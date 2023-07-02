@@ -1,0 +1,76 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "dfgdfgd",
+            "server-pool": "Strong Dev",
+            "server-pool_val": "1221",
+            "http-content-routing-id": "2337264365177280514",
+            "sz_content-routing-match-list": 1
+        },
+        {
+            "id": 2,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "cvbcvbcvb",
+            "server-pool": "Strong Dev",
+            "server-pool_val": "1221",
+            "http-content-routing-id": "11689538784045180902",
+            "sz_content-routing-match-list": 0
+        },
+        {
+            "id": 3,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "1",
+            "server-pool": "Strong Dev",
+            "server-pool_val": "1221",
+            "http-content-routing-id": "10781779713874573981",
+            "sz_content-routing-match-list": 0
+        },
+        {
+            "id": 4,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "2",
+            "server-pool": "Strong Dev",
+            "server-pool_val": "1221",
+            "http-content-routing-id": "299811596138497482",
+            "sz_content-routing-match-list": 0
+        },
+        {
+            "id": 5,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "bnvb",
+            "server-pool": "Strong Dev",
+            "server-pool_val": "1221",
+            "http-content-routing-id": "12436107103072457126",
+            "sz_content-routing-match-list": 0
+        },
+        {
+            "id": 6,
+            "can_view": 0,
+            "q_ref": 1,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "1234",
+            "server-pool": "Strong Dev",
+            "server-pool_val": "1221",
+            "http-content-routing-id": "8209478039452303636",
+            "sz_content-routing-match-list": 0
+        }
+    ]
+}

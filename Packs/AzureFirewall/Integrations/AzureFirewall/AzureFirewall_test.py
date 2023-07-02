@@ -1317,3 +1317,37 @@ def test_azure_firewall_service_tag_list_command(requests_mock):
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'AzureFirewall.ServiceTag'
     assert result.outputs[0].get('name') == 'ActionGroup'
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the out[ut are as expected
+    """
+    from AzureFirewall import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import AzureFirewall
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureFirewall, 'return_results')
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in AzureFirewall.return_results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.management_azure]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

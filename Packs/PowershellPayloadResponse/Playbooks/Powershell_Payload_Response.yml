@@ -66,11 +66,8 @@ tasks:
         simple: "72"
       exsitingIncidentsLookback:
         simple: 7 days ago
-      fromPolicy: {}
       similarIncidentFields:
         simple: name,type,details
-      similarLabelsKeys: {}
-      statusScope: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -116,10 +113,6 @@ tasks:
     scriptarguments:
       assignBy:
         simple: online
-      email: {}
-      onCall: {}
-      roles: {}
-      username: {}
     separatecontext: false
     view: |-
       {
@@ -323,14 +316,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      app: {}
-      batch_limit: {}
-      earliest_time: {}
-      event_limit: {}
-      latest_time: {}
       query:
         simple: QueryTemplate
-      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -540,6 +527,7 @@ tasks:
       - "19"
     separatecontext: false
     sla:
+      minutes: 0
       hours: 0
       days: 0
       weeks: 1
@@ -743,88 +731,20 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
-      active: {}
-      activity_due: {}
-      additional_assignee_list: {}
-      additional_fields: {}
-      approval: {}
-      approval_history: {}
-      approval_set: {}
       assigned_to:
         simple: ${incident.owner}
-      assignment_group: {}
-      business_duration: {}
-      business_service: {}
-      business_stc: {}
-      calendar_duration: {}
-      caller: {}
-      caller_id: {}
       category:
         simple: Malicious File Execution
-      caused_by: {}
-      change_type: {}
-      close_code: {}
-      close_notes: {}
-      closed_at: {}
-      closed_by: {}
-      cmdb_ci: {}
-      comments: {}
-      comments_and_work_notes: {}
-      company: {}
-      contact_type: {}
-      correlation_display: {}
-      correlation_id: {}
-      custom_fields: {}
-      delivery_plan: {}
       description:
         simple: 'Malicious Payload/File Execution Detected on potentially more than
           one Endpoint. The following Endpoint ${incident.endpointid} was detected
           to have executed the following package: ${incident.filename} earlier today.
           Incident will be updated with other devices that have the same file on their
           system.'
-      display: {}
-      due_date: {}
-      escalation: {}
-      expected_start: {}
-      follow_up: {}
-      group_list: {}
-      impact: {}
-      incident_state: {}
-      input_display_value: {}
-      knowledge: {}
-      location: {}
-      made_sla: {}
-      notify: {}
-      number: {}
-      opened_at: {}
-      order: {}
-      parent: {}
-      parent_incident: {}
-      priority: {}
-      problem_id: {}
-      reassignment_count: {}
-      reopen_count: {}
-      resolved_at: {}
-      resolved_by: {}
-      rfc: {}
       severity:
         simple: ${incident.severity}
       short_description:
         simple: Malicious File Payload Executed/Detected on Endpoint
-      sla_due: {}
-      state: {}
-      subcategory: {}
-      sys_updated_by: {}
-      sys_updated_on: {}
-      template: {}
-      ticket_type: {}
-      urgency: {}
-      user_input: {}
-      watch_list: {}
-      work_end: {}
-      work_notes: {}
-      work_notes_list: {}
-      work_start: {}
     separatecontext: false
     view: |-
       {
@@ -855,29 +775,6 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      active: {}
-      activity_due: {}
-      additional_assignee_list: {}
-      additional_fields: {}
-      approval: {}
-      approval_history: {}
-      approval_set: {}
-      assigned_to: {}
-      assignment_group: {}
-      business_duration: {}
-      business_service: {}
-      business_stc: {}
-      calendar_duration: {}
-      caller: {}
-      caller_id: {}
-      category: {}
-      caused_by: {}
-      change_type: {}
-      close_code: {}
-      close_notes: {}
-      closed_at: {}
-      closed_by: {}
-      cmdb_ci: {}
       comments:
         complex:
           root: Splunk
@@ -890,54 +787,8 @@ tasks:
                   simple: device
       comments_and_work_notes:
         simple: Has been detected on multiple machines. Machine ID's in the comments
-      company: {}
-      contact_type: {}
-      correlation_display: {}
-      correlation_id: {}
-      custom_fields: {}
-      delivery_plan: {}
-      description: {}
-      display: {}
-      due_date: {}
-      escalation: {}
-      expected_start: {}
-      follow_up: {}
-      group_list: {}
       id:
         simple: ${ServiceNow.Ticket.ID}
-      impact: {}
-      incident_state: {}
-      input_display_value: {}
-      knowledge: {}
-      location: {}
-      made_sla: {}
-      notify: {}
-      number: {}
-      order: {}
-      parent: {}
-      parent_incident: {}
-      priority: {}
-      problem_id: {}
-      reassignment_count: {}
-      reopen_count: {}
-      resolved_at: {}
-      resolved_by: {}
-      rfc: {}
-      severity: {}
-      short_description: {}
-      sla_due: {}
-      state: {}
-      subcategory: {}
-      sys_updated_by: {}
-      sys_updated_on: {}
-      ticket_type: {}
-      urgency: {}
-      user_input: {}
-      watch_list: {}
-      work_end: {}
-      work_notes: {}
-      work_notes_list: {}
-      work_start: {}
     separatecontext: false
     view: |-
       {
@@ -968,82 +819,12 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      active: {}
-      activity_due: {}
-      additional_assignee_list: {}
-      additional_fields: {}
-      approval: {}
-      approval_history: {}
-      approval_set: {}
-      assigned_to: {}
-      assignment_group: {}
-      business_duration: {}
-      business_service: {}
-      business_stc: {}
-      calendar_duration: {}
-      caller: {}
-      caller_id: {}
-      category: {}
-      caused_by: {}
-      change_type: {}
-      close_code: {}
-      close_notes: {}
-      closed_at: {}
-      closed_by: {}
-      cmdb_ci: {}
-      comments: {}
       comments_and_work_notes:
         simple: Successfully removed all file(s) from all compromised machine(s),
           ensured no more traffic to the external IP/Domain, and removed quarantine
           from the infected machines.
-      company: {}
-      contact_type: {}
-      correlation_display: {}
-      correlation_id: {}
-      custom_fields: {}
-      delivery_plan: {}
-      description: {}
-      display: {}
-      due_date: {}
-      escalation: {}
-      expected_start: {}
-      follow_up: {}
-      group_list: {}
       id:
         simple: ${ServiceNow.Ticket.ID}
-      impact: {}
-      incident_state: {}
-      input_display_value: {}
-      knowledge: {}
-      location: {}
-      made_sla: {}
-      notify: {}
-      number: {}
-      order: {}
-      parent: {}
-      parent_incident: {}
-      priority: {}
-      problem_id: {}
-      reassignment_count: {}
-      reopen_count: {}
-      resolved_at: {}
-      resolved_by: {}
-      rfc: {}
-      severity: {}
-      short_description: {}
-      sla_due: {}
-      state: {}
-      subcategory: {}
-      sys_updated_by: {}
-      sys_updated_on: {}
-      ticket_type: {}
-      urgency: {}
-      user_input: {}
-      watch_list: {}
-      work_end: {}
-      work_notes: {}
-      work_notes_list: {}
-      work_start: {}
     separatecontext: false
     view: |-
       {
@@ -1148,81 +929,14 @@ tasks:
     scriptarguments:
       active:
         simple: "false"
-      activity_due: {}
-      additional_assignee_list: {}
-      additional_fields: {}
-      approval: {}
-      approval_history: {}
-      approval_set: {}
-      assigned_to: {}
-      assignment_group: {}
-      business_duration: {}
-      business_service: {}
-      business_stc: {}
-      calendar_duration: {}
-      caller: {}
-      caller_id: {}
-      category: {}
-      caused_by: {}
-      change_type: {}
       close_code:
         simple: Solved (Permanently)
       close_notes:
         simple: Remediation Successful
-      closed_at: {}
       closed_by:
         simple: ${incident.owner}
-      cmdb_ci: {}
-      comments: {}
-      comments_and_work_notes: {}
-      company: {}
-      contact_type: {}
-      correlation_display: {}
-      correlation_id: {}
-      custom_fields: {}
-      delivery_plan: {}
-      description: {}
-      display: {}
-      due_date: {}
-      escalation: {}
-      expected_start: {}
-      follow_up: {}
-      group_list: {}
       id:
         simple: ${ServiceNow.Ticket.ID}
-      impact: {}
-      incident_state: {}
-      input_display_value: {}
-      knowledge: {}
-      location: {}
-      made_sla: {}
-      notify: {}
-      number: {}
-      order: {}
-      parent: {}
-      parent_incident: {}
-      priority: {}
-      problem_id: {}
-      reassignment_count: {}
-      reopen_count: {}
-      resolved_at: {}
-      resolved_by: {}
-      rfc: {}
-      severity: {}
-      short_description: {}
-      sla_due: {}
-      state: {}
-      subcategory: {}
-      sys_updated_by: {}
-      sys_updated_on: {}
-      ticket_type: {}
-      urgency: {}
-      user_input: {}
-      watch_list: {}
-      work_end: {}
-      work_notes: {}
-      work_notes_list: {}
-      work_start: {}
     separatecontext: false
     view: |-
       {
@@ -1253,17 +967,10 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: Remediated
       closeReason:
         simple: Remediated
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      incomingmirrorerror: {}
-      outgoingmirrorerror: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -1404,7 +1111,6 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      EventId: {}
       MD5:
         complex:
           root: File
@@ -1438,8 +1144,8 @@ tasks:
     task:
       id: 970372d5-8ad5-4989-8fba-0a3a2af7ff36
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
@@ -1448,18 +1154,10 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      EndpointId:
-        simple: ${incident.deviceid}
-      Hostname:
+      Endpoint_hostname:
         simple: ${incident.hostname}
-      IP:
-        complex:
-          root: IP
-          accessor: Address
-      xdr_endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Endpoint.endpoint_id
+      Endpoint_id:
+        simple: ${incident.deviceid}
     separatecontext: true
     loop:
       iscommand: false
@@ -1485,27 +1183,19 @@ tasks:
     task:
       id: eda97e92-1226-4fee-8739-a71cf5fd259b
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
-      EndpointId:
-        complex:
-          root: Splunk
-          accessor: Result
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: device
-      Hostname:
+      Endpoint_hostname:
         complex:
           root: Splunk
           accessor: Result
@@ -1515,14 +1205,16 @@ tasks:
               field:
                 value:
                   simple: host
-      IP:
+      Endpoint_id:
         complex:
-          root: IP
-          accessor: Address
-      xdr_endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Endpoint.endpoint_id
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: device
     separatecontext: true
     loop:
       iscommand: false
@@ -1641,37 +1333,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: Endpoint ID
-  value:
-    simple: ${incident.endpointid}
-  required: false
-  description: ID of the endpoint in question.
-  playbookInputQuery:
-- key: Hostname
-  value:
-    simple: ${incident.hostname}
-  required: false
-  description: Hostname of the endpoint in question.
-  playbookInputQuery:
-- key: Email
-  value:
-    simple: ${incident.email}
-  required: false
-  description: Email attachment.
-  playbookInputQuery:
-- key: File
-  value:
-    simple: ${File}
-  required: false
-  description: Payload file that was executed.
-  playbookInputQuery:
-- key: File Path
-  value:
-    simple: ${incident.filepath}
-  required: false
-  description: File Path of the Executed Payload.
-  playbookInputQuery:
+inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)

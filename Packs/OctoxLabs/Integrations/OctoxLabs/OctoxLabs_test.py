@@ -14,6 +14,7 @@ import pytest
 import requests_mock as rm
 
 from octoxlabs import OctoxLabs
+from octoxlabs.exceptions import NotFound
 from octoxlabs.models.adapter import Adapter
 from OctoxLabs import convert_to_json, run_command
 
@@ -24,7 +25,7 @@ def octox_client() -> OctoxLabs:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -36,7 +37,7 @@ def test_convert_to_json():
         description="Active directory description",
         groups=["ad"],
         beta=False,
-        status=1
+        status=1,
     )
     data = convert_to_json(
         obj=adapter,
@@ -76,7 +77,9 @@ def test_get_adapters(requests_mock, octox_client):
     adapter_data = util_load_json(path="test_data/get_adapters.json")
     requests_mock.get("/adapters/adapters", json=adapter_data)
 
-    result = run_command(octox=octox_client, command_name="octoxlabs-get-adapters", args={})
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-adapters", args={}
+    )
     data = result.outputs
 
     assert data["count"] == 2
@@ -87,7 +90,9 @@ def test_get_connections(requests_mock, octox_client):
     connections_data = util_load_json(path="test_data/get_connections.json")
     requests_mock.get("/adapters/connections", json=connections_data)
 
-    result = run_command(octox=octox_client, command_name="octoxlabs-get-connections", args={})
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-connections", args={}
+    )
     data = result.outputs
 
     assert data["count"] == 2
@@ -97,9 +102,15 @@ def test_get_connections(requests_mock, octox_client):
 
 def test_search_devices_parameters(octox_client):
     with rm.mock() as m:
-        m.post("/assets/assets", json={"count": 0, "results": []})
-        run_command(octox=octox_client, command_name="octoxlabs-search-devices", args={"fields": "Adapters, Hostname"})
-        run_command(octox=octox_client, command_name="octoxlabs-search-devices", args={})
+        m.post("/devices/devices", json={"count": 0, "results": []})
+        run_command(
+            octox=octox_client,
+            command_name="octoxlabs-search-devices",
+            args={"fields": "Adapters, Hostname"},
+        )
+        run_command(
+            octox=octox_client, command_name="octoxlabs-search-devices", args={}
+        )
 
     first_request = m.request_history[0]
     first_data = first_request.json()
@@ -108,3 +119,54 @@ def test_search_devices_parameters(octox_client):
     last_request = m.request_history[1]
     last_data = last_request.json()
     assert last_data["fields"] is None
+
+
+def test_get_queries(requests_mock, octox_client):
+    queries_data = util_load_json(path="test_data/get_queries.json")
+    requests_mock.get("/queries/queries", json=queries_data)
+
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-queries", args={}
+    )
+    first_data = result.outputs
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["id"] == 142
+
+
+def test_get_query_by_id(requests_mock, octox_client):
+    query_data = util_load_json(path="test_data/get_query.json")
+    requests_mock.get("/queries/queries/142", json=query_data)
+
+    result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-get-query-by-id",
+        args={"query_id": 142},
+    )
+    data = result.outputs
+
+    assert data["id"] == 142
+    assert data["tags"] == ["cisco"]
+
+
+def test_get_query_by_name(requests_mock, octox_client):
+    queries_data = util_load_json(path="test_data/get_queries.json")
+    requests_mock.get(
+        "/queries/queries?search=error",
+        json={"count": 1, "results": [{"name": "not cisco"}]},
+    )
+    with pytest.raises(NotFound):
+        run_command(
+            octox=octox_client,
+            command_name="octoxlabs-get-query-by-name",
+            args={"query_name": "error"},
+        )
+
+    requests_mock.get("/queries/queries?search=cisco ise machines", json=queries_data)
+    result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-get-query-by-name",
+        args={"query_name": "cisco ise machines"},
+    )
+    data = result.outputs
+
+    assert data["name"] == "cisco ise machines"

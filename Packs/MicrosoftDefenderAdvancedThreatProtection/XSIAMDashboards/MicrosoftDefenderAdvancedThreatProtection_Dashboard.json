@@ -1,0 +1,567 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Microsoft Defender for Endpoint Overview Dashboard",
+            "description": null,
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-7081",
+                    "data": [
+                        {
+                            "key": "xql_1668072520119",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.317467872441696,
+                                "height": 400,
+                                "phrase": "dataset = incidents \r\n|filter description contains \"Microsoft Defender for Endpoint\"\r\n|filter status not contains \"Resolved\" \r\n|comp count (severity) as TotalCount by severity\n| view graph type = pie header = \"Open Incident by Severity (Last 30 days)\" xaxis = severity yaxis = TotalCount valuecolor(\"HIGH\",\"#f75e40\") valuecolor(\"LOW\",\"#50b0f5\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Open Incident by Severity (Last 30 days)\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "TotalCount"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "HIGH",
+                                                    "#f75e40"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "LOW",
+                                                    "#50b0f5"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668075997841",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 66.6825321275583,
+                                "height": 400,
+                                "phrase": "dataset = incidents \r\n|filter description contains \"Microsoft Defender for Endpoint\"\r\n|filter status not contains \"Resolved\" \r\n|fields\r\nstatus ,\r\ndescription,\r\nseverity, \r\nincident_id\r\n|sort asc severity ",
+                                "entityType": "xql-widget-table-9e00c934-23e4-4f1f-97e7-be7d2ebda292",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": "{\"colId\":\"severity\",\"sort\":\"asc\"}",
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1802",
+                    "data": [
+                        {
+                            "key": "xql_1668088195787",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel dataset in (microsoft_365_defender_raw)\r\n|filter xdm.alert.category = \"Malware\"\r\n|comp count (xdm.target.host.fqdn) as TotalCount by xdm.target.host.fqdn\r\n|sort desc TotalCount \r\n|limit 10\n| view graph type = column subtype = grouped layout = horizontal xaxis = xdm.target.host.fqdn yaxis = TotalCount seriescolor(\"TotalCount\",\"#fc240a\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.target.host.fqdn"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "TotalCount"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "TotalCount",
+                                                    "#fc240a"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668088119662",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel dataset in (microsoft_365_defender_raw)\r\n|filter xdm.alert.category = \"SuspiciousActivity\"\r\n|comp count (xdm.target.host.fqdn) as TotalCount by xdm.target.host.fqdn\r\n|sort desc TotalCount \r\n|limit 10\n| view graph type = column subtype = grouped layout = horizontal xaxis = xdm.target.host.fqdn yaxis = TotalCount seriescolor(\"TotalCount\",\"#bd8a30\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.target.host.fqdn"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "TotalCount"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "TotalCount",
+                                                    "#bd8a30"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668089259803",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel dataset in (microsoft_365_defender_raw)\r\n|comp count (xdm.alert.category ) as TotalAlertsCount by xdm.alert.category\n| view graph type = pie subtype = semi_donut xaxis = xdm.alert.category yaxis = TotalAlertsCount valuecolor(\"Malware\",\"#e70000\") valuecolor(\"None\",\"#4e80c9\") valuecolor(\"SuspiciousActivity\",\"#d18e00\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "semi_donut"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.alert.category"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "TotalAlertsCount"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Malware",
+                                                    "#e70000"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "None",
+                                                    "#4e80c9"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "SuspiciousActivity",
+                                                    "#d18e00"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 3,
+            "global_id": "e6d86cc00b4849e6a45a07c6ce4b310d"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1668072520119",
+            "title": "Microsoft Defender for Endpoint - Open Incident by Severity",
+            "creation_time": 1668072520119,
+            "description": "This widget displays Pie chart of the open incident by severity",
+            "data": {
+                "phrase": "dataset = incidents \r\n|filter description contains \"Microsoft Defender for Endpoint\"\r\n|filter status not contains \"Resolved\" \r\n|comp count (severity) as TotalCount by severity\r\n|sort asc severity\n| view graph type = pie header = \"Open Incident by Severity (Last 30 days)\" xaxis = severity yaxis = TotalCount valuecolor(\"HIGH\",\"#ee5638\") valuecolor(\"MEDIUM\",\"#f99e00\") valuecolor(\"LOW\",\"#2292e2\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Open Incident by Severity (Last 30 days)\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "TotalCount"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "HIGH",
+                                    "#ee5638"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "MEDIUM",
+                                    "#f99e00"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "LOW",
+                                    "#2292e2"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668075997841",
+            "title": "Microsoft Defender for Endpoint - Open Incidents list",
+            "creation_time": 1668075997841,
+            "description": "This widget display list of the open incidents by severity",
+            "data": {
+                "phrase": "dataset = incidents \r\n|filter description contains \"Microsoft Defender for Endpoint\"\r\n|filter status not contains \"Resolved\" \r\n|fields\r\nstatus ,\r\ndescription,\r\nseverity, \r\nincident_id\r\n|sort asc severity ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": "{\"colId\":\"severity\",\"sort\":\"asc\"}",
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668088119662",
+            "title": "Microsoft Defender for Endpoint - Top 10 Hosts with multiple events (Last 30 days)",
+            "creation_time": 1668088119662,
+            "description": "This widget displays column graph of  Top 10 Hosts with multiple events (Last 30 days)",
+            "data": {
+                "phrase": "datamodel\r\n|filter xdm.observer.vendor=\"Microsoft 365\" and  xdm.observer.product=\"Defender\"\r\n|filter xdm.alert.category != \"None\"\r\n|comp count (xdm.target.host.fqdn) as TotalCount by xdm.target.host.fqdn\r\n|sort desc TotalCount \r\n|limit 10\n| view graph type = column subtype = grouped layout = horizontal show_callouts = `true` xaxis = xdm.target.host.fqdn yaxis = TotalCount seriescolor(\"TotalCount\",\"#582de6\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.target.host.fqdn"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "TotalCount"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "TotalCount",
+                                    "#582de6"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668088195787",
+            "title": "Microsoft Defender for Endpoint - Events per day",
+            "creation_time": 1668088195787,
+            "description": "This widget displays line chart of Events per day",
+            "data": {
+                "phrase": "datamodel\r\n|filter xdm.observer.vendor=\"Microsoft 365\" and  xdm.observer.product=\"Defender\"\r\n|sort asc _time \r\n|bin _time span = 1D\r\n|comp count(_time) as EventCount by _time\n| view graph type = line header = \"Event Ingestion Count\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Event Ingestion Count\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "EventCount"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "EventCount",
+                                    "#1e83f7"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668089259803",
+            "title": "Microsoft Defender for Endpoint - Events by category (Last 30 days)",
+            "creation_time": 1668089259803,
+            "description": "This widget displays pie chart of all Microsoft Defender for Endpoint  Events by category (Last 30 days)",
+            "data": {
+                "phrase": "datamodel\n|filter xdm.observer.vendor=\"Microsoft 365\" and  xdm.observer.product=\"Defender\"\n|comp count (xdm.alert.category ) as TotalAlertsCount by xdm.alert.category\n| view graph type = pie subtype = semi_donut xaxis = xdm.alert.category yaxis = TotalAlertsCount valuecolor(\"Malware\",\"#e70000\") valuecolor(\"None\",\"#4e80c9\") valuecolor(\"SuspiciousActivity\",\"#d18e00\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "semi_donut"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.alert.category"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "TotalAlertsCount"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Malware",
+                                    "#e70000"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "None",
+                                    "#4e80c9"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "SuspiciousActivity",
+                                    "#d18e00"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

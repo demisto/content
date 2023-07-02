@@ -23,6 +23,7 @@ tasks:
       - "5"
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -35,6 +36,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 3c8917c3-3fd7-4042-8a9d-7702e13239c1
@@ -47,6 +50,7 @@ tasks:
         registry analysis and extract forensic artifacts. The automation includes
         common registry objects to extract which are useful for analyzing a registry
         or a user provides registry path to parse.
+      playbookName: Registry Parse Data Analysis
       type: playbook
       iscommand: false
       brand: ""
@@ -54,12 +58,12 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      CustomRegistryPaths: {}
       RegistryData:
         simple: All
       RegistryFileEntryID:
         simple: ${inputs.RegistryEntryId}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -77,6 +81,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 81cf33ce-5720-4545-81e4-bf8617668511
@@ -90,6 +96,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,6 +109,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: d9314b03-bd13-42f6-8ee4-e9ec0948e236
@@ -128,6 +137,7 @@ tasks:
             value:
               simple: inputs.PcapEntryID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -140,6 +150,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 85e48460-6d6f-423f-8bfe-1e691ebfe3b2
@@ -166,6 +178,7 @@ tasks:
             value:
               simple: inputs.RegistryEntryId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -178,12 +191,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 35ba700b-4f86-4fc8-807f-a31b85e1b88c
+    taskid: 409db5ba-ecff-46f7-8f20-0348efa7600c
     type: playbook
     task:
-      id: 35ba700b-4f86-4fc8-807f-a31b85e1b88c
+      id: 409db5ba-ecff-46f7-8f20-0348efa7600c
       version: -1
       name: PCAP Search
       description: This playbook is used to parse and search within PCAP files. Supported
@@ -192,22 +207,50 @@ tasks:
         the PCAP. The values to search are IP addresses, CIDR ranges, and TCP or UDP
         ports or protocols. In the event that more than one input type was specified,
         specify in the QueryOperator input (such as IP addresses and TCP ports) if
-        the PCAP filter query will use an AND or an OR operator between the inputs.
-        Another option is to use advanced filters just like in Wireshark to use refined
-        filters or for objects not specified in other inputs. Additional inputs allow
-        the user to provide the WPA password for decrypting 802.11 (wireless) traffic
+        the PCAP filter query will use an AND or an OR operator between the inputs.  Another
+        option is to use advanced filters just like in Wireshark to use refined filters
+        or for objects not specified in other inputs. Additional inputs allow the
+        user to provide the WPA password for decrypting 802.11 (wireless) traffic
         and adding an RSA certificate to decrypt SSL traffic. To display the results
         within the relevant incident fields, the playbook needs to run in a PCAP Analysis
         incident type. For handling of PCAP files larger than 30 MB, refer to the
         PcapMinerV2 documentation.
-      playbookId: PCAP Search
+      playbookName: PCAP Search
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "4"
+    scriptarguments:
+      PcapFileEntryID:
+        simple: ${inputs.PcapEntryID}
+      QueryOperator:
+        simple: and
+      RsaDecryptKeyEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapencryptionkey.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: key
+          accessor: EntryID
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -225,6 +268,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 41788e56-5404-4ac0-8daf-99c7ea845fcb
@@ -242,6 +287,7 @@ tasks:
       - "4"
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -254,6 +300,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 79705b63-e6e5-42f6-847c-09dcca2037cd
@@ -271,6 +319,7 @@ tasks:
       - "4"
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -283,6 +332,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -303,12 +354,12 @@ inputs:
   value: {}
   required: false
   description: The entryid for the PCAP file to analyze.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: RegistryEntryId
   value: {}
   required: false
   description: The entryid for the registry file to analyze.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

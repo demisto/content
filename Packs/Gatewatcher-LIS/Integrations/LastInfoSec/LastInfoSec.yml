@@ -13,12 +13,10 @@ configuration:
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
-description: This integration allow to interact with the Gatewatcher LastInfoSec product
-  via API.
+description: This integration allow to interact with the Gatewatcher LastInfoSec product via API.
 display: LastInfoSec
 name: LastInfoSec
 script:
@@ -112,9 +110,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Allows you to search for an IOC (url, hash, host) or a vulnerability
-      in the Gatewatcher CTI database. If the data is known, only the IOC corresponding
-      to the value will be returned.
+    description: Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gatewatcher CTI database. If the data is known, only the IOC corresponding to the value will be returned.
     execution: false
     name: gw-lis-get-by-value
     outputs:

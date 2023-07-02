@@ -23,7 +23,8 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "ExtraHop Detection"
+  "ExtraHop Detection",
+  "AWS Security Hub Finding"
  ],
  "systemAssociatedTypes": null,
  "associatedToAll": false,

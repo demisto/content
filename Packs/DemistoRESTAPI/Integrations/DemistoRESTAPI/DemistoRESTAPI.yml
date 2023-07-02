@@ -2,9 +2,9 @@ commonfields:
   id: Demisto REST API
   version: -1
 name: Demisto REST API
-display: Demisto REST API
+display: Demisto REST API (Deprecated)
 category: Utilities
-description: Use Demisto REST APIs
+description: Deprecated. Use Core REST API instead.
 configuration:
 - display: Demisto Server URL
   name: url
@@ -18,7 +18,7 @@ configuration:
   hiddenusername: true
 - display: Base marketplace url
   name: marketplace_url
-  defaultvalue: https://storage.googleapis.com/marketplace-dist/content/packs/
+  defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/content/packs/
   type: 0
   required: false
 - display: Trust any certificate (not secure)
@@ -152,3 +152,5 @@ tests:
 marketplaces:
   - xsoar
 fromversion: 5.0.0
+toversion: 7.9.9
+deprecated: true

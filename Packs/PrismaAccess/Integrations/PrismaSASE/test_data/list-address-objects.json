@@ -1,0 +1,21 @@
+{
+    "data": [
+        {
+            "id": "####bdd-ef2d-411c-90f0-####4b7200f",
+            "name": "Address 1",
+            "folder": "Shared",
+            "type": "ip_netmask",
+            "address_value": "1.2.3.4/32"
+        },
+        {
+            "id": "####cf2f-6dfe-4d82-83fb-####190ab99a",
+            "name": "another object",
+            "folder": "Shared",
+            "type": "fqdn",
+            "address_value": "some.domain"
+        }
+    ],
+    "offset": 0,
+    "total": 3,
+    "limit": 20
+}

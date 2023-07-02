@@ -86,7 +86,7 @@ tasks:
       key:
         simple: URL.Data
       value:
-        simple: https://www.google.com
+        simple: "https://www.google.com/hello world"
     separatecontext: false
     view: |-
       {

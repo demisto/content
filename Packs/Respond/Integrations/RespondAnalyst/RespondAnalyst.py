@@ -7,9 +7,10 @@ from datetime import datetime
 import dateparser
 from typing import List, Dict
 from math import floor
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS/GLOBALS '''
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"

@@ -42,8 +42,12 @@ args:
 - name: additionalPollingCommandArgValues
   description: Commas separated arguments values of the polling command
   isArray: true
+- name: scheduledEntryGuid
+  description: The GUID of the scheduled entry that runs the polling command.
+- name: endTime
+  description: The time to end the polling.
 scripttarget: 0
 runonce: false
 tests:
-- No test
+- Generic Polling Test
 fromversion: 5.0.0

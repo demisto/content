@@ -14,4 +14,5 @@ ignore=BA101
 ignore=RM104
 
 [file:GoogleVault.yml]
-ignore=IN145
+ignore=IN145,BA124
+

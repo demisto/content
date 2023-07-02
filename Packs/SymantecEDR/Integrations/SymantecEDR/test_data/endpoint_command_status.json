@@ -1,0 +1,14 @@
+{
+    "state": "completed",
+    "status": [
+        {
+            "target": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "state": 2,
+            "message": "Endpoint is not isolated yet",
+            "error_code": 201
+        }
+    ],
+    "command_issuer_name": "ATP API",
+    "next": null,
+    "total": 1
+}

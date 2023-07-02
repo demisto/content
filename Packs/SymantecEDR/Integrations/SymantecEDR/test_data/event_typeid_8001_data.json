@@ -1,0 +1,96 @@
+{
+    "result": [
+        {
+            "type_id": 8001,
+            "severity_id": 1,
+            "device_time": "2023-02-23T11:58:11.003Z",
+            "log_time": "2023-02-23T12:02:00.125Z",
+            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "device_name": "WIN-TFB8L7BI77H",
+            "device_ip": "172.16.14.42",
+            "device_os_name": "Windows Server 2019 ",
+            "user_name": "SYSTEM",
+            "user_domain": "NT AUTHORITY",
+            "user_sid": "S-1-5-18",
+            "device_domain": "WORKGROUP",
+            "operation": 1,
+            "event_actor": {
+                "pid": 928,
+                "uid": "52D97BA0-A235-F1ED-821C-60ABC5EF1DD4",
+                "cmd_line": "C:\\Windows\\system32\\svchost.exe -k DcomLaunch -p",
+                "start_time": "2023-02-01T13:36:16.743Z",
+                "signature_level_id": 60,
+                "integrity_id": 6,
+                "user": {
+                    "name": "SYSTEM",
+                    "sid": "S-1-5-18"
+                },
+                "file": {
+                    "name": "svchost.exe",
+                    "md5": "4dd18f001ac31d5f48f50f99e4aa1761",
+                    "modified": "2023-02-01T07:31:42.543Z",
+                    "path": "c:\\windows\\system32\\svchost.exe",
+                    "normalized_path": "CSIDL_SYSTEM\\svchost.exe",
+                    "signature_company_name": "Microsoft Windows Publisher",
+                    "signature_value_ids": [
+                        3,
+                        5
+                    ],
+                    "sha2": "2b105fb153b1bcd619b95028612b3a93c60b953eef6837d3bb0099e4207aaf6b",
+                    "original_name": "svchost.exe"
+                }
+            },
+            "process": {
+                "pid": 7260,
+                "uid": "346CA85F-B35B-F1ED-821C-98261F32744E",
+                "cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
+                "signature_level_id": 60,
+                "integrity_id": 6,
+                "user": {
+                    "name": "SYSTEM",
+                    "sid": "S-1-5-18"
+                },
+                "file": {
+                    "normalized_path": "CSIDL_SYSTEM\\dllhost.exe",
+                    "name": "dllhost.exe",
+                    "md5": "d2ab39ea2c0fcd172751f84bda723a97",
+                    "modified": "2018-09-15T07:12:24.564Z",
+                    "path": "c:\\windows\\system32\\dllhost.exe",
+                    "signature_company_name": "Microsoft Windows",
+                    "signature_value_ids": [
+                        3,
+                        5
+                    ],
+                    "sha2": "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905",
+                    "original_name": "dllhost.exe"
+                }
+            },
+            "enriched_data": {
+                "rule_name": "eDCOMLaunch",
+                "suspicion_score": 50,
+                "category_name": "Generic Data to be sent to ATP",
+                "category_id": 201,
+                "rule_description": "Distributed Component Object Model activity detected"
+            },
+            "attacks": [
+                {
+                    "technique_uid": "T1021",
+                    "technique_name": "Remote Services",
+                    "tactic_ids": [
+                        8,
+                        5
+                    ],
+                    "tactic_uids": [
+                        "TA0008",
+                        "TA0004"
+                    ]
+                }
+            ],
+            "ref_uid": "12DD0CC8-4B87-42B0-B278-08EE2C623DD1",
+            "uuid": "5827c0b0-b371-11ed-f707-000000026dc4",
+            "log_name": "epmp_events-fdr-2023-02-23"
+        }
+    ],
+    "next": "MTAwLDIwMjMtMDItMjNUMTI6MDE6MzAuNTE5Wg==",
+    "total": 36268
+}

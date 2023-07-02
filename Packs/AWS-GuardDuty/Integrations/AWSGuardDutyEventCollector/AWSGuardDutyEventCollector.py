@@ -176,6 +176,8 @@ def main():  # pragma: no cover
     aws_gd_severity = params.get('gd_severity', '')
     first_fetch = arg_to_datetime(params.get('first_fetch'))
     limit = arg_to_number(params.get('limit'))
+    sts_endpoint_url = params.get('sts_endpoint_url') or None
+    endpoint_url = params.get('endpoint_url') or None
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -184,7 +186,7 @@ def main():  # pragma: no cover
         # proxy is being handled in AWSClient.
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
-                               timeout, retries)
+                               timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
         client = aws_client.aws_session(service=CLIENT_SERVICE, region=aws_default_region)
 
@@ -199,48 +201,47 @@ def main():  # pragma: no cover
                        detectors_num=1)
             return_results('ok')
 
-        if command in ('aws-gd-get-events', 'fetch-events'):
-            events: list = []
-            if command == 'aws-gd-get-events':
+        elif command == 'aws-gd-get-events':
 
-                collect_from = arg_to_datetime(demisto.args().get('collect_from', params.get('first_fetch')))
-                severity = demisto.args().get('severity', aws_gd_severity)
-                command_limit = arg_to_number(demisto.args().get('limit', limit))
-                events, new_last_ids, new_collect_from = get_events(
-                    aws_client=client,
-                    collect_from={},
-                    collect_from_default=collect_from,
-                    last_ids={},
-                    severity=severity,
-                    limit=command_limit if command_limit else MAX_RESULTS)
+            collect_from = arg_to_datetime(demisto.args().get('collect_from', params.get('first_fetch')))
+            severity = demisto.args().get('severity', aws_gd_severity)
+            command_limit = arg_to_number(demisto.args().get('limit', limit))
+            events, new_last_ids, _ = get_events(
+                aws_client=client,
+                collect_from={},
+                collect_from_default=collect_from,
+                last_ids={},
+                severity=severity,
+                limit=command_limit if command_limit else MAX_RESULTS)
 
-                command_results = CommandResults(
-                    readable_output=tableToMarkdown('AWSGuardDuty Logs', events, headerTransform=pascalToSpace),
-                    raw_response=events,
-                )
-                return_results(command_results)
-
-            if command == 'fetch-events':
-                last_run = demisto.getLastRun()
-                collect_from_dict = last_run.get('collect_from', {})
-                last_ids = last_run.get('last_ids', {})
-
-                events, new_last_ids, new_collect_from_dict = get_events(aws_client=client,
-                                                                         collect_from=collect_from_dict,
-                                                                         collect_from_default=first_fetch,
-                                                                         last_ids=last_ids,
-                                                                         severity=aws_gd_severity,
-                                                                         limit=limit if limit else MAX_RESULTS)
-
-                demisto.setLastRun({
-                    'collect_from': new_collect_from_dict,
-                    'last_ids': new_last_ids
-                })
+            command_results = CommandResults(
+                readable_output=tableToMarkdown('AWSGuardDuty Logs', events, headerTransform=pascalToSpace),
+                raw_response=events,
+            )
+            return_results(command_results)
 
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
                 send_events_to_xsiam(events, VENDOR, PRODUCT)
 
-        elif command != 'test-module':
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            collect_from_dict = last_run.get('collect_from', {})
+            last_ids = last_run.get('last_ids', {})
+
+            events, new_last_ids, new_collect_from_dict = get_events(aws_client=client,
+                                                                     collect_from=collect_from_dict,
+                                                                     collect_from_default=first_fetch,
+                                                                     last_ids=last_ids,
+                                                                     severity=aws_gd_severity,
+                                                                     limit=limit if limit else MAX_RESULTS)
+
+            send_events_to_xsiam(events, VENDOR, PRODUCT)
+            demisto.setLastRun({
+                'collect_from': new_collect_from_dict,
+                'last_ids': new_last_ids
+            })
+
+        else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:

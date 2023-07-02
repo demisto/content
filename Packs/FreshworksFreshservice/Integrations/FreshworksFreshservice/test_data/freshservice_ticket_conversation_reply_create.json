@@ -1,0 +1,18 @@
+{
+    "conversation": {
+        "id": 1,
+        "user_id": 21001397559,
+        "to_emails": [
+            "conversation_to_emails_0"
+        ],
+        "body": "<div>We are working on this issue. Will keep you posted.</div>",
+        "body_text": "We are working on this issue. Will keep you posted.",
+        "ticket_id": 6,
+        "created_at": "conversation_created_at",
+        "updated_at": "conversation_updated_at",
+        "from_email": "conversation_from_email",
+        "cc_emails": [],
+        "bcc_emails": [],
+        "attachments": []
+    }
+}

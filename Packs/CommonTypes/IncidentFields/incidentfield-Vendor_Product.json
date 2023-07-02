@@ -26,8 +26,9 @@
   "associatedTypes": [
    "Malware",
    "Traps",
-   "FireEye NX Alerts",
-   "FireEye NX IPS Event"
+   "FireEye NX Alert",
+   "FireEye NX IPS Event",
+   "Microsoft Sentinel Incident"
   ],
   "associatedToAll": false,
   "unmapped": false,

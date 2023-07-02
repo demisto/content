@@ -188,6 +188,10 @@ dbotMirrorDirection
 dbotMirrorId
 dbotMirrorInstance
 dbotMirrorTags
+Chatbot
+chatbot
+Okta
+optionally
 Parses
 html
 maxPages
@@ -220,3 +224,18 @@ subplaybook
 IAMApiModule
 Salesforce
 Atlassian
+PTR
+Recursively
+ssh
+YAML
+Oproxy
+linter
+pylint
+delimiter
+GCP
+ MS
+ readme
+ params
+Qradar
+XSIAM
+fromversion

@@ -1,0 +1,2693 @@
+id: Rubrik Ransomware Discovery and File Recovery - Rubrik Polaris
+version: -1
+name: Rubrik Ransomware Discovery and File Recovery - Rubrik Polaris
+description: "This playbook performs an IOC Scan based on the provided inputs, search\
+  \ the recoverable snapshot and performs recovery on the searched recoverable snapshot.\
+  \ This playbook also creates tickets on ServiceNow using \"ServiceNow v2\" integration.\
+  \ \nSupported integrations: \n- RubrikPolaris\n- ServiceNow v2\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2b3d6fd1-b39e-4467-8539-363482c26e39
+    type: start
+    task:
+      id: 2b3d6fd1-b39e-4467-8539-363482c26e39
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a6f2431b-12a7-4b5d-8969-cb0975824644
+    type: regular
+    task:
+      id: a6f2431b-12a7-4b5d-8969-cb0975824644
+      version: -1
+      name: Create Snapshot for evidence
+      description: |-
+        Triggers an on-demand snapshot of a system.
+
+        Note: To know about the status of the on-demand snapshot creation, use the "rubrik-gps-async-result" command.
+      script: '|||rubrik-gps-vm-snapshot-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      object_id:
+        complex:
+          root: inputs.ObjectId
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3950,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6c3bdcdc-20f5-4dba-8386-e4ab8315175d
+    type: condition
+    task:
+      id: 6c3bdcdc-20f5-4dba-8386-e4ab8315175d
+      version: -1
+      name: Is IOC scan successful?
+      description: Checks the status of IOC Scan.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      ERROR:
+      - "37"
+      FINISHED:
+      - "58"
+      RUNNING:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: FINISHED
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris
+                accessor: RadarIOCScan
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: status
+            iscontext: true
+          right:
+            value:
+              simple: FINISHED
+    - label: RUNNING
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris
+                accessor: RadarIOCScan
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: status
+            iscontext: true
+          right:
+            value:
+              simple: RUNNING
+    - label: ERROR
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris
+                accessor: RadarIOCScan
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: status
+            iscontext: true
+          right:
+            value:
+              simple: ERROR
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4ce615dc-8ed0-4b26-8258-d822d7d2e997
+    type: regular
+    task:
+      id: 4ce615dc-8ed0-4b26-8258-d822d7d2e997
+      version: -1
+      name: Add comment in SNOW Ticket
+      description: Add comments present in the "Message" key in the context data,
+        to the ServiceNow ticket.
+      script: '|||servicenow-add-comment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      comment:
+        simple: ${Message}
+      id:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2342.5,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6dcb8d25-0d8c-4ff4-828a-b4c92219db1b
+    type: title
+    task:
+      id: 6dcb8d25-0d8c-4ff4-828a-b4c92219db1b
+      version: -1
+      name: Remediating the anomaly
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+      - "22"
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3950,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: f3552c2e-a9fb-4da0-8254-ff891ff5e367
+    type: regular
+    task:
+      id: f3552c2e-a9fb-4da0-8254-ff891ff5e367
+      version: -1
+      name: Create SNOW Ticket
+      description: Creates new ServiceNow ticket.
+      script: '|||servicenow-create-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      description:
+        simple: An anomaly incident occurred on ${incident.rubrikpolarisobjectname}
+          with ID ${incident.rubrikpolarisfid} on cluster ${incident.rubrikcdmclustername}
+          with cluster ID ${incident.rubrikcdmclusterid}. The event started on ${incident.rubrikpolarisstarttime}.
+      short_description:
+        simple: Rubrik Radar Anomaly Alert on ${incident.rubrikpolarisobjectname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9d47fafe-231e-40fd-899d-3cd8aae760d4
+    type: title
+    task:
+      id: 9d47fafe-231e-40fd-899d-3cd8aae760d4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: fcd0ceac-0401-4e3a-8e18-7cb44008f110
+    type: regular
+    task:
+      id: fcd0ceac-0401-4e3a-8e18-7cb44008f110
+      version: -1
+      name: Close SNOW Ticket
+      description: Updates the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      close_code:
+        simple: Closed/Resolved by Caller
+      close_notes:
+        simple: Resolved
+      id:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: ID
+      state:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2342.5,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 08432708-661b-4293-810e-0643c3f0053e
+    type: condition
+    task:
+      id: 08432708-661b-4293-810e-0643c3f0053e
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether an instance of the Rubrik Polaris integration is
+        enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: dba04e34-a97d-455f-8937-28603f379759
+    type: condition
+    task:
+      id: dba04e34-a97d-455f-8937-28603f379759
+      version: -1
+      name: Is ServiceNow integration enabled?
+      description: Checks whether an instance of the ServiceNow integration is enabled
+        or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3950,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a597a058-5e07-4a5b-8a89-3b23e6efb3ff
+    type: title
+    task:
+      id: a597a058-5e07-4a5b-8a89-3b23e6efb3ff
+      version: -1
+      name: Start IOC Scan
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 092b689d-b44b-439c-848f-c7806be63477
+    type: title
+    task:
+      id: 092b689d-b44b-439c-848f-c7806be63477
+      version: -1
+      name: Create Snapshot
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3950,
+          "y": 2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: be679de3-9217-4293-8ead-860fc2ec0937
+    type: condition
+    task:
+      id: be679de3-9217-4293-8ead-860fc2ec0937
+      version: -1
+      name: Is BlockFile enabled?
+      description: Checks whether BlockFile input is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Recovery Data.Answers
+                accessor: "5"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 2445,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: dd4129b2-05da-40e5-8f57-41e3ff8af862
+    type: regular
+    task:
+      id: dd4129b2-05da-40e5-8f57-41e3ff8af862
+      version: -1
+      name: Print records not found message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      message:
+        simple: No recoverable snapshots were found with the given IOC scan arguments.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 3fbe5d3d-3ebf-4020-86ee-bbea431a2535
+    type: title
+    task:
+      id: 3fbe5d3d-3ebf-4020-86ee-bbea431a2535
+      version: -1
+      name: List all Snapshots
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5025,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: b8f493db-88aa-4b69-85de-6189a93df002
+    type: regular
+    task:
+      id: b8f493db-88aa-4b69-85de-6189a93df002
+      version: -1
+      name: List all Snapshots
+      description: Search for a Rubrik snapshot of  an object based on the  provided
+        snapshot ID, exact timestamp, or specific value like earliest/latest, or closest
+        before/after a timestamp.
+      script: '|||rubrik-polaris-vm-object-snapshot-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      end_date:
+        simple: now
+      object_id:
+        complex:
+          root: inputs.ObjectId
+      start_date:
+        simple: 7 days ago
+      timezone_offset:
+        simple: "5.5"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5025,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: bc2e0bf2-b765-4e64-829e-45f4cbf89da7
+    type: regular
+    task:
+      id: bc2e0bf2-b765-4e64-829e-45f4cbf89da7
+      version: -1
+      name: 'Recover snapshot files '
+      description: |-
+        Recovers files from a snapshot backup, back into a system.
+
+        Note: To know about the recovery status, use the "rubrik-gps-async-result" command.
+      script: '|||rubrik-gps-vm-recover-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: inputs.ClusterId
+      destination_object_id:
+        complex:
+          root: Recovery Data.Answers
+          accessor: "2"
+      paths_to_recover:
+        complex:
+          root: Recovery Data.Answers
+          accessor: "0"
+      restore_path:
+        complex:
+          root: Recovery Data.Answers
+          accessor: "1"
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.RecoverableSnapshot
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2445,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 08081f9e-0024-43cc-885d-9a3065cdb46c
+    type: regular
+    task:
+      id: 08081f9e-0024-43cc-885d-9a3065cdb46c
+      version: -1
+      name: Print timeout message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      message:
+        simple: Wait for IOC scan results timed out. Please see incident context for
+          further details.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3305,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: e95d096e-151e-4080-8687-8c0ef12857db
+    type: regular
+    task:
+      id: e95d096e-151e-4080-8687-8c0ef12857db
+      version: -1
+      name: Print error message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      message:
+        simple: There was an error while running the IOC scan. Please see incident
+          context for further details.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2f8b771a-5d16-4ce8-8e20-c850599b064b
+    type: regular
+    task:
+      id: 2f8b771a-5d16-4ce8-8e20-c850599b064b
+      version: -1
+      name: Print unknown status message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      message:
+        simple: Unknown status was received for the IOC scan. Please see incident
+          context for further details.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 6abd5592-e875-4cdc-86c8-9014a36b2a89
+    type: condition
+    task:
+      id: 6abd5592-e875-4cdc-86c8-9014a36b2a89
+      version: -1
+      name: Are there any recoverable snapshots?
+      description: Checks whether recoverable snapshot(s) are available or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.RecoverableSnapshot
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2005,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: efd8a196-a4cc-4ebf-8316-b753efdcc292
+    type: condition
+    task:
+      id: efd8a196-a4cc-4ebf-8316-b753efdcc292
+      version: -1
+      name: Is SNOW Ticket created?
+      description: Checks whether the ServiceNow ticket is created or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.Ticket
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2127.5,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: ba748c98-b8bb-4d0f-8915-ade20e851c16
+    type: playbook
+    task:
+      id: ba748c98-b8bb-4d0f-8915-ade20e851c16
+      version: -1
+      name: Rubrik Poll Async Result - Rubrik Polaris
+      description: Poll async result for any asynchronous request made to rubrik.
+      playbookName: Rubrik Poll Async Result - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      ClusterId:
+        complex:
+          root: inputs.ClusterId
+      PollingInterval:
+        complex:
+          root: Recovery Data.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "5"
+      PollingTimeout:
+        complex:
+          root: Recovery Data.Answers
+          accessor: "4"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "720"
+      RequestId:
+        complex:
+          root: RubrikPolaris.GPSVMRecoverFiles
+          accessor: id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 79080c96-81f3-42c6-8df9-16b9d6daffd9
+    type: condition
+    task:
+      id: 79080c96-81f3-42c6-8df9-16b9d6daffd9
+      version: -1
+      name: Is recovery completed?
+      description: Checks whether recovery of snapshot file(s) is completed or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GPSAsyncResult
+                filters:
+                - - operator: startWith
+                    left:
+                      value:
+                        simple: RubrikPolaris.GPSAsyncResult.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RESTORE
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCEEDED
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: b522e5dd-1f69-4ba7-896b-d2fef388ff1e
+    type: regular
+    task:
+      id: b522e5dd-1f69-4ba7-896b-d2fef388ff1e
+      version: -1
+      name: Print success message
+      description: Prints text to war room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      value:
+        complex:
+          root: RubrikPolaris.RecoverableSnapshot
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'The files have been successfully recovered from the Snapshot
+                    with ID '
+              suffix:
+                value:
+                  simple: ' .'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2875,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c6723941-9ba6-4c5d-800a-e36905fe92a8
+    type: regular
+    task:
+      id: c6723941-9ba6-4c5d-800a-e36905fe92a8
+      version: -1
+      name: Print error message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      message:
+        simple: Recovery of snapshot files for given snapshot ID did not complete.
+          Please see context for more details.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2445,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: be5217ac-a024-49a2-88d6-70f64d6e175b
+    type: collection
+    task:
+      id: be5217ac-a024-49a2-88d6-70f64d6e175b
+      version: -1
+      name: Collect IOC Scan Data
+      description: Collecting data to initiate the IOC Scan, to find recoverable snapshots
+        and to recover the files, if recoverable snapshots are found.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide input values to initiate the IOC Scan and whether to
+          recover file(s) of recoverable snapshots.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: IOC hash to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'IOC Hash value to scan. Supports comma separated multiple values.
+          Please provide input of either IOC hash, IOC path, IOC Yara rule or IOC
+          Yara Rule URL. '
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: IOC path to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'IOC path value to scan. Supports comma separated multiple values.
+          Please provide input of either IOC hash, IOC path, IOC Yara rule or IOC
+          Yara Rule URL. '
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: IOC Yara rule to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'IOC Yara rule value to scan. Supports comma separated multiple values.
+          Please provide input of either IOC hash, IOC path, IOC Yara rule or IOC
+          Yara Rule URL. '
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Start date to initiate the IOC scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 7 days ago
+        tooltip: 'To initiate the scan, provide the start date to filter the snapshots
+          from. If not provided, default will be taken as 7 days ago. Formats accepted:
+          2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ,
+          etc.  Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.'
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: End date to initiate the IOC scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: now
+        tooltip: 'To initiate the scan, provide the end date to filter the snapshots
+          upto. If not provided, default will be taken as now. Formats accepted: 2
+          minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ,
+          etc.  Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.'
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Time Delta to update the date range of IOC scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Provide the time delta to move backward while looping to find out
+          the recoverable snapshot. If not provided, it defaults to the time difference
+          between provided start date, and end date. Format accepted: 2 minutes, 2
+          hours, 2 days, 2 weeks, 2 months, 2 years, etc.'
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: Polling interval for IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "5"
+        tooltip: Frequency that the IOC scan command will run (minutes). If not provided,
+          default will be taken as 5.
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: Polling timeout for IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "720"
+        tooltip: Amount of time to poll before declaring a timeout and resuming the
+          playbook (in minutes). If not provided, default will be taken as 720.
+        readonly: false
+      - id: "8"
+        label: ""
+        labelarg:
+          simple: Limit to loop the IOC scan sub-playbook
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: number
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "1"
+        tooltip: Number of times to loop the IOC scan sub-playbook to fetch recoverable
+          data. If not provided, default will be taken as 1.
+        readonly: false
+      - id: "9"
+        label: ""
+        labelarg:
+          simple: IOC Yara rule file URL to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: IOC Yara rule file URL to fetch rule(s) to scan. Supports comma separated
+          multiple values. Please provide input of either IOC hash, IOC path, IOC
+          Yara rule or IOC Yara Rule URL.
+        readonly: false
+      - id: "10"
+        label: ""
+        labelarg:
+          simple: Paths to include in the IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Paths to include in the scan. Supports comma separated values.  Format
+          accepted: path_to_include_1, path_to_include_2'
+        readonly: false
+      - id: "11"
+        label: ""
+        labelarg:
+          simple: Paths to exclude in the IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Paths to exclude in the scan. Supports comma separated values. Format
+          accepted: path_to_exclude_1, path_to_exclude_2'
+        readonly: false
+      - id: "12"
+        label: ""
+        labelarg:
+          simple: Paths to exempt in the IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Paths to exempt in the scan. Supports comma separated values. Format
+          accepted: path_to_exempt_1, path_to_exempt_2'
+        readonly: false
+      - id: "13"
+        label: ""
+        labelarg:
+          simple: Perform recovery
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Whether to perform recovery for any recoverable snapshots obtained
+          from the scan.
+        readonly: false
+      - id: "14"
+        label: ""
+        labelarg:
+          simple: Requested Hash Type
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: HASH_TYPE_M_D5
+        - simple: HASH_TYPE_SH_A256
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The type of hash values of the matched files to be blocked, if enabled.
+        readonly: false
+      - id: "15"
+        label: ""
+        labelarg:
+          simple: Scan Name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Name of the scan. Default value is "PAXSOAR-1.1.0"
+        readonly: false
+      title: IOC Scan Data
+      description: Input arguments required to initiate IOC Scan(s) and option to
+        recover file(s) of recoverable snapshot.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 43a93ada-2acf-4d0e-868f-6755d95e40a5
+    type: condition
+    task:
+      id: 43a93ada-2acf-4d0e-868f-6755d95e40a5
+      version: -1
+      name: Is object type VM?
+      description: Checks whether an object type of the incident is VM or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: rubrikpolarisobjecttype
+            iscontext: true
+          right:
+            value:
+              simple: Vm
+    view: |-
+      {
+        "position": {
+          "x": 2107.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 9355481b-0b33-4241-819d-d02dc39c1ab0
+    type: regular
+    task:
+      id: 9355481b-0b33-4241-819d-d02dc39c1ab0
+      version: -1
+      name: Print error for not a VM object
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      message:
+        simple: The object associated with the anomaly incident is not a Virtual Machine.
+          Hence, exiting…
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: f85102ac-46d1-4206-8594-06341ca0a8a9
+    type: regular
+    task:
+      id: f85102ac-46d1-4206-8594-06341ca0a8a9
+      version: -1
+      name: Print success message
+      description: Prints text to war room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      value:
+        simple: Evidence snapshot has been created for the VM object.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4165,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 2289e738-8720-439e-8999-9d911bd51d61
+    type: playbook
+    task:
+      id: 2289e738-8720-439e-8999-9d911bd51d61
+      version: -1
+      name: Rubrik Poll Async Result - Rubrik Polaris
+      description: Poll async result for any asynchronous request made to rubrik.
+      playbookName: Rubrik Poll Async Result - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      ClusterId:
+        complex:
+          root: inputs.ClusterId
+      PollingInterval:
+        simple: "5"
+      PollingTimeout:
+        simple: "720"
+      RequestId:
+        complex:
+          root: RubrikPolaris.GPSOndemandSnapshot
+          accessor: id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 4165,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: b837ff2a-e6a4-4a02-8371-c30e499d6854
+    type: condition
+    task:
+      id: b837ff2a-e6a4-4a02-8371-c30e499d6854
+      version: -1
+      name: Is the snapshot created successfully?
+      description: Checks whether the snapshot is created or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      RUNNING:
+      - "68"
+      SUCCESS:
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: SUCCESS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GPSAsyncResult
+                filters:
+                - - operator: startWith
+                    left:
+                      value:
+                        simple: RubrikPolaris.GPSAsyncResult.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CREATE
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCEEDED
+    - label: RUNNING
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GPSAsyncResult
+                filters:
+                - - operator: startWith
+                    left:
+                      value:
+                        simple: RubrikPolaris.GPSAsyncResult.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CREATE
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: status
+            iscontext: true
+          right:
+            value:
+              simple: QUEUED, ACQUIRING, RUNNING
+    view: |-
+      {
+        "position": {
+          "x": 4165,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: b8858512-f21b-404b-80b8-86f6eebe8b1d
+    type: regular
+    task:
+      id: b8858512-f21b-404b-80b8-86f6eebe8b1d
+      version: -1
+      name: Print error message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      message:
+        simple: Evidence snapshot was not created. Please see context for more details.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3735,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 780c1640-bab9-4924-8fc4-942f60d4e140
+    type: condition
+    task:
+      id: 780c1640-bab9-4924-8fc4-942f60d4e140
+      version: -1
+      name: 'Whether to fetch Yara rule(s) from a URL? '
+      description: Checks whether IOC Yara rule URL input is provided or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IOC Scan Data.Answers
+                accessor: "9"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: d2287052-4db5-465c-8aa2-33bed9a731b8
+    type: regular
+    task:
+      id: d2287052-4db5-465c-8aa2-33bed9a731b8
+      version: -1
+      name: Fetch Yara rule(s) from file URL
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "9"
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: cc5ef355-15b3-46ed-87eb-04f885f45ff2
+    type: condition
+    task:
+      id: cc5ef355-15b3-46ed-87eb-04f885f45ff2
+      version: -1
+      name: Is Snapshot creation started?
+      description: Checks if the snapshot creation has started or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GPSOndemandSnapshot
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3950,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: d34b9602-502c-429c-8ffd-cd1c10b88dc2
+    type: title
+    task:
+      id: d34b9602-502c-429c-8ffd-cd1c10b88dc2
+      version: -1
+      name: Recovery
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2005,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 9bef8c00-07a0-4aea-896a-bef77ab21b93
+    type: regular
+    task:
+      id: 9bef8c00-07a0-4aea-896a-bef77ab21b93
+      version: -1
+      name: Set default value for IOC Yara Rule
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      key:
+        simple: IOC Scan Data.Answers.2
+      value:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "2"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: NoYaraRule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 88ff2e5e-13ea-48c7-8241-6ef8739740c1
+    type: condition
+    task:
+      id: 88ff2e5e-13ea-48c7-8241-6ef8739740c1
+      version: -1
+      name: Has recovery started?
+      description: Checks whether the recovery has started or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris
+                accessor: GPSVMRecoverFiles
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2445,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 62c24476-79b9-4d64-88cf-736b07d1fed8
+    type: regular
+    task:
+      id: 62c24476-79b9-4d64-88cf-736b07d1fed8
+      version: -1
+      name: Print error message
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      message:
+        complex:
+          root: RubrikPolaris.RecoverableSnapshot
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Recovery of snapshot using recoverable snapshot id '
+              suffix:
+                value:
+                  simple: ' did not start. Please see context for more details.'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2015,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: c6c412b8-cae7-462f-8f1f-1b056e22c6e7
+    type: collection
+    task:
+      id: c6c412b8-cae7-462f-8f1f-1b056e22c6e7
+      version: -1
+      name: Collect Recovery data
+      description: Collecting data to initiate the IOC Scan, to find recoverable snapshots
+        and to recover the files, if recoverable snapshots are found.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2445,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide input values to recover the files of the recoverable
+          snapshot.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Paths to recover from the recoverable snapshot
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Comma separated paths of files and directories that will be recovered
+          from the snapshot.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Restore path for the file(s)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Path of the destination object on which recovery will be done.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Destination object ID to restore file(s) into
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ID of the object where the files will be restored into. If not provided,
+          Rubrik will use the recoverable snapshots object.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Polling interval for recovery asynchronous results
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "5"
+        tooltip: Frequency that the rubrik-gps-async-result command will run (minutes).
+          If not provided, default will be taken as 5.
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Polling timeout for recovery asynchronous results
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "720"
+        tooltip: Amount of time to poll before declaring a timeout and resuming the
+          playbook (in minutes). If not provided, default will be taken as 720.
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Whether to Block file or not?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Whether to block the hash file obtained in the IOC Scan recoverable
+          snapshot matches.
+        readonly: false
+      title: Recovery Data
+      description: Input arguments required to initiate recovery of file(s) of recoverable
+        snapshot.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: fd5666c5-e491-4955-81bc-07038f93f808
+    type: condition
+    task:
+      id: fd5666c5-e491-4955-81bc-07038f93f808
+      version: -1
+      name: Is recovery enabled?
+      description: Checks whether recovery option is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IOC Scan Data.Answers
+                accessor: "13"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 2332.5,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 0dcb0a2f-9a79-4683-8a1f-cd03537c8715
+    type: playbook
+    task:
+      id: 0dcb0a2f-9a79-4683-8a1f-cd03537c8715
+      version: -1
+      name: Block File - Generic v2
+      description: "This playbook is used to block files from running on endpoints.\
+        \ \nThis playbook supports the following integrations:\n- Palo Alto Networks\
+        \ Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise\
+        \ Response\n- Cylance Protect v2\n"
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      MD5:
+        complex:
+          root: RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.requestedHashDetails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.requestedHashDetails.hashType
+                iscontext: true
+              right:
+                value:
+                  simple: MD5
+          accessor: hashValue
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.requestedHashDetails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.requestedHashDetails.hashType
+                iscontext: true
+              right:
+                value:
+                  simple: SHA256
+          accessor: hashValue
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2557.5,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: abb6945f-a1bb-4fa6-8324-4131a35f8d4c
+    type: playbook
+    task:
+      id: abb6945f-a1bb-4fa6-8324-4131a35f8d4c
+      version: -1
+      name: Rubrik IOC Scan - Rubrik Polaris
+      description: This playbook starts an IOC Scan with the provided IOC values.
+        It can be looped until recoverable snapshots are obtained or the limit to
+        loop is reached.
+      playbookName: Rubrik IOC Scan - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ClusterId:
+        complex:
+          root: inputs.ClusterId
+      EndDate:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "4"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: now
+      IOCHash:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "0"
+      IOCPath:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "1"
+      IOCYaraRule:
+        complex:
+          root: HttpRequest.Response
+          accessor: Body
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: IOC Scan Data.Answers.2
+                iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \\
+              toReplace:
+                value:
+                  simple: \
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \"
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: '[\t\r]'
+              replaceWith:
+                value:
+                  simple: ' '
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: \n
+              replaceWith:
+                value:
+                  simple: \n
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: NoYaraRule
+          - operator: trim
+      Limit:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "8"
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs<=rhs
+              else:
+                value:
+                  simple: IOC Scan Data.Answers.8
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: IOC Scan Data.Answers.8
+                iscontext: true
+              options: {}
+              rhs:
+                value:
+                  simple: "0"
+              then: {}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "1"
+      ObjectId:
+        complex:
+          root: inputs.ObjectId
+      PathsToExclude:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "11"
+      PathsToExempt:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "12"
+      PathsToInclude:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "10"
+      PollingInterval:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "6"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "5"
+      PollingTimeout:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "7"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "720"
+      RequestedHashType:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "14"
+      ScanName:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "15"
+      StartDate:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: 7 days ago
+      TimeDelta:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "5"
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Limit
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RecoverableSnapshot.id
+            iscontext: true
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: a0317bac-c7f5-4ffd-8f3c-6c94f1dc191a
+    type: condition
+    task:
+      id: a0317bac-c7f5-4ffd-8f3c-6c94f1dc191a
+      version: -1
+      name: Is the latest snapshot infected?
+      description: Checks whether the latest snapshot is infected or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.RecoverableSnapshot
+                accessor: isLatestInfected
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 54a86df8-9d63-48a2-8a05-0d69b3003ebb
+    type: regular
+    task:
+      id: 54a86df8-9d63-48a2-8a05-0d69b3003ebb
+      version: -1
+      name: Print no recovery message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      value:
+        simple: The latest snapshot for the given time period is not infected so no
+          recovery is required.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 624b3bc7-cb28-40e3-8053-9cfd4a9c2afb
+    type: regular
+    task:
+      id: 624b3bc7-cb28-40e3-8053-9cfd4a9c2afb
+      version: -1
+      name: Print timeout message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      message:
+        simple: Wait for evidence snapshot creation results timed out. Please see
+          incident context for further details.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4595,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_13_#default#": 0.16,
+      "39_26_#default#": 0.42,
+      "57_53_#default#": 0.57,
+      "6_36_RUNNING": 0.86,
+      "6_37_ERROR": 0.89,
+      "6_38_#default#": 0.82
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4845,
+        "width": 5355,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ObjectId
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisfid
+  required: true
+  description: Object ID of the incident.
+  playbookInputQuery:
+- key: ClusterId
+  value:
+    complex:
+      root: incident
+      accessor: rubrikcdmclusterid
+  required: true
+  description: Cluster ID of the incident.
+  playbookInputQuery:
+outputs: []
+tests:
+- RubrikPolaris-Test
+fromversion: 6.0.0

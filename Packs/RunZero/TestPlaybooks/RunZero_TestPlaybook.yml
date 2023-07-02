@@ -1,0 +1,941 @@
+id: RunZero_TestPlaybook
+version: -1
+name: RunZero_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 21145579-cb56-401b-8598-a5d8fad8a1e1
+    type: start
+    task:
+      id: 21145579-cb56-401b-8598-a5d8fad8a1e1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b8e91800-a447-4033-85a4-4d8beb0fd542
+    type: regular
+    task:
+      id: b8e91800-a447-4033-85a4-4d8beb0fd542
+      version: -1
+      name: Get Assets
+      description: Get assets.
+      script: '|||runzero-asset-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ab5cbc9b-a4d8-463a-8889-77e8e4260e40
+    type: regular
+    task:
+      id: ab5cbc9b-a4d8-463a-8889-77e8e4260e40
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8310ce98-8533-41f8-8c84-d4f202484441
+    type: condition
+    task:
+      id: 8310ce98-8533-41f8-8c84-d4f202484441
+      version: -1
+      name: Check if got Assets
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RunZero.Asset
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5c6d11f8-249d-4cbb-86e7-0504b9124f7d
+    type: title
+    task:
+      id: 5c6d11f8-249d-4cbb-86e7-0504b9124f7d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 057465e7-0c14-48b6-8c9e-44f01484fca0
+    type: regular
+    task:
+      id: 057465e7-0c14-48b6-8c9e-44f01484fca0
+      version: -1
+      name: Error getting asset from RunZero
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Did not get any asset from RunZero
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f0ff81bb-ba12-475d-879b-c5eaf6c1e4b8
+    type: regular
+    task:
+      id: f0ff81bb-ba12-475d-879b-c5eaf6c1e4b8
+      version: -1
+      name: Get Services
+      description: Get services.
+      script: '|||runzero-service-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 027b0bc5-c7e5-4c11-80cf-89431e8e3253
+    type: condition
+    task:
+      id: 027b0bc5-c7e5-4c11-80cf-89431e8e3253
+      version: -1
+      name: Check if got Services.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RunZero.Service
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3eee6fc2-930c-4bfb-81bc-9d83da7f9f10
+    type: regular
+    task:
+      id: 3eee6fc2-930c-4bfb-81bc-9d83da7f9f10
+      version: -1
+      name: Error getting service from RunZero
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Error in getting service from RunZero
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 044b6e40-746a-4561-80fb-754da18fde62
+    type: regular
+    task:
+      id: 044b6e40-746a-4561-80fb-754da18fde62
+      version: -1
+      name: Get API quota
+      description: Get information about the API key used. Type, Limit, usage etc.
+      script: '|||runzero-quota-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2488b324-4c1c-4934-8786-1cd13735b0ba
+    type: condition
+    task:
+      id: 2488b324-4c1c-4934-8786-1cd13735b0ba
+      version: -1
+      name: Check if got Quota.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RunZero.Quota
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 11140c18-c3ae-4e39-8566-d053bed5711e
+    type: regular
+    task:
+      id: 11140c18-c3ae-4e39-8566-d053bed5711e
+      version: -1
+      name: Add tag to asset
+      description: Add tag or tags to the asset.
+      script: '|||runzero-tag-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      asset_id:
+        simple: bf707048-7ce9-4249-a58c-0aaa257d69f0
+      tags:
+        simple: playbook-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 368da98e-bf5f-478e-8a8a-bb5893d50145
+    type: regular
+    task:
+      id: 368da98e-bf5f-478e-8a8a-bb5893d50145
+      version: -1
+      name: Add comment to asset
+      description: Add a comment or override an existing asset comment.
+      script: '|||runzero-comment-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      asset_id:
+        simple: bf707048-7ce9-4249-a58c-0aaa257d69f0
+      comment:
+        simple: playbook-comment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 980305d6-0b8e-4807-8e12-802fe5164075
+    type: regular
+    task:
+      id: 980305d6-0b8e-4807-8e12-802fe5164075
+      version: -1
+      name: Get Assets
+      description: Get assets.
+      script: '|||runzero-asset-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e7363fc2-e463-4bef-82f2-d1e4be83b944
+    type: condition
+    task:
+      id: e7363fc2-e463-4bef-82f2-d1e4be83b944
+      version: -1
+      name: Check if added tag
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RunZero.Asset.tags
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c45078f7-59f1-4de1-8ff6-13a9a0e626d1
+    type: condition
+    task:
+      id: c45078f7-59f1-4de1-8ff6-13a9a0e626d1
+      version: -1
+      name: Check if added comment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RunZero.Asset.comments
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f9394f76-c0f5-4d07-8500-c67a0da7daea
+    type: regular
+    task:
+      id: f9394f76-c0f5-4d07-8500-c67a0da7daea
+      version: -1
+      name: Error setting tag in asset
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Error setting tag in asset
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c32be537-12a3-40b9-864d-09241a9a7338
+    type: regular
+    task:
+      id: c32be537-12a3-40b9-864d-09241a9a7338
+      version: -1
+      name: Error setting comment in asset
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Error setting comment in asset
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: c278ea34-84c1-41e7-8316-2ed05c38f833
+    type: regular
+    task:
+      id: c278ea34-84c1-41e7-8316-2ed05c38f833
+      version: -1
+      name: Delete tag
+      description: Delete tags for specific asset.
+      script: '|||runzero-tag-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      asset_id:
+        simple: bf707048-7ce9-4249-a58c-0aaa257d69f0
+      tags:
+        simple: playbook-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2097.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b82b8a47-d985-4144-8445-776221f862b4
+    type: regular
+    task:
+      id: b82b8a47-d985-4144-8445-776221f862b4
+      version: -1
+      name: Reset comment
+      description: Add a comment or override an existing asset comment.
+      script: '|||runzero-comment-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      asset_id:
+        simple: bf707048-7ce9-4249-a58c-0aaa257d69f0
+      comment:
+        simple: reset-comment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2097.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9886d83e-138c-4289-8aa0-8994297d02ec
+    type: regular
+    task:
+      id: 9886d83e-138c-4289-8aa0-8994297d02ec
+      version: -1
+      name: Get Assets
+      description: Get assets.
+      script: '|||runzero-asset-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2097.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 2f60eb78-81f9-446f-8add-7fb881b32a65
+    type: condition
+    task:
+      id: 2f60eb78-81f9-446f-8add-7fb881b32a65
+      version: -1
+      name: Check deleted tag
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: RunZero.Asset.tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2097.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1b8646d0-b611-4e15-811e-dfbbb85da1b7
+    type: condition
+    task:
+      id: 1b8646d0-b611-4e15-811e-dfbbb85da1b7
+      version: -1
+      name: Check if reset comment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RunZero.Asset.comments
+            iscontext: true
+          right:
+            value:
+              simple: reset-comment
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2312.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 600e3b87-1cd2-40bb-812d-35b66fcc8a6f
+    type: regular
+    task:
+      id: 600e3b87-1cd2-40bb-812d-35b66fcc8a6f
+      version: -1
+      name: Error deleting tag in asset
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Error deleting tag in asset
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: e00c812e-4c91-4cbf-880a-5fb9823a6f20
+    type: regular
+    task:
+      id: e00c812e-4c91-4cbf-880a-5fb9823a6f20
+      version: -1
+      name: Error resetting comment in asset
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Error resetting comment in asset
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_#default#": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3360,
+        "width": 2642.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+description: RunZero integration test playbook. running asset-search, service-search, quota, tag-add, comment-add, tag-delete

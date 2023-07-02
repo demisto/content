@@ -1,8 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -1003,11 +1004,13 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     mirroring = params.get('mirror', 'Disabled').title()
-
+    api_key = params.get('credentials_api_key', {}).get('password') or params.get('apiKey')
+    if not api_key:
+        raise DemistoException('API Key must be provided.')
     client = Client(
         base_url=urljoin(params.get('url'), '/api'),
         verify=not params.get('insecure', False),
-        headers={'Authorization': f'Bearer {params.get("apiKey")}'},
+        headers={'Authorization': f'Bearer {api_key}'},
         proxy=params.get('proxy', False),
         mirroring=None if mirroring == 'Disabled' else mirroring,
     )

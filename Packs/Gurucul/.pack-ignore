@@ -3,3 +3,7 @@ ignore=IN136,IN145
 
 [file:README.md]
 ignore=RM102
+
+[file:GRAAnomaliesDisplay.yml]
+ignore=BA124
+

@@ -1,0 +1,40 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Xpanse - Incoming Mapper",
+    "mapping": {
+        "Xpanse Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Xpanse Category": {
+                    "simple": "asm_alert_categories"
+                },
+                "Xpanse External ID": {
+                    "simple": "external_id"
+                },
+                "Xpanse Host Name": {
+                    "simple": "host_name"
+                },
+                "Xpanse IP": {
+                    "simple": "action_remote_ip"
+                },
+                "Xpanse Alert ID": {
+                    "simple": "alert_id"
+                },
+                "Xpanse Port": {
+                    "simple": "action_remote_port"
+                },
+                "Xpanse Progress Status": {
+                    "simple": "resolution_status"
+                },
+                "Xpanse Tags": {
+                    "simple": "tags"
+                }
+            }
+        }
+    },
+    "name": "Xpanse - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

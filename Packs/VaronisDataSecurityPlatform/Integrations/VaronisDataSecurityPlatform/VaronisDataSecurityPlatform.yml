@@ -13,41 +13,34 @@ configuration:
   type: 13
   defaultvalue: Varonis DSP Incident
 - display: The FQDN/IP the integration should connect to
-  hidden: false
   name: url
   required: true
   type: 0
 - display: Name of Varonis user
-  hidden: false
   name: credentials
   required: true
   type: 9
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum value is 50
-  hidden: false
   name: max_fetch
   required: false
   type: 0
 - defaultvalue: 1 week
   display: First fetch time
-  hidden: false
   name: first_fetch
   required: false
   type: 0
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
-  hidden: false
   name: severity
   options:
   - Low
@@ -57,13 +50,11 @@ configuration:
   type: 15
 - display: Varonis threat model name
   additionalinfo: Comma-separated list of threat model names of alerts to fetch
-  hidden: false
   name: threat_model
   required: false
   type: 0
 - defaultvalue: Open
   display: Varonis alert status
-  hidden: false
   name: status
   options:
   - Open
@@ -181,15 +172,13 @@ script:
       description: Alert severity
       type: String
     - contextPath: Varonis.Alert.Category
-      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion\
-        \ \n- Exploitation \n- Privilege Escalation \n- Lateral Movement "
+      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion \n- Exploitation \n- Privilege Escalation \n- Lateral Movement "
       type: String
     - contextPath: Varonis.Alert.Country
       description: Name of the country from which the event occurred
       type: String
     - contextPath: Varonis.Alert.State
-      description: Name of the state or regional subdivision from which the event
-        occurred
+      description: Name of the state or regional subdivision from which the event occurred
       type: String
     - contextPath: Varonis.Alert.Status
       description: |-
@@ -209,13 +198,10 @@ script:
         - Other
       type: String
     - contextPath: Varonis.Alert.BlacklistLocation
-      description: Whether any of the geographical locations from which an alerted
-        activity originated was on the blacklist at the time the activity occurred
+      description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred
       type: Boolean
     - contextPath: Varonis.Alert.AbnormalLocation
-      description: Whether any of the geographical locations from which an alerted
-        activity originated is new or abnormal to the organization, the user and peers,
-        or only the user
+      description: Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user
       type: Boolean
     - contextPath: Varonis.Alert.NumOfAlertedEvents
       description: Number of events with alerts
@@ -242,12 +228,10 @@ script:
       description: Whether the data affected by the alerted events has global flags
       type: Boolean
     - contextPath: Varonis.Alert.On.ContainsSensitiveData
-      description: Filters according to whether the resource on which the event was
-        performed is sensitive (including subfolders)
+      description: Filters according to whether the resource on which the event was performed is sensitive (including subfolders)
       type: Boolean
     - contextPath: Varonis.Alert.On.Platform
-      description: Type of platform on which the server resides. For example, Windows,
-        Exchange, or SharePoint
+      description: Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint
       type: String
     - contextPath: Varonis.Alert.On.Asset
       description: Path of the alerted asset
@@ -366,15 +350,13 @@ script:
       description: Name of the country from which the event occurred
       type: String
     - contextPath: Varonis.Event.State
-      description: Name of the state or regional subdivision from which the event
-        occurred
+      description: Name of the state or regional subdivision from which the event occurred
       type: String
     - contextPath: Varonis.Event.ExternalIP
       description: Device external IP
       type: String
     - contextPath: Varonis.Event.Details.IsBlacklist
-      description: Whether any of the geographical locations from which an alerted
-        activity originated was on the blacklist at the time the activity occurred
+      description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred
       type: Boolean
     - contextPath: Varonis.Event.Details.Operation
       description: |-
@@ -429,12 +411,10 @@ script:
       description: Type of object on which the event was performed
       type: String
     - contextPath: Varonis.Event.OnObject.Platform
-      description: Type of platform on which the server resides. For example, Windows,
-        Exchange, or SharePoint
+      description: Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint
       type: String
     - contextPath: Varonis.Event.OnObject.IsSensitive
-      description: 'Indicates whether the resource on which the event was performed
-        is sensitive '
+      description: 'Indicates whether the resource on which the event was performed is sensitive '
       type: Boolean
     - contextPath: Varonis.Event.OnObject.FileServerOrDomain
       description: File server of object on which the event was performed

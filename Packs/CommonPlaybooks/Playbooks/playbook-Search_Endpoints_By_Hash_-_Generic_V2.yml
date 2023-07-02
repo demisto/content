@@ -6,25 +6,26 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c485e19b-c83a-48e4-892c-8bd91e17ced2
+    taskid: 92368958-9a49-4dcc-8db9-b15d29c87e29
     type: start
     task:
-      id: c485e19b-c83a-48e4-892c-8bd91e17ced2
+      id: 92368958-9a49-4dcc-8db9-b15d29c87e29
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "9"
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": -50
+          "x": 480,
+          "y": 0
         }
       }
     note: false
@@ -32,16 +33,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c185447e-549c-476e-8477-98c461dadd16
+    taskid: b66537ca-cc94-4509-8985-3bb247c163a9
     type: playbook
     task:
-      id: c185447e-549c-476e-8477-98c461dadd16
+      id: b66537ca-cc94-4509-8985-3bb247c163a9
       version: -1
-      name: Search Endpoints By Hash - CrowdStrike
-      description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host
-      playbookName: Search Endpoints By Hash - CrowdStrike
+      name: CrowdStrike Falcon - Search Endpoints By Hash
+      description: This playbook is part of the 'Malware Investigation And Response'
+        pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook searches across the organization for other endpoints associated
+        with a specific SHA256 hash.
+      playbookName: CrowdStrike Falcon - Search Endpoints By Hash
       type: playbook
       iscommand: false
       brand: ""
@@ -49,19 +55,13 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      MD5Hash:
+      FileSha256:
         complex:
-          root: inputs
-          accessor: MD5Hash
-      SHA1Hash:
-        complex:
-          root: inputs
-          accessor: SHA1Hash
-      SHA256Hash:
-        complex:
-          root: inputs
-          accessor: SHA256Hash
+          root: inputs.SHA256Hash
+          transformers:
+          - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -70,8 +70,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 63,
-          "y": 320
+          "x": -10,
+          "y": 590
         }
       }
     note: false
@@ -79,15 +79,18 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d3865a5d-6516-4d22-8134-a4cfca96bd3c
+    taskid: 481954b9-682a-4722-8790-1547663edb81
     type: playbook
     task:
-      id: d3865a5d-6516-4d22-8134-a4cfca96bd3c
+      id: 481954b9-682a-4722-8790-1547663edb81
       version: -1
       name: Search Endpoints By Hash - Carbon Black Protection
-      description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
+      description: Hunt for endpoint activity involving hash IOCs, using Carbon Black
+        Protection.
       playbookName: Search Endpoints By Hash - Carbon Black Protection
       type: playbook
       iscommand: false
@@ -101,6 +104,7 @@ tasks:
           root: inputs
           accessor: MD5Hash
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -109,8 +113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 500
+          "x": 1130,
+          "y": 590
         }
       }
     note: false
@@ -118,56 +122,29 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 9510dbd8-98c3-4611-802f-333acf31875b
+    taskid: eab5a3b4-3b54-401c-82f9-afbb033b2de3
     type: title
     task:
-      id: 9510dbd8-98c3-4611-802f-333acf31875b
+      id: eab5a3b4-3b54-401c-82f9-afbb033b2de3
       version: -1
       name: MD5 Only
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "11"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1148,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: ce67117f-133a-4da3-84be-14e4a831756a
-    type: title
-    task:
-      id: ce67117f-133a-4da3-84be-14e4a831756a
-      version: -1
-      name: MD5 / SHA1 / SHA256
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "5"
-      - "13"
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 63,
+          "x": 898,
           "y": 160
         }
       }
@@ -176,12 +153,47 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b4804466-0b8c-4c96-89e7-3bbed13670ad
+    type: title
+    task:
+      id: b4804466-0b8c-4c96-89e7-3bbed13670ad
+      version: -1
+      name: MD5 / SHA1 / SHA256
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "13"
+      - "15"
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 05df1d6e-f77e-4b06-8c62-2750064f5b00
+    taskid: d6de96ed-bf55-40bb-887a-3821358bf89c
     type: condition
     task:
-      id: 05df1d6e-f77e-4b06-8c62-2750064f5b00
+      id: d6de96ed-bf55-40bb-887a-3821358bf89c
       version: -1
       name: Is MD5 hash?
       description: Is MD5 hash?
@@ -190,7 +202,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+      - "12"
       "yes":
       - "8"
       - "16"
@@ -205,11 +217,12 @@ tasks:
                 root: inputs
                 accessor: MD5Hash
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1148,
-          "y": 309
+          "x": 898,
+          "y": 320
         }
       }
     note: false
@@ -217,24 +230,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f2a05482-2b17-4a09-8813-be48459935c3
+    taskid: 4b3639ac-2625-446f-8f8a-a534ee676494
     type: title
     task:
-      id: f2a05482-2b17-4a09-8813-be48459935c3
+      id: 4b3639ac-2625-446f-8f8a-a534ee676494
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 690
+          "x": 410,
+          "y": 810
         }
       }
     note: false
@@ -242,12 +258,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8d49d868-d88a-4e69-85d4-44e38c7ef0e7
+    taskid: 9a79dca5-a826-494e-8444-87f03331bbe4
     type: playbook
     task:
-      id: 8d49d868-d88a-4e69-85d4-44e38c7ef0e7
+      id: 9a79dca5-a826-494e-8444-87f03331bbe4
       version: -1
       name: Search Endpoints By Hash - TIE
       description: |-
@@ -268,8 +286,10 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f]; }).reduce(function(a, b){ return a.concat(b); }, [])}
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
+          }).reduce(function(a, b){ return a.concat(b); }, [])}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -278,7 +298,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 410,
           "y": 320
         }
       }
@@ -287,40 +307,14 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: 974d2e04-3c66-445c-844d-be5ebdbc218e
-    type: title
-    task:
-      id: 974d2e04-3c66-445c-844d-be5ebdbc218e
-      version: -1
-      name: No MD5
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "12"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 30440c37-3692-4f92-8974-dadc57ef392a
+    taskid: 96ea4595-3ac2-41be-85f1-9ffe6ac7df6c
     type: playbook
     task:
-      id: 30440c37-3692-4f92-8974-dadc57ef392a
+      id: 96ea4595-3ac2-41be-85f1-9ffe6ac7df6c
       version: -1
       name: Search Endpoints By Hash - Cybereason
       description: Hunt for endpoint activity involving hash, using Cybereason.
@@ -339,6 +333,7 @@ tasks:
         complex:
           root: inputs.SHA1Hash
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -347,7 +342,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
+          "x": -460,
           "y": 320
         }
       }
@@ -356,23 +351,26 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5caac167-7b08-469e-8ad3-eb20356b2e30
+    taskid: 54f36ae2-15fa-42cb-8b77-62e48c8e50c4
     type: playbook
     task:
-      id: 5caac167-7b08-469e-8ad3-eb20356b2e30
+      id: 54f36ae2-15fa-42cb-8b77-62e48c8e50c4
       version: -1
       name: Search Endpoints By Hash - Carbon Black Response V2
       playbookName: Search Endpoints By Hash - Carbon Black Response V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "12"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -381,8 +379,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 500
+          "x": 720,
+          "y": 590
         }
       }
     note: false
@@ -390,18 +388,64 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 58684e15-2a09-47d2-879c-c374af670aa7
+    type: condition
+    task:
+      id: 58684e15-2a09-47d2-879c-c374af670aa7
+      version: -1
+      name: Is SHA256 hash?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256Hash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "11_16_yes": 0.47,
-      "11_8_yes": 0.58
+      "11_8_yes": 0.58,
+      "17_12_#default#": 0.27
     },
     "paper": {
       "dimensions": {
-        "height": 805,
-        "width": 2500,
-        "x": -350,
-        "y": -50
+        "height": 875,
+        "width": 1970,
+        "x": -460,
+        "y": 0
       }
     }
   }
@@ -413,7 +457,7 @@ inputs:
       accessor: MD5
   required: false
   description: MD5 Hash
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SHA1Hash
   value:
     complex:
@@ -421,7 +465,7 @@ inputs:
       accessor: SHA1
   required: false
   description: SHA1 Hash
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SHA256Hash
   value:
     complex:
@@ -429,7 +473,7 @@ inputs:
       accessor: SHA256
   required: false
   description: SHA256 Hash
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Endpoint.Hostname
   description: Device hostname
@@ -439,4 +483,4 @@ outputs:
   type: unknown
 fromversion: 5.0.0
 tests:
-- No tests
+ -  No tests

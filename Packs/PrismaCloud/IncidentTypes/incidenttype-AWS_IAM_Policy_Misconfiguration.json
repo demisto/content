@@ -11,7 +11,7 @@
 	"id": "AWS IAM Policy Misconfiguration",
 	"locked": false,
 	"name": "AWS IAM Policy Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - AWS IAM Policy Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - AWS IAM Policy Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

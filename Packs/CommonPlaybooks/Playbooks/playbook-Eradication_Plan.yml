@@ -1179,5 +1179,4 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
-- xpanse
 fromversion: 6.6.0

@@ -122,6 +122,51 @@ SEARCH_DEVICE_KEY_MAP = {
     'status': 'Status',
 }
 
+SEARCH_DEVICE_VERBOSE_KEY_MAP = {
+    'agent_load_flags': 'AgentLoadFlags',
+    'agent_local_time': 'AgentLocalTime',
+    'agent_version': 'AgentVersion',
+    'bios_manufacturer': 'BiosManufacturer',
+    'bios_version': 'BiosVersion',
+    'cid': 'CID',
+    'config_id_base': 'ConfigIdBase',
+    'config_id_build': 'ConfigIdBuild',
+    'config_id_platform': 'ConfigIdPlatform',
+    'connection_ip': 'ConnectionIp',
+    'connection_mac_address': 'ConnectionMacAddress',
+    'cpu_signature': 'CpuSignature',
+    'default_gateway_ip': 'DefaultGatewayIP',
+    'device_id': 'ID',
+    'device_policies': 'DevicePolicies',
+    'external_ip': 'ExternalIP',
+    'first_seen': 'FirstSeen',
+    'group_hash': 'GroupHash',
+    'group_name': 'GroupName',
+    'group_names': 'GroupNames',
+    'groups': 'Groups',
+    'hostname': 'Hostname',
+    'kernel_version': 'KernelVersion',
+    'last_seen': 'LastSeen',
+    'local_ip': 'LocalIP',
+    'mac_address': 'MacAddress',
+    'major_version': 'MajorVersion',
+    'meta': 'Meta',
+    'minor_version': 'MinorVersion',
+    'modified_timestamp': 'ModifiedTimestamp',
+    'os_version': 'OS',
+    'platform_id': 'PlatformID',
+    'platform_name': 'PlatformName',
+    'policies': 'Policies',
+    'product_type_desc': 'ProductTypeDesc',
+    'provision_status': 'ProvisionStatus',
+    'reduced_functionality_mode': 'ReducedFunctionalityMode',
+    'serial_number': 'SerialNumber',
+    'status': 'Status',
+    'system_manufacturer': 'SystemManufacturer',
+    'system_product_name': 'SystemProductName',
+    'tags': 'Tags'
+}
+
 ENDPOINT_KEY_MAP = {
     'device_id': 'ID',
     'local_ip': 'IPAddress',
@@ -204,6 +249,27 @@ HOST_STATUS_DICT = {
 }
 
 
+CPU_UTILITY_INT_TO_STR_KEY_MAP = {
+    1: 'Lowest',
+    2: 'Low',
+    3: 'Medium',
+    4: 'High',
+    5: 'Highest',
+}
+CPU_UTILITY_STR_TO_INT_KEY_MAP = {
+    value: key for key, value in CPU_UTILITY_INT_TO_STR_KEY_MAP.items()}
+
+
+SCHEDULE_INTERVAL_STR_TO_INT = {
+    'never': 0,
+    'daily': 1,
+    'weekly': 7,
+    'every other week': 14,
+    'every four weeks': 28,
+    'monthly': 30,
+}
+
+
 class IncidentType(Enum):
     INCIDENT = 'inc'
     DETECTION = 'ldt'
@@ -212,11 +278,12 @@ class IncidentType(Enum):
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
+
 ''' HELPER FUNCTIONS '''
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None, status_code=None):
+                 get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -251,6 +318,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type status_code: ``int``
         :param: status_code: The request codes to accept as OK.
 
+        :type timeout: ``float``
+        :param: timeout: The timeout for the request.
+
         :return: Returns the http request response json
         :rtype: ``dict``
     """
@@ -258,6 +328,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         token = get_token()
         headers['Authorization'] = 'Bearer {}'.format(token)
     url = SERVER + url_suffix
+
+    headers['User-Agent'] = 'PANW-XSOAR'
+
     try:
         res = requests.request(
             method,
@@ -268,6 +341,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             headers=headers,
             files=files,
             json=json,
+            timeout=timeout,
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
@@ -299,7 +373,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 reason=reason
             )
             # try to create a new token
-            if res.status_code == 403 and get_token_flag:
+            if res.status_code in (401, 403) and get_token_flag:
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
@@ -315,6 +389,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     get_token_flag=False,
                     status_code=status_code,
                     no_json=no_json,
+                    timeout=timeout,
                 )
             elif safe:
                 return None
@@ -375,10 +450,30 @@ def create_publications(cve: dict) -> list:
     return publications
 
 
+def build_query_params(query_params: dict) -> str:
+    """
+        Gets a dict of {property: value} and return a string to use as a query param in the requests of exclusion entities.
+        For example: {'name': 'test', 'os_name': 'WINDOWS'} => '?name=test+os_name=WINDOWS'
+
+        Args:
+            query_params: dict of exclusion property: value.
+        Returns:
+            String to use as a query param in the requests of exclusion.
+    """
+    query = ''
+
+    for key, value in query_params.items():
+        if query:
+            query += '+'
+        query += f"{key}:'{value}'"
+
+    return query
+
+
 ''' API FUNCTIONS '''
 
 
-def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] = None,
+def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] | None = None,
                         hr: str = ''):
     """
         Creates an entry object
@@ -522,7 +617,7 @@ def get_passed_mins(start_time, end_time_str):
     return time_delta.seconds / 60
 
 
-def handle_response_errors(raw_res: dict, err_msg: str = None):
+def handle_response_errors(raw_res: dict, err_msg: str | None = None):
     """
     Raise exception if raw_res is empty or contains errors
     """
@@ -532,7 +627,6 @@ def handle_response_errors(raw_res: dict, err_msg: str = None):
         raise DemistoException(err_msg)
     if raw_res.get('errors'):
         raise DemistoException(raw_res.get('errors'))
-    return
 
 
 def create_json_iocs_list(
@@ -585,7 +679,7 @@ def create_json_iocs_list(
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
-def init_rtr_single_session(host_id: str) -> str:
+def init_rtr_single_session(host_id: str, queue_offline: bool = False) -> str:
     """
         Start a session with single host.
         :param host_id: Host agent ID to initialize a RTR session on.
@@ -593,7 +687,8 @@ def init_rtr_single_session(host_id: str) -> str:
     """
     endpoint_url = '/real-time-response/entities/sessions/v1'
     body = json.dumps({
-        'device_id': host_id
+        'device_id': host_id,
+        'queue_offline': queue_offline
     })
     response = http_request('POST', endpoint_url, data=body)
     resources = response.get('resources')
@@ -669,7 +764,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list = None) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -694,7 +789,7 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
 
 
 def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30,
-                        optional_hosts: list = None) -> Dict:
+                        optional_hosts: list | None = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -723,8 +818,8 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
     return response
 
 
-def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None,
-                      timeout_duration: str = None) -> Dict:
+def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list | None = None, timeout: int | None = None,
+                      timeout_duration: str | None = None, offline: bool = False) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
@@ -735,10 +830,11 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
                              If this list is supplied, only these hosts will receive the command.
       :param timeout: Timeout for how long to wait for the request in seconds
       :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
+      :param offline: Whether the command will run against an offline-queued session for execution when the host comes online.
       :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
 
     body = assign_params(batch_id=batch_id, file_path=f'"{file_path}"', optional_hosts=optional_hosts)
     params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
@@ -746,7 +842,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
     return response
 
 
-def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str = None) -> Dict:
+def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration: str | None = None) -> Dict:
     """
         Retrieves the status of the specified batch get command. Will return successful files when they are finished processing.
 
@@ -762,7 +858,7 @@ def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str =
     return response
 
 
-def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with read access
         :param host_id: Host agent ID to run RTR command on.
@@ -771,7 +867,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
 
     body = json.dumps({
         'base_command': command_type,
@@ -782,7 +878,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_write_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with write access
         :param host_id: Host agent ID to run RTR command on.
@@ -791,7 +887,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
@@ -801,7 +897,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
     return response
 
 
-def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with admin access
         :param host_id: Host agent ID to run RTR command on.
@@ -810,7 +906,7 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> 
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/admin-command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
 
     body = json.dumps({
         'base_command': command_type,
@@ -875,14 +971,14 @@ def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def list_host_files(host_id: str, session_id: str = None) -> Dict:
+def list_host_files(host_id: str, session_id: str | None = None) -> Dict:
     """
         Get a list of files for the specified RTR session on a host.
         :param host_id: Host agent ID to run RTR command on.
         :param session_id: optional session_id for the command, if not provided a new session_id will generate
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/file/v1'
+    endpoint_url = '/real-time-response/entities/file/v2'
     if not session_id:
         session_id = init_rtr_single_session(host_id)
 
@@ -936,7 +1032,7 @@ def get_script(script_id: list) -> Dict:
         :param script_id: ID of script to get
         :return: Response JSON which contains errors (if exist) and retrieved resource
     """
-    endpoint_url = '/real-time-response/entities/scripts/v1'
+    endpoint_url = '/real-time-response/entities/scripts/v2'
     params = {
         'ids': script_id
     }
@@ -963,12 +1059,12 @@ def list_scripts() -> Dict:
         Retrieves list of scripts
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/scripts/v1'
+    endpoint_url = '/real-time-response/entities/scripts/v2'
     response = http_request('GET', endpoint_url)
     return response
 
 
-def get_extracted_file(host_id: str, sha256: str, filename: str = None):
+def get_extracted_file(host_id: str, sha256: str, filename: str | None = None):
     """
         Get RTR extracted file contents for specified session and sha256.
         :param host_id: The host agent ID to initialize the RTR session on.
@@ -1037,7 +1133,7 @@ def get_file(file_id: list) -> Dict:
         :param file_id: ID of file to get
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/put-files/v1'
+    endpoint_url = '/real-time-response/entities/put-files/v2'
     params = {
         'ids': file_id
     }
@@ -1050,7 +1146,7 @@ def list_files() -> Dict:
         Get a list of put-file ID's that are available to the user for the put command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/put-files/v1'
+    endpoint_url = '/real-time-response/entities/put-files/v2'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -1433,7 +1529,10 @@ def search_device(filter_operator='AND'):
     """
         Searches for devices using the argument provided by the command execution. Returns empty
         result if no device was found
+
         :param: filter_operator: the operator that should be used between filters, default is 'AND'
+        :param: exact_hostname: Whether to return exact hostname
+
         :return: Search device response json
     """
     args = demisto.args()
@@ -1641,6 +1740,10 @@ def resolve_incident(ids: List[str], status: str):
     return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
 
 
+def update_incident_comment(ids: List[str], comment: str):
+    return update_incident_request(ids, comment, 'add_comment')
+
+
 def update_incident_request(ids: List[str], value: str, action_name: str):
     data = {
         "action_parameters": [
@@ -1681,7 +1784,7 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
-def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
+def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float | None = None) -> dict:
     """
     Upload a list of IOC
     """
@@ -1689,10 +1792,10 @@ def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
         'indicators': ioc_batch
     }
 
-    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload, timeout=timeout)
 
 
-def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
+def get_behaviors_by_incident(incident_id: str, params: dict | None = None) -> dict:
     return http_request('GET', f'/incidents/queries/behaviors/v1?filter=incident_id:"{incident_id}"', params=params)
 
 
@@ -1703,6 +1806,115 @@ def get_detections_by_behaviors(behaviors_id):
     except Exception as e:
         demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
         return {}
+
+
+def create_exclusion(exclusion_type: str, body: dict) -> dict:
+    """
+        Creates an exclusions based on a given json object.
+
+        Args:
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A dict contains the exclusion data.
+        Returns:
+            Info about the created exclusion.
+    """
+    return http_request(method='POST', url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
+
+
+def update_exclusion(exclusion_type: str, body: dict) -> dict:
+    """
+        Updates an exclusions based on its ID and a given json object.
+
+        Args:
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A dict contains the exclusion data.
+        Returns:
+            Info about the updated exclusion.
+    """
+    return http_request('PATCH', f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
+
+
+def delete_exclusion(exclusion_type: str, exclusion_ids: list) -> dict:
+    """
+        Deletes an exclusions based on its ID.
+
+        Args:
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A list of exclusion IDs to delete.
+        Returns:
+            Info about the deleted exclusion.
+    """
+    return http_request(method='DELETE',
+                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
+
+
+def get_exclusions(exclusion_type: str, filter_query: str | None, params: dict) -> dict:
+    """
+        Returns IDs of exclusions that match the filter / value
+
+        Args:
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            filter_query: Custom filter, For example `value:'<value>'`.
+            params: API query params (sort, limit, offset).
+        Returns:
+            List of exclusion IDs.
+    """
+    return http_request(method='GET', url_suffix=f'/policy/queries/{exclusion_type}-exclusions/v1',
+                        params=assign_params(filter=filter_query, **params))
+
+
+def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
+    """
+        Returns the exclusions based on a list of IDs.
+
+        Args:
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A list of exclusion IDs to retrieve.
+        Returns:
+            List of exclusions.
+    """
+    return http_request(method='GET',
+                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
+
+
+def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination: dict) -> dict:
+    """
+        Returns the files ID's that match the filter / value.
+
+        Args:
+            files_filter: The exclusion type can be either ml (machine learning) or IOA`.
+            query: The exclusion type can be either ml (machine learning) or IOA`.
+            pagination: API query params for pagination (limit, offset).
+        Returns:
+            list: List of exclusions.
+    """
+
+    return http_request(method='GET', url_suffix='/quarantine/queries/quarantined-files/v1',
+                        params=assign_params(filter=files_filter, q=build_query_params(query), **pagination))
+
+
+def list_quarantined_files(ids: list) -> dict:
+    """
+        Returns the file's metadata based a list of IDs.
+
+        Args:
+            ids: A list of the IDs of the files.
+        Returns:
+            A list contains metadata about the files.
+    """
+    return http_request(method='POST', url_suffix='/quarantine/entities/quarantined-files/GET/v1', json={'ids': ids})
+
+
+def apply_quarantined_files_action(body: dict) -> dict:
+    """
+        Applies action to quarantined files.
+
+        Args:
+            body: The request body with the parameters to update.
+        Returns:
+            A list contains metadata about the updated files.
+    """
+    return http_request(method='PATCH', url_suffix='/quarantine/entities/quarantined-files/v1', json=body)
 
 
 ''' MIRRORING COMMANDS '''
@@ -2077,6 +2289,7 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
 
 def fetch_incidents():
     incidents = []  # type:List
+    detections = []  # type:List
 
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
@@ -2114,24 +2327,22 @@ def fetch_incidents():
                 for detection in demisto.get(raw_res, "resources"):
                     detection['incident_type'] = incident_type
                     incident = detection_to_incident(detection)
-                    incident_date = incident['occurred']
 
-                    incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
+                    detections.append(incident)
 
-                    incidents.append(incident)
-
-            if len(incidents) == INCIDENTS_PER_FETCH:
+            if len(detections) == INCIDENTS_PER_FETCH:
                 current_fetch_info_detections['offset'] = offset + INCIDENTS_PER_FETCH
             else:
                 current_fetch_info_detections['offset'] = 0
-            incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_detections,
-                                                                 fetch_limit=fetch_limit, id_field='name')
+            detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
+                                                                  last_run=current_fetch_info_detections,
+                                                                  fetch_limit=fetch_limit, id_field='name')
 
-            for incident in incidents:
-                occurred = dateparser.parse(incident["occurred"])
+            for detection in detections:
+                occurred = dateparser.parse(detection["occurred"])
                 if occurred:
-                    incident["occurred"] = occurred.strftime(DATE_FORMAT)
-            last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=incidents,
+                    detection["occurred"] = occurred.strftime(DATE_FORMAT)
+            last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
                                               look_back=look_back,
@@ -2201,7 +2412,7 @@ def fetch_incidents():
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents])
-    return incidents
+    return incidents + detections
 
 
 def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
@@ -2549,7 +2760,7 @@ def search_device_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
-
+    extended_data = argToBoolean(demisto.args().get('extended_data', False))
     command_results = []
     for single_device in devices:
         # demisto.debug(f"single device info: {single_device}")
@@ -2564,10 +2775,14 @@ def search_device_command():
             is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
-
-        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
-        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
-
+        if not extended_data:
+            entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
+            headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
+        else:
+            device_groups = single_device['groups']
+            single_device.update({'group_names': list(enrich_groups(device_groups).values())})
+            entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_VERBOSE_KEY_MAP)
+            headers = list(SEARCH_DEVICE_VERBOSE_KEY_MAP.values())
         command_results.append(CommandResults(
             outputs_prefix='CrowdStrike.Device',
             outputs_key_field='ID',
@@ -2576,7 +2791,6 @@ def search_device_command():
             raw_response=raw_res,
             indicator=endpoint,
         ))
-
     return command_results
 
 
@@ -2592,6 +2806,22 @@ def search_device_by_ip(raw_res, ip_address):
     else:
         raw_res = None
     return raw_res
+
+
+def enrich_groups(all_group_ids) -> Dict[str, Any]:
+    """
+        Receives a list of group_ids
+        Returns a dict {group_id: group_name}
+    """
+    result = dict()
+    params = {'ids': all_group_ids}
+    response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
+    for resource in response_json['resources']:
+        try:
+            result[resource['id']] = resource['name']
+        except KeyError:
+            demisto.debug(f"Could not retrieve group name for {resource=}")
+    return result
 
 
 def get_status(device_id):
@@ -2650,6 +2880,11 @@ def get_endpoint_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
+
+    # filter hostnames that will match the exact hostnames including case-sensitive
+    if hostnames := argToList(args.get('hostname')):
+        lowercase_hostnames = {hostname.lower() for hostname in hostnames}
+        devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
     standard_endpoints = generate_endpoint_by_contex_standard(devices)
 
@@ -2833,11 +3068,11 @@ def run_command():
         responses = []
         for host_id in host_ids:
             if scope == 'read':
-                response1 = run_single_read_cmd(host_id, command_type, full_command)
+                response1 = run_single_read_cmd(host_id, command_type, full_command, offline)
             elif scope == 'write':
-                response1 = run_single_write_cmd(host_id, command_type, full_command)
+                response1 = run_single_write_cmd(host_id, command_type, full_command, offline)
             else:  # scope = admin
-                response1 = run_single_admin_cmd(host_id, command_type, full_command)
+                response1 = run_single_admin_cmd(host_id, command_type, full_command, offline)
             responses.append(response1)
 
             for resource in response1.get('resources', []):
@@ -3074,6 +3309,7 @@ def run_script_command():
     script_name = args.get('script_name')
     raw = args.get('raw')
     host_ids = argToList(args.get('host_ids'))
+    offline = argToBoolean(args.get('queue_offline', False))
     try:
         timeout = int(args.get('timeout', 30))
     except ValueError as e:
@@ -3092,7 +3328,7 @@ def run_script_command():
 
     command_type = 'runscript'
 
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
     timer.start()
     try:
@@ -3134,7 +3370,7 @@ def run_script_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def run_get_command(is_polling=False):
+def run_get_command(is_polling=False, offline=False):
     request_ids_for_polling = []
     args = demisto.args()
     host_ids = argToList(args.get('host_ids'))
@@ -3144,7 +3380,7 @@ def run_get_command(is_polling=False):
     timeout_duration = args.get('timeout_duration')
 
     timeout = timeout and int(timeout)
-    response = run_batch_get_cmd(host_ids, file_path, optional_hosts, timeout, timeout_duration)
+    response = run_batch_get_cmd(host_ids, file_path, optional_hosts, timeout, timeout_duration, offline)
 
     resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -3518,9 +3754,9 @@ def list_incident_summaries_command():
 
 
 def create_host_group_command(name: str,
-                              group_type: str = None,
-                              description: str = None,
-                              assignment_rule: str = None) -> CommandResults:
+                              group_type: str | None = None,
+                              description: str | None = None,
+                              assignment_rule: str | None = None) -> CommandResults:
     response = change_host_group(is_post=True,
                                  name=name,
                                  group_type=group_type,
@@ -3601,6 +3837,12 @@ def resolve_incident_command(ids: List[str], status: str):
     return CommandResults(readable_output=readable)
 
 
+def update_incident_comment_command(ids: List[str], comment: str):
+    update_incident_comment(ids, comment)
+    readable = '\n'.join([f'{incident_id} updated successfully with comment \"{comment}\"' for incident_id in ids])
+    return CommandResults(readable_output=readable)
+
+
 def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
         -> CommandResults:
     response = list_host_groups(filter, limit, offset)
@@ -3622,14 +3864,14 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
 
 
 def upload_batch_custom_ioc_command(
-        multiple_indicators_json: str = None,
+        multiple_indicators_json: str | None = None, timeout: str = '180',
 ) -> List[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
 
     """
     batch_json = safe_load_json(multiple_indicators_json)
-    raw_res = upload_batch_custom_ioc(batch_json)
+    raw_res = upload_batch_custom_ioc(batch_json, timeout=float(timeout))
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     entry_objects_list = []
@@ -3662,7 +3904,8 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
     command_type = "kill"
     raw_response = []
     host_ids = [host_id]
-    batch_id = init_rtr_batch_session(host_ids)
+    offline = argToBoolean(args.get('queue_offline', False))
+    batch_id = init_rtr_batch_session(host_ids, offline)
     outputs = []
 
     for process_id in process_ids:
@@ -3729,11 +3972,12 @@ def match_remove_command_for_os(operating_system, file_path):
 def rtr_remove_file_command(args: dict) -> CommandResults:
     file_path = args.get('file_path')
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    offline = argToBoolean(args.get('queue_offline', False))
     operating_system = args.get('os')
     full_command = match_remove_command_for_os(operating_system, file_path)
     command_type = "rm"
 
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
     outputs = parse_rtr_command_response(response, host_ids)
     human_readable = tableToMarkdown(
@@ -3769,12 +4013,12 @@ def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command,
 
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
-                                 write_to_context=True) -> \
+                                 write_to_context=True, offline=False) -> \
         List[Union[CommandResults, dict]]:  # type:ignore
     """
     General function to run RTR commands depending on the given command.
     """
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     response = get_session_function(batch_id, command_type=command, full_command=full_command,
                                     host_ids=host_ids)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
@@ -3819,10 +4063,11 @@ def parse_rtr_stdout_response(host_ids, response, command, file_name_suffix=""):
 
 def rtr_read_registry_keys_command(args: dict):
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    offline = argToBoolean(args.get('queue_offline', False))
     registry_keys = remove_duplicates_from_list_arg(args, 'registry_keys')
     command_type = "reg"
     raw_response = []
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     outputs = []
     files = []
     not_found_hosts = set()
@@ -3876,7 +4121,9 @@ def rtr_polling_retrieve_file_command(args: dict):
     if 'hosts_and_requests_ids' not in args:
         # this is the very first time we call the polling function. We don't wont to call this function more that
         # one time, so we store that arg between the different runs
-        args['hosts_and_requests_ids'] = run_get_command(is_polling=True)  # run the first command to retrieve file
+        offline = argToBoolean(args.get('queue_offline', False))
+        # run the first command to retrieve file
+        args['hosts_and_requests_ids'] = run_get_command(is_polling=True, offline=offline)
 
     # we are here after we ran the cs-falcon-run-get-command command at the current run or in previous
     if not args.get('SHA256'):
@@ -4074,7 +4321,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
 
 def get_cve_command(args: dict) -> list[CommandResults]:
     """
-        Get a list of vulnerability by spotlight
+        Get a list of vulnerabilities by spotlight
         : args: filter which include params or filter param.
         : return: a list of cve indicators according to the user.
     """
@@ -4107,6 +4354,824 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                                                    relationships=relationships_list,
                                                    indicator=cve_indicator))
     return command_results_list
+
+
+def create_ml_exclusion_command(args: dict) -> CommandResults:
+    """Creates a machine learning exclusion.
+
+    Args:
+        args: Arguments to create the exclusion from.
+
+    Returns:
+        The created exclusion meta data.
+
+    """
+    create_args = assign_params(
+        value=args.get('value'),
+        excluded_from=argToList(args.get('excluded_from')),
+        comment=args.get('comment'),
+        groups=argToList(args.get('groups', 'all'))
+    )
+
+    exclusion = create_exclusion('ml', create_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion, sort_headers=False,
+                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=human_readable,
+    )
+
+
+def update_ml_exclusion_command(args: dict) -> CommandResults:
+    """Updates a machine learning exclusion by providing an ID.
+
+    Args:
+        args: Arguments for updating the exclusion.
+
+    Returns:
+        The updated exclusion meta data.
+
+    """
+    update_args = assign_params(
+        value=args.get('value'),
+        comment=args.get('comment'),
+        groups=argToList(args.get('groups'))
+    )
+    if not update_args:
+        raise Exception('At least one argument (besides the id argument) should be provided to update the exclusion.')
+    update_args.update({'id': args.get('id')})
+
+    exclusion = update_exclusion('ml', update_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion, sort_headers=False,
+                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=human_readable,
+    )
+
+
+def delete_ml_exclusion_command(args: dict) -> CommandResults:
+    """Delete a machine learning exclusion by providing an ID.
+
+    Args:
+        args: Arguments for deleting the exclusion (in particular only the id is needed).
+
+    Returns:
+        A message that the exclusion has been deleted.
+
+    """
+    ids = argToList(args.get('ids'))
+
+    delete_exclusion('ml', ids)
+
+    return CommandResults(
+        readable_output=f'The machine learning exclusions with IDs {" ".join(ids)} was successfully deleted.'
+    )
+
+
+def search_ml_exclusion_command(args: dict) -> CommandResults:
+    """Searches machine learning exclusions by providing an ID / value / cusotm-filter.
+
+    Args:
+        args: Arguments for searching the exclusions.
+
+    Returns:
+        The exclusions meta data.
+
+    """
+    if not (ids := argToList(args.get('ids'))):
+        search_args = assign_params(
+            sort=args.get('sort'),
+            limit=args.get('limit'),
+            offset=args.get('offset'),
+        )
+        if value := args.get('value'):
+            ids = get_exclusions('ml', f"value:'{value}'", search_args).get('resources')
+        else:
+            ids = get_exclusions('ml', args.get('filter'), search_args).get('resources')
+
+    if not ids:
+        return CommandResults(
+            readable_output='The arguments/filters you provided did not match any exclusion.'
+        )
+
+    exclusions = get_exclusion_entities('ml', ids).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusions', exclusions, sort_headers=False,
+                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=exclusions,
+        readable_output=human_readable,
+    )
+
+
+def create_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Creates an IOA exclusion.
+
+    Args:
+        args: Arguments to create the exclusion from.
+
+    Returns:
+        The created exclusion meta data.
+
+    """
+    create_args = assign_params(
+        name=args.get('exclusion_name'),
+        pattern_id=args.get('pattern_id'),
+        pattern_name=args.get('pattern_name'),
+        cl_regex=args.get('cl_regex'),
+        ifn_regex=args.get('ifn_regex'),
+        comment=args.get('comment'),
+        description=args.get('description'),
+        groups=argToList(args.get('groups', 'all')),
+        detection_json=args.get('detection_json')
+    )
+
+    exclusion = create_exclusion('ioa', create_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOAExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=human_readable,
+    )
+
+
+def update_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Updates an IOA exclusion by providing an ID.
+
+    Args:
+        args: Arguments for updating the exclusion.
+
+    Returns:
+        The updated exclusion meta data.
+
+    """
+    update_args = assign_params(
+        name=args.get('exclusion_name'),
+        pattern_id=args.get('pattern_id'),
+        pattern_name=args.get('pattern_name'),
+        cl_regex=args.get('cl_regex'),
+        ifn_regex=args.get('ifn_regex'),
+        comment=args.get('comment'),
+        description=args.get('description'),
+        groups=argToList(args.get('groups')),
+        detection_json=args.get('detection_json')
+    )
+    if not update_args:
+        raise Exception('At least one argument (besides the id argument) should be provided to update the exclusion.')
+    update_args.update({'id': args.get('id')})
+
+    exclusion = update_exclusion('ioa', update_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOAExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=human_readable,
+    )
+
+
+def delete_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Delete an IOA exclusion by providing an ID.
+
+    Args:
+        args: Arguments for deleting the exclusion (in particular only the id is needed).
+
+    Returns:
+        A message that the exclusion has been deleted.
+
+    """
+    ids = argToList(args.get('ids'))
+
+    delete_exclusion('ioa', ids)
+
+    return CommandResults(
+        readable_output=f'The IOA exclusions with IDs {" ".join(ids)} was successfully deleted.'
+    )
+
+
+def search_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Searches IOA exclusions by providing an ID / name / cusotm-filter.
+
+    Args:
+        args: Arguments for searching the exclusions.
+
+    Returns:
+        The exclusions meta data.
+
+    """
+    exclusion_name = args.get('name')
+    if not (ids := argToList(args.get('ids'))):
+        search_args = assign_params(
+            limit=args.get('limit'),
+            offset=args.get('offset')
+        )
+        if exclusion_name:
+            ids = get_exclusions('ioa', f"name:~'{exclusion_name}'", search_args).get('resources')
+        else:
+            ids = get_exclusions('ioa', args.get('filter'), search_args).get('resources')
+
+    if not ids:
+        return CommandResults(
+            readable_output='The arguments/filters you provided did not match any exclusion.'
+        )
+
+    exclusions = get_exclusion_entities('ioa', ids).get('resources', [])
+    if exclusion_name and exclusions:
+        exclusions = list(filter(lambda x: x.get('name') == exclusion_name, exclusions))
+    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOAExclusion',
+        outputs_key_field='id',
+        outputs=exclusions,
+        readable_output=human_readable,
+    )
+
+
+def list_quarantined_file_command(args: dict) -> CommandResults:
+    """Get quarantine file metadata by specified IDs / custom-filter.
+
+    Args:
+        args: Arguments for searching the quarantine files.
+
+    Returns:
+        The quarantine files meta data.
+
+    """
+    if not (ids := argToList(args.get('ids'))):
+        pagination_args = assign_params(
+            limit=args.get('limit', '50'),
+            offset=args.get('offset')
+        )
+        search_args = assign_params(
+            state=args.get('state'),
+            sha256=argToList(args.get('sha256')),
+            filename=argToList(args.get('filename')),
+            hostname=argToList(args.get('hostname')),
+            username=argToList(args.get('username')),
+        )
+
+        ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
+
+    if not ids:
+        return CommandResults(
+            readable_output='The arguments/filters you provided did not match any files.'
+        )
+
+    files = list_quarantined_files(ids).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.QuarantinedFile',
+        outputs_key_field='id',
+        outputs=files,
+        readable_output=human_readable,
+    )
+
+
+def apply_quarantine_file_action_command(args: dict) -> CommandResults:
+    """Apply action to quarantine file.
+
+    Args:
+        args: Arguments for searching and applying action to the quarantine files.
+
+    Returns:
+        The applied quarantined files meta data.
+
+    """
+    if not (ids := argToList(args.get('ids'))):
+        pagination_args = assign_params(
+            limit=args.get('limit', '50'),
+            offset=args.get('offset')
+        )
+        search_args = assign_params(
+            state=args.get('state'),
+            sha256=argToList(args.get('sha256')),
+            filename=argToList(args.get('filename')),
+            hostname=argToList(args.get('hostname')),
+            username=argToList(args.get('username')),
+        )
+        if not search_args:
+            raise Exception('At least one search argument (filename, hostname, sha256, state, username, ids, or filter)'
+                            ' is required to update the quarantine file.')
+
+        ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
+
+    update_args = assign_params(
+        ids=ids,
+        action=args.get('action'),
+        comment=args.get('comment'),
+    )
+    if not update_args:
+        raise Exception('At least one update argument (action, comment) should be provided to update the quarantine file.')
+
+    apply_quarantined_files_action(update_args).get('resources')
+
+    return CommandResults(
+        readable_output=f'The Quarantined File with IDs {ids} was successfully updated.',
+    )
+
+
+def build_cs_falcon_filter(custom_filter: str | None = None, **filter_args) -> str:
+    """Creates an FQL syntax filter from a dictionary and a custom built filter
+
+    :custom_filter: custom filter from user (will take priority if conflicts with dictionary), defaults to None
+    :filter_args: args to translate to FQL format.
+
+    :return: FQL syntax filter.
+    """
+
+    custom_filter_list = custom_filter.split('+') if custom_filter else []
+    arguments = [f'{key}:{argToList(value)}' for key, value in filter_args.items() if value]
+    # custom_filter takes priority because it is first
+    return "%2B".join(custom_filter_list + arguments)
+
+
+def ODS_query_scans_request(**query_params) -> dict:
+
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/scans/v1?{url_params}')
+
+
+def ODS_get_scans_by_id_request(ids: list[str]) -> dict:
+
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/scans/v1?{url_params}')
+
+
+def map_scan_resource_to_UI(resource: dict) -> dict:
+
+    output = {
+        'ID': resource.get('id'),
+        'Status': resource.get('status'),
+        'Severity': resource.get('severity'),
+        # Every host in resource.metadata has a "filecount" which is a dictionary
+        # that counts the files traversed, skipped, found to be malicious and the like.
+        'File Count': '\n-\n'.join('\n'.join(f'{k}: {v}' for k, v in filecount.items())
+                                   for host in resource.get('metadata', []) if (filecount := host.get('filecount', {}))),
+        'Description': resource.get('description'),
+        'Hosts/Host groups': resource.get('hosts') or resource.get('host_groups'),
+        'Start time': resource.get('scan_started_on'),
+        'End time': resource.get('scan_completed_on'),
+        'Run by': resource.get('created_by')
+    }
+    return output
+
+
+def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scans',
+        [map_scan_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Status', 'Severity', 'File Count', 'Description',
+                 'Hosts/Host groups', 'End time', 'Start time', 'Run by']
+    )
+
+    return human_readable
+
+
+def get_ODS_scan_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
+
+    query_filter = build_cs_falcon_filter(
+        custom_filter=args.get('filter'),
+        initiated_from=args.get('initiated_from'),
+        status=args.get('status'),
+        severity=args.get('severity'),
+        scan_started_on=args.get('scan_started_on'),
+        scan_completed_on=args.get('scan_completed_on'),
+    )
+
+    raw_response = ODS_query_scans_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources')
+
+
+@polling_function(
+    'cs-falcon-ods-query-scan',
+    poll_message='Retrieving scan results:',
+    polling_arg_name='wait_for_result',
+    interval=arg_to_number(dict_safe_get(demisto.args(), ['interval_in_seconds'], 0, (int, str))),
+    timeout=arg_to_number(dict_safe_get(demisto.args(), ['timeout_in_seconds'], 0, (int, str))),
+)
+def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
+    # call the query api if no ids given
+    ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
+
+    if not ids:
+        command_results = CommandResults(readable_output='No scans match the arguments/filter.')
+        scan_in_progress = False
+
+    else:
+        response = ODS_get_scans_by_id_request(ids)
+        resources = response.get('resources', [])
+
+        scan_in_progress = (
+            len(resources) == 1
+            and dict_safe_get(resources, [0, 'status']) in ('pending', 'running')
+        )
+
+        human_readable = ODS_get_scan_resources_to_human_readable(resources)
+        command_results = CommandResults(
+            raw_response=response,
+            outputs_prefix='CrowdStrike.ODSScan',
+            outputs_key_field='id',
+            outputs=resources,
+            readable_output=human_readable,
+        )
+
+    return PollResult(response=command_results,
+                      continue_to_poll=scan_in_progress,
+                      args_for_next_run=args)
+
+
+def ODS_query_scheduled_scans_request(**query_params) -> dict:
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/scheduled-scans/v1?{url_params}')
+
+
+def ODS_get_scheduled_scans_by_id_request(ids: list[str]) -> dict:
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/scheduled-scans/v1?{url_params}')
+
+
+def map_scheduled_scan_resource_to_UI(resource: dict) -> dict:
+    output = {
+        'ID': resource.get('id'),
+        'Hosts targeted': len(resource.get('metadata', [])),
+        'Description': resource.get('description'),
+        'Host groups': resource.get('host_groups'),
+        'Start time': resource.get('schedule', {}).get('start_timestamp'),
+        'Created by': resource.get('created_by'),
+    }
+    return output
+
+
+def ODS_get_scheduled_scan_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scheduled Scans',
+        [map_scheduled_scan_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Hosts targeted', 'Description',
+                 'Host groups', 'Start time', 'Created by'],
+    )
+
+    return human_readable
+
+
+def get_ODS_scheduled_scan_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
+
+    query_filter = build_cs_falcon_filter(**{
+        'custom_filter': args.get('filter'),
+        'initiated_from': args.get('initiated_from'),
+        'status': args.get('status'),
+        'created_on': args.get('created_on'),
+        'created_by': args.get('created_by'),
+        'schedule.start_timestamp': args.get('start_timestamp'),
+        'deleted': args.get('deleted'),
+    })
+
+    raw_response = ODS_query_scheduled_scans_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources')
+
+
+def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> CommandResults:
+    # call the query api if no ids given
+    ids = argToList(args.get('ids')) or get_ODS_scheduled_scan_ids(args)
+
+    if not ids:
+        return CommandResults(readable_output='No scheduled scans match the arguments/filter.')
+
+    response = ODS_get_scheduled_scans_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_scheduled_scan_resources_to_human_readable(resources)
+
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSScheduledScan',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def ODS_query_scan_hosts_request(**query_params) -> dict:
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/scan-hosts/v1?{url_params}')
+
+
+def ODS_get_scan_hosts_by_id_request(ids: list[str]) -> dict:
+
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/scan-hosts/v1?{url_params}')
+
+
+def get_ODS_scan_host_ids(args: dict) -> list[str]:
+
+    query_filter = build_cs_falcon_filter(
+        custom_filter=args.get('filter'),
+        host_id=args.get('host_ids'),
+        scan_id=args.get('scan_ids'),
+        status=args.get('status'),
+        started_on=args.get('started_on'),
+        completed_on=args.get('completed_on'),
+    )
+
+    raw_response = ODS_query_scan_hosts_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources', [])
+
+
+def map_scan_host_resource_to_UI(resource: dict) -> dict:
+    output = {
+        'ID': resource.get('id'),
+        'Scan ID': resource.get('scan_id'),
+        'Host ID': resource.get('host_id'),
+        'Filecount': resource.get('filecount'),
+        'Status': resource.get('status'),
+        'Severity': resource.get('severity'),
+        'Started on': resource.get('started_on'),
+    }
+    return output
+
+
+def ODS_get_scan_hosts_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scan Hosts',
+        [map_scan_host_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Scan ID', 'Host ID',
+                 'Filecount', 'Status',
+                 'Severity', 'Started on'],
+    )
+
+    return human_readable
+
+
+def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
+
+    ids = get_ODS_scan_host_ids(args)
+
+    if not ids:
+        return CommandResults(readable_output='No hosts to display.')
+
+    response = ODS_get_scan_hosts_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_scan_hosts_resources_to_human_readable(resources)
+
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSScanHost',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def ODS_query_malicious_files_request(**query_params) -> dict:
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/malicious-files/v1?{url_params}')
+
+
+def ODS_get_malicious_files_by_id_request(ids: list[str]) -> dict:
+
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/malicious-files/v1?{url_params}')
+
+
+def map_malicious_file_resource_to_UI(resource: dict) -> dict:
+    output = {
+        'ID': resource.get('id'),
+        'Scan id': resource.get('scan_id'),
+        'Filename': resource.get('filename'),
+        'Hash': resource.get('hash'),
+        'Severity': resource.get('severity'),
+        'Last updated': resource.get('last_updated'),
+    }
+    return output
+
+
+def ODS_get_malicious_files_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Malicious Files',
+        [map_malicious_file_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Scan id', 'Filename', 'Hash', 'Severity', 'Last updated'],
+    )
+
+    return human_readable
+
+
+def get_ODS_malicious_files_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
+
+    query_filter = build_cs_falcon_filter(
+        custom_filter=args.get('filter'),
+        host_id=args.get('host_ids'),
+        scan_id=args.get('scan_ids'),
+        filepath=args.get('file_paths'),
+        filename=args.get('file_names'),
+        hash=args.get('hash'),
+    )
+
+    raw_response = ODS_query_malicious_files_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources')
+
+
+def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
+    # call the query api if no file_ids given
+    ids = argToList(args.get('file_ids')) or get_ODS_malicious_files_ids(args)
+
+    if not ids:
+        return CommandResults(readable_output='No malicious files match the arguments/filter.')
+
+    response = ODS_get_malicious_files_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_malicious_files_resources_to_human_readable(resources)
+
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSMaliciousFile',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
+
+    result = {
+        'host_groups': argToList(args.get('host_groups')),
+        'file_paths': argToList(args.get('file_paths')),
+        'scan_exclusions': argToList(args.get('scan_exclusions')),
+        'scan_inclusions': argToList(args.get('scan_inclusions')),
+        'initiated_from': args.get('initiated_from'),
+        'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
+        'description': args.get('description'),
+        'quarantine': argToBoolean(args.get('quarantine')) if args.get('quarantine') is not None else None,
+        'pause_duration': arg_to_number(args.get('pause_duration')),
+        'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
+        'sensor_ml_level_prevention': arg_to_number(args.get('sensor_ml_level_prevention')),
+        'cloud_ml_level_detection': arg_to_number(args.get('cloud_ml_level_detection')),
+        'cloud_ml_level_prevention': arg_to_number(args.get('cloud_ml_level_prevention')),
+        'max_duration': arg_to_number(args.get('max_duration')),
+    }
+
+    if is_scheduled:
+        result['schedule'] = {
+            'interval': SCHEDULE_INTERVAL_STR_TO_INT.get(args['schedule_interval'].lower()),
+            'start_timestamp': (
+                dateparser.parse(args['schedule_start_timestamp'])
+                or return_error('Invalid start_timestamp.')
+            ).strftime("%Y-%m-%dT%H:%M"),
+        }
+
+    else:
+        result['hosts'] = argToList(args.get('hosts'))
+
+    return result
+
+
+def ODS_create_scan_request(args: dict, is_scheduled: bool) -> dict:
+    body = make_create_scan_request_body(args, is_scheduled)
+    remove_nulls_from_dictionary(body)
+    return http_request('POST', f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
+
+
+def ODS_verify_create_scan_command(args: dict) -> None:
+
+    if not (args.get('hosts') or args.get('host_groups')):
+        raise DemistoException('MUST set either hosts OR host_groups.')
+
+    if not (args.get('file_paths') or args.get('scan_inclusions')):
+        raise DemistoException('MUST set either file_paths OR scan_inclusions.')
+
+
+def ods_create_scan(args: dict, is_scheduled: bool) -> dict:
+
+    ODS_verify_create_scan_command(args)
+
+    response = ODS_create_scan_request(args, is_scheduled)
+    resource = dict_safe_get(response, ('resources', 0), return_type=dict, raise_return_type=False)
+
+    if not (resource and resource.get('id')):
+        raise DemistoException('Unexpected response from CrowdStrike Falcon')
+
+    return resource
+
+
+def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
+
+    resource = ods_create_scan(args, is_scheduled=False)
+    scan_id = resource.get('id')
+
+    query_scan_args = {
+        'ids': scan_id,
+        'wait_for_result': True,
+        'interval_in_seconds': args.get('interval_in_seconds'),
+        'timeout_in_seconds': args.get('timeout_in_seconds'),
+    }
+
+    return cs_falcon_ODS_query_scans_command(query_scan_args)
+
+
+def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
+
+    resource = ods_create_scan(args, is_scheduled=True)
+
+    human_readable = f'Successfully created scheduled scan with ID: {resource.get("id")}'
+
+    command_results = CommandResults(
+        raw_response=resource,
+        outputs_prefix='CrowdStrike.ODSScheduledScan',
+        outputs_key_field='id',
+        outputs=resource,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def ODS_delete_scheduled_scans_request(ids: list[str], scan_filter: str | None = None) -> dict:
+    ids_params = [f'ids={scan_id}' for scan_id in ids]
+    filter_param = [f'filter={scan_filter.replace("+", "%2B")}'] if scan_filter else []
+    url_params = '&'.join(ids_params + filter_param)
+    return http_request('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)
+
+
+def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
+
+    ids, scan_filter = argToList(args.get('ids')), args.get('filter')
+    response = ODS_delete_scheduled_scans_request(ids, scan_filter)
+
+    if dict_safe_get(response, ['errors', 0, 'code']) == 500:
+        raise DemistoException(
+            'CS Falcon returned an error.\n'
+            'Code: 500\n'
+            f'Message: {dict_safe_get(response, ["errors", 0, "message"])}\n'
+            'Perhaps there are no scans to delete?'
+        )
+
+    human_readable = tableToMarkdown('Deleted Scans:', response.get('resources', []), headers=['Scan ID'])
+
+    command_results = CommandResults(
+        raw_response=response,
+        readable_output=human_readable,
+    )
+
+    return command_results
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -4229,6 +5294,9 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
+        elif command == 'cs-falcon-update-incident-comment':
+            return_results(update_incident_comment_command(comment=args.get('comment'),
+                                                           ids=argToList(args.get('ids'))))
         elif command == 'cs-falcon-batch-upload-custom-ioc':
             return_results(upload_batch_custom_ioc_command(**args))
 
@@ -4240,14 +5308,16 @@ def main():
 
         elif command == 'cs-falcon-rtr-list-processes':
             host_id = args.get('host_id')
+            offline = argToBoolean(args.get('queue_offline', False))
             return_results(
-                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True))
+                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True, offline))
 
         elif command == 'cs-falcon-rtr-list-network-stats':
             host_id = args.get('host_id')
+            offline = argToBoolean(args.get('queue_offline', False))
             return_results(
                 rtr_general_command_on_hosts([host_id], "netstat", "netstat", execute_run_batch_write_cmd_with_timer,
-                                             True))
+                                             True, offline))
 
         elif command == 'cs-falcon-rtr-read-registry':
             return_results(rtr_read_registry_keys_command(args))
@@ -4255,8 +5325,9 @@ def main():
         elif command == 'cs-falcon-rtr-list-scheduled-tasks':
             full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
             host_ids = argToList(args.get('host_ids'))
+            offline = argToBoolean(args.get('queue_offline', False))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
-                                                        execute_run_batch_admin_cmd_with_timer))
+                                                        execute_run_batch_admin_cmd_with_timer, offline))
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
         elif command == 'cs-falcon-get-detections-for-incident':
@@ -4275,6 +5346,40 @@ def main():
             return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
         elif command == 'cve':
             return_results(get_cve_command(args))
+        elif command == 'cs-falcon-create-ml-exclusion':
+            return_results(create_ml_exclusion_command(args))
+        elif command == 'cs-falcon-update-ml-exclusion':
+            return_results(update_ml_exclusion_command(args))
+        elif command == 'cs-falcon-delete-ml-exclusion':
+            return_results(delete_ml_exclusion_command(args))
+        elif command == 'cs-falcon-search-ml-exclusion':
+            return_results(search_ml_exclusion_command(args))
+        elif command == 'cs-falcon-create-ioa-exclusion':
+            return_results(create_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-update-ioa-exclusion':
+            return_results(update_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-delete-ioa-exclusion':
+            return_results(delete_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-search-ioa-exclusion':
+            return_results(search_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-list-quarantined-file':
+            return_results(list_quarantined_file_command(args))
+        elif command == 'cs-falcon-apply-quarantine-file-action':
+            return_results(apply_quarantine_file_action_command(args))
+        elif command == 'cs-falcon-ods-query-scan':
+            return_results(cs_falcon_ODS_query_scans_command(args))
+        elif command == 'cs-falcon-ods-query-scheduled-scan':
+            return_results(cs_falcon_ODS_query_scheduled_scan_command(args))
+        elif command == 'cs-falcon-ods-query-scan-host':
+            return_results(cs_falcon_ods_query_scan_host_command(args))
+        elif command == 'cs-falcon-ods-query-malicious-files':
+            return_results(cs_falcon_ODS_query_malicious_files_command(args))
+        elif command == 'cs-falcon-ods-create-scan':
+            return_results(cs_falcon_ods_create_scan_command(args))
+        elif command == 'cs-falcon-ods-create-scheduled-scan':
+            return_results(cs_falcon_ods_create_scheduled_scan_command(args))
+        elif command == 'cs-falcon-ods-delete-scheduled-scan':
+            return_results(cs_falcon_ods_delete_scheduled_scan_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

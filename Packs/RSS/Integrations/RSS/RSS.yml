@@ -1,4 +1,5 @@
-category: Messaging
+deprecated: true
+category: Messaging and Conferencing
 commonfields:
   id: RSS
   version: -1
@@ -16,7 +17,6 @@ configuration:
   required: false
   type: 13
 description: Deprecated. Use RSS Feed instead.
-deprecated: true
 display: RSS (Deprecated)
 name: RSS
 script:

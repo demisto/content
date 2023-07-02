@@ -20,36 +20,43 @@ Supported file types:
 - PPSM
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Microsoft Office File Enrichment - Oletools
+
+* Microsoft Office File Enrichment - Oletools
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* ConvertFile
-* Set
-* ExtractIndicatorsFromTextFile
-* SetAndHandleEmpty
-* ReadPDFFileV2
+
 * ExtractIndicatorsFromWordFile
+* ConvertFile
+* ExtractIndicatorsFromTextFile
+* ReadPDFFileV2
+* Set
+* SetAndHandleEmpty
 
 ### Commands
+
 * rasterize-pdf
 * image-ocr-extract-text
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | The file to extract indicators from. | File | Optional |
-| Indicator Query | Indicators matching the indicator query will be used as playbook input. |  | Optional |
-| Decode | Possible values: "True" or "False". Default is "False".<br/>When this is set to "True", in case a macro was found within the file \(using oletools\), it will output all the obfuscated strings with their decoded content \(Hex, Base64, StrReverse, Dridex, VBA\). | False | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| Decode | Available values: "True" or "False". Default is "False"<br/>When this is set to "True", in case a macro was found within the file \(using oletools\), it will output all the obfuscated strings with their decoded content \(Hex, Base64, StrReverse, Dridex, VBA\). | False | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -77,7 +84,7 @@ This playbook does not use any integrations.
 | Oletools.Oleid.sha256 | SHA256 hash. | string |
 | Oletools.Oleid.ole_command_result.File_format | Indicator file format. | string |
 | Oletools.Oleid.ole_command_result.Container_format | Indicator container format. | string |
-| Oletools.Oleid.ole_command_result.Encrypted | Encrypted indicator. | string |
+| Oletools.Oleid.ole_command_result.Encrypted | Indicator encrypted. | string |
 | Oletools.Oleid.ole_command_result.VBA_Macros | Indicator VBA macros. | string |
 | Oletools.Oleid.ole_command_result.XLM_Macros | Indicator XLM macros. | string |
 | Oletools.Oleid.ole_command_result.External_Relationships | Indicator external relationships. | string |
@@ -121,5 +128,7 @@ This playbook does not use any integrations.
 | DBotScore.Score | The actual score. | number |
 
 ## Playbook Image
+
 ---
+
 ![Extract Indicators From File - Generic v2](../doc_files/Extract_Indicators_From_File_-_Generic_v2.png)

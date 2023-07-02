@@ -2,6 +2,10 @@ import demistomock as demisto  # noqa: F401
 import xlrd
 from CommonServerPython import *  # noqa: F401
 
+# Fixed xlrd known issue
+xlrd.xlsx.ensure_elementtree_imported(False, None)
+xlrd.xlsx.Element_has_iter = True
+
 
 def parse_excel(file_entry_id):
 

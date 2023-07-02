@@ -1,2 +1,5 @@
 [known_words]
 RFC
+TLS
+Syslog
+BrokerVM

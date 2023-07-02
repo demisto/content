@@ -4,6 +4,9 @@ name: Send Investigation Summary Reports
 description: 'This playbook iterates over closed incidents, generates a summary report for each closed incident, and emails the reports to specified users. '
 starttaskid: "0"
 fromversion: "5.0.0"
+marketplaces:
+- xsoar
+- marketplacev2
 tasks:
   "0":
     id: "0"

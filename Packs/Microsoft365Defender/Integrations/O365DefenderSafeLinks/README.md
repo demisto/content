@@ -1079,6 +1079,49 @@ general information about Safe Links results for the last 90 days. Yesterday is 
 Known Limitations
 ----
 
+
+#### Base Command
+
+`o365-defender-safelinks-atp-policy-get`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365Defender.SafeLinks.AtpPolicy.Name | String | ATP policy name. | 
+| O365Defender.SafeLinks.AtpPolicy.AdminDisplayName | String | ATP policy admin display name. | 
+| O365Defender.SafeLinks.AtpPolicy.EnableATPForSPOTeamsODB | String | ATP policy enabled for SPOT teams. | 
+| O365Defender.SafeLinks.AtpPolicy.AllowSafeDocsOpen | String | Whether the ATP policy allows safe docs to open. | 
+| O365Defender.SafeLinks.AtpPolicy.EnableSafeDocs | String | Whether the ATP policy enables safe docs. | 
+| O365Defender.SafeLinks.AtpPolicy.Identity | String | ATP policy ID. | 
+| O365Defender.SafeLinks.AtpPolicy.IsValid | String | Is the ATP policy valid. | 
+| O365Defender.SafeLinks.AtpPolicy.WhenCreatedUTC | String | When the ATP policy was created in UTC format. | 
+| O365Defender.SafeLinks.AtpPolicy.WhenChangedUTC | String | When the ATP policy was changed in UTC format. | 
+
+### o365-defender-safelinks-atp-policy-set
+***
+Set the ATP policy.
+
+
+#### Base Command
+
+`o365-defender-safelinks-atp-policy-set`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| allow_safe_docs_open | Whether users can click through and bypass the Protected View container even when Safe Documents identifies a file as malicious. Possible values are: true, false. | Optional | 
+| enable_atp_spo_teams_odb | Enable or disable O365 Defender for SharePoint, OneDrive, and Microsoft Teams. Possible values are: true, false. | Optional | 
+| enable_safe_docs | Enable or disable safe Documents in organizations with Microsoft 365 A5 or Microsoft 365 E5 Security licenses. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
 * Safe Links does not work on mail-enabled public folders.
 * Safe Links protection is available in the following locations:
     * Office 365 apps: Safe Links protection for Office 365 apps is available in supported desktop, mobile, and web apps. You configure Safe Links protection for Office 365 apps in the global setting that are outside of Safe Links policies. For instructions, see [Configure global settings for Safe Links settings in Microsoft Defender for Office 365](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/configure-global-settings-for-safe-links?view=o365-worldwide).
@@ -1086,4 +1129,3 @@ Known Limitations
     * Email messages: Safe Links protection for links in email messages is controlled by Safe Links policies. There is no default Safe Links policy, so to get the protection of Safe Links in email messages, you need to create one or more Safe Links policies.
 * Allow up to 30 minutes for a new or updated policy to be applied.
 * Organization - be sure to use an `.onmicrosoft.com` domain in the Organization parameter value. Otherwise, you might encounter cryptic permission issues when you run commands in the app context.
-

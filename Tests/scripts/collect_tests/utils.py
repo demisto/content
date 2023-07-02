@@ -49,6 +49,7 @@ class Machine(Enum):
     V6_6 = Version('6.6')
     V6_8 = Version('6.8')
     V6_9 = Version('6.9')
+    V6_10 = Version('6.10')
     MASTER = 'Master'
 
     @staticmethod
@@ -171,7 +172,13 @@ class ContentItem(DictFileBased):
     @property
     def _has_no_id(self):
         # some content files may not have an id
-        return self.path.name == 'pack_metadata.json' or self.path.name.endswith('_schema.json')
+        file_path_splitted = self.path.parts
+        return self.path.name == 'pack_metadata.json' \
+            or self.path.name.endswith('_schema.json') \
+            or self.path.name.endswith('testdata.json') \
+            or len(file_path_splitted) > 1 \
+            and file_path_splitted[-2] == 'ReleaseNotes' \
+            and self.path.suffix == '.json'
 
     @property
     def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
@@ -182,6 +189,19 @@ class ContentItem(DictFileBased):
             return self['commonfields']['id']
         if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
             return self['layout']['id']
+        if self.path.parent.name == 'CorrelationRules' and self.path.suffix == '.yml':
+            return self['global_rule_id']
+        if self.path.suffix == '.json':
+            if self.path.parent.name == 'XSIAMDashboards':
+                return self['dashboards_data'][0]['global_id']
+            if self.path.parent.name == 'XSIAMReports':
+                return self['templates_data'][0]['global_id']
+            if self.path.parent.name == 'Triggers':
+                return self['trigger_id']
+            if self.path.parent.parent.name == 'XDRCTemplates':
+                return self['content_global_id']
+            if self.path.parent.name == 'LayoutRules':
+                return self['rule_id']
         return self['id']
 
     @property
@@ -285,9 +305,9 @@ class PackManager:
         return self.get_pack_metadata(pack_id).get('support', '').lower() or None
 
 
-def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> Optional[tuple]:
+def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> tuple:
     if value is None:
-        return value
+        return tuple()
     if not value:
         return ()
     if isinstance(value, tuple):

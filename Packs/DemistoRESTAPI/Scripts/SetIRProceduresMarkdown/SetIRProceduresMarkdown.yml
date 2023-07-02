@@ -2,7 +2,6 @@ comment: Creates markdown tables based on information from the GetTasksWithSecti
 commonfields:
   id: SetIRProceduresMarkdown
   version: -1
-enabled: false
 name: SetIRProceduresMarkdown
 script: '-'
 system: false

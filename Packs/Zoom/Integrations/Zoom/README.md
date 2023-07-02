@@ -1,5 +1,5 @@
 Use the Zoom integration manage your Zoom users and meetings
-This integration was integrated and tested with version 2 of Zoom API
+This integration was integrated and tested with version 2.0.0 of Zoom
 
 ## Configure Zoom on Cortex XSOAR
 
@@ -9,12 +9,14 @@ This integration was integrated and tested with version 2 of Zoom API
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. 'https://api.zoom.us/v2/') |  | True |
+    | Server URL (e.g. 'https://api.zoom.us/v2/') |  | False |
     | Account ID (OAuth) |  | False |
     | Client ID (OAuth) |  | False |
     | Client Secret (OAuth) |  | False |
-    | API Key (JWT-Deprecated) | This authentication method is deprecated | False |
-    | API Secret (JWT-Deprecated) | This authentication method is deprecated | False |
+    | API Key (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | API Secret (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | API Key (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | API Secret (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
@@ -52,7 +54,7 @@ Create a new user in zoom account
 | Zoom.User.type | number | The type of the user | 
 
 #### Command example
-```!zoom-create-user email=example@example.com first_name=john last_name=smith user_type=Basic ```
+```!zoom-create-user email=example@example.com first_name=john last_name=smith user_type=Basic```
 #### Context Example
 ```json
 {
@@ -84,7 +86,7 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The type of the meeting. Possible values are: instant, scheduled, recurring meeting with fixed time. Default is Instant. | Required | 
+| type | The type of the meeting. Possible values are: Instant, Scheduled, Recurring meeting with fixed time. Default is Instant. | Required | 
 | end_date_time | For recurring meetings only. Select the final date on which the meeting will recur before it is canceled<br/>For example: 2017-11-25T12:00:00Z<br/>. | Optional | 
 | end_times | For recurring meetings only.<br/>Select how many times the meeting should recur before it is canceled. <br/>max = 365. Default = 1.<br/>. | Optional | 
 | monthly_day | For recurring meetings with Monthly recurrence_type only.<br/>State the day in a month, the meeting should recur. The value range is from 1 to 31. Default = 1.<br/>. | Optional | 
@@ -97,7 +99,7 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 | encryption_type | The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee. Possible values are: enhanced_encryption, e2ee. Default is enhanced_encryption. | Optional | 
 | host_video | start meetings with the host video on. Possible values are: true, false. Default is True. | Optional | 
 | join_before_host_time | If the value of the join_before_host field is true, this field sets the time that a participant can join before the meeting's host. <br/>You can choose: 5 or 10 (minuts), or 0 for any time.<br/>. Possible values are: 0, 5, 10. | Optional | 
-| join_before_host | Whether participants can join the meeting before its host. For scheduled or recurring meetings only. The default value is False. Possible values are: False, True. | Optional | 
+| join_before_host | Whether participants can join the meeting before its host. For scheduled or recurring meetings only. The default value is False. Possible values are: false, true. | Optional | 
 | meeting_authentication | If true, only authenticated users can join the meeting. Possible values are: false, true. Default is false. | Optional | 
 | user | email address or id of user for meeting. | Required | 
 | topic | The topic of the meeting. | Required | 
@@ -123,18 +125,18 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 | Zoom.Meeting.type | number | The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8 | 
 
 #### Command example
-```!zoom-create-meeting topic=test type=scheduled user=example@example.com start-time=2022-12-29T12:12:12Z ```
+```!zoom-create-meeting topic=test type=scheduled user=example@example.com start-time=2023-01-29T12:12:12Z```
 #### Context Example
 ```json
 {
     "Zoom": {
         "Meeting": {
-            "created_at": "2022-12-29T08:14:39Z",
+            "created_at": "2023-01-15T12:44:30Z",
             "duration": 60,
             "host_email": "example@example.com",
             "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
-            "id": 81967809573,
-            "join_url": "https://us06web.zoom.us/j/81967809573?pwd=S1NuSEovNWRXSGJNZHRsWDNOSkFkUT09",
+            "id": 88454393857,
+            "join_url": "https://us06web.zoom.us/j/8845?pwd=WkI1WUdvbHhnMlJuaXU1WDNPdz09",
             "pre_schedule": false,
             "settings": {
                 "allow_multiple_devices": false,
@@ -163,6 +165,50 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
                     "US"
                 ],
                 "global_dial_in_numbers": [
+                    {
+                        "city": "Houston",
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 3462487799",
+                        "type": "toll"
+                    },
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 3602095623",
+                        "type": "toll"
+                    },
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 3863475053",
+                        "type": "toll"
+                    },
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 5074734847",
+                        "type": "toll"
+                    },
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 5642172000",
+                        "type": "toll"
+                    },
+                    {
+                        "city": "New York",
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 6465588656",
+                        "type": "toll"
+                    },
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 6469313860",
+                        "type": "toll"
+                    },
                     {
                         "country": "US",
                         "country_name": "US",
@@ -221,54 +267,10 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
                         "type": "toll"
                     },
                     {
-                        "city": "Houston",
+                        "city": "US",
                         "country": "US",
                         "country_name": "US",
                         "number": "+1 3126266799",
-                        "type": "toll"
-                    },
-                    {
-                        "city": "Houston",
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 3462487799",
-                        "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 3602095623",
-                        "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 3863475053",
-                        "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 5074734847",
-                        "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 5642172000",
-                        "type": "toll"
-                    },
-                    {
-                        "city": "New York",
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 6465588656",
-                        "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 6469313860",
                         "type": "toll"
                     }
                 ],
@@ -289,13 +291,13 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
                 "waiting_room": false,
                 "watermark": false
             },
-            "start_time": "2022-12-29T12:12:12Z",
-            "start_url": "https://us06web.zoom.us/s/81967809573?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6IjgxOTY3ODA5NTczIiwiZXhwIjoxNjcyMzA4ODc5LCJpYXQiOjE2NzIzMDE2NzksImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.u77iCWCY0KP2oY5wb9ABzudnFUB8TmqgL7qUdo8sXgg",
+            "start_time": "2023-01-29T12:12:12Z",
+            "start_url": "https://us06web.zoom.us/s/883857?zIjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg4NDU0MzkzODU3IiwiZXhwIjoxNjczNzkzODcwLCJpYXQiOjE2NzM3ODY2NzAsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.5vRJBkMbmODUD_7H3bkS7OjR-MuuLUzNMJ_KeCzWc_U",
             "status": "waiting",
             "timezone": "Asia/Jerusalem",
             "topic": "test",
             "type": 2,
-            "uuid": "fQbNc0ZUTECrosWSasccxw=="
+            "uuid": "4gbib+fjTFmz1wH1LoE7EQ=="
         }
     }
 }
@@ -306,7 +308,7 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 >### Meeting details
 >|uuid|id|host_id|host_email|topic|type|status|start_time|duration|timezone|created_at|start_url|join_url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| fQbNc0ZUTECrosWSasccxw== | 81967809573 | uJiZN-O7Rp6Jp_995FpZGg | example@example.com | test | 2 | waiting | 2022-12-29T12:12:12Z | 60 | Asia/Jerusalem | 2022-12-29T08:14:39Z | https:<span>//</span>us06web.zoom.us/s/81967809573?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6IjgxOTY3ODA5NTczIiwiZXhwIjoxNjcyMzA4ODc5LCJpYXQiOjE2NzIzMDE2NzksImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.u77iCWCY0KP2oY5wb9ABzudnFUB8TmqgL7qUdo8sXgg | https:<span>//</span>us06web.zoom.us/j/81967809573?pwd=S1NuSEovNWRXSGJNZHRsWDNOSkFkUT09 |
+>| 4gbib+fjTFmz1wH1LoE7EQ== | 88454393857 | uJiZN-O7Rp6Jp_995FpZGg | example@example.com | test | 2 | waiting | 2023-01-29T12:12:12Z | 60 | Asia/Jerusalem | 2023-01-15T12:44:30Z | https:<span>//</span>us06web.zoom.us/s/88454393857?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg4NDU0MzkzODU3IiwiZXhwIjoxNjczNzkzODcwLCJpYXQiOjE2NzM3ODY2NzAsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.5vRJBkMbmODUD_7H3bkS7OjR-MuuLUzNMJ_KeCzWc_U | https:<span>//</span>us06web.zoom.us/j/88454393857?pwd=WkI1WnVEWUdvbHhnMlJuaXU1WDNPdz09 |
 
 
 ### zoom-fetch-recording
@@ -321,7 +323,8 @@ Get meeting record and save as file in the warroom
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| meeting_id | Meeting id to get the recording. | Required | 
+| meeting_id | Meeting ID of the recorded meeting. | Required | 
+| delete_after | Whether to delete the recording from the cloud after downloading. Possible values are: false, true. Default is true. | Optional | 
 
 
 #### Context Output
@@ -338,6 +341,46 @@ Get meeting record and save as file in the warroom
 | File.Type | Unknown | Attachment's Type | 
 | File.EntryID | Unknown | Attachment's EntryID | 
 | File.SSDeep | Unknown | Attachment's SSDeep hash | 
+
+#### Command example
+```!zoom-fetch-recording meeting_id=83622325727 delete_after=false```
+#### Context Example
+```json
+{
+    "File": [
+        {
+            "EntryID": "446@37e93103-1bd6-4776-8021-0f7023b1bb79",
+            "Extension": "MP4",
+            "Info": "video/mp4",
+            "MD5": "0de01f8f6d037e9ebecde2f91ad9b7a3",
+            "Name": "recording_83622325727_d831fbd5-3938-44d0-b30b-962bf76e2916.MP4",
+            "SHA1": "c81f9abb6dcf9be42dae99bc5e1501c43496d66e",
+            "SHA256": "8b252b01c8e6af62b88de64abf80d360467da1598dcd6b50ac9a252ffafb2eb5",
+            "SHA512": "b273e90a9cd0589eaba1c5e647fedab7b46e198193a54bec70a18def9ada57575833ea89b6eabf7f5852c3dc98b862780793d3e87e32a238ec2a7acffdba2495",
+            "SSDeep": "1536:TDWnSNbM8oEWzjSn7anYBcoGdee32hfUunvSHx8:T6t8JWzjSWnYBcoG9325UunvSHq",
+            "Size": 320333,
+            "Type": "ISO Media, MP4 v2 [ISO 14496-14]"
+        },
+        {
+            "EntryID": "447@37e93103-1bd6-4776-8021-0f7023b1bb79",
+            "Extension": "M4A",
+            "Info": "video/mp4",
+            "MD5": "e826111564499ca8021d0ddfcfde064b",
+            "Name": "recording_83622325727_19bf5f8a-e77c-4b75-b09e-13983521703c.M4A",
+            "SHA1": "50d3386dc5b74935b8f8d541f319df34a49f90a0",
+            "SHA256": "2719528cf61358ccbee861fb8e42d9d5fb37390baa22d0dc7dad1aa7e3935146",
+            "SHA512": "74bfb40ade824e6e36329b3e2335b2028fac648d3ecef1a02e9be93d4a455e3acf4c1f9c844d1c2ebcc661d4c84d66c1da4f0ca0462eabc12bf2dff84006d460",
+            "SSDeep": "24:fctSXvr4S+08n11/TlllZltk2B0tDilduxEJvCXyxrApd4dEcpXuFxnZQ4r:uYr41Xnf/T/vX/8OvqyrjiCuFhZQK",
+            "Size": 243652,
+            "Type": "ISO Media, MP4 v2 [ISO 14496-14]"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>The Audio file recording_83622325727_19bf5f8a-e77c-4b75-b09e-13983521703c.M4A was downloaded successfully
 
 ### zoom-list-users
 ***
@@ -382,21 +425,43 @@ List the existing users
 | Zoom.User.group_ids | string | Groups user belongs to | 
 
 #### Command example
-```!zoom-list-users status=pending limit=10 ```
+```!zoom-list-users status=pending limit=10```
 #### Context Example
 ```json
 {
     "Zoom": {
         "Metadata": {
-            "Count": 2,
+            "Count": 6,
             "Number": 1,
             "Size": 10,
-            "Total": 11
+            "Total": 59
         },
         "User": [
             {
-                "created_at": "2022-12-29T08:14:44Z",
-                "email": "me3s56f1yhlvdqn@demistomockemail.com",
+                "created_at": "2023-01-15T12:44:34Z",
+                "email": "example@example.com",
+                "id": "",
+                "pmi": 0,
+                "role_id": "0",
+                "status": "pending",
+                "type": 1,
+                "user_created_at": "2023-01-02T12:55:33Z",
+                "verified": 0
+            },
+            {
+                "created_at": "2023-01-15T12:44:34Z",
+                "email": "example@example.com",
+                "id": "",
+                "pmi": 0,
+                "role_id": "0",
+                "status": "pending",
+                "type": 1,
+                "user_created_at": "2023-01-02T13:09:28Z",
+                "verified": 0
+            },
+            {
+                "created_at": "2023-01-15T12:44:34Z",
+                "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
@@ -406,102 +471,80 @@ List the existing users
                 "verified": 0
             },
             {
-                "created_at": "2022-12-29T08:14:44Z",
-                "email": "berg@ks.com",
-                "id": "",
-                "pmi": 0,
-                "role_id": "0",
-                "status": "pending",
-                "type": 1,
-                "user_created_at": "2022-12-14T07:37:02Z",
-                "verified": 0
-            },
-            {
-                "created_at": "2022-12-29T08:14:44Z",
-                "email": "r2e2fxzmphomnc1@demistomockemail.com",
-                "id": "",
-                "pmi": 0,
-                "role_id": "0",
-                "status": "pending",
-                "type": 1,
-                "user_created_at": "2022-12-22T08:04:33Z",
-                "verified": 0
-            },
-            {
-                "created_at": "2022-12-29T08:14:44Z",
-                "email": "ax0qwkfpctfuz06@demistomockemail.com",
-                "id": "",
-                "pmi": 0,
-                "role_id": "0",
-                "status": "pending",
-                "type": 1,
-                "user_created_at": "2022-12-22T10:19:12Z",
-                "verified": 0
-            },
-            {
-                "created_at": "2022-12-29T08:14:44Z",
+                "created_at": "2023-01-15T12:44:34Z",
                 "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
                 "status": "pending",
                 "type": 1,
-                "user_created_at": "2022-12-22T10:13:30Z",
+                "user_created_at": "2023-01-02T13:12:46Z",
                 "verified": 0
             },
             {
-                "created_at": "2022-12-29T08:14:44Z",
+                "created_at": "2023-01-15T12:44:34Z",
                 "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
                 "status": "pending",
                 "type": 1,
-                "user_created_at": "2022-12-14T07:19:20Z",
+                "user_created_at": "2023-01-02T12:04:08Z",
                 "verified": 0
             },
             {
-                "created_at": "2022-12-29T08:14:44Z",
-                "email": "qmeb9kypck6utf1@demistomockemail.com",
-                "id": "",
-                "pmi": 0,
-                "role_id": "0",
-                "status": "pending",
-                "type": 1,
-                "user_created_at": "2022-12-22T10:15:41Z",
-                "verified": 0
-            },
-            {
-                "created_at": "2022-12-29T08:14:44Z",
+                "created_at": "2023-01-15T12:44:34Z",
                 "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
                 "status": "pending",
                 "type": 1,
-                "user_created_at": "2022-12-07T07:38:41Z",
+                "user_created_at": "2023-01-02T12:56:08Z",
                 "verified": 0
             },
             {
-                "created_at": "2022-12-29T08:14:44Z",
+                "created_at": "2023-01-15T12:44:34Z",
                 "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
                 "status": "pending",
                 "type": 1,
-                "user_created_at": "2022-12-07T07:39:52Z",
+                "user_created_at": "2023-01-02T12:58:16Z",
                 "verified": 0
             },
             {
-                "created_at": "2022-12-29T08:14:44Z",
+                "created_at": "2023-01-15T12:44:34Z",
                 "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
                 "status": "pending",
                 "type": 1,
-                "user_created_at": "2022-12-07T07:37:11Z",
+                "user_created_at": "2023-01-02T13:15:04Z",
+                "verified": 0
+            },
+            {
+                "created_at": "2023-01-15T12:44:34Z",
+                "email": "example@example.com",
+                "id": "",
+                "pmi": 0,
+                "role_id": "0",
+                "status": "pending",
+                "type": 1,
+                "user_created_at": "2023-01-02T11:58:04Z",
+                "verified": 0
+            },
+            {
+                "created_at": "2023-01-15T12:44:34Z",
+                "email": "example@example.com",
+                "id": "",
+                "pmi": 0,
+                "role_id": "0",
+                "status": "pending",
+                "type": 1,
+                "user_created_at": "2023-01-02T13:09:52Z",
                 "verified": 0
             }
         ]
@@ -514,21 +557,21 @@ List the existing users
 >### Users
 >|id|email|type|pmi|verified|created_at|status|role_id|
 >|---|---|---|---|---|---|---|---|
->|  | me3s56f1yhlvdqn@demistomockemail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | berg@ks.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | r2e2fxzmphomnc1@demistomockemail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | ax0qwkfpctfuz06@demistomockemail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | qmeb9kypck6utf1@demistomockemail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2023-01-15T12:44:34Z | pending | 0 |
 >
 >### Metadata
 >|total_records|
 >|---|
->| 11 |
+>| 59 |
 
 
 ### zoom-delete-user
@@ -543,7 +586,7 @@ Delete a user from Zoom
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or email to delete. | Required | 
+| user | The user ID or email to delete. | Required | 
 | action | The action to take. Possible values are: disassociate, delete. Default is disassociate. | Optional | 
 
 
@@ -564,7 +607,7 @@ Get the information of an existing zoom meeting
 | --- | --- | --- |
 | meeting_id | The id of the existing meeting. | Required | 
 | occurrence_id | Provide this field to view meeting details of a particular occurrence of the recurring meeting. | Optional | 
-| show_previous_occurrences | Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting. Possible values are: False, True. Default is True. | Optional | 
+| show_previous_occurrences | Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting. Possible values are: false, true. Default is True. | Optional | 
 
 
 #### Context Output
@@ -584,7 +627,7 @@ Get the information of an existing zoom meeting
 | Zoom.Meeting.type | number | The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8 | 
 
 #### Command example
-```!zoom-meeting-get meeting_id=85235660275 ```
+```!zoom-meeting-get meeting_id=88949894296```
 #### Context Example
 ```json
 {
@@ -592,12 +635,12 @@ Get the information of an existing zoom meeting
         "Meeting": {
             "agenda": "",
             "assistant_id": "",
-            "created_at": "2022-12-29T07:35:10Z",
+            "created_at": "2022-12-29T08:10:13Z",
             "duration": 60,
             "host_email": "example@example.com",
             "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
-            "id": 85235660275,
-            "join_url": "https://us06web.zoom.us/j/85235660275?pwd=UWRXdDNyM3JaMnNJZ3pCZ1YyZ3FyUT09",
+            "id": 88949894296,
+            "join_url": "https://us06web.zoom.us/94296?pwd=b3GdrSDBBNU1FYTVRVmdadz09",
             "pre_schedule": false,
             "settings": {
                 "allow_multiple_devices": false,
@@ -626,6 +669,24 @@ Get the information of an existing zoom meeting
                     "US"
                 ],
                 "global_dial_in_numbers": [
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 6469313860",
+                        "type": "toll"
+                    },
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 6694449171",
+                        "type": "toll"
+                    },
+                    {
+                        "country": "US",
+                        "country_name": "US",
+                        "number": "+1 6892781000",
+                        "type": "toll"
+                    },
                     {
                         "country": "US",
                         "country_name": "US",
@@ -672,7 +733,7 @@ Get the information of an existing zoom meeting
                         "type": "toll"
                     },
                     {
-                        "city": "Houston",
+                        "city": "US",
                         "country": "US",
                         "country_name": "US",
                         "number": "+1 3126266799",
@@ -715,24 +776,6 @@ Get the information of an existing zoom meeting
                         "country_name": "US",
                         "number": "+1 6465588656",
                         "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 6469313860",
-                        "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 6694449171",
-                        "type": "toll"
-                    },
-                    {
-                        "country": "US",
-                        "country_name": "US",
-                        "number": "+1 6892781000",
-                        "type": "toll"
                     }
                 ],
                 "host_save_video_order": false,
@@ -753,12 +796,12 @@ Get the information of an existing zoom meeting
                 "watermark": false
             },
             "start_time": "2022-12-29T12:12:12Z",
-            "start_url": "https://us06web.zoom.us/s/85235660275?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg1MjM1NjYwMjc1IiwiZXhwIjoxNjcyMzA4ODg1LCJpYXQiOjE2NzIzMDE2ODUsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.O_0oFbJ4ptJDVhGUSugGT2Uvw7zCzR4M-KUbDr23fJI",
+            "start_url": "https://us06web.zoom.us/s/88949?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg4OTQ5ODk0Mjk2IiwiZXhwIjoxNjczNzkzODc2LCJpYXQiOjE2NzM3ODY2NzYsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.BTOeH_-MZRm7A5sACnDJrP_zKbzaDCWZ5orvtH4rVb0",
             "status": "waiting",
             "timezone": "Asia/Jerusalem",
             "topic": "test",
             "type": 2,
-            "uuid": "987MfVRLQR2UXxYxo9k0rA=="
+            "uuid": "anhEx2x6QWG7TREn71MmoA=="
         }
     }
 }
@@ -769,7 +812,7 @@ Get the information of an existing zoom meeting
 >### Meeting details
 >|uuid|id|host_id|host_email|topic|type|status|start_time|duration|timezone|agenda|created_at|start_url|join_url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 987MfVRLQR2UXxYxo9k0rA== | 85235660275 | uJiZN-O7Rp6Jp_995FpZGg | example@example.com | test | 2 | waiting | 2022-12-29T12:12:12Z | 60 | Asia/Jerusalem |  | 2022-12-29T07:35:10Z | https:<span>//</span>us06web.zoom.us/s/85235660275?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg1MjM1NjYwMjc1IiwiZXhwIjoxNjcyMzA4ODg1LCJpYXQiOjE2NzIzMDE2ODUsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.O_0oFbJ4ptJDVhGUSugGT2Uvw7zCzR4M-KUbDr23fJI | https:<span>//</span>us06web.zoom.us/j/85235660275?pwd=UWRXdDNyM3JaMnNJZ3pCZ1YyZ3FyUT09 |
+>| anhEx2x6QWG7TREn71MmoA== | 88949894296 | uJiZN-O7Rp6Jp_995FpZGg | example@example.com | test | 2 | waiting | 2022-12-29T12:12:12Z | 60 | Asia/Jerusalem |  | 2022-12-29T08:10:13Z | https:<span>//</span>us06web.zoom.us/s/88949894296?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg4OTQ5ODk0Mjk2IiwiZXhwIjoxNjczNzkzODc2LCJpYXQiOjE2NzM3ODY2NzYsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.BTOeH_-MZRm7A5sACnDJrP_zKbzaDCWZ5orvtH4rVb0 | https:<span>//</span>us06web.zoom.us/j/88949894296?pwd=b3dzT1pzWGdrSDBBNU1FYTVRVmdadz09 |
 
 
 ### zoom-meeting-list
@@ -785,7 +828,7 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID. | Required | 
+| user_id | The user ID of the meetings owner. | Required | 
 | page_size | Number of users to return. Default = 30. Max = 300. | Optional | 
 | page_number | Which page of results to return. The default = 1.<br/>Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".<br/>. | Optional | 
 | next_page_token | The next page token is used to paginate te the next page. IMPORTENT: You must pass the same page size that you pased at the first call.<br/>. | Optional | 
@@ -810,10 +853,10 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
 | Zoom.Meeting.topic | string | The topic of the meeting | 
 | Zoom.Meeting.duration | number | The duratian of the meeting | 
 | Zoom.Meeting.created_at | Date | The time that this meeting was created | 
-| Zoom.Meeting.type | unknown |  | 
+| Zoom.Meeting.type | unknown | The ty pe of this meeting | 
 
 #### Command example
-```!zoom-meeting-list user_id=example@example.com type=scheduled limit=7 ```
+```!zoom-meeting-list user_id=example@example.com type=scheduled limit=7```
 #### Context Example
 ```json
 {
@@ -825,79 +868,79 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
                     "duration": 60,
                     "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
                     "id": 83810397585,
-                    "join_url": "https://us06web.zoom.us/j/83810397585?pwd=OGFiZjRYNGhwWkVvMWZzdDBoaXlLdz09",
+                    "join_url": "https://us06web.zoom.us/j/83810397585?pwd=OGFiZjVvMWZzdDBoaXlLdz09",
                     "start_time": "2022-12-10T11:00:00Z",
                     "timezone": "Asia/Jerusalem",
                     "topic": "2",
                     "type": 8,
-                    "uuid": "z93Dc6KjSo20Wr3jx+zaYg=="
+                    "uuid": "z93Dc6Kj3jx+zaYg=="
                 },
                 {
                     "created_at": "2022-12-06T07:59:02Z",
                     "duration": 60,
                     "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
                     "id": 84540166459,
-                    "join_url": "https://us06web.zoom.us/j/84540166459?pwd=ZzdmUEJ5QkZaaUZaaVpFYlBVYnFoUT09",
+                    "join_url": "https://us06web.zoom.us/j/84540166459?pwd=ZzZaaVpFYlBVYnFoUT09",
                     "start_time": "2022-12-12T08:00:00Z",
                     "timezone": "Asia/Jerusalem",
                     "topic": "My recurring Meeting -Dima",
                     "type": 8,
-                    "uuid": "4kZQ+Hl2RFOAz0VBPHoCYg=="
+                    "uuid": "4kZQ+HlFOAz0VBPHoCYg=="
                 },
                 {
                     "created_at": "2022-12-27T21:05:41Z",
                     "duration": 60,
                     "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
                     "id": 89824497327,
-                    "join_url": "https://us06web.zoom.us/j/89824497327?pwd=SWpvK0I0L3pQcTNnWlF3b3VDRVhmQT09",
+                    "join_url": "https://us06web.zoom.us/j/89824497327?pwd=SWp3b3VDRVhmQT09",
                     "start_time": "2022-12-27T21:05:00Z",
                     "timezone": "Asia/Jerusalem",
                     "topic": "efe",
                     "type": 8,
-                    "uuid": "RABXyk81T02D4hA1rgpDgQ=="
+                    "uuid": "RABXy2D4hA1rgpDgQ=="
                 },
                 {
                     "created_at": "2022-12-27T21:11:01Z",
                     "duration": 60,
                     "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
                     "id": 83245658341,
-                    "join_url": "https://us06web.zoom.us/j/83245658341?pwd=SmNGMHI0R1hndnNlRXRDNkZ2Yms3Zz09",
+                    "join_url": "https://us06web.zoom.us/j/83245658341?pwd=SmNGMHI0RDNkZ2Yms3Zz09",
                     "start_time": "2022-12-27T21:11:00Z",
                     "timezone": "Asia/Jerusalem",
                     "topic": "efe",
                     "type": 8,
-                    "uuid": "qOXvlLOoSamJjjFaFgniTA=="
+                    "uuid": "qOXvloSamJjjFaFgniTA=="
                 },
                 {
                     "created_at": "2022-12-27T21:25:54Z",
                     "duration": 60,
                     "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
                     "id": 88468901206,
-                    "join_url": "https://us06web.zoom.us/j/88468901206?pwd=RXZYQlhVbWJKZ1pLWCtpS3l1MHUxZz09",
+                    "join_url": "https://us06web.zoom.us/j/88468901206?pwd=RXZYQlWCtpS3l1MHUxZz09",
                     "start_time": "2022-12-27T21:25:00Z",
                     "timezone": "Asia/Jerusalem",
                     "topic": "efe",
                     "type": 8,
-                    "uuid": "yHzCvl4USry+C9LnCwdnwQ=="
+                    "uuid": "yHzCvl4Sry+C9LnCwdnwQ=="
                 },
                 {
                     "created_at": "2022-12-28T06:39:48Z",
                     "duration": 60,
                     "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
                     "id": 87525048161,
-                    "join_url": "https://us06web.zoom.us/j/87525048161?pwd=ZXlXdXl0QWlLOFVyV3U0OUxxSlBkdz09",
+                    "join_url": "https://us06web.zoom.us/j/87525048161?pwd=ZXlV3U0OUxxSlBkdz09",
                     "start_time": "2022-12-28T06:39:00Z",
                     "timezone": "Asia/Jerusalem",
                     "topic": "efe",
                     "type": 8,
-                    "uuid": "Sblh/I34S1W+rTKUcojJjw=="
+                    "uuid": "Sblh/S1W+rTKUcojJjw=="
                 },
                 {
                     "created_at": "2022-12-28T06:42:25Z",
                     "duration": 60,
                     "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
                     "id": 83877839723,
-                    "join_url": "https://us06web.zoom.us/j/83877839723?pwd=WU9xNmp5RW5KRDhsZ1RySkY4Zkc4Zz09",
+                    "join_url": "https://us06web.zoom.us/j/83877839723?pwd=WySkY4Zkc4Zz09",
                     "start_time": "2022-12-28T06:42:00Z",
                     "timezone": "Asia/Jerusalem",
                     "topic": "efe",
@@ -905,13 +948,13 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
                     "uuid": "iLXDe4HsR6uMb+x8GyybTA=="
                 }
             ],
-            "next_page_token": "bd4jK0hwZi3c9w9dIYzID8EbUuFEF2X10G2",
+            "next_page_token": "N58N4bhqiBFapzndJocx6cc8NKr2",
             "page_size": 7,
-            "total_records": 77
+            "total_records": 60
         },
         "Metadata": {
             "Size": 7,
-            "Total": 77
+            "Total": 60
         }
     }
 }
@@ -933,5 +976,5 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
 >### Metadata
 >|total_records|
 >|---|
->| 77 |
+>| 60 |
 

@@ -1,0 +1,42 @@
+[
+    {
+        "campaign_id": 3423,
+        "pst_id": 16142,
+        "status": "Closed",
+        "name": "Corporate Test",
+        "groups": [
+            {
+                "group_id": 16342,
+                "name": "Corporate Employees"
+            }
+        ],
+        "phish_prone_percentage": 0.5,
+        "started_at": "2019-04-02T15:02:38.000Z",
+        "duration": 1,
+        "categories": [
+            {
+                "category_id": 4237,
+                "name": "Current Events"
+            }
+        ],
+        "template": {
+            "id": 11428,
+            "name": "CNN Breaking News"
+        },
+        "landing_page": {
+            "id": 1842,
+            "name": "SEI Landing Page"
+        },
+        "scheduled_count": 42,
+        "delivered_count": 4,
+        "opened_count": 24,
+        "clicked_count": 20,
+        "replied_count": 0,
+        "attachment_open_count": 3,
+        "macro_enabled_count": 0,
+        "data_entered_count": 0,
+        "qr_code_scanned_count": 0,
+        "reported_count": 0,
+        "bounced_count": 0
+    }
+]

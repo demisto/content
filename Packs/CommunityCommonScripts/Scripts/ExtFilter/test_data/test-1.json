@@ -8198,5 +8198,28 @@
                 "result": ["{xxx}"]
             }
         ]
+    }, {
+        "path": "path",
+        "operation": "==",
+        "filter": "b",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [
+                    [
+                        {
+                            "path": ["a", "b", "c"]
+                        }
+                    ]
+                ],
+                "result": [
+                    {
+                        "path": ["b"]
+                    }
+                ]
+            }
+        ]
     }
 ]

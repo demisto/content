@@ -15,6 +15,7 @@ This playbook does not use any scripts.
 ### Commands
 * qualys-report-fetch
 * qualys-report-launch-scan-based-findings
+* qualys-report-list
 
 ## Playbook Inputs
 ---
@@ -33,7 +34,15 @@ This playbook does not use any scripts.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | unknown | The file name. | 
+| InfoFile.EntryID | unknown | The ID for locating the file in the War Room. | 
+| InfoFile.Size | unknown | The size of the file \(in bytes\). | 
+| InfoFile.Type | unknown | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| InfoFile.Extension | unknown | The file extension. | 
+| InfoFile.Info | unknown | Basic information about the file. | 
 
 ## Playbook Image
 ---

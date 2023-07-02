@@ -1,0 +1,25 @@
+{
+    "results": {
+        "managerMode": "Standalone",
+        "hostName": "FortiWeb",
+        "serialNumber": "FVBAWS0001be9eec",
+        "operationMode": "Reverse Proxy",
+        "haStatus": "Standalone",
+        "systemTime": "Tue Nov 22 23:42:47 2022\n",
+        "firmwareVersion": "FortiWeb-AWS_OnDemand 7.03,build0111(GA),220912",
+        "up_days": "2",
+        "up_hrs": "18",
+        "up_mins": "21",
+        "firmware_partition": 2,
+        "administrativeDomain": "Disabled",
+        "vmLicense": "valid",
+        "registration": {
+            "label": "*",
+            "url": "https://support.fortinet.com",
+            "text": "[Login]"
+        },
+        "readonly": false,
+        "bufferSizeMax": 102400,
+        "fileUploadLimitMax": 102400
+    }
+}

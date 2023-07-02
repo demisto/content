@@ -1960,13 +1960,38 @@ function getDemistoVersion() {
         throw 'Failed retriving server version - ' + ex;
     }
 }
+/**
+ * Compare between two versions.
+ * @param {string} a - version.
+ * @param {string} b - version.
+ * @return {Integer} if A is bigger returns 1, if B is bigger returns -1,
+ * if they are equal returns 0.
+ */
+function compareVersions(a, b) {
+  if (a === b) {
+    return 0;
+  }
+  a_version = a.split('.')
+  b_version = b.split('.')
+  for (var i=0; i < a_version.length; i++) {
+      // A bigger than B
+      if (parseInt(a_version[i]) > parseInt(b_version[i])) {
+          return 1;
+      }
+      // B bigger than A
+      if (parseInt(a_version[i]) < parseInt(b_version[i])) {
+          return -1;
+      }
+  }
+}
 function isDemistoVersionGE(version, buildNumber) {
     var serverVersion = {};
     try {
         serverVersion = getDemistoVersion();
-        if (serverVersion.version > version) {
+        var versionComparison = compareVersions(serverVersion.version, version)
+        if (versionComparison > 0) {
             return true;
-        } else if (serverVersion.version === version) {
+        } else if (versionComparison === 0) {
             if (buildNumber) {
                 var intBuildNumber = parseInt(serverVersion.buildNumber);
                 if (isNaN(intBuildNumber)) {
@@ -2078,3 +2103,24 @@ function mergeContextLists(newItems, oldItems, objectKey) {
     var newItemsByKey = newItems.reduce(toMapByKey, {});
     return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(function() {return !e['remove']});
 }
+
+/**
+ * Creates a file from the given data.
+ * @param {Object} entryType - The  entry type from entryTypes.
+ * @param {string} file_name - The name of the file.
+ * @param {string} file_content - The content of the file.
+ * @param {boolean} human_readable - (Optional) if human_readable isn't passed the human readable would be the name of the file.
+ * @returns {dict} A Demisto war room entry.
+ */
+function fileResult(file_name, file_content,entryType=null, human_readable_optional=null){
+  
+  fileEntryId = saveFile(file_content);
+  HumanReadable = (!(human_readable_optional)) ? `${file_name} uploaded with entryID: ${fileEntryId}.` : human_readable_optional;
+  return {
+    Type: entryType,
+    FileID: fileEntryId,
+    File: file_name,
+    Contents: file_content,
+    HumanReadable: HumanReadable
+  };
+};

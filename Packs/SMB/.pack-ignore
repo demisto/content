@@ -2,4 +2,5 @@
 ignore=auto-test
 
 [file:SMB_v2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,BA124
+

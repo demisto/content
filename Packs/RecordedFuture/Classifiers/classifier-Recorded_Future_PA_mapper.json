@@ -1,0 +1,244 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Recorded Future Playbook Alert Mapper",
+    "mapping": {
+        "Recorded Future Code Repo Leakage": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "panel_status.case_rule_label"
+				},
+				"Alert ID": {
+					"simple": "playbook_alert_id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Description": {
+					"simple": "panel_evidence_summary.evidence.content"
+				},
+				"Source Priority": {
+					"simple": "priority"
+				}
+			}
+		},
+        "Recorded Future Vulnerability": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "category"
+                },
+                "Alert ID": {
+                    "simple": "playbook_alert_id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Evidence Summary": {
+                    "complex": {
+                        "accessor": "risk_rules",
+                        "filters": [],
+                        "root": "panel_evidence_summary.summary",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Recorded Future Identified CVE": {
+                    "complex": {
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Recorded Future Insikt Notes": {
+                    "complex": {
+                        "accessor": "insikt_notes",
+                        "filters": [],
+                        "root": "panel_evidence_summary",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Recorded Future Risk Rule": {
+                    "complex": {
+                        "accessor": "risk_rules",
+                        "filters": [],
+                        "root": "panel_evidence_summary.summary",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Recorded Future Targeted Products": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "panel_status.targets",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "Recorded Future Domain Abuse": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "panel_status.case_rule_label"
+                },
+                "Alert ID": {
+                    "simple": "playbook_alert_id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Recorded Future DNS Records": {
+                    "complex": {
+                        "accessor": "resolved_record_list",
+                        "filters": [],
+                        "root": "panel_evidence_summary",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Description": {
+                    "simple": "panel_evidence_summary.explanation"
+                },
+                "Recorded Future Identified Domain": {
+                    "complex": {
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "RF DNS": {
+                    "complex": {
+                        "filters": [],
+                        "root": "panel_evidence_dns",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "RF Domain Targets": {
+                    "complex": {
+                        "accessor": "targets",
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": []
+                    }
+                },
+                "RF Resolved Record": {
+                    "complex": {
+                        "accessor": "resolved_record_list",
+                        "filters": [],
+                        "root": "panel_evidence_summary",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "RF Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "RF Targets": {
+                    "complex": {
+                        "accessor": "targets",
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": []
+                    }
+                },
+                "RF Whois": {
+                    "complex": {
+                        "accessor": "body",
+                        "filters": [],
+                        "root": "panel_evidence_whois",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Recently Resolved Records": {
+                    "complex": {
+                        "accessor": "resolved_record_list",
+                        "filters": [],
+                        "root": "panel_evidence_summary",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Recorded Future Targeted Domains": {
+                    "complex": {
+                        "accessor": "targets",
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Whois Record Data": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [],
+                        "root": "panel_evidence_whois.body.[0]",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "Recorded Future Playbook Alert Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,8 +1,16 @@
 Unique threat intel technology that automatically serves up relevant insights in real time.
 Recorded Future Identity
+
+
+
+
 ## Configure Recorded Future Identity on Cortex XSOAR
 
 ## Information
+
+
+
+
 A valid API Token for Recorded Future Identity Intelligence needed to fetch information.
 [Get help with Recorded Future for Cortex XSOAR](https://www.recordedfuture.com/integrations/).
 
@@ -13,6 +21,10 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 ---
 
 ## Configuration
+
+
+
+
 | Parameter                        | Description                                                       |
 |----------------------------------|-------------------------------------------------------------------|
 | Server URL                       | The URL to the Recorded Future ConnectAPI                         |
@@ -21,7 +33,7 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 | proxy                            | Use system proxy settings                                         |
 | Password properties              | Password properties that are used as a filter                     |
 | Limit Identities                 | Limit of identities to get min is 0 and max is 10 000             |
-| Domains                          | List of domains to use in search and lookup commands(e.g. mycompany.com; nextcompany.com )|
+| Domains                          | List of domains to use in search and lookup commands(e.g. mycompany.com, nextcompany.com )|
 
 
 
@@ -30,9 +42,21 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 Several of the outputs below have been reduced in size to improve readability.
 
 ## Commands
+
+
+
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+
+
+
 ### recordedfuture-identity-search
+
+
+
+
 ***
 Get a list of identities for the specified period of time.
 
@@ -40,12 +64,17 @@ Get a list of identities for the specified period of time.
 #### Base Command
 
 `recordedfuture-identity-search`
+
+
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | latest-downloaded | Time frame for the leaked identities          | Optional |
 | domain-type       | Type of the domain(Email, Authorization, All) | Optional |
+| domains           | Domains separated by comma (if not specified, domains from app instance will be used) | Optional |
 
 
 
@@ -58,9 +87,17 @@ Get a list of identities for the specified period of time.
 
 
 #### Command Example
+
+
+
+
 ```!recordedfuture-identity-search latest-downloaded="All time" domain-type=Authorization```
 
 #### Context Example
+
+
+
+
 ```
 {
     "RecordedFuture": {
@@ -85,12 +122,20 @@ Get a list of identities for the specified period of time.
 #### Human Readable Output
 
 >##### This is search results for fakeyahoo.com, fake.com :
+>
+>
+>
+>
 >- **30fake**  in domain  fakeyahoo.com
 >- **3072882fake**  in domain  fakeyahoo.com
 >- **fake3@fake.com**
 >- **test@fakeyahoo.com**
 
 ### recordedfuture-identity-lookup
+
+
+
+
 ***
 Get a detailed info regarding identities.
 
@@ -98,12 +143,17 @@ Get a detailed info regarding identities.
 #### Base Command
 
 `recordedfuture-identity-lookup`
+
+
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identities        | String of identities separated by semicolon   | Required |
-| first-downloaded  | Time frame for the leaked identities          | Optional |
+| identities        | String of identities separated by comma   | Required |
+| first-downloaded  | Time frame for the leaked identities      | Optional |
+| domains           | Domains separated by comma                | Optional |
 
 
 
@@ -136,9 +186,17 @@ Get a detailed info regarding identities.
 
 
 #### Command Example
-```!recordedfuture-identity-lookup identities="fake@fakeyahoo.com;real@notfake.com" first-downloaded="3 Months ago"```
+
+
+
+
+```!recordedfuture-identity-lookup identities="fake@fakeyahoo.com,real@notfake.com" first-downloaded="3 Months ago"```
 
 #### Context Example
+
+
+
+
 ```
 {
     "RecordedFuture": {
@@ -305,19 +363,180 @@ Get a detailed info regarding identities.
 
 #### Human Readable Output
 
->#### Credentials Lookup
+>## Credentials Lookup
+
+
+
+
 >*****
->##### Identity __fake1@fake.com__:
+
+>## Results for **fake1@fake.com**:
+
+
+>## Results for **fake1@fake.com**:
+
+>## Results for __fake1@fake.com__:
+
+>## Results for **fake1@fake.com**:
+
+
+>## Results for **fake1@fake.com**:
+
+>## We found 1 passwords that were leaked for this identity:
+
+
+
+
 >*****
->##### Exposed Password Data
->Password 1: OL (clear)
 >*****
->##### Breaches
->__Cit0day__, Sep 2020, Password 1
->In September 2020, the website became inaccessible to users, and was replaced with a seizure notice allegedly.
+
+
+
+
+>## Password 1:
+
+
+
+
+>Rank: TopMillionCommonPasswords
+>
+>Properties: Letter, Number, LowerCase, AtLeast8Characters
+>
+>Type: clear
+>
+>Effectively Clear: True
+>
+>Clear Text Hint: wa
+>
+>Algorithm: SHA1 	 Hash:21b1ee2d6764b61b038605378f361599a8b503ed
+>
+>Algorithm: SHA256 	 Hash:99dbda619dfd82cf9dae074b5c3168e75961b642f3245fe7f400ad03940a0bd8
+>
+>Algorithm: NTLM 	 Hash:da89071afe87527dc0e89a09d35cb9c0
+>
+>Algorithm: MD5 	 Hash:a0b1c21221b29780fc5e3373e626ab9b
+>
+>Authorization service url: <https://signup.norsegods.online/signup>
+>Authorization service url: <https://signup.norsegods.online/signup>
+>Authorization service url: https://signup.norsegods.online/signup
+>Authorization service url: <https://signup.norsegods.online/signup>
+>Authorization service url: <https://signup.norsegods.online/signup>
+>
+>Domain: norsegods.online
+>
+>First Downloaded: Nov 2022
+>
+>Last Downloaded: Nov 2022
+>
+>Exfiltration date: N/A
+>
+>Malware Family: RedLine Stealer
+>
+>## Information about dumps where we found for Password 1:
+
+
+
+
 >*****
->##### Dumps
->__Dark Web Dump March 2021__, Mar 2021,  Password 1
->This combo list of email addresses and clear passwords is not associated with any specific breach.
->__Cit0day Dump November 2020 - Full__, Nov 2020,  Password 1
->After the 2020 closure of the underground site Cit0day, threat actors began to share leaked databases.
+> Stealer Malware Logs 2022-11-03, Nov 2022
+>
+>Description: This credential data was derived from stealer malware logs.
+>Dump type: N/A
+>
+>Compromised Host
+>	Operating System: Windows 10 Enterprise x64
+>
+>	OS User Name: gabi2
+>
+>	File Path Location: C:\Windows\Microsoft.NET\Framework\v4.0.30319\AppLaunch.exe
+>
+>	Time Zone: UTC+01:00
+>
+>	Name of the Machine: N/A
+>
+>	User Account Control Setting: AllowAll
+>
+>	Antivirus: Windows Defender
+>
+>IP Address: 138.255.250.246
+>
+>Country: DO
+>
+>Postal Code: 11403
+
+`recordedfuture-password-lookup`
+
+
+
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| password-hash    | Hash representation of password                          | Required |
+| hash-algorithm   | Hash algorithm for the password(MD5, NTLM, SHA1, SHA256) | Required |
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.Credentials.Password.Password.Hash | String | Recorded Future password hash value. |
+| RecordedFuture.Credentials.Password.Password.Algorithm | String | Recorded Future password hash algorithm. |
+| RecordedFuture.Credentials.Password.ExposureStatus | String | Recorded Future password exposure status. One of Common, UnCommon, NeverExposed |
+
+
+#### Command Example
+
+
+
+
+```!recordedfuture-password-lookup password-hash="0e44ce7308af2b3de5232e4616403ce7d49ba2aec83f79c196409556422a4927" hash-algorithm="SHA256"```
+
+exposure_status:NeverExposed
+algorithm:SHA256
+hash:da6a0f1c706df7e864f9d6f9431de9950450880e
+
+#### Context Example
+
+
+
+
+```
+{
+    "RecordedFuture": {
+        "Credentials": {
+            "Password": [
+                {
+                    "password": {
+                        "algorithm": "SHA256"
+                        "hash": "da6a0f1c706df7e864f9d6f9431de9950450880e"
+                    }
+                    "exposure_status": NeverExposed
+                },
+                {
+                    "password": {
+                        "algorithm": "SHA256"
+                        "hash": "0e44ce7308af2b3de5232e4616403ce7d49ba2aec83f79c196409556422a"
+                    }
+                    "exposure_status": Common
+                },
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## This is search results for password you provided:
+
+
+
+
+>Password hash: 0e44ce7308af2b3de5232e4616403ce7d49ba2aec83f79c196409556422a4927
+>
+>Password hash algorithm: SHA256
+>
+>Password status: Common

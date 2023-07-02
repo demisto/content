@@ -1,0 +1,138 @@
+{
+    "name": "First email to fetch",
+    "details": "Body 1",
+    "labels": [
+        {
+            "type": "Email/ID",
+            "value": "dummy_id_1"
+        },
+        {
+            "type": "Email/CreatedTime",
+            "value": "2019-11-12T15:00:30Z"
+        },
+        {
+            "type": "Email/ModifiedTime",
+            "value": "2019-11-12T15:00:30Z"
+        },
+        {
+            "type": "Email/ReceivedTime",
+            "value": "2019-11-12T15:00:30Z"
+        },
+        {
+            "type": "Email/SentTime",
+            "value": "22019-11-12T15:00:30Z"
+        },
+        {
+            "type": "Email/Subject",
+            "value": "First email to fetch"
+        },
+        {
+            "type": "Email/Importance",
+            "value": "normal"
+        },
+        {
+            "type": "Email/ConversationID",
+            "value": "dummy_conversation_id_1"
+        },
+        {
+            "type": "Email/IsRead",
+            "value": "False"
+        },
+        {
+            "type": "Email/IsDraft",
+            "value": "False"
+        },
+        {
+            "type": "Email/MessageID",
+            "value": "<dummy_message_id_1>"
+        },
+        {
+            "type": "Email/Categories",
+            "value": "['Green category']"
+        },
+        {
+            "type": "Email/Header/MIME-Version",
+            "value": "1.0"
+        },
+        {
+            "type": "Email/Header/Message-ID",
+            "value": "<dummy_message_id_1>"
+        },
+        {
+            "type": "Email/Header/Subject",
+            "value": "First email to fetch"
+        },
+        {
+            "type": "Email/Header/Content-Type",
+            "value": "multipart/alternative"
+        },
+        {
+            "type": "Email/Sender",
+            "value": "dummysender@works.com"
+        },
+        {
+            "type": "Email/From",
+            "value": "dummysender@works.com"
+        },
+        {
+            "type": "Email/To",
+            "value": "recipient@dev.onmicrosoft.com"
+        },
+        {
+            "type": "Email/Body",
+            "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n"
+        },
+        {
+            "type": "Email/BodyType",
+            "value": "html"
+        },
+        {
+            "type": "Email/Mailbox",
+            "value": "dummy@mailbox.com"
+        }
+    ],
+    "occurred": "2019-11-12T15:00:30Z",
+    "attachment": [],
+    "rawJSON": {
+        "ID": "dummy_id_1",
+        "CreatedTime": "2019-11-12T15:00:30Z",
+        "ModifiedTime": "2019-11-12T15:00:30Z",
+        "ReceivedTime": "2019-11-12T15:00:30Z",
+        "SentTime": "22019-11-12T15:00:30Z",
+        "Categories": ["Green category"],
+        "MessageID": "<dummy_message_id_1>",
+        "Subject": "First email to fetch",
+        "Importance": "normal",
+        "ConversationID": "dummy_conversation_id_1",
+        "IsRead": false,
+        "Mailbox": "dummy@mailbox.com",
+        "IsDraft": false,
+        "Headers": [
+            {
+                "name": "MIME-Version",
+                "value": "1.0"
+            },
+            {
+                "name": "Message-ID",
+                "value": "<dummy_message_id_1>"
+            },
+            {
+                "name": "Subject",
+                "value": "First email to fetch"
+            },
+            {
+                "name": "Content-Type",
+                "value": "multipart/alternative"
+            }
+        ],
+        "Body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n",
+        "BodyType": "html",
+        "Sender": "dummysender@works.com",
+        "From": "dummysender@works.com",
+        "To": [
+            "recipient@dev.onmicrosoft.com"
+        ],
+        "Cc": [],
+        "Bcc": []
+    }
+}

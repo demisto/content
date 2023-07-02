@@ -7,12 +7,7 @@ type: python
 subtype: python3
 tags:
 - tanium
-comment: "Get the requested sensors from all machines where the Index Query File Details\
-  \ match the given filter.\nE.g. !TaniumFilterQuestionByIndexQueryFileDetails sensors=\"\
-  Computer Name\" filter_type=contains filter_value=Demisto limit=5 \nwill be translated\
-  \ the following plain text Tanium question:\n\"Get Computer Name from all machines\
-  \ with any Index Query File Details[*, *, *, *, *, *, *, 5] containing \"Demisto\"\
-  \""
+comment: "Deprecated. Use tn-ask-question instead."
 enabled: true
 args:
 - name: directoryPath
@@ -72,3 +67,4 @@ fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
+deprecated: true

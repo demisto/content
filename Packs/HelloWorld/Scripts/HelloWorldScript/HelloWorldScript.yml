@@ -9,7 +9,6 @@ comment: Hello World Script
 commonfields:
   id: HelloWorldScript
   version: -1
-enabled: false
 name: HelloWorldScript
 outputs:
 - contextPath: HelloWorld.hello
@@ -22,5 +21,5 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.0.0

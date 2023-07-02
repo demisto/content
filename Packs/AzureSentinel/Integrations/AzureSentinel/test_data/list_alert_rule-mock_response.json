@@ -1,0 +1,24 @@
+{
+    "value": [
+        {
+            "name": "rule1",
+            "kind": "Scheduled",
+            "properties": {
+                "severity": "High",
+                "displayName": "Rule 1",
+                "description": "Description of Rule 1",
+                "enabled": true
+            }
+        },
+        {
+            "name": "rule2",
+            "kind": "MicrosoftSecurityIncidentCreation",
+            "properties": {
+                "severity": "Medium",
+                "displayName": "Rule 2",
+                "description": "Description of Rule 2",
+                "enabled": false
+            }
+        }
+    ]
+}

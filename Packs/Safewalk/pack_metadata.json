@@ -2,12 +2,12 @@
     "name": "Altipeak",
     "description": "Integration with Safewalk identity management and report service",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Altipeak",
     "url": "https://www.altipeaksecurity.com",
     "email": "support@altipeak.com",
     "categories": [
-        "Authentication"
+        "Authentication & Identity Management"
     ],
     "tags": [],
     "useCases": [],

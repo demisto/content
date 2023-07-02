@@ -31,12 +31,12 @@ The examples below assume you invoke the integration via the server HTTPS endpoi
 ## Usage
 The Generic Webhook integration accepts POST HTTP queries, with the following optional fields in the request body:
 
-| **Field** | **Type** | **Description** |
-| --- | --- | --- |
-| name | string | Name of the incident to be created. |
-| type | string | Type of the incident to be created. If not provided, the value of the integration parameter ***Incident type*** will be used.  |
-| occurred | string | Date the incident occurred in ISO-8601 format. If not provided, the trigger time will be used. |
-| raw_json | object | Details of the incident to be created. For example, `{"field1":"value1","field2":"value2"}` |
+| **Field** | **Type** | **Description**                                                                                                                                                                   |
+| --- | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name | string | Name of the incident to be created.                                                                                                                                               |
+| type | string | Type of the incident to be created. If not provided, the value of the integration parameter ***Incident type*** will be used.                                                     |
+| occurred | string | Date the incident occurred in ISO-8601 format. If not provided, the trigger time will be used.                                                                                    |
+| raw_json | object | Details of the incident to be created. Headers can be found in a seperate key. For example, `{"field1":"value1","field2":"value2","headers": {"header_field3": "header_value3"}}` |
 
 For example, the following triggers the webhook using cURL:
 
@@ -46,7 +46,7 @@ The request payload does not have to contain the fields mentioned above, and may
 
 `curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
-The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper):
+The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper):
 - Note that the *Store sample events for mapping* parameter needs to be set.
 
     <img width="900" src="./../../doc_imgs/mapping.png" />

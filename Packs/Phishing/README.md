@@ -25,8 +25,10 @@ As part of this pack, you will also get out-of-the-box phishing incident views, 
 
 ##### Additional Information
 
+_In order for the playbook to identify and create phishing campaign incidents, configure the Demisto Lock integration and, in addition to this pack, also install the **Phishing Campaign** content pack._
+
 _If you need to respond to phishing alerts ingested from email gateway integrations, see our documentation for the [Phishing Alerts](https://xsoar.pan.dev/docs/reference/packs/Phishing-Alerts) content pack. (This content pack requires the Phishing content pack)._
 
-_If you're new to our Phishing Content Pack, check out our [Setting Up a Phishing Incident in Cortex XSOAR](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/phishing-use-case.html) tutorial._
+_If you're new to our Phishing Content Pack, check out our [Setting Up a Phishing Incident in Cortex XSOAR](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Set-up-a-Phishing-Incident-in-Cortex-XSOAR) tutorial._
 
 

@@ -1,0 +1,2613 @@
+id: Rapid7 InsightIDR - Traffic Indicators Hunting
+version: -1
+name: Rapid7 InsightIDR - Traffic Indicators Hunting
+description: "This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, and geolocations. \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a52d8420-7a8c-4987-866d-15dd05511bae
+    type: start
+    task:
+      id: a52d8420-7a8c-4987-866d-15dd05511bae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7870,
+          "y": -2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: aa54e198-7eb7-4b42-8753-e36c907d4e8b
+    type: title
+    task:
+      id: aa54e198-7eb7-4b42-8753-e36c907d4e8b
+      version: -1
+      name: IP Address Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "104"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6040,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c9ee5e02-a977-48cf-8ece-0a24dee2dc48
+    type: title
+    task:
+      id: c9ee5e02-a977-48cf-8ece-0a24dee2dc48
+      version: -1
+      name: URLDomain Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "106"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7640,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 865c2244-bcfe-4abc-86dd-286ed0b0e52f
+    type: regular
+    task:
+      id: 865c2244-bcfe-4abc-86dd-286ed0b0e52f
+      version: -1
+      name: Rapid7 InsightIDR query - destination IP
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRdstIPField} CONTAINS-ANY [${IPAddressParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5820,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9911df03-8126-4f7b-8312-1c2b11accb7a
+    type: regular
+    task:
+      id: 9911df03-8126-4f7b-8312-1c2b11accb7a
+      version: -1
+      name: Rapid7 InsightIDR query - URLDomain
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "120"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRURLDomainField} CONTAINS-ANY [${URLDomainParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7420,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2103797f-3902-4fc9-8ce4-0b2b510208e4
+    type: regular
+    task:
+      id: 2103797f-3902-4fc9-8ce4-0b2b510208e4
+      version: -1
+      name: Rapid7 InsightIDR query - source IP
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRsrcIPField} CONTAINS-ANY [${IPAddressParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5420,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: ee11970e-cce5-4289-83c0-2061e7d209fe
+    type: regular
+    task:
+      id: ee11970e-cce5-4289-83c0-2061e7d209fe
+      version: -1
+      name: Rapid7 InsightIDR query - sender email address
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRSenderField} CONTAINS-ANY [${EmailAddressParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4830,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 82d403e9-f023-40ad-8133-b7e99414c5b9
+    type: regular
+    task:
+      id: 82d403e9-f023-40ad-8133-b7e99414c5b9
+      version: -1
+      name: Rapid7 InsightIDR query - recipient email address
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRRecipientField} CONTAINS-ANY [${EmailAddressParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4430,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: d1214549-2397-498e-8c4f-d6f5e333321d
+    type: title
+    task:
+      id: d1214549-2397-498e-8c4f-d6f5e333321d
+      version: -1
+      name: Email Address Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5050,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: a85c5093-dd1d-4857-866b-e232edc6f377
+    type: regular
+    task:
+      id: a85c5093-dd1d-4857-866b-e232edc6f377
+      version: -1
+      name: Rapid7 InsightIDR query - source geolocation
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRSrcGeolocationField} CONTAINS-ANY [${GeolocationsParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.sequence_number
+                iscontext: true
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3450,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 1031497a-8595-4693-8c47-161c4dbdabeb
+    type: regular
+    task:
+      id: 1031497a-8595-4693-8c47-161c4dbdabeb
+      version: -1
+      name: Rapid7 InsightIDR query - destination geolocation
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRSDstGeolocationField} CONTAINS-ANY [${GeolocationsParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.sequence_number
+                iscontext: true
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3850,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 465a495b-7f84-4205-89d6-734a49f0efbb
+    type: title
+    task:
+      id: 465a495b-7f84-4205-89d6-734a49f0efbb
+      version: -1
+      name: Geolocation Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4070,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 28752271-dfac-4b1e-8998-97b58a3f0549
+    type: regular
+    task:
+      id: 28752271-dfac-4b1e-8998-97b58a3f0549
+      version: -1
+      name: Rapid7 InsightIDR query - destination port
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRdstPortField} CONTAINS-ANY [${PortsParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6410,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 14394954-faf8-4aff-8040-2ace47a66c69
+    type: regular
+    task:
+      id: 14394954-faf8-4aff-8040-2ace47a66c69
+      version: -1
+      name: Rapid7 InsightIDR query - source port
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRsrcPortField} CONTAINS-ANY [${PortsParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6820,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 00699ce5-0e56-4d08-8714-8d0d46a70e31
+    type: title
+    task:
+      id: 00699ce5-0e56-4d08-8714-8d0d46a70e31
+      version: -1
+      name: Port Number Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7040,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
+    type: condition
+    task:
+      id: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
+      version: -1
+      name: Is Rapid7 InsightIDR enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "175"
+      "yes":
+      - "14"
+      - "52"
+      - "10"
+      - "40"
+      - "46"
+      - "62"
+    scriptarguments:
+      brandname:
+        simple: Rapid7 InsightIDR
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7870,
+          "y": -2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: b35d0f6e-de1d-4046-894a-544f10bf8bed
+    type: title
+    task:
+      id: b35d0f6e-de1d-4046-894a-544f10bf8bed
+      version: -1
+      name: CIDR Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3080,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 0caae704-a0b1-4a02-83ff-fe34a633ed1c
+    type: regular
+    task:
+      id: 0caae704-a0b1-4a02-83ff-fe34a633ed1c
+      version: -1
+      name: Rapid7 InsightIDR query - source IP
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRsrcIPField} IN [${CIDRParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2860,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 8928f512-1788-4eec-857d-e031a3c84726
+    type: condition
+    task:
+      id: 8928f512-1788-4eec-857d-e031a3c84726
+      version: -1
+      name: Any CIDRs to hunt for?
+      description: |
+        Checks whether any CIDRs are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "115"
+      "yes":
+      - "174"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CIDR
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3080,
+          "y": -1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: dfab912a-ea2a-41fb-8dec-00c65cd24b0d
+    type: condition
+    task:
+      id: dfab912a-ea2a-41fb-8dec-00c65cd24b0d
+      version: -1
+      name: Any geolocations to hunt for?
+      description: |
+        Checks whether any geolocations are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "116"
+      "yes":
+      - "173"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Geolocation
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4070,
+          "y": -1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: b8ebbe40-4a37-47aa-8f32-f7b58f037844
+    type: condition
+    task:
+      id: b8ebbe40-4a37-47aa-8f32-f7b58f037844
+      version: -1
+      name: Any email addresses to hunt for?
+      description: |
+        Checks whether any email addresses are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "117"
+      "yes":
+      - "172"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EmailAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5050,
+          "y": -1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: dd54c483-2097-4cd6-871e-5fd3d4149207
+    type: condition
+    task:
+      id: dd54c483-2097-4cd6-871e-5fd3d4149207
+      version: -1
+      name: Any IP addresses to hunt for?
+      description: |
+        Checks whether any IP addresses are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "118"
+      "yes":
+      - "171"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IPAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6040,
+          "y": -1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 1ecc6baa-fb9a-4259-88ae-ed4b3a358592
+    type: condition
+    task:
+      id: 1ecc6baa-fb9a-4259-88ae-ed4b3a358592
+      version: -1
+      name: Any ports to hunt for?
+      description: |
+        Checks whether any ports are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "119"
+      "yes":
+      - "170"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.PortNumber
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7040,
+          "y": -1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: db6c0677-a8bc-4a95-8e6b-61df3aaeff85
+    type: condition
+    task:
+      id: db6c0677-a8bc-4a95-8e6b-61df3aaeff85
+      version: -1
+      name: Any URL or domain to hunt for?
+      description: |
+        Checks whether any URLs or domains are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "120"
+      "yes":
+      - "169"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7640,
+          "y": -1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 8a8070d4-0e51-4d54-8ba7-6613d09f6ab2
+    type: regular
+    task:
+      id: 8a8070d4-0e51-4d54-8ba7-6613d09f6ab2
+      version: -1
+      name: Rapid7 InsightIDR query - destination IP
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRdstIPField} IN [${CIDRParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2460,
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 74c820db-b468-4977-8d45-acef6304585d
+    type: title
+    task:
+      id: 74c820db-b468-4977-8d45-acef6304585d
+      version: -1
+      name: CIDR Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3080,
+          "y": -1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: e7d82d8e-aaeb-43fc-8932-2881ea1dbad2
+    type: title
+    task:
+      id: e7d82d8e-aaeb-43fc-8932-2881ea1dbad2
+      version: -1
+      name: Geolocation Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4070,
+          "y": -1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: aed9d2fe-cb4f-4222-8f53-7fde81ef4c85
+    type: title
+    task:
+      id: aed9d2fe-cb4f-4222-8f53-7fde81ef4c85
+      version: -1
+      name: Email Address Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5050,
+          "y": -1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: f6d028d2-01e2-4a03-8f2b-0fae54cc761a
+    type: title
+    task:
+      id: f6d028d2-01e2-4a03-8f2b-0fae54cc761a
+      version: -1
+      name: IP Address Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6040,
+          "y": -1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 4afbf533-d6bd-47cd-8c34-10d36932caf9
+    type: title
+    task:
+      id: 4afbf533-d6bd-47cd-8c34-10d36932caf9
+      version: -1
+      name: Port Number Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7040,
+          "y": -1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 1b07c485-5482-4b28-82ea-b517e98c6566
+    type: title
+    task:
+      id: 1b07c485-5482-4b28-82ea-b517e98c6566
+      version: -1
+      name: URLDomain Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7640,
+          "y": -1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "169":
+    id: "169"
+    taskid: 4dd6cdba-fbbb-48c2-8cf5-4adcd84db001
+    type: regular
+    task:
+      id: 4dd6cdba-fbbb-48c2-8cf5-4adcd84db001
+      version: -1
+      name: Set URLDomain search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: URLDomainParsed
+      value:
+        complex:
+          root: inputs.URLDomain
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.URLDomain
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7420,
+          "y": -1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "170":
+    id: "170"
+    taskid: 378630ad-1473-43cb-80a0-97aa4c32a9d5
+    type: regular
+    task:
+      id: 378630ad-1473-43cb-80a0-97aa4c32a9d5
+      version: -1
+      name: Set port number search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+      - "47"
+    scriptarguments:
+      key:
+        simple: PortsParsed
+      value:
+        complex:
+          root: inputs.PortNumber
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.PortNumber
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6620,
+          "y": -1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "171":
+    id: "171"
+    taskid: 70ca2151-5f6f-4b32-8fc7-71a383bd495a
+    type: regular
+    task:
+      id: 70ca2151-5f6f-4b32-8fc7-71a383bd495a
+      version: -1
+      name: Set IP address search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "32"
+    scriptarguments:
+      key:
+        simple: IPAddressParsed
+      value:
+        complex:
+          root: inputs.IPAddress
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IPAddress
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5620,
+          "y": -1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: d247398e-7495-4dfe-8dfb-9d5919b17264
+    type: regular
+    task:
+      id: d247398e-7495-4dfe-8dfb-9d5919b17264
+      version: -1
+      name: Set email address search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "36"
+    scriptarguments:
+      key:
+        simple: EmailAddressParsed
+      value:
+        complex:
+          root: inputs.EmailAddress
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.EmailAddress
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4640,
+          "y": -1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "173":
+    id: "173"
+    taskid: 0b60898e-ead7-4ea3-882b-04d89a183f1f
+    type: regular
+    task:
+      id: 0b60898e-ead7-4ea3-882b-04d89a183f1f
+      version: -1
+      name: Set geolocations search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+      - "41"
+    scriptarguments:
+      key:
+        simple: GeolocationsParsed
+      value:
+        complex:
+          root: inputs.Geolocation
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Geolocation
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3650,
+          "y": -1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "174":
+    id: "174"
+    taskid: b43016d2-2a0b-4f6b-8b9a-18caa425773e
+    type: regular
+    task:
+      id: b43016d2-2a0b-4f6b-8b9a-18caa425773e
+      version: -1
+      name: Set CIDR search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+      - "107"
+    scriptarguments:
+      key:
+        simple: CIDRParsed
+      value:
+        complex:
+          root: inputs.CIDR
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.CIDR
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2660,
+          "y": -1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 426e4bed-833f-49fb-8f12-08453c5fc526
+    type: title
+    task:
+      id: 426e4bed-833f-49fb-8f12-08453c5fc526
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -7870,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 5938d4ea-25e8-474a-87eb-6771a8154239
+    type: regular
+    task:
+      id: 5938d4ea-25e8-474a-87eb-6771a8154239
+      version: -1
+      name: Save Queries Results
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "175"
+    scriptarguments:
+      extend-context:
+        simple: Rapid7InsightIDR.HuntingResults=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: Rapid7InsightIDR.Event
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Event
+                iscontext: true
+          accessor: message
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: \
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5520,
+          "y": -1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "106_120_#default#": 0.72,
+      "56_14_yes": 0.48,
+      "56_175_#default#": 0.79,
+      "56_40_yes": 0.83,
+      "56_46_yes": 0.88,
+      "56_52_yes": 0.64,
+      "56_62_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1335,
+        "width": 5790,
+        "x": -7870,
+        "y": -2210
+      }
+    }
+  }
+inputs:
+- key: IPAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to search for within Rapid7 InsightIDR logs. Used for both source and destination IP addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRdstIPField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination IPs.
+  playbookInputQuery:
+- key: InsightIDRsrcIPField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the source IPs.
+  playbookInputQuery:
+- key: PortNumber
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to search for within Rapid7 InsightIDR logs. Used for both source and destination ports.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRsrcPortField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the source ports.
+  playbookInputQuery:
+- key: InsightIDRdstPortField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination ports.
+  playbookInputQuery:
+- key: Geolocation
+  value: {}
+  required: false
+  description: |-
+    A single or multiple country names or codes to search for within Rapid7 InsightIDR logs. Used for both source and destination geolocations.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRsrcGeolocationField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the source geolocations.
+  playbookInputQuery:
+- key: InsightIDRSdstGeolocationField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination geolocations.
+  playbookInputQuery:
+- key: URLDomain
+  value: {}
+  required: false
+  description: |-
+    Single or multiple URLs and/or domains to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRURLDomainField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the URLs or domains.
+  playbookInputQuery:
+- key: EmailAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple email addresses to search for within Rapid7 InsightIDR logs. Used for both sender and recipient email addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRSenderField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the sender's email addresses.
+  playbookInputQuery:
+- key: InsightIDRRecipientField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the recipient's email addresses.
+  playbookInputQuery:
+- key: CIDR
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP ranges to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: LogSetId
+  value: {}
+  required: true
+  description: An identifier for a Rapid7 InsightIDR log set to query.
+  playbookInputQuery:
+- key: time_range
+  value: {}
+  required: false
+  description: |-
+    Specify the timeframe in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
+    The 'start_time' and 'end_time' inputs should not be used if the time_range input is specified.
+
+    Supported time units (case insensitive):
+    min(s) or minute(s)
+    hr(s) or hour(s)
+    day(s)
+    week(s)
+    month(s)
+    year(s)
+  playbookInputQuery:
+- key: logs_per_page
+  value: {}
+  required: false
+  description: Specify the maximum number of log entries to return per page, up to 500 (the maximum allowed). By default, 50 is set.
+  playbookInputQuery:
+- key: sequence_number
+  value: {}
+  required: false
+  description: |-
+    The earliest sequence number of a log entry to start searching.
+
+    If this query parameter is included, the query results will additionally include all log entries received in the 'start_time' millisecond which have sequence numbers larger than the one specified.
+
+    Sequence numbers are identifiers used to distinguish between log entries received in the same millisecond. If a log entry was split up into several log entries during ingestion, then those chunks are ordered by sequence number.
+  playbookInputQuery:
+- key: start_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query start time at which the Rapid7 InsightIDR logs will be searched, as a UNIX timestamp in milliseconds.
+
+    For example, if you wish to begin searching 1 week ago, the UNIX timestamp value is 604800.
+  playbookInputQuery:
+- key: end_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query end time at which the Rapid7 InsightIDR logs will be searched, as a UNIX timestamp in milliseconds.
+
+    For example, to end searching a day ago, the UNIX timestamp value would be 86400.
+  playbookInputQuery:
+outputs:
+- contextPath: Rapid7InsightIDR.HuntingResults
+  description: Events log objects containing relevant fields.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

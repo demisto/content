@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: CyberArkAIM v2
   version: -1
@@ -9,42 +9,33 @@ configuration:
   required: true
   type: 0
 - display: AppID as configured in AIM
-  hidden: false
   name: app_id
   required: false
   type: 0
 - display: Folder to search in safe
-  hidden: false
   name: folder
   required: true
   type: 0
 - display: Safe to search in
-  hidden: false
   name: safe
   required: true
   type: 0
 - display: A comma-separated list of credential names in the safe.
   additionalinfo: Partial names are not supported. If left empty, no credentials will be fetched.
-  hidden: false
   name: credential_names
   required: false
   type: 12
 - display: Username
-  hidden: false
   name: credentials
   required: false
   type: 9
-- additionalinfo: Add a certificate file in text format to use to connect to the CyberArk
-    AIM server.
+- additionalinfo: Add a certificate file in text format to use to connect to the CyberArk AIM server.
   display: Certificate File as Text
-  hidden: false
   name: cert_text
   required: false
   type: 12
-- additionalinfo: Add a key file in text format to use to connect to the CyberArk
-    AIM server.
+- additionalinfo: Add a key file in text format to use to connect to the CyberArk AIM server.
   display: Key File as Text
-  hidden: false
   name: key_text
   required: false
   type: 4
@@ -61,9 +52,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CyberArk Application Identity Manager (AIM) provides a secure safe
-  in which to store your account credentials. Use this integration to retrieve the
-  account credentials in CyberArk AIM.
+description: The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
 display: CyberArk AIM v2
 name: CyberArkAIM v2
 script:
@@ -88,7 +77,7 @@ script:
     - contextPath: CyberArkAIM.Name
       description: The credential name of the account.
       type: String
-  dockerimage: demisto/ntlm:1.0.0.24037
+  dockerimage: demisto/ntlm:1.0.0.48903
   feed: false
   isfetch: false
   longRunning: false

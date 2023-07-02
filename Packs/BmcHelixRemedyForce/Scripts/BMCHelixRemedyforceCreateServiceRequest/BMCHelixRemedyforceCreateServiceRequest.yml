@@ -6,36 +6,31 @@ args:
   required: false
   secret: false
 - default: false
-  description: The unique id of the client. It helps to select a client for a particular service request.
-    Get the client id from the email using the 'bmc-remedy-user-details-get' command.
+  description: The unique id of the client. It helps to select a client for a particular service request. Get the client id from the email using the 'bmc-remedy-user-details-get' command.
   isArray: false
   name: client_id
   required: false
   secret: false
 - default: false
-  description: Classifies the service request using standard classifications to track the reporting purposes.
-    Get the category name using the 'bmc-remedy-category-details-get' command.
+  description: Classifies the service request using standard classifications to track the reporting purposes. Get the category name using the 'bmc-remedy-category-details-get' command.
   isArray: false
   name: category
   required: false
   secret: false
 - default: false
-  description: The unique ID of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
-    Get the category ID using 'bmc-remedy-category-details-get' command.
+  description: The unique ID of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes. Get the category ID using 'bmc-remedy-category-details-get' command.
   isArray: false
   name: category_id
   required: false
   secret: false
 - default: false
-  description: Name of the queue owner. 
-    Get the queue name using the 'bmc-remedy-queue-details-get' command.
+  description: Name of the queue owner. Get the queue name using the 'bmc-remedy-queue-details-get' command.
   isArray: false
   name: queue
   required: false
   secret: false
 - default: false
-  description: The unique ID of the queue owner.
-    Get the queue ID using the 'bmc-remedy-queue-details-get' command.
+  description: The unique ID of the queue owner. Get the queue ID using the 'bmc-remedy-queue-details-get' command.
   isArray: false
   name: queue_id
   required: false
@@ -47,36 +42,31 @@ args:
   required: false
   secret: false
 - default: false
-  description: The unique ID of the staff to whom the user wants to assign the record.
-    Get the staff ID from the staff details using the 'bmc-remedy-user-details-get' command.
+  description: The unique ID of the staff to whom the user wants to assign the record. Get the staff ID from the staff details using the 'bmc-remedy-user-details-get' command.
   isArray: false
   name: staff_id
   required: false
   secret: false
 - default: false
-  description:  Displays the progress of the service request through its stages from opening to closure.
-    Get the status name using the 'bmc-remedy-status-details-get' command.
+  description: Displays the progress of the service request through its stages from opening to closure. Get the status name using the 'bmc-remedy-status-details-get' command.
   isArray: false
   name: status
   required: false
   secret: false
 - default: false
-  description: The unique ID of the status that is used to display the progress of the service request through its stages from opening to closure.
-    Get the status ID using the 'bmc-remedy-status-details-get' command.
+  description: The unique ID of the status that is used to display the progress of the service request through its stages from opening to closure. Get the status ID using the 'bmc-remedy-status-details-get' command.
   isArray: false
   name: status_id
   required: false
   secret: false
 - default: false
-  description: Determines the priority of the service request.
-    Get the urgency name using the 'bmc-remedy-urgency-details-get' command.
+  description: Determines the priority of the service request. Get the urgency name using the 'bmc-remedy-urgency-details-get' command.
   isArray: false
   name: urgency
   required: false
   secret: false
 - default: false
-  description: The unique ID of the urgency which is used to determine the priority of the service request.
-    Get the urgency ID from the urgency name using the 'bmc-remedy-urgency-details-get' command.
+  description: The unique ID of the urgency which is used to determine the priority of the service request. Get the urgency ID from the urgency name using the 'bmc-remedy-urgency-details-get' command.
   isArray: false
   name: urgency_id
   required: false
@@ -88,8 +78,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The unique ID of the Service Request Definition.
-    Get the Service Request Definition ID using the 'bmc-remedy-service-request-definition-get' command.
+  description: The unique ID of the Service Request Definition. Get the Service Request Definition ID using the 'bmc-remedy-service-request-definition-get' command.
   isArray: false
   name: service_request_definition_id
   required: false
@@ -102,15 +91,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: Determines the priority of the service request.
-    Get the impact name using the 'bmc-remedy-impact-details-get' command.
+  description: Determines the priority of the service request. Get the impact name using the 'bmc-remedy-impact-details-get' command.
   isArray: false
   name: impact
   required: false
   secret: false
 - default: false
-  description: The unique ID of the impact which is used to determine the priority of the service request.
-    Get the impact ID using the 'bmc-remedy-impact-details-get' command.
+  description: The unique ID of the impact which is used to determine the priority of the service request. Get the impact ID using the 'bmc-remedy-impact-details-get' command.
   isArray: false
   name: impact_id
   required: false
@@ -122,8 +109,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The account ID of the specific account. Get the account ID from the account name using the
-    'bmc-remedy-account-details-get' command.
+  description: The account ID of the specific account. Get the account ID from the account name using the 'bmc-remedy-account-details-get' command.
   isArray: false
   name: account_id
   required: false
@@ -132,7 +118,6 @@ comment: 'This script is used to simplify the process of creating a service requ
 commonfields:
   id: BMCHelixRemedyforceCreateServiceRequest
   version: -1
-enabled: false
 name: BMCHelixRemedyforceCreateServiceRequest
 outputs:
 - contextPath: BmcRemedyforce.ServiceRequest.Number
@@ -163,6 +148,6 @@ dependson:
   - '|||bmc-remedy-account-details-get'
   - '|||bmc-remedy-service-request-create'
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.10.48392
 tests:
 - No tests (auto formatted)

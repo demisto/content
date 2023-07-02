@@ -790,3 +790,65 @@ INTERNET_EXPOSURE_POST_FORMAT = [
         "agent_id": null
     }
 ]
+
+REMEDIATION_RULES_RESULTS = [
+    {
+        "action": "Email",
+        "attack_surface_rule_id": "RdpServer",
+        "created_at": 1672897301000,
+        "created_by": "test@test.com",
+        "created_by_pretty": "Test User",
+        "criteria": [
+            {
+                "field": "severity",
+                "operator": "eq",
+                "value": "high"
+            },
+            {
+                "field": "isCloudManaged",
+                "operator": "eq",
+                "value": "true"
+            }
+        ],
+        "criteria_conjunction": "AND",
+        "description": "for testing",
+        "rule_id": "b935cf69-add9-4e75-8c3d-fe32ee471554",
+        "rule_name": "TestRule"
+    }
+]
+
+RCS_START_SCAN_SUCCESSFUL_RESULTS_201 = {
+    "scanId": "12345abc-123a-1234-a123-efgh12345678",
+    "scan_creation_status": "created"
+}
+
+RCS_START_SCAN_SUCCESSFUL_RESULTS_200 = {
+    "scanId": "12345abc-123a-1234-a123-efgh12345678",
+    "scan_creation_status": "existing"
+}
+
+RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESULTS_200 = {
+    "status": "SUCCESS",
+    "result": "REMEDIATED"
+}
+
+RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESULTS_200 = {
+    "status": "SUCCESS",
+    "result": "UNREMEDIATED"
+}
+
+RCS_GET_SCAN_STATUS_IN_PROGRESS_RESULTS_200 = {
+    "status": "IN_PROGRESS",
+}
+
+RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200 = {
+    "status": "FAILED_ERROR",
+}
+
+RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200 = {
+    "status": "FAILED_TIMEOUT",
+}
+
+RCS_GET_SCAN_STATUS_OTHER_RESULTS_200 = {
+    "status": "OTHER",
+}

@@ -10,6 +10,44 @@ TAEGIS_ALERT = {
     "url": f"{TAEGIS_URL}/alerts/alert:%2F%2Fpriv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6",
 }
 
+TAEGIS_ASSET = {
+    "architecture": "ARCH_AMD64",
+    "biosSerial": "\\x12345",
+    "createdAt": "2022-04-14T20:01:02.123456Z",
+    "deletedAt": None,
+    "endpointPlatform": "",
+    "endpointType": "ENDPOINT_REDCLOAK",
+    "firstDiskSerial": "\\x98765",
+    "hostId": "110d1fd3a23c95c0120d0d10451cb001",
+    "hostnames": [
+        {
+            "hostname": "WIN-DESKTOP",
+            "id": "1236c34a-18ab-32c0-a584-8e5a32e617b8"
+        }
+    ],
+    "id": "123abc12-1111-22b2-3333-44446632c8fd",
+    "ingestTime": "2023-01-15T08:01:35Z",
+    "kernelRelease": "",
+    "kernelVersion": "",
+    "osCodename": "",
+    "osDistributor": "Microsoft",
+    "osFamily": "WINDOWS",
+    "osRelease": "0.0",
+    "osVersion": "VERSION_SERVER_2012_R2",
+    "sensorId": "110d1fd3a23c95c0120d0d10451cb001",
+    "sensorVersion": "2.8.5.0",
+    "systemType": "NT_SERVER",
+    "systemVolumeSerial": "\\x33363336323333333036",
+    "tags": [
+        {
+            "__typename": "Tag",
+            "key": "",
+            "tag": "SERVER:TestMachine"
+        }
+    ],
+    "updatedAt": "2022-05-23T01:20:16.295598Z"
+}
+
 TAEGIS_COMMENT = {
     "author_user": {
         "email_normalized": "myuser@email.com",
@@ -24,6 +62,16 @@ TAEGIS_COMMENT = {
     "modified_at": None,
     "parent_id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
     "parent_type": "investigation",
+}
+
+TAEGIS_ENDPOINT = {
+    "hostId": "110d1fd3a23c95c0120d0d10451cb001",
+    "hostname": "WIN-DESKTOP",
+    "actualIsolationStatus": "",
+    "desiredIsolationStatus": "",
+    "firstConnectTime": "",
+    "lastConnectTime": "",
+    "sensorVersion": "2.8.5.0",
 }
 
 TAEGIS_ENVIRONMENT = "us1"
@@ -75,6 +123,14 @@ TAEGIS_PLAYBOOK_EXECUTION_ID = "UGxheWJvb2tFeGVjdXRpb246M2NiM2FmYWItYTZiNy00ZWNm
 
 TAEGIS_PLAYBOOK_INSTANCE_ID = "UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg="
 
+TAEGIS_USER = {
+    "email": "testuser@email.com",
+    "given_name": "John",
+    "family_name": "Smith",
+    "user_id": "auth0|123456",
+    "status": "Registered",
+}
+
 EXECUTE_PLAYBOOK_RESPONSE = {
     "data": {
         "executePlaybookInstance": {
@@ -96,6 +152,8 @@ EXECUTE_PLAYBOOK_BAD_RESPONSE = {
     ]
 }
 
+
+
 FETCH_ALERTS_RESPONSE = {
     "data": {
         "alertsServiceSearch": {
@@ -116,6 +174,27 @@ FETCH_ALERTS_BY_ID_RESPONSE = {
             "total_results": 1,
         }
     }
+}
+
+FETCH_ASSETS_RESPONSE = {
+    "data": {
+        "searchAssetsV2": {
+            "assets": [TAEGIS_ASSET]
+        }
+    }
+}
+
+FETCH_ASSETS_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "Cannot query requested field",
+            "path": [
+                "input",
+                "unknown_id"
+            ]
+        }
+    ]
 }
 
 CREATE_COMMENT_RESPONSE = {
@@ -168,6 +247,22 @@ UPDATE_COMMENT_RESPONSE = {
             "id": TAEGIS_COMMENT["id"],
         }
     }
+}
+
+FETCH_ENDPOINT_RESPONSE = {
+    "data": {
+        "assetEndpointInfo": TAEGIS_ENDPOINT
+    }
+}
+
+FETCH_ENDPOINT_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "failed to fetch endpoint",
+            "path": []
+        }
+    ]
 }
 
 FETCH_INCIDENTS_RESPONSE = {
@@ -236,4 +331,103 @@ UPDATE_INVESTIGATION_RESPONSE = {
             "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
         }
     }
+}
+
+FETCH_USER_RESPONSE = {
+    "data": {
+        "tdrusersByIDs": [TAEGIS_USER],
+    }
+}
+
+FETCH_USERS_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "invalid format",
+            "path": [
+                "variables",
+                "id"
+            ]
+        }
+    ]
+}
+
+FETCH_USERS_RESPONSE = {
+    "data": {
+        "tdrUsersSearch": {
+            "results": [TAEGIS_USER],
+        }
+    }
+}
+
+INVESTIGATION_ARCHIVE_RESPONSE = {
+    "data": {
+        "archiveInvestigation": {
+            "id": TAEGIS_INVESTIGATION["id"],
+        }
+    }
+}
+
+INVESTIGATION_ARCHIVE_ALREADY_COMPLETE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "sql: no rows in result set"
+        }
+    ]
+}
+
+INVESTIGATION_NOT_ARCHIVED_RESPONSE = {
+    'data': None, 'errors': [{'Offset': 182}]
+}
+
+INVESTIGATION_UNARCHIVE_RESPONSE = {
+    "data": {
+        "unArchiveInvestigation": {
+            "id": TAEGIS_INVESTIGATION["id"],
+        }
+    }
+}
+
+ISOLATE_ASSET_RESPONSE = {
+    "data": {
+        "isolateAsset": {
+            "id": TAEGIS_ASSET["id"],
+        }
+    }
+}
+
+ISOLATE_ASSET_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "invalid format",
+            "path": [
+                "variables",
+                "id"
+            ]
+        }
+    ]
+}
+
+UPDATE_ALERT_STATUS_RESPONSE = {
+    "data": {
+        "alertsServiceUpdateResolutionInfo": {
+            "reason": "feedback updates successfully applied",
+            "resolution_status": "SUCCESS"
+        }
+    }
+}
+
+UPDATE_ALERT_STATUS_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "invalid format",
+            "path": [
+                "variables",
+                "id"
+            ]
+        }
+    ]
 }

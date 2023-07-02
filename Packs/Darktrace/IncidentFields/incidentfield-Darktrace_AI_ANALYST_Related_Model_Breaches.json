@@ -1,0 +1,86 @@
+{
+    "id": "incident_darktraceaianalystrelatedmodelbreaches",
+    "version": -1,
+    "modified": "2023-01-30T11:30:13.783879589Z",
+    "name": "Darktrace AI Analyst Related Model Breaches",
+    "ownerOnly": false,
+    "cliName": "darktraceaianalystrelatedmodelbreaches",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Darktrace AI Analyst Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "modelname",
+            "displayName": "modelName",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 108,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "pbid",
+            "displayName": "pbid",
+            "type": "number",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "threatscore",
+            "displayName": "threatScore",
+            "type": "number",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "timestamp",
+            "displayName": "timestamp",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.6.0"
+}

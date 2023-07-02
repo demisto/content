@@ -2,7 +2,8 @@
 ignore=PA113
 
 [file:SCADAfenceCNM.yml]
-ignore=IN126,IN145
+ignore=IN126,IN145,BA124
 
 [file:README.md]
 ignore=RM104
+

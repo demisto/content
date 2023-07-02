@@ -1,5 +1,5 @@
 {
-  "proofpoint_trap_raw": {
+  "proofpoint_threat_response_raw": {
     "id": {
       "type": "string",
       "is_array": false

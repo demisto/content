@@ -1,0 +1,102 @@
+[MODEL: dataset="clearswift_dlp_raw"]
+alter
+    log_type1 = if(_raw_log ~= "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+", "Policy Enforcement", null),
+    log_type2 = if(_raw_log ~= "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+.*\.\sReason:\s\[[^\]]+\]", "User Authentication", null),
+    log_type3 = if(_raw_log ~= "^[^\<\>\s]+\s[^\s]+\s[^\sE]+\s[^\s]+\s[^\s]+\s[^\s]+", "User Interface Service Access", null)
+| alter
+    find_type = coalesce(log_type1, log_type2, log_type3)
+| filter find_type = "Policy Enforcement"
+| alter
+    get_observer_name = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s([^\s]+)\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    get_category = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    get_email_sender = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    get_email_recipients = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    get_event_id = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    get_email_subject = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+"), ""),
+    get_outcome_reason = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+"), ""),
+    get_policy_rule = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+"), ""),
+    get_description = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)"), "")   
+| alter
+    clean_category = replex(get_category, "\[|\]", ""),
+    clean_email_recipients = arraymap(split(get_email_recipients, ","), trim("@element")),
+    get_action = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^-]+\-\s([^\|]+)\|"), "")
+| alter
+    xdm.event.type = find_type,
+    xdm.observer.name = get_observer_name,
+    xdm.alert.subcategory = clean_category,
+    xdm.email.sender = get_email_sender,
+    xdm.source.user.username = get_email_sender,
+    xdm.email.recipients = clean_email_recipients,
+    xdm.alert.original_alert_id = get_event_id,
+    xdm.email.subject = get_email_subject,
+    xdm.event.outcome_reason = get_outcome_reason,
+    xdm.network.rule = get_policy_rule,
+    xdm.alert.description = get_description,
+    xdm.observer.action = get_action;
+
+
+alter
+    log_type1 = if(_raw_log ~= "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+", "Policy Enforcement", null),
+    log_type2 = if(_raw_log ~= "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+.*\.\sReason:\s\[[^\]]+\]", "User Authentication", null),
+    log_type3 = if(_raw_log ~= "^[^\<\>\s]+\s[^\s]+\s[^\sE]+\s[^\s]+\s[^\s]+\s[^\s]+", "User Interface Service Access", null)
+| alter
+    find_type = coalesce(log_type1, log_type2, log_type3)    
+| filter find_type = "User Interface Service Access"
+| alter
+    get_session_id = arraystring(regextract(_raw_log, "^[^\<\>\s]+\s[^\s]+\s[^\sE]+\s([^\s]+)\s[^\s]+\s[^\s]+"), ""),
+    get_ip = arraystring(regextract(_raw_log, "^[^\<\>\s]+\s[^\s]+\s[^\sE]+\s[^\s]+\s[^\s]+\s([^\s]+)"), ""),    
+    get_email_sender = arraystring(regextract(_raw_log, "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)\s[^\]]+\]"), ""),
+    get_session_role = arraystring(regextract(_raw_log, "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\]]+)\]"), ""),
+    get_path = arraystring(regextract(_raw_log, "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\]]+\]\s([^\s]+)"), "")
+| alter
+    clean_session_id = replex(get_session_id, "\[|\]|\-$", ""),
+    clean_ip = replex(get_ip, "\[|\]", ""),
+    clean_email_sender = replex(get_email_sender, "\[|\]", ""),
+    clean_session_role = replex(get_session_role, "\[|\]", ""),
+    clean_path = replex(get_path, "\[|\]", "")
+| alter
+    src_ip_v4 = if(clean_ip !~= ":", clean_ip, null),
+    src_ip_v6 = if(clean_ip ~= ":", clean_ip, null),
+    lowercase_privilege = lowercase(clean_session_role)
+| alter
+    xdm.event.type = find_type,
+    xdm.network.session_id = clean_session_id,
+    xdm.session_context_id = clean_session_id,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.email.sender = clean_email_sender,
+    xdm.source.user.username = clean_email_sender,
+    xdm.auth.privilege_level = if(lowercase_privilege ~= "analyst", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase_privilege ~= "admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, lowercase_privilege ~= "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, lowercase_privilege ~= "system", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, lowercase_privilege ~= "user", XDM_CONST.PRIVILEGE_LEVEL_USER, null),
+    xdm.network.http.url_category = if(lowercase_privilege ~= "analyst|admin|guest|user|system", clean_session_role, null),
+    xdm.target.url = clean_path;
+
+
+alter
+    log_type1 = if(_raw_log ~= "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+", "Policy Enforcement", null),
+    log_type2 = if(_raw_log ~= "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+.*\.\sReason:\s\[[^\]]+\]", "User Authentication", null),
+    log_type3 = if(_raw_log ~= "^[^\<\>\s]+\s[^\s]+\s[^\sE]+\s[^\s]+\s[^\s]+\s[^\s]+", "User Interface Service Access", null)
+| alter
+    find_type = coalesce(log_type1, log_type2, log_type3)
+| filter find_type = "User Authentication"
+| alter
+    get_event_subtype = arraystring(regextract(_raw_log, "^[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)\-.*\.\sReason:\s\[[^\]]+\]"), ""),
+    get_log_level = arraystring(regextract(_raw_log, "^[^\s]+\s[^\s]+\s([^\s]+)\s[^\s]+\-.*\.\sReason:\s\[[^\]]+\]"), ""),
+    get_description = arraystring(regextract(_raw_log, "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\-(.*)\.\sReason:\s\[[^\]]+\]"), "")
+| alter
+    clean_event_subtype = replex(get_event_subtype, "\[|\]", ""),
+    lowercase_log_level = lowercase(get_log_level),
+    get_ip_protocol = arraystring(regextract(_raw_log, "\'([^:]+)\:\/\/[^:]+\:\d+"), ""),
+    get_domain = arraystring(regextract(_raw_log, "\'[^:]+\:\/\/([^:]+)\:\d+"), ""),
+    get_port = arraystring(regextract(_raw_log, "\'[^:]+\:\/\/[^:]+\:(\d+)"), ""),
+    get_outcome_reason = arraystring(regextract(_raw_log, "^[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\-.*\.\sReason:\s\[([^\]]+)\]"), "")
+| alter
+    proto = uppercase(get_ip_protocol)
+| alter
+    xdm.event.type = find_type,
+    xdm.event.operation_sub_type = clean_event_subtype,
+    xdm.event.log_level = if(lowercase_log_level ~= "alert", XDM_CONST.LOG_LEVEL_ALERT, lowercase_log_level ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, lowercase_log_level ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, lowercase_log_level ~= "emergency", XDM_CONST.LOG_LEVEL_EMERGENCY, lowercase_log_level ~= "error", XDM_CONST.LOG_LEVEL_ERROR, lowercase_log_level ~= "informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, lowercase_log_level ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, lowercase_log_level ~= "warning", XDM_CONST.LOG_LEVEL_WARNING, lowercase_log_level = null, null, to_string(lowercase_log_level)),
+    xdm.event.description = get_description,
+    xdm.network.ip_protocol = if(proto="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, proto="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, proto="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, proto="GGP",XDM_CONST.IP_PROTOCOL_GGP, proto="IP",XDM_CONST.IP_PROTOCOL_IP, proto="ST",XDM_CONST.IP_PROTOCOL_ST, proto="TCP",XDM_CONST.IP_PROTOCOL_TCP, proto="CBT",XDM_CONST.IP_PROTOCOL_CBT, proto="EGP",XDM_CONST.IP_PROTOCOL_EGP, proto="IGP",XDM_CONST.IP_PROTOCOL_IGP, proto="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, proto="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, proto="PUP",XDM_CONST.IP_PROTOCOL_PUP, proto="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, proto="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, proto="XNET",XDM_CONST.IP_PROTOCOL_XNET, proto="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, proto="UDP",XDM_CONST.IP_PROTOCOL_UDP, proto="MUX",XDM_CONST.IP_PROTOCOL_MUX, proto="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, proto="HMP",XDM_CONST.IP_PROTOCOL_HMP, proto="PRM",XDM_CONST.IP_PROTOCOL_PRM, proto="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, proto="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, proto="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, proto="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, proto="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, proto="RDP",XDM_CONST.IP_PROTOCOL_RDP, proto="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, proto="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, proto="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, proto="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, proto="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, proto="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, proto="3PC",XDM_CONST.IP_PROTOCOL_3PC, proto="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, proto="XTP",XDM_CONST.IP_PROTOCOL_XTP, proto="DDP",XDM_CONST.IP_PROTOCOL_DDP, proto="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, proto="TP",XDM_CONST.IP_PROTOCOL_TP, proto="IL",XDM_CONST.IP_PROTOCOL_IL, proto="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, proto="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, proto="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, proto="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, proto="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, proto="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, proto="GRE",XDM_CONST.IP_PROTOCOL_GRE, proto="DSR",XDM_CONST.IP_PROTOCOL_DSR, proto="BNA",XDM_CONST.IP_PROTOCOL_BNA, proto="ESP",XDM_CONST.IP_PROTOCOL_ESP, proto="AH",XDM_CONST.IP_PROTOCOL_AH, proto="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, proto="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, proto="NARP",XDM_CONST.IP_PROTOCOL_NARP, proto="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, proto="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, proto="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, proto="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, proto="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, proto="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, proto="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, proto="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, proto="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, proto="RVD",XDM_CONST.IP_PROTOCOL_RVD, proto="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, proto="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, proto="VISA",XDM_CONST.IP_PROTOCOL_VISA, proto="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, proto="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, proto="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, proto="WSN",XDM_CONST.IP_PROTOCOL_WSN, proto="PVP",XDM_CONST.IP_PROTOCOL_PVP, proto="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, proto="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, proto="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, proto="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, proto="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, proto="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, proto="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, proto="VINES",XDM_CONST.IP_PROTOCOL_VINES, proto="TTP",XDM_CONST.IP_PROTOCOL_TTP, proto="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, proto="DGP",XDM_CONST.IP_PROTOCOL_DGP, proto="TCF",XDM_CONST.IP_PROTOCOL_TCF, proto="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, proto="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, proto="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, proto="LARP",XDM_CONST.IP_PROTOCOL_LARP, proto="MTP",XDM_CONST.IP_PROTOCOL_MTP, proto="AX25",XDM_CONST.IP_PROTOCOL_AX25, proto="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, proto="MICP",XDM_CONST.IP_PROTOCOL_MICP, proto="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, proto="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, proto="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, proto="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, proto="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, proto="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, proto="PIM",XDM_CONST.IP_PROTOCOL_PIM, proto="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, proto="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, proto="QNX",XDM_CONST.IP_PROTOCOL_QNX, proto="AN",XDM_CONST.IP_PROTOCOL_AN, proto="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, proto="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, proto="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, proto="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, proto="PGM",XDM_CONST.IP_PROTOCOL_PGM, proto="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, proto="DDX",XDM_CONST.IP_PROTOCOL_DDX, proto="IATP",XDM_CONST.IP_PROTOCOL_IATP, proto="STP",XDM_CONST.IP_PROTOCOL_STP, proto="SRP",XDM_CONST.IP_PROTOCOL_SRP, proto="UTI",XDM_CONST.IP_PROTOCOL_UTI, proto="SMP",XDM_CONST.IP_PROTOCOL_SMP, proto="SM",XDM_CONST.IP_PROTOCOL_SM, proto="PTP",XDM_CONST.IP_PROTOCOL_PTP, proto="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, proto="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, proto="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, proto="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, proto="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, proto="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, proto="SPS",XDM_CONST.IP_PROTOCOL_SPS, proto="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, proto="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, proto="FC",XDM_CONST.IP_PROTOCOL_FC, proto="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, proto="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, proto="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, proto="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP, proto = null, null, to_string(proto)),
+    xdm.target.domain = get_domain, 
+    xdm.target.port = to_integer(get_port),
+    xdm.event.outcome_reason = get_outcome_reason;

@@ -1,0 +1,33 @@
+alert_category: EXECUTION
+alert_description: This alert will trigger in an event where Malware was detected by Microsoft Defender for Endpoints.
+alert_fields:
+  actor_process_image_name:
+  actor_process_image_path: xdm.target.file.path
+  actor_process_command_line: xdm.target.process.command_line
+  agent_device_domain: xdm.source.user.domain
+  actor_process_image_sha256: xdm.target.file.sha256
+  agent_hostname: xdm.target.host.fqdn
+  action_local_ip: xdm.target.ipv4
+  action_remote_ip:
+  action_remote_port:
+  actor_effective_username: xdm.source.user.username
+alert_name: Malware detected by Microsoft Defender for Endpoints
+crontab: '*/10 * * * *'
+dataset: alerts
+description: This alert will trigger in an event where Malware was detected by Microsoft Defender for Endpoints.
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: 6af7a4d0-498c-4d89-804c-655dd14c37ab
+investigation_query_link:
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: Microsoft Defender for Endpoint - Malware Detected
+search_window: 10 minutes
+severity: SEV_040_HIGH
+suppression_duration:
+suppression_enabled: false
+suppression_fields:
+user_defined_category:
+user_defined_severity:
+xql_query: "datamodel\r\n|filter xdm.observer.vendor=\"Microsoft 365\" and  xdm.observer.product=\"Defender\"\r\n|filter (xdm.alert.category = \"Malware\") and xdm.target.file.sha256 != null\r\n|fields \r\n    xdm.event.id,\r\n    xdm.alert.original_alert_id,\r\n    xdm.alert.severity,\r\n    xdm.alert.subcategory,\r\n    xdm.alert.name,\r\n    xdm.alert.description,\r\n    xdm.target.host.device_id,\r\n    xdm.target.host.fqdn,\r\n    xdm.alert.mitre_techniques,\r\n    xdm.target.file.sha256,\r\n    xdm.target.file.filename,\r\n    xdm.target.file.path,\r\n    xdm.target.process.pid,\r\n    xdm.target.process.command_line,\r\n    xdm.target.process.parent_id,\r\n    xdm.target.host.ipv4_addresses,\r\n    xdm.target.registry.key,\r\n    xdm.target.registry.value_type,\r\n    xdm.target.registry.value,\r\n    xdm.source.user.username,\r\n    xdm.source.user.domain,\r\n    xdm.source.user.identifier,\r\n    xdm.target.ipv4,\r\n    xdm.event.outcome"
+fromversion: 6.10.0

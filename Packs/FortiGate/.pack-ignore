@@ -1,0 +1,9 @@
+[file:FortiGate.yml]
+ignore=BA124,PR101,MR108
+
+[known_words]
+ccsrftoken
+
+[file:FortiGate_1_3.yml]
+ignore=MR108
+

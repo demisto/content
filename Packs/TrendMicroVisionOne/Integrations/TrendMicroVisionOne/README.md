@@ -383,11 +383,14 @@ Retrieves the status of a sandbox analysis submission
 | VisionOne.File_Analysis_Status.digest                   | string   | The hash values of file analyzed                                        |
 | VisionOne.File_Analysis_Status.analysis_completion_time | string   | Sample analysis completed time.                                         |
 | VisionOne.File_Analysis_Status.risk_level               | string   | Risk Level of the analyzed file.                                        |
-| VisionOne.File_Analysis_Status.descritption              | string   | Scan result description for NotAnalyzed.                                |
+| VisionOne.File_Analysis_Status.descritption             | string   | Scan result description for NotAnalyzed.                                |
 | VisionOne.File_Analysis_Status.detection_name_list      | unknown  | Detection name of this sample, if applicable.                           |
 | VisionOne.File_Analysis_Status.threat_type_list         | unknown  | Threat type of this sample.                                             |
 | VisionOne.File_Analysis_Status.file_type                | string   | File type of this sample.                                               |
 | VisionOne.File_Analysis_Status.report_id                | string   | ID used to get the report and suspicious object. Empty means no report. |
+| VisionOne.File_Analysis_Status.DBotScore.score          | number   | The DBot score.                                                         |
+| VisionOne.File_Analysis_Status.DBotScore.Vendor         | string   | The Vendor name.                                                        |
+| VisionOne.File_Analysis_Status.DBotScore.Reliability    | string   | The reliability level.                                                  |
 
 ### trendmicro-visionone-get-file-analysis-report
 
@@ -561,6 +564,9 @@ Runs a polling command to retrieve the status of a sandbox analysis submission
 | VisionOne.Sandbox_Submission_Polling.threat_type_list         | unknown  | Threat type of this sample.                                             |
 | VisionOne.Sandbox_Submission_Polling.file_type                | string   | File type of this sample.                                               |
 | VisionOne.Sandbox_Submission_Polling.report_id                | string   | ID used to get the report and suspicious object. Empty means no report. |
+| VisionOne.Sandbox_Submission_Polling.DBotScore.score          | number   | The DBot score.                                                         |
+| VisionOne.Sandbox_Submission_Polling.DBotScore.Vendor         | string   | The Vendor name.                                                        |
+| VisionOne.Sandbox_Submission_Polling.DBotScore.Reliability    | string   | The reliability level.                                                  |
 
 ### trendmicro-visionone-check-task-status
 

@@ -1,0 +1,9 @@
+[MODEL: dataset=harry_rule_raw]
+filter SOME_FIELD in ("F6", "F7", "F8", "F9", "F10")
+| alter xdm.session_context_id = SOME_SESSION_ID,
+xdm.source.user.username = SOME_USERNAME,
+xdm.source.host.hostname = SOME_HOSTNAME,
+xdm.logon.type = SOME_LOGON_TYPE,
+xdm.source.application.name = SOME_APPLICATION_NAME,
+_time = parse_timestamp("%d/%b/%Y:%k:%M:%S", TIMESTAMP),
+xdm.event.outcome_reason = SOME_FIELD;

@@ -24,7 +24,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PAN-OS - Block Destination Service on Panorama
 * Expanse Enrich Cloud Assets
 * Extract and Enrich Expanse Indicators
-* Prisma Cloud Correlate Alerts
+* Prisma Cloud Correlate Alerts v2
 * PAN-OS - Block Destination Service on Firewall
 * Expanse Load-Create List
 * Expanse Attribution

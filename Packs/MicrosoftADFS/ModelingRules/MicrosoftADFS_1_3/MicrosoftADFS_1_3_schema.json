@@ -5,7 +5,7 @@
         "is_array": false
     },
     "event_id": {
-        "type": "int",
+        "type": "string",
         "is_array": false
     },
     "record_id": {
@@ -21,6 +21,14 @@
         "is_array": false
     },
     "event_result": {
+        "type": "string",
+        "is_array": false
+    },
+    "user": {
+        "type": "string",
+        "is_array": false
+    },
+    "provider_name": {
         "type": "string",
         "is_array": false
     }

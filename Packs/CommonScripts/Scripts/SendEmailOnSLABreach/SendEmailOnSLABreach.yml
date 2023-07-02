@@ -18,4 +18,7 @@ runas: DBotWeakRole
 tests:
 - No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted.
 fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
 dockerimage: demisto/python3:3.10.7.33922

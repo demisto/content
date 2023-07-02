@@ -29,7 +29,7 @@ def test_json_feed_no_config():
 CONFIG_PARAMETERS = [
     (
         {
-            'AMAZON': {
+            'AMAZON$$CIDR': {
                 'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
                 'extractor': "prefixes[?service=='AMAZON']",
                 'indicator': 'ip_prefix',
@@ -42,11 +42,18 @@ CONFIG_PARAMETERS = [
     ),
     (
         {
-            'AMAZON': {
+            'AMAZON$$CIDR': {
                 'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
                 'extractor': "prefixes[?service=='AMAZON']",
                 'indicator': 'ip_prefix',
                 'indicator_type': FeedIndicatorType.CIDR,
+                'fields': ['region', 'service']
+            },
+            'AMAZON$$IPV6': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "ipv6_prefixes[?service=='AMAZON']",
+                'indicator': 'ipv6_prefix',
+                'indicator_type': FeedIndicatorType.IPv6,
                 'fields': ['region', 'service']
             },
             'CLOUDFRONT': {
@@ -57,7 +64,7 @@ CONFIG_PARAMETERS = [
                 'fields': ['region', 'service']
             }
         },
-        1148,
+        1465,
         36
     )
 ]
@@ -89,7 +96,7 @@ def test_json_feed_with_config_mapping():
         ip_ranges = json.load(ip_ranges_json)
 
     feed_name_to_config = {
-        'AMAZON': {
+        'AMAZON$$CIDR': {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
             'extractor': "prefixes[?service=='AMAZON']",
             'indicator': 'ip_prefix',
@@ -316,3 +323,145 @@ def test_get_no_update_value_without_headers(mocker):
 
 def test_version_6_2_0(mocker):
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+
+
+def test_fetch_indicators_command_google_ip_ranges(mocker):
+    """
+    Given
+    - indicators response from google ip feed
+
+    When
+    - Running fetch indicators command
+
+    Then
+    - Ensure that all indicators values exist and are not 'None'
+    """
+    from JSONFeedApiModule import fetch_indicators_command
+    client = Client(
+        url='',
+        headers={},
+        feed_name_to_config={
+            'CIDR': {
+                'url': 'https://www.test.com/ipranges/goog.json',
+                'extractor': 'prefixes[]', 'indicator': 'ipv4Prefix', 'indicator_type': 'CIDR'
+            }
+        }
+    )
+
+    mocker.patch.object(
+        client, 'build_iterator', return_value=(
+            [{'ipv4Prefix': '1.1.1.1'}, {'ipv4Prefix': '1.2.3.4'}, {'ipv6Prefix': '1111:1111::/28'}], True
+        ),
+    )
+
+    indicators, _ = fetch_indicators_command(client, indicator_type=None, feedTags=[], auto_detect=None, limit=100)
+    for indicator in indicators:
+        assert indicator.get('value')
+
+
+def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
+    """
+    Given
+    - Feed config from AWS feed, with last_run from the same feed, emulating the first
+      fetch after updating the AWS Feed integration when there is no update to the feed.
+      (the last_run object contains an 'AMAZON' entry)
+
+    When
+    - Running fetch indicators command
+
+    Then
+    - Ensure that the correct message displays in demisto.debug, and the last_run object
+     remained the same, and continue to have the previous AWS feed config name 'AMAZON'.
+     (the last_run object contains an 'AMAZON' entry)
+    """
+    with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
+        ip_ranges = json.load(ip_ranges_json)
+
+    mocker.patch.object(demisto, 'debug')
+    last_run = mocker.patch.object(demisto, 'setLastRun')
+
+    feed_name_to_config = {
+        'AMAZON$$CIDR': {
+            'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+            'extractor': "prefixes[?service=='AMAZON']",
+            'indicator': 'ip_prefix',
+            'indicator_type': FeedIndicatorType.CIDR,
+            'fields': ['region', 'service'],
+            'mapping': {
+                'region': 'Region'
+            }
+        }
+    }
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('JSONFeedApiModule.is_demisto_version_ge', return_value=True)
+    mock_last_run = {"AMAZON": {"last_modified": '2019-12-17-23-03-10', "etag": "etag"}}
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges, status_code=304,)
+
+        client = Client(
+            url='https://ip-ranges.amazonaws.com/ip-ranges.json',
+            credentials={'username': 'test', 'password': 'test'},
+            feed_name_to_config=feed_name_to_config,
+            insecure=True
+        )
+
+        fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'], auto_detect=False)
+        assert demisto.debug.call_args[0][0] == 'No new indicators fetched, createIndicators will be executed with noUpdate=True.'
+        assert last_run.call_count == 0
+
+
+def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
+    """
+    Given
+    - Feed config from AWS feed, with last_run from the same feed, emulating the first
+      fetch after updating the AWS Feed, when there is an update to the indicators
+      (the last_run object contains an 'AMAZON' entry)
+
+    When
+    - Running fetch indicators command
+
+    Then
+    - Ensure that the correct message displays in demisto.debug, and the last_run object
+      contains the new feed config name 'AMAZON$$CIDR'
+    """
+    with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
+        ip_ranges = json.load(ip_ranges_json)
+
+    mocker.patch.object(demisto, 'debug')
+    last_run = mocker.patch.object(demisto, 'setLastRun')
+
+    feed_name_to_config = {
+        'AMAZON$$CIDR': {
+            'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+            'extractor': "prefixes[?service=='AMAZON']",
+            'indicator': 'ip_prefix',
+            'indicator_type': FeedIndicatorType.CIDR,
+            'fields': ['region', 'service'],
+            'mapping': {
+                'region': 'Region'
+            }
+        }
+    }
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('JSONFeedApiModule.is_demisto_version_ge', return_value=True)
+    mock_last_run = {"AMAZON": {"last_modified": '2019-12-17-23-03-10', "etag": "etag"}}
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges, status_code=200,
+              headers={'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                       'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line)
+
+        client = Client(
+            url='https://ip-ranges.amazonaws.com/ip-ranges.json',
+            credentials={'username': 'test', 'password': 'test'},
+            feed_name_to_config=feed_name_to_config,
+            insecure=True
+        )
+
+        fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'], auto_detect=False)
+        assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
+               ' createIndicators will be executed with noUpdate=False.'
+        assert "AMAZON$$CIDR" in last_run.call_args[0][0]

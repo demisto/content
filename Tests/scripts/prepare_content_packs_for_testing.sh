@@ -85,7 +85,7 @@ fi
 
 if [ -z "${BUCKET_UPLOAD}" ]; then
   echo "Updating the following content packs: $CONTENT_PACKS_TO_UPLOAD ..."
-  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -p $CONTENT_PACKS_TO_UPLOAD -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -p $CONTENT_PACKS_TO_UPLOAD -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
   echo "Finished updating content packs successfully."
 else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
@@ -111,10 +111,23 @@ else
   else
     echo "Skipping uploading index.json file."
   fi
-  if [ -f "$ARTIFACTS_FOLDER/corepacks.json" ]; then
-    gsutil cp -z json "$ARTIFACTS_FOLDER/corepacks.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+
+  corepacks_files_count=$(find $ARTIFACTS_FOLDER -name "corepacks*.json" | wc -l)
+  if [ $corepacks_files_count -eq 0 ]; then
+    echo "No corepacks files were found, skipping uploading."
   else
-    echo "Skipping uploading corepacks.json file."
+    echo "Uploading corepacks files."
+    # Copy corepacks files from the artifacts folder to the build bucket:
+    find $ARTIFACTS_FOLDER -name "corepacks*.json" -exec gsutil cp -z json {} "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH" \;
+    echo "Successfully uploaded corepacks files."
+  fi
+
+  if [ -f "$ARTIFACTS_FOLDER/versions-metadata.json" ]; then
+    echo "Uploading versions-metadata.json."
+    gsutil cp -z json "$ARTIFACTS_FOLDER/versions-metadata.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+    echo "Successfully uploaded versions-metadata.json."
+  else
+    echo "No versions-metadata.json file, skipping uploading."
   fi
 
   echo "Finished updating content packs successfully."

@@ -406,7 +406,7 @@ EXPECTED_CALL_ARGS = {
         'priority': [
             'medium'
         ],
-        'startedDate': [
+        'createdAt': [
             '1671717185195', '1671976385145'
         ]
     },

@@ -11,7 +11,8 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
 		"Netwitness Incident",
-		"Symantec DLP Discover Incident"
+		"Symantec DLP Discover Incident",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -38,9 +39,9 @@
 	"sla": 0,
 	"system": false,
 	"systemAssociatedTypes": [
-        "Symantec DLP Discover Incident"
+        "Symantec DLP Discover Incident",
+		"Prisma Cloud - VM Alert Prioritization"
     ],
-	"systemAssociatedTypes": null,
 	"threshold": 72,
 	"type": "shortText",
 	"unmapped": false,

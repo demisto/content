@@ -334,6 +334,10 @@ def main() -> None:
             if entityTypeId is not None:
                 analyticalFeatures_url += '&entityTypeId=' + entityTypeId
             fetch_records(client, analyticalFeatures_url, 'Gra.Analytical.Features.Entity.Value', 'entityID', params)
+        elif demisto.command() == 'gra-cases-anomaly':
+            caseId = arguments.get('caseId')
+            anomaliesUrl = '/anomalies/' + caseId
+            fetch_records(client, anomaliesUrl, 'Gra.Cases.anomalies', 'caseId', params)
 
     # Log exceptions and return errors
     except Exception as e:

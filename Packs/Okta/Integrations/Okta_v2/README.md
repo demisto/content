@@ -259,6 +259,7 @@ Sets passwords without validating existing user credentials.
 | --- | --- | --- |
 | username | Okta username for which to set the password. | Required | 
 | password | The new password to set for the user. | Required | 
+| temporary_password | When true, you'll need to change the password in the next login. | Optional | 
 
 
 #### Context Output
@@ -621,7 +622,8 @@ Fetches information for a single user. You must enter one or more parameters for
 | Account.Activated | Date | Timestamp for when the user was activated. | 
 | Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
 | Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-
+| Account.Manager | String | The manager. | 
+| Account.ManagerEmail | String | The manager email. | 
 
 ##### Command Example
 ```!okta-get-user username=testForDocs@test.com verbose=true```
@@ -635,6 +637,8 @@ Fetches information for a single user. You must enter one or more parameters for
         "DisplayName": "test that",
         "Email": "testForDocs@test.com",
         "ID": "00uqk1qesl3k0SRbH0h7",
+        "Manager": "manager@test.com",
+        "ManagerEmail": null,
         "PasswordChanged": "2020-03-26T13:56:50.000Z",
         "Status": "ACTIVE",
         "StatusChanged": "2020-03-26T13:56:52.000Z",
@@ -647,9 +651,9 @@ Fetches information for a single user. You must enter one or more parameters for
 ##### Human Readable Output
 >### User:testForDocs@test.com
 >### Profile
->|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
->|---|---|---|---|---|---|
->| testForDocs@test.com | test | that | testForDocs@test.com |  |  |
+>|Email|First Name|Last Name|Login|Manager|Manager Email|Mobile Phone|Second Email|
+>|---|---|---|---|---|---|---|---|
+>| testForDocs@test.com | test | that | testForDocs@test.com | manager@test.com |  |  |  |
 
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|

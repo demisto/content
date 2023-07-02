@@ -1,0 +1,269 @@
+{
+    "access_policies": [
+        {
+            "amw_reputation": {
+                "state": "use_global"
+            },
+            "avc": {
+                "state": "use_global"
+            },
+            "http_rewrite_profile": "use_global",
+            "membership": {
+                "identification_profiles": [
+                    {
+                        "global_identification_profile": {
+                            "auth": "No Authentication"
+                        }
+                    }
+                ]
+            },
+            "objects": {
+                "state": "use_global"
+            },
+            "policy_description": "test",
+            "policy_expiry": "",
+            "policy_name": "test2",
+            "policy_order": 1,
+            "policy_status": "enable",
+            "protocols_user_agents": {
+                "state": "use_global"
+            },
+            "url_filtering": {
+                "content_rating": {
+                    "status": "use_global"
+                },
+                "custom_cats": {
+                    "use_global": [
+                        "test"
+                    ]
+                },
+                "exception_referred_embedded_content": {
+                    "state": "disable"
+                },
+                "predefined_cats": {
+                    "use_global": [
+                        "Adult",
+                        "Advertisements",
+                        "Alcohol",
+                        "Animals and Pets",
+                        "Arts",
+                        "Astrology",
+                        "Auctions",
+                        "Business and Industry",
+                        "Cannabis",
+                        "Chat and Instant Messaging",
+                        "Cheating and Plagiarism",
+                        "Child Abuse Content",
+                        "Cloud and Data Centers",
+                        "Computer Security",
+                        "Computers and Internet",
+                        "Conventions, Conferences and Trade Shows",
+                        "Cryptocurrency",
+                        "Cryptomining",
+                        "DIY Projects",
+                        "DNS-Tunneling",
+                        "Dating",
+                        "Digital Postcards",
+                        "Dining and Drinking",
+                        "DoH and DoT",
+                        "Dynamic DNS Provider",
+                        "Dynamic and Residential",
+                        "Education",
+                        "Entertainment",
+                        "Extreme",
+                        "Fashion",
+                        "File Transfer Services",
+                        "Filter Avoidance",
+                        "Finance",
+                        "Freeware and Shareware",
+                        "Gambling",
+                        "Games",
+                        "Government and Law",
+                        "Hacking",
+                        "Hate Speech",
+                        "Health and Medicine",
+                        "Humor",
+                        "Hunting",
+                        "Illegal Activities",
+                        "Illegal Downloads",
+                        "Illegal Drugs",
+                        "Infrastructure and Content Delivery Networks",
+                        "Internet Telephony",
+                        "Internet of Things",
+                        "Job Search",
+                        "Lingerie and Swimsuits",
+                        "Lotteries",
+                        "Military",
+                        "Mobile Phones",
+                        "Museums",
+                        "Nature and Conservation",
+                        "News",
+                        "Non-governmental Organizations",
+                        "Non-sexual Nudity",
+                        "Not Actionable",
+                        "Online Communities",
+                        "Online Document Sharing and Collaboration",
+                        "Online Meetings",
+                        "Online Storage and Backup",
+                        "Online Trading",
+                        "Organizational Email",
+                        "Paranormal",
+                        "Parked Domains",
+                        "Peer File Transfer",
+                        "Personal Sites",
+                        "Personal VPN",
+                        "Photo Search and Images",
+                        "Politics",
+                        "Pornography",
+                        "Private IP Addresses as Host",
+                        "Professional Networking",
+                        "Real Estate",
+                        "Recipes and Food",
+                        "Reference",
+                        "Regional Restricted Sites (Germany)",
+                        "Regional Restricted Sites (Great Britain)",
+                        "Regional Restricted Sites (Italy)",
+                        "Regional Restricted Sites (Poland)",
+                        "Religion",
+                        "SaaS and B2B",
+                        "Safe for Kids",
+                        "Science and Technology",
+                        "Search Engines and Portals",
+                        "Sex Education",
+                        "Shopping",
+                        "Social Networking",
+                        "Social Science",
+                        "Society and Culture",
+                        "Software Updates",
+                        "Sports and Recreation",
+                        "Streaming Audio",
+                        "Streaming Video",
+                        "Terrorism and Violent Extremism",
+                        "Tobacco",
+                        "Transportation",
+                        "Travel",
+                        "URL Shorteners",
+                        "Weapons",
+                        "Web Cache and Archives",
+                        "Web Hosting",
+                        "Web Page Translation",
+                        "Web-based Email"
+                    ]
+                },
+                "safe_search": {
+                    "status": "use_global"
+                },
+                "state": "custom",
+                "uncategorized_url": "use_global",
+                "update_cats_action": "use_global",
+                "yt_cats": {
+                    "use_global": [
+                        "Film Animation",
+                        "Autos Vehicles",
+                        "Music",
+                        "Pets Animals",
+                        "Sports",
+                        "Travel Events",
+                        "Gaming",
+                        "People Blogs",
+                        "Comedy",
+                        "Entertainment",
+                        "News Politics",
+                        "Howto Style",
+                        "Education",
+                        "Science Technology",
+                        "Nonprofits Activism"
+                    ]
+                }
+            }
+        },
+        {
+            "amw_reputation": {
+                "state": "use_global"
+            },
+            "avc": {
+                "state": "use_global"
+            },
+            "http_rewrite_profile": "use_global",
+            "membership": {
+                "identification_profiles": [
+                    {
+                        "_all_": {
+                            "auth": "No Authentication"
+                        }
+                    }
+                ],
+                "ports": [
+                    {
+                        "id_profile": "",
+                        "value": [
+                            "1234"
+                        ]
+                    }
+                ],
+                "url_categories": [
+                    {
+                        "id_profile": "",
+                        "value": {
+                            "predefined": [
+                                "Adult",
+                                "Advertisements",
+                                "Alcohol"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "objects": {
+                "state": "use_global"
+            },
+            "policy_description": "",
+            "policy_expiry": "01/04/2023 08:30",
+            "policy_name": "test",
+            "policy_order": 12,
+            "policy_status": "disable",
+            "protocols_user_agents": {
+                "state": "use_global"
+            },
+            "url_filtering": {
+                "content_rating": {
+                    "status": "use_global"
+                },
+                "exception_referred_embedded_content": {
+                    "state": "disable"
+                },
+                "predefined_cats": {
+                    "use_global": [
+                        "Adult",
+                        "Advertisements",
+                        "Alcohol"
+                    ]
+                },
+                "safe_search": {
+                    "status": "use_global"
+                },
+                "state": "custom",
+                "update_cats_action": "use_global",
+                "yt_cats": {
+                    "use_global": [
+                        "Film Animation",
+                        "Autos Vehicles",
+                        "Music",
+                        "Pets Animals",
+                        "Sports",
+                        "Travel Events",
+                        "Gaming",
+                        "People Blogs",
+                        "Comedy",
+                        "Entertainment",
+                        "News Politics",
+                        "Howto Style",
+                        "Education",
+                        "Science Technology",
+                        "Nonprofits Activism"
+                    ]
+                }
+            }
+        }
+    ]
+}

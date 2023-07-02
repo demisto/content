@@ -1,0 +1,28 @@
+{
+  "trigger_id": "39f9b9dce947a6af186c75c72709c716",
+  "playbook_id": "Cloud IAM User Access Investigation",
+  "suggestion_reason": "Recommended for Cloud IAM user access alerts",
+  "description": "This trigger is responsible for handling Cloud IAM user access investigation alerts",
+  "trigger_name": "Cloud IAM User Access Investigation",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "Penetration testing tool activity"
+        },
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "Penetration testing tool attempt"
+        },
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "Suspicious API call from a Tor exit node"
+        }
+      ]
+    }
+  }
+}

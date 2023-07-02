@@ -316,7 +316,8 @@
                            "@time":"2022/09/10 03:03:37",
                            "#text":"any"
                         }
-                     }
+                     },
+                     "disabled": "yes"
                   },
                   {
                      "@name":"test3",
@@ -416,6 +417,7 @@
                            "#text":"any"
                         }
                      },
+                     "disabled": "no",
                      "service":{
                         "@admin":"admin",
                         "@dirtyId":"802",

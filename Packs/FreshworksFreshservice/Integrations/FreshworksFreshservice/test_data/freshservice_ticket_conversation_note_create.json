@@ -1,0 +1,16 @@
+{
+    "conversation": {
+        "id": 1,
+        "user_id": 21001397559,
+        "to_emails": [],
+        "body": "<div>Hi tom, Still Angry</div>",
+        "body_text": "Hi tom, Still Angry",
+        "ticket_id": 6,
+        "created_at": "conversation_created_at",
+        "updated_at": "conversation_updated_at",
+        "incoming": false,
+        "private": false,
+        "support_email": null,
+        "attachments": []
+    }
+}

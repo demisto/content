@@ -1,0 +1,1885 @@
+{
+    "content": [
+        {
+            "cveId": "CVE-1999-0006",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:a:qualcomm:qpopper:2.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Qualcomm Qpopper 2.4",
+                    "VendorProduct": "Qualcomm Qpopper"
+                }
+            ],
+            "publishedDate": "content[0]_publishedDate",
+            "updateDate": "content[0]_updateDate",
+            "severity": "Medium",
+            "intsightsScore": 68,
+            "cvssScore": 10,
+            "mentionsAmount": 15,
+            "mentionsPerSource": {
+                "SocialMedia": 0,
+                "PasteSite": 12,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 1,
+                "Exploit": 2,
+                "ClearWebCyberBlogs": 0,
+                "POC": 0
+            },
+            "firstMentionDate": "content[0]_firstMentionDate",
+            "lastMentionDate": "content[0]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0071",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:a:apache:http_server:1.1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Apache Http Server 1.1.1",
+                    "VendorProduct": "Apache Http Server"
+                }
+            ],
+            "publishedDate": "content[1]_publishedDate",
+            "updateDate": "content[1]_updateDate",
+            "severity": "Medium",
+            "intsightsScore": 64,
+            "cvssScore": 7.5,
+            "mentionsAmount": 254,
+            "mentionsPerSource": {
+                "SocialMedia": 2,
+                "PasteSite": 219,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 32,
+                "Exploit": 0,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[1]_firstMentionDate",
+            "lastMentionDate": "content[1]_lastMentionDate",
+            "exploitAvailability": false,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0001",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:1.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 1.0",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "content[2]_cpe[1]_Value",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "content[2]_cpe[1]_Title",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.7:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.1.7",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.8:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.8",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:openbsd:openbsd:2.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Openbsd 2.3",
+                    "VendorProduct": "Openbsd Openbsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:bsdi:bsd_os:3.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Bsdi Bsd Os 3.1",
+                    "VendorProduct": "Bsdi Bsd Os"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.3",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.4",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.5",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.6:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.6",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.0",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.0.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.0.5",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.1.5",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.6:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.1.6",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.2",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.0.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.0.1",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 1.1",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:1.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 1.2",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "content[2]_cpe[19]_Value",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "content[2]_cpe[19]_Title",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "content[2]_cpe[20]_Value",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "content[2]_cpe[20]_Title",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:3.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 3.0",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:openbsd:openbsd:2.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Openbsd 2.4",
+                    "VendorProduct": "Openbsd Openbsd"
+                }
+            ],
+            "publishedDate": "content[2]_publishedDate",
+            "updateDate": "content[2]_updateDate",
+            "severity": "Low",
+            "intsightsScore": 33,
+            "cvssScore": 5,
+            "mentionsAmount": 36,
+            "mentionsPerSource": {
+                "SocialMedia": 18,
+                "PasteSite": 10,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 6,
+                "Exploit": 0,
+                "ClearWebCyberBlogs": 2,
+                "POC": 0
+            },
+            "firstMentionDate": "content[2]_firstMentionDate",
+            "lastMentionDate": "content[2]_lastMentionDate",
+            "exploitAvailability": false,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0003",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.0",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.1",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.2",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.3",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:5.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 5.2",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:a:tritreal:ted_cde:4.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Tritreal Ted Cde 4.3",
+                    "VendorProduct": "Tritreal Ted Cde"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:5.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 5.3",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.4",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:10.03:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 10.03",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:11.00:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 11.00",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.1",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.4",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.5",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.5.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.5.1",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:solaris:2.6:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Solaris 2.6",
+                    "VendorProduct": "Sun Solaris"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.2",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.2.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.2.1",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.3",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:4.1.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 4.1.3",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:-:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:10.02:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 10.02",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.2",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.4",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.0",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.2",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:10.01:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 10.01",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.3",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.5",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.1",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.3",
+                    "VendorProduct": "Sun Sunos"
+                }
+            ],
+            "publishedDate": "content[3]_publishedDate",
+            "updateDate": "content[3]_updateDate",
+            "severity": "High",
+            "intsightsScore": 92,
+            "cvssScore": 10,
+            "mentionsAmount": 59,
+            "mentionsPerSource": {
+                "SocialMedia": 2,
+                "PasteSite": 16,
+                "HackingForum": 2,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 36,
+                "Exploit": 2,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[3]_firstMentionDate",
+            "lastMentionDate": "content[3]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0002",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:o:caldera:openlinux:1.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Caldera Openlinux 1.2",
+                    "VendorProduct": "Caldera Openlinux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:2.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 2.1",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:bsdi:bsd_os:1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Bsdi Bsd Os 1.1",
+                    "VendorProduct": "Bsdi Bsd Os"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:4.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 4.0",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:4.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 4.1",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:4.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 4.2",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:5.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 5.0",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:2.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 2.0",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:3.0.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 3.0.3",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:5.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 5.1",
+                    "VendorProduct": "Redhat Linux"
+                }
+            ],
+            "publishedDate": "content[4]_publishedDate",
+            "updateDate": "content[4]_updateDate",
+            "severity": "Medium",
+            "intsightsScore": 71,
+            "cvssScore": 10,
+            "mentionsAmount": 22,
+            "mentionsPerSource": {
+                "SocialMedia": 3,
+                "PasteSite": 13,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 4,
+                "Exploit": 1,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[4]_firstMentionDate",
+            "lastMentionDate": "content[4]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0005",
+            "cpe": [
+                {
+                    "Value": "test",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "University Of Washington Imap 10.234",
+                    "VendorProduct": "University Of Washington Imap"
+                },
+                {
+                    "Value": "cpe:2.3:a:netscape:messaging_server:3.55:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Netscape Messaging Server 3.55",
+                    "VendorProduct": "Netscape Messaging Server"
+                }
+            ],
+            "publishedDate": "content[5]_publishedDate",
+            "updateDate": "content[5]_updateDate",
+            "severity": "Critical",
+            "intsightsScore": 100,
+            "cvssScore": 10,
+            "mentionsAmount": 156,
+            "mentionsPerSource": {
+                "SocialMedia": 2,
+                "PasteSite": 11,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 141,
+                "Exploit": 1,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[5]_firstMentionDate",
+            "lastMentionDate": "content[5]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0006",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:a:qualcomm:qpopper:2.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Qualcomm Qpopper 2.4",
+                    "VendorProduct": "Qualcomm Qpopper"
+                }
+            ],
+            "publishedDate": "content[6]_publishedDate",
+            "updateDate": "content[6]_updateDate",
+            "severity": "Medium",
+            "intsightsScore": 68,
+            "cvssScore": 10,
+            "mentionsAmount": 15,
+            "mentionsPerSource": {
+                "SocialMedia": 0,
+                "PasteSite": 12,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 1,
+                "Exploit": 2,
+                "ClearWebCyberBlogs": 0,
+                "POC": 0
+            },
+            "firstMentionDate": "content[6]_firstMentionDate",
+            "lastMentionDate": "content[6]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0071",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:a:apache:http_server:1.1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Apache Http Server 1.1.1",
+                    "VendorProduct": "Apache Http Server"
+                }
+            ],
+            "publishedDate": "content[7]_publishedDate",
+            "updateDate": "content[7]_updateDate",
+            "severity": "Medium",
+            "intsightsScore": 64,
+            "cvssScore": 7.5,
+            "mentionsAmount": 254,
+            "mentionsPerSource": {
+                "SocialMedia": 2,
+                "PasteSite": 219,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 32,
+                "Exploit": 0,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[7]_firstMentionDate",
+            "lastMentionDate": "content[7]_lastMentionDate",
+            "exploitAvailability": false,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0001",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:1.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 1.0",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "content[8]_cpe[1]_Value",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "content[8]_cpe[1]_Title",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.7:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.1.7",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.8:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.8",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:openbsd:openbsd:2.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Openbsd 2.3",
+                    "VendorProduct": "Openbsd Openbsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:bsdi:bsd_os:3.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Bsdi Bsd Os 3.1",
+                    "VendorProduct": "Bsdi Bsd Os"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.3",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.4",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.5",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.6:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.6",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.0",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.0.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.0.5",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.1.5",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.6:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.1.6",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.2.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.2.2",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:2.0.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 2.0.1",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 1.1",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:1.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 1.2",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "content[8]_cpe[19]_Value",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "content[8]_cpe[19]_Title",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "content[8]_cpe[20]_Value",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "content[8]_cpe[20]_Title",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:freebsd:freebsd:3.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Freebsd 3.0",
+                    "VendorProduct": "Freebsd Freebsd"
+                },
+                {
+                    "Value": "cpe:2.3:o:openbsd:openbsd:2.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Openbsd 2.4",
+                    "VendorProduct": "Openbsd Openbsd"
+                }
+            ],
+            "publishedDate": "content[8]_publishedDate",
+            "updateDate": "content[8]_updateDate",
+            "severity": "Low",
+            "intsightsScore": 33,
+            "cvssScore": 5,
+            "mentionsAmount": 36,
+            "mentionsPerSource": {
+                "SocialMedia": 18,
+                "PasteSite": 10,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 6,
+                "Exploit": 0,
+                "ClearWebCyberBlogs": 2,
+                "POC": 0
+            },
+            "firstMentionDate": "content[8]_firstMentionDate",
+            "lastMentionDate": "content[8]_lastMentionDate",
+            "exploitAvailability": false,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0003",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.0",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.1",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.2",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.3",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:5.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 5.2",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:a:tritreal:ted_cde:4.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Tritreal Ted Cde 4.3",
+                    "VendorProduct": "Tritreal Ted Cde"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:5.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 5.3",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sgi:irix:6.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sgi Irix 6.4",
+                    "VendorProduct": "Sgi Irix"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:10.03:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 10.03",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:11.00:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 11.00",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.1",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.4",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.5",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.5.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.5.1",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:solaris:2.6:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Solaris 2.6",
+                    "VendorProduct": "Sun Solaris"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.2",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.2.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.2.1",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.3",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:4.1.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 4.1.3",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:-:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:10.02:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 10.02",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.2",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.4:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.4",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.0",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.2",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:hp:hp-ux:10.01:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Hp Hp-ux 10.01",
+                    "VendorProduct": "Hp Hp-ux"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.3",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:ibm:aix:4.1.5:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Ibm Aix 4.1.5",
+                    "VendorProduct": "Ibm Aix"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.1",
+                    "VendorProduct": "Sun Sunos"
+                },
+                {
+                    "Value": "cpe:2.3:o:sun:sunos:5.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Sun Sunos 5.3",
+                    "VendorProduct": "Sun Sunos"
+                }
+            ],
+            "publishedDate": "content[9]_publishedDate",
+            "updateDate": "content[9]_updateDate",
+            "severity": "High",
+            "intsightsScore": 92,
+            "cvssScore": 10,
+            "mentionsAmount": 59,
+            "mentionsPerSource": {
+                "SocialMedia": 2,
+                "PasteSite": 16,
+                "HackingForum": 2,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 36,
+                "Exploit": 2,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[9]_firstMentionDate",
+            "lastMentionDate": "content[9]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0002",
+            "cpe": [
+                {
+                    "Value": "cpe:2.3:o:caldera:openlinux:1.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Caldera Openlinux 1.2",
+                    "VendorProduct": "Caldera Openlinux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:2.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 2.1",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:bsdi:bsd_os:1.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Bsdi Bsd Os 1.1",
+                    "VendorProduct": "Bsdi Bsd Os"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:4.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 4.0",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:4.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 4.1",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:4.2:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 4.2",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:5.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 5.0",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:2.0:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 2.0",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:3.0.3:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 3.0.3",
+                    "VendorProduct": "Redhat Linux"
+                },
+                {
+                    "Value": "cpe:2.3:o:redhat:linux:5.1:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Redhat Linux 5.1",
+                    "VendorProduct": "Redhat Linux"
+                }
+            ],
+            "publishedDate": "content[10]_publishedDate",
+            "updateDate": "content[10]_updateDate",
+            "severity": "Medium",
+            "intsightsScore": 71,
+            "cvssScore": 10,
+            "mentionsAmount": 22,
+            "mentionsPerSource": {
+                "SocialMedia": 3,
+                "PasteSite": 13,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 4,
+                "Exploit": 1,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[10]_firstMentionDate",
+            "lastMentionDate": "content[10]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        },
+        {
+            "cveId": "CVE-1999-0005",
+            "cpe": [
+                {
+                    "Value": "test",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "University Of Washington Imap 10.234",
+                    "VendorProduct": "University Of Washington Imap"
+                },
+                {
+                    "Value": "cpe:2.3:a:netscape:messaging_server:3.55:*:*:*:*:*:*:*",
+                    "Range": {
+                        "VersionStartIncluding": "",
+                        "VersionEndIncluding": "",
+                        "VersionStartExcluding": "",
+                        "VersionEndExcluding": ""
+                    },
+                    "Title": "Netscape Messaging Server 3.55",
+                    "VendorProduct": "Netscape Messaging Server"
+                }
+            ],
+            "publishedDate": "content[11]_publishedDate",
+            "updateDate": "content[11]_updateDate",
+            "severity": "Critical",
+            "intsightsScore": 100,
+            "cvssScore": 10,
+            "mentionsAmount": 156,
+            "mentionsPerSource": {
+                "SocialMedia": 2,
+                "PasteSite": 11,
+                "HackingForum": 0,
+                "InstantMessage": 0,
+                "DarkWeb": 0,
+                "CodeRepositories": 141,
+                "Exploit": 1,
+                "ClearWebCyberBlogs": 1,
+                "POC": 0
+            },
+            "firstMentionDate": "content[11]_firstMentionDate",
+            "lastMentionDate": "content[11]_lastMentionDate",
+            "exploitAvailability": true,
+            "pocAvailability": false,
+            "vulnerabilityOrigin": [
+                "API"
+            ],
+            "relatedThreatActors": [],
+            "relatedMalware": [],
+            "relatedCampaigns": []
+        }
+    ],
+    "nextOffset": null
+}

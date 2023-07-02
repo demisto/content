@@ -1,0 +1,1 @@
+[View Live Activity Map in ExtraHop](https://dummy-base-url.com/extrahop/#/activitymaps?appliance_id=6c078a2ea98c42378048f72636c371c8&discovery_id=005056838cc00000&from=30&interval_type=MIN&object_type=device&protocol=any&role=any&until=0)

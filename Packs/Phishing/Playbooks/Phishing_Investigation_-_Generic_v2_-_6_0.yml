@@ -4,9 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Phishing Investigation - Generic v2
 description: |-
-  Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
-
-  The final remediation tasks are always decided by a human analyst.
+  Deprecated. Use Phishing - Generic v3 instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -46,8 +44,7 @@ tasks:
       id: b8fe1f1e-c1ae-499e-83d7-f466009b5790
       version: -1
       name: Assign to analyst
-      description: Assign the incident to an analyst based on the analyst's organizational
-        role.
+      description: Assign the incident to an analyst based on the analyst's organizational role.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -86,8 +83,7 @@ tasks:
       id: d6dfa5b6-7756-4f6f-8e97-c9c7bcd67ad7
       version: -1
       name: Manually review the incident
-      description: Review the incident to determine if the email that the user reported
-        is malicious.
+      description: Review the incident to determine if the email that the user reported is malicious.
       type: regular
       iscommand: false
       brand: ""
@@ -230,14 +226,7 @@ tasks:
       - "56"
     scriptarguments:
       body:
-        simple: "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress;\
-          \ var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc)\
-          \ { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email)\
-          \ && acc.Email.indexOf(reporter) > -1) }); return account && account[0]\
-          \ && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received\
-          \ your email and are investigating.\nPlease do not touch the email until\
-          \ further notice.\n\nCordially, \n  Your friendly neighborhood security\
-          \ team"
+        simple: "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
@@ -310,8 +299,7 @@ tasks:
       id: 511c7226-fa33-4a95-88b7-709566ab4f90
       version: -1
       name: Update the user that the reported email is safe
-      description: Send an email to the user explaining that the email they reported
-        is safe.
+      description: Send an email to the user explaining that the email they reported is safe.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -358,8 +346,7 @@ tasks:
       id: f9a62c93-67f8-41f2-8cd5-6a6a700ed9b4
       version: -1
       name: Update the user that the reported email is malicious
-      description: Send an email to the user explaining that the email they reported
-        is malicious.
+      description: Send an email to the user explaining that the email they reported is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -532,8 +519,7 @@ tasks:
       id: 6838736c-c177-4b2a-883e-43e36cc896bb
       version: -1
       name: Search And Delete Emails - Generic v2
-      description: This playbook searches and delete emails with similar attributes
-        of a malicious email using EWS or Office 365.
+      description: This playbook searches and delete emails with similar attributes of a malicious email using EWS or Office 365.
       playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
@@ -724,10 +710,7 @@ tasks:
       id: 945915a4-395f-444f-8500-c80791cddcfd
       version: -1
       name: Manually remediate  the incident
-      description: "Consider the following:\n1. Search for and delete similar emails\n\
-        2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4.\
-        \ Update proxies and firewalls as necessary\n5. Block the malicious sender/\
-        \ domain in the mail-gateway "
+      description: "Consider the following:\n1. Search for and delete similar emails\n2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4. Update proxies and firewalls as necessary\n5. Block the malicious sender/ domain in the mail-gateway "
       type: regular
       iscommand: false
       brand: ""
@@ -1054,9 +1037,7 @@ tasks:
       id: d18654f5-16fd-441e-8db0-4e55f0df0f43
       version: -1
       name: Should the email be authenticated?
-      description: Whether the email should be authenticated using DKIM, SPF and DMARC.
-        This checks whether "AuthenticateEmail" output is set to "True" and whether
-        there are headers from an email to authenticate.
+      description: Whether the email should be authenticated using DKIM, SPF and DMARC. This checks whether "AuthenticateEmail" output is set to "True" and whether there are headers from an email to authenticate.
       type: condition
       iscommand: false
       brand: ""
@@ -1137,8 +1118,7 @@ tasks:
       id: 0f654686-0911-450d-86e6-0689df621d61
       version: -1
       name: Authenticate email
-      description: Checks the authenticity of an email based on the email's SPF, DMARC,
-        and DKIM.
+      description: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
       scriptName: CheckEmailAuthenticity
       type: regular
       iscommand: false
@@ -1177,8 +1157,7 @@ tasks:
       id: 3056d685-6aaf-4d07-879e-48c2bb841b19
       version: -1
       name: Save authenticity check result to incident field
-      description: Save the verdict, regarding the authenticity of the email, in an
-        incident field.
+      description: Save the verdict, regarding the authenticity of the email, in an incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1283,8 +1262,7 @@ tasks:
       id: c325df0c-5e0f-4ba9-8863-0b0c18410025
       version: -1
       name: Save reporter email address in field
-      description: Saves the email address of the reporter of the email, in an incident
-        field.
+      description: Saves the email address of the reporter of the email, in an incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1320,9 +1298,7 @@ tasks:
       id: ecf8ed98-3577-455c-813a-ddcab5b2bd2b
       version: -1
       name: Predict phishing type using pre-trained phishing model
-      description: Predicts the specific type of phishing mail using a pre-trained
-        machine learning model, and highlights the most important words used in the
-        classification decision.
+      description: Predicts the specific type of phishing mail using a pre-trained machine learning model, and highlights the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -1409,8 +1385,7 @@ tasks:
       id: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
       version: -1
       name: Update incident with predictions
-      description: Updates incident fields with the predictions of the machine-learning
-        phishing model.
+      description: Updates incident fields with the predictions of the machine-learning phishing model.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1910,8 +1885,7 @@ tasks:
       id: 164f85dc-16f8-4ee8-8ced-20b4d0b4a401
       version: -1
       name: Was the incident part of a phishing campaign?
-      description: Checks whether the current incident was found to be part of a phishing
-        campaign.
+      description: Checks whether the current incident was found to be part of a phishing campaign.
       type: condition
       iscommand: false
       brand: ""
@@ -1996,8 +1970,7 @@ tasks:
       id: fd39af07-3674-4de7-8d83-3fb41a3d2055
       version: -1
       name: Update the user that the email is a malicious campaign
-      description: Send an email to the user explaining that the email they reported
-        is malicious.
+      description: Send an email to the user explaining that the email they reported is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -2239,15 +2212,13 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether the authenticity of the email should be verified, using SPF,
-    DKIM and DMARC.
+  description: Whether the authenticity of the email should be verified, using SPF, DKIM and DMARC.
   playbookInputQuery:
 - key: OnCall
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
   value:
@@ -2272,43 +2243,33 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: Used only when searching and deleting emails in O365. The exchange
-    location. Determines from where to search and delete emails searched using O365
-    playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto}
-    to search and delete the email only from the recipient's inbox. Note - searching
-    all mailboxes may take a significant amount of time. This input is only applicable
-    if the SearchAndDeleteIntegration input is set to O365.
+  description: Used only when searching and deleting emails in O365. The exchange location. Determines from where to search and delete emails searched using O365 playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto} to search and delete the email only from the recipient's inbox. Note - searching all mailboxes may take a significant amount of time. This input is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
   value:
     simple: "false"
   required: false
-  description: Used only when searching and deleting emails in O365. Whether to include
-    mailboxes other than regular user mailboxes in the compliance search. Default
-    is "false".
+  description: Used only when searching and deleting emails in O365. Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
   required: false
-  description: Used only when searching and deleting emails in O365. Comma-separated
-    list of mailboxes/distribution groups to exclude when you use the value "All"
-    for the O365ExchangeLocation input.
+  description: Used only when searching and deleting emails in O365. Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the O365ExchangeLocation input.
   playbookInputQuery:
 - key: CheckMicrosoftHeaders
   value:
     simple: "True"
   required: false
-  description: Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity"
-    and "Email Classification" accordingly.
+  description: Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly.
   playbookInputQuery:
 - key: PhishingModelName
   value:
     simple: phishing_model
   required: false
-  description: Optional - the name of a pre-trained phishing model to use for phishing
-    type prediction using machine learning.
+  description: Optional - the name of a pre-trained phishing model to use for phishing type prediction using machine learning.
   playbookInputQuery:
 outputs: []
 tests:
-- Phishing v2 - Test - Incident Starter
+- No tests (deprecated)
 fromversion: 6.0.0
+deprecated: true

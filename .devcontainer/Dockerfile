@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install dos2unix git python2 curl -y \
     && cd /features \
     # locking to the latest master commit in this repo to prevent breaking changes
     # We should update this commit hash from time to time to
-    && git checkout ef192bf4677f35c18d9f0812ed2902a682c7bdeb
+    && git checkout 1869e5931cfe0517f75d58cb70863a6b4874c487
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh

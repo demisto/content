@@ -35,7 +35,7 @@ SDK_ERROR_MESSAGES = {
                                     "'AZURE_SQL_DATABASE_OBJECT_TYPE', 'AZURE_SQL_MANAGED_INSTANCE_OBJECT_TYPE'].",
     'INVALID_SORT_ORDER': "'{}' is an invalid value for 'sort_order'. Value must be in ['ASC', 'DESC'].",
     'INVALID_OBJECT_SNAPSHOT_SORT_ORDER': "'{}' is an invalid value for 'sort_order'. "
-                                          "Value must be in ['Asc', 'Desc'].",
+                                          "Value must be in ['ASC', 'DESC'].",
     'INVALID_REQUESTED_HASH_TYPE': "'{}' is an invalid value for 'requested_hash_types'. "
                                    "Value must be in ['HASH_TYPE_M_D5', 'HASH_TYPE_SH_A1', 'HASH_TYPE_SH_A256']."
 }
@@ -845,7 +845,7 @@ def test_vm_object_snapshot_get_success(client, requests_mock, empty_response):
     if empty_response:
         responses = [
             {'json': enum_values.get('snapshot_group_by_enum')},
-            {'json': enum_values.get('snapshot_group_by_enum')},
+            {'json': enum_values.get('missed_snapshot_group_by_enum')},
             {'json': object_snapshot_response.get('empty_response')}
         ]
         requests_mock.post(BASE_URL_GRAPHQL, responses)
@@ -855,7 +855,7 @@ def test_vm_object_snapshot_get_success(client, requests_mock, empty_response):
     else:
         responses = [
             {'json': enum_values.get('snapshot_group_by_enum')},
-            {'json': enum_values.get('snapshot_group_by_enum')},
+            {'json': enum_values.get('missed_snapshot_group_by_enum')},
             {'json': object_snapshot_response.get('raw_response')}
         ]
         requests_mock.post(BASE_URL_GRAPHQL, responses)
@@ -887,7 +887,7 @@ def test_vm_object_snapshot_get_when_invalid_arguments_are_provided(client, requ
 
     responses = [
         {'json': enum_values.get('snapshot_group_by_enum')},
-        {'json': enum_values.get('snapshot_group_by_enum')}
+        {'json': enum_values.get('missed_snapshot_group_by_enum')}
     ]
 
     requests_mock.post(BASE_URL_GRAPHQL, responses)
@@ -1077,6 +1077,8 @@ def test_gps_vm_export_success(client, requests_mock, empty_response):
 @pytest.mark.parametrize("args, error", [
     ({"datastore_id": "dummy_id", "host_id": "dummy_id", "snapshot_id": "dummy_id"},
      ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('object_id')),
+    ({"object_id": "dummy_id", "datastore_id": "dummy_id", "snapshot_id": "dummy_id"},
+     ERROR_MESSAGES['MISSING_EXPORT_DESTINATION']),
     ({"object_id": "dummy_id", "host_id": "dummy_id", "snapshot_id": "dummy_id"},
      ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('datastore_id')),
     ({"object_id": "dummy_id", "datastore_id": "dummy_id", "snapshot_id": "dummy_id"},
@@ -1201,7 +1203,7 @@ def test_gps_sla_domain_list_when_success_response(client, requests_mock):
     gps_sla_domain_list_command_results = rubrik_gps_sla_domain_list(client, args)
 
     assert gps_sla_domain_list_command_results.raw_response == [edge["node"] for edge in
-                                                                raw_response["data"]["globalSlaConnection"]["edges"]]
+                                                                raw_response["data"]["slaDomains"]["edges"]]
     assert gps_sla_domain_list_command_results.readable_output == gps_sla_domain_list_hr
     assert gps_sla_domain_list_command_results.outputs == gps_sla_domain_list_outputs
 
@@ -1373,21 +1375,19 @@ def test_gps_snapshot_file_download_when_invalid_arguments_are_provided(client, 
     assert str(e.value) == error
 
 
-@pytest.mark.parametrize("snapshot_id, bool_value, field_name, exception, error",
+@pytest.mark.parametrize("snappable_id, bool_value, field_name, exception, error",
                          [("", None, None, ValueError,
-                           ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format("snapshot_id")),
+                           ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format("snappable_id")),
                           ("dummy_id", 'Abc', "power_on", ValueError,
                            ERROR_MESSAGES['INVALID_BOOLEAN'].format("Abc", "power_on")),
                           ("dummy_id", 'Abc', "keep_mac_addresses", ValueError,
                            ERROR_MESSAGES['INVALID_BOOLEAN'].format("Abc", "keep_mac_addresses")),
                           ("dummy_id", 'Abc', "remove_network_devices", ValueError,
                            ERROR_MESSAGES['INVALID_BOOLEAN'].format("Abc", "remove_network_devices")),
-                          ("dummy_id", 'Abc', "disable_network", ValueError,
-                           ERROR_MESSAGES['INVALID_BOOLEAN'].format("Abc", "disable_network")),
-                          ("dummy_id", 'Abc', "recover_tags", ValueError,
-                           ERROR_MESSAGES['INVALID_BOOLEAN'].format("Abc", "recover_tags"))
+                          ("dummy_id", 'Abc', "should_recover_tags", ValueError,
+                           ERROR_MESSAGES['INVALID_BOOLEAN'].format("Abc", "should_recover_tags"))
                           ])
-def test_gps_vm_livemount_when_invalid_input(requests_mock, snapshot_id, bool_value, field_name, exception, error):
+def test_gps_vm_livemount_when_invalid_input(requests_mock, snappable_id, bool_value, field_name, exception, error):
     """Tests rubrik_gps_vm_livemount when inputs are invalid."""
     from RubrikPolaris import rubrik_gps_vm_livemount
 
@@ -1396,7 +1396,7 @@ def test_gps_vm_livemount_when_invalid_input(requests_mock, snapshot_id, bool_va
 
     requests_mock.post(BASE_URL_GRAPHQL, json=raw_response)
     args = {
-        "snapshot_id": snapshot_id,
+        "snappable_id": snappable_id,
         f"{field_name}": bool_value
     }
 
@@ -1415,7 +1415,7 @@ def test_gps_vm_livemount_when_empty_response(client, requests_mock):
 
     requests_mock.post(BASE_URL_GRAPHQL, json=raw_response)
 
-    gps_vm_livemount_command_results = rubrik_gps_vm_livemount(client, {"snapshot_id": "dummy_id"})
+    gps_vm_livemount_command_results = rubrik_gps_vm_livemount(client, {"snappable_id": "dummy_id"})
 
     assert gps_vm_livemount_command_results.readable_output == MESSAGES["NO_RESPONSE"]
     assert gps_vm_livemount_command_results.outputs is None
@@ -1437,7 +1437,7 @@ def test_gps_vm_livemount_list_when_success_response(client, requests_mock):
 
     requests_mock.post(BASE_URL_GRAPHQL, json=raw_response)
     args = {
-        "snapshot_id": "dummy_id"
+        "snappable_id": "dummy_id"
     }
     gps_vm_livemount_command_results = rubrik_gps_vm_livemount(client, args)
 
@@ -1826,9 +1826,10 @@ def test_object_list_success(client, requests_mock, empty_response):
                                               enum_values_file_path))
     responses = [
         {'json': enum_values.get('sort_by_enum')},
-        {'json': enum_values.get('sort_order_enum')}
+        {'json': enum_values.get('sort_order_enum')},
+        {'json': enum_values.get('hierarchy_object_type_enum')}
     ]
-    args = {"sort_order": "ASC"}
+    args = {"sort_order": "ASC", "type_filter": "MONGODB_DATABASE"}
     if empty_response:
         responses.append({'json': object_list_response.get('empty_response')})
         requests_mock.post(BASE_URL_GRAPHQL, responses)
@@ -1849,9 +1850,9 @@ def test_object_list_success(client, requests_mock, empty_response):
 
 
 @pytest.mark.parametrize("args, error", [
-    ({"limit": "a"}, '"a" is not a valid number'),
-    ({"limit": -1}, ERROR_MESSAGES['INVALID_LIMIT'].format(-1)),
-    ({"sort_order": "asc"}, SDK_ERROR_MESSAGES['INVALID_SORT_ORDER'].format('asc'))
+    ({"limit": "a"}, "'type_filter' field is required. Please provide correct input."),
+    ({"type_filter": "MONGODB_DATABASE", "limit": -1}, ERROR_MESSAGES['INVALID_LIMIT'].format(-1)),
+    ({"type_filter": "MONGODB_DATABASE", "sort_order": "asc"}, SDK_ERROR_MESSAGES['INVALID_SORT_ORDER'].format('asc'))
 ])
 def test_object_list_when_invalid_arguments_are_provided(client, args, error, requests_mock):
     """
@@ -1869,7 +1870,8 @@ def test_object_list_when_invalid_arguments_are_provided(client, args, error, re
                                               enum_values_file_path))
     responses = [
         {'json': enum_values.get('sort_by_enum')},
-        {'json': enum_values.get('sort_order_enum')}
+        {'json': enum_values.get('sort_order_enum')},
+        {'json': enum_values.get('hierarchy_object_type_enum')}
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 
@@ -1895,7 +1897,7 @@ def test_polaris_object_snapshot_list_success(client, requests_mock, empty_respo
     responses = [
         {'json': enum_values.get('event_sort_order_enum')}
     ]
-    args = {"object_id": "06515737-388a-57aa-9c8e-54b3f1ee5d8b", "sort_order": "Asc"}
+    args = {"object_id": "06515737-388a-57aa-9c8e-54b3f1ee5d8b", "sort_order": "ASC"}
     if empty_response:
         responses.append({'json': object_snapshot_list_response.get('empty_response')})
         requests_mock.post(BASE_URL_GRAPHQL, responses)

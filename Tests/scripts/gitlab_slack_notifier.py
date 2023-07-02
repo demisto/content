@@ -24,7 +24,8 @@ CONTENT_NIGHTLY = 'Content Nightly'
 BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
 SDK_NIGHTLY = 'Demisto SDK Nightly'
 PRIVATE_NIGHTLY = 'Private Nightly'
-WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY}
+TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
+WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY, TEST_NATIVE_CANDIDATE}
 SLACK_USERNAME = 'Content GitlabCI'
 
 
@@ -121,13 +122,13 @@ def unit_tests_results():
     return slack_results
 
 
-def bucket_upload_results(bucket_artifact_folder):
+def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: bool):
     steps_fields = []
-    pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE)
+    pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK)
     marketplace_name = os.path.basename(bucket_artifact_folder).upper()
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
-    successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
+    successful_packs, _, failed_packs, successful_private_packs, _ = get_upload_data(
         pack_results_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:
@@ -144,7 +145,7 @@ def bucket_upload_results(bucket_artifact_folder):
             'short': False
         }]
 
-    if successful_private_packs:
+    if successful_private_packs and should_include_private_packs:
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
         steps_fields += [{
             'title': 'Successful Private Packs:',
@@ -178,7 +179,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     # report failing unit-tests
     triggering_workflow_lower = triggering_workflow.lower()
-    check_unittests_substrings = {'lint', 'unit', 'demisto sdk nightly'}
+    check_unittests_substrings = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
     failed_jobs_or_workflow_title = {job_name.lower() for job_name in failed_jobs_names}
     failed_jobs_or_workflow_title.add(triggering_workflow_lower)
     for means_include_unittests_results in failed_jobs_or_workflow_title:
@@ -188,9 +189,9 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     # report pack updates
     if 'upload' in triggering_workflow_lower:
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR, True)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2, False)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE, False)
 
     # report failing test-playbooks
     if 'content nightly' in triggering_workflow_lower:
@@ -198,6 +199,14 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XPANSE, title="XPANSE")
         coverage_slack_msg = construct_coverage_slack_msg()
+        missing_packs = get_artifact_data(ARTIFACTS_FOLDER_XSOAR, 'missing_content_packs_test_conf.txt')
+        if missing_packs:
+            missing_packs_lst = missing_packs.split('\n')
+            content_fields.append({
+                "title": f"{title} - Notice - Missing packs - ({len(missing_packs_lst)})",
+                "value": f"The following packs exist in content-test-conf, but not in content: {', '.join(missing_packs_lst)}",
+                "short": False
+            })
 
     slack_msg = [{
         'fallback': title,
@@ -255,7 +264,7 @@ def main():
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(
-        channel=slack_channel, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
+        channel=slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
     )
 
 

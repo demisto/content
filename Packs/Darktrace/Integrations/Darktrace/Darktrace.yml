@@ -51,7 +51,6 @@ configuration:
 - additionalinfo: Minimum Darktrace score for fetched incidents (0-100)
   defaultvalue: '0'
   display: Minimum Score
-  hidden: false
   name: min_score
   required: true
   type: 0
@@ -59,7 +58,6 @@ configuration:
 - additionalinfo: Maximum number of Darktrace model breaches to fetch at a time
   defaultvalue: '50'
   display: Maximum Model Breaches per Fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -67,7 +65,6 @@ configuration:
 - additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
   defaultvalue: 1 day ago
   display: First fetch time
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -86,8 +83,8 @@ configuration:
   type: 4
   section: Connect
   advanced: true
-description: Rapid detection of malicious behavior can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate and manage security events before they have time to escalate.
-display: Darktrace
+description: Deprecated. Use DarktraceMBs, DarktraceAIA, DarktraceAdmin instead.
+display: Darktrace (Deprecated)
 name: Darktrace
 script:
   commands:
@@ -513,7 +510,7 @@ script:
     - contextPath: Darktrace.Component
       description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
@@ -523,3 +520,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)

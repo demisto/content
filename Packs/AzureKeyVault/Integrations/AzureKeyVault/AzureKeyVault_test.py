@@ -1,9 +1,11 @@
+
 from CommonServerPython import *
 from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, list_key_vaults_command, \
     get_key_vault_command, delete_key_vault_command, update_access_policy_command, list_keys_command, get_key_command, \
     delete_key_command, list_secrets_command, get_secret_command, delete_secret_command, list_certificates_command, \
     get_certificate_command, get_certificate_policy_command, convert_attributes_to_readable, \
     convert_key_info_to_readable, convert_time_attributes_to_iso
+import pytest
 
 '''MOCK PARAMETERS '''
 CLIENT_ID = "client_id"
@@ -68,13 +70,15 @@ def test_azure_key_vault_key_vault_create_or_update_command(requests_mock):
     """
 
     mock_response = json.loads(load_mock_response('create_or_update_key_vault.json'))
-    url = f'{BASE_MANAGEMENT_URL}/{VAULT_NAME}{API_MANAGEMENT_VERSION_PARAM}'
+    url = "https://management.azure.com/subscriptions/sub_id/\
+resourceGroups/group_name/providers/Microsoft.KeyVault/vaults/myvault?api-version=2022-07-01"
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.put(url, json=mock_response)
 
     result = create_or_update_key_vault_command(mock_client(), {'vault_name': VAULT_NAME, 'storage': None,
-                                                                'object_id': "00000000-0000-0000-0000-000000000000"})
+                                                                'object_id': "00000000-0000-0000-0000-000000000000"},
+                                                params={"subscription_id": "sub_id", "resource_group_name": "group_name"})
 
     assert len(result.outputs) == 6
     assert result.outputs_prefix == KEY_VAULT_PREFIX
@@ -94,12 +98,12 @@ def test_azure_key_vault_key_vault_list_command(requests_mock):
      - Ensure a sample value from the API matches what is generated in the context.
     """
     mock_response = json.loads(load_mock_response('list_key_vaults.json'))
-    url = f'{BASE_MANAGEMENT_URL}{API_MANAGEMENT_VERSION_PARAM}'
+    url = 'https://management.azure.com/subscriptions/sub_id/providers/Microsoft.KeyVault/vaults?$top=50&api-version=2022-07-01'
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
     requests_mock.get(url, json=mock_response)
 
-    result = list_key_vaults_command(mock_client(), {})
+    result = list_key_vaults_command(mock_client(), {}, params={"subscription_id": "sub_id"})
 
     assert len(result.outputs) == 1
     assert result.outputs_prefix == KEY_VAULT_PREFIX
@@ -123,12 +127,14 @@ def test_azure_key_vault_key_vault_get_command(requests_mock):
     """
 
     mock_response = json.loads(load_mock_response('get_key_vault.json'))
-    url = f'{BASE_MANAGEMENT_URL}/{VAULT_NAME}{API_MANAGEMENT_VERSION_PARAM}'
+    url = 'https://management.azure.com/subscriptions/sub_id/resourceGroups/group_name/providers/\
+Microsoft.KeyVault/vaults/myvault?api-version=2022-07-01'
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
     requests_mock.get(url, json=mock_response)
 
-    result = get_key_vault_command(mock_client(), {'vault_name': VAULT_NAME})
+    result = get_key_vault_command(mock_client(), {'vault_name': VAULT_NAME}, params={
+                                   "subscription_id": "sub_id", "resource_group_name": "group_name"})
 
     assert len(result.outputs) == 6
     assert result.outputs_prefix == 'AzureKeyVault.KeyVault'
@@ -150,12 +156,14 @@ def test_azure_key_vault_key_vault_delete_command(requests_mock):
     """
 
     mock_response = json.loads(load_mock_response('delete_key_vault.json'))
-    url = f'{BASE_MANAGEMENT_URL}/{VAULT_NAME}{API_MANAGEMENT_VERSION_PARAM}'
+    url = "https://management.azure.com/subscriptions/sub_id/resourceGroups/\
+group_name/providers/Microsoft.KeyVault/vaults/myvault?api-version=2022-07-01"
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.delete(url, json=mock_response)
 
-    result = delete_key_vault_command(mock_client(), {'vault_name': VAULT_NAME})
+    result = delete_key_vault_command(mock_client(), {'vault_name': VAULT_NAME}, params={
+                                      "subscription_id": "sub_id", "resource_group_name": "group_name"})
     assert result.outputs is None
 
 
@@ -180,12 +188,14 @@ def test_azure_key_vault_key_vault_access_policy_update_command(requests_mock):
 
     mock_response = json.loads(load_mock_response('update_access_policy.json'))
 
-    url = f'{BASE_MANAGEMENT_URL}/{VAULT_NAME}/accessPolicies/{operation_kind}{API_MANAGEMENT_VERSION_PARAM}'
+    url = "https://management.azure.com/subscriptions/sub_id/resourceGroups/\
+group_name/providers/Microsoft.KeyVault/vaults/myvault/accessPolicies/add?api-version=2022-07-01"
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.put(url, json=mock_response)
 
-    result = update_access_policy_command(mock_client(), command_arguments)
+    result = update_access_policy_command(mock_client(), command_arguments, params={
+                                          "subscription_id": "sub_id", "resource_group_name": "group_name"})
     assert len(result.outputs) == 1
     assert result.outputs.get('properties').get('accessPolicies')[0].get(
         'tenantId') == "00000000-0000-0000-0000-000000000000"
@@ -633,3 +643,38 @@ def test_convert_time_attributes_to_iso():
     assert readable_time_attributes['exp'] == "2017-05-04T22:53:30"
     assert readable_time_attributes['created'] == "2017-05-04T22:53:30"
     assert readable_time_attributes['updated'] == "2017-05-04T22:53:30"
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the out[ut are as expected
+    """
+    from AzureKeyVault import main, MANAGED_IDENTITIES_TOKEN_URL
+    import AzureKeyVault
+
+    def additional_matcher(request):
+        return request.qs['resource'] and (not client_id or request.qs['client_id'] == [client_id])
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, additional_matcher=additional_matcher, json=mock_token)
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureKeyVault, 'return_results')
+    mocker.patch.object(KeyVaultClient, 'list_key_vaults_request')
+
+    main()
+
+    assert 'ok' in AzureKeyVault.return_results.call_args_list[0][0]

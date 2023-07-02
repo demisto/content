@@ -1,0 +1,490 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Gitlab Overview Dashboard",
+            "description": "Gitlab Overview Dashboard - an overview based on Gitlab logs.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-1465",
+                    "data": [
+                        {
+                            "key": "xql_1668355726297",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 41.213553979511424,
+                                "height": 400,
+                                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type\r\n//| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\"\r\n| comp count_distinct(xdm.event.id) as events_count by xdm.event.operation\r\n| view graph type = column subtype = grouped header = \"Sum of events by type\" xaxis = xdm.event.operation yaxis = events_count ",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Sum of events by type\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.event.operation"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "events_count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668438648067",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 58.786446020488576,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d\r\n| dataset = incidents \r\n| filter description contains \"Gitlab\"\r\n| filter status contains \"New\" \r\n//| comp count (severity) as Count by severity\r\n//| view graph type = pie header = \"Open Incidents by Severity (Last 30 days)\" xaxis = severity yaxis = Count ",
+                                "entityType": "xql-widget-table-ddc622b8-4c2a-482b-bbd9-3ba32654c541",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7834",
+                    "data": [
+                        {
+                            "key": "xql_1668419516117",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type\r\n//| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\"\r\n| comp count_distinct(xdm.event.operation) as events by xdm.source.user.username\r\n| view graph type = pie subtype = grouped header = \"Top users by events count\" xaxis = xdm.source.user.username yaxis = events ",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top users by events count\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.source.user.username"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "events"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668423202453",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n|sort asc _time \r\n|bin _time span = 1D\r\n|comp count(xdm.event.id) as EventCount by _time\r\n| view graph type = line header = \"Event Type per day\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Event Type per day\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "_time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "EventCount"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "\"EventCount\"",
+                                                    "\"#1e83f7\""
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668436849007",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"Top IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "map",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top IP Locations\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "country"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "15"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "10"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "`false`"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "f87d82c76c4b45c283cef888d624e111"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1668355726297",
+            "title": "Gitlab - Top event types",
+            "creation_time": 1668355726297,
+            "description": "shows top event types",
+            "data": {
+                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type\r\n//| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\"\r\n| comp count_distinct(xdm.event.id) as events_count by xdm.event.operation\r\n| view graph type = column subtype = grouped header = \"Sum of events by type\" xaxis = xdm.event.operation yaxis = events_count ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Sum of events by type\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.event.operation"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "events_count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668419516117",
+            "title": "Gitlab - Top users by events count",
+            "creation_time": 1668419516117,
+            "description": "Show event count per username",
+            "data": {
+                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type\r\n//| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\"\r\n| comp count_distinct(xdm.event.operation) as events by xdm.source.user.username\r\n| view graph type = pie subtype = grouped header = \"Top users by events count\" xaxis = xdm.source.user.username yaxis = events ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top users by events count\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.source.user.username"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "events"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668423202453",
+            "title": "Gitlab - Events count per day",
+            "creation_time": 1668423202453,
+            "description": "Events count per day",
+            "data": {
+                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n|sort asc _time \r\n|bin _time span = 1D\r\n|comp count(xdm.event.id) as EventCount by _time\r\n| view graph type = line header = \"Event Type per day\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Event Type per day\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "EventCount"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"EventCount\"",
+                                    "\"#1e83f7\""
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668436849007",
+            "title": "Gitlab - Top IP locations",
+            "creation_time": 1668436849007,
+            "description": "Shows the locations of top IP address",
+            "data": {
+                "phrase": "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"Top IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "map",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top IP Locations\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "country"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "15"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "10"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "`false`"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668438648067",
+            "title": "Gitlab - Open incidents",
+            "creation_time": 1668438648067,
+            "description": "List of open incidents related to Gitlab",
+            "data": {
+                "phrase": "config timeframe = 30d\r\n| dataset = incidents \r\n| filter description contains \"Gitlab\"\r\n| filter status contains \"New\" \r\n//| comp count (severity) as Count by severity\r\n//| view graph type = pie header = \"Open Incidents by Severity (Last 30 days)\" xaxis = severity yaxis = Count ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

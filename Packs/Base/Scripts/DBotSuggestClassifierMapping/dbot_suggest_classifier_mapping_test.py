@@ -2,6 +2,7 @@ import pytest
 
 import DBotSuggestClassifierMapping
 from DBotSuggestClassifierMapping import *
+from freezegun import freeze_time
 
 all_incident_fields = []
 
@@ -19,6 +20,7 @@ def setup(mocker):
     init()
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_date_validator():
     date_validator = DateValidator()
 
@@ -30,6 +32,7 @@ def test_date_validator():
     assert date_validator.has_valid_date("2020.05.14 12:58:31")
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_validator():
     validator = Validator()
 
@@ -164,6 +167,7 @@ def test_get_most_relevant_match_for_field():
     get_most_relevant_match_for_field("value", cnt) == "value 3"
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_main_qradar(mocker):
     incidents = json.load(open('TestData/qradar.json'))
 

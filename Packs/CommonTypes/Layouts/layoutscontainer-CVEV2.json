@@ -1,0 +1,834 @@
+{
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_cvssversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_cvssscore",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_cvssvector",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_cvsstable",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_vulnerableproducts",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "indicator",
+    "id": "cveRep",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "main",
+                "name": "Summary",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "0030d590-7d0d-11ec-abe4-4fa9d22d9889",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "790baae0-8a4f-11ec-a1ef-6369524b39c7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "ea9dea60-7d0c-11ec-abe4-4fa9d22d9889",
+                                "index": 2,
+                                "listId": "main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "name",
+                                "height": 22,
+                                "id": "600f1ba0-7d19-11ec-9cc4-5f8baabc422c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "96772e60-ccc8-11ea-937a-6f8841d9fed1",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "083ac1b0-4e75-11ea-8bf6-67db400d7da5",
+                                "index": 6,
+                                "listId": "main-ffe4f7b0-4e74-11ea-8bf6-67db400d7da5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "b6cab200-9db5-11ea-a17b-1d06fd239c52",
+                                "index": 6,
+                                "listId": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-c5fc5760-ef29-11ed-800c-4b027a433365",
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "f4d78d70-9db5-11ea-a17b-1d06fd239c52",
+                                "index": 6,
+                                "listId": "main-ffe4f7b0-4e74-11ea-8bf6-67db400d7da5",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerability Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 1,
+                        "maxH": null
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "id",
+                                "width": 110
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "severity",
+                                "width": 80
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "type",
+                                "width": 104
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "status",
+                                "width": 80
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "owner",
+                                "width": 160
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
+                        "isVisible": true,
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 9,
+                        "maxH": null
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "created",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "content",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "source",
+                                "width": 100
+                            }
+                        ],
+                        "h": 3,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1,
+                        "maxH": null
+                    },
+                    {
+                        "h": 5,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4,
+                        "maxH": null
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
+                        "items": [
+                            {
+                                "args": {},
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "fe326d30-a9af-11ea-a4b1-a5bbd1788c5a",
+                                "index": 0,
+                                "name": "Enrich indicator",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "64422e90-bf71-11ea-b085-3f354e53d3e6",
+                                "index": 0,
+                                "listId": "main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
+                                "name": "Expire indicator",
+                                "scriptId": "Builtin|||expireIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0,
+                        "maxH": null
+                    },
+                    {
+                        "h": 3,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-cba17b40-7d0c-11ec-abe4-4fa9d22d9889",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6,
+                        "maxH": null
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-8c4ad450-8a4a-11ec-a1ef-6369524b39c7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "f8a8e2e0-7d0c-11ec-abe4-4fa9d22d9889",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerability Description ",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0,
+                        "maxH": null
+                    },
+                    {
+                        "h": 1,
+                        "hideName": false,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b7da5140-ef25-11ed-800c-4b027a433365",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "CVSS Score",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0,
+                        "description": "",
+                        "maxH": null,
+                        "query": "cvss_color",
+                        "queryType": "script",
+                        "type": "dynamicIndicator"
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "main-a79c78a0-ff8b-11ed-9881-51d8dd00e8e3",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cvssversion",
+                                "height": 22,
+                                "id": "26bc3a40-8e3a-11ec-9c49-5f11296515d9",
+                                "index": 0,
+                                "listId": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cvssvector",
+                                "height": 22,
+                                "id": "d0c64ea0-8e39-11ec-9c49-5f11296515d9",
+                                "index": 1,
+                                "listId": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvsstable",
+                                "height": 106,
+                                "id": "d532a970-8e39-11ec-9c49-5f11296515d9",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "CVSS Table",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "main-e9922700-ff8b-11ed-9881-51d8dd00e8e3",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "vulnerableproducts",
+                                "height": 22,
+                                "id": "05d801a0-ff8c-11ed-9881-51d8dd00e8e3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerable Products",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "kopixekjqw",
+                "name": "Additional Details",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "b891551f-96df-4348-8c29-a243172176a7-kopixekjqw-27fffce0-beb4-11ea-b519-21bdfb6f5a43",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Details",
+                        "static": false,
+                        "type": "customDetails",
+                        "w": 3,
+                        "x": 0,
+                        "y": 4,
+                        "maxH": null,
+                        "minW": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "b891551f-96df-4348-8c29-a243172176a7-kopixekjqw-89359390-9878-11ec-8a36-89f2ae31e8cd",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "9835c180-9878-11ec-8a36-89f2ae31e8cd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "96266980-9878-11ec-8a36-89f2ae31e8cd",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Additional Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 3
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-relatedIncidents",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-comments",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-b92ed1c0-ccbd-11ea-937a-6f8841d9fed1",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "8337a3a0-84ed-11ec-a589-e73aadc98c9a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "8f4f4870-8a4f-11ec-a1ef-6369524b39c7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "92f211b0-8a4f-11ec-a1ef-6369524b39c7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "name",
+                                "height": 22,
+                                "id": "9693d8b0-84ed-11ec-a589-e73aadc98c9a",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "a0e3a360-ccc8-11ea-937a-6f8841d9fed1",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerability Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cvssversion",
+                                "height": 22,
+                                "id": "03bdb440-9945-11ec-97f5-a1136dc35e61",
+                                "index": 0,
+                                "listId": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvssvector",
+                                "height": 22,
+                                "id": "aa548700-9898-11ec-8810-754d8dd0d227",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvsstable",
+                                "height": 106,
+                                "id": "aed665a0-9898-11ec-8810-754d8dd0d227",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "CVSS",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-a9e35130-8a4b-11ec-a1ef-6369524b39c7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 44,
+                                "id": "aafdd440-84ed-11ec-a589-e73aadc98c9a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerability Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-b7f82270-ff8c-11ed-9881-51d8dd00e8e3",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "CVSS Score",
+                        "query": "cvss_color",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "ksuqyogsni",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "ksuqyogsni-ec1e5850-84ed-11ec-a589-e73aadc98c9a",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "4uughxrfxl",
+                "name": "CPEs",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "4uughxrfxl-d5b003a0-ff8c-11ed-9881-51d8dd00e8e3",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "vulnerableproducts",
+                                "height": 22,
+                                "id": "214a6a30-ff8d-11ed-9881-51d8dd00e8e3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerable Products",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "CVE Indicator",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "CVE Indicator Layout"
+}

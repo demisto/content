@@ -43,6 +43,7 @@ class FeedbackStatus(Enum):
     EXCEPTION_GRANTED = 'EXCEPTION_GRANTED'
     EXCEPTION_NOT_REQUESTED = 'EXCEPTION_NOT_REQUESTED'
     SEND_NOTIFICATION_FAILURE = 'SEND_NOTIFICATION_FAILURE'
+    EXCEPTION_DENIED = 'EXCEPTION_DENIED'
 
 
 class Client(BaseClient):
@@ -155,7 +156,8 @@ class Client(BaseClient):
         if res.status_code != 204:
             try:
                 result_json = res.json()
-            except json.decoder.JSONDecodeError:
+            # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError
+            except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError):
                 result_json = {}
 
         return result_json, res.status_code
@@ -188,7 +190,8 @@ class Client(BaseClient):
         if res.status_code != 204:
             try:
                 result_json = res.json()
-            except json.decoder.JSONDecodeError:
+            # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError
+            except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError):
                 result_json = {}
 
         return result_json, res.status_code

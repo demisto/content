@@ -1,0 +1,5 @@
+name: myIntegration
+marketplaces:
+- marketplacev2
+subtype: python3
+type: python

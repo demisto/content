@@ -2,9 +2,10 @@ import demistomock as demisto
 from CommonServerPython import *
 import requests
 import collections
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
 USE_SSL = not demisto.params().get('insecure', False)

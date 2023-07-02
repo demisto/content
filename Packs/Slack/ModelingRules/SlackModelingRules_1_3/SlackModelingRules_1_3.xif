@@ -4,7 +4,6 @@ filter
 | alter
     xdm.event.id = id,
     xdm.event.operation = action,
-    xdm.source.user.user_type = json_extract_scalar(actor, "$.type"),
     xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
     xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
     xdm.target.resource.type = json_extract_scalar(entity, "$.type"),
@@ -20,7 +19,6 @@ filter
 | alter
     xdm.event.id = id,
     xdm.event.operation = action,
-    xdm.source.user.user_type = json_extract_scalar(actor, "$.type"),
     xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
     xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
     xdm.target.user.identifier = json_extract_scalar(entity, "$.user.id"),

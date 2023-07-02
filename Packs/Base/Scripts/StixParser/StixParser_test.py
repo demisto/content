@@ -45,7 +45,8 @@ def test_parse_stix1(indicators_file, expected_result):
     ('stix2.json', 'stix2_results.json'),
     ('stix2_extension1.json', 'expected_result_extension1.json'),
     ('stix2_extension2.json', 'expected_result_extension2.json'),
-    ('stix2_example8_report.json', 'expected_result_example8.json')
+    ('stix2_example8_report.json', 'expected_result_example8.json'),
+    ('stix2_example_in.json', 'expected_result_example_in.json')
 ])
 def test_parse_stix2(indicators_file, expected_result):
     """

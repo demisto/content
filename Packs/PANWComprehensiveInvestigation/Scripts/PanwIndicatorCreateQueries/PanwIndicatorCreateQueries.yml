@@ -21,7 +21,6 @@ comment: The script accepts indicators as input and creates an indicator query i
 commonfields:
   id: PanwIndicatorCreateQueries
   version: -1
-enabled: false
 name: PanwIndicatorCreateQueries
 outputs:
 - contextPath: Query.IP.CortexTrapsIP
@@ -75,5 +74,5 @@ type: python
 tests:
 - No test
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0

@@ -1,3 +1,7 @@
+The Volatility integration and automation rely on the D2 agent, which has been deprecated.
+Therefore, the Volatility content is marked as deprecated.
+No available replacement.
+
 Executes a volatility with command and returns a tabular output. In cases where proper JSON output is not supported, scripts will return errors. The User should use the raw command.
 
 ## Script Data

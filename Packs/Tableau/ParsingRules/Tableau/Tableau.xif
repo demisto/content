@@ -1,21 +1,10 @@
-[INGEST:vendor="tableau", product="log", target_dataset="tableau_log_raw"]
-alter tmp_date_part = arraystring(regextract(_raw_log, "^(\d{4}-\d+\-\d+)\s+\d+\:\d+\:\d+"), ""),
+[INGEST:vendor="tableau", product="log", target_dataset="tableau_log_raw", no_hit=keep]
+alter 
+    tmp_date_part = arraystring(regextract(_raw_log, "^(\d{4}-\d+\-\d+)\s+\d+\:\d+\:\d+"), ""),
     tmp_time_part = arraystring(regextract(_raw_log, "^\d{4}-\d+\-\d+\s+(\d+\:\d+\:\d+)"), ""),
-    tmp_mili_part = arraystring(regextract(_raw_log, "^\d{4}-\d+\-\d+\s+\d+\:\d+\:\d+\.(\d+)\s"), ""),
-    tmp_zhrs_part = to_integer(arraystring(regextract(_raw_log, "^\d{4}-\d+\-\d+\s+\d+\:\d+\:\d+\.\d+\s[\-|\+](\d{2})\d{2}\s"), "")),
-    tmp_zmins_part = to_integer(arraystring(regextract(_raw_log, "^\d{4}-\d+\-\d+\s+\d+\:\d+\:\d+\.\d+\s[\-|\+]\d{2}(\d{2})\s"), ""))
-//
-//
-| alter tmp_time_format = to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")), "seconds"),
-    tmp_zhrssec_part = multiply(tmp_zhrs_part, 3600),
-    tmp_zminsec_part = multiply(tmp_zmins_part, 60)
-//
-| alter tmp_change_seconds = add(tmp_zhrssec_part, tmp_zminsec_part),
-    tmp_zone_validate_po_ne = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}\d+(\+|\-)\d{2}"), "")
-//
-| alter tmp_timeseconds = if(tmp_zone_validate_po_ne = "+", add(tmp_time_format, tmp_change_seconds), subtract(tmp_time_format, tmp_change_seconds))
-//
-| alter tmp_timeseconds_string = to_integer(arraystring(arraycreate(format_string("%d",tmp_timeseconds), tmp_mili_part), ""))
-| alter _time = to_timestamp(tmp_timeseconds_string, "millis")
-//
-| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_zhrs_part, tmp_zmins_part, tmp_time_format, tmp_zhrssec_part, tmp_zminsec_part, tmp_change_seconds, tmp_zone_validate_po_ne, tmp_timeseconds, tmp_timeseconds_string;
+    tmp_zone_part = arraystring(regextract(_raw_log, "^\d{4}-\d+\-\d+\s+\d+\:\d+\:\d+\.\d+\s([\+|\-]\d+)"), "")
+| alter 
+    tmp_datetime = arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")
+| alter
+    _time = parse_timestamp("%Y-%m-%d %H:%M:%S %z", arraystring(arraycreate(tmp_datetime, tmp_zone_part), " "))
+| fields -tmp_date_part, tmp_time_part, tmp_zone_part, tmp_zone_part, tmp_datetime;

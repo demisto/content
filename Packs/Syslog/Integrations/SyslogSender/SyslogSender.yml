@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Syslog Sender
   version: -1
@@ -7,19 +10,38 @@ configuration:
   name: address
   required: false
   type: 0
+  section: Connect
+  additionalinfo: A Syslog server address must be provided. Note, the maximal supported length of a label inside an address is 64 characters.
 - defaultvalue: '514'
   display: Port
   name: port
   required: false
   type: 0
+  section: Connect
+  additionalinfo: When using UDP or TCP, port 514 is the default. When using TLS, port 6514 is the default.
 - defaultvalue: UDP
   display: Protocol
   name: protocol
   options:
   - TCP
   - UDP
+  - TLS
   required: false
   type: 15
+  section: Connect
+  advanced: true
+  additionalinfo: TLS versions supported are 1.2 and above.
+- name: certificate
+  required: false
+  type: 9
+  displaypassword: Certificate
+  hiddenusername: true
+  additionalinfo: Required for TLS.
+- display: Self Signed Certificate
+  name: self_signed_certificate
+  required: false
+  type: 8
+  additionalinfo: Required for TLS. Check if the certificate is self signed.
 - defaultvalue: LOG_USER
   display: Facility
   name: facility
@@ -46,6 +68,8 @@ configuration:
   - LOG_LOCAL7
   required: false
   type: 15
+  section: Connect
+  advanced: true
 - defaultvalue: LOG_INFO
   display: Log level to send
   name: priority
@@ -57,6 +81,8 @@ configuration:
   - LOG_CRIT
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - defaultvalue: Low
   display: Minimum severity of incidents to send messages on
   name: severity
@@ -68,8 +94,7 @@ configuration:
   - Critical
   required: false
   type: 15
-description: Use the Syslog Sender integration to send messages and mirror incident
-  War Room entries to Syslog.
+description: Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.
 display: Syslog Sender
 name: Syslog Sender
 script:
@@ -78,8 +103,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: The mirroring type. Can be "all", which mirrors everything, "chat",
-        which mirrors only chats (not commands), or "none", which stops all mirroring.
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
       isArray: false
       name: type
       predefined:
@@ -108,8 +132,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Demisto.
-        Can be "true" or "false". The default value is "false'.
+      description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". The default value is "false'.
       isArray: false
       name: ignoreAddURL
       predefined:
@@ -119,8 +142,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR",
-        or "CRITICAL".
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
       isArray: false
       name: level
       predefined:
@@ -144,8 +166,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR",
-        or "CRITICAL".
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
       isArray: false
       name: level
       predefined:
@@ -164,7 +185,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The protocol to use. Can be "TCP" or "UDP".
+      description: The protocol to use. Can be "TCP", "UDP", or "TLS".
       isArray: false
       name: protocol
       predefined:
@@ -210,7 +231,7 @@ script:
     description: Sends a message to Syslog.
     execution: false
     name: syslog-send
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/syslog:1.0.0.48738
   feed: false
   isfetch: false
   longRunning: false

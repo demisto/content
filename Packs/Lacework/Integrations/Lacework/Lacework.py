@@ -1,13 +1,14 @@
+import ast
+import hashlib
 import json
 
 from datetime import datetime, timedelta, timezone
 
-from laceworksdk import LaceworkClient
 import demistomock as demisto
-from CommonServerPython import *
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+from CommonServerPython import *
+from laceworksdk import LaceworkClient
+from laceworksdk.exceptions import ApiError
 
 handle_proxy()
 
@@ -16,19 +17,22 @@ LACEWORK_ACCOUNT = demisto.params().get('lacework_account')
 LACEWORK_SUBACCOUNT = demisto.params().get('lacework_subaccount', None)
 LACEWORK_API_KEY = demisto.params()['lacework_api_key']
 LACEWORK_API_SECRET = demisto.params()['lacework_api_secret']
-LACEWORK_EVENT_SEVERITY = demisto.params()['lacework_event_severity']
-LACEWORK_EVENT_HISTORY_DAYS = demisto.params()['lacework_event_history']
+LACEWORK_ALERT_SEVERITY = demisto.params()['lacework_event_severity']
+LACEWORK_ALERT_HISTORY_DAYS = demisto.params()['lacework_event_history']
+
+LACEWORK_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+LACEWORK_ROW_LIMIT = 500000
 
 try:
     if LACEWORK_SUBACCOUNT:
-        lacework_client = LaceworkClient(account=LACEWORK_ACCOUNT,
-                                         subaccount=LACEWORK_SUBACCOUNT,
-                                         api_key=LACEWORK_API_KEY,
-                                         api_secret=LACEWORK_API_SECRET)
+        lw_client = LaceworkClient(account=LACEWORK_ACCOUNT,
+                                   subaccount=LACEWORK_SUBACCOUNT,
+                                   api_key=LACEWORK_API_KEY,
+                                   api_secret=LACEWORK_API_SECRET)
     else:
-        lacework_client = LaceworkClient(account=LACEWORK_ACCOUNT,
-                                         api_key=LACEWORK_API_KEY,
-                                         api_secret=LACEWORK_API_SECRET)
+        lw_client = LaceworkClient(account=LACEWORK_ACCOUNT,
+                                   api_key=LACEWORK_API_KEY,
+                                   api_secret=LACEWORK_API_SECRET)
 except Exception as e:
     demisto.results("Lacework API authentication failed. Please validate Account, \
                     Sub-Account, API Key, and API Secret. Error: {}".format(e))
@@ -36,23 +40,25 @@ except Exception as e:
 ''' HELPER FUNCTIONS '''
 
 
-def get_event_severity_threshold():
+def get_alert_severity_int(sev_string):
     """
-    Convert the Event Severity string to the appropriate integer
+    Convert the Alert Severity string to the appropriate integer
     """
 
-    if LACEWORK_EVENT_SEVERITY == 'critical':
+    sev_string = sev_string.lower()
+
+    if sev_string == 'critical':
         return 1
-    elif LACEWORK_EVENT_SEVERITY == 'high':
+    elif sev_string == 'high':
         return 2
-    elif LACEWORK_EVENT_SEVERITY == 'medium':
+    elif sev_string == 'medium':
         return 3
-    elif LACEWORK_EVENT_SEVERITY == 'low':
+    elif sev_string == 'low':
         return 4
-    elif LACEWORK_EVENT_SEVERITY == 'informational':
+    elif sev_string in ('info', 'informational'):
         return 5
     else:
-        raise Exception('Invalid Event Severity Threshold was defined.')
+        raise Exception(f'Invalid Alert Severity Threshold was defined: {sev_string}')
 
 
 def create_entry(title, data, ec, human_readable=None):
@@ -71,6 +77,51 @@ def create_entry(title, data, ec, human_readable=None):
         'HumanReadable': tableToMarkdown(title, human_readable) if data else 'No result were found',
         'EntryContext': ec
     }
+
+
+def create_search_json(start_time, end_time, filters, returns, time_delta=None):
+    """
+    Create a properly formatted JSON object with search parameters
+    """
+
+    json_request = {}
+
+    now = datetime.now(timezone.utc)
+
+    if time_delta is None:
+        time_delta = timedelta(days=1)
+
+    if start_time is None:
+        start_time = now - time_delta
+        start_time = start_time.strftime(LACEWORK_DATE_FORMAT)
+
+    if end_time is None:
+        end_time = now.strftime(LACEWORK_DATE_FORMAT)
+
+    json_request['timeFilter'] = {
+        'startTime': start_time,
+        'endTime': end_time
+    }
+
+    if filters:
+        json_request['filters'] = filters
+
+    if returns:
+        json_request['returns'] = returns
+
+    return json_request
+
+
+def create_vulnerability_ids(vulnerability_data):
+    """
+    Calculate Unique IDs for each vulnerability
+    """
+
+    for vulnerability in vulnerability_data:
+        vulnerability_string = json.dumps(vulnerability).encode('utf-8')
+        vulnerability['vulnHash'] = hashlib.new('md5', vulnerability_string, usedforsecurity=False).hexdigest()
+
+    return vulnerability_data
 
 
 def format_compliance_data(compliance_data, rec_id):
@@ -123,9 +174,14 @@ def get_aws_compliance_assessment():
     rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'AWS_CIS_S3')
 
-    response = lacework_client.compliance.get_latest_aws_report(account_id,
-                                                                file_format="json",
-                                                                report_type=report_type)
+    response = lw_client.reports.get(
+        primary_query_id=account_id,
+        format="json",
+        type="COMPLIANCE",
+        report_type=report_type,
+        template_name="Default",
+        latest=True
+    )
 
     results = format_compliance_data(response, rec_id)
     return_results(results)
@@ -141,10 +197,15 @@ def get_azure_compliance_assessment():
     rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'AZURE_CIS')
 
-    response = lacework_client.compliance.get_latest_azure_report(tenant_id,
-                                                                  subscription_id,
-                                                                  file_format="json",
-                                                                  report_type=report_type)
+    response = lw_client.reports.get(
+        primary_query_id=tenant_id,
+        secondary_query_id=subscription_id,
+        format="json",
+        type="COMPLIANCE",
+        report_type=report_type,
+        template_name="Default",
+        latest=True
+    )
 
     results = format_compliance_data(response, rec_id)
     return_results(results)
@@ -155,15 +216,18 @@ def get_gcp_compliance_assessment():
     Get the latest GCP compliance assessment
     """
 
-    organization_id = demisto.args().get('organization_id')
     project_id = demisto.args().get('project_id')
     rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'GCP_CIS')
 
-    response = lacework_client.compliance.get_latest_gcp_report(organization_id,
-                                                                project_id,
-                                                                file_format="json",
-                                                                report_type=report_type)
+    response = lw_client.reports.get(
+        secondary_query_id=project_id,
+        format="json",
+        type="COMPLIANCE",
+        report_type=report_type,
+        template_name="Default",
+        latest=True
+    )
 
     results = format_compliance_data(response, rec_id)
     return_results(results)
@@ -176,7 +240,7 @@ def get_gcp_projects_by_organization():
 
     organization_id = demisto.args().get('organization_id')
 
-    response = lacework_client.compliance.list_gcp_projects(organization_id)
+    response = lw_client.configs.gcp_projects.get(org_id=organization_id)
 
     ec = {"Lacework.GCP(val.organization === obj.organization)": response['data']}
     create_entry('Google Cloud Platform Projects for Organization ' + str(organization_id),
@@ -184,113 +248,55 @@ def get_gcp_projects_by_organization():
                  ec)
 
 
-def run_aws_compliance_assessment():
-    """
-    Run an AWS compliance assessment
-    """
-
-    account_id = demisto.args().get('account_id')
-
-    run_report_response = lacework_client.run_reports.aws(account_id)
-
-    if run_report_response:
-        return {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["text"],
-            "Contents": 'Compliance assessment running on AWS Account ID ' + str(account_id)
-        }
-    else:
-        return {
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
-            "Contents": 'Failed to trigger AWS compliance assessment.'
-        }
-
-
-def run_azure_compliance_assessment():
-    """
-    Run an Azure compliance assessment
-    """
-
-    tenant_id = demisto.args().get('tenant_id')
-
-    run_report_response = lacework_client.run_reports.azure(tenant_id)
-
-    if run_report_response:
-        return {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["text"],
-            "Contents": 'Compliance assessment running on Azure Tenant ID ' + str(tenant_id)
-        }
-    else:
-        return {
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
-            "Contents": 'Failed to trigger Azure compliance assessment.'
-        }
-
-
-def run_gcp_compliance_assessment():
-    """
-    Run a GCP compliance assessment
-    """
-
-    project_id = demisto.args().get('project_id')
-
-    run_report_response = lacework_client.run_reports.gcp(project_id)
-
-    if run_report_response:
-        return {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["text"],
-            "Contents": 'Compliance assessment running on GCP Project ID ' + str(project_id)
-        }
-    else:
-        return {
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
-            "Contents": 'Failed to trigger GCP compliance assessment.'
-        }
-
-
 def get_container_vulnerabilities():
     """
     Get Container Vulnerabilities
     """
 
-    id_type = demisto.args().get('id_type', 'image_digest')
-    image_id = demisto.args().get('image_id', None)
-    image_digest = demisto.args().get('image_digest', None)
-    severity = demisto.args().get('severity', None)
-    fixable = demisto.args().get('fixable', None)
     start_time = demisto.args().get('start_time', None)
     end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', None)
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
 
-    if id_type == 'image_digest':
-        response = lacework_client.vulnerabilities.get_container_vulnerabilities(image_digest=image_digest,
-                                                                                 severity=severity,
-                                                                                 fixable=fixable,
-                                                                                 start_time=start_time,
-                                                                                 end_time=end_time)
-    elif id_type == 'image_id':
-        response = lacework_client.vulnerabilities.get_container_vulnerabilities(image_id=image_id,
-                                                                                 severity=severity,
-                                                                                 fixable=fixable,
-                                                                                 start_time=start_time,
-                                                                                 end_time=end_time)
-    else:
-        raise Exception('Invalid Container Image ID Type.')
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
 
-    full_data = response
-    if response['data'].get('image', ''):
-        response['data'].pop('image')
-    human_readable = response
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    ec = {"Lacework.Vulnerability.Container(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
-    return create_entry("Lacework Vulnerability Data for Container",
-                        full_data['data'],
-                        ec,
-                        human_readable=human_readable['data'])
+    try:
+        response = lw_client.vulnerabilities.containers.search(
+            json=json_request
+        )
+
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            response_data = create_vulnerability_ids(response_data)
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The vulnerability search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs#tag/Vulnerabilities'
+        )
+
+    ec = {"Lacework.Vulnerability.Container(val.vulnHash === obj.vulnHash)": response_data}
+    return create_entry("Lacework Vulnerability Data for Containers",
+                        response_data,
+                        ec)
 
 
 def get_host_vulnerabilities():
@@ -298,116 +304,157 @@ def get_host_vulnerabilities():
     Get Host Vulnerabilities
     """
 
-    fixable = demisto.args().get('fixable', None)
-    namespace = demisto.args().get('namespace', None)
-    severity = demisto.args().get('severity', None)
     start_time = demisto.args().get('start_time', None)
     end_time = demisto.args().get('end_time', None)
-    cve = demisto.args().get('cve', None)
-    limit = demisto.args().get('limit', None)
+    filters = demisto.args().get('filters', None)
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
 
-    response = lacework_client.vulnerabilities.get_host_vulnerabilities(fixable=fixable,
-                                                                        namespace=namespace,
-                                                                        severity=severity,
-                                                                        start_time=start_time,
-                                                                        end_time=end_time,
-                                                                        cve=cve)
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
 
-    # If a limit is set, then use it
-    if limit:
-        try:
-            limit = int(limit)
-            response['data'] = response['data'][0:limit]
-        except Exception:
-            return {
-                "Type": entryTypes["error"],
-                "ContentsFormat": formats["text"],
-                "Contents": "The provided limit parameter was invalid."
-            }
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    ec = {"Lacework.Vulnerability.Host(val.cve_id === obj.cve_id)": response['data']}
-    return create_entry("Lacework Host Vulnerability Data",
+    try:
+        response = lw_client.vulnerabilities.hosts.search(
+            json=json_request
+        )
+
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            response_data = create_vulnerability_ids(response_data)
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The vulnerability search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs#tag/Vulnerabilities'
+        )
+
+    ec = {"Lacework.Vulnerability.Host(val.vulnHash === obj.vulnHash)": response_data}
+    return create_entry("Lacework Vulnerability Data for Hosts",
+                        response_data,
+                        ec)
+
+
+def get_alert_details():
+    """
+    Get Alert Details
+    """
+
+    alert_id = demisto.args().get('alert_id')
+    scope = demisto.args().get('scope', 'Details')
+
+    response = lw_client.alerts.get_details(alert_id, scope)
+
+    ec = {"Lacework.Alert(val.alertId === obj.alertId)": response['data']}
+    return create_entry("Lacework Alert " + str(alert_id),
                         response['data'],
                         ec)
 
 
-def get_event_details():
+def get_compliance_report():
     """
-    Get Event Details
+    Get Compliance Report
     """
 
-    event_id = demisto.args().get('event_id')
+    primary_query_id = demisto.args().get('primary_query_id')
+    secondary_query_id = demisto.args().get('secondary_query_id')
+    report_name = demisto.args().get('report_name')
+    report_type = demisto.args().get('report_type')
+    template_name = demisto.args().get('template_name')
 
-    response = lacework_client.events.get_details(event_id)
+    # Optional filtering
+    rec_id = demisto.args().get('rec_id')
 
-    ec = {"Lacework.Event(val.EVENT_ID === obj.EVENT_ID)": response['data']}
-    return create_entry("Lacework Event " + str(event_id),
-                        response['data'],
-                        ec)
+    response = lw_client.reports.get(
+        primary_query_id=primary_query_id,
+        secondary_query_id=secondary_query_id,
+        format="json",
+        type="COMPLIANCE",
+        report_name=report_name,
+        report_type=report_type,
+        template_name=template_name,
+        latest=True
+    )
+
+    results = format_compliance_data(response, rec_id)
+    return_results(results)
 
 
 def fetch_incidents():
     """
-    Function to fetch incidents (events) from Lacework
+    Function to fetch incidents (alerts) from Lacework
     """
-
-    date_format = "%Y-%m-%dT%H:%M:%SZ"
 
     # Make a placeholder for events
     new_incidents = []
 
     # Get data from the last run
-    max_event_id = demisto.getLastRun().get('max_event_id', 0)
+    max_alert_id = demisto.getLastRun().get('max_alert_id', 0)
 
     now = datetime.now(timezone.utc)
 
     # Generate ISO8601 Timestamps
-    end_time = now.strftime(date_format)
-    start_time = now - timedelta(days=int(LACEWORK_EVENT_HISTORY_DAYS))
-    start_time = start_time.strftime(date_format)
+    end_time = now.strftime(LACEWORK_DATE_FORMAT)
+    start_time = now - timedelta(days=int(LACEWORK_ALERT_HISTORY_DAYS))
+    start_time = start_time.strftime(LACEWORK_DATE_FORMAT)
 
-    # Get the event severity threshold
-    event_severity_threshold = get_event_severity_threshold()
+    # Get the alert severity threshold
+    alert_severity_threshold = get_alert_severity_int(LACEWORK_ALERT_SEVERITY)
 
-    # Get events from Lacework
-    events_response = lacework_client.events.get_for_date_range(start_time, end_time)
-    events_data = events_response.get('data', [])
+    # Get alerts from Lacework
+    alerts_response = lw_client.alerts.get(start_time, end_time)
+    alerts_data = alerts_response.get('data', [])
 
-    temp_max_event_id = max_event_id
+    temp_max_alert_id = max_alert_id
 
-    # Iterate through all events
-    for event in events_data:
+    # Iterate through all alerts
+    for alert in alerts_data:
 
-        # Convert the current Event ID to an integer
-        event_id = int(event['EVENT_ID'])
-        event_severity = int(event['SEVERITY'])
+        # Convert the current Alert ID to an integer
+        alert_id = int(alert['alertId'])
+        # Get the numeric value for severity
+        alert_severity = get_alert_severity_int(alert['severity'])
 
-        # If the event is severe enough, continue
-        if event_severity <= event_severity_threshold:
+        # If the alert is severe enough, continue
+        if alert_severity <= alert_severity_threshold:
 
-            # If the Event ID is newer than we've imported, then add it
-            if event_id > max_event_id:
+            # If the Alert ID is newer than we've imported, then add it
+            if alert_id > max_alert_id:
 
-                # Store our new max Event ID
-                if event_id > temp_max_event_id:
-                    temp_max_event_id = event_id
+                # Store our new max Alert ID
+                if alert_id > temp_max_alert_id:
+                    temp_max_alert_id = alert_id
 
                 # Get the event details from Lacework
-                event_details = lacework_client.events.get_details(event['EVENT_ID'])
-                event_details['data'][0]['SEVERITY'] = event['SEVERITY']
+                alert_details = lw_client.alerts.get_details(alert['alertId'], 'Details')
 
                 incident = {
-                    'name': 'Lacework Event: ' + event['EVENT_TYPE'],
-                    'occurred': event['START_TIME'],
-                    'rawJSON': json.dumps(event_details['data'][0])
+                    'name': 'Lacework Event: ' + alert['alertType'],
+                    'occurred': alert['startTime'],
+                    'rawJSON': json.dumps(alert_details['data'])
                 }
 
                 new_incidents.append(incident)
 
-    max_event_id = temp_max_event_id
+    max_alert_id = temp_max_alert_id
 
     demisto.setLastRun({
-        'max_event_id': max_event_id
+        'max_alert_id': max_alert_id
     })
     demisto.incidents(new_incidents)
 
@@ -421,10 +468,12 @@ try:
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         try:
-            demisto.debug('Getting all integrations for "test-module" run')
-            response = lacework_client.integrations.get_all()
+            demisto.debug('Getting User Profile for "test-module" run')
+            response = lw_client.user_profile.get()
             demisto.debug(response)
-            if response['ok']:
+
+            keys = set(['username', 'url', 'accounts'])
+            if keys.issubset(response['data'][0].keys()):
                 demisto.results('ok')
         except Exception as error:
             demisto.results(error)
@@ -436,18 +485,14 @@ try:
         demisto.results(get_gcp_compliance_assessment())
     elif demisto.command() == 'lw-get-gcp-projects-by-organization':
         demisto.results(get_gcp_projects_by_organization())
-    elif demisto.command() == 'lw-run-aws-compliance-assessment':
-        demisto.results(run_aws_compliance_assessment())
-    elif demisto.command() == 'lw-run-azure-compliance-assessment':
-        demisto.results(run_azure_compliance_assessment())
-    elif demisto.command() == 'lw-run-gcp-compliance-assessment':
-        demisto.results(run_gcp_compliance_assessment())
     elif demisto.command() == 'lw-get-container-vulnerabilities':
         demisto.results(get_container_vulnerabilities())
     elif demisto.command() == 'lw-get-host-vulnerabilities':
         demisto.results(get_host_vulnerabilities())
-    elif demisto.command() == 'lw-get-event-details':
-        demisto.results(get_event_details())
+    elif demisto.command() == 'lw-get-compliance-report':
+        demisto.results(get_compliance_report())
+    elif demisto.command() == 'lw-get-alert-details':
+        demisto.results(get_alert_details())
     elif demisto.command() == 'fetch-incidents':
         demisto.results(fetch_incidents())
 except Exception as e:

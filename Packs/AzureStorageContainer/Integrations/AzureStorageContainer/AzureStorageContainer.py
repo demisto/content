@@ -1,7 +1,9 @@
+import hashlib
+import hmac
 import shutil
-import urllib3
 from typing import Callable
-
+from urllib import parse  # noqa: F401
+import defusedxml.ElementTree as defused_ET
 from requests import Response
 
 import demistomock as demisto  # noqa: F401
@@ -17,9 +19,10 @@ class Client:
     API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
-                                                api_version)
+                                                api_version, managed_identities_client_id)
 
     def list_containers_request(self, limit: str = None, prefix: str = None, marker: str = None) -> str:
         """
@@ -57,6 +60,12 @@ class Client:
                                                return_empty_response=True)
 
         return response
+
+    def get_base_url(self):
+        return self.ms_client._base_url
+
+    def get_api_version(self):
+        return self.ms_client._api_version
 
     def get_container_properties_request(self, container_name: str) -> Response:
         """
@@ -135,6 +144,8 @@ class Client:
         xsoar_system_file_path = xsoar_file_data['path']
         blob_name = file_name if file_name else xsoar_file_data['name']
 
+        headers = {'x-ms-blob-type': 'BlockBlob'}
+
         try:
             shutil.copy(xsoar_system_file_path, blob_name)
         except FileNotFoundError:
@@ -143,7 +154,6 @@ class Client:
 
         try:
             with open(blob_name, 'rb') as file:
-                headers = {'x-ms-blob-type': 'BlockBlob', 'Content-Length': f'{os.path.getsize(file.name)}'}
                 response = self.ms_client.http_request(method='PUT',
                                                        url_suffix=f'{container_name}/{blob_name}',
                                                        headers=headers,
@@ -286,7 +296,7 @@ def get_pagination_next_marker_element(limit: str, page: int, client_request: Ca
     """
     offset = int(limit) * (page - 1)
     response = client_request(limit=str(offset), **params)
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     return root.findtext('NextMarker')  # type: ignore
@@ -326,7 +336,7 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     response = client.list_containers_request(limit, prefix, marker)
 
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     raw_response = []
@@ -510,7 +520,7 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.list_blobs_request(container_name, limit, prefix, marker)
 
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     raw_response = []
@@ -634,7 +644,7 @@ def get_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     response = client.get_blob_tags_request(container_name, blob_name)
 
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     raw_response = []
@@ -850,6 +860,124 @@ def set_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
+# generate signature helper function
+def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str, expiry: str, sr: str, api_version: str,
+                           sip: str = '') -> str:
+    """
+    Generate sas token for Container
+
+    Args:
+        account_key: account key of conatiner.
+        cr: canonicalizedResource.
+        sp:SignedPermissions.
+        signedstart: start time for sas token.
+        expiry : Expiry time for sas token.
+    Returns:
+        sas token
+
+    """
+    if sip is None:
+        sip = ''
+    string_to_sign = (sp + "\n" +  # noqa: W504
+                      signedstart + "\n"
+                      + expiry + "\n"
+                      + cr + "\n"
+                      + "" + "\n"
+                      + sip + "\n"
+                      + "https" + "\n"
+                      + api_version + "\n"
+                      + sr + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "").encode('UTF-8')
+    signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
+    sig = base64.b64encode(signed_hmac_sha256.digest())
+
+    token = {
+        'sp': sp,
+        'st': signedstart,
+        'se': expiry,
+        'sip': sip,
+        'spr': "https",
+        'sv': api_version,
+        'sr': sr,
+        'sig': sig
+    }
+
+    sas_token = urllib.parse.urlencode(token)
+    return sas_token
+
+
+def check_valid_permission(valid_permissions: str, input_permissions: str) -> bool:
+    """
+    Check the permissions follows valid permission order.
+
+    Args:
+        valid_permissions : valid permissions order
+        input_permissions : permissions given
+
+    Returns:
+        bool
+
+    """
+    permissions_length = len(input_permissions)
+    if len(valid_permissions) < permissions_length:
+        return False
+    for i in range(permissions_length - 1):
+        last = valid_permissions.rindex(input_permissions[i])
+        first = valid_permissions.index(input_permissions[i + 1])
+        if last == -1 or first == -1 or last > first:
+            return False
+    return True
+
+
+def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  # type: ignore # pragma: no cover
+    """
+    Generate sas url for Container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs and raw response for XSOAR.
+
+    """
+    api_version = client.get_api_version()
+    container_name = args.get("container_name")
+    signed_resource = args.get("signed_resources")
+    signed_permissions = args.get("signed_permissions")
+    valid_permissions = "racwdxltmeop"
+    signed_ip = args.get("signed_ip")
+    # Check Permissions
+    if check_valid_permission(valid_permissions, signed_permissions):  # type: ignore
+        # Set start time
+        signed_start = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        account_key = demisto.params().get("key")
+        time_taken = int(args.get('expiry_time'))  # type: ignore
+        signed_expiry = str((datetime.utcnow() + timedelta(hours=time_taken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        url_suffix = f"{container_name}"
+        canonicalized_resource = f"/blob/{storage_account_name}/{container_name}"
+        url = client.get_base_url() + url_suffix
+        sas_token = generate_sas_signature(account_key, canonicalized_resource, signed_permissions, signed_start,  # type: ignore # noqa
+                                           signed_expiry, signed_resource, api_version, signed_ip)  # type: ignore
+        sas_url = f"{url}?{sas_token}"
+        res_data = sas_url
+        markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[container_name])
+        result = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='AzureStorageContainer.Container',
+            outputs_key_field=container_name,
+            outputs=res_data
+        )
+        return result
+    else:
+        return_error("Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\'")
+
+
 def test_module(client: Client) -> None:
     """
     Tests API connectivity and authentication.
@@ -873,7 +1001,7 @@ def test_module(client: Client) -> None:
     return_results('ok')
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     Main function
     """
@@ -881,23 +1009,22 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
     global account_sas_token
     global storage_account_name
-    account_sas_token = params['credentials']['password']
+    account_sas_token = params.get('credentials', {}).get('password')
     storage_account_name = params['credentials']['identifier']
-    # supported api versions can be found here:
-    # https://learn.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.blob.core.windows.net/'
-
+    # supported api versions can be found here:
+    # https://learn.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
-        urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
-                                api_version)
+                                api_version,
+                                managed_identities_client_id)
 
         commands = {
             'azure-storage-container-list': list_containers_command,
@@ -913,6 +1040,7 @@ def main() -> None:
             'azure-storage-container-blob-delete': delete_blob_command,
             'azure-storage-container-blob-property-get': get_blob_properties_command,
             'azure-storage-container-blob-property-set': set_blob_properties_command,
+            'azure-storage-container-sas-create': generate_sas_token_command,
         }
 
         if command == 'test-module':

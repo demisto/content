@@ -15,6 +15,8 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | Key or Client Secret | See the Help tab. | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Fetch incidents | Whether to fetch incidents. | False |
     | Email address from which to fetch incidents | For example, "example@demisto.com" | False |
     | Name of the folder or sub-folder from which to fetch incidents | Supports folder ID and sub-folders, for example Inbox/Phishing. | False |
@@ -35,6 +37,12 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how far backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Required Permissions
+The following permissions are required for all commands:
+- Mail.ReadWrite - Application
+- Mail.Send - Application
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

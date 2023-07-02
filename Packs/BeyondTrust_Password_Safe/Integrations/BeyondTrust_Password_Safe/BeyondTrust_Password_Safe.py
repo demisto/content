@@ -1,13 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
 import json
+from typing import Dict, List
+
 import requests
 import urllib3
-from typing import List, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,7 +16,9 @@ urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
-API_KEY = demisto.params().get('key')
+API_KEY = demisto.params().get('credentials_key', {}).get('password') or demisto.params().get('key')
+if not API_KEY or not(USERNAME and PASSWORD):
+    raise DemistoException('The API Key or username and password must be provided')
 SYSTEM_NAME = demisto.params().get('system_name')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \
@@ -195,6 +197,42 @@ def create_release_request(data: str):
     return response
 
 
+def list_release_requests():
+    """
+    Returns a list of release requests
+    """
+    suffix_url = '/requests'
+    release_list = http_request('GET', suffix_url)
+
+    data = []
+    headers = ['AccessType', 'AccountID', 'AccountName', 'AliasID', 'ApplicationID',
+               'ApprovedDate', 'CanceledDate', 'DomainName', 'ExpiresDate', 'Reason', 'RequestID',
+               'RequestReleaseDate', 'RequestorName', 'Status', 'SystemID', 'SystemName']
+
+    for release in release_list:
+        data.append({
+            'AccessType': release.get('AccessType'),
+            'AccountID': release.get('AccountID'),
+            'AccountName': release.get('AccountName'),
+            'AliasID': release.get('AliasID'),
+            'ApplicationID': release.get('ApplicationID'),
+            'ApprovedDate': release.get('ApprovedDate'),
+            'DomainName': release.get('DomainName'),
+            'ExpiresDate': release.get('ExpiresDate'),
+            'Reason': release.get('Reason'),
+            'RequestID': release.get('RequestID'),
+            'RequestReleaseDate': release.get('RequestReleaseDate'),
+            'RequestorName': release.get('RequestorName'),
+            'Status': release.get('Status'),
+            'SystemID': release.get('SystemID'),
+            'SystemName': release.get('SystemName')
+        })
+
+    entry_context = {'BeyondTrust.Request': createContext(release_list)}
+    return_outputs(tableToMarkdown('Current requests are as follows', data,
+                   headers, removeNull=True), entry_context, release_list)
+
+
 def create_release():
     """
     Creates a new release request.
@@ -279,9 +317,13 @@ def get_credentials():
 
     request_id = demisto.args().get('request_id')
     request = str(request_id)
-    response = get_credentials_request(request)
+    credentials = get_credentials_request(request)
 
-    demisto.results('The credentials for BeyondTrust request: ' + response)
+    response = {
+        'Credentials': credentials
+    }
+    entry_context = {'BeyondTrust.Request': createContext(response)}
+    return_outputs(tableToMarkdown('Passwordsafe Credentials', response), entry_context, response)
 
 
 def check_in_credentials_request(request_id: str, data: dict):
@@ -438,6 +480,8 @@ try:
         check_in_credentials()
     elif demisto.command() == 'beyondtrust-change-credentials':
         change_credentials()
+    elif demisto.command() == 'beyondtrust-list-release-requests':
+        list_release_requests()
     elif demisto.command() == 'fetch-credentials':
         fetch_credentials()
 

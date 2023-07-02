@@ -133,11 +133,14 @@ def process_event_params(body: str = '', start: str = '', end: str = '', time_zo
 class MsGraphClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify,
-                 proxy, default_user, self_deployed, certificate_thumbprint, private_key):
+                 proxy, default_user, self_deployed, certificate_thumbprint, private_key,
+                 managed_identities_client_id):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
                                          proxy=proxy, self_deployed=self_deployed,
-                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+                                         managed_identities_client_id=managed_identities_client_id,
+                                         managed_identities_resource_uri=Resources.graph)
         self.default_user = default_user
 
     def test_function(self):
@@ -509,20 +512,24 @@ def module_test_function_command(client: MsGraphClient, args: Dict) -> Tuple[str
 def main():
     params: dict = demisto.params()
     url = params.get('url', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id')
+    auth_and_token_url = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id', '')
+    enc_key = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     default_user = params.get('default_user')
-    self_deployed: bool = params.get('self_deployed', False)
-    certificate_thumbprint = params.get('certificate_thumbprint')
+    certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+        'password') or params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     commands = {
         'test-module': module_test_function_command,
@@ -541,7 +548,8 @@ def main():
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               default_user=default_user, self_deployed=self_deployed,
-                                              certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+                                              certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+                                              managed_identities_client_id=managed_identities_client_id)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
         # Run the command

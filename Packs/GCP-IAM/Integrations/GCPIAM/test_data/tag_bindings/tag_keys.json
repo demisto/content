@@ -1,0 +1,10 @@
+{
+    "createTime": "2022-06-01T21:51:09.965156Z",
+    "description": "Apply Environment Tag",
+    "etag": "I5z8HCh2IZozLWApOEztuQ==",
+    "name": "tagKeys/111111111111",
+    "namespacedName": "111111111111/environment",
+    "parent": "organizations/111111111111",
+    "shortName": "environment",
+    "updateTime": "2022-06-01T21:51:12.577490Z"
+  }

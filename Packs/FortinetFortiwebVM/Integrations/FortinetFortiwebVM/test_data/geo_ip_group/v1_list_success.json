@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "_id": "1",
+        "name": "1",
+        "count": 0,
+        "triggerPolicy": "",
+        "severity": 3,
+        "except": "",
+        "can_delete": true
+    },
+    {
+        "id": 2,
+        "_id": "2",
+        "name": "2",
+        "count": 0,
+        "triggerPolicy": "",
+        "severity": 3,
+        "except": "",
+        "can_delete": true
+    },
+    {
+        "id": 3,
+        "_id": "tesSSSSvbnvbSStttt",
+        "name": "tesSSSSvbnvbSStttt",
+        "count": 0,
+        "triggerPolicy": "",
+        "severity": 1,
+        "except": "",
+        "can_delete": true
+    },
+    {
+        "id": 4,
+        "_id": "check",
+        "name": "check",
+        "count": 0,
+        "triggerPolicy": "",
+        "severity": 2,
+        "except": "",
+        "can_delete": true
+    }
+]

@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "name": "Sanctioned",
+            "folder": "predefined",
+            "color": "Olive"
+        },
+        {
+            "name": "empty",
+            "folder": "predefined"
+        },
+        {
+            "id": "id1",
+            "name": "name1",
+            "folder": "Shared",
+            "color": "Green"
+        },
+        {
+            "id": "id2",
+            "name": "name2",
+            "folder": "Shared",
+            "color": "Red"
+        },
+        {
+            "id": "id3",
+            "name": "name3",
+            "folder": "Shared",
+            "color": "Green"
+        }
+    ],
+    "offset": 0,
+    "total": 5,
+    "limit": 200
+}
