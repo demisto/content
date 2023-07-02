@@ -977,12 +977,15 @@ def test_is_investigation_mirrored():
     assert is_investigation_mirrored(non_existing_investigation_id, mirrored_channels) == -1
 
 
-def test_urlify_hyperlinks():
+@pytest.mark.parametrize('message, expected_result', [
+    ("Visit https://github.com/demisto/content and https://xsoar.pan.dev",
+     "Visit [https://github.com/demisto/content](https://github.com/demisto/content) and [https://xsoar.pan.dev](https://xsoar.pan.dev)"),
+    ("Link: https://xsoar.pan.dev/page?parametized=true",
+     "Link: [https://xsoar.pan.dev/page?parametized=true](https://xsoar.pan.dev/page?parametized=true)"),
+])
+def test_urlify_hyperlinks(message: str, expected_result: str):
     from MicrosoftTeams import urlify_hyperlinks
-    message: str = 'Visit https://www.demisto.com and http://www.demisto.com'
-    formatted_message: str = 'Visit [https://www.demisto.com](https://www.demisto.com) ' \
-                             'and [http://www.demisto.com](http://www.demisto.com)'
-    assert urlify_hyperlinks(message) == formatted_message
+    assert urlify_hyperlinks(message) == expected_result
 
 
 def test_get_team_aad_id(mocker, requests_mock):
@@ -1457,7 +1460,7 @@ def test_direct_message_handler(mocker, requests_mock):
 
     assert requests_mock.request_history[1].json() == {
         'text': "Successfully created incident incidentnumberfour.\n"
-                "View it on: [https://test-address:8443#/WarRoom/4](https://test-address:8443#/WarRoom/4)",
+                "View it on: [https://test-address:8443/#/WarRoom/4](https://test-address:8443/#/WarRoom/4)",
         'type': 'message'
     }
     create_incidents_mocker.assert_called_with(expected_created_incident, userID=expected_assigned_user)
