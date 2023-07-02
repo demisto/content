@@ -1,2 +1,0 @@
-[MODEL: dataset=OneModel_raw, model=Audit]
-alter XDM.Audit.operation = summary;

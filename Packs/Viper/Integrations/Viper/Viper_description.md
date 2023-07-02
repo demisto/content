@@ -1,2 +1,0 @@
-Its fundamental objective is to provide a solution to easily organize your collection of malware and exploit samples as well as your collection of scripts you created or found over the time to facilitate your daily research. 
-Find the Framework here -> https://github.com/viper-framework/viper

@@ -1,1 +1,0 @@
-Query MxToolBox for threat intelligence information as seen [here](https://mxtoolbox.com/User/Api/Lookup.aspx)

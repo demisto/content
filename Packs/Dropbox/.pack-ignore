@@ -1,9 +1,0 @@
-[file:DropboxEventCollector.yml]
-ignore=MR108
-
-[file:DropboxParsingRules.yml]
-ignore=PR101
-
-[file:DropboxEventCollector_1_3.yml]
-ignore=MR108
-

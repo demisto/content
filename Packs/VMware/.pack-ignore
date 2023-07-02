@@ -1,6 +1,0 @@
-[file:README.md]
-ignore=RM102
-
-[known_words]
-vmware-get-vms
-VMs

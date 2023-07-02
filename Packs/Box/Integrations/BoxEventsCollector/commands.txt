@@ -1,1 +1,0 @@
-!box-get-events limit=1 created_after="30 days"

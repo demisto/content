@@ -1,4 +1,0 @@
-[file:GetFilePathPreProcessing.yml]
-ignore=SC106
-[file:1_0_1.md]
-ignore=RN113,RN114

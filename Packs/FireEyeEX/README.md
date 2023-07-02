@@ -1,1 +1,0 @@
-<!-- Currently holds the incident type for FE CM, will be edited when an integration will be added -->

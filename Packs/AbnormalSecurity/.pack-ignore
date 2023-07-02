@@ -1,9 +1,0 @@
-[file:AbnormalSecurity_image.png]
-ignore=IM111
-
-[file:AbnormalSecurityEventCollector_1_3.yml]
-ignore=MR108
-
-[file:AbnormalSecurityEventCollector.yml]
-ignore=MR108
-

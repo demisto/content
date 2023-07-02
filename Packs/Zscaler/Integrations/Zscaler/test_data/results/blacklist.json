@@ -1,7 +1,0 @@
-{
-  "blacklistUrls": [
-    ".demisto.com",
-    "dbot.com",
-    "www.demisto22.com"
-  ]
-}

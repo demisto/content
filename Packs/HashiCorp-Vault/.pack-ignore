@@ -1,6 +1,0 @@
-[file:HashiCorpVault.yml]
-ignore=CJ105
-
-[known_words]
-HashiCorp
-namespace

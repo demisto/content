@@ -1,9 +1,0 @@
-[file:ImpossibleTraveler]
-ignore=PA116
-
-[file:layoutscontainer-Impossible_Traveler.json]
-ignore=BA101
-
-[file:CalculateGeoDistance.yml]
-ignore=BA124
-

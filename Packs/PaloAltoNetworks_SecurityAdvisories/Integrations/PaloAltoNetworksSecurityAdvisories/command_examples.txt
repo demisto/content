@@ -1,1 +1,0 @@
-!pan-advisories-get-advisories product="PAN-OS" q=CVE-2022-0778

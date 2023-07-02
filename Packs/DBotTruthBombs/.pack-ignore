@@ -1,6 +1,0 @@
-[file:DBotTruthBombs.yml]
-ignore=BA109,RM110,BA124
-
-[file:FactsAboutYou.yml]
-ignore=BA124
-

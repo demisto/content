@@ -1,1 +1,0 @@
-!misp-feed-get-indicators tags=tlp:% attribute_type=ip-src

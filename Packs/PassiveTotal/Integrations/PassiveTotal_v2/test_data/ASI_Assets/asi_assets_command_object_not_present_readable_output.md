@@ -1,2 +1,0 @@
-### Asset(s)
-**No entries.**

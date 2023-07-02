@@ -1,2 +1,0 @@
-[INGEST:vendor="msft", product="exchange", target_dataset="msft_exchange_raw", no_hit = keep]
-alter _time = date_time;

@@ -1,1 +1,0 @@
-You can grab the API token from your Netskope tenant by navigating to: Settings-->Manage-->REST API

@@ -1,6 +1,0 @@
-{
-  "permissions": [
-    "aiplatform.dataItems.create",
-    "compute.instances.create"
-  ]
-}

@@ -1,4 +1,0 @@
-{
-"breakingChanges":true,
-"breakingChangesNotes":"The context path prefix changed to be `AWS.AccessAnalyzer` instead of `AWS.AccessAnalyzer.Analyzers`in some commands."
-}

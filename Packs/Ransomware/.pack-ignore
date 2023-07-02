@@ -1,9 +1,0 @@
-[file:playbook-ransomware.yml]
-ignore=BA101,BA110
-
-[file:RansomwareDataEncryptionStatus.yml]
-ignore=BA124
-
-[file:RansomwareHostWidget.yml]
-ignore=BA124
-

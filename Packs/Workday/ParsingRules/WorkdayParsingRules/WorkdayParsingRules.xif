@@ -1,2 +1,0 @@
-[INGEST:vendor="workday", product="workday", target_dataset="workday_workday_raw", no_hit = keep]
-alter _time = requestTime;

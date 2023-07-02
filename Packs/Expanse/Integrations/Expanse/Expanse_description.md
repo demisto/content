@@ -1,1 +1,0 @@
-API Key can be retrieved by contacting your technical account manager. 

@@ -1,9 +1,0 @@
-{
-    "data": {
-        "name": "check",
-        "action": "block-period",
-        "block-period": "600",
-        "severity": "Low",
-        "ignore-x-forwarded-for": "disable"
-    }
-}

@@ -1,6 +1,0 @@
-[known_words]
-WebDriver
-rasterization
-
-[tests_require_network]
-Rasterize
