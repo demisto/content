@@ -449,7 +449,7 @@ script:
     - contextPath: CrowdStrike.Command.Stderr
       description: The standard error of the command.
       type: String
-    - contextPath: CrowdStrike.Command.BaseCommandƒ
+    - contextPath: CrowdStrike.Command.BaseCommand
       description: The base command.
       type: String
     - contextPath: CrowdStrike.Command.FullCommand
