@@ -85,7 +85,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -102,7 +101,6 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -159,7 +157,6 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -178,7 +175,6 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -197,7 +193,6 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -216,7 +211,6 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -300,7 +294,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -360,7 +353,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -531,7 +523,6 @@
                                 "startCol": 2
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -546,7 +537,6 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-6f1661f0-ad44-11e9-a569-716c95c51bfe",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -564,7 +554,6 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -582,7 +571,6 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -658,7 +646,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -672,7 +659,6 @@
                         "h": 2,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-c037a9b0-5412-11eb-830f-fbfa6e45cb4e",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -929,15 +915,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "useragent",
-                                "height": 22,
-                                "id": "3e2d8e60-3fef-11ed-8b45-b1684b1bfc04",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "sourceip",
                                 "height": 22,
                                 "id": "6c27dc10-1507-11ee-afe1-4bea2a14f94c",
@@ -947,10 +924,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "useragent",
+                                "height": 22,
+                                "id": "cbf13710-18e3-11ee-a005-5968c8362785",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "asnname",
                                 "height": 22,
                                 "id": "7bbf2660-ffbd-11ed-91cb-b704c053731a",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -959,7 +945,7 @@
                                 "fieldId": "asn",
                                 "height": 22,
                                 "id": "74d9fc50-3fef-11ed-bd56-1f5a2b2d17b4",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -968,7 +954,7 @@
                                 "fieldId": "country",
                                 "height": 22,
                                 "id": "4c8d5610-0f52-11ee-81b3-5b1a51073e91",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -1121,7 +1107,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Cloud Extra Data",
+                        "name": "Cloud Info",
                         "static": false,
                         "w": 1,
                         "x": 0,
