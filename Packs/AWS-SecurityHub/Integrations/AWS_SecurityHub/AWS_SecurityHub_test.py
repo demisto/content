@@ -33,10 +33,12 @@ FILTER_FIELDS_TEST_CASES = [
         }
     ),
     (
-        'name=Id,value=x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-xxx-xx,comparison=EQUALS',
+        'name=Id,value=x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-xxx-\
+xx,comparison=EQUALS',
         {
             'Id': [{
-                'Value': 'x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-xxx-xx',
+                'Value': 'x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-\
+xxx-xx',
                 'Comparison': 'EQUALS'
             }]
         }
@@ -44,17 +46,19 @@ FILTER_FIELDS_TEST_CASES = [
     (
         'name=Id,\
         value=x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-xxx-xx,\
-            comparison=EQUALS;\
-            name=Id2,\
+comparison=EQUALS;\
+name=Id2,\
             value=x:x:x:someplace-removed-2:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-xxx-xx,\
-                comparison=EQUALS',
+comparison=EQUALS',
         {
             'Id': [{
-                'Value': 'x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-xxx-xx',
+                'Value': 'x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-\
+xxx-xx',
                 'Comparison': 'EQUALS'
             }],
             'Id2': [{
-                'Value': 'x:x:x:someplace-removed-2:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-xxx-xx',
+                'Value': 'x:x:x:someplace-removed-2:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-\
+xxx-xx',
                 'Comparison': 'EQUALS'
             }]
         }

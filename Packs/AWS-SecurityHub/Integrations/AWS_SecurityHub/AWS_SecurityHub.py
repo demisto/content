@@ -548,7 +548,7 @@ def parse_filter_field(string_filters) -> dict:
     if not is_valid_advanced_filters(string_filters):
         demisto.info(f'Advanced filters does not contain all fields or fields are not in\
             the correct order: name,value,comparison: {string_filters}')
-    elif ',' in string_filters: # TODO consider using Array to List from CSP
+    elif ',' in string_filters:  # TODO consider using Array to List from CSP
         filters_list = string_filters.split(';')
         filters = {split_str[0].split('=')[1]: [{'Value': split_str[1].split('=')[1],
                                                  'Comparison':split_str[2].split('=')[1].upper()}]
