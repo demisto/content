@@ -125,7 +125,7 @@ class Client(BaseClient):
 
         Args:
             chunk_size: maximum number of assets in one chunk.
-            last_fetch: the last asset that was fetched previously.
+            fetch_from: the last asset that was fetched previously.
 
         Returns: The UUID of the assets export job.
 
@@ -133,7 +133,7 @@ class Client(BaseClient):
         payload = {
             'chunk_size': chunk_size,
             "filters": {
-                "created_at": last_fetch
+                "created_at": fetch_from
             }
         }
 
@@ -144,7 +144,7 @@ class Client(BaseClient):
     def get_export_assets_status(self, export_uuid):
         """
         Args:
-                export_uuid: The UUID of the vulnerabilities export job.
+                export_uuid: The UUID of the assets export job.
 
         Returns: The assets' chunk id.
 
@@ -346,6 +346,7 @@ def get_vulnerabilities_command(args: Dict[str, Any], client: Client) -> Command
         return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid, **args},
                           response=results)
 
+
 @polling_function('tenable-export-assets', requires_polling_arg=False)
 def get_assets_command(client: Client, args: Dict[str, Any]):
     """
@@ -387,6 +388,7 @@ def get_assets_command(client: Client, args: Dict[str, Any]):
         return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid, **args},
                           response=results)
 
+
 def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_last_run: Dict[str, str | float | None]):
     """
     Generate a job export uuid in order to fetch assets.
@@ -407,7 +409,11 @@ def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_la
 
     assets_last_run.update({'last_fetch': last_fetch, 'next_assets_fetch': next_assets_fetch, 'export_uuid': export_uuid})
 
-def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: check if there's a use to max_fetch
+
+''' FETCH COMMANDS '''
+
+
+def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: add a use to max_fetch
     """
     Fetches assets.
     Args:
@@ -432,9 +438,6 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
 
     demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
     return assets, assets_last_run
-
-
-''' FETCH COMMANDS '''
 
 
 def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
@@ -541,7 +544,7 @@ def main() -> None:  # pragma: no cover
 
     # transform minutes to seconds
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
-    first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "3 days"))
+    first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "3 days")) # todo: add param to the dropdown
 
     demisto.debug(f'Command being called is {command}')
     try:

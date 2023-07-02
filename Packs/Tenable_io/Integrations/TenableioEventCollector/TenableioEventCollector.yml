@@ -164,6 +164,30 @@ script:
     execution: false
     polling: true
     name: tenable-get-vulnerabilities
+  - arguments:
+    - default: false
+      description: Returns assets that were last found between the specified date (in Unix time) and now.
+      isArray: false
+      name: last_fetch
+      required: false
+      secret: false
+    - default: false
+      description: The number of the assets per chunk.
+      isArray: false
+      name: chunk_size
+      required: false
+      secret: false
+    - name: hide_polling_output
+      description: Whether to hide the polling output.
+      deprecated: true
+    - name: export_uuid
+      description: Whether to export the UUID for which to check the status.
+      deprecated: true
+    deprecated: false
+    description: Returns assets extracted from Tenable io.
+    execution: false
+    polling: true
+    name: tenable-export-assets
   isfetch: false
   runonce: false
   script: '-'
