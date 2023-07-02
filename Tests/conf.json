@@ -21,6 +21,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": " Test Playbook - MDE - Retrieve File",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
         },
