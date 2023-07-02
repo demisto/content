@@ -10,9 +10,6 @@ from MicrosoftGraphMailApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 
 
-
-
-
 class MsGraphMailClient(MsGraphMailBaseClient):
 
     @staticmethod

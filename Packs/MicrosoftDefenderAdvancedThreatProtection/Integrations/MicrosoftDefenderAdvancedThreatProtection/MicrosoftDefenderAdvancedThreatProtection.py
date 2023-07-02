@@ -65,9 +65,6 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
 INTEGRATION_NAME = 'Microsoft Defender ATP'
 
 
-
-
-
 class HuntingQueryBuilder:
     """ERROR MESSAGES"""
     FILE_ARGS_ERR = 'Please provide at least one file arguments: "file_name", "sha1", "sha256" or "md5".'
