@@ -863,10 +863,7 @@ def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
         raw_data = client.zoom_list_channels(page_size=page_size, next_page_token=next_page_token,
                                              url_suffix=url_suffix, page_number=page_number)
         # parsing the data according to the different given arguments
-        if channel_id:
-            data = [raw_data]
-        else:
-            data = raw_data.get("channels")
+        data = [raw_data] if channel_id else raw_data.get("channels")
         token = raw_data.get('next_page_token', None)
     outputs = []
     for i in data:
@@ -923,10 +920,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
                                                   next_page_token=next_page_token, url_suffix=url_suffix,
                                                   page_number=page_number)
         # parsing the data according to the different given arguments
-        if channel_id:
-            data = [raw_data]
-        else:
-            data = raw_data.get('channels')
+        data = [raw_data] if channel_id else raw_data.get("channels")
         token = raw_data.get('next_page_token', None)
     outputs = []
     for i in data:
