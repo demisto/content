@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: linux_events_collectiom_ModelingRule
+id: Linux_Events_Collection_ModelingRule
 name: Linux Events Collection Modeling Rule
 rules: ''
 schema: ''
