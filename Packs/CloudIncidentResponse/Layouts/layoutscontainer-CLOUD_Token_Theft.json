@@ -571,7 +571,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Cloud Indicators",
-                        "query": "99900222-7570-4e56-8fa6-1206e76be060",
+                        "query": "displayCloudIndicators",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
