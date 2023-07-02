@@ -8,8 +8,14 @@ configuration:
     portal)
   display: Token / Tenant ID
   name: refresh_token
-  required: true
+  required: false
+  hidden: true
   type: 4
+- displaypassword: Token / Tenant ID
+  name:  credentials_refresh_token
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process.
   display: ID / (Client ID :For client credentials flow)
@@ -20,7 +26,14 @@ configuration:
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
+  hidden: true
   type: 4
+- displaypassword: Certificate Thumbprint
+  name:  credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -45,6 +58,14 @@ configuration:
   name: auth_code
   required: false
   type: 4
+  hidden: true
+- displaypassword: Authorization code
+  name:  credentials_auth_code
+  required: false
+  hiddenusername: true
+  type: 9
+  additionalinfo: Get the Authorization code from steps 3-5 in the self deployed authorization
+    process.
 - additionalinfo: Relevant only if the integration is running on Azure VM. 
     If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
     If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
@@ -339,7 +360,7 @@ script:
     execution: false
     name: azure-log-analytics-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: false
   longRunning: false
