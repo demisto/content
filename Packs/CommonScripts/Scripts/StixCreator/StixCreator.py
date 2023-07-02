@@ -327,7 +327,10 @@ def main():
                         "Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type, value))
                     demisto.info("Export failure excpetion: {}".format(e))
                     continue
-
+            
+            except stix2.exceptions.InvalidValueError as e:
+                demisto.info(f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
+                demisto.debug(f"Export failure exception: {e}")
     if len(indicators) > 1:
         bundle = Bundle(indicators, allow_custom=True)
         context = {
