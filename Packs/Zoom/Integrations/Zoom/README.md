@@ -97,14 +97,14 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of the meeting. Possible values are: Instant, Scheduled, Recurring meeting with fixed time. Default is Instant. | Required | 
-| end_date_time | For recurring meetings only. Select the final date on which the meeting will recur before it is canceledFor example: 2017-11-25T12:00:00Z. | Optional | 
+| end_date_time | For recurring meetings only. Select the final date on which the meeting will recur before it is canceled. For example: 2017-11-25T12:00:00Z. | Optional | 
 | end_times | For recurring meetings only.Select how many times the meeting should recur before it is canceled. max = 365. Default = 1.. | Optional | 
-| monthly_day | For recurring meetings with Monthly recurrence_type only.State the day in a month, the meeting should recur. The value range is from 1 to 31. Default = 1.. | Optional | 
+| monthly_day | For recurring meetings with Monthly recurrence_type only. State the day in a month the meeting should recur. The value range is from 1 to 31. Default = 1.. | Optional | 
 | monthly_week | For recurring meetings with Monthly recurrence_type only.State the week of the month when the meeting should recur. If you use this field, you must also use the monthly_week_day field to state the day of the week when the meeting should recur. Allowed: -1 (for last week of the month) ┃1┃2┃3┃4. | Optional | 
-| monthly_week_day | For recurring meetings with Monthly recurrence_type only.State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7To use this field, you must also use the monthly_week field.. | Optional | 
-| repeat_interval | For recurring meeting with fixed time only.Define the interval at which the meeting should recur. For instance, if you would like to schedule a meeting that recurs every two months, you must set the value of this field as 2 and the value of the type parameter as Monthly.For a daily meeting, the maximum is 90 days. For a weekly meeting the maximum is of 12 weeks. For a monthly meeting, there is a maximum of 3 months.. | Optional | 
+| monthly_week_day | For recurring meetings with Monthly recurrence_type only. State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7To use this field, you must also use the monthly_week field.. | Optional | 
+| repeat_interval | For recurring meeting with fixed time only. Define the interval at which the meeting should recur. For instance, if you would like to schedule a meeting that recurs every two months, you must set the value of this field as 2 and the value of the type parameter as Monthly. For a daily meeting, the maximum is 90 days. For a weekly meeting the maximum is of 12 weeks. For a monthly meeting, there is a maximum of 3 months. | Optional | 
 | recurrence_type | For recurring meetings  only.Set the recurrence meeting types.. Possible values are: Daily, Weekly, Monthly. | Optional | 
-| weekly_days | For recurring meetings with a Weekly recurrence_type only.State a specific day in a week when the weekly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7  Default = 1.. | Optional | 
+| weekly_days | For recurring meetings with a Weekly recurrence_type only. State a specific day in a week when the weekly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7  Default = 1.. | Optional | 
 | auto-record-meeting | The automatic recording settings. Note that the Cloud option is available for zoom paid customers only.. Possible values are: local, cloud, none. Default is none. | Optional | 
 | encryption_type | The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee. Possible values are: enhanced_encryption, e2ee. Default is enhanced_encryption. | Optional | 
 | host_video | start meetings with the host video on. Possible values are: true, false. Default is True. | Optional | 
