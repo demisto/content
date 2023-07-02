@@ -111,8 +111,5 @@ poetry.lock @ilaner @dorschw
 # Devcontainers
 .devcontainer/* @ilaner
 
-# VSCode
-.vscode/* @ilaner
-
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval
