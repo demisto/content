@@ -159,7 +159,7 @@ select = [
     "C404", # unnecessary-list-comprehension-dict
     "C405", # unnecessary-literal-set
     "C406", # unnecessary-literal-dict
-    "C408", # unnecessary-collection-call
+    # "C408", # unnecessary-collection-call # temporarily disabled
     "C409", # unnecessary-literal-within-tuple-call
     "C410", # unnecessary-literal-within-list-call
     "C411", # unnecessary-list-call
@@ -322,7 +322,7 @@ select = [
 
     "RET501", # unnecessary-return-none
     "RET502", # implicit-return-value
-    "RET503", # implicit-return
+    # "RET503", # implicit-return # temporarily disabled
     "RET508", # superfluous-else-break
 
     "RSE102", # unnecessary-paren-on-raise-exception
@@ -357,18 +357,18 @@ select = [
     "S701", # jinja2-autoescape-false
 
     "SIM101", # duplicate-isinstance-call
-    "SIM102", # collapsible-if
+    # "SIM102", # collapsible-if # temporarily disabled
     "SIM103", # needless-bool
     "SIM107", # return-in-try-except-finally
-    "SIM108", # if-else-block-instead-of-if-exp
+    # "SIM108", # if-else-block-instead-of-if-exp # temporarily disabled
     "SIM109", # compare-with-tuple
     "SIM110", # reimplemented-builtin
     "SIM117", # multiple-with-statements
-    "SIM118", # in-dict-keys
+    # "SIM118", # in-dict-keys # temporarily disabled
     "SIM201", # negate-equal-op
     "SIM202", # negate-not-equal-op
     "SIM208", # double-negation
-    "SIM210", # if-expr-with-true-false
+    # "SIM210", # if-expr-with-true-false # temporarily disabled
     "SIM211", # if-expr-with-false-true
     "SIM212", # if-expr-with-twisted-arms
     "SIM220", # expr-and-not-expr
@@ -388,8 +388,8 @@ select = [
     "UP003", # type-of-primitive
     "UP004", # useless-object-inheritance
     "UP005", # deprecated-unittest-alias
-    "UP006", # non-pep585-annotation
-    "UP007", # non-pep604-annotation
+    # "UP006", # non-pep585-annotation # temporarily disabled
+    # "UP007", # non-pep604-annotation # temporarily disabled
     "UP008", # super-call-with-parameters
     "UP009", # utf8-encoding-declaration
     "UP010", # unnecessary-future-import
@@ -397,23 +397,23 @@ select = [
     "UP012", # unnecessary-encode-utf8
     "UP013", # convert-typed-dict-functional-to-class
     "UP014", # convert-named-tuple-functional-to-class
-    "UP015", # redundant-open-modes
+    # "UP015", # redundant-open-modes # temporarily disabled
     "UP017", # datetime-timezone-utc
     "UP018", # native-literals
     "UP019", # typing-text-str-alias
-    "UP020", # open-alias
+    # "UP020", # open-alias # temporarily disabled
     "UP021", # replace-universal-newlines
     "UP022", # replace-stdout-stderr
     "UP023", # deprecated-c-element-tree
     "UP024", # os-error-alias
-    "UP025", # unicode-kind-prefix
+    # "UP025", # unicode-kind-prefix # temporarily disabled
     "UP026", # deprecated-mock-import
     "UP027", # unpacked-list-comprehension
     "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
-    "UP030", # format-literals
-    "UP031", # printf-string-formatting
-    "UP032", # f-string
+    # "UP030", # format-literals # temporarily disabled
+    # "UP031", # printf-string-formatting # temporarily disabled
+    # "UP032", # f-string # temporarily disabled
     "UP033", # lru-cache-with-maxsize-none
     "UP034", # extraneous-parentheses
     "UP035", # deprecated-import
