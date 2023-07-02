@@ -6,6 +6,7 @@ import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
+from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member

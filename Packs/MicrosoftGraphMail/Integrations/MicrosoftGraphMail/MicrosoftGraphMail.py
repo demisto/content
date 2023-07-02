@@ -44,7 +44,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
         try:
-            email_content_as_html, email_content_as_text = email_body or email_unique_body
+            email_content_as_html, email_content_as_text = email_body or email_unique_body, email_body or email_unique_body
         except ValueError:
             demisto.info(f'email body content is missing from email {email}')
             return '', ''
