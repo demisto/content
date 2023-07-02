@@ -14,7 +14,7 @@ description: |-
   - Enriches the involved IPs
 
   **Verdict Decision Tree:**
-  - Determines the appropriate verdict based on the investigation findings
+  - Determines the appropriate verdict based on the investigation findings.
 
   **Early Containment using the Cloud Response - Generic Playbook:**
   - Implements early containment measures to prevent further impact
