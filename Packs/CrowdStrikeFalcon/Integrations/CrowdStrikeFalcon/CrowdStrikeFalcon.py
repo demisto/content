@@ -3913,7 +3913,7 @@ def upload_batch_custom_ioc_command(
     return entry_objects_list
 
 
-def mtest_module():
+def test_module():
     try:
         get_token(new_token=True)
     except ValueError:
@@ -5213,7 +5213,7 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
-            result = mtest_module()
+            result = test_module()
             return_results(result)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
