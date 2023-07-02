@@ -1,5 +1,4 @@
-Viper is a binary analysis and management framework. 
-This integration was integrated and tested with version xx of Viper
+Viper is a binary analysis and management framework.
 
 ## Configure Viper on Cortex XSOAR
 

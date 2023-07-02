@@ -426,7 +426,7 @@ def fetch_incidents_command(
     client: Client,
     max_results: int,
     last_run: Dict,
-    first_fetch_time: Optional[str],
+    first_fetch_time: str,
     minimum_severity: str
 ) -> Tuple[Dict, List]:
     """
