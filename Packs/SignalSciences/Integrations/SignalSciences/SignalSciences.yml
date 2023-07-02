@@ -953,7 +953,8 @@ script:
       description: An array of relevant tags.
     description: Retrieves a request by request ID.
   isfetch: true
-  dockerimage: demisto/python3:3.10.11.61265
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

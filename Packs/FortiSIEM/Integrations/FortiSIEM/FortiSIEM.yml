@@ -368,7 +368,8 @@ script:
       description: Resource type.
     description: Lists all elements in a resource list.
   isfetch: true
-  dockerimage: demisto/python3:3.10.11.61265
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No Test
 fromversion: 5.0.0

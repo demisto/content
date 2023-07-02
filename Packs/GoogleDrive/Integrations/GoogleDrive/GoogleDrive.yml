@@ -2674,7 +2674,10 @@ script:
       predefined:
       - "true"
       - "false"
-  dockerimage: demisto/googleapi-python3:1.0.0.63394
+      required: false
+      secret: false
+  dockerimage: demisto/googleapi-python3:1.0.0.64222
+  feed: false
   isfetch: true
   runonce: false
   script: "-"
