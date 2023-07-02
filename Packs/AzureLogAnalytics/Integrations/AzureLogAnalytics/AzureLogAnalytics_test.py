@@ -166,7 +166,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
         'use_managed_identities': 'True',
         'auth_type': 'Azure Managed Identities',
         'subscription_id': {'password': 'test'},
-        'resource_group': 'test_resource_group'
+        'resource_group': 'test_resource_group',
+        'credentials_refresh_token': {'password': 'test'}
     }
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')
