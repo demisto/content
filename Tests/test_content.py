@@ -553,7 +553,7 @@ def workflow_still_running(workflow_id: str) -> bool:
         try:
             workflow_details_response = requests.get(f'https://circleci.com/api/v2/workflow/{workflow_id}',
                                                      headers={'Accept': 'application/json'},
-                                                     auth=(CIRCLE_STATUS_TOKEN, ''))
+                                                     auth=(CIRCLE_STATUS_TOKEN, ''))  # type: ignore[arg-type]
             workflow_details_response.raise_for_status()
         except Exception:
             logging_manager.exception(f'Failed to get circleci response about workflow with id {workflow_id}.')

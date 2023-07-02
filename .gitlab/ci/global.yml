@@ -76,6 +76,9 @@
       # we want to checkout if it's not up-to-date
       ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CI_COMMIT_BRANCH true
       ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CI_COMMIT_BRANCH true
+      ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_list.json $CI_COMMIT_BRANCH true
+      ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_mpv2_list.json $CI_COMMIT_BRANCH true
+      ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_xpanse_list.json $CI_COMMIT_BRANCH true
     fi
   - section_end "Check Build Files Are Up To Date"
 
@@ -148,7 +151,7 @@
 
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit"
-  - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+  - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
   - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
   - export LAST_UPLOAD_COMMIT=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
@@ -359,6 +362,6 @@
     - job-done
 
 .jobs-done-check:
-  stage: are-jobs-realy-done
+  stage: are-jobs-really-done
   script:
     - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER

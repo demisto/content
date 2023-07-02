@@ -147,7 +147,6 @@ comment: Create a phishing classifier using machine learning technique, based on
 commonfields:
   id: DBotBuildPhishingClassifier
   version: -1
-enabled: false
 name: DBotBuildPhishingClassifier
 script: '-'
 subtype: python3

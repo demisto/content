@@ -11,7 +11,6 @@ configuration:
     https://portal.cloudappsecurity.com or
     https://yourdomain.eu2.portal.cloudappsecurity.com
   display: Endpoint URI
-  hidden: false
   name: url
   required: true
   type: 0
@@ -42,7 +41,6 @@ configuration:
   section: Connect
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: after
   required: false
   type: 0
@@ -50,7 +48,6 @@ configuration:
 - defaultvalue: '1000'
   additionalinfo: Due to API limitations, the maximum is 10,000.
   display: Number of alerts for each fetch.
-  hidden: false
   name: limit
   required: false
   type: 0
@@ -62,7 +59,6 @@ configuration:
   section: Collect
 - defaultvalue: 'true'
   display: Verify SSL Certificate
-  hidden: false
   name: verify
   required: false
   type: 8

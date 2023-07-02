@@ -122,6 +122,51 @@ SEARCH_DEVICE_KEY_MAP = {
     'status': 'Status',
 }
 
+SEARCH_DEVICE_VERBOSE_KEY_MAP = {
+    'agent_load_flags': 'AgentLoadFlags',
+    'agent_local_time': 'AgentLocalTime',
+    'agent_version': 'AgentVersion',
+    'bios_manufacturer': 'BiosManufacturer',
+    'bios_version': 'BiosVersion',
+    'cid': 'CID',
+    'config_id_base': 'ConfigIdBase',
+    'config_id_build': 'ConfigIdBuild',
+    'config_id_platform': 'ConfigIdPlatform',
+    'connection_ip': 'ConnectionIp',
+    'connection_mac_address': 'ConnectionMacAddress',
+    'cpu_signature': 'CpuSignature',
+    'default_gateway_ip': 'DefaultGatewayIP',
+    'device_id': 'ID',
+    'device_policies': 'DevicePolicies',
+    'external_ip': 'ExternalIP',
+    'first_seen': 'FirstSeen',
+    'group_hash': 'GroupHash',
+    'group_name': 'GroupName',
+    'group_names': 'GroupNames',
+    'groups': 'Groups',
+    'hostname': 'Hostname',
+    'kernel_version': 'KernelVersion',
+    'last_seen': 'LastSeen',
+    'local_ip': 'LocalIP',
+    'mac_address': 'MacAddress',
+    'major_version': 'MajorVersion',
+    'meta': 'Meta',
+    'minor_version': 'MinorVersion',
+    'modified_timestamp': 'ModifiedTimestamp',
+    'os_version': 'OS',
+    'platform_id': 'PlatformID',
+    'platform_name': 'PlatformName',
+    'policies': 'Policies',
+    'product_type_desc': 'ProductTypeDesc',
+    'provision_status': 'ProvisionStatus',
+    'reduced_functionality_mode': 'ReducedFunctionalityMode',
+    'serial_number': 'SerialNumber',
+    'status': 'Status',
+    'system_manufacturer': 'SystemManufacturer',
+    'system_product_name': 'SystemProductName',
+    'tags': 'Tags'
+}
+
 ENDPOINT_KEY_MAP = {
     'device_id': 'ID',
     'local_ip': 'IPAddress',
@@ -204,6 +249,27 @@ HOST_STATUS_DICT = {
 }
 
 
+CPU_UTILITY_INT_TO_STR_KEY_MAP = {
+    1: 'Lowest',
+    2: 'Low',
+    3: 'Medium',
+    4: 'High',
+    5: 'Highest',
+}
+CPU_UTILITY_STR_TO_INT_KEY_MAP = {
+    value: key for key, value in CPU_UTILITY_INT_TO_STR_KEY_MAP.items()}
+
+
+SCHEDULE_INTERVAL_STR_TO_INT = {
+    'never': 0,
+    'daily': 1,
+    'weekly': 7,
+    'every other week': 14,
+    'every four weeks': 28,
+    'monthly': 30,
+}
+
+
 class IncidentType(Enum):
     INCIDENT = 'inc'
     DETECTION = 'ldt'
@@ -211,6 +277,7 @@ class IncidentType(Enum):
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -261,6 +328,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         token = get_token()
         headers['Authorization'] = 'Bearer {}'.format(token)
     url = SERVER + url_suffix
+
+    headers['User-Agent'] = 'PANW-XSOAR'
+
     try:
         res = requests.request(
             method,
@@ -403,7 +473,7 @@ def build_query_params(query_params: dict) -> str:
 ''' API FUNCTIONS '''
 
 
-def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] = None,
+def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] | None = None,
                         hr: str = ''):
     """
         Creates an entry object
@@ -547,7 +617,7 @@ def get_passed_mins(start_time, end_time_str):
     return time_delta.seconds / 60
 
 
-def handle_response_errors(raw_res: dict, err_msg: str = None):
+def handle_response_errors(raw_res: dict, err_msg: str | None = None):
     """
     Raise exception if raw_res is empty or contains errors
     """
@@ -557,7 +627,6 @@ def handle_response_errors(raw_res: dict, err_msg: str = None):
         raise DemistoException(err_msg)
     if raw_res.get('errors'):
         raise DemistoException(raw_res.get('errors'))
-    return
 
 
 def create_json_iocs_list(
@@ -610,7 +679,7 @@ def create_json_iocs_list(
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
-def init_rtr_single_session(host_id: str) -> str:
+def init_rtr_single_session(host_id: str, queue_offline: bool = False) -> str:
     """
         Start a session with single host.
         :param host_id: Host agent ID to initialize a RTR session on.
@@ -618,7 +687,8 @@ def init_rtr_single_session(host_id: str) -> str:
     """
     endpoint_url = '/real-time-response/entities/sessions/v1'
     body = json.dumps({
-        'device_id': host_id
+        'device_id': host_id,
+        'queue_offline': queue_offline
     })
     response = http_request('POST', endpoint_url, data=body)
     resources = response.get('resources')
@@ -694,7 +764,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list = None) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -719,7 +789,7 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
 
 
 def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30,
-                        optional_hosts: list = None) -> Dict:
+                        optional_hosts: list | None = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -748,8 +818,8 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
     return response
 
 
-def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None,
-                      timeout_duration: str = None, offline: bool = False) -> Dict:
+def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list | None = None, timeout: int | None = None,
+                      timeout_duration: str | None = None, offline: bool = False) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
@@ -772,7 +842,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
     return response
 
 
-def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str = None) -> Dict:
+def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration: str | None = None) -> Dict:
     """
         Retrieves the status of the specified batch get command. Will return successful files when they are finished processing.
 
@@ -788,7 +858,7 @@ def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str =
     return response
 
 
-def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with read access
         :param host_id: Host agent ID to run RTR command on.
@@ -797,7 +867,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
 
     body = json.dumps({
         'base_command': command_type,
@@ -808,7 +878,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_write_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with write access
         :param host_id: Host agent ID to run RTR command on.
@@ -817,7 +887,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
@@ -827,7 +897,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
     return response
 
 
-def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with admin access
         :param host_id: Host agent ID to run RTR command on.
@@ -836,7 +906,7 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> 
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/admin-command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
 
     body = json.dumps({
         'base_command': command_type,
@@ -901,7 +971,7 @@ def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def list_host_files(host_id: str, session_id: str = None) -> Dict:
+def list_host_files(host_id: str, session_id: str | None = None) -> Dict:
     """
         Get a list of files for the specified RTR session on a host.
         :param host_id: Host agent ID to run RTR command on.
@@ -994,7 +1064,7 @@ def list_scripts() -> Dict:
     return response
 
 
-def get_extracted_file(host_id: str, sha256: str, filename: str = None):
+def get_extracted_file(host_id: str, sha256: str, filename: str | None = None):
     """
         Get RTR extracted file contents for specified session and sha256.
         :param host_id: The host agent ID to initialize the RTR session on.
@@ -1714,7 +1784,7 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
-def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float = None) -> dict:
+def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float | None = None) -> dict:
     """
     Upload a list of IOC
     """
@@ -1725,7 +1795,7 @@ def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float = None) -> dic
     return http_request('POST', '/iocs/entities/indicators/v1', json=payload, timeout=timeout)
 
 
-def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
+def get_behaviors_by_incident(incident_id: str, params: dict | None = None) -> dict:
     return http_request('GET', f'/incidents/queries/behaviors/v1?filter=incident_id:"{incident_id}"', params=params)
 
 
@@ -2690,7 +2760,7 @@ def search_device_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
-
+    extended_data = argToBoolean(demisto.args().get('extended_data', False))
     command_results = []
     for single_device in devices:
         # demisto.debug(f"single device info: {single_device}")
@@ -2705,10 +2775,14 @@ def search_device_command():
             is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
-
-        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
-        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
-
+        if not extended_data:
+            entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
+            headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
+        else:
+            device_groups = single_device['groups']
+            single_device.update({'group_names': list(enrich_groups(device_groups).values())})
+            entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_VERBOSE_KEY_MAP)
+            headers = list(SEARCH_DEVICE_VERBOSE_KEY_MAP.values())
         command_results.append(CommandResults(
             outputs_prefix='CrowdStrike.Device',
             outputs_key_field='ID',
@@ -2717,7 +2791,6 @@ def search_device_command():
             raw_response=raw_res,
             indicator=endpoint,
         ))
-
     return command_results
 
 
@@ -2733,6 +2806,22 @@ def search_device_by_ip(raw_res, ip_address):
     else:
         raw_res = None
     return raw_res
+
+
+def enrich_groups(all_group_ids) -> Dict[str, Any]:
+    """
+        Receives a list of group_ids
+        Returns a dict {group_id: group_name}
+    """
+    result = dict()
+    params = {'ids': all_group_ids}
+    response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
+    for resource in response_json['resources']:
+        try:
+            result[resource['id']] = resource['name']
+        except KeyError:
+            demisto.debug(f"Could not retrieve group name for {resource=}")
+    return result
 
 
 def get_status(device_id):
@@ -2794,7 +2883,7 @@ def get_endpoint_command():
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
-        lowercase_hostnames = set(hostname.lower() for hostname in hostnames)
+        lowercase_hostnames = {hostname.lower() for hostname in hostnames}
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
     standard_endpoints = generate_endpoint_by_contex_standard(devices)
@@ -2979,11 +3068,11 @@ def run_command():
         responses = []
         for host_id in host_ids:
             if scope == 'read':
-                response1 = run_single_read_cmd(host_id, command_type, full_command)
+                response1 = run_single_read_cmd(host_id, command_type, full_command, offline)
             elif scope == 'write':
-                response1 = run_single_write_cmd(host_id, command_type, full_command)
+                response1 = run_single_write_cmd(host_id, command_type, full_command, offline)
             else:  # scope = admin
-                response1 = run_single_admin_cmd(host_id, command_type, full_command)
+                response1 = run_single_admin_cmd(host_id, command_type, full_command, offline)
             responses.append(response1)
 
             for resource in response1.get('resources', []):
@@ -3665,9 +3754,9 @@ def list_incident_summaries_command():
 
 
 def create_host_group_command(name: str,
-                              group_type: str = None,
-                              description: str = None,
-                              assignment_rule: str = None) -> CommandResults:
+                              group_type: str | None = None,
+                              description: str | None = None,
+                              assignment_rule: str | None = None) -> CommandResults:
     response = change_host_group(is_post=True,
                                  name=name,
                                  group_type=group_type,
@@ -3775,7 +3864,7 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
 
 
 def upload_batch_custom_ioc_command(
-        multiple_indicators_json: str = None, timeout: str = '180',
+        multiple_indicators_json: str | None = None, timeout: str = '180',
 ) -> List[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
@@ -4232,7 +4321,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
 
 def get_cve_command(args: dict) -> list[CommandResults]:
     """
-        Get a list of vulnerability by spotlight
+        Get a list of vulnerabilities by spotlight
         : args: filter which include params or filter param.
         : return: a list of cve indicators according to the user.
     """
@@ -4599,6 +4688,492 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
     )
 
 
+def build_cs_falcon_filter(custom_filter: str | None = None, **filter_args) -> str:
+    """Creates an FQL syntax filter from a dictionary and a custom built filter
+
+    :custom_filter: custom filter from user (will take priority if conflicts with dictionary), defaults to None
+    :filter_args: args to translate to FQL format.
+
+    :return: FQL syntax filter.
+    """
+
+    custom_filter_list = custom_filter.split('+') if custom_filter else []
+    arguments = [f'{key}:{argToList(value)}' for key, value in filter_args.items() if value]
+    # custom_filter takes priority because it is first
+    return "%2B".join(custom_filter_list + arguments)
+
+
+def ODS_query_scans_request(**query_params) -> dict:
+
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/scans/v1?{url_params}')
+
+
+def ODS_get_scans_by_id_request(ids: list[str]) -> dict:
+
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/scans/v1?{url_params}')
+
+
+def map_scan_resource_to_UI(resource: dict) -> dict:
+
+    output = {
+        'ID': resource.get('id'),
+        'Status': resource.get('status'),
+        'Severity': resource.get('severity'),
+        # Every host in resource.metadata has a "filecount" which is a dictionary
+        # that counts the files traversed, skipped, found to be malicious and the like.
+        'File Count': '\n-\n'.join('\n'.join(f'{k}: {v}' for k, v in filecount.items())
+                                   for host in resource.get('metadata', []) if (filecount := host.get('filecount', {}))),
+        'Description': resource.get('description'),
+        'Hosts/Host groups': resource.get('hosts') or resource.get('host_groups'),
+        'Start time': resource.get('scan_started_on'),
+        'End time': resource.get('scan_completed_on'),
+        'Run by': resource.get('created_by')
+    }
+    return output
+
+
+def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scans',
+        [map_scan_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Status', 'Severity', 'File Count', 'Description',
+                 'Hosts/Host groups', 'End time', 'Start time', 'Run by']
+    )
+
+    return human_readable
+
+
+def get_ODS_scan_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
+
+    query_filter = build_cs_falcon_filter(
+        custom_filter=args.get('filter'),
+        initiated_from=args.get('initiated_from'),
+        status=args.get('status'),
+        severity=args.get('severity'),
+        scan_started_on=args.get('scan_started_on'),
+        scan_completed_on=args.get('scan_completed_on'),
+    )
+
+    raw_response = ODS_query_scans_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources')
+
+
+@polling_function(
+    'cs-falcon-ods-query-scan',
+    poll_message='Retrieving scan results:',
+    polling_arg_name='wait_for_result',
+    interval=arg_to_number(dict_safe_get(demisto.args(), ['interval_in_seconds'], 0, (int, str))),
+    timeout=arg_to_number(dict_safe_get(demisto.args(), ['timeout_in_seconds'], 0, (int, str))),
+)
+def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
+    # call the query api if no ids given
+    ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
+
+    if not ids:
+        command_results = CommandResults(readable_output='No scans match the arguments/filter.')
+        scan_in_progress = False
+
+    else:
+        response = ODS_get_scans_by_id_request(ids)
+        resources = response.get('resources', [])
+
+        scan_in_progress = (
+            len(resources) == 1
+            and dict_safe_get(resources, [0, 'status']) in ('pending', 'running')
+        )
+
+        human_readable = ODS_get_scan_resources_to_human_readable(resources)
+        command_results = CommandResults(
+            raw_response=response,
+            outputs_prefix='CrowdStrike.ODSScan',
+            outputs_key_field='id',
+            outputs=resources,
+            readable_output=human_readable,
+        )
+
+    return PollResult(response=command_results,
+                      continue_to_poll=scan_in_progress,
+                      args_for_next_run=args)
+
+
+def ODS_query_scheduled_scans_request(**query_params) -> dict:
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/scheduled-scans/v1?{url_params}')
+
+
+def ODS_get_scheduled_scans_by_id_request(ids: list[str]) -> dict:
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/scheduled-scans/v1?{url_params}')
+
+
+def map_scheduled_scan_resource_to_UI(resource: dict) -> dict:
+    output = {
+        'ID': resource.get('id'),
+        'Hosts targeted': len(resource.get('metadata', [])),
+        'Description': resource.get('description'),
+        'Host groups': resource.get('host_groups'),
+        'Start time': resource.get('schedule', {}).get('start_timestamp'),
+        'Created by': resource.get('created_by'),
+    }
+    return output
+
+
+def ODS_get_scheduled_scan_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scheduled Scans',
+        [map_scheduled_scan_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Hosts targeted', 'Description',
+                 'Host groups', 'Start time', 'Created by'],
+    )
+
+    return human_readable
+
+
+def get_ODS_scheduled_scan_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
+
+    query_filter = build_cs_falcon_filter(**{
+        'custom_filter': args.get('filter'),
+        'initiated_from': args.get('initiated_from'),
+        'status': args.get('status'),
+        'created_on': args.get('created_on'),
+        'created_by': args.get('created_by'),
+        'schedule.start_timestamp': args.get('start_timestamp'),
+        'deleted': args.get('deleted'),
+    })
+
+    raw_response = ODS_query_scheduled_scans_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources')
+
+
+def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> CommandResults:
+    # call the query api if no ids given
+    ids = argToList(args.get('ids')) or get_ODS_scheduled_scan_ids(args)
+
+    if not ids:
+        return CommandResults(readable_output='No scheduled scans match the arguments/filter.')
+
+    response = ODS_get_scheduled_scans_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_scheduled_scan_resources_to_human_readable(resources)
+
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSScheduledScan',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def ODS_query_scan_hosts_request(**query_params) -> dict:
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/scan-hosts/v1?{url_params}')
+
+
+def ODS_get_scan_hosts_by_id_request(ids: list[str]) -> dict:
+
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/scan-hosts/v1?{url_params}')
+
+
+def get_ODS_scan_host_ids(args: dict) -> list[str]:
+
+    query_filter = build_cs_falcon_filter(
+        custom_filter=args.get('filter'),
+        host_id=args.get('host_ids'),
+        scan_id=args.get('scan_ids'),
+        status=args.get('status'),
+        started_on=args.get('started_on'),
+        completed_on=args.get('completed_on'),
+    )
+
+    raw_response = ODS_query_scan_hosts_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources', [])
+
+
+def map_scan_host_resource_to_UI(resource: dict) -> dict:
+    output = {
+        'ID': resource.get('id'),
+        'Scan ID': resource.get('scan_id'),
+        'Host ID': resource.get('host_id'),
+        'Filecount': resource.get('filecount'),
+        'Status': resource.get('status'),
+        'Severity': resource.get('severity'),
+        'Started on': resource.get('started_on'),
+    }
+    return output
+
+
+def ODS_get_scan_hosts_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scan Hosts',
+        [map_scan_host_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Scan ID', 'Host ID',
+                 'Filecount', 'Status',
+                 'Severity', 'Started on'],
+    )
+
+    return human_readable
+
+
+def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
+
+    ids = get_ODS_scan_host_ids(args)
+
+    if not ids:
+        return CommandResults(readable_output='No hosts to display.')
+
+    response = ODS_get_scan_hosts_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_scan_hosts_resources_to_human_readable(resources)
+
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSScanHost',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def ODS_query_malicious_files_request(**query_params) -> dict:
+    remove_nulls_from_dictionary(query_params)
+    # http_request messes up the params, so they were put directly in the url:
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
+    return http_request('GET', f'/ods/queries/malicious-files/v1?{url_params}')
+
+
+def ODS_get_malicious_files_by_id_request(ids: list[str]) -> dict:
+
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/malicious-files/v1?{url_params}')
+
+
+def map_malicious_file_resource_to_UI(resource: dict) -> dict:
+    output = {
+        'ID': resource.get('id'),
+        'Scan id': resource.get('scan_id'),
+        'Filename': resource.get('filename'),
+        'Hash': resource.get('hash'),
+        'Severity': resource.get('severity'),
+        'Last updated': resource.get('last_updated'),
+    }
+    return output
+
+
+def ODS_get_malicious_files_resources_to_human_readable(resources: list[dict]) -> str:
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Malicious Files',
+        [map_malicious_file_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Scan id', 'Filename', 'Hash', 'Severity', 'Last updated'],
+    )
+
+    return human_readable
+
+
+def get_ODS_malicious_files_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
+
+    query_filter = build_cs_falcon_filter(
+        custom_filter=args.get('filter'),
+        host_id=args.get('host_ids'),
+        scan_id=args.get('scan_ids'),
+        filepath=args.get('file_paths'),
+        filename=args.get('file_names'),
+        hash=args.get('hash'),
+    )
+
+    raw_response = ODS_query_malicious_files_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+
+    return raw_response.get('resources')
+
+
+def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
+    # call the query api if no file_ids given
+    ids = argToList(args.get('file_ids')) or get_ODS_malicious_files_ids(args)
+
+    if not ids:
+        return CommandResults(readable_output='No malicious files match the arguments/filter.')
+
+    response = ODS_get_malicious_files_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_malicious_files_resources_to_human_readable(resources)
+
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSMaliciousFile',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
+
+    result = {
+        'host_groups': argToList(args.get('host_groups')),
+        'file_paths': argToList(args.get('file_paths')),
+        'scan_exclusions': argToList(args.get('scan_exclusions')),
+        'scan_inclusions': argToList(args.get('scan_inclusions')),
+        'initiated_from': args.get('initiated_from'),
+        'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
+        'description': args.get('description'),
+        'quarantine': argToBoolean(args.get('quarantine')) if args.get('quarantine') is not None else None,
+        'pause_duration': arg_to_number(args.get('pause_duration')),
+        'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
+        'sensor_ml_level_prevention': arg_to_number(args.get('sensor_ml_level_prevention')),
+        'cloud_ml_level_detection': arg_to_number(args.get('cloud_ml_level_detection')),
+        'cloud_ml_level_prevention': arg_to_number(args.get('cloud_ml_level_prevention')),
+        'max_duration': arg_to_number(args.get('max_duration')),
+    }
+
+    if is_scheduled:
+        result['schedule'] = {
+            'interval': SCHEDULE_INTERVAL_STR_TO_INT.get(args['schedule_interval'].lower()),
+            'start_timestamp': (
+                dateparser.parse(args['schedule_start_timestamp'])
+                or return_error('Invalid start_timestamp.')
+            ).strftime("%Y-%m-%dT%H:%M"),
+        }
+
+    else:
+        result['hosts'] = argToList(args.get('hosts'))
+
+    return result
+
+
+def ODS_create_scan_request(args: dict, is_scheduled: bool) -> dict:
+    body = make_create_scan_request_body(args, is_scheduled)
+    remove_nulls_from_dictionary(body)
+    return http_request('POST', f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
+
+
+def ODS_verify_create_scan_command(args: dict) -> None:
+
+    if not (args.get('hosts') or args.get('host_groups')):
+        raise DemistoException('MUST set either hosts OR host_groups.')
+
+    if not (args.get('file_paths') or args.get('scan_inclusions')):
+        raise DemistoException('MUST set either file_paths OR scan_inclusions.')
+
+
+def ods_create_scan(args: dict, is_scheduled: bool) -> dict:
+
+    ODS_verify_create_scan_command(args)
+
+    response = ODS_create_scan_request(args, is_scheduled)
+    resource = dict_safe_get(response, ('resources', 0), return_type=dict, raise_return_type=False)
+
+    if not (resource and resource.get('id')):
+        raise DemistoException('Unexpected response from CrowdStrike Falcon')
+
+    return resource
+
+
+def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
+
+    resource = ods_create_scan(args, is_scheduled=False)
+    scan_id = resource.get('id')
+
+    query_scan_args = {
+        'ids': scan_id,
+        'wait_for_result': True,
+        'interval_in_seconds': args.get('interval_in_seconds'),
+        'timeout_in_seconds': args.get('timeout_in_seconds'),
+    }
+
+    return cs_falcon_ODS_query_scans_command(query_scan_args)
+
+
+def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
+
+    resource = ods_create_scan(args, is_scheduled=True)
+
+    human_readable = f'Successfully created scheduled scan with ID: {resource.get("id")}'
+
+    command_results = CommandResults(
+        raw_response=resource,
+        outputs_prefix='CrowdStrike.ODSScheduledScan',
+        outputs_key_field='id',
+        outputs=resource,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
+def ODS_delete_scheduled_scans_request(ids: list[str], scan_filter: str | None = None) -> dict:
+    ids_params = [f'ids={scan_id}' for scan_id in ids]
+    filter_param = [f'filter={scan_filter.replace("+", "%2B")}'] if scan_filter else []
+    url_params = '&'.join(ids_params + filter_param)
+    return http_request('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)
+
+
+def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
+
+    ids, scan_filter = argToList(args.get('ids')), args.get('filter')
+    response = ODS_delete_scheduled_scans_request(ids, scan_filter)
+
+    if dict_safe_get(response, ['errors', 0, 'code']) == 500:
+        raise DemistoException(
+            'CS Falcon returned an error.\n'
+            'Code: 500\n'
+            f'Message: {dict_safe_get(response, ["errors", 0, "message"])}\n'
+            'Perhaps there are no scans to delete?'
+        )
+
+    human_readable = tableToMarkdown('Deleted Scans:', response.get('resources', []), headers=['Scan ID'])
+
+    command_results = CommandResults(
+        raw_response=response,
+        readable_output=human_readable,
+    )
+
+    return command_results
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4791,6 +5366,20 @@ def main():
             return_results(list_quarantined_file_command(args))
         elif command == 'cs-falcon-apply-quarantine-file-action':
             return_results(apply_quarantine_file_action_command(args))
+        elif command == 'cs-falcon-ods-query-scan':
+            return_results(cs_falcon_ODS_query_scans_command(args))
+        elif command == 'cs-falcon-ods-query-scheduled-scan':
+            return_results(cs_falcon_ODS_query_scheduled_scan_command(args))
+        elif command == 'cs-falcon-ods-query-scan-host':
+            return_results(cs_falcon_ods_query_scan_host_command(args))
+        elif command == 'cs-falcon-ods-query-malicious-files':
+            return_results(cs_falcon_ODS_query_malicious_files_command(args))
+        elif command == 'cs-falcon-ods-create-scan':
+            return_results(cs_falcon_ods_create_scan_command(args))
+        elif command == 'cs-falcon-ods-create-scheduled-scan':
+            return_results(cs_falcon_ods_create_scheduled_scan_command(args))
+        elif command == 'cs-falcon-ods-delete-scheduled-scan':
+            return_results(cs_falcon_ods_delete_scheduled_scan_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

@@ -1,0 +1,26 @@
+args:
+- default: false
+  description: Response from extractIndicators (Builtin) script.
+  isArray: false
+  name: ExtractedIndicators
+  required: true
+  secret: false
+comment: Script used to transform result received from the extractIndicators (Builtin) script from the dictionary of indicators to a list of indicators.
+commonfields:
+  id: DataminrPulseTransformExtractedIndicatorsToList
+  version: -1
+enabled: true
+name: DataminrPulseTransformExtractedIndicatorsToList
+outputs:
+- contextPath: TransformedIndicators.indicatorList
+  description: Indicator list.
+  type: Unknown
+script: '-'
+subtype: python3
+dockerimage: demisto/python3:3.10.11.59581
+system: false
+timeout: '0'
+type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

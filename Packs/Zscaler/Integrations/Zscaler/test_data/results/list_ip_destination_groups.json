@@ -1,0 +1,105 @@
+{
+    "Type": 1,
+    "Contents": [
+      {
+        "ID": 1964949, 
+        "Name": "Russia-Region", 
+        "Type": "DSTN_OTHER", 
+        "Addresses": [], 
+        "Description": "Russia based destination group", 
+        "IpCategories": [], 
+        "Countries": ["COUNTRY_RU"]
+      },
+      {
+        "ID": 1971364, 
+        "Name": "Algeria-Region", 
+        "Type": "DSTN_OTHER", 
+        "Description": "",
+        "Addresses": [], 
+        "IpCategories": [], 
+        "Countries": ["COUNTRY_AL"]
+      }, 
+      {
+        "ID": 1971539, 
+        "Name": "India_Destination", 
+        "Type": "DSTN_OTHER",
+        "Description": "", 
+        "Addresses": [], 
+        "IpCategories": [], 
+        "Countries": ["COUNTRY_IN"]
+      }, 
+      {
+        "ID": 1997898, 
+        "Name": "Test99", 
+        "Type": "DSTN_IP", 
+        "Addresses": ["127.0.0.2"], 
+        "Description": "Localhost v2", 
+        "IpCategories": [], 
+        "Countries": []
+      },
+      {
+        "ID": 2001335, 
+        "Name": "Test01", 
+        "Type": "DSTN_IP", 
+        "Addresses": ["127.0.0.1"], 
+        "Description": "Localhost v1", 
+        "IpCategories": [], 
+        "Countries": []
+      }      
+    ],
+    "ContentsFormat": "json",
+    "HumanReadable": "### IPv4 Destination groups (5)\n|ID|Name|Type|Description|Addresses|Countries|\n|---|---|---|---|---|---|\n| 1964949 | Russia-Region | DSTN_OTHER | Russia based destination group |  | COUNTRY_RU |\n| 1971364 | Algeria-Region | DSTN_OTHER |  |  | COUNTRY_AL |\n| 1971539 | India_Destination | DSTN_OTHER |  |  | COUNTRY_IN |\n| 1997898 | Test99 | DSTN_IP | Localhost v2 | 127.0.0.2 |  |\n| 2001335 | Test01 | DSTN_IP | Localhost v1 | 127.0.0.1 |  |\n",
+    "EntryContext": {
+      "Zscaler.IPDestinationGroup(val.ID && val.ID == obj.ID)": [
+        {
+          "ID": 1964949, 
+          "Name": "Russia-Region", 
+          "Type": "DSTN_OTHER", 
+          "Addresses": [], 
+          "Description": "Russia based destination group", 
+          "IpCategories": [], 
+          "Countries": ["COUNTRY_RU"]
+        },
+        {
+          "ID": 1971364, 
+          "Name": "Algeria-Region", 
+          "Type": "DSTN_OTHER", 
+          "Description": "",
+          "Addresses": [], 
+          "IpCategories": [], 
+          "Countries": ["COUNTRY_AL"]
+        }, 
+        {
+          "ID": 1971539, 
+          "Name": "India_Destination", 
+          "Type": "DSTN_OTHER", 
+          "Description": "",
+          "Addresses": [], 
+          "IpCategories": [], 
+          "Countries": ["COUNTRY_IN"]
+        }, 
+        {
+          "ID": 1997898, 
+          "Name": "Test99", 
+          "Type": "DSTN_IP", 
+          "Addresses": ["127.0.0.2"], 
+          "Description": "Localhost v2", 
+          "IpCategories": [], 
+          "Countries": []
+        },
+        {
+          "ID": 2001335, 
+          "Name": "Test01", 
+          "Type": "DSTN_IP", 
+          "Addresses": ["127.0.0.1"], 
+          "Description": "Localhost v1", 
+          "IpCategories": [], 
+          "Countries": []
+        }      
+      ]
+    },
+    "IgnoreAutoExtract": false,
+    "IndicatorTimeline": [],
+    "Note": false,
+    "Relationships": []
+}

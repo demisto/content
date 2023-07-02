@@ -1,12 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+# pack version: 1.0.4
 import json
 from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, Tuple
 
 import dateparser
-import demistomock as demisto  # noqa: F401
-import urllib3
-from CommonServerPython import *  # noqa: F401
 
+import urllib3
 
 
 """Dragos Worldview Integration for XSOAR."""
@@ -127,7 +128,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
 
     max_time = last_fetch
 
-    api_query = "products?updated_after="
+    api_query = "products?released_after="
     api_query = api_query + str(max_time)
     api_query = api_query.replace(":", "%3A")
     api_query = api_query.replace(" ", "%20")
@@ -216,4 +217,3 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-

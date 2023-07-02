@@ -10,8 +10,14 @@ configuration:
   type: 0
 - display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: cred_api_key
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -151,7 +157,7 @@ script:
     description: Delete domain.
     execution: false
     name: umbrella-domain-delete
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

@@ -159,6 +159,20 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     if str(result.reason) == 'Not Found':
         raise NotFoundError('Not Found.')
 
+    # invalid argument
+    if result.status_code == 421:
+        try:
+            error_message = json.loads(xml2json(result.text))
+            error_message = error_message.get('error', {}).get('error-message')
+        except Exception:
+            raise Exception(f'Failed to parse response to json. response: {result.text}')
+
+        demisto.results({
+            'Type': entryTypes["error"],
+            'Contents': error_message,
+            'ContentsFormat': formats['text']
+        })
+
     if result.status_code < 200 or result.status_code >= 300:
         if str(result.status_code) in ERROR_DICT:
             if result.status_code == 418 and FILE_TYPE_SUPPRESS_ERROR:
@@ -1285,16 +1299,15 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                 resp_type='json'
             )
 
-            report = res_maec.get('result')
-            report_str = json.dumps(report)
+            report_json = res_maec.get('result')
 
             file_name = 'wildfire_report_maec_' + file_hash + '.json'
             file_type = entryTypes['entryInfoFile']
 
-            result = fileResult(file_name, report_str, file_type)  # will be saved under 'InfoFile' in the context.
+            result = fileResult(file_name, report_json, file_type)  # will be saved under 'InfoFile' in the context.
             demisto.results(result)
             human_readable = tableToMarkdown('WildFire File Report - MAEC format', prettify_report_entry(file_info))
-            outputs['maec_report'] = report
+            outputs['maec_report'] = json.loads(report_json)
 
         except Exception as exc:
             demisto.error(f'Report MAEC Exception. Error: {exc}')
@@ -1399,7 +1412,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             params=PARAMS_DICT
         )
         # we get the report and file info from the XML object
-        reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
+        reports = ((json_res.get('wildfire') or {}).get('task_info') or {}).get('report')
         file_info = json_res.get('wildfire', {}).get('file_info')
 
         # extra options to provide in the query

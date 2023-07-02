@@ -279,25 +279,25 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
 
     task_status = pack.load_user_metadata()
     if not task_status:
-        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
+        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status = pack.collect_content_items()
     if not task_status:
-        pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+        pack.status = PackStatus.FAILED_COLLECT_ITEMS.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status = pack.upload_integration_images(storage_bucket, storage_base_path)
     if not task_status:
-        pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+        pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status = pack.upload_author_image(storage_bucket, storage_base_path)
     if not task_status:
-        pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+        pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name  # type: ignore[misc]
         pack.cleanup()
         return
 
@@ -307,43 +307,43 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
                                           statistics_handler=None)
 
     if not task_status:
-        pack.status = PackStatus.FAILED_METADATA_PARSING.name
+        pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(index_folder_path, build_number)
     if not task_status:
-        pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+        pack.status = PackStatus.FAILED_RELEASE_NOTES.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     if not_updated_build:
-        pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+        pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status = pack.remove_unwanted_files(remove_test_playbooks)
     if not task_status:
-        pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+        pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status = pack.sign_pack(signature_key)
     if not task_status:
-        pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+        pack.status = PackStatus.FAILED_SIGNING_PACKS.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status, zip_pack_path = pack.zip_pack(extract_destination_path, enc_key,
                                                private_artifacts_dir, secondary_enc_key)
     if not task_status:
-        pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+        pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status = pack.is_pack_encrypted(zip_pack_path, enc_key)
     if not task_status:
-        pack.status = PackStatus.FAILED_DECRYPT_PACK.name
+        pack.status = PackStatus.FAILED_DECRYPT_PACK.name  # type: ignore[misc]
         pack.cleanup()
         return
 
@@ -361,19 +361,19 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
     pack.bucket_url = bucket_url
 
     if not task_status:
-        pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+        pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
     if not task_status:
-        pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
+        pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     task_status = pack.prepare_for_index_upload()
     if not task_status:
-        pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
+        pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name  # type: ignore[misc]
         pack.cleanup()
         return
 
@@ -381,17 +381,17 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
                                       pack_path=pack.path, pack_version=pack.latest_version,
                                       hidden_pack=pack.hidden, pack_versions_to_keep=pack_versions_to_keep)
     if not task_status:
-        pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+        pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
         pack.cleanup()
         return
 
     # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
     if skipped_pack_uploading and exists_in_index:
-        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+        pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
         pack.cleanup()
         return
 
-    pack.status = PackStatus.SUCCESS.name
+    pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
 
 
 def option_handler():
@@ -529,7 +529,7 @@ def main():
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path, {})
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path, [])
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,

@@ -18,13 +18,10 @@ configuration:
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
-description: The Threat Context module provides SOC, Incident Response, and Threat
-  Intelligence teams with continuously updated and intuitive information around threat
-  actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs.
+description: The Threat Context module provides SOC, Incident Response, and Threat Intelligence teams with continuously updated and intuitive information around threat actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs.
 display: Blueliv ThreatContext
 name: Blueliv ThreatContext
 script:

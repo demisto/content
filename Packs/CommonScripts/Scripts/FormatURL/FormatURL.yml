@@ -9,7 +9,6 @@ comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP
 commonfields:
   id: FormatURL
   version: -1
-enabled: false
 name: FormatURL
 outputs:
 - contextPath: URL
@@ -26,3 +25,5 @@ dockerimage: demisto/python3:3.10.11.54132
 fromversion: 5.5.0
 tests:
 - FormatURL-Test
+- URL extraction test
+- FormattingPerformance - Test

@@ -693,8 +693,15 @@ def alerts_to_xsoar_incidents(alerts: List[dict]):
     for alert in alerts:
         alert_timestamp = alert['timestamp']
         alert_occurred_time_utc = timestamp_to_datetime_string(alert_timestamp, is_utc=True)
+        alert_occurred_time_current_timezone = timestamp_to_datetime_string(alert_timestamp)
         alert_id = alert.get('_id') or ''
-        demisto.debug(f"{alert_id=}, {alert_timestamp=}, {alert_occurred_time_utc=}")
+        alert_title = alert.get('title') or ''
+        alert_description = alert.get('description') or ''
+        alert_description = alert_description[:100]
+        demisto.debug(
+            f"{alert_id=}, {alert_timestamp=}, {alert_occurred_time_utc=}, "
+            f"{alert_occurred_time_current_timezone=}, {alert_title=}, {alert_description=}"
+        )
         incident = {
             'name': alert['title'],
             'occurred': timestamp_to_datetime_string(alert_timestamp, include_miliseconds=False) + 'Z',

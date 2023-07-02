@@ -8,10 +8,11 @@ configuration:
   defaultvalue: https://outlook.office365.com
   type: 0
   required: true
-- display: Email (Password for basic authentication only)
+- display: Email (UPN)
   name: credentials
   type: 9
-  required: false
+  required: true
+  hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -160,7 +161,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
+  dockerimage: demisto/powershell-ubuntu:7.3.0.49844
 fromversion: 5.5.0
 tests:
 - Audit Log - Test

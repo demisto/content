@@ -21,7 +21,7 @@
             "is_array": false
         },
         "rejected": {
-            "type": "string",
+            "type": "boolean",
             "is_array": false
         },
         "query": {
@@ -33,7 +33,7 @@
             "is_array": false
         },
         "rcode": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "rcode_name": {
@@ -69,7 +69,7 @@
             "is_array": false
         },
         "status_code": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "origin": {
@@ -109,7 +109,7 @@
             "is_array": false
         },
         "success": {
-            "type": "string",
+            "type": "boolean",
             "is_array": false
         },
         "message": {

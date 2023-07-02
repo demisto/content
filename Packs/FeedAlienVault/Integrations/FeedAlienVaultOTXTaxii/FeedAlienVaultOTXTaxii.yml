@@ -64,7 +64,6 @@ configuration:
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -85,13 +84,11 @@ configuration:
   type: 4
 - additionalinfo: When selected, will run on all active collections regardless of the supplied collections. Inactive or empty collections will be ignored.
   display: Get All Active Collections
-  hidden: false
   name: all_collections
   required: false
   type: 8
 - additionalinfo: Supports a CSV of collections to fetch from. If an inactive or empty collection is supplied, a Timeout error will be raised. If not set, it will raise an error listing all the available collections.
   display: Collections to Fetch From
-  hidden: false
   name: collections
   required: false
   type: 0
@@ -101,7 +98,6 @@ configuration:
   type: 0
   additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
   defaultvalue: 1 hour
-  hidden: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

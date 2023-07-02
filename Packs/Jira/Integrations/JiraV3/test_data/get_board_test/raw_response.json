@@ -1,0 +1,15 @@
+{
+    "id": 14,
+    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/board/14",
+    "name": "COMPANYSA board",
+    "type": "kanban",
+    "location": {
+        "projectId": 10022,
+        "displayName": "Company Snoozing App (COMPANYSA)",
+        "projectName": "Company Snoozing App",
+        "projectKey": "COMPANYSA",
+        "projectTypeKey": "software",
+        "avatarURI": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10402?size=small",
+        "name": "Company Snoozing App (COMPANYSA)"
+    }
+}

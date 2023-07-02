@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
 
 # Get XSIAM Tenant Config Details

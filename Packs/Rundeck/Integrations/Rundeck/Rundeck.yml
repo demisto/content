@@ -9,8 +9,14 @@ configuration:
   type: 0
 - display: API Key
   name: token
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: token_creds
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -20,12 +26,11 @@ configuration:
   required: false
   type: 8
 - display: Project Name
-  hidden: false
   name: project_name
   required: false
   type: 0
-description: Rundeck is a runbook automation for incident management, business continuity, and self-service operations. |-
-  The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack.
+
+description: Rundeck is a runbook automation for incident management, business continuity, and self-service operations. |- The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack.
 display: Rundeck
 name: Rundeck
 script:
@@ -49,7 +54,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A group or partial group path to include all jobs within that group path. 
+      description: A group or partial group path to include all jobs within that group path.
       isArray: false
       name: group_path
       required: false
@@ -307,7 +312,7 @@ script:
       required: false
       secret: false
     - default: false
-      description:  |-
+      description: |-
         Options for running the job.
         For example, if you have the 'foo' and 'bar' options set for a job, you can pass values to them using the syntax: 'foo=someValue,bar=someValue'.
       isArray: false
@@ -558,7 +563,7 @@ script:
       description: The number of total executions.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.offset
-      description: The number of the offset for the first result to include. 
+      description: The number of the offset for the first result to include.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.max
       description: The maximum number of results to return.
@@ -683,7 +688,7 @@ script:
       description: Whether to include all the available data."true" if the current log entries or request parameters include all of the available data. Otherwise, "false".
       type: Boolean
     - contextPath: Rundeck.ExecutionsOutput.execCompleted
-      description: Whether the execution finished. 
+      description: Whether the execution finished.
       type: Boolean
     - contextPath: Rundeck.ExecutionsOutput.hasFailedNodes
       description: Whether there are nodes that failed.
@@ -704,7 +709,7 @@ script:
       description: The total bytes available in the output file.
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.retryBackoff
-      description: The maximum number of times to retry an execution when the job is directly invoked. 
+      description: The maximum number of times to retry an execution when the job is directly invoked.
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.clusterExec
       description: Whether there was a cluster execution.
@@ -894,7 +899,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the script file and arguments will be quoted as the last argument to the script_interpreter. 
+      description: Whether the script file and arguments will be quoted as the last argument to the script_interpreter.
       isArray: false
       name: interpreter_args_quoted
       predefined:
@@ -985,7 +990,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the script file and arguments will be quoted as the last argument to the script_interpreter. 
+      description: Whether the script file and arguments will be quoted as the last argument to the script_interpreter.
       isArray: false
       name: interpreter_args_quoted
       predefined:
@@ -1094,7 +1099,7 @@ script:
     - contextPath: Rundeck.WebhookEvent.executionId
       description: The ID of the execution.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false

@@ -10,16 +10,34 @@ configuration:
   type: 0
 - display: Client token
   name: clientToken
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Access token
   name: accessToken
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Client secret
   name: clientSecret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: Client token
+  name:  credentials_client_token
+  required: false
+  hiddenusername: true
+  type: 9
+- displaypassword: Access token
+  name:  credentials_access_token
+  required: false
+  hiddenusername: true
+  type: 9
+- displaypassword: Client secret
+  name:  credentials_client_secret
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -410,6 +428,9 @@ script:
     - defaultValue: 'True'
       description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
       name: network_configuration_sni_only
+    - description: Multiple sans adding into the Common name
+      isArray: true
+      name: sans
     description: Create a new enrollment.
     name: akamai-create-enrollment
     outputs:
@@ -1317,11 +1338,17 @@ script:
       - PRODUCTION
     - description: Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time
       name: contract_id
-    - description: Unique identifier for the group. Both contract_id and group_id need to be defined.
+    - description: Unique identifier for the group. contract_id and groupd_id need to be presented at the same time
       name: group_id
-    description: 'Lists active property hostnames for all properties available in an account.'
+    description: 'Lists active property hostnames for all properties available in an account. '
     name: akamai-list-papi-property-by-hostname
-  dockerimage: demisto/akamai:1.0.0.52532
+  - arguments: []
+    description: Returns a list of all Site Shield maps that belong to your account.
+    name: akamai-list-siteshield-map
+    outputs:
+    - contextPath: Akamai.SiteShieldMaps
+      description: Akamai SiteShield Maps
+  dockerimage: demisto/akamai:1.0.0.62965
   runonce: false
   script: ''
   subtype: python3

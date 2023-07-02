@@ -86,6 +86,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '50'
+  additionalinfo: For each indicator type if you choose 3 indicator types (Malware, Actors, Indicators) it will fetch in total 150 indicators.
   display: Maximum number of indicators per fetch
   name: max_fetch
   required: false
@@ -126,8 +127,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Retrieves indicators from the Mandiant Advantage Feed.
-display: Mandiant Advantage Feed
+description: Deprecated. Use Mandiant Advantage Threat Intelligence instead.
+display: Mandiant Advantage Feed (Deprecated)
 name: FeedMandiant
 script:
   commands:
@@ -182,7 +183,7 @@ script:
     description: Get mandiant indicators.
     execution: false
     name: feed-mandiant-get-indicators
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.56082
   feed: true
   isfetch: false
   longRunning: false
@@ -194,3 +195,4 @@ script:
 tests:
 - Fetch Indicators Test
 fromversion: 6.1.0
+deprecated: true

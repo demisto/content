@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 09f21bd9-e1a4-4379-85a2-e94538403b85
+    taskid: 57259496-2efe-442a-81ed-1f73173073e0
     type: condition
     task:
-      id: 09f21bd9-e1a4-4379-85a2-e94538403b85
+      id: 57259496-2efe-442a-81ed-1f73173073e0
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -256,7 +256,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer
+              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer
       - - operator: inList
           left:
             value:

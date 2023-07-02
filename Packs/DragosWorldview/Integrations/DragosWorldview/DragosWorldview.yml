@@ -57,15 +57,13 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: 'Custom integration designed to pull in reports from the Dragos Worldview
-  API as incidents '
+description: 'Custom integration designed to pull in reports from the Dragos Worldview API as incidents '
 display: Dragos Worldview
 name: Dragos Worldview
 script:
   commands:
   - arguments:
-    - description: Report serial number to get indicators from, if no serial number
-        provided command will retrieve all indicators from the last 48 hours
+    - description: Report serial number to get indicators from, if no serial number provided command will retrieve all indicators from the last 48 hours
       name: serial
     description: Get Indicators from the Dragos WorldView API
     name: dragos-get-indicators
@@ -87,7 +85,7 @@ script:
       required: true
     description: Get the stix2 json bundle of indicators from a given report
     name: dragos-get-stix2
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.57890
   isFetchSamples: true
   isfetch: true
   runonce: false

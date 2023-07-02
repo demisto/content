@@ -1,4 +1,5 @@
 import ssl
+import email
 from datetime import timezone
 from typing import Any, Dict, Tuple, List, Optional
 
@@ -31,12 +32,13 @@ class Email(object):
             email_object = parse_from_bytes(message_bytes)
         except Exception:
             email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
-
+        eml_attachments = self.get_eml_attachments(message_bytes)
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
         self.cc = [mail_addresses for _, mail_addresses in email_object.cc]
         self.bcc = [mail_addresses for _, mail_addresses in email_object.bcc]
         self.attachments = email_object.attachments
+        self.attachments.extend(eml_attachments)
         self.from_ = [mail_addresses for _, mail_addresses in email_object.from_][0]
         self.format = email_object.message.get_content_type()
         self.html = email_object.text_html[0] if email_object.text_html else ''
@@ -50,6 +52,28 @@ class Email(object):
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
+
+    @staticmethod
+    def get_eml_attachments(message_bytes: bytes) -> list:
+        eml_attachments = []
+        msg = email.message_from_bytes(message_bytes)
+        if msg:
+            for part in msg.walk():
+                if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
+                    continue
+
+                filename = part.get_filename()
+                if filename and filename.endswith('.eml'):
+                    eml_attachments.append({
+                        "filename": filename,
+                        "payload": part.get_payload(decode=False)[0].as_bytes(),
+                        "binary": False,
+                        "mail_content_type": part.get_content_subtype(),
+                        "content-id": part.get('content-id'),
+                        "content-disposition": part.get('content-disposition'),
+                        "charset": part.get_content_charset(),
+                        "content_transfer_encoding": part.get_content_charset()})
+        return eml_attachments
 
     @staticmethod
     def handle_message_slashes(message_bytes: bytes) -> bytes:
@@ -409,7 +433,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     return messages_query_list
 
 
-def test_module(client: IMAPClient) -> str:
+def script_test_module(client: IMAPClient) -> str:
     yesterday = parse('1 day UTC')
     client.search(['SINCE', yesterday])
     return 'ok'
@@ -420,7 +444,7 @@ def list_emails(client: IMAPClient,
                 with_headers: bool,
                 permitted_from_addresses: str,
                 permitted_from_domains: str,
-                _limit: int,) -> CommandResults:
+                _limit: int, ) -> CommandResults:
     """
     Lists all emails that can be fetched with the given configuration and return a preview version of them.
     Args:
@@ -503,7 +527,7 @@ def main():
             client.login(username, password)
             client.select_folder(folder)
             if demisto.command() == 'test-module':
-                result = test_module(client)
+                result = script_test_module(client)
                 demisto.results(result)
             elif demisto.command() == 'mail-listener-list-emails':
                 return_results(list_emails(client=client,

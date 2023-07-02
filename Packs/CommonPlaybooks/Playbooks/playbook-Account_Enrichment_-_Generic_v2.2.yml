@@ -884,8 +884,8 @@ tasks:
     scriptarguments:
       UserEmail:
         complex:
-          root: Account.Email
-          accessor: Address
+          root: Account
+          accessor: Email
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
@@ -1053,6 +1053,11 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.ID
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {

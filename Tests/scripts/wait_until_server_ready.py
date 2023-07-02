@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 import time
-from subprocess import check_output
+from subprocess import CalledProcessError, check_output
 from time import sleep
 
 import requests
@@ -44,7 +44,7 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
         # downloading cloud-init logs to artifacts
         check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} '
                      f'{ARTIFACTS_FOLDER}/{ip}-cloud_init.log'.split())
-    except Exception as e:
+    except CalledProcessError as e:
         logging.exception(f'Could not download cloud-init file from server {ip}:\n{e.stderr=}\n{e.output=}\n'
                           f'{e.returncode=}\n{e.cmd=}.')
 
@@ -63,7 +63,7 @@ def docker_login(ip: str) -> None:
             f'ssh {SSH_USER}@{ip} cd /home/demisto && sudo -u demisto {container_engine_type} '
             f'login --username {docker_username} --password-stdin'.split(),
             input=docker_password.encode())
-    except Exception as e:
+    except CalledProcessError as e:
         logging.exception(f'Could not login to {container_engine_type} on server {ip}:\n{e.stderr=}\n{e.output=}\n'
                           f'{e.returncode=}\n{e.cmd=}.')
 

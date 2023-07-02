@@ -812,6 +812,66 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### jira-issue-assign
+
+***
+Edit the assignee of an existing issue.
+
+#### Base Command
+
+`jira-issue-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | The ID of the issue to edit. | Required | 
+| assignee | The name of the assignee. Relevant for Jira Server only, if you are using Jira Cloud, provide the assignee_id argument instead. | Optional | 
+| assignee_id | The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. | 
+| Ticket.Key | String | The ticket key. | 
+| Ticket.Assignee | String | The user assigned to the ticket. | 
+| Ticket.Creator | String | The user who created the ticket. | 
+| Ticket.Summary | String | The ticket summary. | 
+| Ticket.Status | String | The ticket status. | 
+
+#### Command example
+```!jira-issue-assign issueId=21492 assignee_id=1234```
+#### Context Example
+```json
+{
+    "Ticket": {
+        "Assignee": "assignee1(null)",
+        "Created": "2023-03-01T14:05:49.037+0200",
+        "Creator": "assignee1(null)",
+        "Description": null,
+        "DueDate": null,
+        "Id": "21492",
+        "Key": "key",
+        "Labels": [],
+        "LastSeen": "2023-03-15T15:40:44.329+0200",
+        "LastUpdate": "2023-05-03T16:15:32.771+0300",
+        "Priority": "Medium",
+        "ProjectName": "test",
+        "Status": "To Do",
+        "Summary": "something something",
+        "attachment": "attachments"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### jira-issue-assign
+>|assignee| attachment  |created|creator|description|duedate|id|issueType| key |labels|priority| project |reporter|status|summary| ticket_link                                           |
+>|-------------|---|---|---|---|---|---|-----|---|---|---------|---|---|---|-------------------------------------------------------|---|
+>| assignee1(null) | attachments | 2023-03-01T14:05:49.037+0200 | assignee1(null) |  |  | 21492 | Task (Tasks track small, distinct pieces of work.) | key |  | Medium | test    | assignee1(null) | To Do | something something | https:<span>//</span>test/rest/api/latest/issue/21492 |
+>Issue #21492 was updated successfully
 
 ## Configure Incident Mirroring
 **This feature is compliant with Cortex XSOAR version 6.0 and above.**
@@ -990,3 +1050,57 @@ Add a new custom field and add it to the incident type&#39;s layout:
 6. Click on the 'V' option in the 'V/X' menu.
 7. You can see the new status under 'Jira Status'.
 8. Go to Jira, within approximately one minute you will be able to see the new status there as well.
+### jira-add-user-to-project
+
+***
+Adds the user to a project.
+
+#### Base Command
+
+`jira-add-user-to-project`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_email | User's email address. | Optional | 
+| project_key | Project key. | Optional | 
+| role_name | Role name to assign the user. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### jira-get-project-role
+
+***
+Gets the information related to the role, including assigned users.
+
+#### Base Command
+
+`jira-get-project-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### jira-get-organizations
+
+***
+Lists all the organizations.
+
+#### Base Command
+
+`jira-get-organizations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

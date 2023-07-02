@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"ParseEmailFilesV2 automation will no longer embed the base64 of an image in the returned HTML"}

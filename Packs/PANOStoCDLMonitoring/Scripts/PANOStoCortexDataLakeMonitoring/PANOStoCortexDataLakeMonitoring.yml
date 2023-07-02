@@ -1,7 +1,6 @@
 commonfields:
   id: PANOStoCortexDataLakeMonitoring
   version: -1
-enabled: false
 name: PANOStoCortexDataLakeMonitoring
 args:
 - description: Comma separated list of FW serial numbers to monitor.

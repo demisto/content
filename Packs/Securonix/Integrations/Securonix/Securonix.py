@@ -678,6 +678,10 @@ class Client(BaseClient):
             demisto.error(err_msg)
             raise Exception(f'{err_msg}\n{exception}')
 
+        except requests.exceptions.InvalidHeader as exception:
+            set_integration_context({})
+            raise Exception(f"Invalid token generated from the API.\n{exception}")
+
         except Exception as exception:
             raise Exception(str(exception))
 

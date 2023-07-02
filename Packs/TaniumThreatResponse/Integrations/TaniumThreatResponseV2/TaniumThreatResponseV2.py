@@ -5,6 +5,7 @@ import os
 import traceback
 import urllib.parse
 from typing import Any, List, Tuple
+from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -220,6 +221,29 @@ def get_file_data(entry_id: str) -> Tuple[str, str, str]:
     with open(file_path, 'r') as f:
         file_content = f.read()
     return file_name, file_path, file_content
+
+
+def get_future_date(date_string: str) -> str:
+    """ Gets a date string and returns an ISO 8061 formatted datetime string
+
+        :type date_string: ``str``
+        :param date_string:
+            The date string in "<number> <unit>" format (i.e. "7 days")
+
+        :return: ISO8061 formatted datetime string
+        :rtype: ``str``
+
+    """
+    try:
+        if 'in' not in date_string:
+            date_string = f'in {date_string}'
+        parsed_date = dateparser.parse(date_string)
+        if parsed_date:
+            return parsed_date.isoformat()
+        else:
+            raise ValueError
+    except Exception:
+        raise DemistoException('Invalid date string format. Must be "<amount> <unit>"')
 
 
 ''' EVIDENCE HELPER FUNCTIONS '''
@@ -1353,6 +1377,96 @@ def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, 
     return human_readable, outputs, raw_response
 
 
+''' RESPONSE ACTIONS COMMANDS FUNCTIONS'''
+
+
+def get_response_actions(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ List all Response Actions based on the filters provided
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    limit = arg_to_number(data_args.get('limit', 50))
+    offset = arg_to_number(data_args.get('offset', 0))
+    sort_order = data_args.get('sort_order', 'desc')
+    partial_computer_name = data_args.get('partial_computer_name', None)
+    status = data_args.get('status', None)
+    _type = data_args.get('type', None)
+
+    params = {
+        "limit": limit,
+        "offset": offset,
+        "sortOrder": sort_order
+    }
+    if partial_computer_name:
+        params['queryPartialComputerName'] = partial_computer_name
+    if status:
+        params['queryStatus'] = status
+    if _type:
+        params['queryType'] = _type
+
+    raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/response-actions', params=params)
+    raw_response_data = normalize_api_response(raw_response)  # This is a list of dicts
+
+    context = createContext(raw_response, removeNull=True,
+                            keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    outputs = {'Tanium.ResponseActions(val.id === obj.id)': context}
+
+    headers = ['id', 'type', 'status', 'computerName', 'userId', 'userName', 'results', 'expirationTime']
+    human_readable = tableToMarkdown('Response Actions', raw_response_data, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+
+    return human_readable, outputs, raw_response
+
+
+def response_action_gather_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Creates a "gatherSnapshot" Response Action for the specified host.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    payload = {
+        "type": "gatherSnapshot",
+        "options": {}  # Empty options dict is expected for this type
+    }
+
+    payload['computerName'] = data_args.get('computer_name')
+
+    if data_args.get('expiration_time'):
+        expiration_time = get_future_date(data_args.get('expiration_time'))
+        payload['expirationTime'] = expiration_time
+
+    raw_response = client.do_request(
+        'POST',
+        '/plugin/products/threat-response/api/v1/response-actions',
+        data=payload
+    )
+
+    raw_response_data = normalize_api_response(raw_response)
+    context = createContext(raw_response, removeNull=True,
+                            keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    outputs = {'Tanium.ResponseActions(val.id === obj.id)': context}
+
+    headers = ['id', 'type', 'status', 'computerName', 'userId',
+               'userName', 'results', 'expirationTime', 'createdAt', 'updatedAt']
+    human_readable = tableToMarkdown('Response Actions', raw_response_data, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+
+    return human_readable, outputs, raw_response
+
+
 ''' LABELS COMMANDS FUNCTIONS '''
 
 
@@ -2161,6 +2275,9 @@ def main():
 
         'tanium-tr-get-task-by-id': get_task_by_id,
         'tanium-tr-get-system-status': get_system_status,
+
+        'tanium-tr-get-response-actions': get_response_actions,
+        'tanium-tr-response-action-gather-snapshot': response_action_gather_snapshot
     }
 
     try:

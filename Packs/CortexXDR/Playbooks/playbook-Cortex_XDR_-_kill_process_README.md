@@ -1,22 +1,28 @@
-Initiates a new endpoint script execution kill process and retrieves the results.
+Deprecated. Use the `xdr-kill-process-script-execute` command instead. Initiates a new endpoint script execution kill process and retrieves the results.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Cortex XDR - Check Action Status
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * xdr-run-script-kill-process
 * xdr-get-script-execution-results
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -27,6 +33,7 @@ This playbook does not use any scripts.
 | polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -35,5 +42,7 @@ This playbook does not use any scripts.
 | PaloAltoNetworksXDR.ScriptResult.results.standard_output | The STDOUT and the STDERR logged by the script during the execution. | unknown |
 
 ## Playbook Image
+
 ---
-![Cortex XDR - kill process](https://raw.githubusercontent.com/demisto/content/2e19477c6355d781bf8f5c9dfdd1216a6bca07b7/Packs/CortexXDR/doc_files/Cortex_XDR_-_kill_process.png)
+
+![Cortex XDR - kill process](../doc_files/Cortex_XDR_-_kill_process.png)

@@ -9,10 +9,14 @@ import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: d
 from Tests.scripts.utils.log_util import install_logging
 import demisto_client
 
+# Disable insecure warnings
+import urllib3
+urllib3.disable_warnings()
+
 
 def main():
     install_logging('Destroy_instances.log')
-    circle_aritfact = sys.argv[1]
+    circle_artifact = sys.argv[1]
     env_file = sys.argv[2]
     instance_role = sys.argv[3]
     time_to_live = sys.argv[4]
@@ -24,11 +28,11 @@ def main():
         logging.info(f'Downloading server log from {env.get("Role", "Unknown role")}')
         try:
             logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
-            dmst_client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}', verify_ssl=False)
-            tmp_file_path, _, _ = dmst_client.generic_request('/log/bundle', 'GET', response_type='file')
+            client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}', verify_ssl=False)
+            tmp_file_path, _, _ = client.generic_request('/log/bundle', 'GET', response_type='file')
 
             server_ip = env["InstanceDNS"].split('.')[0]
-            logs_dst = f"{circle_aritfact}/server_{env['Role'].replace(' ', '')}_{server_ip}_logs.tar.gz"
+            logs_dst = f"{circle_artifact}/server_{env['Role'].replace(' ', '')}_{server_ip}_logs.tar.gz"
             copy_dst = shutil.copy(tmp_file_path, logs_dst)
             logging.info(f'Server logs saved in: {copy_dst}')
 
@@ -42,9 +46,9 @@ def main():
                 os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
             logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
                          f'{env["InstanceDNS"]}')
-            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
-            if aws_functions.isError(rminstance):
-                logging.error(rminstance['Message'])
+            removed_instance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
+            if aws_functions.isError(removed_instance):
+                logging.error(removed_instance['Message'])
         else:
             logging.warning(f'Tests for some integration failed on {env.get("Role", "Unknown role")}'
                             f', keeping instance alive')

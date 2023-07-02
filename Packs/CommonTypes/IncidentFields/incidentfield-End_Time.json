@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Guardicore Incident"
+        "Guardicore Incident",
+        "Graph Security Alert"
     ],
     "breachScript": "",
     "caseInsensitive": true,

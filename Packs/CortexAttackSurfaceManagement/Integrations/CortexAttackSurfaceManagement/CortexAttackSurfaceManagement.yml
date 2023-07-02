@@ -370,11 +370,63 @@ script:
     - contextPath: ASM.RemediationRule.created_at
       description: Date the rule was created.
       type: Date
-  dockerimage: demisto/python3:3.10.11.54132
+  - arguments:
+    - description: The ID of the service in Cortex Xpanse associated with the alert.
+      name: service_id
+      required: true
+    - description: The Cortex Xpanse attack surface rule associated with the alert.
+      name: attack_surface_rule_id
+      required: true
+    - description: The Cortex Xpanse alert ID.
+      name: alert_internal_id
+      required: true
+    description: Starts a new Remediation Confirmation Scan or gets an existing scan ID.
+    name: asm-start-remediation-confirmation-scan
+    outputs:
+    - contextPath: ASM.RemediationScan.scanId
+      description: The ID returned for the created or existing scan.
+      type: string
+    - contextPath: ASM.RemediationScan.scan_creation_status
+      description: The creation status of the scan (based on HTTP status).
+      type: string
+  - arguments:
+    - description: The ID of an existing remediation confirmation scan.
+      name: scan_id
+      required: true
+    - description: The interval, in seconds, to poll for scan results of an existing Remediation Confirmation Scan.
+      name: interval_in_seconds
+      required: false
+      defaultValue: "600"
+    - description: The timeout, in seconds, for polling for scan results of an existing Remediation Confirmation Scan.
+      name: timeout_in_seconds
+      required: false
+      defaultValue: "11000"
+    - name: hide_polling_output
+      description: Whether to hide the polling result (automatically filled by polling).
+    - auto: PREDEFINED
+      description: Whether to poll until there is at least one result.
+      name: polling
+      required: false
+      isArray: false
+      defaultValue: true
+      predefined:
+      - "true"
+      - "false"
+    description: Get the status of an existing Remediation Confirmation Scan.
+    name: asm-get-remediation-confirmation-scan-status
+    polling: true
+    outputs:
+    - contextPath: ASM.RemediationScan.status
+      description: Status of the Remediation Confirmation Scan.
+      type: string
+    - contextPath: ASM.RemediationScan.result
+      description: Result of the Remediation Confirmation Scan.
+      type: string
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 6.5.0
 tests:
-- CortexAttackSurfaceManagement_Test
+- No tests (auto formatted)
