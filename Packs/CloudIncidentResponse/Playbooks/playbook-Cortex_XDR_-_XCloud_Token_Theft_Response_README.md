@@ -51,14 +51,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* TIM - Indicator Relationships Analysis
-* IP Enrichment - Generic v2
-* Cloud Response - Generic
 * Entity Enrichment - Generic v3
-* Cloud Threat Hunting - Persistence
-* Cloud Enrichment - Generic
 * Cortex XDR - XCloud Token Theft - Set Verdict
-* Handle False Positive Alerts
+* Cloud Threat Hunting - Persistence
+* TIM - Indicator Relationships Analysis
+* Cloud Enrichment - Generic
+* Cloud Response - Generic
+* IP Enrichment - Generic v2
 
 ### Integrations
 
@@ -66,14 +65,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ParseHTMLIndicators
 * LoadJSON
+* ParseHTMLIndicators
 
 ### Commands
 
+* closeInvestigation
 * xdr-get-cloud-original-alerts
 * setIncident
-* closeInvestigation
+* xdr-update-incident
 
 ## Playbook Inputs
 

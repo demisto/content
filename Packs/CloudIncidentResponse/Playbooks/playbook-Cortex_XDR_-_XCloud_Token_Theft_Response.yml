@@ -462,62 +462,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: d4f26e16-62f2-45d5-850f-4c36e1a951f3
-    type: playbook
-    task:
-      id: d4f26e16-62f2-45d5-850f-4c36e1a951f3
-      version: -1
-      name: Handle False Positive Alerts
-      description: |
-        This playbook handles false positive alerts.
-        It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
-      playbookName: Handle False Positive Alerts
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      ShouldCloseAutomatically:
-        simple: "False"
-      ShouldHandleFPautomatically:
-        simple: "False"
-      alertName:
-        complex:
-          root: alert
-          accessor: name
-      sourceIP:
-        complex:
-          root: alert
-          accessor: hostip
-      username:
-        complex:
-          root: alert
-          accessor: username
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -230,
-          "y": 3005
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: e8e43851-9d56-4d01-8fb9-0403519aecec
@@ -839,7 +783,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "61"
       "Yes":
       - "51"
     separatecontext: false
@@ -1633,7 +1577,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "61"
       Malicious:
       - "50"
     separatecontext: false
@@ -2045,7 +1989,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "61"
       "Yes":
       - "59"
     separatecontext: false
@@ -2192,6 +2136,86 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 043be677-29be-4c9f-894a-801024ade783
+    type: regular
+    task:
+      id: 043be677-29be-4c9f-894a-801024ade783
+      version: -1
+      name: Closer XDR incident as False Positive
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: incident
+          accessor: xdrincidentid
+      resolve_comment:
+        simple: Resolved using Cortex XSOAR in incident id ${incident.investigationId}
+      status:
+        simple: RESOLVED_FALSE_POSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: eefcea6e-32df-4efe-868a-982db65eaadf
+    type: regular
+    task:
+      id: eefcea6e-32df-4efe-868a-982db65eaadf
+      version: -1
+      name: Close XSOAR incident as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": 3185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2202,11 +2226,11 @@ view: |-
       "36_35_Yes": 0.41,
       "36_37_#default#": 0.8,
       "38_39_Yes": 0.42,
-      "49_9_#default#": 0.14,
+      "49_61_#default#": 0.1,
       "54_59_#default#": 0.11,
       "55_57_yes": 0.43,
       "55_59_#default#": 0.21,
-      "56_9_#default#": 0.12,
+      "56_61_#default#": 0.14,
       "8_49_#default#": 0.48,
       "8_50_Malicious": 0.63
     },

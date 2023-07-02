@@ -85,6 +85,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -101,6 +102,7 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -157,6 +159,7 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -175,6 +178,7 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -193,6 +197,7 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -211,6 +216,7 @@
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -294,6 +300,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -353,6 +360,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -523,6 +531,7 @@
                                 "startCol": 2
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -537,6 +546,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-6f1661f0-ad44-11e9-a569-716c95c51bfe",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -554,6 +564,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -571,6 +582,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -646,6 +658,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -659,6 +672,7 @@
                         "h": 2,
                         "i": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-c037a9b0-5412-11eb-830f-fbfa6e45cb4e",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -1033,19 +1047,10 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "accountid",
-                                "height": 22,
-                                "id": "e5bc3ed0-158f-11ee-9c72-eb2e3cb3cb42",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "projectid",
                                 "height": 22,
                                 "id": "e94dca00-158f-11ee-9c72-eb2e3cb3cb42",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -1054,7 +1059,7 @@
                                 "fieldId": "operationname",
                                 "height": 22,
                                 "id": "f7b7d270-158f-11ee-9c72-eb2e3cb3cb42",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -1063,7 +1068,7 @@
                                 "fieldId": "operationtype",
                                 "height": 22,
                                 "id": "f8abcf60-158f-11ee-9c72-eb2e3cb3cb42",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -1072,7 +1077,7 @@
                                 "fieldId": "identitytype",
                                 "height": 22,
                                 "id": "fc49ddb0-158f-11ee-9c72-eb2e3cb3cb42",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -1081,7 +1086,7 @@
                                 "fieldId": "region",
                                 "height": 22,
                                 "id": "6204ffb0-15b6-11ee-9c72-eb2e3cb3cb42",
-                                "index": 5,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -1090,16 +1095,25 @@
                                 "fieldId": "resourcetype",
                                 "height": 22,
                                 "id": "69d67e80-15b6-11ee-9c72-eb2e3cb3cb42",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "referencedresourceid",
+                                "height": 22,
+                                "id": "a6834e20-18be-11ee-a005-5968c8362785",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xdralertsearchresults",
-                                "height": 106,
-                                "id": "5b40af40-1673-11ee-9c72-eb2e3cb3cb42",
-                                "index": 6,
+                                "fieldId": "referencedresourcename",
+                                "height": 22,
+                                "id": "a7935e90-18be-11ee-a005-5968c8362785",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -1176,6 +1190,15 @@
                                 "startCol": 0
                             },
                             {
+                                "endCol": 4,
+                                "fieldId": "xdralertsearchresults",
+                                "height": 106,
+                                "id": "83a31520-18be-11ee-a005-5968c8362785",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "mitretechniquename",
@@ -1190,7 +1213,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Indicator Relationships",
+                        "name": "Relationships",
                         "static": false,
                         "w": 2,
                         "x": 0,
