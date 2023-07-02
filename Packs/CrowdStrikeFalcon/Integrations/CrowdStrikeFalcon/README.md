@@ -508,14 +508,15 @@ Sends commands to hosts.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_ids | A comma-separated list of host agent IDs for which to run commands. (Can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
-| command_type | The type of command to run. | Required | 
-| full_command | The full command to run. | Required | 
-| scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
-| target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
-| queue_offline | Any commands run against an offline-queued session will be queued up and executed when the host comes online. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                 | **Required** |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| host_ids          | A comma-separated list of host agent IDs for which to run commands. (Can be retrieved by running the 'cs-falcon-search-device' command.)                                                                        | Required | 
+| command_type      | The type of command to run.                                                                                                                                                                                     | Required | 
+| full_command      | The full command to run.                                                                                                                                                                                        | Required | 
+| scope             | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
+| target            | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch".                                                                                                         | Optional | 
+| queue_offline     | Any commands run against an offline-queued session will be queued up and executed when the host comes online.                                                                                                   | Optional | 
+| timeout           | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional     | 
 
 
 #### Context Output
@@ -3678,9 +3679,10 @@ Uploads a batch of indicators.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required | 
+| **Argument Name**        | **Description** | **Required** |
+|--------------------------| --- |--------------|
+| multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required     | 
+| timeout                  | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional     | 
 
 
 #### Context Output
