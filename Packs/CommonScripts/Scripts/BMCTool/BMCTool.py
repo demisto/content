@@ -356,7 +356,7 @@ class BMCContainer(Generic[AnyStr]):
                     msk = b"\x05"
                     ml = 1
                 else:
-                    ml = rl // 8 + 1 if rl % 8 != 0 else rl // 8
+                    ml = (rl // 8) + 1 if rl % 8 != 0 else rl // 8
                     if len(data) < ml:
                         self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                         return b""
@@ -439,15 +439,12 @@ class BMCContainer(Generic[AnyStr]):
         if not self.pal:
             return b"BM" + pack("<L", len(data) + 122) + b"\x00\x00\x00\x00\x7A\x00\x00\x00\x6C\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x20\x00\x03\x00\x00\x00" + pack("<L",
-                                                                                               len(data)) + \
-                b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\x00\x00\xFF\x00\x00\xFF\x00\x00 \
-                    \x00\x00\x00\x00\xFF niW" + (
-                b"\x00" * 36) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
+                                                                                               len(data)) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\x00\x00\xFF\x00\x00\xFF\x00\x00\x00\x00\x00\x00\xFF niW" + (
+                               b"\x00" * 36) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
         else:
             return b"BM" + pack("<L", len(data) + 0x36) + b"\x00\x00\x00\x00\x36\x04\x00\x00\x28\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x08\x00\x00\x00\x00\x00" + pack("<L",
-                                                                                               len(data) - 0x400) + \
-                                                        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
+                                                                                               len(data) - 0x400) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
 
     def b_write(self, fname, data):
         collage = fileResult(fname, data)
@@ -490,7 +487,7 @@ def main():
     del bmcc
 
     results = CommandResults(
-        outputs_prefix='Collages',
+        outputs_prefix = 'Collages',
         outputs=sources
     )
 
