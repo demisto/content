@@ -1,7 +1,7 @@
 {
 	"defaultIncidentType": "LogPoint Incident",
   	"name": "LogPoint SIEM Integration - Incoming Mapper",
-  	"id": "c",
+  	"id": "LogPoint SIEM Integration - Incoming Mapper",
   	"type": "mapping-incoming",
   	"description": "Maps LogPoint Incident fields",
 	"fromVersion": "6.0.0",
