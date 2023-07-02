@@ -50,7 +50,7 @@ def print_test_summary(failed_tests_path, succeeded_tests_path) -> None:
 
 def main():
     try:
-        install_logging('print_summary.log', logger=logging)
+        install_logging('print_testplaybook_summary.log', logger=logging)
         options = options_handler()
         print_test_summary(failed_tests_path=options.failed_tests_path,
                            succeeded_tests_path=options.succeeded_tests_path)
