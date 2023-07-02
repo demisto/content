@@ -31,6 +31,8 @@ configuration:
     spreadsheets is created in the associated Google Drive and is
     easily accessible from a UI. This parameter is used during the
     authentication process.
+  hidden:
+  - xsoar_saas
 description: Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
 display: Google Sheets
 name: GoogleSheets
@@ -136,8 +138,6 @@ script:
       name: include_grid_data
       required: false
       secret: false
-      hidden:
-        - xsoar_saas
     - default: false
       description: Works only with include_grid_data = True. The ranges to retrieve from the spreadsheet. Ranges are specified using A1 notation. For example, Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1.
       isArray: true
@@ -823,7 +823,7 @@ script:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title
       description: Sheet title.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.64222
+  dockerimage: demisto/googleapi-python3:1.0.0.64384
   feed: false
   isfetch: false
   longRunning: false
