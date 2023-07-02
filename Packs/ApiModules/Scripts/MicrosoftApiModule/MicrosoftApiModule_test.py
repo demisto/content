@@ -127,10 +127,8 @@ def test_page_not_found_error(mocker):
     mocker.patch.object(BaseClient, '_http_request', return_value=error_404)
     mocker.patch.object(client, 'get_access_token')
 
-    try:
+    with pytest.raises(NotFoundError):
         client.http_request()
-    except Exception as e:  # Validate that a `NotFoundError` was raised
-        assert type(e).__name__ == 'NotFoundError'
 
 
 def test_epoch_seconds(mocker):
@@ -394,8 +392,8 @@ def test_self_deployed_multi_resource(requests_mock, resource):
     assert client.resource_to_access_token[resource] == TOKEN
 
 
-@pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
-def test_national_endpoints(mocker, endpoint):
+@pytest.mark.parametrize('azure_cloud_name', ['com', 'gcc', 'gcc-high', 'dod', 'de', 'cn'])
+def test_national_endpoints(mocker, azure_cloud_name):
     """
     Given:
         self-deployed client
@@ -408,14 +406,14 @@ def test_national_endpoints(mocker, endpoint):
     auth_id = f'{AUTH_ID}@{TOKEN_URL}'
     enc_key = ENC_KEY
     app_name = APP_NAME
-    base_url = BASE_URL
     ok_codes = OK_CODES
+    azure_cloud = AZURE_CLOUDS[azure_cloud_name]
     client = MicrosoftClient(self_deployed=True, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-                             tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
-                             endpoint=endpoint)
+                             tenant_id=tenant_id, verify=True, proxy=False, ok_codes=ok_codes,
+                             azure_cloud=azure_cloud)
 
-    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[endpoint]
-    assert client.scope == f'{GRAPH_ENDPOINTS[endpoint]}/.default'
+    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[client.azure_cloud.abbreviation]
+    assert client.scope == f'{GRAPH_ENDPOINTS[client.azure_cloud.abbreviation]}/.default'
 
 
 def test_retry_on_rate_limit(requests_mock, mocker):
@@ -483,11 +481,8 @@ def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
     mocker.patch.object(sys, 'exit')
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
 
-    try:
+    with pytest.raises(DemistoException, match=r'Rate limit reached!'):
         client.http_request(method='GET', url_suffix='test_id')
-        assert False
-    except DemistoException as err:
-        assert 'Rate limit reached!' in err.args[0]['content']
 
 
 def test_rate_limit_when_retry_is_false(requests_mock):
@@ -510,11 +505,8 @@ def test_rate_limit_when_retry_is_false(requests_mock):
         json={'content': "Rate limit reached!"}
     )
 
-    try:
+    with pytest.raises(DemistoException, match="Error in API call \[429\]"):
         client.http_request(method='GET', url_suffix='test_id')
-        assert False
-    except DemistoException as err:
-        assert 'Error in API call [429]' in err.args[0]
 
 
 @pytest.mark.parametrize('response, result', [
@@ -556,13 +548,11 @@ def test_general_error_metrics(requests_mock, mocker):
     mocker.patch.object(demisto, 'command', return_value='testing_command')
     mocker.patch.object(demisto, 'results')
 
-    try:
+    with pytest.raises(DemistoException):
         client.http_request(method='GET', url_suffix='test_id')
-        assert False
-    except DemistoException:
-        metric_results = demisto.results.call_args_list[0][0][0]
-        assert metric_results.get('Contents') == 'Metrics reported successfully.'
-        assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
@@ -619,3 +609,73 @@ def test_get_token_managed_identities__error(requests_mock, mocker):
 
     err_message = 'Error in Microsoft authorization with Azure Managed Identities'
     assert err_message in MicrosoftApiModule.return_error.call_args[0][0]
+
+
+args = {'test': 'test_arg_value'}
+params = {'test': 'test_param_value', 'test_unique': 'test_arg2_value'}
+
+
+def test_get_from_args_or_params__when_the_key_exists_in_args_and_params():
+    """
+    Given:
+        args and params with the same key in both
+    When:
+        get value from args or params is called
+    Then:
+        Verify that the result are as expected = the value from args is returned
+    """
+
+    assert get_from_args_or_params(args, params, 'test') == 'test_arg_value'
+
+
+def test_get_from_args_or_params__when_the_key_exists_only_in_params():
+    """
+    Given:
+        args and params with the requested key exist only in params
+    When:
+        get value from args or params is called
+    Then:
+        Verify that the result are as expected = the value from params
+    """
+    assert get_from_args_or_params(args, params, 'test_unique') == 'test_arg2_value'
+
+
+def test_get_from_args_or_params__when_the_key_dose_not_exists():
+    """
+    Given:
+        args and params
+    When:
+        get value from args or params is called with a key that dose not exist
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        get_from_args_or_params(args, params, 'mock')
+    assert e.value.args[0] == "No mock was provided. Please provide a mock either in the instance \
+configuration or as a command argument."
+
+
+def test_azure_tag_formatter__with_valid_input():
+    """
+    Given:
+        A valid json as a string
+    When:
+        azure_tag_formatter is called
+    Then:
+        Verify that the result are as expected
+    """
+    assert azure_tag_formatter('{"key":"value"}') == "tagName eq 'key' and tagValue eq 'value'"
+
+
+def test_azure_tag_formatter__with_invalid_input():
+    """
+    Given:
+        A invalid json as a string
+    When:
+        azure_tag_formatter is called
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        azure_tag_formatter('{"key:value"}')
+    assert e.value.args[0] == 'Invalid tag format, please use the following format: \'{"key_name":"value_name"}\''

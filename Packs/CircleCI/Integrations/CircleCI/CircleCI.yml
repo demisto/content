@@ -13,14 +13,20 @@ configuration:
   name: api_key
   required: false
   type: 4
+  hidden: true
+- name: api_key_creds
+  type: 9
+  required: false
+  displaypassword: The API key
+  hiddenusername: true
 - display: Version control system type
   name: vcs_type
   type: 15
   required: true
+  additionalinfo: Type of version control system
   options:
   - github
   - bitbucket
-  additionalinfo: Type of version control system
 - display: Organization name
   name: organization
   type: 0
@@ -28,8 +34,8 @@ configuration:
   additionalinfo: Name of the organization
 - display: Project Name
   name: project
-  type: 0
   required: true
+  type: 0
   additionalinfo: Name of the project
 - display: Trust any certificate (not secure)
   name: insecure
@@ -39,6 +45,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+
 description: Gets the details of the CircleCI workflows; including the details of the last runs and the jobs, and retrieves the artifacts of the jobs.
 display: CircleCI
 name: CircleCI
@@ -164,8 +171,8 @@ script:
       default: true
       auto: PREDEFINED
       predefined:
-        - github
-        - bitbucket
+      - github
+      - bitbucket
       defaultValue: github
     - default: false
       description: The organization from which to retrieve artifacts. Defaults to the organization instance parameter.
@@ -259,8 +266,8 @@ script:
       default: true
       auto: PREDEFINED
       predefined:
-        - github
-        - bitbucket
+      - github
+      - bitbucket
       defaultValue: github
     - default: false
       description: Organization from which to retrieve workflow last runs. Defaults to the organization instance parameter.
@@ -335,7 +342,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

@@ -23,19 +23,20 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-API_TOKEN = demisto.params().get('APIToken')
-BASE_URL = demisto.params().get('baseURL')
-USE_SSL = not demisto.params().get('insecure', False)
+PARAMS = demisto.params()
+API_TOKEN = PARAMS.get('apitoken_creds', {}).get('password') or PARAMS.get('APIToken')
+BASE_URL = PARAMS.get('baseURL')
+USE_SSL = not PARAMS.get('insecure', False)
 DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
-SUSPICIOUS_THRESHOLD = arg_to_number(demisto.params().get('suspicious_threshold', 0))
-MALICIOUS_THRESHOLD = arg_to_number(demisto.params().get('dboscore_threshold', -100))
+SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0))
+MALICIOUS_THRESHOLD = arg_to_number(PARAMS.get('dboscore_threshold', -100))
 MAX_THRESHOLD_VALUE = 100
 MIN_THRESHOLD_VALUE = -100
 
-reliability = demisto.params().get('integrationReliability')
+reliability = PARAMS.get('integrationReliability')
 reliability = reliability if reliability else DBotScoreReliability.B
 
 if DBotScoreReliability.is_valid_type(reliability):

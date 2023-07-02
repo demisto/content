@@ -528,6 +528,7 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
+    UNREMOVABLE_PACKS: "Base,CoreAlertFields,Core,CortexAttackSurfaceManagement"
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true
@@ -552,6 +553,7 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
+    UNREMOVABLE_PACKS: "Base"
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
@@ -587,7 +589,15 @@ test-upload-flow:
     - section_end "Create Testing Branch"
 
     - section_start "Trigger Test Upload Flow On Testing Branch"
-    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+    # retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
+    - for _ in {1..3}; do
+    -   export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+    -   if [ "${pipeline_id}" != "null" ]; then
+    -     break
+    -   fi
+    -   echo "Sleeping for 10 seconds before retrying"
+    -   sleep 10
+    - done
     - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
