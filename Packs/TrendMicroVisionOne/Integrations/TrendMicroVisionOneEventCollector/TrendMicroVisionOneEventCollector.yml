@@ -8,7 +8,7 @@ sectionOrder:
 configuration:
 - additionalinfo: 'The API endpoint to the Trend Micro Vision One instance. See the domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs.'
   defaultvalue: https://api.xdr.trendmicro.com
-  display: server URL
+  display: Server URL
   name: url
   required: true
   type: 0
