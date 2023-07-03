@@ -780,6 +780,18 @@ def get_search_detection_logs(
     Returns:
         Tuple[List[Dict], Dict]: search detection logs & updated last run time
     """
+    def parse_search_detection_logs(_search_detection_logs):
+        for _log in _search_detection_logs:
+            for field in [
+                'actResult', 'app', 'blocking', 'cat', 'component', 'deviceProcessName', 'processName', 'deviceMacAddress',
+                'endpointMacAddress', 'interestedMacAddress', 'dhost', 'domainName', 'endpointHostName', 'hostName',
+                'endpointIp', 'fileName', 'filePath', 'fileSize', 'httpReferer', 'malType', 'mitreMapping', 'objectCmd',
+                'processCmd', 'objectFileName', 'objectName', 'processSigner', 'request', 'requestClientApplication',
+                'threatName', 'mDevice', 'src'
+            ]:
+                if field not in _log:
+                    _log[field] = None
+
     search_detections_log_type = LogTypes.SEARCH_DETECTIONS.value
     search_detection_start_run_time = LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value
     search_detection_next_link = LastRunLogsNextLink.SEARCH_DETECTIONS.value
@@ -841,6 +853,8 @@ def get_search_detection_logs(
             # pagination is over
             dedup_log_ids = pagination_log_ids
         last_run_next_link = ''
+
+    parse_search_detection_logs(search_detection_logs)
 
     search_detections_updated_last_run = {
         search_detection_start_run_time: last_run_start_time,
