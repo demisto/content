@@ -1,6 +1,8 @@
 $script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
+Import-Module ExchangeOnlineManagement
+
 #### Security And Compliance client - OAUTH2.0 ####
 
 class ExchangeOnlinePowershellV3Client
@@ -39,7 +41,7 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName Search-UnifiedAuditLog -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
@@ -142,8 +144,22 @@ function SearchAuditLogCommand {
 
     }
     finally {
-        $client.CloseSession()
+        $client.DisconnectSession()
     }
+}
+
+function TestModuleCommand($client)
+{
+    try
+    {
+        $client.CreateSession()
+        $demisto.results("ok")
+    }
+    finally
+    {
+        $client.DisconnectSession()
+    }
+
 }
 
 function Main {
@@ -153,9 +169,9 @@ function Main {
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
 
-    if ($integration_params.password.password)
+    if ($integration_params.certificate.password)
     {
-        $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
+        $password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
     }
     else
     {
@@ -166,7 +182,7 @@ function Main {
             $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
-            $integration_params.certificate.password,
+            $integration_params.certificate.identifier,
             $password
     )
     try {
@@ -174,9 +190,7 @@ function Main {
         $demisto.Debug("Command being called is $command")
         switch ($command) {
             "test-module" {
-                throw "To complete the authentication process, run the '!o365-auditlog-auth-start' command,
-                and follow the printed instructions.
-                Then to verify the authentication was successful, run '!o365-auditlog-auth-test'."
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $audit_log_client
             }
             "$script:COMMAND_PREFIX-search" {
                 ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $audit_log_client $command_arguments

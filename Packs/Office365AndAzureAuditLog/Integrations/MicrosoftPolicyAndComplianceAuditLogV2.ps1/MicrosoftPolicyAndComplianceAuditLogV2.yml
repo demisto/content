@@ -9,18 +9,12 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: Certificate
-  name: certificate
-  type: 9
-  required: true
-  additionalinfo: A pfx certificate encoded in Base64.
-  hiddenusername: true
-  section: Connect
 - displaypassword: Password
-  name: password
+  display: Certificate
+  additionalinfo: A pfx certificate encoded in Base64.
+  name: certificate
   required: true
   type: 9
-  hiddenusername: true
   section: Connect
 - display: The organization used in app-only authentication.
   name: organization
@@ -167,7 +161,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/powershell-ubuntu:7.3.0.49844
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
 fromversion: 5.5.0
 tests:
 - Audit Log - Test
