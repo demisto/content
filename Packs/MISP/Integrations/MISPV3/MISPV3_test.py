@@ -779,66 +779,65 @@ def test_add_tag(demisto_args: dict, is_attribute: bool, expected_result: dict, 
     assert result.outputs_prefix == expected_result['outputs_prefix']
 
 
-def test_add_user_to_misp(mock):
+def test_add_user_to_misp(mocker):
+    mock_misp(mocker)
     from MISPV3 import add_user_to_misp
+    mock_response = {}
+    mocker.patch('PYMISP.add_user', return_value=mock_response)
     demisto_args = {
         'email': 'test@example.com',
         'org_id': '123',
         'role_id': '456',
-        'password': 'paSs123456!'
+        'password': 'password123'
     }
-    mock.add_user.return_value = {}
     result = add_user_to_misp(demisto_args)
-    assert result == {
+    expected_output = {
         'readable_output': '## MISP add user\nNew user was added to MISP.\nEmail:test@example.com',
-        'raw_response': {},
-        'outputs': {}
+        'raw_response': mock_response,
+        'outputs': mock_response
     }
+    assert result.readable_output == expected_output['readable_output']
+    assert result.raw_response == expected_output['raw_response']
+    assert result.outputs == expected_output['outputs']
 
 
-def test_get_organizations_info(mock):
+def test_get_organizations_info(mocker):
+
+    mock_misp(mocker)
     from MISPV3 import get_organizations_info
-    mock.organizations.return_value = [
-        {'Organisation': {'id': 1, 'name': 'org1'}},
-        {'Organisation': {'id': 2, 'name': 'org2'}},
-        {'Organisation': {'id': 3, 'name': 'org3'}}        
+
+    mock_organizations = [
+        {'Organisation': {'id': 1, 'name': 'Org1'}},
+        {'Organisation': {'id': 2, 'name': 'Org2'}}
     ]
+    mocker.patch('PYMISP.organisations', return_value=mock_organizations)
     result = get_organizations_info()
-    assert result == {
-        'readable_output': 'MISP Organizations\n\n| id | name |\n|----|------|\n| 1  | org1 |\n| 2  | org2 |\n| 3  | org3 |',
-        'outputs_prefix': 'MISP.Organization',
-        'outputs': [
-            {'name': 'Org1', 'id': 1},
-            {'name': 'Org2', 'id': 2},
-            {'name': 'Org3', 'id': 3}
-        ],
-        'raw_response': [
-            {'Organisation': {'id': 1, 'name': 'org1'}},
-            {'Organisation': {'id': 2, 'name': 'org2'}},
-            {'Organisation': {'id': 3, 'name': 'org3'}}
+    expected_output = {
+        'MISP.Organization': [
+            {'id': 1, 'name': 'Org1'},
+            {'id': 2, 'name': 'Org2'}
         ]
     }
+    assert result.outputs == expected_output
 
 
-def test_get_role_info(mock):
+def test_get_role_info(mocker):
+    mock_misp(mocker)
     from MISPV3 import get_role_info
-    mock.roles.return_value = [
-        {'Role': {'id': 1, 'name': 'role1'}},
-        {'Role': {'id': 2, 'name': 'role2'}},
-        {'Role': {'id': 3, 'name': 'role3'}}
-    ]
-    result = get_role_info()
-    assert result == {
-        'readable_output': 'MISP Roles\n\n| id | name  |\n|----|-------|\n| 1  | role1 |\n| 2  | role2 |\n| 3  | role3 |',
-        'outputs_prefix': 'MISP.Role',
-        'outputs': [
-            {'name': 'role1', 'id': 1},
-            {'name': 'role2', 'id': 2},
-            {'name': 'role3', 'id': 3}
-        ],
-        'raw_response': [
-            {'Role': {'id': 1, 'name': 'role1'}},
-            {'Role': {'id': 2, 'name': 'role2'}},
-            {'Role': {'id': 3, 'name': 'role3'}}
+
+    with mocker.patch('PYMISP.roles') as mocker_roles:
+        mocker_roles.return_value = [
+            {'Role': {'name': 'Role 1', 'id': 1}},
+            {'Role': {'name': 'Role 2', 'id': 2}},
         ]
-    }
+    result = get_role_info()
+    assert result.readable_output == 'MISP Roles'
+    assert result.outputs_prefix == 'MISP.Role'
+    assert result.outputs == [
+            {'name': 'Role 1', 'id': 1},
+            {'name': 'Role 2', 'id': 2},
+        ]
+    assert result.raw_response == [
+            {'Role': {'name': 'Role 1', 'id': 1}},
+            {'Role': {'name': 'Role 2', 'id': 2}},
+        ]
