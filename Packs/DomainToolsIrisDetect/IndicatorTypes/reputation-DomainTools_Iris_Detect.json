@@ -13,6 +13,6 @@
     "updateAfter": 0,
     "mergeContext": false,
     "expiration": 0,
-    "layout": "DomainTools Iris Detect Layout",
+    "layout": "DomainTools Iris Detect Indicator Layout",
     "fromVersion": "6.5.0"
 }

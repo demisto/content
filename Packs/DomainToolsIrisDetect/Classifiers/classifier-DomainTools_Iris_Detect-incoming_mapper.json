@@ -20,13 +20,6 @@
                         "root": "incidents",
                         "transformers": []
                     }
-                },
-                "domaintoolstest": {
-                    "complex": {
-                        "filters": [],
-                        "root": "incidents",
-                        "transformers": []
-                    }
                 }
             }
         },

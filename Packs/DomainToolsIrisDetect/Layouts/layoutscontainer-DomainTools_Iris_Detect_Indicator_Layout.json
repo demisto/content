@@ -323,7 +323,7 @@
                                 "endCol": 2,
                                 "fieldId": "irisdetectterm",
                                 "height": 22,
-                                "id": "dcbb1c70-9655-11ed-a4d4-3540341773bb",
+                                "id": "68b26830-1998-11ee-aef7-fdaac55c9c0d",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -424,10 +424,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "domaintoolsriskscore",
+                                "height": 22,
+                                "id": "560bc780-1998-11ee-aef7-fdaac55c9c0d",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "irisdetectriskscorecompoents",
                                 "height": 22,
                                 "id": "7e490770-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -436,7 +445,7 @@
                                 "fieldId": "irisdetectdomainescalationtype",
                                 "height": 22,
                                 "id": "855a91a0-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -445,7 +454,7 @@
                                 "fieldId": "irisdetectipdetails",
                                 "height": 22,
                                 "id": "8f7208d0-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -454,16 +463,7 @@
                                 "fieldId": "irisdetectmxdetails",
                                 "height": 22,
                                 "id": "92725080-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 10,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "domaintoolsriskscore",
-                                "height": 22,
-                                "id": "333dc290-9283-11ed-b59f-efdbfef0ca1a",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -471,7 +471,7 @@
                                 "endCol": 2,
                                 "fieldId": "domaintoolsriskscorestatus",
                                 "height": 22,
-                                "id": "41c5b340-9283-11ed-b59f-efdbfef0ca1a",
+                                "id": "a15d6540-1998-11ee-aef7-fdaac55c9c0d",
                                 "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -480,7 +480,7 @@
                                 "endCol": 2,
                                 "fieldId": "domaintoolsriskscorecomponents",
                                 "height": 106,
-                                "id": "3956bbf0-9283-11ed-b59f-efdbfef0ca1a",
+                                "id": "02c3e4e0-1998-11ee-aef7-fdaac55c9c0d",
                                 "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -488,9 +488,9 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "irisdetecthostingipdetails",
-                                "height": 22,
-                                "id": "522b3290-ab66-11ed-b2d3-4bccc48f583b",
-                                "index": 13,
+                                "height": 106,
+                                "id": "34752580-1998-11ee-aef7-fdaac55c9c0d",
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -504,24 +504,20 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "irisdetectmailserverdetails",
                                 "height": 106,
-                                "id": "3ced9350-ab66-11ed-b2d3-4bccc48f583b",
+                                "id": "846a81c0-1998-11ee-aef7-fdaac55c9c0d",
                                 "index": 14,
-                                "listId": "main-cad52b9d-4857-4b9d-8ae0-640336b7b425-main-65002b10-90df-11ed-99c3-e1f211a26b87",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "irisdetectescalations",
                                 "height": 106,
-                                "id": "0c511c00-9647-11ed-8034-93b6a2fb2519",
+                                "id": "122c4a80-1998-11ee-aef7-fdaac55c9c0d",
                                 "index": 15,
-                                "listId": "main-65002b10-90df-11ed-99c3-e1f211a26b87",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -626,7 +622,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Tags and TLP",
                         "static": false,
@@ -767,42 +762,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "techname",
-                                "height": 22,
-                                "id": "ca0b4d00-9861-11eb-a24d-4941fb0e06df",
-                                "index": 11,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techcountry",
-                                "height": 22,
-                                "id": "cb505020-9861-11eb-a24d-4941fb0e06df",
-                                "index": 12,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techorganization",
-                                "height": 22,
-                                "id": "cd02e220-9861-11eb-a24d-4941fb0e06df",
-                                "index": 13,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techemail",
-                                "height": 22,
-                                "id": "cf7568c0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 14,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "registrarname",
                                 "height": 22,
                                 "id": "d3ed0e30-9861-11eb-a24d-4941fb0e06df",
@@ -825,15 +784,6 @@
                                 "height": 22,
                                 "id": "d77375d0-9861-11eb-a24d-4941fb0e06df",
                                 "index": 17,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "billing",
-                                "height": 22,
-                                "id": "dad405f0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 18,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -869,7 +819,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Domain Details",
                         "static": false,
@@ -884,7 +833,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Reputation Status",
                         "static": false,
@@ -907,7 +855,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
@@ -924,5 +871,5 @@
     "name": "DomainTools Iris Detect Indicator Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.9.0"
 }

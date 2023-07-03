@@ -1373,7 +1373,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- DomainToolsIrisDetect_Test
 fromversion: 6.9.0
 defaultclassifier: DomainTools Iris Detect - Classifier
 defaultmapperin: DomainTools Iris Detect - Incoming Mapper
