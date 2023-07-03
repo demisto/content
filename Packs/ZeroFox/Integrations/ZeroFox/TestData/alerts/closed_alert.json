@@ -1,0 +1,83 @@
+{
+    "alert": {
+        "alert_type": "search query",
+        "logs": [
+            {
+                "id": 390795944,
+                "timestamp": "2023-06-01T07:07:58+00:00",
+                "actor": "",
+                "subject": "",
+                "action": "open"
+            }
+        ],
+        "offending_content_url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35803",
+        "asset_term": null,
+        "assignee": "",
+        "entity": {
+            "id": 560648,
+            "name": "Virginia Potts",
+            "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+            "labels": [
+                {
+                    "id": 1639880,
+                    "name": "Stark"
+                }
+            ],
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            }
+        },
+        "entity_term": null,
+        "content_created_at": "2023-06-01T06:55:20+00:00",
+        "id": 224850127,
+        "protected_account": null,
+        "severity": 4,
+        "perpetrator": {
+            "name": "Akira Ransomware: Lewis Young Robertson & Burningham",
+            "display_name": "Akira Ransomware: Lewis Young Robertson & Burningham",
+            "id": 424158735,
+            "url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35803",
+            "content": "On June 01, 2023, ZeroFox observed an update on the Akira Ransomware leak site targeting Lewis Young Robertson & Burningham, a U.S.-based firm that provide financial advice and consultant to local governments. ZeroFox has detected close to 100 victims of ransomware and digital extortion in the financial services sector in the past year, more than 40 percent of which are in the U.S.-Canada region.",
+            "type": "page",
+            "timestamp": "2023-06-01T06:55:20+00:00",
+            "network": "advanced_dark_web"
+        },
+        "rule_group_id": 1775,
+        "asset": {
+            "id": 560648,
+            "name": "Virginia Potts",
+            "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+            "labels": [
+                {
+                    "id": 1639880,
+                    "name": "Stark"
+                }
+            ],
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            }
+        },
+        "entered_by": "",
+        "metadata": "",
+        "status": "Closed",
+        "timestamp": "2023-06-01T07:07:58+00:00",
+        "rule_name": "Advanced Dark Web",
+        "last_modified": "2023-06-01T07:07:58Z",
+        "protected_locations": null,
+        "darkweb_term": null,
+        "business_network": null,
+        "reviewed": false,
+        "escalated": false,
+        "network": "advanced_dark_web",
+        "protected_social_object": null,
+        "notes": "",
+        "reviews": [],
+        "content_actions": [],
+        "rule_id": 41785,
+        "entity_account": null,
+        "entity_email_receiver_id": null,
+        "tags": []
+    }
+}

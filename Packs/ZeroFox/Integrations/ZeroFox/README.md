@@ -1,7 +1,5 @@
-The ZeroFox Platform delivers proactive intelligence to disrupt phishing, impersonations,
-malicious domains and data leakage across the public, deep and dark web.
-
-This integration was integrated and tested with api version 1.0 of ZeroFox
+Cloud-based SaaS to detect risks found on social media and digital channels.
+This integration was integrated and tested with version 1.0 and 2.0 of ZeroFox
 
 ## Configure ZeroFox on Cortex XSOAR
 
@@ -11,7 +9,7 @@ This integration was integrated and tested with api version 1.0 of ZeroFox
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | URL (e.g., https://api.zerofox.com/1.0) | True |
+    | URL (e.g., <https://api.zerofox.com/>) | True |
     | Username | True |
     | Password | True |
     | Trust any certificate (not secure) | False |
@@ -22,23 +20,26 @@ This integration was integrated and tested with api version 1.0 of ZeroFox
     | Incident type | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### zerofox-get-alert
+
 ***
 Fetches an alert by ID.
-
 
 #### Base Command
 
 `zerofox-get-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
-
 
 #### Context Output
 
@@ -78,20 +79,20 @@ Fetches an alert by ID.
 | ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-alert-user-assignment
+
 ***
 Assigns an alert to a user.
-
 
 #### Base Command
 
 `zerofox-alert-user-assignment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
 | username | The name of the user to which an alert is assigned. | Required |
-
 
 #### Context Output
 
@@ -101,19 +102,19 @@ Assigns an alert to a user.
 | ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
 
 ### zerofox-close-alert
+
 ***
 Closes an alert.
-
 
 #### Base Command
 
 `zerofox-close-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
-
 
 #### Context Output
 
@@ -123,19 +124,19 @@ Closes an alert.
 | ZeroFox.Alert.Status | String | The status of an alert. |
 
 ### zerofox-alert-request-takedown
+
 ***
 Requests a takedown of a specified alert.
-
 
 #### Base Command
 
 `zerofox-alert-request-takedown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
-
 
 #### Context Output
 
@@ -145,13 +146,14 @@ Requests a takedown of a specified alert.
 | ZeroFox.Alert.Status | String | The status of an alert. |
 
 ### zerofox-modify-alert-tags
+
 ***
 Adds tags to and or removes tags from a specified alert.
-
 
 #### Base Command
 
 `zerofox-modify-alert-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -160,6 +162,58 @@ Adds tags to and or removes tags from a specified alert.
 | alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
 | tags | A CSV of tags to be added to or removed from an alert. | Required |
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
+| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
+| ZeroFox.Alert.ID | Number | The ID of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested", or "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
+
+### zerofox-modify-alert-notes
+
+***
+Modify the notes from a specified alert.
+
+#### Base Command
+
+`zerofox-modify-alert-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
+| notes | The modified notes to update in the alert. | Required |
 
 #### Context Output
 
@@ -199,13 +253,14 @@ Adds tags to and or removes tags from a specified alert.
 | ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-list-alerts
+
 ***
 Returns alerts that match user-defined or default filters and parameters. By default, no filters are applied and the results are sorted by timestamp.
-
 
 #### Base Command
 
 `zerofox-list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -237,7 +292,6 @@ Returns alerts that match user-defined or default filters and parameters. By def
 | status | The alert status. Possible values are: closed, open, takedown_accepted, takedown_denied, takedown_requested, whitelisted. | Optional |
 | escalated | If true, returns only escalated alerts. Possible values are: true, false. | Optional |
 | tags | Alert tags. Returns alerts containing at least of the tags in the provided CSV list. | Optional |
-
 
 #### Context Output
 
@@ -277,23 +331,23 @@ Returns alerts that match user-defined or default filters and parameters. By def
 | ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-create-entity
+
 ***
 Creates a new entity associated with the company of the authorized user.
-
 
 #### Base Command
 
 `zerofox-create-entity`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the entity (may be non-unique). | Required |
-| strict_name_matching | Indicates the type of string matching used for comparing entity names to impersonator names. | Optional |
-| tags | Comma-separated list of string tags for tagging the entity. <br/>For example:<br/>label1,label2,label3. | Optional |
-| policy_id | The ID of the policy to assign to the new entity. Can be retrieved running the zerofox-get-policy-types command. | Optional |
+| strict_name_matching | Indicates the type of string matching used for comparing entity names<br/>to impersonator names. It must be `true` or `false`. | Optional |
+| tags | Comma-separated list of string tags for tagging the entity.<br/>For example:<br/>label1,label2,label3. | Optional |
+| policy_id | The ID of the policy to assign to the new entity. Can be retrieved running the zerofox-get-policy-types command. Possible values are: . | Optional |
 | organization | The name of the organization associated with the entity. | Optional |
-
 
 #### Context Output
 
@@ -307,19 +361,19 @@ Creates a new entity associated with the company of the authorized user.
 | ZeroFox.Entity.Organization | String | The name of the organization associated with the entity. |
 
 ### zerofox-alert-cancel-takedown
+
 ***
 Cancels a takedown of a specified alert.
-
 
 #### Base Command
 
 `zerofox-alert-cancel-takedown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required |
-
 
 #### Context Output
 
@@ -329,19 +383,19 @@ Cancels a takedown of a specified alert.
 | ZeroFox.Alert.Status | String | The status of an alert. |
 
 ### zerofox-open-alert
+
 ***
 Opens an alert.
-
 
 #### Base Command
 
 `zerofox-open-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required |
-
 
 #### Context Output
 
@@ -351,13 +405,14 @@ Opens an alert.
 | ZeroFox.Alert.Status | String | The status of an alert. |
 
 ### zerofox-list-entities
+
 ***
 Lists all entities associated with the company of the authorized user.
-
 
 #### Base Command
 
 `zerofox-list-entities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -370,7 +425,6 @@ Lists all entities associated with the company of the authorized user.
 | page | The index of page to fetch. | Optional |
 | policy | Filters by entity policy ID. Can be filtered by multiple policy parameters. Can be retrieved running the zerofox-get-policy-types command. | Optional |
 | type | Filters by an entity type ID. Can be filtered by multiple type parameters. Can be retrieved running the zerofox-get-entity-types command. | Optional |
-
 
 #### Context Output
 
@@ -390,13 +444,14 @@ Lists all entities associated with the company of the authorized user.
 | ZeroFox.Entity.TypeName | String | The name of the type of entity |
 
 ### zerofox-get-entity-types
+
 ***
 Shows a table of all entity type names and IDs in the War Room.
-
 
 #### Base Command
 
 `zerofox-get-entity-types`
+
 #### Input
 
 There are no input arguments for this command.
@@ -404,14 +459,16 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### zerofox-get-policy-types
+
 ***
 Shows a table of all policy type names and IDs in the War Room.
-
 
 #### Base Command
 
 `zerofox-get-policy-types`
+
 #### Input
 
 There are no input arguments for this command.
@@ -419,3 +476,157 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### zerofox-submit-threat
+
+***
+Submits potential threats into the ZF alert registry for disruption.
+
+#### Base Command
+
+`zerofox-submit-threat`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| source | Content to be considered a threat. | Required |
+| alert_type | Type of content acting as a threat, could be one of email, ip, domain, url, phone, mail_exchange, page_content or account. | Required |
+| violation | Type of infringement the submitted threat represents, could be one of phishing, malware, rogue_app, impersonation, trademark, copyright, private_data, fraud or other. | Required |
+| entity_id | Identifier of the entity being threatened by submitted content. | Required |
+| notes | Additional notes to include in submission. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.Alert.ID | Number | The ID of the alert created. |
+
+### zerofox-search-compromised-domain
+
+***
+Looks for a given domain in Zerofox's CTI feeds
+
+#### Base Command
+
+`zerofox-search-compromised-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain to search. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.CompromisedDomains.Domain | string | Domain in which the search domain was found |
+| ZeroFox.CompromisedDomains.LastModified | string | Last time that the threat was found |
+| ZeroFox.CompromisedDomains.IPs | string | Related domains to the threat separated by commas |
+
+### zerofox-search-compromised-email
+
+***
+Looks for a given email in ZeroFox's CTI feeds
+
+#### Base Command
+
+`zerofox-search-compromised-email`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | email to search. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.CompromisedEmails.Domain | string | Domain in which the search domain was found |
+| ZeroFox.CompromisedEmails.Email | string | Email involved in the threat |
+| ZeroFox.CompromisedEmails.CreatedAt | string | Date in which the email was found related to a threat |
+
+### zerofox-search-malicious-ip
+
+***
+Looks for malicious ips in ZeroFox's CTI feeds
+
+#### Base Command
+
+`zerofox-search-malicious-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | ip to search. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.MaliciousIPs.Domain | string | Domain in which the search domain was found |
+| ZeroFox.MaliciousIPs.IPAddress | string | IP in which the search domain was found |
+| ZeroFox.MaliciousIPs.CreatedAt | string | Date in which the ip was found related to a threat |
+
+### zerofox-search-malicious-hash
+
+***
+Looks for registered hashes in ZeroFox's CTI feeds
+
+#### Base Command
+
+`zerofox-search-malicious-hash`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | hash to search. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.MaliciousHashes.CreatedAt | string | Date in which the ip was found related to a threat |
+| ZeroFox.MaliciousHashes.Family | string | Family related threat |
+| ZeroFox.MaliciousHashes.MD5 | string | Hash in MD5 format |
+| ZeroFox.MaliciousHashes.SHA1 | string | Hash in SHA1 format |
+| ZeroFox.MaliciousHashes.SHA256 | string | Hash in SHA256 format |
+| ZeroFox.MaliciousHashes.SHA512 | string | Hash in SHA512 format |
+| ZeroFox.MaliciousHashes.FoundHash | string | Indicates in which hash format was found the search |
+
+### zerofox-search-exploit
+
+***
+Looks for registered exploits in ZeroFox's CTI feeds
+
+#### Base Command
+
+`zerofox-search-exploit`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| since | Staring date for exploit search. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.Exploits.CreatedAt | string | Date in which the ip was found related to a threat |
+| ZeroFox.Exploits.CVECode | string | CVE Code to identify the exploit |
+| ZeroFox.Exploits.URLs | string | URLs associated to the threat separated by commas |
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and ZeroFox corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+
+1. Enable *Fetching incidents* in your instance configuration.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and ZeroFox.

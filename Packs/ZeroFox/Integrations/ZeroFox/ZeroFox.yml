@@ -513,7 +513,12 @@ script:
     - description: Name of the entity (may be non-unique).
       name: name
       required: true
-    - description: Indicates the type of string matching used for comparing entity names to impersonator names.
+      secret: false
+    - default: false
+      description: |-
+        Indicates the type of string matching used for comparing entity names
+        to impersonator names. It must be `true` or `false`
+      isArray: false
       name: strict_name_matching
     - description: |-
         Comma-separated list of string tags for tagging the entity.
@@ -642,15 +647,12 @@ script:
     - name: alert_type
       required: true
       auto: PREDEFINED
-      description: Type of content acting as a threat, could be one of email, ip,
-        domain, url, phone, mail_exchange, page_content or account
+      description: Type of content acting as a threat, could be one of email, ip, domain, url, phone, mail_exchange, page_content or account
       type: keyValue
     - name: violation
       required: true
       auto: PREDEFINED
-      description: Type of infringement the submitted threat represents, could be
-        one of phishing, malware, rogue_app, impersonation, trademark, copyright,
-        private_data, fraud or other
+      description: Type of infringement the submitted threat represents, could be one of phishing, malware, rogue_app, impersonation, trademark, copyright, private_data, fraud or other
       type: keyValue
     - name: entity_id
       required: true
@@ -675,6 +677,16 @@ script:
       description: Domain to search
       type: keyValue
     description: Looks for a given domain in Zerofox's CTI feeds
+    outputs:
+    - contextPath: ZeroFox.CompromisedDomains.Domain
+      type: string
+      description: Domain in which the search domain was found
+    - contextPath: ZeroFox.CompromisedDomains.LastModified
+      type: string
+      description: Last time that the threat was found
+    - contextPath: ZeroFox.CompromisedDomains.IPs
+      type: string
+      description: Related domains to the threat separated by commas
   - name: zerofox-search-compromised-email
     arguments:
     - name: email
@@ -683,8 +695,15 @@ script:
       description: email to search
       type: keyValue
     outputs:
-    - contextPath: ZeroFox.Alert
+    - contextPath: ZeroFox.CompromisedEmails.Domain
       type: string
+      description: Domain in which the search domain was found
+    - contextPath: ZeroFox.CompromisedEmails.Email
+      type: string
+      description: Email involved in the threat
+    - contextPath: ZeroFox.CompromisedEmails.CreatedAt
+      type: string
+      description: Date in which the email was found related to a threat
     description: Looks for a given email in ZeroFox's CTI feeds
   - name: zerofox-search-malicious-ip
     arguments:
@@ -694,8 +713,15 @@ script:
       description: ip to search
       type: keyValue
     outputs:
-    - contextPath: ZeroFox.Alert
+    - contextPath: ZeroFox.MaliciousIPs.Domain
       type: string
+      description: Domain in which the search domain was found
+    - contextPath: ZeroFox.MaliciousIPs.IPAddress
+      type: string
+      description: IP in which the search domain was found
+    - contextPath: ZeroFox.MaliciousIPs.CreatedAt
+      type: string
+      description: Date in which the ip was found related to a threat
     description: Looks for malicious ips in ZeroFox's CTI feeds
   - name: zerofox-search-malicious-hash
     arguments:
@@ -705,9 +731,29 @@ script:
       description: hash to search
       type: keyValue
     outputs:
-    - contextPath: ZeroFox.Alert
+    - contextPath: ZeroFox.MaliciousHashes.CreatedAt
+      description: Date in which the ip was found related to a threat
+      type: string
+    - contextPath: ZeroFox.MaliciousHashes.Family
+      description: Family related threat
+      type: string
+    - contextPath: ZeroFox.MaliciousHashes.MD5
+      description: Hash in MD5 format
+      type: string
+    - contextPath: ZeroFox.MaliciousHashes.SHA1
+      description: Hash in SHA1 format
+      type: string
+    - contextPath: ZeroFox.MaliciousHashes.SHA256
+      description: Hash in SHA256 format
+      type: string
+    - contextPath: ZeroFox.MaliciousHashes.SHA512
+      description: Hash in SHA512 format
+      type: string
+    - contextPath: ZeroFox.MaliciousHashes.FoundHash
+      description: Indicates in which hash format was found the search
+      type: string
     description: Looks for registered hashes in ZeroFox's CTI feeds
-  - name: zerofox-search-exploit
+  - name: zerofox-search-exploits
     arguments:
     - name: since
       required: true
@@ -715,20 +761,26 @@ script:
       description: Staring date for exploit search
       type: keyValue
     outputs:
-    - contextPath: ZeroFox.Alert
+    - contextPath: ZeroFox.Exploits.CreatedAt
+      description: Date in which the ip was found related to a threat
+      type: string
+    - contextPath: ZeroFox.Exploits.CVECode
+      description: CVE Code to identify the exploit
+      type: string
+    - contextPath: ZeroFox.Exploits.URLs
+      description: URLs associated to the threat separated by commas
+      type: string
     description: Looks for registered exploits in ZeroFox's CTI feeds
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  defaultmapperin: ZeroFox Mapping
+  isremotesyncin: true
+  isremotesyncout: false
 tests:
 - ZeroFox-Test
 fromversion: 5.0.0
