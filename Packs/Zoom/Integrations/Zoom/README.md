@@ -103,12 +103,12 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 | monthly_week | For recurring meetings with Monthly recurrence_type only.State the week of the month when the meeting should recur. If you use this field, you must also use the monthly_week_day field to state the day of the week when the meeting should recur. Allowed: -1 (for last week of the month) ┃1┃2┃3┃4. | Optional | 
 | monthly_week_day | For recurring meetings with Monthly recurrence_type only. State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7To use this field, you must also use the monthly_week field.. | Optional | 
 | repeat_interval | For recurring meeting with fixed time only. Define the interval at which the meeting should recur. For instance, if you would like to schedule a meeting that recurs every two months, you must set the value of this field as 2 and the value of the type parameter as Monthly. For a daily meeting, the maximum is 90 days. For a weekly meeting the maximum is of 12 weeks. For a monthly meeting, there is a maximum of 3 months. | Optional | 
-| recurrence_type | For recurring meetings  only.Set the recurrence meeting types.. Possible values are: Daily, Weekly, Monthly. | Optional | 
+| recurrence_type | For recurring meetings only. Set the recurrence meeting types.. Possible values are: Daily, Weekly, Monthly. | Optional | 
 | weekly_days | For recurring meetings with a Weekly recurrence_type only. State a specific day in a week when the weekly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7  Default = 1.. | Optional | 
-| auto-record-meeting | The automatic recording settings. Note that the Cloud option is available for zoom paid customers only.. Possible values are: local, cloud, none. Default is none. | Optional | 
+| auto-record-meeting | The automatic recording settings. Note that the Cloud option is available for Zoom paid customers only. Possible values are: local, cloud, none. Default is none. | Optional | 
 | encryption_type | The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee. Possible values are: enhanced_encryption, e2ee. Default is enhanced_encryption. | Optional | 
 | host_video | start meetings with the host video on. Possible values are: true, false. Default is True. | Optional | 
-| join_before_host_time | If the value of the join_before_host field is true, this field sets the time that a participant can join before the meeting's host. You can choose: 5 or 10 (minuts), or 0 for any time.. Possible values are: 0, 5, 10. | Optional | 
+| join_before_host_time | If the value of the join_before_host field is true, this field sets the time that a participant can join before the meeting's host. You can choose: 5 or 10 (minutes), or 0 for any time. Possible values are: 0, 5, 10. | Optional | 
 | join_before_host | Whether participants can join the meeting before its host. For scheduled or recurring meetings only. The default value is False. Possible values are: false, true. | Optional | 
 | meeting_authentication | If true, only authenticated users can join the meeting. Possible values are: false, true. Default is false. | Optional | 
 | user | email address or id of user for meeting. | Required | 
@@ -417,11 +417,11 @@ List the existing users
 | --- | --- | --- |
 | status | Which status of users to list. Possible values are: active, inactive, pending. Default is active. | Optional | 
 | page-size | Number of users to return. Max 300. The default is 30. | Optional | 
-| next_page_token | The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.. | Optional | 
-| page-number | Which page of results to return. The default = 1.Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".. | Optional | 
+| next_page_token | The next page token is used to get the next page. IMPORTANT: You must pass the same page size that you passed in the first call. | Optional | 
+| page-number | Which page of results to return. The default = 1. Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".. | Optional | 
 | limit | The total amunt of results to show. | Optional | 
 | user_id | A user ID. this is for a singel user. | Optional | 
-| role_id | Filter the response by a specific role.For example: role_id=0 (Owner), role_id=2 (Member). | Optional | 
+| role_id | Filter the response by a specific role. For example: role_id=0 (Owner), role_id=2 (Member). | Optional | 
 
 
 #### Context Output
@@ -867,7 +867,7 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
 | --- | --- | --- |
 | user_id | The user ID of the meetings owner. | Required | 
 | page_size | Number of users to return. Default = 30. Max = 300. | Optional | 
-| page_number | Which page of results to return. The default = 1.Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".. | Optional | 
+| page_number | Which page of results to return. The default = 1. Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit". | Optional | 
 | next_page_token | The next page token is used to paginate te the next page. IMPORTENT: You must pass the same page size that you pased at the first call.. | Optional | 
 | limit | The total amunt of results to show. | Optional | 
 | type | Filter the results by searching specific types. Possible values are: all, scheduled, live, upcoming, upcoming_meetings, previous_meetings. Default is "scheduled". | Optional | 
@@ -1119,20 +1119,20 @@ List the existing channels
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page-size | Number of channels to return. Max 300. The default is 50. | Optional | 
-| next_page_token | The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.. | Optional | 
-| page-number | Which page of results to return. The default = 1.Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".. | Optional | 
+| next_page_token | The next page token is used to get the next page. IMPORTANT: You must pass the same page size that you passed in the first call. | Optional | 
+| page-number | Which page of results to return. The default = 1. Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit". | Optional | 
 | limit | The total amunt of results to show. | Optional | 
-| channel_id | A channel ID. this is for a singel channel. | Optional | 
-| user_id | A user ID. this is for a singel user. | Required | 
+| channel_id | A channel ID. This is for a single channel. | Optional | 
+| user_id | A user ID. This is for a single user. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zoom.Channel.id | string | The ID of the created channel | 
-| Zoom.Channel.name | string | The name of the created channel | 
-| Zoom.Channel.type | string | created channel type | 
-| Zoom.Channel.url | string | created channel url | 
+| Zoom.Channel.id | string | The ID of the created channel. | 
+| Zoom.Channel.name | string | The name of the created channel. | 
+| Zoom.Channel.type | string | The created channel type. | 
+| Zoom.Channel.url | string | The created channel URL. | 
 
 #### Command example
 
@@ -1380,11 +1380,11 @@ Creates a channel for a user
 | --- | --- | --- |
 | user_id | The user's unique identifier. | Required | 
 | member_emails | The member(s) to include in the channel. A maximum of 20 members can be added to the channel at once with this API. | Required | 
-| add_member_permissions | Who can add new channel members: * 1 - All channel members can add new members. * 2 - Only channel owner and administrators can add new members. Note: This setting can only be modified by the channel owner.Default: 1 Allowed: 1┃2 . Possible values are: All channel members can add, Only channel owner and admins can add. | Optional | 
-| posting_permissions | The channel members' posting permissions: * 1 — All chat channel members can post to the channel. * 2 — Only the channel owner and administrators can post to the channel. * 3 — Only the channel owner, administrators and certain members can post to the channel.Default: 1 Allowed: 1┃2┃3. Possible values are: All members can post, Only the owner and admins can post, Only the owner, admins and certain members can post. | Optional | 
+| add_member_permissions | Who can add new channel members: * 1 - All channel members can add new members. * 2 - Only channel owner and administrators can add new members. Note: This setting can only be modified by the channel owner. Default: 1. 
+| posting_permissions | The channel members' posting permissions: * 1 — All chat channel members can post to the channel. * 2 — Only the channel owner and administrators can post to the channel. * 3 — Only the channel owner, administrators and certain members can post to the channel. Default: 1. | Optional | 
 | new_members_can_see_prev_msgs | Whether new channel members can view messages and files previously posted in the channel. Possible values are: true, false. Default is True. | Optional | 
-| channel_name | The name of the channel. Constraints Max 128 chars. | Required | 
-| channel_type | The type of the channel. The value can be one of the following: 1: Private channel. In this type of channel, members must be invited to join a channel. 2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization. 3: Public channel. Anyone can search for this channel and join the channel. 4: New chat. This is an instant channel which can be created by adding members to a new chat.Allowed: 1┃2┃3┃4. Possible values are: Private channel, Private channel with members that belong to one account, Public channel, New chat. | Required | 
+| channel_name | The name of the channel. Maximum of 128 characters. | Required | 
+| channel_type | The type of the channel. The value can be one of the following: 1: Private channel. In this type of channel, members must be invited to join a channel. 2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization. 3: Public channel. Anyone can search for this channel and join the channel. 4: New chat. This is an instant channel which can be created by adding members to a new chat. | Required | 
 
 #### Context Output
 
@@ -1393,9 +1393,9 @@ Creates a channel for a user
 | Zoom.Channel.id | string | the channel's unique identifier. | 
 | Zoom.Channel.jid | string | The channel JID. | 
 | Zoom.Channel.name | string | The channel name. | 
-| Zoom.Channel.type | string | The type of the channel. The value can be one of the following: 1: Private channel. In this type of channel, members must be invited to join a channel. 2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization. 3: Public channel. Anyone can search for this channel and join the channel. 4: Group chat. This is an instant channel which can be created by adding members to a new chat. Allowed: 1┃2┃3┃4
+| Zoom.Channel.type | string | The type of the channel. The value can be one of the following: 1: Private channel. In this type of channel, members must be invited to join a channel. 2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization. 3: Public channel. Anyone can search for this channel and join the channel. 4: Group chat. This is an instant channel which can be created by adding members to a new chat. 
  | 
-| Zoom.Channel.url | string | The URL of the Zoom Chat channel. | 
+| Zoom.Channel.url | string | The URL of the Zoom chat channel. | 
 
 #### Command example
 
@@ -1439,8 +1439,8 @@ Deletes a specific Zoom channel
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channel_id | Unique Identifier of a channel. | Required | 
-| user_id | User Unique Identifier. | Required | 
+| channel_id | Unique identifier of a channel. | Required | 
+| user_id | User unique identifier. | Required | 
 
 #### Context Output
 
@@ -1457,7 +1457,7 @@ There is no context output for this command.
 ### zoom-update-channel
 
 ***
-Update an existing channel in zoom account
+Update an existing channel in a Zoom account.
 
 #### Base Command
 
@@ -1469,8 +1469,8 @@ Update an existing channel in zoom account
 | --- | --- | --- |
 | channel_id | The channel ID. | Required | 
 | user_id | User unique identifier. | Required | 
-| add_member_permissions | Who can add new channel members: * 1 - All channel members can add new members. * 2 - Only channel owner and administrators can add new members. Note: This setting can only be modified by the channel owner.Allowed: 1┃2. Possible values are: All channel members can add, Only channel owner and admins can add. | Optional | 
-| posting_permissions | The channel members' posting permissions: * 1 — All chat channel members can post to the channel. * 2 — Only the channel owner and administrators can post to the channel. * 3 — Only the channel owner, administrators and certain members can post to the channel.Allowed: 1┃2┃3. Possible values are: All members can post, Only the owner and admins can post, Only the owner, admins and certain members can post. | Optional | 
+| add_member_permissions | Who can add new channel members: * 1 - All channel members can add new members. * 2 - Only channel owner and administrators can add new members. Note: This setting can only be modified by the channel owner. | Optional | 
+| posting_permissions | The channel members' posting permissions: * 1 — All chat channel members can post to the channel. * 2 — Only the channel owner and administrators can post to the channel. * 3 — Only the channel owner, administrators and certain members can post to the channel. | Optional | 
 | new_members_can_see_prev_msgs | Whether new channel members can view messages and files previously posted in the channel. Possible values are: true, false. Default is True. | Optional | 
 | channel_name | A new name for the channel. | Optional | 
 
@@ -1500,7 +1500,7 @@ Invites members that are in a user's contact list to a channel. A channel can ha
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channel_id | Channel ID the channel's unique identifier. | Required | 
+| channel_id | The channel's unique identifier. | Required | 
 | user_id | User unique identifier. | Required | 
 | members | The member's email address. | Required | 
 
@@ -1508,10 +1508,10 @@ Invites members that are in a user's contact list to a channel. A channel can ha
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zoom.Channel.ids | string | The comma-separated user IDs of the members added to the channel.  The user IDs of those who are not from the same account will be omitted from the list.
+| Zoom.Channel.ids | string | A comma-separated list of user IDs of the members added to the channel.  User IDs of those who are not from the same account will be omitted from the list.
  | 
 | Zoom.Channel.added_at | string | The date and time when the members are added to the channel. | 
-| Zoom.Channel.member_ids | string | The comma-separated member IDs of the members added to the channel. | 
+| Zoom.Channel.member_ids | string | A comma-separated list of member IDs of the members added to the channel. | 
 
 #### Command example
 
@@ -1543,7 +1543,7 @@ Invites members that are in a user's contact list to a channel. A channel can ha
 ### zoom-remove-from-channel
 
 ***
-Removes a member from a chat channel. A channel can have one or many members.
+Removes a member from a chat channel. A channel can have one or more members.
 
 #### Base Command
 
@@ -1555,7 +1555,7 @@ Removes a member from a chat channel. A channel can have one or many members.
 | --- | --- | --- |
 | channel_id | The unique identifier of the channel from where you would like to remove a member. | Required | 
 | user_id | User unique identifier. | Required | 
-| member_id | The email address or user ID or member ID of the member whom you would like to be remove from the channel.. | Required | 
+| member_id | The email address or user ID or member ID of the member to remove from the channel. | Required | 
 
 #### Context Output
 
@@ -1584,8 +1584,8 @@ Sends a file on Zoom to either an individual user in your contact list or a chan
 | --- | --- | --- |
 | to_channel | The channel ID of the channel to which to send the chat file. | Optional | 
 | user_id | The user's ID. | Required | 
-| to_contact | The user ID or member ID of the contact to whom you want to send the chat file. | Optional | 
-| entry_id | XSOAR internal file Id. | Required | 
+| to_contact | The user ID or member ID of the contact to send the chat file. | Optional | 
+| entry_id | Cortex XSOAR internal file ID. | Required | 
 
 #### Context Output
 
@@ -1605,25 +1605,25 @@ Sends chat messages on Zoom to either an individual user who is in your contact 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | Unique identifier of the user. | Required | 
-| at_contact | This field is required if the value of at_type field is set to 1. Email address of the contact.. | Optional | 
-| at_type | The type of mention. You can use one of the following values: 1: Mention a contact. 2: Mention "all" to notify everyone in the channel. Allowed: 1┃2. Possible values are: Mention a contact, Mention "all" to notify everyone in the channel. | Optional | 
+| at_contact | This field is required if the value of at_type field is set to 1. Email address of the contact. | Optional | 
+| at_type | The type of mention. You can use one of the following values: 1: Mention a contact. 2: Mention "all" to notify everyone in the channel.  | Optional | 
 | end_position | The end position of the mention. | Optional | 
 | start_position | The start position of the mention("@") in the message string. | Optional | 
 | rt_start_position | The start position of the rich text in the message string. | Optional | 
 | rt_end_position | The end position of the rich text. | Optional | 
 | format_type | The type of rich text. There is some special logic which is the same as on the Zoom client. 1. AddLink's position can not cross multi lines. 2. A BulletedList will clear the formatting of a NumberedList, Quote, or LeftIndent after it. 3. Likewise, a NumberedList will clear the formatting of a BulletedList, Quote, or LeftIndent after it. 4. Only AddLink, NumberedList and BulletedList can apply to a message which already applied a Quote. 5. A Quote will clear the formatting of all styles after it except AddLink, NumberedList, BulletedList, or Italic. 6. An AddLink will clear the formatting of BackgroundColor, FontColor, or Underline after it. 7. BackgroundColor, FontColor and Underline can not apply to a message which already applied AddLink. 8. BulletedList, NumberedList, LeftIndent, Paragraph, and Quote will automatically expand to apply to the whole line. Possible values are: FontSize, FontColor, BackgroundColor, LeftIndent, Paragraph, AddLink. | Optional | 
 | format_attr | This field is required if the value of the format_type field is listed below: 1.FontSize value: s for small, m for medium, or l for large font size. 2.FontColor and BackgroundColor value: only supports RGB value. For example: FFC0CB 3.LeftIndent value: a positive pixel length. 4.Paragraph value: h1 for Heading 1, h2 for Heading 2, or h3 for Heading 3. 5.AddLink value: must be a valid URL, with an http or https prefix. For example: <https://example.com>. | Optional | 
-| message | The message to be sent.Constraints Max 1024 chars. | Required | 
-| entry_ids | A list of the file IDs to send. This field only accepts a maximum of six file IDs. Max Items 6. | Optional | 
+| message | The message to be sent. Maximum of 1024 characters. | Required | 
+| entry_ids | A list of the file IDs to send. This field only accepts a maximum of six file IDs.  | Optional | 
 | reply_main_message_id | The reply message's ID. This field only returns if the message is a reply message. | Optional | 
-| to_channel | The channel ID of the channel where you would like to send a message. | Optional | 
-| to_contact | The email address or user ID or member ID of the person you wish to send a message. | Optional | 
+| to_channel | The channel ID of the channel to send a message. | Optional | 
+| to_contact | The email address or user ID or member ID of the person to send a message. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zoom.ChatMessage.id | number | Unique Identifier of the message. | 
+| Zoom.ChatMessage.id | number | Unique identifier of the message. | 
 
 #### Command example
 
@@ -1664,9 +1664,9 @@ Deletes a chat message previously sent to a contact or a channel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | Unique identifier of the user. | Required | 
-| message_id | Unique Identifier of the message. | Required | 
-| to_channel | The channel ID where the message was sent. You must provide this parameter or the to_contact parameter.. | Optional | 
-| to_contact | he member ID or user ID or email address of a chat contact to whom the message was sent.  You must provide this parameter or the to_channel parameter.. | Optional | 
+| message_id | Unique identifier of the message. | Required | 
+| to_channel | The channel ID where the message was sent. You must provide this parameter or the to_contact parameter. | Optional | 
+| to_contact | The member ID or user ID or email address of a chat contact to whom the message was sent.  You must provide this parameter or the to_channel parameter. | Optional | 
 
 #### Context Output
 
@@ -1683,7 +1683,7 @@ There is no context output for this command.
 ### zoom-update-message
 
 ***
-Edits a chat message that you previously sent to either a contact or a channel in Zoom by providing the ID of the message as the value of the messageId parameter.  as a query parameter, you must provide either the contact's email address of the contact or the Channel ID of the channel where the message was sent.
+Edits a chat message that you previously sent to either a contact or a channel in Zoom by providing the ID of the message as the value of the messageId parameter.  As a query parameter, you must provide either the contact's email address or the Channel ID of the channel where the message was sent.
 
 
 #### Base Command
@@ -1695,11 +1695,11 @@ Edits a chat message that you previously sent to either a contact or a channel i
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | Unique identifier of the user. | Required | 
-| message_id | Unique Identifier of the message. | Required | 
+| message_id | Unique identifier of the message. | Required | 
 | message | The edited message. | Required | 
-| to_channel | The channel ID of the channel where you sent the message. You must provide either to_contact or to_channel parameter in the API request. Channel ID can be retrieved from List User's Channels API.. | Optional | 
-| to_contact | The email address or user ID or member ID of the contact to whom the message was sent.  You must provide either this parameter or the to_channel parameter in the API request.. | Optional | 
-| entry_ids | A list of XSOAR file entry IDs to send. | Optional | 
+| to_channel | The channel ID of the channel where you sent the message. You must provide either to_contact or to_channel parameter in the API request. Channel ID can be retrieved from List User's Channels API. | Optional | 
+| to_contact | The email address or user ID or member ID of the contact to whom the message was sent.  You must provide either this parameter or the to_channel parameter in the API request. | Optional | 
+| entry_ids | A list of Cortex XSOAR file entry IDs to send. | Optional | 
 
 #### Context Output
 
@@ -1728,18 +1728,18 @@ Searches chat messages or shared files between a user and an individual contact 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | Unique identifier of the user. | Required | 
-| to_contact | This field allows you to query by the email address or user ID or member ID of a chat contact with whom the user communicated. The API only returns messages sent and/or received between the user and the queried contact.. | Optional | 
-| to_channel | This field queries by the channel ID of a channel in which the user had chat conversations. The API only returns messages sent and/or received by the user in the queried channel.. | Optional | 
+| to_contact | This field allows you to query by the email address or user ID or member ID of a chat contact with whom the user communicated. The API only returns messages sent and/or received between the user and the queried contact. | Optional | 
+| to_channel | This field queries by the channel ID of a channel in which the user had chat conversations. The API only returns messages sent and/or received by the user in the queried channel. | Optional | 
 | date | The query date from which to retrieve the chat messages. This value defaults to the current date. Format %Y-%m-%dT%H:%M:%S.. | Optional | 
 | from | Start date. Format %Y-%m-%dT%H:%M:%S. | Optional | 
 | to | End date. Format %Y-%m-%dT%H:%M:%S. | Optional | 
-| include_deleted_and_edited_message | Include deleted and edited messages. Default false. | Optional | 
-| search_type | Allowed: message ┃ file The type of search: message — Search messages. file — Search files.. Possible values are: message, file. | Optional | 
+| include_deleted_and_edited_message | Whether to include deleted and edited messages. Default false. | Optional | 
+| search_type | The type of search: message — Search messages. file — Search files.. Possible values are: message, file. | Optional | 
 | search_key | Key for search in messages. | Optional | 
-| exclude_child_message | Default: false This parameter is used to exclude returning all child messages in a chat, leaving only the parent messages.. | Optional | 
-| next_page_token | The next page token paginates through a large set of results. A next page token is returned whenever the set of available results exceeds the current page size. This token's expiration period is 15 minutes.. | Optional | 
+| exclude_child_message |  Whether to exclude returning all child messages in a chat, leaving only the parent messages.  Default: false. | Optional | 
+| next_page_token | The next page token paginates through a large set of results. A next page token is returned whenever the set of available results exceeds the current page size. This token's expiration period is 15 minutes. | Optional | 
 | page_size | Number of records returned from a single API call. Default 50. | Optional | 
-| page_number | Which page of results to return. Default 1. | Optional | 
+| page_number | The page of results to return. Default 1. | Optional | 
 | limit | Total amount of results to show. | Optional | 
 
 #### Context Output
@@ -1747,10 +1747,10 @@ Searches chat messages or shared files between a user and an individual contact 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Zoom.ChatMessage.date | date | The queried date value. | 
-| Zoom.ChatMessage.id | string | the channel's unique identifier. | 
+| Zoom.ChatMessage.id | string | The channel's unique identifier. | 
 | Zoom.Channel.jid | string | The channel JID. | 
 | Zoom.Channel.name | string | The channel name. | 
-| Zoom.Channel.type | string | The type of the channel. The value can be one of the following: 1: Private channel. In this type of channel, members must be invited to join a channel. 2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization. 3: Public channel. Anyone can search for this channel and join the channel. 4: Group chat. This is an instant channel which can be created by adding members to a new chat. Allowed: 1┃2┃3┃4
+| Zoom.Channel.type | string | The type of the channel. The value can be one of the following: 1: Private channel. In this type of channel, members must be invited to join a channel. 2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization. 3: Public channel. Anyone can search for this channel and join the channel. 4: Group chat. This is an instant channel which can be created by adding members to a new chat. 
  | 
 | Zoom.ChatMessage.date | date | The queried date value. | 
 | Zoom.ChatMessage.from | date-time | The queried from value. \(Returned only if the from query parameter is used\) | 
