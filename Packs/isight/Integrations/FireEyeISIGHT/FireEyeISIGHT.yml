@@ -15,13 +15,11 @@ configuration:
   name: privateKey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - displaypassword: Private Key
-  name:  credentials_private_key
-  required: false
+  name: credentials_private_key
   hiddenusername: true
-  type: 9 
+  type: 9
 - display: Version
   name: version
   defaultvalue: "2.5"

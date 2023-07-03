@@ -160,9 +160,6 @@ script:
       description: Classless Inter-Domain Routing.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -9,12 +9,10 @@ configuration:
   type: 0
 - display: API Token
   name: token
-  required: false
   type: 4
   hidden: true
 - displaypassword: API Token
-  name:  credentials_api_token
-  required: false
+  name: credentials_api_token
   hiddenusername: true
   type: 9
 - display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default is "clean")'

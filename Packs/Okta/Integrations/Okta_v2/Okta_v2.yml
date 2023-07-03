@@ -1399,8 +1399,6 @@ script:
       name: appName
     description: Assign a group to an application
     name: okta-assign-group-to-app
-    deprecated: false
-    execution: false
   dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'

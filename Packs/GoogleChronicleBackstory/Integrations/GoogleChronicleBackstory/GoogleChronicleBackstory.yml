@@ -3587,7 +3587,6 @@ script:
       description: The time period the detection was found in.
       type: Date
   dockerimage: demisto/googleapi-python3:1.0.0.64384
-  feed: false
   isfetch: true
   runonce: false
   script: '-'

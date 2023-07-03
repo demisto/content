@@ -148,7 +148,6 @@ script:
       description: Notes for the given issue
       type: Unknown
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   longRunning: true
   runonce: false

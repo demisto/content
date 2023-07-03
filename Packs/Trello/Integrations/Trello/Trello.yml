@@ -324,7 +324,6 @@ script:
       description: Label ID
       type: Unknown
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   runonce: false
   script: '-'

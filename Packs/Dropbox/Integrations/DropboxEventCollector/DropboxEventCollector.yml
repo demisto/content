@@ -75,10 +75,6 @@ script:
     description: Get events.
     name: dropbox-get-events
   dockerimage: demisto/fastapi:1.0.0.64153
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
