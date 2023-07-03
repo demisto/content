@@ -2316,7 +2316,9 @@ def uptycs_get_carves_file_command():
     filename = carve_id + '.tar'
     if response.status_code == 200:
         return demisto.results(fileResult(filename, response.content))
-    return_error('Error , file fetching failed , got response ' + str(response.status_code))
+    elif response.status_code == 403:
+        return_error('Error, file fetching failed, user forbidden from downloading, 403 response')
+    return_error('Error, file fetching failed, got response ' + str(response.status_code))
 
 
 def uptycs_get_carves():
@@ -2328,8 +2330,8 @@ def uptycs_get_carves():
 
     path = demisto.args().get('path')
     if path is not None:
-        api_call = '%s?filters={"path":{"equals":"%s"}}' %\
-            (api_call, path)
+        api_call = '%s?filters={"path":{"iLike":"' % api_call
+        api_call += "%" + path + "%" + '"}}'
 
     return restcall(http_method, api_call)
 
@@ -2688,6 +2690,8 @@ def uptycs_edit_lookuptable():
     active = demisto.args().get('active')
     if active is not None and active == 'true':
         post_data["active"] = True
+    elif active is not None and active == 'false':
+        post_data["active"] = False
 
     table_id = demisto.args().get('table_id')
     if table_id is not None:
