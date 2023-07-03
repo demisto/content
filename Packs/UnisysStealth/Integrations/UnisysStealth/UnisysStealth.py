@@ -5,9 +5,10 @@ import os
 
 import requests
 from requests.auth import HTTPBasicAuth
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('credentials')['identifier']
 PASSWORD = demisto.params().get('credentials')['password']

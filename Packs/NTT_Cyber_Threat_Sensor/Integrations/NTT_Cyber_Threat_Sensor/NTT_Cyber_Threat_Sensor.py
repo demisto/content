@@ -7,12 +7,13 @@ from datetime import timezone
 from datetime import timedelta
 import requests
 import dateutil.parser
+import urllib3
 
 # Local imports
 from CommonServerUserPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """GLOBALS/PARAMS
 """
