@@ -908,7 +908,7 @@ class Pack:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
                 arg = f'./signDirectory {self._pack_path} keyfile base64'
-                signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)  # noqa: S602
                 output, err = signing_process.communicate()
 
                 if err:
@@ -968,17 +968,17 @@ class Pack:
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
             os.chdir(extract_destination_path)
 
-            subprocess.call('chmod +x ./encryptor', shell=True)
+            subprocess.call('chmod +x ./encryptor', shell=True)  # noqa: S602
 
             output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
-            subprocess.call(full_command, shell=True)
+            subprocess.call(full_command, shell=True)  # noqa: S602
 
             secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
             full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
                                                      f'{secondary_encryption_key_output_file}' \
                                                      f' "{secondary_encryption_key}"'
-            subprocess.call(full_command_with_secondary_encryption, shell=True)
+            subprocess.call(full_command_with_secondary_encryption, shell=True)  # noqa: S602
 
             new_artefacts = Path(current_working_dir, private_artifacts_dir)
             if new_artefacts.exists():
@@ -1013,9 +1013,9 @@ class Pack:
             output_decrypt_file_path = f"{extract_destination_path}/decrypt_pack.zip"
             os.chdir(extract_destination_path)
 
-            subprocess.call('chmod +x ./decryptor', shell=True)
+            subprocess.call('chmod +x ./decryptor', shell=True)  # noqa: S602
             full_command = f'./decryptor {secondary_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
-            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)  # noqa: S602
             stdout, stderr = process.communicate()
             shutil.rmtree(extract_destination_path)
             os.chdir(current_working_dir)
