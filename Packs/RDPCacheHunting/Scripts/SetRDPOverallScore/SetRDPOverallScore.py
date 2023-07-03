@@ -25,11 +25,11 @@ def main():
         query = "100"
         html = f"<div style={RED_HTML_STYLE}{int(query)}/100</div>"
 
-    return_results(CommandResults('RDPOverallScore', 'RDPOverallScore', {
+    return_results({
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],
         'Contents': html
-    }))
+    })
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
