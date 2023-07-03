@@ -93,7 +93,7 @@ filter _log_source_file_name = "cron"
     get_process_name = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\s\S+\s([a-zA-Z]+)"), 0),
     get_pid = to_integer(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s[^\s]+\[(\d+)\]"),0)),
     get_event_description = arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s+[^\:]+\:+(.*)"),0),
-    get_operation_sub = arrayindex(regextract(_raw_log, "\:\s+\(\S+\s+([A-Z0-9]+)\s"),0)
+    get_operation_sub = arrayindex(regextract(_raw_log, "\:\s+\(\S+\s+([[:upper:]]+)\s"),0)
 | alter
     get_task = to_string(arrayindex(regextract(get_event_description, "^\s+\(([^\)]+)\)"),0)),
     get_info_des = if(get_operation_sub = "INFO", arrayindex(regextract(_raw_log, "\:\s+\(\S+\s+INFO\s+\(([^\)]+)\)"),0), null),
