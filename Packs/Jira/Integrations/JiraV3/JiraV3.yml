@@ -4,7 +4,7 @@ commonfields:
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
-description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
+description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 configuration:
 - name: server_url
   display: Server URL
@@ -42,7 +42,7 @@ configuration:
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
 - display: Issue index to start fetching incidents from
-  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
+  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.
   name: id_offset
   required: false
   defaultvalue: 0
@@ -457,15 +457,8 @@ script:
     - contextPath: Ticket.LastUpdate
       description: The last time the ticket was updated.
       type: Date
-  - arguments:
-    - default: false
-      description: The query that will be used to retrieve the first issue ID in it.
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira instance, or the first issue with respect to the given query argument if given. You can use its result as the initial id when fetching incidents by the issue id field.
+  - deprecated: false
+    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
     execution: false
     name: jira-get-id-offset
     outputs:
@@ -2137,7 +2130,7 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/btfl-soup:1.0.1.61451
+  dockerimage: demisto/btfl-soup:1.0.1.63668
   feed: false
   isfetch: true
   ismappable: true
