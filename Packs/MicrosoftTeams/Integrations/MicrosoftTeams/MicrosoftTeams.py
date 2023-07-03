@@ -244,7 +244,7 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
             data = 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
         else:
             incident_name: str = re.sub('type=.*', '', name_match.group()).strip()
-            incident_type: str = ''
+            incident_type = ''
 
             type_match: Match[str] | None = re.search(type_pattern, message)
             if type_match:
@@ -1806,7 +1806,7 @@ def close_channel():
     channel_name: str = demisto.args().get('channel', '')
     investigation: dict = demisto.investigation()
     investigation_id: str = investigation.get('id', '')
-    channel_id: str = ''
+    channel_id = ''
     team_aad_id: str
     mirrored_channels: list
     if not channel_name:
