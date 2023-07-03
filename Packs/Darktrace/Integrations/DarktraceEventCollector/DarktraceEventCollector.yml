@@ -32,7 +32,7 @@ configuration:
   required: true
   type: 9
   section: Connect
-- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page
+- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page.
   displaypassword: Private API Token
   hiddenusername: true
   name: private_creds
