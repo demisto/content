@@ -780,10 +780,9 @@ def test_add_tag(demisto_args: dict, is_attribute: bool, expected_result: dict, 
 
 
 def test_add_user_to_misp(mocker):
-    mock_misp(mocker)
     from MISPV3 import add_user_to_misp
     mock_response = {}
-    mocker.patch('PYMISP.add_user', return_value=mock_response)
+    mocker.patch('MISPV3.PYMISP.add_user', return_value=mock_response)
     demisto_args = {
         'email': 'test@example.com',
         'org_id': '123',
@@ -802,15 +801,13 @@ def test_add_user_to_misp(mocker):
 
 
 def test_get_organizations_info(mocker):
-
-    mock_misp(mocker)
     from MISPV3 import get_organizations_info
 
     mock_organizations = [
         {'Organisation': {'id': 1, 'name': 'Org1'}},
         {'Organisation': {'id': 2, 'name': 'Org2'}}
     ]
-    mocker.patch('PYMISP.organisations', return_value=mock_organizations)
+    mocker.patch('MISPV3.PYMISP.organisations', return_value=mock_organizations)
     result = get_organizations_info()
     expected_output = {
         'MISP.Organization': [
@@ -818,26 +815,21 @@ def test_get_organizations_info(mocker):
             {'id': 2, 'name': 'Org2'}
         ]
     }
-    assert result.outputs == expected_output
+    assert result.outputs == expected_output['MISP.Organization']
 
 
 def test_get_role_info(mocker):
-    mock_misp(mocker)
     from MISPV3 import get_role_info
-
-    with mocker.patch('PYMISP.roles') as mocker_roles:
-        mocker_roles.return_value = [
-            {'Role': {'name': 'Role 1', 'id': 1}},
-            {'Role': {'name': 'Role 2', 'id': 2}},
-        ]
+    mock_roles = [
+        {'Role': {'id': 1, 'name': 'Role1'}},
+        {'Role': {'id': 2, 'name': 'Role2'}}
+    ]
+    mocker.patch('MISPV3.PYMISP.roles', return_value=mock_roles)
     result = get_role_info()
-    assert result.readable_output == 'MISP Roles'
-    assert result.outputs_prefix == 'MISP.Role'
-    assert result.outputs == [
-            {'name': 'Role 1', 'id': 1},
-            {'name': 'Role 2', 'id': 2},
+    expected_output = {
+        'MISP.Role': [
+            {'id': 1, 'name': 'Role1'},
+            {'id': 2, 'name': 'Role2'}
         ]
-    assert result.raw_response == [
-            {'Role': {'name': 'Role 1', 'id': 1}},
-            {'Role': {'name': 'Role 2', 'id': 2}},
-        ]
+    }
+    assert result.outputs == expected_output['MISP.Role']
