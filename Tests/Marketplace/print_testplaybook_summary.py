@@ -16,7 +16,7 @@ def options_handler():
 
 def read_file_contents(file_path: str) -> list:
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as file:
+        with open(file_path) as file:
             return file.read().splitlines()
     return []
 
