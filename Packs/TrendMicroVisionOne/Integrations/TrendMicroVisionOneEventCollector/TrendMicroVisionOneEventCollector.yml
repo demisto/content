@@ -8,14 +8,14 @@ sectionOrder:
 configuration:
 - additionalinfo: 'The API endpoint to the Trend Micro Vision One instance. See the domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs.'
   defaultvalue: https://api.xdr.trendmicro.com
-  display: Your server URL
+  display: server URL
   name: url
   required: true
   type: 0
   section: Connect
-- displaypassword: Trend Micro Vision One API Key
+- displaypassword: API Key
   name: credentials
-  required: false
+  required: true
   type: 9
   additionalinfo: The API key of Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.
   hiddenusername: true
