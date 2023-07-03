@@ -37,8 +37,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * SearchIncidentsV2
+* Set
 
 ### Commands
 
@@ -51,7 +51,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | sourceIP | The source IP to search by additional alerts. |  | Optional |
-| fromDate | The start date for the search additional alerts task.<br/><br/>Filter by from date \(e.g., "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |  | Optional |
+| fromDate | The start date for the search additional alerts task.<br/><br/>Filter by from date \(e.g. "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |  | Optional |
 
 ## Playbook Outputs
 
@@ -60,7 +60,7 @@ This playbook does not use any commands.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | alertVerdict | The alert verdict. | unknown |
-| foundIncidents | The additional alerts found. | unknown |
+| PaloAltoNetworksXDR.Alert | The additional alerts found. | unknown |
 
 ## Playbook Image
 
