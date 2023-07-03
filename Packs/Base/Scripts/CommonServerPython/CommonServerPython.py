@@ -10671,7 +10671,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     new_found_incidents_ids = {}
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time < deletion_threshold_in_seconds:
+        if current_time - addition_time <= deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
             demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
         else:
