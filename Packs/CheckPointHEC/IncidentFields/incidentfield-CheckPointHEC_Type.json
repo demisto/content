@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "CheckPoint Security Event"
+        "CheckPointHEC Security Event"
     ],
     "associatedToAll": false,
     "unmapped": false,
