@@ -2027,24 +2027,21 @@ def github_trigger_workflow_command():
             repository (str): The GitHub repository name.
             branch (str): The branch to trigger the workflow on.
             workflow (str): The name of your workflow file.
-            access_token (str): The GitHub personal access token.
 
         Returns:
             CommandResults object with informative printout if trigger the workflow succeeded or not.
     """
     args = demisto.args()
-    params = demisto.params()
-    owner = args.get('owner') or params.get('user')
-    repository = args.get('repository') or params.get('repository')
+    owner = args.get('owner') or USER
+    repository = args.get('repository') or REPOSITORY
     branch = args.get('branch', 'master')
     workflow = args.get('workflow')
-    access_token = args.get('access_token') or params.get('api_token', {}).get('password', '')
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
     headers = {
-        "Authorization": f"Bearer {access_token}",
+        "Authorization": f"Bearer {TOKEN}",
         "Accept": "application/vnd.github.v3+json"
-    } if access_token else HEADERS
+    }
     data = {
         "ref": branch
     }
@@ -2056,6 +2053,46 @@ def github_trigger_workflow_command():
         message = f"Failed to trigger workflow. {response.json().get('message')}"
 
     return_results(CommandResults(raw_response=response, readable_output=message))
+
+
+def github_list_workflows_command():
+    """Returns a list of GitHub workflows on a given repository.
+
+        Args:
+            owner (str): The GitHub owner (organization or username) of the repository.
+            repository (str): The GitHub repository name.
+            workflow (str): The name of your workflow file.
+            limit (int): Number of workflows to return. Default is 100.
+
+        Returns:
+            CommandResults object with an informative printout of the returns workflows.
+    """
+    args = demisto.args()
+    owner = args.get('owner') or USER
+    repository = args.get('repository') or REPOSITORY
+    workflow = args.get('workflow')
+    limit = args.get('limit', 100)
+
+    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches?per_page={limit}"
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    response = http_request('GET', url_suffix=suffix, headers=headers)
+
+    output_headers = ['id', 'name', 'head_branch', 'head_sha', 'path', 'display_title', 'run_number', 'event', 'status',
+                      'conclusion', 'workflow_id', 'url', 'html_url', 'created_at', 'updated_at']
+
+    outputs = {k: v for k, v in response.workflow_runs if k in output_headers}
+
+    return_results(CommandResults(
+        raw_response=response,
+        outputs=outputs,
+        outputs_key_field='id',
+        outputs_prefix='GitHub.Workflow',
+        readable_output=tableToMarkdown('GitHub workflows', outputs, removeNull=True),
+    ))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -2105,6 +2142,7 @@ COMMANDS = {
     'GitHub-delete-comment': github_delete_comment_command,
     'GitHub-add-assignee': github_add_assignee_command,
     'GitHub-trigger-workflow': github_trigger_workflow_command,
+    'GitHub-list-workflows': github_list_workflows_command,
 }
 
 
