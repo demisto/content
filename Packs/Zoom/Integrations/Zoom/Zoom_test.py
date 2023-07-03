@@ -827,7 +827,7 @@ def test_zoom_fetch_recording__download_success(mocker):
     from Zoom import zoom_fetch_recording_command
     import shutil
     mocker.patch.object(demisto, "debug")
-    shutil_copy_mock = mocker.patch.object(shutil, "copyfileobj")
+    mocker.patch.object(shutil, "copyfileobj")
     mocker.patch.object(Client, "zoom_fetch_recording",
                         side_effect=[{'recording_files': [{'id': '29c7tc',
                                                            'meeting_id': 'Y',
@@ -845,7 +845,6 @@ def test_zoom_fetch_recording__download_success(mocker):
         client=client, meeting_id="000000", delete_after="false")
 
     assert res[1].readable_output == 'The None file recording_000000_29c7tc.None was downloaded successfully'
-    shutil_copy_mock.called
 
 
 def test_zoom_fetch_recording_command__delete_success(mocker):
