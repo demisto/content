@@ -1108,7 +1108,10 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
                        'extern_id', 'received_by', 'received_representing', 'reply_to', 'sender', 'folder']:
         value = getattr(item, dict_field, None)
         if value:
-            raw_dict[dict_field] = parse_object_as_dict(value)
+            if type(value) is list:
+                raw_dict[dict_field] = [parse_object_as_dict(x) for x in value]
+            else:
+                raw_dict[dict_field] = parse_object_as_dict(value)
 
     for list_dict_field in ['headers', 'cc_recipients', 'to_recipients']:
         value = getattr(item, list_dict_field, None)

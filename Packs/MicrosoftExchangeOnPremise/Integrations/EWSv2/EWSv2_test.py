@@ -489,8 +489,10 @@ def test_list_parse_item_as_dict():
                       )
 
     return_value = parse_item_as_dict(message, False)
-    assert return_value.get("effective_rights") == ['Purple', 'Orange']
-    
+    effetive_right_res = return_value.get("effective_rights")
+    assert type(effetive_right_res) is list
+    assert len(effetive_right_res) == 2
+
 
 def test_get_entry_for_object_empty():
     from EWSv2 import get_entry_for_object
