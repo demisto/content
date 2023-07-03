@@ -5,7 +5,7 @@ import hashlib
 import json
 import urllib3
 import uuid
-from typing import Dict, List, Any
+from typing import Any
 
 urllib3.disable_warnings()
 
@@ -29,7 +29,7 @@ class Client(BaseClient):
         signature_hash = hashlib.sha256(signature_base64_bytes).hexdigest()
         return signature_hash
 
-    def _get_headers(self, request_string: str = None, auth: bool = False) -> Dict[str, str]:
+    def _get_headers(self, request_string: str = None, auth: bool = False) -> dict[str, str]:
         request_id = str(uuid.uuid4())
         timestamp = datetime.utcnow().isoformat()
         headers = {
@@ -54,7 +54,7 @@ class Client(BaseClient):
         )
         return self.token or ''
 
-    def _call_api(self, method: str, url_suffix: str, json_data: dict = None) -> Dict[str, str]:
+    def _call_api(self, method: str, url_suffix: str, json_data: dict = None) -> dict[str, str]:
         path = '/'.join([self.api_version, url_suffix])
         request_string = f'/{path}'
         return self._http_request(
@@ -64,13 +64,13 @@ class Client(BaseClient):
             json_data=json_data
         )
 
-    def get_scopes(self) -> Dict[str, str]:
+    def get_scopes(self) -> dict[str, str]:
         return self._call_api(
             'GET',
             url_suffix='scopes'
         )
 
-    def query_events(self, start_date: str) -> Dict[str, Any]:
+    def query_events(self, start_date: str) -> dict[str, Any]:
         saas = ['office365_emails']
         request_data = {
             'startDate': start_date,
@@ -85,7 +85,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def get_entity(self, entity: str) -> Dict[str, Any]:
+    def get_entity(self, entity: str) -> dict[str, Any]:
         return self._call_api(
             'GET',
             url_suffix=f'search/entity/{entity}'
@@ -102,7 +102,7 @@ def fetch_incidents(client: Client):
     last_fetch = last_run.get('last_fetch', (datetime.utcnow() - timedelta(hours=1)).isoformat())
     result = client.query_events(start_date=last_fetch)
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     for event in result['responseData']:
         event_id = event.get('eventId')
         incidents.append({
@@ -141,7 +141,7 @@ def checkpointhec_get_entity(client: Client, entity: str) -> CommandResults:
     raise Exception(f'Entity with id {entity} not found')
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     base_url = params.get('url')
     client_id = params.get('client_id', {}).get('password')
@@ -171,5 +171,5 @@ def main() -> None:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
