@@ -2283,7 +2283,7 @@ script:
       description: IP Address
     - contextPath: SentinelOne.MAC.mac
       description: MAC Address
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   ismappable: true
   isremotesyncin: true
