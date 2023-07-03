@@ -350,6 +350,9 @@ def fetch_indicators(client: Client,
                      is_fetch: bool = True) -> List[Dict]:
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
 
+    if limit and limit not in params_dict:
+        params_dict['limit'] = limit
+
     response = client.search_query(params_dict)
     indicators_iterator = build_indicators_iterator(response, url)
     added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, is_fetch)
