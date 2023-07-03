@@ -315,7 +315,16 @@ class Client(BaseClient):
         suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
         return self._http_request('get', suffix, headers=headers, resp_type='text')
 
-    def gitlab_trigger_pipeline(self, project_id: str, data: dict):
+    def gitlab_trigger_pipeline(self, project_id: str, data: dict) -> dict:
+        """Triggers a pipeline on GitLab.
+
+        Args:
+            project_id: Project ID on winch to run the pipeline.
+            data: The request body in JSON format.
+
+        Returns:
+            dict: The response in JSON format.
+        """
         suffix = f'projects/{project_id}/trigger/pipeline'
         return self._http_request('POST', suffix, data=data)
 
@@ -1709,7 +1718,7 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (dict) XSOAR arguments:
-            - 'project_id': Project ID on winch to run the pipeline.
+            - 'project_id': Project ID on which to run the pipeline.
             - 'ref_branch': The branch on which to run the pipeline. Default is 'master'
 
     Returns:

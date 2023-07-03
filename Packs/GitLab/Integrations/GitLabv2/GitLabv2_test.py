@@ -993,6 +993,18 @@ def test_return_date_arg_as_iso(arg, isValidDate, expected_response):
     (1111, {'project_id': 2222, 'ref_branch': 'test'}, util_load_json('test_data/commands_test_data.json').get('trigger_pipeline2'))
 ])
 def test_trigger_pipeline(mocker, trigger_token, args, expected_result):
+    """
+    Given:
+        - client and demisto args
+            - case 1 - client without trigger token.
+            - case 2 - client with trigger token and args with a different project ID than the instance.
+    When:
+        - gitlab_trigger_pipeline_command
+    Then:
+        - The response is as expected
+            - case 1 - Throws an error about the trigger token that is missing
+            - case 2 - The response is correct with the same branch and project_id as in the args.
+    """
     from GitLabv2 import Client, gitlab_trigger_pipeline_command
     client = Client(project_id=1234,
                     base_url="base_url",

@@ -16,6 +16,7 @@ This integration enables you to:
 - Get a list of files in the GitLab project.
 - Get the contents and details of a file in GitLab.
 - Search for code in the GitLab project.
+- Trigger a pipeline in the GitLab project.
 
 #### Create a Personal Access Token 
 Personal access tokens (PATs) are an alternative to using passwords for authentication to GitLab when using the GitLab API. 
@@ -27,6 +28,18 @@ To generate a new token:
 5. To give your token an expiration, select the **Expiration drop-down** menu, then click a default or use the calendar picker. 
 6. Select the **scopes**, or **permissions**, you want to grant this token. The minimum is read-only on repo.
 7. Click **Create personal access token** and copy the api key generated.-+
+
+#### Create a Trigger Token
+Trigger tokens allows you to trigger a pipeline for a branch using it to authenticate on an API call.
+Prerequisite:
+- You must have at least the Maintainer role for the project.
+To generate a new token:
+1. Navigate to your project.
+2. Select Settings > CI/CD.
+3. Expand Pipeline triggers.
+4. Enter a description and select Add trigger.
+   - You can view and copy the full token for all triggers you have created.
+   - You can only see the first 4 characters for tokens created by other project members.
 
 #### Get Project ID
 1. Go to the desired project example gitlab.com/username/project1.
@@ -42,6 +55,7 @@ To generate a new token:
     | --- | --- | --- |
     | Server URL (e.g. https://gitlab.com/api/v4) |  | False |
     | API Key | The API Key to use for connection | True |
+    | Trigger Token | The trigger token to run pipelines | False |
     | Project ID |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -2158,9 +2172,9 @@ Triggers a GitLab pipeline on a selected project and branch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Project ID on winch to run the pipeline. | Optional | 
+| project_id | Project ID on which to run the pipeline. | Optional | 
 | ref_branch | The branch on which to run the pipeline. Default is 'master'. | Optional | 
-| trigger_variables | json contains the pipeline variables. | Optional | 
+| trigger_variables | JSON containing the pipeline variables. | Optional | 
 
 #### Context Output
 

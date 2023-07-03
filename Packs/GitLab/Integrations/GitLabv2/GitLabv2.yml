@@ -14,7 +14,7 @@ configuration:
   required: true
   type: 9
 - displaypassword: Trigger Token
-  additionalinfo: The trigger token in order to run pipelines. For more info see https://docs.gitlab.com/ee/ci/triggers
+  additionalinfo: The trigger token to run pipelines. For more info see https://docs.gitlab.com/ee/ci/triggers
   name: trigger_token
   hiddenusername: true
   required: false
@@ -3673,7 +3673,7 @@ script:
   - name: gitlab-trigger-pipeline
     arguments:
     - default: false
-      description: Project ID on winch to run the pipeline.
+      description: Project ID on which to run the pipeline.
       isArray: false
       name: project_id
       required: false
@@ -3685,7 +3685,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: json contains the pipeline variables.
+      description: JSON containing the pipeline variables.
       isArray: false
       name: trigger_variables
       required: false
