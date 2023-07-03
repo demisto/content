@@ -10,7 +10,7 @@ configuration:
   type: 4
 - additionalinfo: This is the URL provided by MS-ISAC for the base of all endpoints
   defaultvalue: https://socapi.cisecurity.org
-  display: ""
+  display: Server URL
   name: url
   required: true
   type: 0
@@ -181,7 +181,7 @@ script:
     - contextPath: MSISAC.RetrievedEvents.severity
       description: The severity assigned to the MS-ISAC alert
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3
