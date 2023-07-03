@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: Server URL (e.g. https://example.cloud.darktrace.com)
+  display: Server URL (e.g., https://example.cloud.darktrace.com)
   required: true
   defaultvalue:
   type: 0
@@ -25,21 +25,21 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- additionalinfo: Public token obtained by creating an API token pair on the /config configuration page
+- additionalinfo: Public token obtained by creating an API token pair on the /config configuration page.
   displaypassword: Public API Token
   hiddenusername: true
   name: public_creds
   required: true
   type: 9
   section: Connect
-- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page
+- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page.
   displaypassword: Private API Token
   hiddenusername: true
   name: private_creds
   required: true
   type: 9
   section: Connect
-- additionalinfo: Maximum number of Darktrace model breaches to fetch at a time
+- additionalinfo: Maximum number of Darktrace model breaches to fetch at a time.
   defaultvalue: '1000'
   display: Max events per fetch
   name: max_fetch
@@ -53,7 +53,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-description: Use this integration to fetch a list of model breaches, filtered by the specified parameters. This is the most important for organizations that wish to integrate Darktrace programmatically into their SOC environment.
+description: Use this integration to fetch a list of model breaches, filtered by the specified parameters. This is important for organizations that wish to integrate Darktrace programmatically into their SOC environment.
 display: Darktrace Event Collector
 name: Darktrace Event Collector
 script:
