@@ -423,20 +423,25 @@ class Taxii2FeedClient:
         return all(not obj_ref.startswith("report--") for obj_ref in obj_refs)
 
     @staticmethod
-    def parse_report_relationships(report_obj: dict[str, Any]) -> list[EntityRelationship]:
+    def parse_report_relationships(report_obj: dict[str, Any],
+                                   id_to_object: dict[str, dict[str, Any]]) -> list[EntityRelationship]:
         obj_refs = report_obj.get('object_refs', [])
         relationships: list[EntityRelationship] = []
         for related_obj in obj_refs:
-            relation_type_and_id = related_obj.split('--')
-            relationships.append(
-                EntityRelationship(
-                    name='related-to',
-                    entity_a=report_obj.get('name'),
-                    entity_a_type='Report',
-                    entity_b=relation_type_and_id[1],
-                    entity_b_type=relation_type_and_id[0]
+            # relationships objects ref handled in parse_relationships
+            if not related_obj.startswith('relationship--'):
+                entity_b_obj = id_to_object.get(related_obj, {})
+                entity_b_name = entity_b_obj and entity_b_obj.get('name') or related_obj
+                entity_b_type = entity_b_obj and entity_b_obj.get('type') or related_obj.split('--')[0]
+                relationships.append(
+                    EntityRelationship(
+                        name='related-to',
+                        entity_a=report_obj.get('name'),
+                        entity_a_type=ThreatIntel.ObjectsNames.REPORT,
+                        entity_b=entity_b_name,
+                        entity_b_type=STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_type, '')
+                    )
                 )
-            )
         return relationships
 
     @staticmethod
@@ -624,7 +629,7 @@ class Taxii2FeedClient:
 
         report["fields"] = fields
 
-        report['relationships'] = self.parse_report_relationships(report_obj)
+        report['relationships'] = self.parse_report_relationships(report_obj, self.id_to_object)
 
         return [report]
 
@@ -1214,6 +1219,9 @@ class Taxii2FeedClient:
                 # no fetched objects
                 break
 
+            # we should build the id_to_object dict before iteration as some object reference each other
+            self.id_to_object.update({obj.get('id'): obj for obj in stix_objects})
+
             # now we have a list of objects, go over each obj, save id with obj, parse the obj
             for obj in stix_objects:
                 obj_type = obj.get('type')
@@ -1225,7 +1233,6 @@ class Taxii2FeedClient:
                     relationships_lst.append(obj)
                     continue
 
-                self.id_to_object[obj.get('id')] = obj
                 if not parse_objects_func.get(obj_type):
                     demisto.debug(f'There is no parsing function for object type {obj_type}, '
                                   f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
