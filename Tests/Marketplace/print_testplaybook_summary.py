@@ -28,7 +28,7 @@ def print_test_summary(failed_tests_path, succeeded_tests_path) -> None:
     succeeded_playbooks = read_file_contents(succeeded_tests_path)
     failed_playbooks = read_file_contents(failed_tests_path)
 
-    succeeded_count = len( succeeded_playbooks)
+    succeeded_count = len(succeeded_playbooks)
     failed_count = len(failed_playbooks)
 
     logging.info("TEST RESULTS:")
