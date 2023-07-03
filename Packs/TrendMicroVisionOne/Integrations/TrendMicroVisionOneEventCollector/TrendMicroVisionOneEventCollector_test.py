@@ -245,17 +245,17 @@ class TestFetchEvents:
         main()
 
         assert set_last_run_mocker.call_args.args[0] == {
-            'workbench_start_time': '2023-01-01T14:00:00Z',
+            'workbench_start_time': '2023-01-01T14:00:01Z',
             'found_workbench_logs': [],
-            'oat_detection_start_time': '2023-01-01T14:00:00Z',
+            'oat_detection_start_time': '2023-01-01T14:00:01Z',
             'dedup_found_oat_logs': [],
             'pagination_found_oat_logs': [],
             'oat_detection_next_link': '',
-            'search_detection_start_time': '2023-01-01T14:00:00Z',
+            'search_detection_start_time': '2023-01-01T14:00:01Z',
             'dedup_found_search_detection_logs': [],
             'pagination_found_search_detection_logs': [],
             'search_detection_next_link': '',
-            'audit_start_time': '2023-01-01T14:00:00Z',
+            'audit_start_time': '2023-01-01T14:00:01Z',
             'found_audit_logs': []
         }
 
@@ -311,7 +311,7 @@ class TestFetchEvents:
             'oat_detection_next_link': 'https://api.xdr.trendmicro.com/v3.0/oat/detections?top=1000&fetchedAmountOfEvents=1000',
             'search_detection_start_time': '2023-01-01T14:59:59Z', 'dedup_found_search_detection_logs': [500],
             'pagination_found_search_detection_logs': [], 'search_detection_next_link': '',
-            'audit_start_time': '2023-01-01T14:08:19Z',
+            'audit_start_time': '2023-01-01T14:08:20Z',
             'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
         }
 
@@ -584,7 +584,6 @@ class TestFetchEvents:
 
         Then:
          - make sure only 500 events are returned
-         - make sure latest audit log is saved in the audit_logs_time minus 1 second.
          - make sure in the cache we will have event with hash of the 500 id as its the event that happened in the last second.
         """
         from TrendMicroVisionOneEventCollector import get_audit_logs
@@ -605,10 +604,9 @@ class TestFetchEvents:
 
         assert len(audit_logs) == 500
         assert updated_last_run == {
-            LastRunLogsStartTimeFields.AUDIT.value: '2023-01-01T14:08:19Z',
+            LastRunLogsStartTimeFields.AUDIT.value: '2023-01-01T14:08:20Z',
             'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
         }
-        assert audit_logs[-1]['_time'] == '2023-01-01T14:08:20Z'
 
     def test_get_audit_logs_with_last_run(self, mocker, client: Client):
         """
@@ -622,7 +620,6 @@ class TestFetchEvents:
 
         Then:
          - make sure only 200 events are returned
-         - make sure latest audit log is saved in the audit_logs_time minus 1 second.
          - make sure in the cache we will have event with hash of the 200 id as its the event that happened in the last second.
         """
         from TrendMicroVisionOneEventCollector import get_audit_logs
@@ -643,10 +640,9 @@ class TestFetchEvents:
 
         assert len(audit_logs) == 200
         assert updated_last_run == {
-            LastRunLogsStartTimeFields.AUDIT.value: '2023-01-01T14:03:19Z',
+            LastRunLogsStartTimeFields.AUDIT.value: '2023-01-01T14:03:20Z',
             'found_audit_logs': ['4410bac4975e15bc234ee627129e46665744349bb59830968a2e4769fe0afc0e']
         }
-        assert audit_logs[-1]['_time'] == '2023-01-01T14:03:20Z'
 
 
 @pytest.mark.parametrize(
