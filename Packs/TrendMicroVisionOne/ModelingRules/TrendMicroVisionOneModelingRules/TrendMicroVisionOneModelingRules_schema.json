@@ -69,7 +69,7 @@
          "is_array":true
       },
       "component":{
-         "type":"json",
+         "type":"string",
          "is_array":true
       },
       "deviceGUID":{
