@@ -1515,5 +1515,6 @@
                 "query_uses_library": false
             }
         }
-    ]
+    ],
+    "fromVersion": "8.2.0"
 }
