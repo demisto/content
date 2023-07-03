@@ -418,28 +418,21 @@ class Taxii2FeedClient:
         return indicator
 
     @staticmethod
-    def is_sub_report(report_obj: dict[str, Any]) -> bool:
-        obj_refs = report_obj.get('object_refs', [])
-        return all(not obj_ref.startswith("report--") for obj_ref in obj_refs)
-
-    @staticmethod
     def parse_report_relationships(report_obj: dict[str, Any],
                                    id_to_object: dict[str, dict[str, Any]]) -> list[EntityRelationship]:
         obj_refs = report_obj.get('object_refs', [])
         relationships: list[EntityRelationship] = []
         for related_obj in obj_refs:
-            # relationships objects ref handled in parse_relationships
-            if not related_obj.startswith('relationship--'):
-                entity_b_obj = id_to_object.get(related_obj, {})
-                entity_b_name = entity_b_obj and entity_b_obj.get('name') or related_obj
-                entity_b_type = entity_b_obj and entity_b_obj.get('type') or related_obj.split('--')[0]
+            # relationship-- objects ref handled in parse_relationships
+            if not related_obj.startswith('relationship--') and (entity_b_obj := id_to_object.get(related_obj, {})):
+                entity_b_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')
                 relationships.append(
                     EntityRelationship(
                         name='related-to',
                         entity_a=report_obj.get('name'),
                         entity_a_type=ThreatIntel.ObjectsNames.REPORT,
-                        entity_b=entity_b_name,
-                        entity_b_type=STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_type, '')
+                        entity_b=entity_b_obj.get('name'),
+                        entity_b_type=entity_b_type
                     )
                 )
         return relationships
