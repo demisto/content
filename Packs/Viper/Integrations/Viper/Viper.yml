@@ -3,7 +3,7 @@ commonfields:
   id: Viper
   version: -1
 configuration:
-- display: ""
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -41,7 +41,7 @@ script:
       required: true
     description: Search for sample with file hash
     name: viper-search
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

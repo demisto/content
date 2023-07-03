@@ -2,7 +2,7 @@
 filter event_type_name = "activities_login"
 | alter activityResult_isSuccess = json_extract_scalar(mainInfo, "$.activityResult.isSuccess"),
         outcome = coalesce(json_extract_scalar(rawDataJson, "$.LoginStatus"), json_extract_scalar(mainInfo, "$.type"))
-| alter outcome = if(outcome = "login" and activityResult_isSuccess = "true", "Success", outcome = "login" and activityResult_isSuccess = "false", "Failure", outcome)
+| alter outcome = if(outcome = "login" and activityResult_isSuccess = "true", "success", outcome = "login" and activityResult_isSuccess = "false", "failure", lowercase(outcome))
 | alter xdm.event.id = to_string(idValue),
         xdm.event.type = event_type_name,
         xdm.source.ipv4 = json_extract_scalar(device, "$.clientIP"),
@@ -19,7 +19,7 @@ filter event_type_name = "activities_login"
         xdm.event.description = description,
         xdm.alert.severity = severity;
 filter event_type_name = "activities_admin"
-| alter outcome = json_extract_scalar(rawDataJson, "$.ResultStatus")
+| alter outcome = lowercase(json_extract_scalar(rawDataJson, "$.ResultStatus"))
 | alter xdm.event.id = to_string(idValue),
         xdm.event.type = event_type_name,
         xdm.event.operation_sub_type = eventTypeValue,
