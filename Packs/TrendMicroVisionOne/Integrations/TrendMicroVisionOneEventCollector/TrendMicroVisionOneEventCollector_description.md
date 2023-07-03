@@ -43,3 +43,4 @@ Be sure to select the correct domain for **Your server URL** integration paramet
 * You cannot retrieve audit logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for audit logs it will be a maximum of 180 days.
 * For API rate limits, refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
 * Observed Attack Techniques Logs and Search Detection Logs are fetched from the newest to the oldest as its the logs are returned in descending order from the api.
+* For Observed Attack Techniques Logs and Search Detection Logs it is possible that the limit will be exceeded due to api limitations.
