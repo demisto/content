@@ -70,8 +70,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
 
     servers = []
     # Configure the Servers
-    for server_url, port in server_to_port_mapping.items():
-        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password, build_number=build_number)
+    for server_url in server_to_port_mapping:
+        server = XSOARServer(internal_ip=server_url, user_name=username, password=password, build_number=build_number)
         logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)

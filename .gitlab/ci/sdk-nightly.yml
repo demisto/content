@@ -176,11 +176,11 @@ demisto-sdk-nightly:run-commands-against-instance:
   stage: run-instances
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   script:
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - !reference [.download-demisto-conf]
     - |
-      export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
     - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
@@ -208,7 +208,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - section_end "Destroy instances"
     - job-done
 
@@ -229,13 +229,12 @@ demisto-sdk-nightly:run-end-to-end-tests:
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
-    - !reference [.open-ssh-tunnel]
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b master --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
       TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
       unset DEMISTO_API_KEY # a temporary fix 
       python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?

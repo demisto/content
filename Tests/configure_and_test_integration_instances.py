@@ -89,7 +89,6 @@ class Server:
 
     def __init__(self):
         self.internal_ip = None
-        self.ssh_tunnel_port = None
         self.user_name = None
         self.password = None
         self.name = ''
@@ -136,12 +135,10 @@ class CloudServer(Server):
 
 class XSOARServer(Server):
 
-    def __init__(self, internal_ip, port, user_name, password, build_number=''):
+    def __init__(self, internal_ip, user_name, password, build_number=''):
         super().__init__()
-        self.__ssh_client = None
         self.__client = None
         self.internal_ip = internal_ip
-        self.ssh_tunnel_port = port
         self.user_name = user_name
         self.password = password
         self.build_number = build_number
@@ -157,7 +154,7 @@ class XSOARServer(Server):
         return self.__client
 
     def reconnect_client(self):
-        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+        self.__client = demisto_client.configure(f'https://{self.internal_ip}',
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
@@ -575,12 +572,11 @@ class XSOARBuild(Build):
     def __init__(self, options):
         super().__init__(options)
         self.ami_env = options.ami_env
-        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
+        servers_list, self.server_numeric_version = self.get_servers(options.ami_env)
         self.servers = [XSOARServer(internal_ip,
-                                    port,
                                     self.username,
                                     self.password,
-                                    self.ci_build_number) for internal_ip, port in self.server_to_port_mapping.items()]
+                                    self.ci_build_number) for internal_ip in servers_list]
 
     @property
     def proxy(self) -> MITMProxy:
@@ -735,12 +731,12 @@ class XSOARBuild(Build):
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
+        servers = get_servers(env_conf, ami_env)
         if Build.run_environment == Running.CI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return server_to_port_mapping, server_numeric_version
+        return servers, server_numeric_version
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         threads_list = []
@@ -1557,7 +1553,7 @@ def get_env_conf():
     return None
 
 
-def map_server_to_port(env_results, instance_role):
+def get_servers(env_results, instance_role):
     """
     Arguments:
         env_results: (dict)
@@ -1569,9 +1565,7 @@ def map_server_to_port(env_results, instance_role):
         (lst): The server url list to connect to
     """
 
-    ip_to_port_map = {env.get('InstanceDNS'): env.get('TunnelPort') for env in env_results if
-                      instance_role in env.get('Role', '')}
-    return ip_to_port_map
+    return [env.get('InstanceDNS') for env in env_results if instance_role in env.get('Role')]
 
 
 def get_json_file(path):
