@@ -867,7 +867,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
                 highlights = alert['ioc_attr'].get('highlights', [])
                 for i, attribute in enumerate(highlights):
                     highlights[i] = attribute.replace("PREPREPRE", "").replace("POSTPOSTPOST", "")
-            except JSONDecodeError as e:
+            except json.JSONDecodeError as e:
                 demisto.debug(f"Failed to parse ioc_attr as JSON: {e}")
 
         incident = {
