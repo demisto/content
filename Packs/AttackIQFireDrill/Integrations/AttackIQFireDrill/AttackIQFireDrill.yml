@@ -9,8 +9,14 @@ configuration:
   type: 0
 - display: API Token
   name: token
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: token_creds
+  required: false
+  type: 9
+  displaypassword: API Token
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -19,6 +25,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+
 description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
 display: AttackIQ Platform
 name: AttackIQFireDrill
@@ -679,7 +686,7 @@ script:
     description: Deletes an assessment.
     execution: false
     name: attackiq-delete-assessment
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: false
   runonce: false
   script: '-'
