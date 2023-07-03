@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *
 
 
 class Client(BaseClient):  # type: ignore
@@ -59,7 +56,7 @@ def main() -> None:
     try:
 
         # (i.e. "Authorization": {api key})
-        headers: Dict = {}
+        headers: dict = {}
 
         client = Client(
             base_url=base_url,
