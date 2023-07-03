@@ -1,13 +1,14 @@
-from copy import deepcopy
-import pytest
-from splunklib.binding import AuthenticationError
-
-import SplunkPy as splunk
-from splunklib import client
 import demistomock as demisto
 from CommonServerPython import *
-from datetime import timedelta, datetime
+
+import pytest
+from copy import deepcopy
 from collections import namedtuple
+from datetime import timedelta, datetime
+
+from splunklib.binding import AuthenticationError
+from splunklib import client
+import SplunkPy as splunk
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -1008,6 +1009,54 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
     assert results == expected_results
 
 
+def test_get_remote_data_command_with_message(mocker):
+    """
+    Test for the get_remote_data_command function with a message.
+
+    This test verifies that when the splunk-sdk returns a message, the function correctly logs the message
+    using demisto.debug().
+
+    Args:
+        mocker: The mocker object for patching and mocking.
+
+    Returns:
+        None
+    """
+
+    class Message:
+        def __init__(self, message: str):
+            self.message = message
+
+    class Jobs:
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == "json"
+            return Message("test message")
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": True,
+        "close_end_statuses": True,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(Service(), False),
+    }
+    debug_mock = mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
+    mocker.patch.object(demisto, "info")
+    mocker.patch(
+        "SplunkPy.results.JSONResultsReader", return_value=[Message("test message")]
+    )
+    mocker.patch.object(demisto, "results")
+    mocker.patch("SplunkPy.isinstance", return_value=True)
+
+    splunk.get_remote_data_command(Service(), **func_call_kwargs)
+    (debug_message,) = debug_mock.call_args_list[1][0]
+    assert debug_message == "Message from splunk-sdk message: test message"
+
+
 def test_get_modified_remote_data_command(mocker):
     updated_incidet_review = {'rule_id': 'id'}
 
@@ -1391,7 +1440,7 @@ def test_module_test(mocker, credentials):
     service = client.Service(**credentials)
     # run
 
-    splunk.test_module(service)
+    splunk.test_module(service, {})
 
     # validate
     assert service.info.call_count == 1
@@ -1424,7 +1473,7 @@ def test_module__exception_raised(mocker, credentials):
     service = client.Service(**credentials)
 
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {})
 
     # validate
     assert return_error_mock.call_args[0][0] == 'Authentication error, please validate your credentials.'
@@ -1442,7 +1491,6 @@ def test_module_hec_url(mocker):
         - Validate that the request.get was called with the expected args
     """
     # prepare
-    mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
     mocker.patch.object(requests, 'get')
@@ -1450,7 +1498,7 @@ def test_module_hec_url(mocker):
     service = client.Service(username='test', password='test')
 
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {'hec_url': 'test_hec_url'})
 
     # validate
     assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
@@ -1469,12 +1517,11 @@ def test_module_message_object(mocker):
     """
     from splunklib import results
     # prepare
-    mocker.patch.object(demisto, 'params', return_value={'isFetch': True, 'fetchQuery': 'something'})
     message = results.Message("DEBUG", "There's something in that variable...")
     mocker.patch('splunklib.results.JSONResultsReader', return_value=[message])
     service = mocker.patch('splunklib.client.connect', return_value=None)
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {'isFetch': True, 'fetchQuery': 'something'})
 
     # validate
     assert service.info.call_count == 1
@@ -1549,10 +1596,9 @@ def test_empty_string_as_app_param_value(mocker):
     """
     # prepare
     mock_params = {'app': '', 'host': '111', 'port': '111'}
-    mocker.patch('demistomock.params', return_value=mock_params)
 
     # run
-    connection_args = splunk.get_connection_args()
+    connection_args = splunk.get_connection_args(mock_params)
 
     # validate
     assert connection_args.get('app') == '-'
