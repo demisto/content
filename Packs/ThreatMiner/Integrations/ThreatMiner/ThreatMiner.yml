@@ -288,7 +288,8 @@ script:
       description: File name.
       type: string
     description: Retrieves data from ThreatMiner about a specified file.
-  dockerimage: demisto/python3:3.10.8.36650
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - ThreatMiner-Test
 fromversion: 5.0.0

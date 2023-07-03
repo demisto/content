@@ -194,6 +194,7 @@ script:
       description: State of the network application ("open" or "closed").
       type: string
     description: Query Data for specific component for companies in the portfolio
-  dockerimage: demisto/python3:3.10.12.62631
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

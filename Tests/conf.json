@@ -21,6 +21,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE SIEM ingestion - Get Incident Data",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": " Test Playbook - MDE - Retrieve File",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
         },
@@ -5756,7 +5766,8 @@
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
-        "SentinelOne V2": "No instance - developed by partner"
+        "SentinelOne V2": "No instance - developed by partner",
+        "CheckPhish": "Issue CRTX-86562"
     },
     "nightly_packs": [
         "CommonScripts",

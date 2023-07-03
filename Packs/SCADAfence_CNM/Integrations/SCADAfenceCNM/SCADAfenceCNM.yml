@@ -250,7 +250,8 @@ script:
       type: number
     description: Fetches all connections from the CNM
   isfetch: true
-  dockerimage: demisto/python3:3.10.9.40422
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - SCADAfence_test
 fromversion: 5.0.0

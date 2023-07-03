@@ -74,7 +74,8 @@ script:
       description: For malicious files, the reason that the vendor made the decision.
       type: string
     description: Returns the verdict for a scanned file.
-  dockerimage: demisto/python3:3.10.11.54132
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Detonate File - BitDam Test
 fromversion: 5.0.0
