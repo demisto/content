@@ -990,7 +990,7 @@ script:
         - contextPath: Securitytrails.SQL.query
           description: The original query used
           type: string
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3
