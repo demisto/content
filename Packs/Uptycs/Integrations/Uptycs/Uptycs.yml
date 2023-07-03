@@ -1845,7 +1845,7 @@ script:
       type: date
   - arguments:
     - default: false
-      description: uuid of a specific carved file.
+      description: uuid of a specific carved file. Get id from list of carves with command uptycs-get-carves.
       isArray: false
       name: carve_id
       required: true
@@ -1860,7 +1860,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: uuid of a specific carved file to download.
+      description: uuid of a specific carved file to download. Get id from list of carves with command uptycs-get-carves.
       isArray: false
       name: carve_id
       required: true
@@ -1876,7 +1876,7 @@ script:
     arguments:
     - name: asset_id
       required: true
-      description: Uptycs asset id
+      description: Uptycs asset id. Get id from list of assets with command uptycs-get-assets.
       isArray: false
       secret: false
       default: false
@@ -1960,7 +1960,7 @@ script:
     arguments:
     - name: tag_id
       required: true
-      description: Uptycs tag id
+      description: Uptycs tag id. Get id from list of tags with command uptycs-get-tags.
       isArray: false
       secret: false
       default: false
@@ -2113,7 +2113,7 @@ script:
     arguments:
     - name: tag_id
       required: true
-      description: Delete the tag matching this id.
+      description: Delete the tag matching this id. Get id from list of tags with command uptycs-get-tags.
       isArray: false
       secret: false
       default: false
@@ -2172,7 +2172,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Id of table in Uptycs DB
+      description: Id of table in Uptycs DB. Get id from list of tables with command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false
@@ -2229,7 +2229,7 @@ script:
       default: false
     - name: id_field
       required: true
-      description: Id field for the table
+      description: Id field for the table. An identifier (ID) from the JSON/CSV file you want to upload. Select an ID based on the context of lookup data. For example, a domain lookup ID can be domain, or a port lookup ID can be port. This ID must be the same as defined in the JSON file to be uploaded, otherwise Uptycs does not capture the JSON data. This field is case sensitive and cannot be edited after a lookup table is saved.
       isArray: false
       secret: false
       default: false
@@ -2259,7 +2259,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Look up table id.
+      description: Look up table id. Get id from list of tables with command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false
@@ -2297,7 +2297,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Table id in Uptycs DB
+      description: Table id in Uptycs DB. Get id from list of tables with command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false
@@ -2308,13 +2308,13 @@ script:
     arguments:
     - name: asset_id
       required: true
-      description: Disassociate the asset matching this asset id with the given tag_id
+      description: Disassociate the asset matching this asset id with the given tag_id. Get id from list of assets with command uptycs-get-assets.
       isArray: false
       secret: false
       default: false
     - name: tag_id
       required: true
-      description: Disassociate the tag matching this id with the given asset_id
+      description: Disassociate the tag matching this id with the given asset_id. Get id from list of tags with command uptycs-get-tags.
       isArray: false
       secret: false
       default: false
@@ -2325,7 +2325,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Look up table id.
+      description: Look up table id. Get id from list of tables with command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false

@@ -2663,7 +2663,7 @@ Get the url of a carved file using uuid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| carve_id | uuid of a specific carved file. | Required |
+| carve_id | uuid of a specific carved file. Get id from list of carves with command uptycs-get-carves.| Required |
 
 
 ##### Context Output
@@ -2699,7 +2699,7 @@ Download a carved file using uuid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| carve_id | uuid of a specific carved file to download. | Required |
+| carve_id | uuid of a specific carved file to download. Get id from list of carves with command uptycs-get-carves.| Required |
 
 
 ##### Context Output
@@ -2730,7 +2730,7 @@ Get an Uptycs asset details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Uptycs asset id | Required |
+| asset_id | Uptycs asset id. Get id from list of assets with command uptycs-get-assets.| Required |
 
 
 ##### Context Output
@@ -2818,7 +2818,7 @@ Return Uptycs asset tag details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | Uptycs tag id | Required |
+| tag_id | Uptycs tag id. Get id from list of tags with command uptycs-get-tags. | Required |
 
 
 ##### Context Output
@@ -2978,7 +2978,7 @@ Delete an Uptycs asset tag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | Delete the tag matching this id. | Required |
+| tag_id | Delete the tag matching this id. Get id from list of tags with command uptycs-get-tags.| Required |
 
 
 ##### Context Output
@@ -3008,7 +3008,7 @@ Create a new Uptycs lookup table.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of a lookup table | Required |
-| id_field | Id field for the table | Required |
+| id_field | Id field for the table. An identifier (ID) from the JSON/CSV file you want to upload. Select an ID based on the context of lookup data. For example, a domain lookup ID can be domain, or a port lookup ID can be port. This ID must be the same as defined in the JSON file to be uploaded, otherwise Uptycs does not capture the JSON data. This field is case sensitive and cannot be edited after a lookup table is saved.| Required |
 | description | Description of a lookup table. | Optional |
 | filename | The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI. | Required |
 
@@ -3051,7 +3051,7 @@ Update csv data for a look up table.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | Look up table id. | Required |
+| table_id | Look up table id. Get id from list of tables with command uptycs-get-lookuptables.| Required |
 | filename | The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.| Required |
 
 
@@ -3080,7 +3080,7 @@ Edit an Uptycs lookup table
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | Look up table id. | Required |
+| table_id | Look up table id. Get id from list of tables with command uptycs-get-lookuptables.| Required |
 | name | Name of a lookup table. | Optional |
 | description | A lookup table description. | Optional |
 | active | Enable or disable the table with a boolean flag of true or false. | Optional |
@@ -3134,7 +3134,7 @@ Get an Uptycs lookup table details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | Id of table in Uptycs DB | Required |
+| table_id | Id of table in Uptycs DB. Get id from list of tables with command uptycs-get-lookuptables.| Required |
 
 ##### Context Output
 
@@ -3263,7 +3263,7 @@ Delete an Uptycs lookup table
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | Table id in Uptycs DB | Required |
+| table_id | Table id in Uptycs DB. Get id from list of tables with command uptycs-get-lookuptables.| Required |
 
 
 ##### Context Output
@@ -3292,8 +3292,8 @@ Disassociate an asset with a tag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | Disassociate the tag matching this id with the given asset_id | Required |
-| asset_id | Disassociate the asset matching this asset id with the given tag_id | Required |
+| tag_id | Disassociate the tag matching this id with the given asset_id. Get id from list of assets with command uptycs-get-assets.| Required |
+| asset_id | Disassociate the asset matching this asset id with the given tag_id. Get id from list of tags with command uptycs-get-tags.| Required |
 
 
 ##### Context Output
