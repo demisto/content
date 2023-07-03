@@ -1,7 +1,7 @@
 
 var baseUrl = 'https://api.isightpartners.com'; // iSight base url
 var publicKey = params.publicKey;
-var privateKey = params.privateKey;
+var privateKey = params.credentials_private_key? params.credentials_private_key.password : params.privateKey;
 var acceptVersion = params.version;
 var insecure = params.insecure;
 var proxy = params.proxy;
@@ -44,6 +44,9 @@ var getHeaders = function(query) {
         timestamp = timestamp.substring(0,timestamp.indexOf('+'));
     } else if (timestamp.indexOf('-') > 0) {
         timestamp = timestamp.substring(0,timestamp.indexOf('-'));
+    }
+    if (!privateKey){
+        throw('Private Key must be provided.')
     }
     message = query + acceptVersion + 'application/json' + timestamp;
     hashed = HMAC_SHA256_MAC(privateKey, message);
