@@ -4,14 +4,19 @@ from CommonServerUserPython import *
 import json
 
 ARGS = demisto.args()
-OVERRIDE_BUILTINS = {'__builtins__': None}
+EVAL_ARGS = {
+    '__builtins__': None,
+    'null': None,
+    'true': True,
+    'false': False,
+}
 EVAL_BLACKLIST = ('.__', '*', ':')
 
 
 def evaluate_condition(condition: str) -> bool:
-    if any(op in condition for op in EVAL_BLACKLIST):
-        raise SyntaxError(condition)
-    return eval(condition, OVERRIDE_BUILTINS)  # noqa: PGH001
+    for op in EVAL_BLACKLIST:
+        condition = condition.replace(op, repr(op))
+    return eval(condition, EVAL_ARGS)  # noqa: PGH001
 
 
 def main():
