@@ -666,6 +666,8 @@ class Client(BaseClient):
         &showMajor=true&showCritical=false&showAnomalous=true
         &fromTime={fromtime}&toTime={seconds_since_epoch}&showAnomalous=true"""
         headers = self.headers
+		if max_fetch is None:
+			max_fetch=50
         headers["pagingInfo"] = "0,{mfetch}".format(mfetch=max_fetch)
         resp = self.http_request("GET", event_endpoint, None, headers=headers)
         last_run_new = {'last_fetch': seconds_since_epoch}
@@ -1385,7 +1387,9 @@ def main() -> None:
     cv_webservice_url: str = params.get("CVWebserviceUrl")
     cv_api_token: str = params.get("CommvaultAPIToken")
     is_fetch: List[str] = params.get("isFetch")
-    client = Client(base_url=cv_webservice_url, verify=False, proxy=False)
+    if not cv_webservice_url.endswith("/") :
+        cv_webservice_url=cv_webservice_url+"/"
+    client = Client(base_url=cv_webservice_url+"api", verify=False, proxy=False)
     is_valid_cv_token = None
     # Azure Key Vault Parameters
     client.keyvault_url = params.get("AzureKeyVaultUrl")
@@ -1452,7 +1456,7 @@ def main() -> None:
             return_results("ok")
         elif command == "fetch-incidents":
             last_fetch,out = fetch_incidents(client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time)
-            if len(out) == 0:
+            if (out is None) or len(out) == 0:
                 demisto.incidents([])
             else:
                 client.create_incident(

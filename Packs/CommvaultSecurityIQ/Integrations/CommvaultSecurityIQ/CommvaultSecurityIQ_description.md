@@ -21,7 +21,8 @@ This integration was integrated and tested with version 6.8.0 of CommvaultSecuri
    | Fetch incidents| False|
    | Incidents Fetch Interval| False|
    | Forwarding Rule| False|
-
+   | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)| False|
+   | Max events to fetch| False|
 4. Click **Test** to validate the URLs, token, and connection.
 
 ##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled.
@@ -46,15 +47,18 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
-### commvault-security-generate_token
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Status returned after calling disable data aging API | 
+
+### commvault-security-generate-token
 
 ***
 Generate Token
 
 #### Base Command
 
-`commvault-security-generate_token`
+`commvault-security-generate-token`
 
 #### Input
 
@@ -62,7 +66,9 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Status indicating whether successfully generated access token or not | 
 ### commvault-security-disable-saml-provider
 
 ***
@@ -78,7 +84,9 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Status indicating whether successfully disabled SAML provider or not | 
 ### commvault-security-copy-files-list-to-war-room
 
 ***
@@ -95,19 +103,23 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### commvault-security-get-access-token-from-keyvault
+### commvault-security-disable-user
 
 ***
-Read the access token from KeyVault
+Disables user
 
 #### Base Command
 
-`commvault-security-get-access-token-from-keyvault`
+`commvault-security-disable-user`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_email | Email id of the user to be disabled. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Response indicating whether successfully disabled user or not. | 
