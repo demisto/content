@@ -1,4 +1,4 @@
-Commvault Security IQ provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
+ Commvault Security IQ provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
 This integration was integrated and tested with version 6.8.0 of CommvaultSecurityIQ
 
 ## Configure Commvault Security IQ on Cortex XSOAR
@@ -7,22 +7,25 @@ This integration was integrated and tested with version 6.8.0 of CommvaultSecuri
 2. Search for Commvault Security IQ.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Long running instance | False |
-    | Commvault Webservice Url | True |
-    | Commvault API Token | True |
-    | Azure KeyVault Url | False |
-    | Azure KeyVault Tenant ID | False |
-    | Azure KeyVault Client ID | False |
-    | Azure KeyVault Client Secret | False |
-    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | False |
-    | Incident type | False |
-    | Fetch incidents | False |
-    | Incidents Fetch Interval | False |
-    | Forwarding Rule | False |
-
+   | **Parameter**| **Required**|
+   | ---| ---|
+   | Long running instance| False|
+   | Commvault Webservice Url| True|
+   | Commvault API Token| True|
+   | Azure KeyVault Url| False|
+   | Azure KeyVault Tenant ID| False|
+   | Azure KeyVault Client ID| False|
+   | Azure KeyVault Client Secret| False|
+   | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;)| False|
+   | Incident type| False|
+   | Fetch incidents| False|
+   | Incidents Fetch Interval| False|
+   | Forwarding Rule| False|
+   | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)| False|
+   | Max events to fetch| False|
 4. Click **Test** to validate the URLs, token, and connection.
+
+##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled.
 
 ## Commands
 
@@ -44,15 +47,18 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
-### commvault-security-generate_token
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Status returned after calling disable data aging API | 
+
+### commvault-security-generate-token
 
 ***
 Generate Token
 
 #### Base Command
 
-`commvault-security-generate_token`
+`commvault-security-generate-token`
 
 #### Input
 
@@ -60,7 +66,9 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Status indicating whether successfully generated access token or not | 
 ### commvault-security-disable-saml-provider
 
 ***
@@ -76,7 +84,9 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Status indicating whether successfully disabled SAML provider or not | 
 ### commvault-security-copy-files-list-to-war-room
 
 ***
@@ -93,19 +103,23 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### commvault-security-get-access-token-from-keyvault
+### commvault-security-disable-user
 
 ***
-Read the access token from KeyVault
+Disables user
 
 #### Base Command
 
-`commvault-security-get-access-token-from-keyvault`
+`commvault-security-disable-user`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_email | Email id of the user to be disabled. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Response indicating whether successfully disabled user or not. | 

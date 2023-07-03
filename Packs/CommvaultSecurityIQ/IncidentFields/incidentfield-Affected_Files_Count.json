@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+	  "associatedTypes": [
+        "Suspicious File Activity"
+    ],
     "caseInsensitive": true,
     "cliName": "affectedfilescount",
     "closeForm": false,

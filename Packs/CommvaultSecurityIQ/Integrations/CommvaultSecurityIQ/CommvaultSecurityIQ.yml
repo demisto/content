@@ -35,10 +35,11 @@ configuration:
   name: AzureKeyVaultClientSecret
   required: false
   type: 4
-- display: Port mapping (<port> or <host port>:<docker port>) (Only for Long running Integration)
+- display: 'Port mapping (<port> or <host port>:<docker port>) '
   name: longRunningPort
   required: false
   type: 0
+  additionalinfo: Only for Long running Integration
 - display: Incident type
   name: incidentType
   required: false
