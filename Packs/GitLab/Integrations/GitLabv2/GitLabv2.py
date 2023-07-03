@@ -1716,6 +1716,8 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
         (CommandResults).
     """
     project_id = args.get('project_id') or client.project_id
+    if not client.trigger_token:
+        return_error("A trigger token is required in the integration instance configuration")
     data = {
         'token': client.trigger_token,
         'ref': args.get('ref_branch', 'master'),
@@ -1726,7 +1728,7 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
     response = client.gitlab_trigger_pipeline(project_id, data)
 
     outputs = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
-    human_readable = f'## Pipeline for branch {outputs.get("ref")} [triggered]({outputs.get("web_url")}) successfully.'
+    human_readable = tableToMarkdown('GitLab Pipeline', outputs, removeNull=True)
 
     return CommandResults(
         outputs_prefix='GitLab.Pipeline',
