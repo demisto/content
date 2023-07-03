@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from collections.abc import Iterable
-from typing import Iterable, Set
 
 
 ''' STANDALONE FUNCTION '''
