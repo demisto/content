@@ -66,7 +66,7 @@ script:
     - contextPath: FileOrbis.UserStatus.Message
       description: User friendly result message of the operation
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false

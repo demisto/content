@@ -89,7 +89,7 @@ script:
     - contextPath: Cyren.data.status
       description: status of actions performed
       type: string
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   script: ''
