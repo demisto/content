@@ -19,9 +19,14 @@ configuration:
   section: Connect
 - display: InsightIDR API key
   name: apiKey
-  required: true
   type: 4
   section: Connect
+  hidden: true
+- name: apikey_creds
+  type: 9
+  section: Connect
+  displaypassword: InsightIDR API key
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -32,31 +37,32 @@ configuration:
   required: false
   type: 13
   section: Connect
-- defaultvalue: 7 days
+- defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
   section: Collect
-- additionalinfo: Max number of alerts per fetch. Default is 50.
-  defaultvalue: '50'
-  display: Fetch Limit
+- display: Fetch Limit
   name: max_fetch
   required: false
   type: 0
   section: Collect
+  additionalinfo: Max number of alerts per fetch. Default is 50.
+  defaultvalue: '50'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
   advanced: true
-- display: Use system proxy settings
+- advanced: true
+  display: Use system proxy settings
   name: proxy
   required: false
-  type: 8
   section: Connect
-  advanced: true
+  type: 8
+
 description: 'Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.'
 display: Rapid7 InsightIDR
 name: Rapid7 InsightIDR
@@ -593,7 +599,7 @@ script:
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
       type: Number
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false
