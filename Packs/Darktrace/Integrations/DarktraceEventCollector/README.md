@@ -1,9 +1,9 @@
-Use this integration to fetch a list of model breaches, filtered by the specified parameters. This is the most important for organizations that wish to integrate Darktrace programmatically into their SOC environment.
+Use this integration to fetch a list of model breaches, filtered by the specified parameters. This is important for organizations that wish to integrate Darktrace programmatically into their SOC environment.
 
 ## Configure Darktrace Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**. 
-2. Search for Ironscales Event Collector.
+2. Search for Darktrace Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -11,8 +11,8 @@ Use this integration to fetch a list of model breaches, filtered by the specifie
     | Server URL (e.g. https://example.cloud.darktrace.com) | REST API Endpoint of Darktrace server. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Public API Token | Public token obtained by creating an API token pair on the /config configuration page | True |
-    | Private API Token | Private token obtained by creating an API token pair on the /config configuration page | True |
+    | Public API Token | Public token obtained by creating an API token pair on the /config configuration page. | True |
+    | Private API Token | Private token obtained by creating an API token pair on the /config configuration page. | True |
     | Max events per fetch | Maximum number of Darktrace model breaches to fetch at a time | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Time to start fetching the first incidents. | False |
 
