@@ -568,7 +568,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
             hostname=host.get('hostName'),
             ip_address=ips,
             mac_address=mac_addresses,
-            vendor='RSA NetWitness Response')
+            vendor='RSA NetWitness 11.5 Response')
 
         endpoint_context = endpoint_entry.to_context().get(Common.Endpoint.CONTEXT_PATH)
         md = tableToMarkdown(f'RSA NetWitness -  Endpoint: {host.get("agentId")}', endpoint_context)

@@ -718,7 +718,7 @@ Retrieves host information for a specific endpoint. To use this command, service
         "MACAddress": [
             "111::111:11:111:11"
         ],
-        "Vendor": "RSA NetWitness Response"
+        "Vendor": "RSA NetWitness 11.5 Response"
     }
 }
 ```
