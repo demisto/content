@@ -9,8 +9,6 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
-"""Darktrace Integration for Cortex XSOAR (aka Demisto)"""
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 

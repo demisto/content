@@ -131,14 +131,4 @@ def test_test_module_failure(mocker, params, error_msg):
     return_error = mocker.patch('DarktraceEventCollector.return_error')
     main()
     assert return_error.call_args[0][0] == error_msg
-# def test_get_events_command_parse_time_argument_correctly(client, mock_args):
-#     """
-#     Given: A mock Darktrace client.
-#     When: Running get_events_command with a limit of 2, while there are three events.
-#     Then: Ensure only two events is returned.
-#     """
-#     from DarktraceEventCollector import get_events_command
-#     mock_args = {"limit": "2", "start_time": "2021-01-01T00:00:00Z", "end_time": "2021-01-01T00:00:00Z""}
-#                  mock_first_fetch_time = "3 days"
-#     events, _ = get_events_command(client=client, args=mock_args, first_fetch_time=mock_first_fetch_time)
-#     assert len(events) == 2
+

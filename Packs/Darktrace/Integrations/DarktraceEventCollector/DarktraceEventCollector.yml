@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Network Security
 sectionOrder:
 - Connect
 - Collect
@@ -53,7 +53,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-description: Use this integration to fetch a list of model breaches, filtered by the specified parameters. This is important for organizations that wish to integrate Darktrace programmatically into their SOC environment.
+description: Use this integration to fetch model breaches from Darktrace as events in XSIAM.
 display: Darktrace Event Collector
 name: Darktrace Event Collector
 script:

@@ -1,9 +1,9 @@
 Use this integration to fetch a list of model breaches, filtered by the specified parameters. This is important for organizations that wish to integrate Darktrace programmatically into their SOC environment.
 
-## Configure DarktraceEventCollector on Cortex XSIAM
+## Configure Darktrace Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**. 
-2. Search for DarktraceEventCollector.
+2. Search for Darktrace Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### darktrace-get-events
 
 ***
-Gets events from DarktraceEventCollector.
+Gets events from Darktrace Event Collector.
 
 #### Base Command
 
