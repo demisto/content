@@ -41,6 +41,7 @@
     "unsearchable": false,
     "useAsKpi": false,
     "validationRegex": "",
+    "aliasTo": "originalevents",
     "version": -1,
     "fromVersion": "6.0.0",
     "openEnded": true,

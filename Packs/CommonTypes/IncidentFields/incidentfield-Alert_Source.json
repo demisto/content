@@ -24,6 +24,7 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
+    "aliasTo": "originalalertsource",
     "fromVersion": "5.5.0",
     "marketplaces": [
         "xsoar"

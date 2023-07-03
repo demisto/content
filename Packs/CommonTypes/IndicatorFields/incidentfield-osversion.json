@@ -36,5 +36,6 @@
     "selectValues": null,
     "validationRegex": "",
     "sla": 0,
+    "aliasTo": "agentossubtype",
     "fromVersion": "5.0.0"
 }

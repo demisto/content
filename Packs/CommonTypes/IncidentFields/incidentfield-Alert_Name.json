@@ -33,6 +33,7 @@
 	"useAsKpi": false,
 	"validationRegex": "",
 	"version": -1,
+	"aliasTo": "originalalertname",
 	"fromVersion": "5.0.0",
 	"marketplaces": [
 		"xsoar"
