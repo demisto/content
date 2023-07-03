@@ -1,9 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from urllib3 import disable_warnings
 
-# Disable insecure warnings
-disable_warnings()
 
 ERROR_TITLES = {
     400: "400 Bad Request - The request was malformed, check the given arguments\n",
