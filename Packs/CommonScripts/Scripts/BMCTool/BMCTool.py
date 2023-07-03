@@ -439,12 +439,12 @@ class BMCContainer(Generic[AnyStr]):
         if not self.pal:
             return b"BM" + pack("<L", len(data) + 122) + b"\x00\x00\x00\x00\x7A\x00\x00\x00\x6C\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x20\x00\x03\x00\x00\x00" + pack("<L",
-                                                                                               len(data)) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\x00\x00\xFF\x00\x00\xFF\x00\x00\x00\x00\x00\x00\xFF niW" + (
+                                                                                               len(data)) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\x00\x00\xFF\x00\x00\xFF\x00\x00\x00\x00\x00\x00\xFF niW" + (  # noqa: E501
                                b"\x00" * 36) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
         else:
             return b"BM" + pack("<L", len(data) + 0x36) + b"\x00\x00\x00\x00\x36\x04\x00\x00\x28\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x08\x00\x00\x00\x00\x00" + pack("<L",
-                                                                                               len(data) - 0x400) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
+                                                                                               len(data) - 0x400) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data  # noqa: E501
 
     def b_write(self, fname, data):
         collage = fileResult(fname, data)
