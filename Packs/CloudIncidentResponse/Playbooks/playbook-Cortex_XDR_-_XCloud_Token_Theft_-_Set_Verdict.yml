@@ -136,11 +136,39 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      fromdate:
-        complex:
-          root: inputs.fromDate
-      query:
-        simple: hostip:${inputs.sourceIP}
+      custom_filter:
+        simple: |-
+          {
+            "OR": [
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "agent_ip_addresses",
+                    "SEARCH_TYPE": "IPLIST_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              },
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "action_local_ip",
+                    "SEARCH_TYPE": "IP_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              },
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "action_remote_ip",
+                    "SEARCH_TYPE": "IP_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              }
+            ]
+          }
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -153,6 +181,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: XDR Alert Search Results
+      output:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Alert
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -379,7 +413,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -424,7 +458,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -469,7 +503,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -514,7 +548,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -606,7 +640,7 @@ outputs:
 - contextPath: alertVerdict
   description: The alert verdict.
   type: unknown
-- contextPath: foundIncidents
+- contextPath: PaloAltoNetworksXDR.Alert
   description: The additional alerts found.
   type: unknown
 tests:
