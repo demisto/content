@@ -5,9 +5,10 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPBasicAuth
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('credentials')['identifier']
 PASSWORD = demisto.params().get('credentials')['password']
