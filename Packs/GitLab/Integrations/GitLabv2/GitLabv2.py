@@ -19,7 +19,7 @@ JOB_FIELDS_TO_EXTRACT = {'created_at', 'started_at', 'finished_at', 'duration', 
 
 
 class Client(BaseClient):
-    def __init__(self, project_id, base_url, verify, proxy, headers, trigger_token):
+    def __init__(self, project_id, base_url, verify, proxy, headers, trigger_token=None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.project_id = project_id
         self.trigger_token = trigger_token

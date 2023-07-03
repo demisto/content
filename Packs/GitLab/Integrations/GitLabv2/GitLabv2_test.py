@@ -986,3 +986,33 @@ def test_return_date_arg_as_iso(arg, isValidDate, expected_response):
             return_date_arg_as_iso(arg)
 
         assert str(e.value) == expected_response
+
+
+@pytest.mark.parametrize('trigger_token, args, expected_result', [
+    ('', {}, util_load_json('test_data/commands_test_data.json').get('trigger_pipeline1')),
+    (1111, {'project_id': 2222, 'ref_branch': 'test'}, util_load_json('test_data/commands_test_data.json').get('trigger_pipeline2'))
+])
+def test_trigger_pipeline(mocker, trigger_token, args, expected_result):
+    from GitLabv2 import Client, gitlab_trigger_pipeline_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'},
+                    trigger_token=trigger_token)
+    expected_outputs: List[Dict] = expected_result['expected_outputs']
+    expected_prefix: str = expected_result['expected_prefix']
+    expected_key_field: str = expected_result['expected_key_field']
+    mocker.patch.object(Client, '_http_request', return_value=expected_result['mock_response'])
+    mock_error = mocker.patch('GitLabv2.return_error')
+
+    command_result = gitlab_trigger_pipeline_command(client, args)
+
+    if not trigger_token:
+        assert mock_error.call_args[0][0] == 'A trigger token is required in the integration instance configuration'
+    else:
+        assert command_result.outputs_prefix == expected_prefix
+        assert command_result.outputs_key_field == expected_key_field
+        assert command_result.outputs == expected_outputs
+        assert command_result.outputs.get('ref') == args.get('ref_branch')
+        assert command_result.outputs.get('project_id') == args.get('project_id')
