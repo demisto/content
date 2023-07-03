@@ -1,0 +1,21 @@
+{
+    "name": "LengthArray",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "sashakulakov",
+    "url": "",
+    "email": "",
+    "created": "2023-07-03T22:36:08Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "sashakulakov"
+    ]
+}
