@@ -49,7 +49,7 @@ def get_open_to_do_tasks_of_current_user() -> List[Dict]:
     return table
 
 
-def main():
+def main():  # pragma: no cover
     try:
         results = get_open_to_do_tasks_of_current_user()
         if len(results) >= MAX_ENTRIES:
