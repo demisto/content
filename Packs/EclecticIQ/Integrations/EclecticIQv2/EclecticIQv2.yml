@@ -170,7 +170,7 @@ script:
       type: string
     description: 'create observable in the EclecticIQ Intelligence Center Platform '
   runonce: true
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No test - instance issues
 fromversion: 6.5.0

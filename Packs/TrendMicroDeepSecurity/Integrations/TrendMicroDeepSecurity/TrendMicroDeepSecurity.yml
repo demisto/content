@@ -4051,7 +4051,7 @@ script:
       description: The name of the default policy setting.
     - contextPath: TrendMicro.DefaultPolicySettings.value
       description: The value of the default policy setting.
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   subtype: python3
   type: python
