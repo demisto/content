@@ -2,14 +2,13 @@ from typing import Any
 from CommonServerPython import DemistoException
 import json
 import pytest
-import io
 import importlib
 
 OPSWAT_Filescan = importlib.import_module("OPSWATFilescan")
 
 
 def util_load_json(path: str) -> Any:
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -132,7 +131,7 @@ def test_scan_command_url_polling(mocker, client):
 
     assert response[0].indicator.dbot_score.indicator == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
     assert response[0].indicator.dbot_score.score == 1
-    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan Sandbox"
     assert response[0].indicator.name == "https://www.google.com"
     assert response[0].indicator.sha256 == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
     assert response[0].outputs['finalVerdict']['verdict'] == "BENIGN"
@@ -163,7 +162,7 @@ def test_scan_command_file_polling(mocker, client):
 
     assert response[0].indicator.dbot_score.indicator == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
     assert response[0].indicator.dbot_score.score == 3
-    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan Sandbox"
     assert response[0].indicator.name == "bad_file.exe"
     assert response[0].indicator.sha256 == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
     assert response[0].outputs['finalVerdict']['verdict'] == "MALICIOUS"
@@ -176,7 +175,7 @@ def test_scan_command_file_polling(mocker, client):
 
     assert response[1].indicator.dbot_score.indicator == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
     assert response[1].indicator.dbot_score.score == 1
-    assert response[1].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[1].indicator.dbot_score.integration_name == "OPSWAT Filescan Sandbox"
     assert response[1].indicator.name == "contract.docx"
     assert response[1].indicator.sha256 == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
     assert response[1].outputs['finalVerdict']['verdict'] == "INFORMATIONAL"
@@ -189,7 +188,7 @@ def test_scan_command_file_polling(mocker, client):
 
     assert response[2].indicator.dbot_score.indicator == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
     assert response[2].indicator.dbot_score.score == 1
-    assert response[2].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[2].indicator.dbot_score.integration_name == "OPSWAT Filescan Sandbox"
     assert response[2].indicator.name == "poorguy.png"
     assert response[2].indicator.sha256 == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
     assert response[2].outputs['finalVerdict']['verdict'] == "INFORMATIONAL"
