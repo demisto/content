@@ -818,3 +818,27 @@ def test_get_organizations_info(mock):
             {'Organisation': {'id': 3, 'name': 'org3'}}
         ]
     }
+
+
+def test_get_role_info(mock):
+    from MISPV3 import get_role_info
+    mock.roles.return_value = [
+        {'Role': {'id': 1, 'name': 'role1'}},
+        {'Role': {'id': 2, 'name': 'role2'}},
+        {'Role': {'id': 3, 'name': 'role3'}}
+    ]
+    result = get_role_info()
+    assert result == {
+        'readable_output': 'MISP Roles\n\n| id | name  |\n|----|-------|\n| 1  | role1 |\n| 2  | role2 |\n| 3  | role3 |',
+        'outputs_prefix': 'MISP.Role',
+        'outputs': [
+            {'name': 'role1', 'id': 1},
+            {'name': 'role2', 'id': 2},
+            {'name': 'role3', 'id': 3}
+        ],
+        'raw_response': [
+            {'Role': {'id': 1, 'name': 'role1'}},
+            {'Role': {'id': 2, 'name': 'role2'}},
+            {'Role': {'id': 3, 'name': 'role3'}}
+        ]
+    }
