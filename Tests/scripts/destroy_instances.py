@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 import subprocess
 from typing import Optional
-
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from Tests.scripts.utils.log_util import install_logging
 
