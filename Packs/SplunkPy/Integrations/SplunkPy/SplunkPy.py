@@ -11,12 +11,11 @@ import requests
 from splunklib import client
 from splunklib import results
 from splunklib.data import Record
-import urllib3
 from CommonServerPython import *  # noqa: F401
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
-urllib3.disable_warnings()
 
+OUTPUT_MODE = 'json'  # type of response from splunk-sdk query
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -139,9 +138,7 @@ class UserMappingObject:
 
         if not record:
             demisto.error(
-                "Could not find splunk user matching xsoar's {xsoar_user}. "
-                "Consider adding it to the {table_name} lookup.".format(
-                    xsoar_user=xsoar_user, table_name=self.table_name))
+                f"Could not find splunk user matching xsoar's {xsoar_user}. Consider adding it to the {self.table_name} lookup.")
             return 'unassigned' if map_missing else None
 
         # assuming username is unique, so only one record is returned.
@@ -149,8 +146,7 @@ class UserMappingObject:
 
         if not splunk_user:
             demisto.error(
-                "Splunk user matching Xsoar's {xsoar_user} is empty. Fix the record in {table_name} lookup.".format(
-                    xsoar_user=xsoar_user, table_name=self.table_name))
+                f"Splunk user matching Xsoar's {xsoar_user} is empty. Fix the record in {self.table_name} lookup.")
             return 'unassigned' if map_missing else None
 
         return splunk_user
@@ -192,13 +188,10 @@ def get_latest_incident_time(incidents):
 
 
 def get_next_start_time(latests_incident_fetched_time, latest_time, were_new_incidents_found=True):
-    if were_new_incidents_found:
-        latest_incident_datetime = splunk_time_to_datetime(latests_incident_fetched_time)
-        next_run_without_miliseconds_and_tz = latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
-        next_run = next_run_without_miliseconds_and_tz
-        return next_run
-    else:
+    if not were_new_incidents_found:
         return latest_time
+    latest_incident_datetime = splunk_time_to_datetime(latests_incident_fetched_time)
+    return latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
 
 
 def create_incident_custom_id(incident):
@@ -305,14 +298,13 @@ def build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offse
     extensive_log(f'[SplunkPy] occurred_start_time_fieldname: {occurred_start_time_fieldname}')
     extensive_log(f'[SplunkPy] occured_start_time: {occured_start_time}')
 
-    kwargs_oneshot = {
+    return {
         occurred_start_time_fieldname: occured_start_time,
         occurred_end_time_fieldname: latest_time,
         "count": FETCH_LIMIT,
-        'offset': search_offset
+        'offset': search_offset,
+        "output_mode": OUTPUT_MODE,
     }
-
-    return kwargs_oneshot
 
 
 def build_fetch_query(dem_params):
@@ -323,7 +315,7 @@ def build_fetch_query(dem_params):
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
-            fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
+            fetch_query = f'{fetch_query} | eval {field_trimmed}={field_trimmed}'
 
     return fetch_query
 
@@ -348,12 +340,11 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
     # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
     latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offset)
-    kwargs_oneshot["output_mode"] = "json"
     fetch_query = build_fetch_query(dem_params)
 
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
-    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
+    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
     reader = results.JSONResultsReader(oneshotsearch_results)
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
@@ -363,8 +354,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
     incident_ids_to_add = []
     num_of_dropped = 0
     for item in reader:
-        if isinstance(item, results.Message):
-            demisto.debug(f"Message from splunk-sdk message: {item.message}")
+        if handle_message(item):
             continue
         extensive_log(f'[SplunkPy] Incident data before parsing to notable: {item}')
         notable_incident = Notable(data=item)
@@ -1045,9 +1035,8 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
                         demisto.debug(f'Handling open {enrichment.type} enrichment for notable {notable.id}')
-                        for item in results.JSONResultsReader(job.results(output_mode='json')):
-                            if isinstance(item, results.Message):
-                                demisto.debug(f"Message from splunk-sdk message: {item.message}")
+                        for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE)):
+                            if handle_message(item):
                                 continue
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
@@ -1266,9 +1255,8 @@ def get_remote_data_command(service: client.Service, args: dict,
              '| map search=" search `notable_by_id($rule_id$)`"'.format(notable_id, last_update_splunk_timestamp)
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
-    for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode='json')):
-        if isinstance(item, results.Message):
-            demisto.debug(f"Message from splunk-sdk message: {item.message}")
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode=OUTPUT_MODE)):
+        if handle_message(item):
             continue
         updated_notable = parse_notable(item, to_dict=True)
 
@@ -1317,14 +1305,13 @@ def get_modified_remote_data_command(service: client.Service, args):
 
     search = '|`incident_review` ' \
              '| eval last_modified_timestamp=_time ' \
-             '| where last_modified_timestamp>{} ' \
+             f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
              '| fields rule_id ' \
-             '| dedup rule_id'.format(last_update_splunk_timestamp)
+             '| dedup rule_id'
     demisto.debug(f'Performing get-modified-remote-data command with query: {search}')
 
-    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT, output_mode='json')):
-        if isinstance(item, results.Message):
-            demisto.debug(f"Message from splunk-sdk message: {item.message}")
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE)):
+        if handle_message(item):
             continue
         modified_notable_ids.append(item['rule_id'])
     if len(modified_notable_ids) >= MIRROR_LIMIT:
@@ -1445,7 +1432,7 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
         'latest_time': now,
         'count': FETCH_LIMIT,
         'offset': search_offset,
-        'output_mode': 'json',
+        'output_mode': OUTPUT_MODE,
     }
 
     searchquery_oneshot = params['fetchQuery']
@@ -1466,8 +1453,7 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
         if isinstance(item, dict):
             notable = Notable(data=item)
             total_parsed_results.append(notable.to_incident(mapper))
-        elif isinstance(item, results.Message):
-            demisto.debug(f"Message from splunk-sdk message: {item.message}")
+        elif handle_message(item):
             continue
 
     types_map = create_mapping_dict(total_parsed_results, type_field)
@@ -1664,7 +1650,7 @@ class ResponseReaderWrapper(io.RawIOBase):
 def get_current_splunk_time(splunk_service: client.Service):
     t = datetime.utcnow() - timedelta(days=3)
     time = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {'count': 1, 'earliest_time': time, 'output_mode': 'json', }
+    kwargs_oneshot = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE, }
     searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S")' \
                           ' | sort 1 -_time | table clock'
 
@@ -1672,8 +1658,7 @@ def get_current_splunk_time(splunk_service: client.Service):
 
     reader = results.JSONResultsReader(oneshotsearch_results)
     for item in reader:
-        if isinstance(item, results.Message):
-            demisto.debug(f"Message from splunk-sdk message: {item.message}")
+        if handle_message(item):
             continue
         if isinstance(item, dict):
             return item["clock"]
@@ -1845,8 +1830,7 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
         raise Exception("Either eventIDs of a searchID must be provided (or both)")
 
     # These the arguments to the REST handler
-    args = {}
-    args['comment'] = comment
+    args = {'comment': comment}
 
     if status is not None:
         args['status'] = status
@@ -1868,17 +1852,21 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
     if searchID is not None:
         args['searchID'] = searchID
 
-    auth_header = {"Authorization": sessionKey} if not auth_token else {"Authorization": "Bearer %s" % auth_token}
+    auth_header = {"Authorization": f"Bearer {auth_token}"} if auth_token else {"Authorization": sessionKey}
 
-    args['output_mode'] = 'json'
+    args['output_mode'] = OUTPUT_MODE
 
-    mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header,
-                                 verify=VERIFY_CERTIFICATE)
+    mod_notables = requests.post(
+        f'{baseurl}services/notable_update',
+        data=args,
+        headers=auth_header,
+        verify=VERIFY_CERTIFICATE,
+    )
 
     return mod_notables.json()
 
 
-def severity_to_level(severity):
+def severity_to_level(severity: str) -> int | float:
     if severity == 'informational':
         return 0.5
     elif severity == 'critical':
@@ -2055,7 +2043,7 @@ def get_current_results_batch(search_job: client.Job, batch_size: int, results_o
     current_batch_kwargs = {
         "count": batch_size,
         "offset": results_offset,
-        'output_mode': 'json',
+        'output_mode': OUTPUT_MODE,
     }
 
     return search_job.results(**current_batch_kwargs)
@@ -2179,7 +2167,7 @@ def splunk_results_command(service: client.Service):
         else:
             return_error(msg, error)
     else:
-        for result in results.JSONResultsReader(job.results(count=limit, output_mode='json')):
+        for result in results.JSONResultsReader(job.results(count=limit, output_mode=OUTPUT_MODE)):
             if isinstance(result, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
@@ -2375,7 +2363,7 @@ def test_module(service: client.Service, params: dict) -> None:
     if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
-        kwargs = {'count': 1, 'earliest_time': time, 'output_mode': 'json'}
+        kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE}
         query = params['fetchQuery']
         try:
             if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
@@ -2637,6 +2625,13 @@ def get_connection_args(params: dict) -> dict:
     }
 
 
+def handle_message(item: results.Message | dict) -> bool:
+    if isinstance(item, results.Message):
+        demisto.debug(f"Message from splunk-sdk message: {item.message}")
+        return True
+    return False
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
@@ -2670,9 +2665,7 @@ def main():  # pragma: no cover
 
     connection_args['handler'] = requests_handler
 
-    service = client.connect(**connection_args)
-
-    if service is None:
+    if (service := client.connect(**connection_args)) is None:
         demisto.error("Could not connect to SplunkPy")
 
     mapper = UserMappingObject(service, params.get('userMapping'), params.get('user_map_lookup_name'),
@@ -2734,10 +2727,10 @@ def main():  # pragma: no cover
             get_mapping_fields_command(service, mapper, params)
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
-        get_remote_data_command(service=service, args=demisto.args(),
-                                close_incident=demisto.params().get('close_incident'),
-                                close_end_statuses=demisto.params().get('close_end_status_statuses'),
-                                close_extra_labels=argToList(demisto.params().get('close_extra_labels', '')),
+        get_remote_data_command(service=service, args=args(),
+                                close_incident=params.get('close_incident'),
+                                close_end_statuses=params.get('close_end_status_statuses'),
+                                close_extra_labels=argToList(params.get('close_extra_labels', '')),
                                 mapper=mapper)
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, args)
