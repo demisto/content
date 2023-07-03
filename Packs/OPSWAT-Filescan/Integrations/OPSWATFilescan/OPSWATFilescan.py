@@ -9,7 +9,7 @@ import urllib3
 urllib3.disable_warnings()
 
 """GLOBALS/PARAMS """
-INTEGRATION_NAME = "OPSWAT Filescan Integration"
+INTEGRATION_NAME = "OPSWAT Filescan Sandbox Integration"
 INTEGRATION_CONTEXT_NAME = "OPSWAT.Filescan"
 
 
@@ -124,7 +124,7 @@ def build_one_reputation_result(report: Dict[str, Any]):
     dbot_score = Common.DBotScore(
         indicator=report_hash,
         indicator_type=DBotScoreType.FILE,
-        integration_name="OPSWAT Filescan",
+        integration_name="OPSWAT Filescan Sandbox",
         score=score,
     )
 
@@ -186,7 +186,7 @@ def build_serach_query_result(analyses: List[Dict]) -> CommandResults:
         dbot_score = Common.DBotScore(
             indicator=analysis_file.get("sha256"),
             indicator_type=DBotScoreType.FILE,
-            integration_name="OPSWAT Filescan",
+            integration_name="OPSWAT Filescan Sandbox",
             score=score,
         )
 
