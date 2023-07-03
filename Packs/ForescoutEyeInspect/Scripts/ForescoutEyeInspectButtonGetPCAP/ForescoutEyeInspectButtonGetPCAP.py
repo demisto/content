@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Any, Dict
 
-import demistomock as demisto
-from CommonServerPython import *
 
 
 def get_pcap() -> Dict[str, Any]:

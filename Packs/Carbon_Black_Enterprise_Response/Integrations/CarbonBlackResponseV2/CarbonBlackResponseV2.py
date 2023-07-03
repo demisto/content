@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import struct
 import dateparser
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from typing import Callable, Dict, List, Any, Union, Tuple
 

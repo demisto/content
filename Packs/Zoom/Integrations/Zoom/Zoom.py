@@ -1,7 +1,7 @@
-import shutil
-from ZoomApiModule import *
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import shutil
+from ZoomApiModule import *
 from traceback import format_exc
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
