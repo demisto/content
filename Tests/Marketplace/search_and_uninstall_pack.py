@@ -209,9 +209,9 @@ def main():
     # in earlier builds they will appear in the bucket as it is cached.
     sync_marketplace(client=client)
     unremovable_packs = options.unremovable_packs.split(',')
-    success = reset_core_pack_version(client, unremovable_packs) and \
-        uninstall_all_packs(client, host, unremovable_packs) and \
-        wait_for_uninstallation_to_complete(client, unremovable_packs)
+    success = uninstall_all_packs(client, host, unremovable_packs) and \
+              reset_core_pack_version(client, unremovable_packs) and \
+              wait_for_uninstallation_to_complete(client, unremovable_packs)
     sync_marketplace(client=client)
     if not success:
         sys.exit(2)
