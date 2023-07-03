@@ -1,4 +1,4 @@
-[MODEL:dataset="forcepoint_dlp_raw"]
+[MODEL:dataset="forcepoint_forcepoint_dlp_raw"]
 alter fsize = to_float(arrayindex(regextract(fname,"\s\-\s(\d+\.\d+)\s\w+"),0)),
     fsize_unit = arrayindex(regextract(fname,"\s\-\s\d+\.\d+\s(\w+)"),0)
 | alter fname = if(fname contains "N/A",null,arrayindex(regextract(fname ,"(.*)\s\-\s\d+"),0))

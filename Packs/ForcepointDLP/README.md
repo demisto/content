@@ -34,4 +34,4 @@ You can configure the specific vendor and product for this instance.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**:
    - vendor as vendor - forcepoint
-   - product as product - dlp
+   - product as product - forcepoint dlp
