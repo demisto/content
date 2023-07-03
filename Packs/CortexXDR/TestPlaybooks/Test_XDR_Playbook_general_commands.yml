@@ -1,5 +1,6 @@
 id: Test XDR Playbook general commands
-version: -1
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook general commands
 starttaskid: "0"
 tasks:
@@ -1370,7 +1371,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6990
+          "y": 6980
         }
       }
     note: false
@@ -1414,10 +1415,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: a1da1fa8-1531-48ce-8f0e-debeddbac2f4
+    taskid: f41e82db-437a-47fa-88a1-4e424a0fd178
     type: condition
     task:
-      id: a1da1fa8-1531-48ce-8f0e-debeddbac2f4
+      id: f41e82db-437a-47fa-88a1-4e424a0fd178
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1431,14 +1432,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               simple: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTNAME
             iscontext: true
-          right:
-            value:
-              simple: ip-172-31-15-237.eu-central-1.compute.internal
       - - operator: isNotEmpty
           left:
             value:
@@ -1466,10 +1464,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 85d56b77-4b86-4f37-8560-865c5defbea1
+    taskid: 6642f602-df92-4b46-8e82-b2606b0a6302
     type: regular
     task:
-      id: 85d56b77-4b86-4f37-8560-865c5defbea1
+      id: 6642f602-df92-4b46-8e82-b2606b0a6302
       version: -1
       name: xdr-get-audit-agent-reports
       description: xdr-get-audit-agent-reports
@@ -1481,12 +1479,8 @@ tasks:
       '#none#':
       - "43"
     scriptarguments:
-      endpoint_names:
-        simple: ip-172-31-15-237.eu-central-1.compute.internal
       limit:
         simple: "5"
-      result:
-        simple: Success
       retry-count:
         simple: "3"
       retry-interval:
