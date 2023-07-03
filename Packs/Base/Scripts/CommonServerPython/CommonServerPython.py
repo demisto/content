@@ -10769,7 +10769,10 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
             # As we stuck, we need to update the limit anyway (even if the `lookback` is off)
             new_last_run['limit'] = len(incidents) + fetch_limit
 
-    new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
+    if look_back > 0:
+        new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
+    else:
+        new_last_run['limit'] = fetch_limit
 
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
