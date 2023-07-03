@@ -45,11 +45,13 @@ configuration:
   required: false
   type: 13
 - defaultvalue: '60'
-  display: Incidents Fetch Interval (Only for Fetch Incidents)
+  display: Incidents Fetch Interval
+  additionalinfo: Only for Fetch Incidents
   name: incidentFetchInterval
   required: false
   type: 19
-- display: Forwarding Rule (Only for Long running Integration)
+- display: Forwarding Rule
+  additionalinfo: Only for Long running Integration
   name: forwardingRule
   options:
   - Syslog
@@ -57,11 +59,13 @@ configuration:
   required: false
   type: 15
 - defaultvalue: 1 day 
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) (Only for Fetch Incidents)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  additionalinfo: Only for Fetch Incidents
   name: first_fetch
   required: false
   type: 0
-- display: Max events to fetch. Maximum events that can be fetch is 200 (Only for Fetch Incidents)
+- display: Max events to fetch
+  additionalinfo: Maximum events that can be fetch is 200 (Only for Fetch Incidents)
   name: max_fetch
   required: false
   type: 0
