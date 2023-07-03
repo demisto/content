@@ -131,4 +131,3 @@ def test_test_module_failure(mocker, params, error_msg):
     return_error = mocker.patch('DarktraceEventCollector.return_error')
     main()
     assert return_error.call_args[0][0] == error_msg
-
