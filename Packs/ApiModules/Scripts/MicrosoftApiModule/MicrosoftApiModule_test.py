@@ -642,3 +642,49 @@ def test_azure_tag_formatter__with_invalid_input():
     with pytest.raises(Exception) as e:
         azure_tag_formatter('{"key:value"}')
     assert e.value.args[0] == 'Invalid tag format, please use the following format: \'{"key_name":"value_name"}\''
+
+
+def test_reset_auth(mocker):
+    """
+        Given:
+            -
+        When:
+            - Calling function reset_auth.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftApiModule import reset_auth
+
+    expected_output = 'Authorization was reset successfully. Please regenerate the credentials, ' \
+                      'and then click **Test** to validate the credentials and connection.'
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"test"})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+
+    result = reset_auth()
+
+    assert result.readable_output == expected_output
+    assert demisto.getIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_args[0][0] == {}
+    assert result
+
+
+def test_generate_login_url():
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function generate_login_url
+        - Ensure the generated url are as expected.
+    """
+    from MicrosoftApiModule import generate_login_url
+
+    client = self_deployed_client()
+
+    result = generate_login_url(client)
+
+    expected_url = f'[login URL](https://login.microsoftonline.com/{TENANT}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
+                   f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp)'
+    assert expected_url in result.readable_output, "Login URL is incorrect"
