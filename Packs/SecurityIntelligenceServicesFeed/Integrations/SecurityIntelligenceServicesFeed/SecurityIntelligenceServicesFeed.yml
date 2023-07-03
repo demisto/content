@@ -150,7 +150,7 @@ script:
       will fetch from the latest found object.
     execution: false
     name: sis-get-indicators
-  dockerimage: demisto/boto3py3:1.0.0.63846
+  dockerimage: demisto/boto3py3:1.0.0.64385
   feed: true
   isfetch: false
   longRunning: false
