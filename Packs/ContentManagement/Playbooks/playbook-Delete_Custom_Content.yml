@@ -56,8 +56,7 @@ tasks:
       uri:
         simple: /content/bundle
       using:
-        complex:
-          root: inputs.instance_name
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -131,8 +130,7 @@ tasks:
       include_ids_dict:
         simple: ${GetIdsFromCustomContent.included_ids}
       using:
-        complex:
-          root: inputs.instance_name
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
