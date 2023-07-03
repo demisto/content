@@ -5353,6 +5353,8 @@ class ClientV1(Client):
                 "warmUp": kwargs.get("warm_up"),
                 "warmRate": kwargs.get("warm_rate"),
                 "backupServer": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("backup_server")]),
+                "inHeritHCheck": dict_safe_get(self.parser.boolean_user_to_api_mapper,
+                                               [kwargs.get("health_check_inherit")]),
             }
         )
 
@@ -5703,7 +5705,7 @@ class ClientV2(Client):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        if args.get('type') == ArgumentValues.TRUE_TRANSPARENT_PROXY.value:
+        if args.get("health_check") and args.get('type') == ArgumentValues.TRUE_TRANSPARENT_PROXY.value:
             validate_argument(args=args, key_='health_check_source_ip')
             validate_argument(args=args, key_='health_check_source_ip_v6')
         super().validate_server_pool_group(args, action)
@@ -7785,7 +7787,7 @@ class ClientV2(Client):
 
         Args:
 
-            kwargs: name (str): URL access rule group name.
+            kwargs: name (str): Virtual server group name.
 
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
@@ -7816,7 +7818,7 @@ class ClientV2(Client):
             use_interface_ip (str): Whether uses interface IP.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V1.
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {"mkey": group_name}
         data = {
@@ -7845,6 +7847,19 @@ class ClientV2(Client):
         status: str | None,
         virtual_ip: str | None,
     ) -> dict[str, Any]:
+        """
+        Update a virtual server item.
+
+        Args:
+            group_name (str | None): Virtual server group name.
+            interface (str | None): The name of the network interface or bridge.
+            virtual_ip (str | None): The virtual IP of the virtual server.
+            status (str | None): Wheter to enable the virtual server group.
+            use_interface_ip (str | None): Whether uses interface IP.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
         params = {"mkey": group_name, "sub_mkey": item_id}
         data = {
             "data": remove_empty_elements(
@@ -7866,14 +7881,14 @@ class ClientV2(Client):
     def virtual_server_item_delete_request(
         self, group_name: str | None, member_id: str | None
     ) -> dict[str, Any]:
-        """Delete an URL access rule condition.
+        """Delete a virtual server item.
 
         Args:
-            group_name (str): URL access rule group name.
-            condition_id (str): URL access rule condition ID.
+            group_name (str): Virtual server group name.
+            member_id (str): Virtual server item ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V1.
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = remove_empty_elements({"mkey": group_name, "sub_mkey": member_id})
         return self._http_request(
@@ -7885,16 +7900,16 @@ class ClientV2(Client):
     def virtual_server_item_list_request(
         self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
-        """List URL access rule conditions.
+        """List virtual server items.
 
         Args:
-            group_name (str): URL access rule group name.
-            kwargs: condition_id (str): URL access rule condition ID.
+            group_name (str): Virtual server group name.
+            kwargs: item_id (str): Virtual server item ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V1.
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
-        params = {"mkey": group_name}
+        params = remove_empty_elements({"mkey": group_name, "sub_mkey": kwargs.get("item_id")})
         return self._http_request(
             method="GET",
             url_suffix="cmdb/server-policy/vserver/vip-list",
@@ -7923,6 +7938,30 @@ class ClientV2(Client):
         health_check_source_ip_v6: str | None = None,
 
     ) -> dict[str, Any]:
+        """Build server pool group object.
+
+        Args:
+            name (str): Server pool group name.
+            type (str | None, optional): Server pool type. Defaults to None.
+            comments (str | None, optional): Server pool comments. Defaults to None.
+            server_balance (str | None, optional): Server pool serve balance. Defaults to None.
+            health_check (str | None, optional): Server pool health check. Defaults to None.
+            lb_algo (str | None, optional): Server pool load blancing algorithem. Defaults to None.
+            persistence (str | None, optional): Server pool persistence policy. Defaults to None.
+            protocol (str | None, optional): Server pool protocol. Defaults to None.
+            http_reuse (str | None, optional): Server pool http reuse. Defaults to None.
+            reuse_conn_idle_time (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_max_count (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_max_request (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_total_time (str | None, optional): Server pool settings. Defaults to None.
+            server_pool_id (str | None, optional): Server pool ID. Defaults to None.
+            proxy_protocol_version (str | None, optional): Server pool proxy protocol version. Defaults to None.
+            adfs_server_name (str | None, optional): Server pool adfs server name. Defaults to None.
+            health_check_source_ip (str | None, optional): Server pool health check source IP. Defaults to None.
+            health_check_source_ip_v6 (str | None, optional): Server pool health check source v6 IP. Defaults to None.
+        Returns:
+            dict[str, Any]: Server pool group object.
+        """
         return remove_empty_elements(
             {
                 "data": {
@@ -7965,6 +8004,33 @@ class ClientV2(Client):
         persistence: str | None = None,
         **kwargs,
     ) -> dict[str, Any]:
+        """Create a server pool group.
+
+        Args:
+            name (str | None, optional): Server pool group name. Defaults to None.
+            type (str | None, optional): Server pool type. Defaults to None.
+            comments (str | None, optional): Server pool comments. Defaults to None.
+            server_balance (str | None, optional): Server pool serve balance. Defaults to None.
+            health_check (str | None, optional): Server pool health check. Defaults to None.
+            lb_algo (str | None, optional): Server pool load blancing algorithem. Defaults to None.
+            persistence (str | None, optional): Server pool persistence policy. Defaults to None.
+
+        Kwargs:
+            protocol (str | None, optional): Server pool protocol. Defaults to None.
+            http_reuse (str | None, optional): Server pool http reuse. Defaults to None.
+            reuse_conn_idle_time (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_max_count (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_max_request (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_total_time (str | None, optional): Server pool settings. Defaults to None.
+            server_pool_id (str | None, optional): Server pool ID. Defaults to None.
+            proxy_protocol_version (str | None, optional): Server pool proxy protocol version. Defaults to None.
+            adfs_server_name (str | None, optional): Server pool adfs server name. Defaults to None.
+            health_check_source_ip (str | None, optional): Server pool health check source IP. Defaults to None.
+            health_check_source_ip_v6 (str | None, optional): Server pool health check source v6 IP. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
         args = locals()
         args.pop("self")
         args |= args.pop("kwargs")
@@ -7986,6 +8052,33 @@ class ClientV2(Client):
         persistence: str | None = None,
         **kwargs,
     ) -> dict[str, Any]:
+        """Update a server pool group.
+
+        Args:
+            name (str | None, optional): Server pool group name. Defaults to None.
+            type (str | None, optional): Server pool type. Defaults to None.
+            comments (str | None, optional): Server pool comments. Defaults to None.
+            server_balance (str | None, optional): Server pool serve balance. Defaults to None.
+            health_check (str | None, optional): Server pool health check. Defaults to None.
+            lb_algo (str | None, optional): Server pool load blancing algorithem. Defaults to None.
+            persistence (str | None, optional): Server pool persistence policy. Defaults to None.
+
+        Kwargs:
+            protocol (str | None, optional): Server pool protocol. Defaults to None.
+            http_reuse (str | None, optional): Server pool http reuse. Defaults to None.
+            reuse_conn_idle_time (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_max_count (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_max_request (str | None, optional): Server pool settings. Defaults to None.
+            reuse_conn_total_time (str | None, optional): Server pool settings. Defaults to None.
+            server_pool_id (str | None, optional): Server pool ID. Defaults to None.
+            proxy_protocol_version (str | None, optional): Server pool proxy protocol version. Defaults to None.
+            adfs_server_name (str | None, optional): Server pool adfs server name. Defaults to None.
+            health_check_source_ip (str | None, optional): Server pool health check source IP. Defaults to None.
+            health_check_source_ip_v6 (str | None, optional): Server pool health check source v6 IP. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
         args = locals()
         args.pop("self")
         args |= args.pop("kwargs")
@@ -8065,7 +8158,45 @@ class ClientV2(Client):
         registration_username: str | None = None,
         registration_password: str | None = None,
     ) -> dict[str, Any]:
+        """
+        Build server pool rule object.
 
+        Args:
+            status (str | None, optional): Server pool status. Defaults to None.
+            server_type (str | None, optional): Server pool server type. Defaults to None.
+            sdn_address_type (str | None, optional): Server pool sdn address type. Defaults to None.
+            sdn_connector (str | None, optional): Server pool sdn conneector. Defaults to None.
+            filter (str | None, optional): Server pool filter. Defaults to None.
+            ip (str | None, optional): Server pool IP. Defaults to None.
+            domain (str | None, optional): Server pool domain. Defaults to None.
+            port (str | None, optional): Server pool port. Defaults to None.
+            connection_limit (str | None, optional): Server pool connection limit. Defaults to None.
+            weight (str | None, optional): Server pool weight. Defaults to None.
+            http2 (str | None, optional): Server pool http2. Defaults to None.
+            enable_ssl (str | None, optional): Server pool enable ssl. Defaults to None.
+            certificate_file (str | None, optional): Server pool certificate. Defaults to None.
+            client_certificate_file (str | None, optional): Server pool client certificate. Defaults to None.
+            recover (str | None, optional): Server pool recover. Defaults to None.
+            warm_up (str | None, optional): Server pool warm up. Defaults to None.
+            warm_rate (str | None, optional): Server pool warm rate. Defaults to None.
+            health_check (str | None, optional): Server pool health check policy. Defaults to None.
+            health_check_inherit (str | None, optional): Server pool health check flag. Defaults to None.
+            health_check_domain (str | None, optional): Server pool health check domain. Defaults to None.
+            backup_server (str | None, optional): Server pool backup server. Defaults to None.
+            enable_sni (str | None, optional): Server pool enable sni. Defaults to None.
+            sni_certificate (str | None, optional): Server pool SNI certificate. Defaults to None.
+            certificate_type (str | None, optional): Server pool cartificate type. Defaults to None.
+            multi_certificate (str | None, optional): Server pool multi certificate group. Defaults to None.
+            letsencrypt (str | None, optional): Server pool letsencrypt certificate. Defaults to None.
+            certficate_intermediate_group (str | None, optional): Server pool certificate intermediate group.
+            Defaults to None.
+            implicit_ssl (str | None, optional): Server pool implicit ssl flag. Defaults to None.
+            registration_username (str | None, optional): Server pool username. Defaults to None.
+            registration_password (str | None, optional): Server pool password. Defaults to None.
+
+        Returns:
+            dict[str, Any]: Server pool object.
+        """
         cert_type = None if not certificate_type else "enable" if certificate_type == "Letsencrypt" else "disable"
         enable_multi_certificate = \
             None if not certificate_type else 'enable' if certificate_type == "Multi Certificate" else "disable"
@@ -8120,6 +8251,45 @@ class ClientV2(Client):
         rule_id: str,
         **kwargs,
     ) -> dict[str, Any]:
+        """
+        Update a server pool rule.
+
+        kwargs:
+            status (str | None, optional): Server pool status. Defaults to None.
+            server_type (str | None, optional): Server pool server type. Defaults to None.
+            sdn_address_type (str | None, optional): Server pool sdn address type. Defaults to None.
+            sdn_connector (str | None, optional): Server pool sdn conneector. Defaults to None.
+            filter (str | None, optional): Server pool filter. Defaults to None.
+            ip (str | None, optional): Server pool IP. Defaults to None.
+            domain (str | None, optional): Server pool domain. Defaults to None.
+            port (str | None, optional): Server pool port. Defaults to None.
+            connection_limit (str | None, optional): Server pool connection limit. Defaults to None.
+            weight (str | None, optional): Server pool weight. Defaults to None.
+            http2 (str | None, optional): Server pool http2. Defaults to None.
+            enable_ssl (str | None, optional): Server pool enable ssl. Defaults to None.
+            certificate_file (str | None, optional): Server pool certificate. Defaults to None.
+            client_certificate_file (str | None, optional): Server pool client certificate. Defaults to None.
+            recover (str | None, optional): Server pool recover. Defaults to None.
+            warm_up (str | None, optional): Server pool warm up. Defaults to None.
+            warm_rate (str | None, optional): Server pool warm rate. Defaults to None.
+            health_check (str | None, optional): Server pool health check policy. Defaults to None.
+            health_check_inherit (str | None, optional): Server pool health check flag. Defaults to None.
+            health_check_domain (str | None, optional): Server pool health check domain. Defaults to None.
+            backup_server (str | None, optional): Server pool backup server. Defaults to None.
+            enable_sni (str | None, optional): Server pool enable sni. Defaults to None.
+            sni_certificate (str | None, optional): Server pool SNI certificate. Defaults to None.
+            certificate_type (str | None, optional): Server pool cartificate type. Defaults to None.
+            multi_certificate (str | None, optional): Server pool multi certificate group. Defaults to None.
+            letsencrypt (str | None, optional): Server pool letsencrypt certificate. Defaults to None.
+            certficate_intermediate_group (str | None, optional): Server pool certificate intermediate group.
+            Defaults to None.
+            implicit_ssl (str | None, optional): Server pool implicit ssl flag. Defaults to None.
+            registration_username (str | None, optional): Server pool username. Defaults to None.
+            registration_password (str | None, optional): Server pool password. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
         args = locals()
         args.pop("self")
         args.pop("group_name")
@@ -8141,6 +8311,45 @@ class ClientV2(Client):
         group_name: str | None,
         **kwargs,
     ) -> dict[str, Any]:
+        """
+        Create a server pool rule.
+
+        kwargs:
+            status (str | None, optional): Server pool status. Defaults to None.
+            server_type (str | None, optional): Server pool server type. Defaults to None.
+            sdn_address_type (str | None, optional): Server pool sdn address type. Defaults to None.
+            sdn_connector (str | None, optional): Server pool sdn conneector. Defaults to None.
+            filter (str | None, optional): Server pool filter. Defaults to None.
+            ip (str | None, optional): Server pool IP. Defaults to None.
+            domain (str | None, optional): Server pool domain. Defaults to None.
+            port (str | None, optional): Server pool port. Defaults to None.
+            connection_limit (str | None, optional): Server pool connection limit. Defaults to None.
+            weight (str | None, optional): Server pool weight. Defaults to None.
+            http2 (str | None, optional): Server pool http2. Defaults to None.
+            enable_ssl (str | None, optional): Server pool enable ssl. Defaults to None.
+            certificate_file (str | None, optional): Server pool certificate. Defaults to None.
+            client_certificate_file (str | None, optional): Server pool client certificate. Defaults to None.
+            recover (str | None, optional): Server pool recover. Defaults to None.
+            warm_up (str | None, optional): Server pool warm up. Defaults to None.
+            warm_rate (str | None, optional): Server pool warm rate. Defaults to None.
+            health_check (str | None, optional): Server pool health check policy. Defaults to None.
+            health_check_inherit (str | None, optional): Server pool health check flag. Defaults to None.
+            health_check_domain (str | None, optional): Server pool health check domain. Defaults to None.
+            backup_server (str | None, optional): Server pool backup server. Defaults to None.
+            enable_sni (str | None, optional): Server pool enable sni. Defaults to None.
+            sni_certificate (str | None, optional): Server pool SNI certificate. Defaults to None.
+            certificate_type (str | None, optional): Server pool cartificate type. Defaults to None.
+            multi_certificate (str | None, optional): Server pool multi certificate group. Defaults to None.
+            letsencrypt (str | None, optional): Server pool letsencrypt certificate. Defaults to None.
+            certficate_intermediate_group (str | None, optional): Server pool certificate intermediate group.
+            Defaults to None.
+            implicit_ssl (str | None, optional): Server pool implicit ssl flag. Defaults to None.
+            registration_username (str | None, optional): Server pool username. Defaults to None.
+            registration_password (str | None, optional): Server pool password. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
         args = locals()
         args.pop("self")
         args.pop("group_name")
@@ -11343,16 +11552,15 @@ def virtual_server_item_list_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     group_name = args.get("group_name")
-    condition_id = args.get("condition_id")
+    item_id = args.get("item_id")
     response = client.virtual_server_item_list_request(
-        group_name, condition_id=condition_id
+        group_name, item_id=item_id
     )
     parsed_data, pagination_message, _ = list_response_handler(
         client,
         response,
         client.parser.parse_virtual_server_item,
         args,
-        condition_id,
     )
     outputs = {"id": group_name, "Item": parsed_data}
     headers = client.parser.create_output_headers(

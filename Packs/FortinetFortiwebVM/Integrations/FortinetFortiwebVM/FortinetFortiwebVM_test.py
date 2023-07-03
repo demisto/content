@@ -7417,12 +7417,12 @@ def test_server_pool_group_create_command(
     (
         (
             ClientV2.API_VER,
-            {"name": "check", "type": "True Transparent Proxy"},
+            {"name": "check", "health_check": "test", "type": "True Transparent Proxy"},
             ErrorMessage.INSERT_VALUE.value.format('health_check_source_ip')
         ),
         (
             ClientV2.API_VER,
-            {"name": "check", "type": "True Transparent Proxy", "health_check_source_ip": "test"},
+            {"name": "check", "health_check": "test", "type": "True Transparent Proxy", "health_check_source_ip": "test"},
             ErrorMessage.INSERT_VALUE.value.format('health_check_source_ip_v6')
         ),
     ),
