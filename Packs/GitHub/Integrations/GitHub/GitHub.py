@@ -2073,7 +2073,7 @@ def github_list_workflows_command():
     workflow = args.get('workflow')
     limit = args.get('limit', 100)
 
-    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches?per_page={limit}"
+    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/runs?per_page={limit}"
     headers = {
         "Authorization": f"Bearer {TOKEN}",
         "Accept": "application/vnd.github.v3+json"
@@ -2084,7 +2084,9 @@ def github_list_workflows_command():
     output_headers = ['id', 'name', 'head_branch', 'head_sha', 'path', 'display_title', 'run_number', 'event', 'status',
                       'conclusion', 'workflow_id', 'url', 'html_url', 'created_at', 'updated_at']
 
-    outputs = {k: v for k, v in response.workflow_runs if k in output_headers}
+    outputs: list[dict] = []
+    for workflow in response.get('workflow_runs', []):
+        outputs.append({k: v for k, v in workflow.items() if k in output_headers})
 
     return_results(CommandResults(
         raw_response=response,
