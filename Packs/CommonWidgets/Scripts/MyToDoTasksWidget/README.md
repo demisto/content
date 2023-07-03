@@ -18,4 +18,9 @@ There are no inputs for this script.
 ## Outputs
 
 ---
-Markdown table of open tasks assigned to the current user.
+### Human Readable Output
+
+>### My ToDo Tasks (1)
+>|Task Name|Task Description|Task ID|SLA|Opened By|Incident ID|
+>|---|---|---|---|---|---|---|
+>| task | task description | 1@1 | 0001-01-01 00:00:00+0000 | user | 1 | 
