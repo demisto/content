@@ -252,7 +252,7 @@ def get_colored_pred_json(pred_json: Dict) -> Dict:
     return pred_json_colored
 
 
-def create_X_pred(output_rasterize: Dict, url: str) -> pd.DataFrame:
+def create_x_pred(output_rasterize: Dict, url: str) -> pd.DataFrame:
     """
     Create dataframe to predict from the rasterize output
     :param output_rasterize: Dict from the output of rasterize command
@@ -492,26 +492,28 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
                                                          })
     if is_error(res_rasterize):
         error = get_error(res_rasterize)
+
         if 'disabled' in error or 'enabled' in error:
             raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
+
         elif 'timeout' in error:
-            return create_dict_context(url, url, MSG_FAILED_RASTERIZE_TIMEOUT, {}, SCORE_INVALID_URL, is_white_listed,
-                                       {})
+            return create_dict_context(url, url, MSG_FAILED_RASTERIZE_TIMEOUT, {}, SCORE_INVALID_URL, is_white_listed, {})
+
         elif 'ERR_NAME_NOT_RESOLVED' in error:
             return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
+
         else:
             return create_dict_context(url, url, error, {}, SCORE_INVALID_URL, is_white_listed, {})
 
     if len(res_rasterize) > 0 and isinstance(res_rasterize[0]['Contents'], str):
         return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
-    if not res_rasterize[0]['Contents'].get(KEY_IMAGE_RASTERIZE) or \
-            not res_rasterize[0]['Contents'].get(KEY_IMAGE_HTML):
-        return create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed,
-                                   {})
+    if not res_rasterize[0]['Contents'].get(KEY_IMAGE_RASTERIZE) or not res_rasterize[0]['Contents'].get(KEY_IMAGE_HTML):
+        return create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
     if len(res_rasterize) > 0:
         output_rasterize = res_rasterize[0]['Contents']
+
     else:
         create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
@@ -520,8 +522,10 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
 
     # Get final url and redirection
     final_url = output_rasterize.get(KEY_CURRENT_URL_RASTERIZE, url)
+
     if final_url != url:
         url_redirect = '%s -> %s   (%s)' % (url, final_url, MSG_REDIRECT)
+
     else:
         url_redirect = final_url
 
@@ -532,22 +536,25 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
     if in_white_list(model, final_url):
         if not force_model:
             is_white_listed = True
-            return create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN,
-                                       is_white_listed, {})
+            return create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
             is_white_listed = True
+
     res_whois = []
+
     if who_is_enabled:
         try:
-            res_whois = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
-                                                         })
+            res_whois = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5})
+
         except Exception:
             res_whois = []
+
     is_new_domain = extract_created_date(res_whois)
 
-    X_pred = create_X_pred(output_rasterize, final_url)
+    x_pred = create_x_pred(output_rasterize, final_url)
 
-    pred_json = model.predict(X_pred)
+    pred_json = model.predict(x_pred)
+
     if debug:
         return_results(pred_json['debug_top_words'])
         return_results(pred_json['debug_found_domains_list'])
