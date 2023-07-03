@@ -777,3 +777,44 @@ def test_add_tag(demisto_args: dict, is_attribute: bool, expected_result: dict, 
     assert result.readable_output == expected_result['readable_output']
     assert result.outputs == expected_result['outputs']
     assert result.outputs_prefix == expected_result['outputs_prefix']
+
+
+def test_add_user_to_misp(mock):
+    from MISPV3 import add_user_to_misp
+    demisto_args = {
+        'email': 'test@example.com',
+        'org_id': '123',
+        'role_id': '456',
+        'password': 'paSs123456!'
+    }
+    mock.add_user.return_value = {}
+    result = add_user_to_misp(demisto_args)
+    assert result == {
+        'readable_output': '## MISP add user\nNew user was added to MISP.\nEmail:test@example.com',
+        'raw_response': {},
+        'outputs': {}
+    }
+
+
+def test_get_organizations_info(mock):
+    from MISPV3 import get_organizations_info
+    mock.organizations.return_value = [
+        {'Organisation': {'id': 1, 'name': 'org1'}},
+        {'Organisation': {'id': 2, 'name': 'org2'}},
+        {'Organisation': {'id': 3, 'name': 'org3'}}        
+    ]
+    result = get_organizations_info()
+    assert result == {
+        'readable_output': 'MISP Organizations\n\n| id | name |\n|----|------|\n| 1  | org1 |\n| 2  | org2 |\n| 3  | org3 |',
+        'outputs_prefix': 'MISP.Organization',
+        'outputs': [
+            {'name': 'Org1', 'id': 1},
+            {'name': 'Org2', 'id': 2},
+            {'name': 'Org3', 'id': 3}
+        ],
+        'raw_response': [
+            {'Organisation': {'id': 1, 'name': 'org1'}},
+            {'Organisation': {'id': 2, 'name': 'org2'}},
+            {'Organisation': {'id': 3, 'name': 'org3'}}
+        ]
+    }
