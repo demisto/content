@@ -1845,7 +1845,7 @@ script:
       type: date
   - arguments:
     - default: false
-      description: uuid of a specific carved file. Get id from list of carves with command uptycs-get-carves.
+      description: uuid of a specific carved file. Get the id from the list of carves with the command uptycs-get-carves.
       isArray: false
       name: carve_id
       required: true
@@ -1860,7 +1860,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: uuid of a specific carved file to download. Get id from list of carves with command uptycs-get-carves.
+      description: uuid of a specific carved file to download. Get the id from the list of carves with the command uptycs-get-carves.
       isArray: false
       name: carve_id
       required: true
@@ -1876,7 +1876,7 @@ script:
     arguments:
     - name: asset_id
       required: true
-      description: Uptycs asset id. Get id from list of assets with command uptycs-get-assets.
+      description: Uptycs asset id. Get the id from the list of assets with the command uptycs-get-assets.
       isArray: false
       secret: false
       default: false
@@ -1960,7 +1960,7 @@ script:
     arguments:
     - name: tag_id
       required: true
-      description: Uptycs tag id. Get id from list of tags with command uptycs-get-tags.
+      description: Uptycs tag id. Get the id from the list of tags with the command uptycs-get-tags.
       isArray: false
       secret: false
       default: false
@@ -2113,7 +2113,7 @@ script:
     arguments:
     - name: tag_id
       required: true
-      description: Delete the tag matching this id. Get id from list of tags with command uptycs-get-tags.
+      description: Delete the tag matching this id. Get the id from the list of tags with the command uptycs-get-tags.
       isArray: false
       secret: false
       default: false
@@ -2172,7 +2172,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Id of table in Uptycs DB. Get id from list of tables with command uptycs-get-lookuptables.
+      description: Id of table in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false
@@ -2259,7 +2259,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Look up table id. Get id from list of tables with command uptycs-get-lookuptables.
+      description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false
@@ -2297,7 +2297,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Table id in Uptycs DB. Get id from list of tables with command uptycs-get-lookuptables.
+      description: Table id in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false
@@ -2308,13 +2308,13 @@ script:
     arguments:
     - name: asset_id
       required: true
-      description: Disassociate the asset matching this asset id with the given tag_id. Get id from list of assets with command uptycs-get-assets.
+      description: Disassociate the asset matching this asset id with the given tag_id. Get the id from the list of asset with the command uptycs-get-assets.
       isArray: false
       secret: false
       default: false
     - name: tag_id
       required: true
-      description: Disassociate the tag matching this id with the given asset_id. Get id from list of tags with command uptycs-get-tags.
+      description: Disassociate the tag matching this id with the given asset_id. Get the id from the list of tags with the command uptycs-get-tags.
       isArray: false
       secret: false
       default: false
@@ -2325,7 +2325,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: Look up table id. Get id from list of tables with command uptycs-get-lookuptables.
+      description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
       isArray: false
       secret: false
       default: false
