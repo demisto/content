@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: GitHub -custom
+  id: GitHub
   version: -1
 configuration:
 - display: Fetch incidents
@@ -94,8 +94,8 @@ configuration:
   section: Connect
   advanced: true
 description: Integration to GitHub API
-display: GitHub -custom
-name: GitHub -custom
+display: GitHub
+name: GitHub
 script:
   commands:
   - arguments:
@@ -4138,7 +4138,7 @@ script:
     - contextPath: GitHub.Workflow.updated_at
       description: Datetime the GitHub workflow was updated at
       type: Date
-  dockerimage: demisto/pyjwt3:1.0.0.45830
+  dockerimage: demisto/pyjwt3:1.0.0.63826
   feed: false
   isfetch: true
   longRunning: false
