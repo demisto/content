@@ -639,6 +639,11 @@ script:
     arguments:
     - name: sensor_id
       required: true
+    - name: timeout
+      default: true
+      description: Overrides the XSOAR default of 10s for timeout. Default Analsyt1
+        app is 200s for this command. Caller may further override as required.
+      defaultValue: "200"
     outputs:
     - contextPath: Analyst1.SensorTaskings
       description: 'Root JSON for processing all taskings data. '

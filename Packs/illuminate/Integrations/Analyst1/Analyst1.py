@@ -206,17 +206,22 @@ class Client(BaseClient):
             return {'message': 'Error occurred and returned in return_error()'}
 
     def get_sensors(self, page: int, pageSize: int):
-        raw_data: dict = self._http_request(method='GET', url_suffix='sensors/?page=' + str(page) + '&pageSize=' + str(pageSize))
+        raw_data: dict = self._http_request(method='GET', url_suffix='sensors?page=' + str(page) + '&pageSize=' + str(pageSize))
         return raw_data
 
-    def get_sensor_taskings(self, sensor: str):
-        raw_data: dict = self._http_request(method='GET', url_suffix='sensors/' + sensor + '/taskings')
+    def get_sensor_taskings(self, sensor: str, timeout_input: int):
+        if timeout_input is None:
+            timeout_input = 500
+        raw_data: dict = self._http_request(method='GET', timeout=int(timeout_input),
+                                            url_suffix='sensors/' + sensor + '/taskings')
         return raw_data
 
     def get_sensor_config(self, sensor: str) -> str:
         return self._http_request(method='GET', resp_type='text', url_suffix='sensors/' + sensor + '/taskings/config')
 
     def get_sensor_diff(self, sensor: str, version: str, timeout_input: int):
+        if timeout_input is None:
+            timeout_input = 500
         raw_data: dict = self._http_request(method='GET', timeout=int(timeout_input),
                                             url_suffix='sensors/' + sensor + '/taskings/diff/' + version)
         # if raw_data is not None:
@@ -237,10 +242,10 @@ class Client(BaseClient):
         return EnrichmentOutput(context_data, raw_data, indicator_type)
 
     def get_indicator(self, ioc_id: str):
-        if ioc_id is not None and ioc_id:
+        if ioc_id is not None and ioc_id and type(ioc_id) is str:
             # remove unnwanted suffix for hash ids
             ioc_id = ioc_id.split('-')[0].split('_')[0]
-        return self._http_request(method='GET', url_suffix='indicator/' + ioc_id)
+        return self._http_request(method='GET', url_suffix='indicator/' + str(ioc_id))
 
     @staticmethod
     def get_data_key(data: dict, key: str) -> Optional[Any]:
@@ -446,7 +451,7 @@ def url_command(client: Client, args: dict) -> List[EnrichmentOutput]:
     return enrichment_data_list
 
 
-def analyst1_get_indicator(client: Client, args):
+def analyst1_get_indicator(client: Client, args) -> CommandResults:
     raw_data = client.get_indicator(args.get('indicator_id'))
     if len(raw_data) > 0:
         command_results = CommandResults(
@@ -454,6 +459,8 @@ def analyst1_get_indicator(client: Client, args):
             outputs=raw_data
         )
         return_results(command_results)
+        return command_results
+    return None
 
 
 def analyst1_batch_check_command(client: Client, args):
@@ -466,17 +473,24 @@ def analyst1_batch_check_command(client: Client, args):
             outputs=raw_data['results']
         )
         return_results(command_results)
-    return
+        return command_results
+    return None
 
 
 def analyst1_batch_check_post(client: Client, args: dict):
     values = args.get('values')
     if values is None:
         val_array = args.get('values_array')
-        typeofarg = type(val_array)
-        if typeofarg is str:
-            val_array = '{"values": "' + val_array + '"}'
-        val_array = json.loads(val_array)
+        # process all possible inbound value array combinations
+        if isinstance(val_array, str):
+            # if a string, assume it is a viable string to become an array
+            val_array = '{"values": [' + val_array + ']}'
+            val_array = json.loads(val_array)
+        elif isinstance(val_array, list):
+            # if already an list, accept it
+            val_array = {'values': val_array}
+        # if none of the above assume it is json matching this format
+        # pull values regardless of input form to newline text for acceptable submission
         values = '\n'.join(val_array["values"])
 
     raw_data = client.post_batch_search(values)
@@ -488,7 +502,12 @@ def analyst1_batch_check_post(client: Client, args: dict):
             outputs=raw_data['results']
         )
         return_results(command_results)
-    return
+        output_check: dict = {
+            'command_results': command_results,
+            'submitted_values': values
+        }
+        return output_check
+    return None
 
 
 def analyst1_evidence_submit(client: Client, args: dict):
@@ -501,7 +520,7 @@ def analyst1_evidence_submit(client: Client, args: dict):
         outputs=raw_data
     )
     return_results(command_results)
-    return
+    return command_results
 
 
 def analyst1_evidence_status(client: Client, args: dict):
@@ -510,11 +529,11 @@ def analyst1_evidence_status(client: Client, args: dict):
     if not raw_data or raw_data is None:
         raw_data = {"message": "UUID unknown"}
     elif 'id' in raw_data and raw_data.get('id') is not None and raw_data.get('id'):
-        raw_data["processingComplete"] = "true"
+        raw_data["processingComplete"] = True
     elif 'message' in raw_data and raw_data.get('message') is not None:
-        raw_data["processingComplete"] = "true"
+        raw_data["processingComplete"] = False
     else:
-        raw_data["processingComplete"] = "false"
+        raw_data["processingComplete"] = False
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.EvidenceStatus',
@@ -522,26 +541,28 @@ def analyst1_evidence_status(client: Client, args: dict):
         outputs=raw_data
     )
     return_results(command_results)
-    return
+    return command_results
 
 
-def a1_tasking_array_from_indicators(indicatorsJson: dict) -> dict:
+def a1_tasking_array_from_indicators(indicatorsJson: dict) -> list:
     taskings_list: List[dict] = []
     for ioc in indicatorsJson:
         # each IOC or each HASH gets insertd for outward processing
+        # convert ID to STR to make output consistent
         if ioc.get('type') == 'File' and len(ioc.get('fileHashes')) > 0:
             for (key, value) in ioc.get('fileHashes').items():
                 # hash algorithm is the key, so use it to create output
                 listIoc: dict = {
                     'category': 'indicator',
                     'id': str(ioc.get('id')) + '-' + key,
-                    'type': 'File-' + key, 'value': value
+                    'type': 'File-' + key,
+                    'value': value
                 }
                 taskings_list.append(listIoc)
         else:
             listIoc: dict = {
                 'category': 'indicator',
-                'id': ioc.get('id'),
+                'id': str(ioc.get('id')),
                 'type': ioc.get('type'),
                 'value': ioc.get('value')
             }
@@ -549,16 +570,21 @@ def a1_tasking_array_from_indicators(indicatorsJson: dict) -> dict:
     return taskings_list
 
 
-def a1_tasking_array_from_rules(rulesJson: dict) -> dict:
+def a1_tasking_array_from_rules(rulesJson: dict) -> list:
     taskings_list: List[dict] = []
+    # convert ID to STR to make output consistent
     for rule in rulesJson:
-        listRule = {'category': 'rule', 'id': rule.get('id'), 'signature': rule.get('signature')}
+        listRule = {
+            'category': 'rule',
+            'id': str(rule.get('id')),
+            'signature': rule.get('signature')
+        }
         taskings_list.append(listRule)
     return taskings_list
 
 
 def analyst1_get_sensor_taskings_command(client: Client, args: dict):
-    raw_data = client.get_sensor_taskings(args.get('sensor_id'))
+    raw_data = client.get_sensor_taskings(args.get('sensor_id'), args.get('timeout'))
 
     simplified_data: dict = raw_data
     if 'links' in simplified_data:
@@ -574,12 +600,15 @@ def analyst1_get_sensor_taskings_command(client: Client, args: dict):
         rules_taskings = a1_tasking_array_from_rules(simplified_data['rules'])
         del simplified_data['rules']
 
+    command_results_list: List[CommandResults] = []
+
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings',
         outputs=simplified_data,
         raw_response=raw_data
     )
     return_results(command_results)
+    command_results_list.append(command_results)
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings.Indicators',
@@ -587,6 +616,7 @@ def analyst1_get_sensor_taskings_command(client: Client, args: dict):
         outputs=indicators_taskings
     )
     return_results(command_results)
+    command_results_list.append(command_results)
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings.Rules',
@@ -594,7 +624,9 @@ def analyst1_get_sensor_taskings_command(client: Client, args: dict):
         outputs=rules_taskings
     )
     return_results(command_results)
-    return
+    command_results_list.append(command_results)
+
+    return command_results_list
 
 
 def analyst1_get_sensors_command(client: Client, args: dict):
@@ -606,7 +638,7 @@ def analyst1_get_sensors_command(client: Client, args: dict):
         raw_response=sensor_raw_data
     )
     return_results(command_results)
-    return
+    return command_results
 
 
 def analyst1_get_sensor_diff(client: Client, args: dict):
@@ -637,12 +669,15 @@ def analyst1_get_sensor_diff(client: Client, args: dict):
         rules_removed = a1_tasking_array_from_rules(simplified_data['rulesRemoved'])
         del simplified_data['rulesRemoved']
 
+    command_results_list: List[CommandResults] = []
+
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings',
         outputs=simplified_data,
         raw_response=raw_data
     )
     return_results(command_results)
+    command_results_list.append(command_results)
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings.IndicatorsAdded',
@@ -650,6 +685,7 @@ def analyst1_get_sensor_diff(client: Client, args: dict):
         outputs=indicators_added
     )
     return_results(command_results)
+    command_results_list.append(command_results)
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings.IndicatorsRemoved',
@@ -657,6 +693,7 @@ def analyst1_get_sensor_diff(client: Client, args: dict):
         outputs=indicators_removed
     )
     return_results(command_results)
+    command_results_list.append(command_results)
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings.RulesAdded',
@@ -664,6 +701,7 @@ def analyst1_get_sensor_diff(client: Client, args: dict):
         outputs=rules_added
     )
     return_results(command_results)
+    command_results_list.append(command_results)
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings.RulesRemoved',
@@ -671,7 +709,9 @@ def analyst1_get_sensor_diff(client: Client, args: dict):
         outputs=rules_removed
     )
     return_results(command_results)
-    return
+    command_results_list.append(command_results)
+
+    return command_results_list
 
 
 def analyst1_get_sensor_config_command(client: Client, args):
@@ -685,7 +725,7 @@ def analyst1_get_sensor_config_command(client: Client, args):
         outputs=outputOptions
     )
     return_results(command_results)
-    return
+    return command_results
 
 
 ''' EXECUTION '''
