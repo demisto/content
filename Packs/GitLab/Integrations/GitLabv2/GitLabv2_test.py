@@ -990,7 +990,8 @@ def test_return_date_arg_as_iso(arg, isValidDate, expected_response):
 
 @pytest.mark.parametrize('trigger_token, args, expected_result', [
     ('', {}, util_load_json('test_data/commands_test_data.json').get('trigger_pipeline1')),
-    (1111, {'project_id': 2222, 'ref_branch': 'test'}, util_load_json('test_data/commands_test_data.json').get('trigger_pipeline2'))
+    (1111, {'project_id': 2222, 'ref_branch': 'test'},
+     util_load_json('test_data/commands_test_data.json').get('trigger_pipeline2'))
 ])
 def test_trigger_pipeline(mocker, trigger_token, args, expected_result):
     """
