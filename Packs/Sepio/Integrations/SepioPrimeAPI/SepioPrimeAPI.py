@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 #
 #
 #                 _____            _         _____      _
@@ -26,9 +28,7 @@
 # IMPORTS
 import json
 import dateparser
-import demistomock as demisto
 import requests
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
