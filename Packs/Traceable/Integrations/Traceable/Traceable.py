@@ -553,6 +553,18 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     message: str = ""
     try:
+        end_time = datetime.now()
+        start_time = end_time - timedelta(days=1)
+        query = client.get_threat_events_query(start_time, end_time)
+        demisto.debug("Query is: " + query)
+        result = client.graphql_query(query)
+        if Helper.is_error(result, "data", "explore", "results"):
+            msg = "Error Object: " + json.dumps(result)
+            demisto.error(msg)
+            raise Exception(msg)
+
+        results = result["data"]["explore"]["results"]
+        demisto.info(f"Query successfully completed. Returned {len(results)} records")
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
