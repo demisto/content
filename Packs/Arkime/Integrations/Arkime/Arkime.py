@@ -776,6 +776,7 @@ def sessions_csv_get_command(client: Client,
     length = length_validness(arg_to_number(limit), MAX_LENGTH)
     start = arg_to_number(offset)
 
+
     response = client.sessions_csv_request(date=date,
                                            expression=expression,
                                            start_time=start_time,
