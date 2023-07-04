@@ -1,0 +1,6 @@
+fromversion: 8.2.0
+id: forcepoint_dlp_parsing_rule
+name: Forcepoint DLP Parsing Rules
+rules: ''
+schema: ''
+tags: Forcepoint DLP
