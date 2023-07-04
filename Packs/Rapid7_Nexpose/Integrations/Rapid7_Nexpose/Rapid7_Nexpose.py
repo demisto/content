@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 from copy import deepcopy
@@ -5,8 +7,6 @@ from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import overload
 
-import demistomock as demisto
-from CommonServerPython import *
 
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
