@@ -101,6 +101,14 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- displaypassword: Client Certificate And Private Key (PEM)
+  display: ""
+  name: clientCertAndKey
+  required: false
+  section: Connect
+  type: 9
+  advanced: true
+  hiddenusername: true
 description: Listens to a mailbox and enables incident triggering via e-mail.
 display: Mail Listener v2
 name: Mail Listener v2

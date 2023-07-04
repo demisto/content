@@ -232,7 +232,7 @@ def mock_email():
         return email
 
 
-@pytest.mark.parametrize('src_data, expected', [({1: {b'RFC822': r'C:\User\u'.encode('utf-8')}}, br'C:\User\u'),
+@pytest.mark.parametrize('src_data, expected', [({1: {b'RFC822': br'C:\User\u'}}, br'C:\User\u'),
                                                 ({2: {b'RFC822': br'C:\User\u'}}, br'C:\User\u')])
 def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     """
@@ -272,3 +272,149 @@ def test_get_eml_attachments():
         msg = email.message_from_bytes(f.read())
     res = Email.get_eml_attachments(msg.as_bytes())
     assert res[0]['filename'] == 'Test with an image.eml'
+
+
+@pytest.mark.parametrize('cert_and_key, ok', [
+    # - No certificates and private keys
+    ({
+    },
+        False
+    ),
+    # - cert and key are in the integration instance parameters
+    # - private key is OpenSSL format
+    ({
+        'password': '''
+-----BEGIN CERTIFICATE-----
+MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL
+BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa
+Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr
+gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737
+kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K
+fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G
+A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud
+DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF
+AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM
+Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a
+XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW
+0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo
+5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM
+UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ==
+-----END CERTIFICATE-----
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDCmOdUkhzeHqGnwZSnXyFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4fa
+E/W0C/0vmK+gBwYFK4EEACKhZANiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/
+MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh
+255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y=
+-----END EC PRIVATE KEY-----
+'''
+    },
+        True
+    ),
+    # - cert and key are in the Certificate secion of the Credentials
+    # - private key is OpenSSL format
+    ({
+        'credentials': {
+            'sshkey': '''
+-----BEGIN CERTIFICATE-----
+MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL
+BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa
+Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr
+gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737
+kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K
+fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G
+A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud
+DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF
+AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM
+Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a
+XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW
+0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo
+5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM
+UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ==
+-----END CERTIFICATE-----
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDCmOdUkhzeHqGnwZSnXyFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4fa
+E/W0C/0vmK+gBwYFK4EEACKhZANiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/
+MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh
+255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y=
+-----END EC PRIVATE KEY-----
+'''
+        }
+    },
+        True
+    ),
+    # - cert and key are in the integration instance parameters
+    # - private key is PKCS#8 PEM
+    ({
+        'password': '''
+-----BEGIN CERTIFICATE-----
+MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL
+BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa
+Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr
+gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737
+kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K
+fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G
+A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud
+DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF
+AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM
+Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a
+XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW
+0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo
+5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM
+UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ==
+-----END CERTIFICATE-----
+-----BEGIN PRIVATE KEY-----
+MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCmOdUkhzeHqGnwZSnX
+yFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4faE/W0C/0vmK+hZANiAAQ2iJqs8Ca+
+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcu
+rCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y=
+-----END PRIVATE KEY-----
+'''
+    },
+        True
+    ),
+    # - cert and key are in the Certificate secion of the Credentials
+    # - private key is PKCS#8 PEM
+    ({
+        'credentials': {
+            'sshkey': '''
+-----BEGIN CERTIFICATE-----
+MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL
+BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa
+Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr
+gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737
+kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K
+fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G
+A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud
+DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF
+AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM
+Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a
+XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW
+0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo
+5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM
+UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ==
+-----END CERTIFICATE-----
+-----BEGIN PRIVATE KEY-----
+MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCmOdUkhzeHqGnwZSnX
+yFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4faE/W0C/0vmK+hZANiAAQ2iJqs8Ca+
+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcu
+rCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y=
+-----END PRIVATE KEY-----
+'''
+        }
+    },
+        True
+    )
+])
+def test_load_client_cert_and_key(cert_and_key, ok):
+    from MailListenerV2 import load_client_cert_and_key
+    import ssl
+
+    if password := cert_and_key.get('password'):
+        # new lines are replaced with spaces in the integration instance parameters
+        cert_and_key['password'] = password.replace('\n', ' ').replace('\r', ' ')
+
+    params = {
+        'clientCertAndKey': cert_and_key
+    }
+    ssl_ctx = ssl.create_default_context()
+    assert (load_client_cert_and_key(ssl_ctx, params) == ok)
