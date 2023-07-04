@@ -2727,7 +2727,7 @@ def main():  # pragma: no cover
             get_mapping_fields_command(service, mapper, params)
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
-        get_remote_data_command(service=service, args=args(),
+        get_remote_data_command(service=service, args=args,
                                 close_incident=params.get('close_incident'),
                                 close_end_statuses=params.get('close_end_status_statuses'),
                                 close_extra_labels=argToList(params.get('close_extra_labels', '')),
