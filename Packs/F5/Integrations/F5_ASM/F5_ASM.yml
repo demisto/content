@@ -2633,7 +2633,11 @@ script:
     - contextPath: f5.Policy.md5
       description: The MD5 hash of the policy.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

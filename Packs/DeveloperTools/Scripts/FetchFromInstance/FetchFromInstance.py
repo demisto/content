@@ -1,7 +1,7 @@
-import re
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
+
 
 
 def get_instance_name(args):
