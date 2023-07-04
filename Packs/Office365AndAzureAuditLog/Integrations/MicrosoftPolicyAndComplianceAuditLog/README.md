@@ -1,5 +1,4 @@
 Use the integration to get logs from the O365 service.
-This integration was integrated and tested with version xx of MicrosoftPolicyAndComplianceAuditLog
 
 ## Configure Microsoft Policy And Compliance (Audit Log) on Cortex XSOAR
 
