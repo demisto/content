@@ -23,15 +23,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Panorama Query Logs for Kaseya breach Threat IDs
-* PAN-OS - Block Domain - External Dynamic List
-* Block Indicators - Generic v3
 * Post Intrusion Ransomware Investigation
-* Search Endpoints By Hash - Generic V2
-* QRadar Indicator Hunting V2
-* QRadar Domain Indicators Hunting
 * Splunk Indicator Hunting
+* Block Indicators - Generic v2
 * Palo Alto Networks - Hunting And Threat Detection
+* Search Endpoints By Hash - Generic V2
+* QRadar Domain Indicators Hunting
+* Panorama Query Logs for Kaseya breach Threat IDs
+* QRadar Indicator Hunting V2
 
 ### Integrations
 
@@ -39,23 +38,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* isError
+* ParseHTMLIndicators
 * http
 * SearchIncidentsV2
-* ParseHTMLIndicators
+* isError
 
 ### Commands
 
-* setIndicators
-* qradar-create-reference-set
-* linkIncidents
 * qradar-get-reference-by-name
-* qradar-delete-reference-set
 * splunk-search
+* setIndicators
+* expanse-get-issues
+* linkIncidents
+* qradar-create-reference-set-value
+* qradar-create-reference-set
 * closeInvestigation
 * extractIndicators
-* qradar-create-reference-set-value
-* expanse-get-issues
+* qradar-delete-reference-set
 
 ## Playbook Inputs
 

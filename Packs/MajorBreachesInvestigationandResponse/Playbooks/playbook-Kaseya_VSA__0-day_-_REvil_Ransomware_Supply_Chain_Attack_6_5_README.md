@@ -23,15 +23,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* QRadar Domain Indicators Hunting
-* PAN-OS - Block Domain - External Dynamic List
-* Splunk Indicator Hunting
+* Block Indicators - Generic v3
 * Search Endpoints By Hash - Generic V2
 * Palo Alto Networks - Hunting And Threat Detection
 * Post Intrusion Ransomware Investigation
-* QRadar Indicator Hunting V2
-* Block Indicators - Generic v3
 * Panorama Query Logs for Kaseya breach Threat IDs
+* QRadar Domain Indicators Hunting
+* QRadar Indicator Hunting V2
+* Splunk Indicator Hunting
 
 ### Integrations
 
@@ -39,23 +38,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* isError
+* SearchIncidentsV2
 * http
 * ParseHTMLIndicators
-* SearchIncidentsV2
+* isError
 
 ### Commands
 
-* splunk-search
+* expanse-get-issues
 * closeInvestigation
-* extractIndicators
-* qradar-create-reference-set
 * qradar-delete-reference-set
+* splunk-search
+* linkIncidents
+* qradar-create-reference-set-value
+* qradar-create-reference-set
 * setIndicators
 * qradar-get-reference-by-name
-* expanse-get-issues
-* qradar-create-reference-set-value
-* linkIncidents
+* extractIndicators
 
 ## Playbook Inputs
 
@@ -85,4 +84,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](../doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.png)
+![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](../doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack_6_5.png)

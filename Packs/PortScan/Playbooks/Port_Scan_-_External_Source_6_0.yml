@@ -520,7 +520,7 @@ tasks:
       '#default#':
       - "52"
       "yes":
-      - "51"
+      - "57"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -741,7 +741,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "57":
     id: "57"
     taskid: f57c255a-834b-43cd-8374-16a4e9920a22
