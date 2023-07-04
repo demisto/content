@@ -1,6 +1,7 @@
 import json
 
 import pytest
+import requests_mock
 
 import demistomock as demisto
 from CommonServerPython import CommandResults
@@ -427,3 +428,52 @@ def test_assignee(mocker, args, response_content, expected_result):
     GitHub.github_add_assignee_command()
     mocker_results.assert_called_once()
     assert mocker_results.call_args_list[0].args[0].readable_output == expected_result
+
+
+def test_github_trigger_workflow(mocker):
+    """
+    Given:
+      - A workflow name.
+    When:
+      - Calling the 'github_trigger_workflow_command' function
+    Then:
+      - Ensure workflow triggerd successfully.
+    """
+    GitHub.BASE_URL = 'https://github.com'
+    GitHub.USE_SSL = True
+    GitHub.TOKEN = '123456'
+    mocker.patch.object(demisto, 'args', return_value={'owner': 'demisto', 'repository': 'test', 'workflow': 'nightly.yml'})
+    mocker_results = mocker.patch('GitHub.return_results')
+
+    with requests_mock.Mocker() as m:
+        m.post('https://github.com/repos/demisto/test/actions/workflows/nightly.yml/dispatches', status_code=204)
+        GitHub.github_trigger_workflow_command()
+
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args[0][0].readable_output == 'Workflow triggered successfully.'
+
+
+def test_github_list_workflow(mocker):
+    """
+    Given:
+      - A workflow name.
+    When:
+      - Calling the 'github_list_workflows_command' function
+    Then:
+      - Ensure the correctness of the response.
+    """
+    GitHub.BASE_URL = 'https://github.com'
+    GitHub.USE_SSL = True
+    GitHub.TOKEN = '123456'
+    GitHub.USER = 'demisto'
+    GitHub.REPOSITORY = 'master'
+    mocker.patch.object(demisto, 'args', return_value={'workflow': 'nightly.yml', 'limit': 1})
+    mocker_results = mocker.patch('GitHub.return_results')
+    json_response = load_test_data('test_data/list_workflow.json')
+
+    with requests_mock.Mocker() as m:
+        m.get('/repos/demisto/master/actions/workflows/nightly.yml/runs?per_page=1', json=json_response)
+        GitHub.github_list_workflows_command()
+
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args[0][0].outputs[0]['head_branch'] == 'master'

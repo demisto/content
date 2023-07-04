@@ -2071,7 +2071,7 @@ def github_list_workflows_command():
     owner = args.get('owner') or USER
     repository = args.get('repository') or REPOSITORY
     workflow = args.get('workflow')
-    limit = args.get('limit', 100)
+    limit = int(args.get('limit', 100))
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/runs?per_page={limit}"
     headers = {
