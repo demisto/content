@@ -21,7 +21,6 @@ configuration:
   advanced: true
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
-  hidden: false
   name: proxy
   required: false
   type: 8
@@ -61,7 +60,6 @@ configuration:
 - display: Suppress Rate Limit errors
   additionalinfo: "Whether Rate Limit errors should be supressed or not."
   defaultvalue: "false"
-  hidden: false
   name: rate_limit_errors_suppressed
   required: false
   type: 8
@@ -605,7 +603,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.61823
+  dockerimage: demisto/ippysocks-py3:1.0.0.63627
   feed: false
   isfetch: false
   longRunning: false
@@ -614,7 +612,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultEnabled: false
 tests:
 - whois_test
 fromversion: 5.0.0

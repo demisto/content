@@ -47,7 +47,6 @@ configuration:
 - additionalinfo: How far back in time to go when performing the first fetch.
   defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch
   required: false
   type: 0

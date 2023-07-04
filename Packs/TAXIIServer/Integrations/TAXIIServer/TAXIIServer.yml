@@ -30,7 +30,6 @@ configuration:
   type: 14
   section: Connect
 - display: Username
-  hidden: false
   name: credentials
   required: false
   type: 9
@@ -41,14 +40,12 @@ configuration:
        "AWS": "type:CIDR and sourceBrands:\"AWS Feed\""
     }
   display: Collection JSON
-  hidden: false
   name: collections
   required: true
   type: 12
   section: Collect
 - display: TAXII Service URL Address
   additionalinfo: The URL address to set in the TAXII service response. If not set, the integration will try to auto-detect the URL.
-  hidden: false
   name: service_address
   required: false
   type: 0

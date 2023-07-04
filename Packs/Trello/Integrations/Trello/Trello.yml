@@ -25,21 +25,18 @@ configuration:
   advanced: true
 - additionalinfo: ID of Trello board used both to fetch incidents and as the default for all integration commands.
   display: Default and Fetch Board ID
-  hidden: false
   name: board_id
   required: false
   type: 0
   section: Connect
   advanced: true
 - display: API Key
-  hidden: false
   name: credentials
   required: true
   type: 9
   section: Connect
 - additionalinfo: Optional - If specified, incidents will only be fetched when cards are created in this specific list. Use trello-list-lists command to display IDs of available lists in Board.
   display: List to Fetch Incidents from
-  hidden: false
   name: list_id
   required: false
   type: 0
@@ -430,7 +427,7 @@ script:
     - contextPath: Trello.Cards.Labels.id
       description: Label ID
       type: Unknown
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

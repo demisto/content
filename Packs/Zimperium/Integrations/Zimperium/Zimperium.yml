@@ -10,8 +10,14 @@ configuration:
   type: 0
 - display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -1088,7 +1094,7 @@ script:
     description: Checks the reputation of an app in Zimperium.
     execution: false
     name: file
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

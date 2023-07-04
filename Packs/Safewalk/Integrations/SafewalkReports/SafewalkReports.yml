@@ -66,8 +66,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -101,9 +100,7 @@ configuration:
   display: Bypass exclusion list
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - name: feedTags
   display: Tags
   required: false
@@ -118,8 +115,7 @@ configuration:
   - WHITE
   required: false
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 script:
   commands:
   - name: safewalk-get-associated-users
@@ -330,7 +326,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  ismappable: false
   isFetchSamples: true
 fromversion: 6.0.0
 tests:

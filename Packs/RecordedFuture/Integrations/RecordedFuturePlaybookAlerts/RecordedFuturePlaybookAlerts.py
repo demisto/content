@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Recorded Future Playbook alerts Integration for Demisto."""
 
 import platform
@@ -5,15 +7,13 @@ import json
 import base64
 
 # flake8: noqa: F402,F405 lgtm
-import demistomock as demisto
-from CommonServerPython import *
 
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 # === === === === === === === === === === === === === === ===
