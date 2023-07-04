@@ -45,6 +45,8 @@ jobs:
     - name: Comment the changes
       if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
       uses: KazukiHayase/review-git-diff-action@v1.0.0
+      with:
+        threshold: 100
     - name: Commit and push changes
       if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
       uses: stefanzweifel/git-auto-commit-action@v4
