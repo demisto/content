@@ -7,6 +7,7 @@ import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
 
+
 ''' CONSTANT VARIABLES '''
 
 # The field mapping here will determine how the fields

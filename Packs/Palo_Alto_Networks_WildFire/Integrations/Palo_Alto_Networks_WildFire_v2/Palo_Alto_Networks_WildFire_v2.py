@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
-from typing import Callable, Tuple, Optional, List
+from collections.abc import Callable
 
 
 import tarfile
@@ -287,7 +287,7 @@ def create_dbot_score_from_verdict(pretty_verdict):
     return dbot_score
 
 
-def create_dbot_score_from_url_verdict(pretty_verdict: Dict) -> List:
+def create_dbot_score_from_url_verdict(pretty_verdict: Dict) -> list:
     if pretty_verdict.get('Verdict') not in VERDICTS_TO_DBOTSCORE:
         dbot_score = [
             {'Indicator': pretty_verdict.get('URL'),
@@ -396,7 +396,7 @@ def hash_list_to_file(hash_list):
     return [file_path]
 
 
-def create_relationship(name: str, entities: Tuple, types: Tuple) -> List[Optional[EntityRelationship]]:
+def create_relationship(name: str, entities: tuple, types: tuple) -> list[EntityRelationship | None]:
 
     if CREATE_RELATIONSHIPS:
         return [EntityRelationship(
@@ -622,10 +622,7 @@ def get_results_function_args(outputs, uploaded_item, args):
 
     """
     results_function_args = {}
-    if uploaded_item == 'FILE':
-        identifier = {'md5': outputs.get('MD5')}
-    else:
-        identifier = {'url': outputs.get('URL')}
+    identifier = {'md5': outputs.get('MD5')} if uploaded_item == 'FILE' else {'url': outputs.get('URL')}
     results_function_args.update(identifier)
 
     results_function_args.update({key: value for key, value in args.items() if key in ['verbose', 'format']})
@@ -697,7 +694,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
 
 
 @logger
-def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None) -> Tuple[dict, dict]:
+def wildfire_get_verdict(file_hash: str | None = None, url: str | None = None) -> tuple[dict, dict]:
     get_verdict_uri = URL + URL_DICT["verdict"]
 
     if file_hash:
@@ -914,7 +911,7 @@ def wildfire_get_url_webartifacts_command():
             return_results('WildFire Webartifacts were not found.')
 
 
-def parse_wildfire_object(report: dict, keys: List[tuple]) -> Union[dict, None]:
+def parse_wildfire_object(report: dict, keys: list[tuple]) -> Union[dict, None]:
     '''
     This function changes the key names of the json object that came from the API response,
     for the context path.
@@ -969,12 +966,11 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                             create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in udp_obj:
                         udp_port.append(udp_obj["@port"])
-                    if extended_data:
-                        if network_udp_dict := parse_wildfire_object(report=udp_obj,
-                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
-                                                                           ('@ja3s', 'JA3S')]):
-                            network_udp.append(network_udp_dict)
+                    if extended_data and (network_udp_dict := parse_wildfire_object(report=udp_obj,
+                                                                                    keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                                                          ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                                                          ('@ja3s', 'JA3S')])):
+                        network_udp.append(network_udp_dict)
 
             if 'TCP' in report["network"]:
                 tcp_objects = report["network"]["TCP"]
@@ -988,12 +984,11 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                             create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in tcp_obj:
                         tcp_port.append(tcp_obj['@port'])
-                    if extended_data:
-                        if network_tcp_dict := parse_wildfire_object(report=tcp_obj,
-                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
-                                                                           ('@ja3s', 'JA3S')]):
-                            network_tcp.append(network_tcp_dict)
+                    if extended_data and (network_tcp_dict := parse_wildfire_object(report=tcp_obj,
+                                                                                    keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                                                          ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                                                          ('@ja3s', 'JA3S')])):
+                        network_tcp.append(network_tcp_dict)
 
             if 'dns' in report["network"]:
                 dns_objects = report["network"]["dns"]
@@ -1004,12 +999,11 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         dns_query.append(dns_obj['@query'])
                     if '@response' in dns_obj and dns_obj['@response']:
                         dns_response.append(dns_obj['@response'])
-                    if extended_data:
-                        if network_dns_dict := parse_wildfire_object(report=dns_obj,
-                                                                     keys=[('@query', 'Query'),
-                                                                           ('@response', 'Response'),
-                                                                           ('@type', 'Type')]):
-                            network_dns.append(network_dns_dict)
+                    if extended_data and (network_dns_dict := parse_wildfire_object(report=dns_obj,
+                                                                                    keys=[('@query', 'Query'),
+                                                                                          ('@response', 'Response'),
+                                                                                          ('@type', 'Type')])):
+                        network_dns.append(network_dns_dict)
 
             if 'url' in report["network"]:
                 url_objects = report['network']['url']
@@ -1025,20 +1019,18 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
                         relationships.extend(
                             create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
-                    if extended_data:
-                        if network_url_dict := parse_wildfire_object(report=url_obj,
-                                                                     keys=[('@host', 'Host'), ('@uri', 'URI'),
-                                                                           ('@method', 'Method'),
-                                                                           ('@user_agent', 'UserAgent')]):
-                            network_url.append(network_url_dict)
+                    if extended_data and (network_url_dict := parse_wildfire_object(report=url_obj,
+                                                                                    keys=[('@host', 'Host'), ('@uri', 'URI'),
+                                                                                          ('@method', 'Method'),
+                                                                                          ('@user_agent', 'UserAgent')])):
+                        network_url.append(network_url_dict)
 
-        if 'evidence' in report and report["evidence"]:
-            if 'file' in report["evidence"]:
-                if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
-                    if '@md5' in report["evidence"]["file"]["entry"]:
-                        evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
-                    if '@text' in report["evidence"]["file"]["entry"]:
-                        evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
+        if 'evidence' in report and report["evidence"] and 'file' in report["evidence"]:
+            if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
+                if '@md5' in report["evidence"]["file"]["entry"]:
+                    evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
+                if '@text' in report["evidence"]["file"]["entry"]:
+                    evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
 
         if 'elf_info' in report and report["elf_info"]:
             if 'Domains' in report["elf_info"]:
@@ -1050,16 +1042,15 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     for domain in entry:
                         feed_related_indicators.append({'value': domain, 'type': 'Domain'})
                         relationships.extend(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
-            if 'IP_Addresses' in report["elf_info"]:
-                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
-                        report["elf_info"]["IP_Addresses"]:
-                    entry = report["elf_info"]["IP_Addresses"]["entry"]
-                    # when there is only one entry, it is returned as a single string not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for ip in entry:
-                        feed_related_indicators.append({'value': ip, 'type': 'IP'})
-                        relationships.extend(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
+            if 'IP_Addresses' in report["elf_info"] and isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
+                    report["elf_info"]["IP_Addresses"]:
+                entry = report["elf_info"]["IP_Addresses"]["entry"]
+                # when there is only one entry, it is returned as a single string not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for ip in entry:
+                    feed_related_indicators.append({'value': ip, 'type': 'IP'})
+                    relationships.extend(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
             if 'suspicious' in report["elf_info"]:
                 if isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in report["elf_info"]['suspicious']:
                     entry = report["elf_info"]["suspicious"]["entry"]
@@ -1078,9 +1069,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     for url in entry:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
                         relationships.extend(create_relationship('related-to', (file_hash, url), ('file', 'url')))
-            if extended_data:
-                if shell_commands := demisto.get(report, 'elf_info.Shell_Commands.entry'):
-                    elf_shell_commands.append(shell_commands)
+            if extended_data and (shell_commands := demisto.get(report, 'elf_info.Shell_Commands.entry')):
+                elf_shell_commands.append(shell_commands)
 
         if extended_data:
             if process_list := demisto.get(report, 'process_list.process'):
@@ -1335,7 +1325,7 @@ def get_sha256_of_file_from_report(report):
 
 
 @logger
-def wildfire_get_url_report(url: str) -> Tuple:
+def wildfire_get_url_report(url: str) -> tuple:
     """
     This functions is used for retrieving the results of a previously uploaded url.
     Args:
@@ -1500,6 +1490,7 @@ def wildfire_file_command(args: dict):
             command_results = wildfire_get_file_report(element, args)[0]
             command_results_list.append(command_results)
             return command_results
+    return None
 
 
 def wildfire_get_sample(file_hash):
@@ -1518,10 +1509,7 @@ def wildfire_get_sample(file_hash):
 
 
 def wildfire_get_sample_command():
-    if 'sha256' in demisto.args() or 'hash' in demisto.args():
-        sha256 = demisto.args().get('sha256', None)
-    else:
-        sha256 = None
+    sha256 = demisto.args().get('sha256', None) if 'sha256' in demisto.args() or 'hash' in demisto.args() else None
     md5 = demisto.args().get('md5', None)
     inputs = hash_args_handler(sha256, md5)
 

@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
 
-
-from typing import List, Dict, Set, Optional
 import json
 import urllib3
 from stix2 import TAXIICollectionSource, Filter
@@ -72,15 +70,15 @@ urllib3.disable_warnings()
 class Client:
 
     def __init__(self, url, proxies, verify, tags: list = None,
-                 tlp_color: Optional[str] = None):
+                 tlp_color: str | None = None):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        self.tags = [] if not tags else tags
+        self.tags = tags if tags else []
         self.tlp_color = tlp_color
         self.server: Server
-        self.api_root: List[ApiRoot]
-        self.collections: List[Collection]
+        self.api_root: list[ApiRoot]
+        self.collections: list[Collection]
 
     def get_server(self):
         server_url = urljoin(self.base_url, '/taxii/')
@@ -90,7 +88,7 @@ class Client:
         self.api_root = self.server.api_roots[0]
 
     def get_collections(self):
-        self.collections = [x for x in self.api_root.collections]  # type: ignore[attr-defined]
+        self.collections = list(self.api_root.collections)  # type: ignore[attr-defined]
 
     def initialise(self):
         self.get_server()
@@ -123,11 +121,11 @@ class Client:
         Returns:
             A list of objects, containing the indicators.
         """
-        indicators: List[Dict] = list()
-        mitre_id_list: Set[str] = set()
+        indicators: list[dict] = []
+        mitre_id_list: set[str] = set()
         mitre_relationships_list = []
-        id_to_name: Dict = {}
-        mitre_id_to_mitre_name: Dict = {}
+        id_to_name: dict = {}
+        mitre_id_to_mitre_name: dict = {}
         counter = 0
 
         # For each collection
@@ -234,7 +232,7 @@ def get_item_type(mitre_type, is_up_to_6_2):
 
 
 def is_indicator_deprecated_or_revoked(indicator_json):
-    return True if indicator_json.get("x_mitre_deprecated") or indicator_json.get("revoked") else False
+    return bool(indicator_json.get("x_mitre_deprecated") or indicator_json.get("revoked"))
 
 
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
@@ -462,7 +460,7 @@ def fetch_indicators(client, create_relationships):
 
 def get_indicators_command(client, args):
     limit = int(args.get('limit', 10))
-    raw = True if args.get('raw') == "True" else False
+    raw = args.get("raw") == "True"
 
     indicators = client.build_iterator(limit=limit)
 
@@ -486,7 +484,7 @@ def get_indicators_command(client, args):
 
 
 def show_feeds_command(client):
-    feeds = list()
+    feeds = []
     for collection in client.collections:
         feeds.append({"Name": collection.title, "ID": collection.id})
     md = tableToMarkdown('MITRE ATT&CK Feeds:', feeds, ['Name', 'ID'])
@@ -540,7 +538,7 @@ def build_command_result(value, score, md, attack_obj):
 
 
 def attack_pattern_reputation_command(client, args):
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     filter_by_type = [Filter('type', '=', 'attack-pattern')]
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
@@ -622,11 +620,7 @@ def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_obj
         True if the external_id matches the attack_id, else False
     """
     external_references_list = attack_pattern_object.get('external_references', [])
-    for external_reference in external_references_list:
-        if external_reference.get('external_id', '') == attack_id:
-            return True
-
-    return False
+    return any(external_reference.get("external_id", "") == attack_id for external_reference in external_references_list)
 
 
 def get_mitre_value_from_id(client, args):

@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=tuple(), headers: dict = None,
+    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=(), headers: dict = None,
                  token: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
@@ -22,9 +22,8 @@ class Client(BaseClient):
         """
         # This block is a patch - need to remove it once the server side fix of the following issue is merged:
         # https://jira-hq.paloaltonetworks.local/browse/CRTX-77146
-        if version := get_demisto_version().get('version'):
-            if version == '8.1.0':
-                return 'xsoartim'
+        if (version := get_demisto_version().get('version')) and version == '8.1.0':
+            return 'xsoartim'
 
         platform = get_demisto_version().get('platform')
         return 'xdr' if platform == 'x2' else 'xsoartim'

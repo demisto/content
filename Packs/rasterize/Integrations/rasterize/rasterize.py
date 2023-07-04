@@ -11,7 +11,7 @@ import traceback
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 import numpy as np
 from pdf2image import convert_from_path
@@ -22,6 +22,7 @@ from pyvirtualdisplay import Display
 from selenium.common.exceptions import (InvalidArgumentException,
                                         NoSuchElementException,
                                         TimeoutException)
+
 
 # Chrome respects proxy env params
 handle_proxy()
@@ -77,7 +78,7 @@ class RasterizeType(Enum):
     JSON = 'json'
 
 
-def check_width_and_height(width: int, height: int) -> Tuple[int, int]:
+def check_width_and_height(width: int, height: int) -> tuple[int, int]:
     """
     Verifies that the width and height are not greater than the safeguard limit.
     Args:
@@ -110,7 +111,7 @@ def merge_options(default_options, user_options):
     Returns:
         list -- merged options
     """
-    user_options = re.split(r'(?<!\\),', user_options) if user_options else list()
+    user_options = re.split(r'(?<!\\),', user_options) if user_options else []
     if not user_options:  # nothing to do
         return default_options.copy()
     demisto.debug(f'user chrome options: {user_options}')
@@ -264,7 +265,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     """
     demisto.debug(f'Rasterizing using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
-    rasterize_funcs: Tuple[Callable, ...] = ()
+    rasterize_funcs: tuple[Callable, ...] = ()
     if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
         rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
     elif r_mode == RasterizeMode.WEBDRIVER_ONLY:
@@ -734,7 +735,7 @@ def main():  # pragma: no cover
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
     finally:
         if is_debug_mode():
-            with open(DRIVER_LOG, 'r') as log:
+            with open(DRIVER_LOG) as log:
                 demisto.debug('Driver log:' + log.read())
 
 

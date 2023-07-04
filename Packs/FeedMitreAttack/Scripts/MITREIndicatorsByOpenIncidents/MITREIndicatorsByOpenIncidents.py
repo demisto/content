@@ -3,6 +3,7 @@ from CommonServerPython import *
 import traceback
 
 
+
 def main():
     try:
         from_date = demisto.args().get('from', '')

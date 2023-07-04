@@ -50,17 +50,17 @@ def main():
                     section = tableToMarkdown(queriedCVE, findings[queriedCVE], headerTransform=string_to_table_header)
                 else:
                     section = '### %s\n' % queriedCVE
-                    rows = [','.join([entry[fieldName] for fieldName in entry.keys()]) for entry in findings[queriedCVE]]
+                    rows = [','.join([entry[fieldName] for fieldName in entry]) for entry in findings[queriedCVE]]
                     section += '\n'.join(rows)
                 res += section
             else:
-                res += '### %s\nNo coverage for %s' % (queriedCVE, queriedCVE)
+                res += f'### {queriedCVE}\nNo coverage for {queriedCVE}'
             res += '\n'
         res += '\n\n'
 
         # create the context outputs
         outputs = []
-        for queried_CVE in findings.keys():
+        for queried_CVE in findings:
             outputs.append({'CVE': queried_CVE,
                             'Coverage': findings[queried_CVE]})
     except Exception as e:

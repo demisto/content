@@ -2,18 +2,16 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any
+from typing import Any
 
 ''' STANDALONE FUNCTION '''
 
 
 def fix_nested_dicts(rules):
     for key, value in rules.items():
-        if isinstance(value, dict):
-            if members := value.get('member'):
-                if isinstance(members, list):
-                    new_members = ','.join(members)
-                    rules[key] = new_members
+        if isinstance(value, dict) and (members := value.get('member')) and isinstance(members, list):
+            new_members = ','.join(members)
+            rules[key] = new_members
 
 
 def create_script_output(result):
@@ -78,7 +76,7 @@ def wrapper_panorama_security_policy_match(destinations: list, sources: list, de
     return results
 
 
-def wrapper_command(args: Dict[str, Any]):
+def wrapper_command(args: dict[str, Any]):
     destinations = argToList(args.get('destination'))
     sources = argToList(args.get('source'))
     destination_ports = argToList(args.get('destination_port'))

@@ -7,11 +7,8 @@ import json
 import requests
 import socket
 import traceback
-import urllib3
-from typing import Callable, Tuple
+from collections.abc import Callable
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
@@ -517,7 +514,7 @@ def validate_if_line_needed(category, info_line):
         risk_index = category_indexes.get('risk')  # type: ignore
         risk = line_values[risk_index].strip()
         # only lines with risk higher the informational are considered
-        return not risk == 'informational'
+        return risk != 'informational'
     elif category == 'registry':
         action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
@@ -670,7 +667,7 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
             }
         ]
     }
-    tag_scopes = list()
+    tag_scopes = []
     if private:
         tag_scopes.append('private')
     if public:
@@ -802,7 +799,7 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     result_object_filtered = {}
     if af_params_dict and isinstance(result_object, dict) and isinstance(af_params_dict, dict):
-        for key in result_object.keys():
+        for key in result_object:
             if key in af_params_dict.values():  # type: ignore
                 result_object_filtered[key] = result_object.get(key)
     return result_object_filtered
@@ -1175,7 +1172,6 @@ def test_module():
     }
 
     do_search('samples', query=query, scope='Public', err_operation='Test module failed')
-    return
 
 
 def search_samples_command(args):
@@ -1332,7 +1328,7 @@ def sample_analysis_command():
     args = demisto.args()
     sample_id = args.get('sample_id')
     os = args.get('os')
-    filter_data = False if args.get('filter_data') == 'False' else True
+    filter_data = args.get('filter_data') != 'False'
     analysis = sample_analysis(sample_id, os, filter_data)
     context = createContext(analysis, keyTransform=string_to_context_key)
     demisto.results({
@@ -1378,7 +1374,7 @@ def top_tags_search_command(args):
     )
 
 
-def top_tags_results_command(args) -> Tuple[CommandResults, str]:
+def top_tags_results_command(args) -> tuple[CommandResults, str]:
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)

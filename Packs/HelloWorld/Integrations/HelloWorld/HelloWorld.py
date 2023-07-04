@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """HelloWorld Integration for Cortex XSOAR (aka Demisto)
 
 This integration is a good example on you can build a Cortex XSOAR Integration
@@ -247,7 +248,7 @@ from CommonServerUserPython import *
 import json
 import urllib3
 import dateparser
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -272,7 +273,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
+    def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Gets the IP reputation using the '/ip' API endpoint
 
         Args:
@@ -290,7 +291,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_domain_reputation(self, domain: str) -> Dict[str, Any]:
+    def get_domain_reputation(self, domain: str) -> dict[str, Any]:
         """
         Gets the Domain reputation using the '/domain' API endpoint.
 
@@ -309,9 +310,9 @@ class Client(BaseClient):
             }
         )
 
-    def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-                      alert_type: Optional[str], max_results: Optional[int],
-                      start_time: Optional[int]) -> List[Dict[str, Any]]:
+    def search_alerts(self, alert_status: str | None, severity: str | None,
+                      alert_type: str | None, max_results: int | None,
+                      start_time: int | None) -> list[dict[str, Any]]:
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -328,7 +329,7 @@ class Client(BaseClient):
             list: list of HelloWorld alerts as dicts.
         """
 
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if alert_status:
             request_params['alert_status'] = alert_status
@@ -351,7 +352,7 @@ class Client(BaseClient):
             params=request_params
         )
 
-    def get_alert(self, alert_id: str) -> Dict[str, Any]:
+    def get_alert(self, alert_id: str) -> dict[str, Any]:
         """
         Gets a specific HelloWorld alert by id.
 
@@ -370,7 +371,7 @@ class Client(BaseClient):
             }
         )
 
-    def update_alert_status(self, alert_id: str, alert_status: str) -> Dict[str, Any]:
+    def update_alert_status(self, alert_id: str, alert_status: str) -> dict[str, Any]:
         """
         Changes the status of a specific HelloWorld alert.
 
@@ -391,7 +392,7 @@ class Client(BaseClient):
             }
         )
 
-    def scan_start(self, hostname: str) -> Dict[str, Any]:
+    def scan_start(self, hostname: str) -> dict[str, Any]:
         """
         Starts a HelloWorld scan on a specific hostname.
 
@@ -410,7 +411,7 @@ class Client(BaseClient):
             }
         )
 
-    def scan_status(self, scan_id: str) -> Dict[str, Any]:
+    def scan_status(self, scan_id: str) -> dict[str, Any]:
         """
         Gets the status of a HelloWorld scan.
 
@@ -429,7 +430,7 @@ class Client(BaseClient):
             }
         )
 
-    def scan_results(self, scan_id: str) -> Dict[str, Any]:
+    def scan_results(self, scan_id: str) -> dict[str, Any]:
         """Gets the results of a HelloWorld scan
 
         Args:
@@ -464,7 +465,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
+def parse_domain_date(domain_date: list[str] | str, date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> str | None:
     """
     Converts whois date format to an ISO8601 string.
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
@@ -521,7 +522,7 @@ def convert_to_demisto_severity(severity: str) -> int:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -574,7 +575,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     helloworld-say-hello command: Returns Hello {somename}
 
@@ -619,10 +620,10 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], alert_status: Optional[str],
-                    min_severity: str, alert_type: Optional[str]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int],
+                    first_fetch_time: int | None, alert_status: str | None,
+                    min_severity: str, alert_type: str | None
+                    ) -> tuple[dict[str, int], list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
@@ -661,7 +662,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # Get the CSV list of severities from min_severity
     severity = ','.join(HELLOWORLD_SEVERITIES[HELLOWORLD_SEVERITIES.index(min_severity):])
@@ -681,9 +682,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         incident_created_time_ms = incident_created_time * 1000
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
+        if last_fetch and incident_created_time <= last_fetch:
+            continue
 
         # If no name is present it will throw an exception
         incident_name = alert['name']
@@ -730,8 +730,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
-                          reliability: DBotScoreReliability) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict[str, Any], default_threshold: int,
+                          reliability: DBotScoreReliability) -> list[CommandResults]:
     """
     ip command: Returns IP reputation for a list of IPs
 
@@ -767,7 +767,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     # Initialize an empty list of CommandResults to return
     # each CommandResult will contain context standard for IP
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for ip in ips:
         if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
@@ -871,8 +871,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
-                              reliability: DBotScoreReliability) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: dict[str, Any], default_threshold: int,
+                              reliability: DBotScoreReliability) -> list[CommandResults]:
     """
     domain command: Returns domain reputation for a list of domains.
 
@@ -904,7 +904,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
 
     # Initialize an empty list of CommandResults to return,
     # each CommandResult will contain context standard for Domain
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for domain in domains:
         domain_data = client.get_domain_reputation(domain)
@@ -989,7 +989,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     return command_results
 
 
-def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     helloworld-search-alerts command: Search alerts in HelloWorld
 
@@ -1009,7 +1009,7 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
     status = args.get('status')
 
     # Check if severity contains allowed values, use all if default
-    severities: List[str] = HELLOWORLD_SEVERITIES
+    severities: list[str] = HELLOWORLD_SEVERITIES
     severity = args.get('severity', None)
     if severity:
         severities = severity.split(',')
@@ -1061,7 +1061,7 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     helloworld-get-alert command: Returns a HelloWorld alert.
 
@@ -1099,7 +1099,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def update_alert_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_alert_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     helloworld-update-alert-status command: Changes the status of an alert.
     Changes the status of a HelloWorld alert and returns the updated alert info
@@ -1145,7 +1145,7 @@ def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def scan_start_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     helloworld-start-scan command: Starts a HelloWorld scan.
 
@@ -1185,7 +1185,7 @@ def scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def scan_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     helloworld-scan-status command: Returns status for HelloWorld scans.
 
@@ -1203,7 +1203,7 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(scan_id_list) == 0:
         raise ValueError('scan_id(s) not specified')
 
-    scan_list: List[Dict[str, Any]] = []
+    scan_list: list[dict[str, Any]] = []
     for scan_id in scan_id_list:
         scan = client.scan_status(scan_id=scan_id)
         scan_list.append(scan)
@@ -1218,8 +1218,8 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def scan_results_command(client: Client, args: Dict[str, Any]) ->\
-        Union[Dict[str, Any], CommandResults, List[CommandResults]]:
+def scan_results_command(client: Client, args: dict[str, Any]) ->\
+        dict[str, Any] | CommandResults | list[CommandResults]:
     """
     helloworld-scan-results command: Returns results for a HelloWorld scan.
 
@@ -1264,11 +1264,11 @@ def scan_results_command(client: Client, args: Dict[str, Any]) ->\
         # This scan returns CVE information. CVE is also part of the XSOAR
         # context standard, so we must extract CVE IDs and return them also.
         # See: https://xsoar.pan.dev/docs/integrations/context-standards#cve
-        cves: List[Common.CVE] = []
-        command_results: List[CommandResults] = []
+        cves: list[Common.CVE] = []
+        command_results: list[CommandResults] = []
         entities = results.get('entities', [])
         for e in entities:
-            if 'vulns' in e.keys() and isinstance(e['vulns'], list):
+            if 'vulns' in e and isinstance(e['vulns'], list):
                 cves.extend(
                     [Common.CVE(id=c, cvss=None, published=None, modified=None, description=None) for c in e['vulns']])
 
