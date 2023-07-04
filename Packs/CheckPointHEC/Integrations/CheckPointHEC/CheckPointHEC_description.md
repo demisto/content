@@ -8,5 +8,5 @@ To set up a CheckPointHEC instance, please provide the SMART API url based on yo
 
 If you have several portals in different regions, you will need to use an instance per region
 
-* Contact support to get your client id and client secret at https://www.avanan.com/support
+* Contact support to get your client id and client secret at [support page](https://supportcenter.checkpoint.com/)
 * Keep your credentials secret since they give access to your data in Check Point Systems 

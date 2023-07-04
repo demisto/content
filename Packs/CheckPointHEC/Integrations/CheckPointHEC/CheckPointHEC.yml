@@ -14,7 +14,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- section: Connect
+- section: Collect
   display: Incident type
   name: incidentType
   type: 13
