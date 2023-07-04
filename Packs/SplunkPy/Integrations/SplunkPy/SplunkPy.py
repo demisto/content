@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 import io
 import json
@@ -5,14 +7,12 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto
 import pytz
 import requests
 from splunklib import client
 from splunklib import results
 from splunklib.data import Record
 import urllib3
-from CommonServerPython import *  # noqa: F401
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 urllib3.disable_warnings()
