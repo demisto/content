@@ -2325,10 +2325,10 @@ def splunk_job_status(service: client.Service, args: dict) -> CommandResults | N
     try:
         job = service.job(sid)
     except HTTPError as error:
-        if error.message == 'HTTP 404 Not Found -- Unknown sid.':  # pylint: disable=no-member
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':
             demisto.results(f"Not found job for SID: {sid}")
         else:
-            return_error(error.message, error)  # pylint: disable=no-member
+            return_error(error.message, error)
         return None
     else:
         status = job.state.content.get('dispatchState')
@@ -2423,8 +2423,7 @@ def kv_store_collection_create(service: client.Service, args: dict) -> CommandRe
     )
 
 
-def kv_store_collection_config(service: client.Service) -> None:
-    args = demisto.args()
+def kv_store_collection_config(service: client.Service, args: dict) -> CommandResults:
     app = service.namespace['app']
     kv_store_collection_name = args['kv_store_collection_name']
     kv_store_fields = args['kv_store_fields'].split(',')
@@ -2438,7 +2437,9 @@ def kv_store_collection_config(service: client.Service) -> None:
                 service.kvstore[kv_store_collection_name].update_index(_key.replace('index.', ''), val)
             else:
                 service.kvstore[kv_store_collection_name].update_field(_key.replace('field.', ''), val)
-    return_outputs(f"KV store collection {app} configured successfully", {}, {})
+    return CommandResults(
+        readable_output=f"KV store collection {app} configured successfully"
+    )
 
 
 def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict:
@@ -2705,7 +2706,7 @@ def main():  # pragma: no cover
         if command == 'splunk-kv-store-collection-create':
             return_results(kv_store_collection_create(service, args))
         elif command == 'splunk-kv-store-collection-config':
-            kv_store_collection_config(service)
+            return_results(kv_store_collection_config(service, args))
         elif command == 'splunk-kv-store-collection-delete':
             kv_store_collection_delete(service)
         elif command == 'splunk-kv-store-collections-list':
