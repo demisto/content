@@ -3,6 +3,6 @@
   "profile_type": "WINLOGBEAT",
   "name": "MicrosoftADFS",
   "content_global_id": "MicrosoftADFS",
-  "toversion": "3.4.0",
+  "from_xdr_version": "8.5.0",
   "yaml_template": ""
 }
