@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 from typing import Any, Generator, List, Optional, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 def convert_pcap(pcap_type: str, pcap_bytes: bytes) -> Optional[bytes]:

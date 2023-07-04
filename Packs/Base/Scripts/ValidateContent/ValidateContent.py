@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import io
 import json
 import traceback
@@ -25,8 +27,6 @@ from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
 
-import demistomock as demisto
-from CommonServerPython import *
 
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML()

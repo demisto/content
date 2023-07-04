@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 from typing import Dict, List, Optional, Union
 
 import dateparser
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
 
 import urllib3
 

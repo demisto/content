@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import functools
 import uuid
 import json
@@ -8,8 +10,6 @@ from secrets import compare_digest
 from dateutil.parser import parse
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
-import demistomock as demisto
-from CommonServerPython import *
 
 ''' GLOBAL VARIABLES '''
 HTTP_200_OK = 200

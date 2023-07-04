@@ -1,5 +1,5 @@
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from SiemApiModule import *  # noqa: E402
 import urllib3
 import json

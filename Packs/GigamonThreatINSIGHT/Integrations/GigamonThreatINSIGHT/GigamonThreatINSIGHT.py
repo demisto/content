@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """    Gigamon ThreatINSIGHT Integration for Cortex XSOAR (aka Demisto)
 
        This integration allows fetching detections, entities, events and
@@ -5,8 +7,6 @@
        some management operations like creating scheduled pcap tasks,
        updating detection rules and resolving detections.
 """
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json

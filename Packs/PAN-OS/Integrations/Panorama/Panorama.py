@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
@@ -5,8 +7,6 @@ from functools import partial
 import enum
 import html
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 import panos.errors
 

@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from dateparser import parse
 
-import demistomock as demisto
-from CommonServerPython import *
 
 
 def get_open_to_do_tasks_of_current_user() -> List[Dict]:
