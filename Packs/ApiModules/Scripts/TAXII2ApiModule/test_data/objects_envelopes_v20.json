@@ -178,10 +178,6 @@
         "created": "2022-08-04T18:25:46.215Z",
         "description": "Also known as Bokbot, IcedID is an information stealer and backdoor that first appeared as a banking Trojan in 2017 [1]. Since then, it has evolved. The criminal group behind IcedID also acts as an initial access broker for other criminal groups.\n\nIn an Active Directory (AD) environment, IcedID infections lead to network mapping, with criminals using tools like ADfind.exe, an AD enumeration utility [2]. Criminals use access from IcedID to collect information about AD users, systems, organizational units, subnets, groups, and trust objects.\n\nIn recent years, IcedID routinely has routinely led to Cobalt Strike and lateral movement within a targeted AD network. Cobalt strike is a known precursor to ransomware like Conti [3].\n\nIcedID is distributed through different campaigns run by different threat actors, but the end result is the same. Regardless of the distribution channel, IcedID causes remote access, data exfiltration, and follow-up activity like Cobalt Strike and ransomware.\n\n[1] https://securityintelligence.com/new-banking-trojan-icedid-discovered-by-ibm-x-force-research/\n[2] https://thedfirreport.com/2021/06/20/from-word-to-lateral-movement-in-1-hour/\n[3] https://thedfirreport.com/2022/04/04/stolen-images-campaign-ends-in-conti-ransomware/",
         "id": "report--959e0017-c770-4387-b9d8-fb310ae0f251",
-        "labels": [
-            "atom-playbook",
-            "intrusion-set"
-        ],
         "modified": "2022-08-10T18:45:13.212Z",
         "name": "IcedID Malware",
         "object_refs": [
