@@ -12,6 +12,15 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  defaultvalue: OpenSearch
+  display: Client type
+  name: client_type
+  options:
+  - ElasticSearch
+  - OpenSearch
+  required: false
+  type: 15
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -163,7 +172,7 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.45904
+  dockerimage: demisto/py3-tools:1.0.0.64131
   feed: true
   isfetch: false
   longRunning: false
@@ -173,3 +182,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

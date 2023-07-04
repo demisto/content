@@ -657,7 +657,7 @@ script:
     description: Revoke access request for a single object(access profile or role) for a single user.
     execution: false
     name: identitynow-request-revoke
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
