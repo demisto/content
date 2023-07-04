@@ -6,8 +6,7 @@ import json
 import time
 import traceback
 from datetime import datetime, timezone
-from typing import Any, cast
-from collections.abc import Mapping
+from typing import Any, Dict, List, Mapping, Optional, Tuple, cast
 
 import dateparser
 import urllib3
@@ -53,7 +52,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get(self, query_uri: str, params: dict[str, str] = None):
+    def get(self, query_uri: str, params: Dict[str, str] = None):
         """Handles Darktrace GET API calls"""
         return self._darktrace_api_call(query_uri, method='GET', params=params)
 
@@ -68,7 +67,7 @@ class Client(BaseClient):
         params: dict = None,
         data: dict = None,
         json: dict = None,
-        headers: dict[str, str] = None,
+        headers: Dict[str, str] = None,
     ):
         """Handles Darktrace API calls"""
         headers = {
@@ -118,14 +117,14 @@ class Client(BaseClient):
         elif res.status_code >= 300:
             raise Exception(DARKTRACE_API_ERRORS['UNDETERMINED_ERROR'])
 
-    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
+    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> Dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
         date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {'DTAPI-Token': public_token, 'DTAPI-Date': date, 'DTAPI-Signature': signature}
 
-    def get_model_breach(self, pbid: str) -> dict[str, Any]:
+    def get_model_breach(self, pbid: str) -> Dict[str, Any]:
         """Searches for a single Darktrace model breach alerts using '/modelbreaches?pbid=<pbid>'
         :type pbid: ``str``
         :param pbid: Model breach ID of the model breach to get
@@ -136,7 +135,7 @@ class Client(BaseClient):
         params = {'pbid': pbid, 'deviceattop': 'true'}
         return self.get(query_uri, params)
 
-    def get_model_breach_connections(self, pbid: str, endtime: str, count: str, offset: str) -> list[dict[str, Any]]:
+    def get_model_breach_connections(self, pbid: str, endtime: str, count: str, offset: str) -> List[Dict[str, Any]]:
         """Searches for a single Darktrace model breach connections using '/details' endpoint
         :type pbid: ``str``
         :param pbid: Model breach ID of the model breach to get
@@ -160,7 +159,7 @@ class Client(BaseClient):
         }
         return self.get(query_uri, params)
 
-    def get_model(self, uuid: str) -> dict[str, Any]:
+    def get_model(self, uuid: str) -> Dict[str, Any]:
         """Pulls a model configuration from /models endpoint
         :type uuid: ``str``
         :param uuid: Model ID
@@ -171,7 +170,7 @@ class Client(BaseClient):
         params = {'uuid': uuid}
         return self.get(query_uri, params)
 
-    def get_model_component(self, cid: str) -> dict[str, Any]:
+    def get_model_component(self, cid: str) -> Dict[str, Any]:
         """Pulls a model component from /components endpoint
         :type cid: ``str``
         :param cid: component ID
@@ -182,7 +181,7 @@ class Client(BaseClient):
         params = {'cid': cid}
         return self.get(query_uri, params)
 
-    def get_model_breach_comments(self, pbid: str) -> list[dict[str, Any]]:
+    def get_model_breach_comments(self, pbid: str) -> List[Dict[str, Any]]:
         """Searches for comments on a modelbreach using '/modelbreaches/<pbid>/comments'
         :type pbid: ``str``
         :param pbid: Model breach ID
@@ -193,7 +192,7 @@ class Client(BaseClient):
         params = {'pbid': pbid}
         return self.get(query_uri, params)
 
-    def acknowledge_model_breach(self, pbid: str) -> dict[str, Any]:
+    def acknowledge_model_breach(self, pbid: str) -> Dict[str, Any]:
         """Acknowledges a modelbreach using '/modelbreaches/<pbid>/acknowledge?acknowledge=true'
         :type pbid: ``str``
         :param pbid: Model breach ID of the model breach to get
@@ -203,7 +202,7 @@ class Client(BaseClient):
         query_uri = f'{MODEL_BREACH_ENDPOINT}/{pbid}{ACK_BREACH}'
         return self.post(query_uri, data={'acknowledge': 'true'})
 
-    def unacknowledge_model_breach(self, pbid: str) -> dict[str, Any]:
+    def unacknowledge_model_breach(self, pbid: str) -> Dict[str, Any]:
         """Unacknowledges a modelbreach using '/modelbreaches/<pbid>/unacknowledge?unacknowledge=true'
         :type pbid: ``str``
         :param pbid: Model breach ID of the model breach to get
@@ -213,7 +212,7 @@ class Client(BaseClient):
         query_uri = f"{MODEL_BREACH_ENDPOINT}/{pbid}{UNACK_BREACH}"
         return self.post(query_uri, data={"unacknowledge": "true"})
 
-    def post_comment_to_model_breach(self, pbid: str, comment: str) -> dict[str, Any]:
+    def post_comment_to_model_breach(self, pbid: str, comment: str) -> Dict[str, Any]:
         """Posts a comment to a model breach'
         :type pbid: ``str``
         :param pbid: Model breach ID
@@ -225,7 +224,7 @@ class Client(BaseClient):
         query_uri = f'{MODEL_BREACH_ENDPOINT}/{pbid}{COMMENT_BREACH}'
         return self.post(query_uri, json={'message': comment})
 
-    def search_model_breaches(self, min_score: float, start_time: int | None) -> list[dict[str, Any]]:
+    def search_model_breaches(self, min_score: float, start_time: Optional[int]) -> List[Dict[str, Any]]:
         """Searches for Darktrace alerts using the '/modelbreaches' API endpoint
         :type min_score: ``float``
         :param min_score: min score of the alert to search for. Range [0, 1].
@@ -247,7 +246,7 @@ class Client(BaseClient):
 """*****HELPER FUNCTIONS****"""
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
     This function is used to quickly validate an argument provided to XSOAR
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
@@ -286,7 +285,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, int | float):
+    if isinstance(arg, (int, float)):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: \'{arg_name}\'')
@@ -307,7 +306,10 @@ def check_required_fields(args, *fields):
 def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict = None, is_json: bool = False) -> str:
     """Create signature from Darktrace private token"""
     public_token, private_token = tokens
-    query_string = f'?{json.dumps(query_data)}' if is_json else f'?{stringify_data(query_data)}' if query_data else ''
+    if is_json:
+        query_string = f'?{json.dumps(query_data)}'
+    else:
+        query_string = f'?{stringify_data(query_data)}' if query_data else ''
 
     return hmac.new(
         private_token.encode('ASCII'),
@@ -316,7 +318,7 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict
     ).hexdigest()
 
 
-def format_JSON_for_model_breach(modelbreach: dict[str, Any], details: bool = False) -> dict[str, Any]:
+def format_JSON_for_model_breach(modelbreach: Dict[str, Any], details: bool = False) -> Dict[str, Any]:
     """Formats JSON for get-model-breach command
     :type modelbreach: ``Dict[str, Any]``
     :param modelbreach: JSON model breach as returned by API for fetch incident
@@ -376,7 +378,7 @@ def _compute_xsoar_severity(dt_categry: str) -> int:
 """*****COMMAND FUNCTIONS****"""
 
 
-def test_module(client: Client, first_fetch_time: int | None) -> str:
+def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -401,8 +403,8 @@ def test_module(client: Client, first_fetch_time: int | None) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
-                    first_fetch_time: int | None, min_score: int) -> tuple[dict[str, int], list[dict]]:
+def fetch_incidents(client: Client, max_alerts: int, last_run: Dict[str, int],
+                    first_fetch_time: Optional[int], min_score: int) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new model breaches every minute. It will use last_run
     to save the timestamp of the last incident it processed. If last_run is not provided,
     it should use the integration parameter first_fetch to determine when to start fetching
@@ -434,13 +436,16 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
-    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = int(last_fetch)
 
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
 
     # Each incident is a dict with a string as a key
-    incidents: list[dict[str, Any]] = []
+    incidents: List[Dict[str, Any]] = []
 
     model_breach_alerts = client.search_model_breaches(
         min_score=min_score / 100,    # Scale the min score from [0,100] to [0 to 1] for API calls
@@ -454,8 +459,9 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
         alert['time'] = timestamp_to_datestring(incident_created_time)
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch and incident_created_time <= last_fetch:
-            continue
+        if last_fetch:
+            if incident_created_time <= last_fetch:
+                continue
         pbid = str(alert['pbid'])
         title = alert['model']['then']['name']
         incident_name = f'DT modelId #{pbid}: {title}'
@@ -484,7 +490,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
     return next_run, incidents
 
 
-def get_model_breach_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_model_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """darktrace-get-breach command: Returns a Darktrace model breach
 
     :type client: ``Client``
@@ -522,7 +528,7 @@ def get_model_breach_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-def get_model_breach_connections_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_model_breach_connections_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """get_model_breach_connections_command command: Returns a Darktrace model breach connections
 
     :type client: ``Client``
@@ -563,7 +569,7 @@ def get_model_breach_connections_command(client: Client, args: dict[str, Any]) -
     )
 
 
-def get_model_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """get_model_command command: Returns a Darktrace model information
 
     :type client: ``Client``
@@ -593,7 +599,7 @@ def get_model_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def get_model_component_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_model_component_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """get_model_component_command command: Returns a Darktrace model component information
 
     :type client: ``Client``
@@ -623,7 +629,7 @@ def get_model_component_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def get_model_breach_comments_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_model_breach_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """darktrace-get-comments command: Returns the comments on the model breach
 
     :type client: ``Client``
@@ -665,7 +671,7 @@ def get_model_breach_comments_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
-def acknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def acknowledge_model_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """acknowledge_model_breach_command: Acknowledges the model breach based on pbid
 
     :type client: ``Client``
@@ -702,7 +708,7 @@ def acknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> Co
     )
 
 
-def unacknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def unacknowledge_model_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """acknowledge_model_breach_command: Unacknowledges the model breach based on pbid
 
     :type client: ``Client``
@@ -739,7 +745,7 @@ def unacknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> 
     )
 
 
-def post_comment_to_model_breach_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def post_comment_to_model_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """post_comment_to_model_breach_command: posts a comment to a model breach
 
     :type client: ``Client``

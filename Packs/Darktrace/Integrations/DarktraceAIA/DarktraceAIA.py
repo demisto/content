@@ -5,8 +5,7 @@ import hmac
 import json
 import traceback
 from datetime import datetime, timezone
-from typing import Any, cast
-from collections.abc import Mapping
+from typing import Any, Dict, List, Mapping, Optional, Tuple, cast
 
 import dateparser
 import urllib3
@@ -47,7 +46,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get(self, query_uri: str, params: dict[str, str] = None):
+    def get(self, query_uri: str, params: Dict[str, str] = None):
         """Handles Darktrace GET API calls"""
         return self._darktrace_api_call(query_uri, method="GET", params=params)
 
@@ -62,7 +61,7 @@ class Client(BaseClient):
         params: dict = None,
         data: dict = None,
         json: dict = None,
-        headers: dict[str, str] = None,
+        headers: Dict[str, str] = None,
     ):
         """Handles Darktrace API calls"""
         headers = {
@@ -112,14 +111,14 @@ class Client(BaseClient):
         elif res.status_code >= 300:
             raise Exception(DARKTRACE_API_ERRORS['UNDETERMINED_ERROR'])
 
-    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
+    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> Dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
         date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {"DTAPI-Token": public_token, "DTAPI-Date": date, "DTAPI-Signature": signature}
 
-    def get_ai_analyst_incident_event(self, event_id: str) -> list[dict[str, Any]]:
+    def get_ai_analyst_incident_event(self, event_id: str) -> List[Dict[str, Any]]:
         """Searches for a single AI Analyst Incident alerts using '/incidentevents?uuid=<event_id>'
         :type event_id: ``str``
         :param event_id:  unique event identifier
@@ -128,7 +127,7 @@ class Client(BaseClient):
         """
         return self.get(AI_ANALYST_ENDPOINT, params={"uuid": event_id})
 
-    def search_ai_analyst_incident_events(self, min_score: int, start_time: int | None) -> list[dict[str, Any]]:
+    def search_ai_analyst_incident_events(self, min_score: int, start_time: Optional[int]) -> List[Dict[str, Any]]:
         """Searches all AI Analyst Incident alerts from a certain date and score'
         :type min_score: ``str``
         :param min_score:  minimum score for data to be pulled
@@ -144,7 +143,7 @@ class Client(BaseClient):
         }
         return self.get(query_uri, params)
 
-    def get_comments_for_ai_analyst_incident_event(self, event_id: str) -> dict[str, Any]:
+    def get_comments_for_ai_analyst_incident_event(self, event_id: str) -> Dict[str, Any]:
         """ Returns all comments for a specified incident event id
         :type event_id: ``str``
         :param event_id:  unique event identifier
@@ -157,7 +156,7 @@ class Client(BaseClient):
         }
         return self.get(query_uri, params)
 
-    def post_comment_to_ai_analyst_incident_event(self, event_id: str, comment: str) -> dict[str, Any]:
+    def post_comment_to_ai_analyst_incident_event(self, event_id: str, comment: str) -> Dict[str, Any]:
         """ Posts a message to an incident event id
         :type event_id: ``str``
         :param event_id:  unique event identifier
@@ -173,7 +172,7 @@ class Client(BaseClient):
         }
         return self.post(query_uri, json=body)
 
-    def acknowledge_ai_analyst_incident_event(self, event_id: str) -> dict[str, Any]:
+    def acknowledge_ai_analyst_incident_event(self, event_id: str) -> Dict[str, Any]:
         """ acknowledges an incident event
         :type event_id: ``str``
         :param event_id:  unique event identifier
@@ -183,7 +182,7 @@ class Client(BaseClient):
         query_uri = AI_ANALYST_ACKNOWLEDGE_ENDPOINT
         return self.post(query_uri, data={'uuid': str(event_id)})
 
-    def unacknowledge_ai_analyst_incident_event(self, event_id: str) -> dict[str, Any]:
+    def unacknowledge_ai_analyst_incident_event(self, event_id: str) -> Dict[str, Any]:
         """ unacknowledges an incident event
         :type event_id: ``str``
         :param event_id:  unique event identifier
@@ -193,7 +192,7 @@ class Client(BaseClient):
         query_uri = AI_ANALYST_UNACKNOWLEDGE_ENDPOINT
         return self.post(query_uri, data={'uuid': str(event_id)})
 
-    def get_ai_analyst_incident_group_from_eventId(self, event_id: str) -> list[dict[str, Any]]:
+    def get_ai_analyst_incident_group_from_eventId(self, event_id: str) -> List[Dict[str, Any]]:
         """Searches for a single AI Analyst Group alerts using '/groups?uuid=<event_id>'
         :type event_id: ``str``
         :param event_id:  unique event identifier
@@ -206,7 +205,7 @@ class Client(BaseClient):
 """*****HELPER FUNCTIONS****"""
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
     This function is used to quickly validate an argument provided to XSOAR
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
@@ -245,7 +244,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, int | float):
+    if isinstance(arg, (int, float)):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -254,7 +253,10 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
 def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict = None, is_json: bool = False) -> str:
     """Create signature from Darktrace private token"""
     public_token, private_token = tokens
-    query_string = f'?{json.dumps(query_data)}' if is_json else f'?{stringify_data(query_data)}' if query_data else ''
+    if is_json:
+        query_string = f"?{json.dumps(query_data)}"
+    else:
+        query_string = f"?{stringify_data(query_data)}" if query_data else ""
 
     return hmac.new(
         private_token.encode("ASCII"),
@@ -268,7 +270,7 @@ def stringify_data(data: Mapping) -> str:
     return "&".join([f"{k}={v}" for k, v in data.items()])
 
 
-def format_JSON_for_ai_analyst_incident(aia_incident: dict[str, Any], details: bool = False) -> dict[str, Any]:
+def format_JSON_for_ai_analyst_incident(aia_incident: Dict[str, Any], details: bool = False) -> Dict[str, Any]:
     """Formats JSON for get-ai-incident-event command
     :type aia_incident: ``Dict[str, Any]``
     :param aia_incident: JSON incident event as returned by API for fetch incident
@@ -317,7 +319,7 @@ def check_required_fields(args, *fields):
             raise ValueError(f'Argument error could not find {field} in {args}')
 
 
-def test_module(client: Client, first_fetch_time: int | None) -> str:
+def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -342,8 +344,8 @@ def test_module(client: Client, first_fetch_time: int | None) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
-                    first_fetch_time: int | None, min_score: int) -> tuple[dict[str, int], list[dict]]:
+def fetch_incidents(client: Client, max_alerts: int, last_run: Dict[str, int],
+                    first_fetch_time: Optional[int], min_score: int) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new ai analyst incident event every minute. It will use last_run
     to save the timestamp of the last incident it processed. If last_run is not provided,
     it should use the integration parameter first_fetch to determine when to start fetching
@@ -375,13 +377,16 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
-    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = int(last_fetch)
 
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
 
     # Each incident is a dict with a string as a key
-    incidents: list[dict[str, Any]] = []
+    incidents: List[Dict[str, Any]] = []
 
     ai_analyst_alerts = client.search_ai_analyst_incident_events(
         min_score=min_score,    # Scale the min score from [0,100] to [0 to 1] for API calls
@@ -391,8 +396,9 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
     for alert in ai_analyst_alerts:
         incident_created_time = int(alert.get('createdAt', 0))
         alert['time'] = timestamp_to_datestring(incident_created_time)
-        if last_fetch and incident_created_time <= last_fetch:
-            continue
+        if last_fetch:
+            if incident_created_time <= last_fetch:
+                continue
         id = str(alert['id'])
         title = str(alert['title'])
         incident_name = f'DT eventId #{id}: {title}'
@@ -420,7 +426,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
     return next_run, incidents
 
 
-def get_ai_analyst_incident_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_ai_analyst_incident_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """get-ai-analyst-incident-event-command: Returns a Darktrace incident event details
 
     :type client: ``Client``
@@ -458,7 +464,7 @@ def get_ai_analyst_incident_event_command(client: Client, args: dict[str, Any]) 
     )
 
 
-def get_comments_for_ai_analyst_incident_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_comments_for_ai_analyst_incident_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """darktrace-get-comments-for-ai-analyst-incident-event-command: Returns all comments associated with an
     incident event.
 
@@ -496,7 +502,7 @@ def get_comments_for_ai_analyst_incident_event_command(client: Client, args: dic
     )
 
 
-def post_comment_to_ai_analyst_incident_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def post_comment_to_ai_analyst_incident_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """darktrace-post-comment-to-ai-analyst-incident-event-command: Posts a comment to an ai analyst event
 
     :type client: ``Client``
@@ -535,7 +541,7 @@ def post_comment_to_ai_analyst_incident_event_command(client: Client, args: dict
     )
 
 
-def acknowledge_ai_analyst_incident_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def acknowledge_ai_analyst_incident_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """acknowledge-ai-analyst-incident-event-command: Acknowledges an ai analyst event
 
     :type client: ``Client``
@@ -572,7 +578,7 @@ def acknowledge_ai_analyst_incident_event_command(client: Client, args: dict[str
     )
 
 
-def unacknowledge_ai_analyst_incident_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def unacknowledge_ai_analyst_incident_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """unacknowledge-ai-analyst-incident-event-command: Unacknowledges an ai analyst event
 
     :type client: ``Client``
@@ -609,7 +615,7 @@ def unacknowledge_ai_analyst_incident_event_command(client: Client, args: dict[s
     )
 
 
-def get__ai_analyst_incident_group_from_eventId_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get__ai_analyst_incident_group_from_eventId_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """darktrace-get-incident-group-from-event: Pulls all events belonging to the same investigation group.
 
     :type client: ``Client``
