@@ -1,7 +1,7 @@
-from email.header import decode_header
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from email.header import decode_header
+
 
 
 def decode(s):
