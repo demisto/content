@@ -211,9 +211,12 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
 
+
         elif command == 'ip':
             ip_command = ipinfo_ip_command(client, **args)
             return_results(ip_command)
+            
+            
         else:
             raise NotImplementedError(f"command {command} is not supported")
 
