@@ -1,0 +1,23 @@
+[MODEL: dataset="cyber_ark_vault_raw"]
+alter
+xdm.event.type=act,
+xdm.source.application.name=app,
+xdm.session_context_id=cn1,
+xdm.event.id=cn2,
+xdm.target.resource.value=cs1,
+xdm.target.resource.name=cs2,
+xdm.target.resource.type=cs3,
+xdm.database.name=cs4,
+xdm.event.operation_sub_type=cs5,
+xdm.intermediate.host.hostname=dvc,
+xdm.event.description=msg,
+xdm.event.outcome=if(Value contains "success",XDM_CONST.OUTCOME_SUCCESS, Value contains "failure", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+xdm.target.host.hostname=dhost,
+xdm.target.user.username=duser,
+xdm.target.file.filename=fname,
+xdm.source.host.ipv4_addresses=arraycreate(shost),
+xdm.source.user.username=suser,
+xdm.event.outcome_reason=reason,
+xdm.alert.name=cefName,
+xdm.alert.severity=cefSeverity,
+xdm.observer.version=cefDeviceVersion;

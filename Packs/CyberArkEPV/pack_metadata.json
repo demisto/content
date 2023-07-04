@@ -1,0 +1,17 @@
+{
+    "name": "CyberArk Enterprise Password Vault (EPV)",
+    "description": "CyberArk Enterprise Password Vault enables organizations to secure, manage, automatically change and log all activities associated with all types of Privileged Passwords and SSH Keys.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
