@@ -1,5 +1,5 @@
-name: MicrosoftCloudAppSecurity
-id: MicrosoftCloudAppSecurity
+name: Microsoft Cloud App Security Parsing Rule
+id: MicrosoftCloudAppSecurityParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''
