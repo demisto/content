@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from pytz import utc
 from taxii2client.common import _ensure_datetime_to_string
 
-import demistomock as demisto
-from CommonServerPython import *
 from TAXII2ApiModule import *  # noqa: E402
 
 ''' CONSTANTS '''
