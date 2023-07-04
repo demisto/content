@@ -11,7 +11,6 @@ from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
 from google.oauth2 import service_account
-import proto
 # Local packages
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -306,7 +305,7 @@ def gcloud_clusters_list_command(client: ClusterManagerClient, project: str, zon
     raw_response_msg: Message = client.list_clusters(project_id=project,
                                                      zone=zone,
                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
 
     # Entry context
     clusters_ec: list[dict] = [parse_cluster(cluster) for cluster in raw_response_dict.get('clusters', [])]
@@ -342,7 +341,7 @@ def gcloud_clusters_describe_command(client: ClusterManagerClient, project: str 
                                                    zone=zone,
                                                    timeout=API_TIMEOUT)
     # Entry context
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     cluster_ec = parse_cluster(raw_response_dict)
     entry_context = {
         CLUSTER_CONTEXT: cluster_ec,
@@ -385,7 +384,7 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
         },
         timeout=API_TIMEOUT,
     )
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -439,7 +438,7 @@ def gcloud_clusters_set_addons_command(client: ClusterManagerClient, project: st
                                                          cluster_id=cluster,
                                                          addons_config=update,
                                                          timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -476,7 +475,7 @@ def gcloud_clusters_set_legacy_auth_command(client: ClusterManagerClient, projec
                                                        cluster_id=cluster,
                                                        enabled=(enable == 'true'),
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -523,7 +522,7 @@ def gcloud_clusters_set_master_authorized_network_command(client: ClusterManager
                                                       cluster_id=cluster,
                                                       update=update,
                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -565,7 +564,7 @@ def gcloud_clusters_set_k8s_stackdriver_command(client: ClusterManagerClient, pr
                                                               monitoring_service=update,
                                                               timeout=API_TIMEOUT)
 
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -607,7 +606,7 @@ def gcloud_clusters_set_binary_auth(client: ClusterManagerClient, project: str, 
                                                       cluster_id=cluster,
                                                       update=update,
                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -650,7 +649,7 @@ def gcloud_clusters_set_intra_node_visibility(client: ClusterManagerClient, proj
                                                       cluster_id=cluster,
                                                       update=update,
                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -721,7 +720,7 @@ def gcloud_node_pool_describe_command(client: ClusterManagerClient, project: str
                                                      cluster_id=cluster,
                                                      node_pool_id=node_pool,
                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     node_pools_ec: dict = parse_node_pool(raw_response_dict)
     entry_context = {
@@ -773,7 +772,7 @@ def gcloud_set_node_pool_management(client: ClusterManagerClient, project: str, 
             'management': update,
         },
         timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -806,7 +805,7 @@ def gcloud_operations_list_command(client: ClusterManagerClient, project: str, z
     raw_response_msg: Message = client.list_operations(project_id=project,
                                                        zone=zone,
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operations: list[dict] = [parse_operation(operation) for operation in raw_response_dict.get('operations', [])]
     entry_context = {
@@ -841,7 +840,7 @@ def gcloud_operations_describe_command(client: ClusterManagerClient, project: st
                                                      zone=zone,
                                                      operation_id=operation,
                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operations: dict = parse_operation(raw_response_dict)
     entry_context = {
