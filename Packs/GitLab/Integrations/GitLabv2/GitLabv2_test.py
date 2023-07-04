@@ -1,12 +1,10 @@
-import io
 import json
-from typing import Dict, List
 import pytest
 from freezegun import freeze_time
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -769,7 +767,7 @@ def test_gitlab_pipelines_schedules_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     response_client = util_load_json('test_data/commands_test_data.json').get('pipeline_schedule')
     args = {"project_id": 1}
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -796,7 +794,7 @@ def test_gitlab_pipelines_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     response_client = util_load_json('test_data/commands_test_data.json').get('pipeline')
     args = {"project_id": "3"}
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -826,7 +824,7 @@ def test_gitlab_jobs_list_command(mocker):
         "project_id": "4",
         "pipeline_id": "12"
     }
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -856,7 +854,7 @@ def test_gitlab_artifact_get_command(mocker):
         "project_id": "45",
         "job_id": "32",
         "artifact_path_suffix": "artifacts/failed_tests.txt"}
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -1013,7 +1011,7 @@ def test_trigger_pipeline(mocker, trigger_token, args, expected_result):
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'},
                     trigger_token=trigger_token)
-    expected_outputs: List[dict] = expected_result['expected_outputs']
+    expected_outputs: list[dict] = expected_result['expected_outputs']
     expected_prefix: str = expected_result['expected_prefix']
     expected_key_field: str = expected_result['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=expected_result['mock_response'])
