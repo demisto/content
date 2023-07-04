@@ -42,12 +42,17 @@ jobs:
         source .venv/bin/activate
         npm install
         demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
+    - name: Comment the changes
+      if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
+      uses: KazukiHayase/review-git-diff-action@v1.0.0
     - name: Commit and push changes
       if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "Pre-Commit auto-fixes"
         author_name: "Pre-Commit Bot"
+        # will commit only modified files
+        add_options: "-u"
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
       if: always() # always run even if the previous step fails
