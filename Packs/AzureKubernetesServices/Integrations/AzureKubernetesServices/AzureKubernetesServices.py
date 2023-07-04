@@ -272,7 +272,7 @@ def reset_auth() -> str:
     return 'Authorization was reset successfully. Run **!azure-ks-auth-start** to start the authentication process.'
 
 
-@ logger
+@logger
 def test_module(client):
     """
     Performs basic GET request to check if the API is reachable and authentication is successful.

@@ -64,7 +64,8 @@ class AzureNSGClient:
                      data: dict = None, resp_type: str = 'json') -> requests.Response:
 
         params = params or {}
-        params['api-version'] = API_VERSION
+        if not params.get('api-version'):
+            params['api-version'] = API_VERSION
         return self.ms_client.http_request(method=method,
                                            url_suffix=url_suffix,
                                            full_url=full_url,
@@ -218,7 +219,7 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
     return format_rule(rules, f"in {security_group_name}")
 
 
-@ logger
+@logger
 def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str:
     """
     Deletes a rule from a security group
@@ -246,7 +247,7 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
     return message
 
 
-@ logger
+@logger
 def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Creates a rule in a security group
@@ -310,7 +311,7 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
     return format_rule(rule, security_rule_name)
 
 
-@ logger
+@logger
 def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Update an existing rule.
@@ -394,7 +395,7 @@ def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
     return format_rule(rule, security_rule_name)
 
 
-@ logger
+@logger
 def get_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Args:
@@ -416,7 +417,7 @@ def get_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comman
     return format_rule(rules, security_rule_name)
 
 
-@ logger
+@logger
 def nsg_subscriptions_list_command(client: AzureNSGClient) -> CommandResults:
     """
         Gets a list of subscriptions.
@@ -441,7 +442,7 @@ def nsg_subscriptions_list_command(client: AzureNSGClient) -> CommandResults:
     )
 
 
-@ logger
+@logger
 def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     List all resource groups in the subscription.
@@ -478,25 +479,25 @@ def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: 
     )
 
 
-@ logger
+@logger
 def test_connection(client: AzureNSGClient, params: dict) -> str:
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return '✅ Success!'
 
 
-@ logger
+@logger
 def start_auth(client: AzureNSGClient) -> CommandResults:
     result = client.ms_client.start_auth('!azure-nsg-auth-complete')
     return CommandResults(readable_output=result)
 
 
-@ logger
+@logger
 def complete_auth(client: AzureNSGClient):
     client.ms_client.get_access_token()
     return '✅ Authorization completed successfully.'
 
 
-@ logger
+@logger
 def reset_auth(client: AzureNSGClient):
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
