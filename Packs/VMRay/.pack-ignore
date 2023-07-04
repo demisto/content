@@ -1,8 +1,6 @@
 [file:playbook-VMRay-Detonate-File.yml]
 ignore=BA101
 
-[file:VMRay.yml]
-ignore=IN145
-
 [file:VMRay_image.png]
 ignore=IM111
+
