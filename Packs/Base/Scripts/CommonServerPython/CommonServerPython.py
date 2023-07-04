@@ -10752,7 +10752,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
                   "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
     remove_incident_ids = True
 
-
+    new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
@@ -10767,10 +10767,10 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
             # As we stuck, we need to update the limit anyway (even if the `lookback` is off)
-            new_last_run['limit'] = len(incidents) + fetch_limit
+            new_last_run['limit'] = new_limit
 
     if look_back > 0:
-        new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
+        new_last_run['limit'] = new_limit
     else:
         new_last_run['limit'] = fetch_limit
 
