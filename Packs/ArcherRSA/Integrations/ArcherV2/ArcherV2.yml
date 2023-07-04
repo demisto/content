@@ -419,7 +419,7 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3-deb:3.10.11.56078
+  dockerimage: demisto/python3-deb:3.10.12.63475
   isfetch: true
   runonce: false
   script: ''
