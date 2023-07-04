@@ -2,7 +2,7 @@
     "id": "incident_domaintoolsirisdetect",
     "version": -1,
     "modified": "2023-04-11T10:15:28.170021904+05:30",
-    "name": "DomainTools Iris Detect",
+    "name": "DomainToolsIrisDetect",
     "ownerOnly": false,
     "description": "DomainTools Iris Detect",
     "cliName": "domaintoolsirisdetect",
