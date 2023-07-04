@@ -1,5 +1,5 @@
 [file:AnsibleKubernetes.yml]
-ignore=IN145,BA124
+ignore=BA124
 
 [known_words]
 ansii

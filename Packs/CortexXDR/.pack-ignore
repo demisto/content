@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN136,IN145,IN124
+ignore=IN126,IN136,IN124
 
 [file:XDR_iocs.yml]
 ignore=BA108,BA109
@@ -47,13 +47,13 @@ ignore=BA113
 ignore=RM108
 
 [known_words]
-XDR
-CoreIRApiModule
-CortexCoreIR
-XQL
-indicatorsValues
-setIndicators
-PrintErrorEntry
+xdr
+coreirapimodule
+cortexcoreir
+xql
+indicatorsvalues
+setindicators
+printerrorentry
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
