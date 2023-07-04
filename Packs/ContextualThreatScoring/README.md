@@ -15,7 +15,7 @@ In this version, the custom scores are derived from certain pre-defined factors 
 		1. *age*: An indicator’s age is calculated as the time difference between *now* and when the indicator was first seen.
 		2. *weightedScore*: An indicator’s weighted score is calculated as by taking each source’s reliability as weight and associated verdict as value.
 			$$weightedScore = \frac{\sum_{i=0}^{N}{{source\_reliability}^2_i.score_i}}{\sum_{i=0}^{N}{source\_reliability_i}}$$
-	1. Directly extracted: It can be extracted from an existing field. For example, *geocountry* can be extracted from an existing indicator field directly.
+	2. Directly extracted: It can be extracted from an existing field. For example, *geocountry* can be extracted from an existing indicator field directly.
 
 #### Results
 Finally, the indicator is assigned a threat score between 0-100. The ThreatScoreWidget can be added to the layout to display the indicator score.
