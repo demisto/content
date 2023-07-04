@@ -42,17 +42,17 @@ configuration:
   defaultvalue: "1"
   type: 19
   required: false
-- display: ""
+- display: First fetch
   name: first_fetch
   defaultvalue: 0 minutes
   type: 0
   required: false
-- display: ""
+- display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
-- display: ""
+- display: Fetch Query Filter
   name: fetch_query_filter
   defaultvalue: ACCESS_DENIED,USER_DOES_NOT_EXIST,INVALID_OTP
   type: 0
@@ -319,7 +319,7 @@ script:
       type: Number
     arguments: []
     description: safewalk-get-users-associations-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   feed: false
   runonce: false

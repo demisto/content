@@ -133,7 +133,7 @@ script:
       required: false
       secret: false
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   runonce: false
   subtype: python3

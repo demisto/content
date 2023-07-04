@@ -1,5 +1,5 @@
 [file:SafewalkReports.yml]
-ignore=IN145,IN118
+ignore=IN145
 
 [file:SafewalkManagement.yml]
 ignore=IN145
