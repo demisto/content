@@ -695,7 +695,7 @@ def list_exfiltration_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_exfiltration_assessment_command(client: Client, template_id: str, agent_name: str,
+def start_exfiltration_assessment_command(client: Client, template_id: str, agent_name: str, agent_profile_name: str,
                                           schedule: bool, schedule_loop: str) -> CommandResults:
     """Start a new exfiltration assessment.
 
@@ -703,6 +703,7 @@ def start_exfiltration_assessment_command(client: Client, template_id: str, agen
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the exfiltration Assessment with.
         agent_name (str): Agent name to run simulation attacks.
+        agent_profile_name (str): Agent profile name to run simulation attacks on.
         schedule (bool): Whether to schedule the automated assessment periodically.
         schedule_loop (str): Loop size of the scheduled agent.
                              For example: to run the agent only once, use the value 'one-time'.
@@ -715,6 +716,7 @@ def start_exfiltration_assessment_command(client: Client, template_id: str, agen
     params = {
         'templateID': template_id,
         'agentName': agent_name,
+        'agentProfileName': agent_profile_name,
         'schedule': schedule,
         'scheduleLoop': schedule_loop
     }
@@ -931,7 +933,7 @@ def list_endpoint_security_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_endpoint_security_assessment_command(client: Client, template_id: str, agent_name: str,
+def start_endpoint_security_assessment_command(client: Client, template_id: str, agent_name: str,agent_Profile_Name: str,
                                                schedule: bool,
                                                schedule_loop: str) -> CommandResults:
     """Start a new endpoint security assessment.
@@ -940,6 +942,7 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the assessment with.
         agent_name (str): Agent's name to run simulation attacks with.
+        agent_Profile_Name (str): Agent profile name to run simulation attacks on
         schedule (bool): Whether to schedule the automated assessment periodically.
         schedule_loop (str): Loop size of the scheduled agent.
                              For example: to run the agent only once, use the value 'one-time'.
@@ -952,6 +955,7 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
     params = {
         'templateID': template_id,
         'agentName': agent_name,
+        'agentProfileName': agent_Profile_Name,
         'schedule': schedule,
         'scheduleLoop': schedule_loop
     }
@@ -1152,7 +1156,9 @@ def get_waf_assessment_status_command(client: Client, assessment_id: str) -> Com
 
 def start_immediate_threat_assessment_command(client: Client, template_id: str,
                                               browsing_address: str = "",
+                                              browsing_Address_ProfileName : str ="",
                                               mail_address: str = "",
+                                              edr_Address_ProfileName: str = "",
                                               edr_address: str = "") -> CommandResults:
     """Start a new immediate threats assessment.
 
@@ -1160,8 +1166,10 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the assessment with.
         browsing_address (str): Browsing address.
+        browsing_Address_ProfileName (str): browsing Agent profile name (Optional - required on SBA only)
         mail_address (str): Agent email address.
-        edr_address (str): EDR address.
+        edr_Address_ProfileName (str): EDR Agent profile name (Optional - required on SBA only)
+        edr_address (str): EDR Agent address.
 
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
@@ -1173,8 +1181,10 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
 
     params = {
         'templateID': template_id,
-        'mailAddress': browsing_address,
-        'browsingAddress': mail_address,
+        'mailAddress': mail_address,
+        'browsingAddress': browsing_address,
+        'browsingAddressProfileName': browsing_Address_ProfileName,
+        'edrAddressProfileName': edr_Address_ProfileName,
         'edrAddress': edr_address
     }
 
@@ -1273,7 +1283,7 @@ def list_lateral_movement_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_lateral_movement_assessment_command(client: Client, agent_name: str, template_id: str,
+def start_lateral_movement_assessment_command(client: Client, agent_name: str, template_id: str, agent_Profile_Name: str,
                                               upload_to_cymulate: bool, schedule: bool,
                                               schedule_loop: str) -> CommandResults:
     """Start a new lateral movement assessment.
@@ -1281,6 +1291,7 @@ def start_lateral_movement_assessment_command(client: Client, agent_name: str, t
     Args:
         client (Client): Cymulate client.
         agent_name (str): Agent name to run the assessment with.
+        agent_Profile_Name (str): Agent profile name to run simulation attacks on.
         template_id (str): The ID of the template to run the lateral movement with.
         upload_to_cymulate (bool): Whether to upload the result to Cymulate.
         schedule (bool): Whether to schedule the automated assessment periodically.
@@ -1294,6 +1305,7 @@ def start_lateral_movement_assessment_command(client: Client, agent_name: str, t
     """
     params = {
         "agentName": agent_name,
+        "agentProfileName": agent_Profile_Name,
         "templateID": template_id,
         "uploadResultsToCymulate": upload_to_cymulate,
         "schedule": schedule,
