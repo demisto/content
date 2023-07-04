@@ -1069,7 +1069,7 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     """
     Command to create new security rule
     """
-
+    raise DemistoException("TEST")
     rule = client.build_security_rule(args)
     query_params = {
         'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,

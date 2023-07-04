@@ -54,7 +54,8 @@ def shutdown(server_ip: str, ttl: Optional[int] = None):
 def main():
     install_logging('Destroy_instances.log')
     options = options_handler()
-    time_to_live = os.getenv('TIME_TO_LIVE')
+    # time to live in minutes
+    time_to_live = os.getenv('TIME_TO_LIVE') or 180
     tests_path = Path('./Tests')
 
     with open(options.env_file, 'r') as json_file:
@@ -77,6 +78,7 @@ def main():
         shutdown(server_ip)
     else:
         logging.warning(f'Tests for some integration failed on {readable_role}, keeping instance alive')
+        shutdown(server_ip, int(time_to_live))
 
 
 if __name__ == "__main__":
