@@ -1267,7 +1267,7 @@ script:
       description: An HTML comment to add to the ticket.
     - name: public
       description: true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it.
-      defaultValue: 'false'
+      defaultValue: 'true'
       auto: PREDEFINED
       predefined:
         - 'true'
