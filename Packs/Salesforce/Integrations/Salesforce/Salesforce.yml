@@ -20,12 +20,19 @@ configuration:
   name: clientID
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: Consumer Secret
   name: clientSecret
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- display: Consumer Key
+  displaypassword: Consumer Secret
+  name:  credentials_client_secret
+  required: false
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

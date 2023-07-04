@@ -6,11 +6,22 @@ commonfields:
   id: Azure Sentinel
   version: -1
 configuration:
-- defaultvalue: https://management.azure.com
-  display: Server URL
-  name: server_url
-  required: true
-  type: 0
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  section: Connect
+  advanced: true
+  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - name: creds_tenant_id
   required: false
   type: 9
@@ -112,6 +123,15 @@ configuration:
   required: false
   type: 13
   section: Connect
+- display: Server URL
+  name: server_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+  defaultvalue: https://management.azure.com
+  hidden: false
+  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -128,29 +148,29 @@ configuration:
   name: fetch_additional_info
   required: false
   type: 16
-  additionalinfo: |
-    Choose what additional info to fetch for each incident.
-    Note that this will increase the number of API calls.
   options:
   - Alerts
   - Entities
   - Comments
   - Relations
   section: Collect
+  additionalinfo: |
+    Choose what additional info to fetch for each incident.
+    Note that this will increase the number of API calls.
   advanced: true
-- display: Mirroring Direction
+- defaultvalue: 'None'
+  display: Mirroring Direction
   name: mirror_direction
   required: false
   type: 15
-  defaultvalue: None
+  hidden:
+  - marketplacev2
+  section: Collect
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  hidden:
-  - marketplacev2
-  section: Collect
 - additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -1993,7 +2013,7 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. THis is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between 0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
@@ -2656,7 +2676,7 @@ script:
       description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts".
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.
@@ -2934,7 +2954,7 @@ script:
       description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts".
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.
@@ -3005,7 +3025,66 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.61689
+  - name: azure-sentinel-subscriptions-list
+    description: Lists all subscriptions.
+    outputs:
+    - contextPath: AzureSentinel.SubscriptionId
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.displayName
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.authorizationSource
+      description: The authorization source of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.managedByTenants
+      description: The subscriptions that are managed by tenants of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.tenetId
+      description: The tenet ID of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.state
+      description: The state of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.subscriptionPolicies
+      description: The subscription policies of the resource.
+      type: String
+  - name: azure-sentinel-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided."
+      type: String
+      required: false
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+      isArray: false
+      type: String
+    - name: limit
+      description: The maximum number of resource groups to return.
+      defaultValue: 50
+      isArray: false
+      type: Number
+    outputs:
+    - contextPath: AzureSentinel.ResourceGroup.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.type
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.location
+      description: The location of the resource group.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.tags
+      description: The tags of the resource group.
+      type: Dictionary
+    - contextPath: AzureSentinel.ResourceGroup.properties
+      description: The properties of the resource group.
+      type: dictionary
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: true
   longRunning: false

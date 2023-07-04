@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Dict, Tuple, Optional, Any
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
 
 # Disable insecure warnings
 
@@ -459,7 +459,8 @@ def main():
     auth_code = params.get('creds_auth_code', {}).get('password', '') or params.get('auth_code', '')
     proxy = params.get('proxy')
     handle_error: bool = argToBoolean(params.get('handle_error', 'true'))
-    certificate_thumbprint = params.get('certificate_thumbprint')
+    certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+        'password', '') or params.get('certificate_thumbprint')
     private_key = params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None

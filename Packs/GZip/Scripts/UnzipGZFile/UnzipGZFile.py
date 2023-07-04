@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import gzip
 import re
 import shutil
 from os.path import isfile
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
 
