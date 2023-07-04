@@ -106,17 +106,6 @@
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "domaintoolstest",
-                                "height": 22,
-                                "id": "7497f520-a788-11ed-9a70-afcd44cfc764",
-                                "index": 6,
-                                "listId": "caseinfoid-15655ab0-a603-11ed-8226-434af2d764ab",
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxH": null,
@@ -333,5 +322,5 @@
     "name": "DomainTools Iris Detect",
     "system": false,
     "version": -1,
-    "fromVersion": "6.9.0"
+    "fromVersion": "6.8.0"
 }

@@ -309,17 +309,6 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "domaintoolsirisdetectterm",
-                                "height": 22,
-                                "id": "c85c4240-9646-11ed-8034-93b6a2fb2519",
-                                "index": 1,
-                                "listId": "main-65002b10-90df-11ed-99c3-e1f211a26b87",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "irisdetectterm",
                                 "height": 22,
@@ -343,15 +332,6 @@
                                 "height": 22,
                                 "id": "61c56080-90e1-11ed-99c3-e1f211a26b87",
                                 "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "irisdetectdomainriskscore",
-                                "height": 22,
-                                "id": "69ddd360-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -381,15 +361,6 @@
                                 "height": 22,
                                 "id": "028057d0-9283-11ed-b59f-efdbfef0ca1a",
                                 "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "irisdetectdomainriskscorestatus",
-                                "height": 22,
-                                "id": "6bbf8bb0-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -428,42 +399,6 @@
                                 "height": 22,
                                 "id": "560bc780-1998-11ee-aef7-fdaac55c9c0d",
                                 "index": 10,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "irisdetectriskscorecompoents",
-                                "height": 22,
-                                "id": "7e490770-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 11,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "irisdetectdomainescalationtype",
-                                "height": 22,
-                                "id": "855a91a0-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 11,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "irisdetectipdetails",
-                                "height": 22,
-                                "id": "8f7208d0-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 11,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "irisdetectmxdetails",
-                                "height": 22,
-                                "id": "92725080-90e1-11ed-99c3-e1f211a26b87",
-                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -871,5 +806,5 @@
     "name": "DomainTools Iris Detect Indicator Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.9.0"
+    "fromVersion": "6.8.0"
 }
