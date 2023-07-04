@@ -2505,8 +2505,74 @@ script:
     description: Adding a new user to MISP.
     name: misp-add-user
     outputs:
+    - contextPath: MISP.User.id
+      description: MISP User ID.
+      type: string
+    - contextPath: MISP.User.password
+      description: MISP User Password.
+      type: string
+    - contextPath: MISP.User.org_id
+      description: MISP User Organisation ID.
+      type: string
+    - contextPath: MISP.User.server_id
+      description: MISP User Server ID.
+      type: string
     - contextPath: MISP.User.email
       description: MISP User Email.
+      type: string
+    - contextPath: MISP.User.autoalert
+      description: MISP User Auto Alert.
+      type: boolean
+    - contextPath: MISP.User.authkey
+      description: MISP User Auth Key.
+      type: string
+    - contextPath: MISP.User.invited_by
+      description: MISP User Invited By.
+      type: string
+    - contextPath: MISP.User.gpgkey
+      description: MISP User GPG Key.
+      type: string
+    - contextPath: MISP.User.certif_public
+      description: MISP User Certif Public.
+      type: string
+    - contextPath: MISP.User.nids_sid
+      description: MISP User Nids Sid.
+      type: string
+    - contextPath: MISP.User.termsaccepted
+      description: MISP User Terms Accepted.
+      type: boolean
+    - contextPath: MISP.User.newsread
+      description: MISP User News Read.
+      type: string
+    - contextPath: MISP.User.role_id
+      description: MISP User Role ID.
+      type: string
+    - contextPath: MISP.User.change_pw
+      description: MISP User Change Password.
+      type: boolean
+    - contextPath: MISP.User.contactalert
+      description: MISP User Contact Alert.
+      type: boolean
+    - contextPath: MISP.User.disabled
+      description: MISP User Disabled.
+      type: boolean
+    - contextPath: MISP.User.expiration
+      description: MISP User Expiration.
+      type: string
+    - contextPath: MISP.User.current_login
+      description: MISP User Current Login.
+      type: string
+    - contextPath: MISP.User.last_login
+      description: MISP User Last Login.
+      type: string
+    - contextPath: MISP.User.force_logout
+      description: MISP User Force Logout.
+      type: boolean
+    - contextPath: MISP.User.date_created
+      description: MISP User Created Date.
+      type: string
+    - contextPath: MISP.User.date_modified
+      description: MISP User Modified Date.
       type: string
   - arguments: []
     description: Display organization ids and names.

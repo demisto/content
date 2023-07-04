@@ -781,7 +781,35 @@ def test_add_tag(demisto_args: dict, is_attribute: bool, expected_result: dict, 
 
 def test_add_user_to_misp(mocker):
     from MISPV3 import add_user_to_misp
-    mock_response = {}
+    mock_response = {
+        {'User':
+            {
+                'id': '1',
+                'password': '*****',
+                'org_id': '1',
+                'server_id': '1',
+                'email': 'test@example.com',
+                'autoalert': False,
+                'authkey': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+                'invited_by': '1',
+                'gpgkey': '',
+                'certif_public': '',
+                'nids_sid': '1111111',
+                'termsaccepted': False,
+                'newsread': '1',
+                'role_id': '1',
+                'change_pw': True,
+                'contactalert': False,
+                'disabled': False,
+                'expiration': None,
+                'current_login': '0',
+                'last_login': '0',
+                'force_logout': False,
+                'date_created': '1111111111',
+                'date_modified': '1111111111'
+                }
+            }
+            }
     mocker.patch('MISPV3.PYMISP.add_user', return_value=mock_response)
     demisto_args = {
         'email': 'test@example.com',

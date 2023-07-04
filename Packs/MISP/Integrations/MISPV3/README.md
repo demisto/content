@@ -3856,6 +3856,43 @@ Adding a new user to MISP.
 
 `misp-add-user`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | The email address of the new user to be added. | Required | 
+| org_id | ID number indicating which organization the new user will be added to. | Required | 
+| role_id | Role of the new user to be added. | Required | 
+| password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, at least one lower-case character. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.User.id | string | MISP User ID. | 
+| MISP.User.password | string | MISP User Password. | 
+| MISP.User.org_id | string | MISP User Organisation ID. | 
+| MISP.User.server_id | string | MISP User Server ID. | 
+| MISP.User.email | string | MISP User Email. | 
+| MISP.User.autoalert | boolean | MISP User Auto Alert. | 
+| MISP.User.authkey | string | MISP User Auth Key. | 
+| MISP.User.invited_by | string | MISP User Invited By. | 
+| MISP.User.gpgkey | string | MISP User GPG Key. | 
+| MISP.User.certif_public | string | MISP User Certif Public. | 
+| MISP.User.nids_sid | string | MISP User Nids Sid. | 
+| MISP.User.termsaccepted | boolean | MISP User Terms Accepted. | 
+| MISP.User.newsread | string | MISP User News Read. | 
+| MISP.User.role_id | string | MISP User Role ID. | 
+| MISP.User.change_pw | boolean | MISP User Change Password. | 
+| MISP.User.contactalert | boolean | MISP User Contact Alert. | 
+| MISP.User.disabled | boolean | MISP User Disabled. | 
+| MISP.User.expiration | string | MISP User Expiration. | 
+| MISP.User.current_login | string | MISP User Current Login. | 
+| MISP.User.last_login | string | MISP User Last Login. | 
+| MISP.User.force_logout | boolean | MISP User Force Logout. | 
+| MISP.User.date_created | string | MISP User Created Date. | 
+| MISP.User.date_modified | string | MISP User Modified Date. | 
+
 ### Input
 
 | **Argument Name** | **Description** | **Required** |
