@@ -490,7 +490,11 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
                                                          'wait_time': WAIT_TIME_RASTERIZE,
                                                          'execution-timeout': TIMEOUT_RASTERIZE
                                                          })
+
+    demisto.debug('Rasterize Data: ' + json.dumps(res_rasterize))
+
     if is_error(res_rasterize):
+        demisto.debug(f'Rasterize Error: {res_rasterize}')
         error = get_error(res_rasterize)
 
         if 'disabled' in error or 'enabled' in error:
