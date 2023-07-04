@@ -65,7 +65,16 @@ def test_module(client: Client):
 
 
 def get_cvss_verion(cvss_vector: str) -> float:
-    # Checks for the CVSS score version according to its vector
+    """
+    Extracts the CVSS score version according to its vector.
+
+    Args:
+        cvss_vector: The CVSS of the CVE.
+
+    Returns:
+        The CVSS version as a float.
+
+    """
     if not cvss_vector:
         return 0
     elif cvss_version_regex := re.match('CVSS:(?P<version>.+?)/', cvss_vector):
