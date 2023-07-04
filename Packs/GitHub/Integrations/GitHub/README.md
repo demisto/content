@@ -2932,21 +2932,21 @@ Returns a list of GitHub workflows on a given repository.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Workflow.id | Number | The GitHub workflow id \(per run\) | 
-| GitHub.Workflow.name | String | The GitHub workflow name | 
+| GitHub.Workflow.id | Number | The GitHub workflow ID \(per run\). | 
+| GitHub.Workflow.name | String | The GitHub workflow name. | 
 | GitHub.Workflow.head_branch | String | The branch on which the workflow ran. | 
-| GitHub.Workflow.head_sha | String | The commit sha on which the workflow ran. | 
-| GitHub.Workflow.path | String | The GitHub workflow name path | 
-| GitHub.Workflow.display_title | String | The GitHub workflow title | 
-| GitHub.Workflow.run_number | Number | The GitHub workflow run number | 
-| GitHub.Workflow.event | String | The GitHub workflow trigger type \(scheduled, dispatch\) | 
-| GitHub.Workflow.status | String | The GitHub workflow status \(in_progress, completed\) | 
-| GitHub.Workflow.conclusion | String | The GitHub workflow conclusion \(cancelled, success\) | 
-| GitHub.Workflow.workflow_id | String | The GitHub workflow id \(per workflow\) | 
-| GitHub.Workflow.url | String | The GitHub workflow API URL | 
-| GitHub.Workflow.html_url | String | The GitHub workflow html URL | 
-| GitHub.Workflow.created_at | Date | Datetime the GitHub workflow was created at | 
-| GitHub.Workflow.updated_at | Date | Datetime the GitHub workflow was updated at | 
+| GitHub.Workflow.head_sha | String | The commit SHA on which the workflow ran. | 
+| GitHub.Workflow.path | String | The GitHub workflow name path. | 
+| GitHub.Workflow.display_title | String | The GitHub workflow title. | 
+| GitHub.Workflow.run_number | Number | The GitHub workflow run number. | 
+| GitHub.Workflow.event | String | The GitHub workflow trigger type \(scheduled, dispatch\). | 
+| GitHub.Workflow.status | String | The GitHub workflow status \(in_progress, completed\). | 
+| GitHub.Workflow.conclusion | String | The GitHub workflow conclusion \(cancelled, success\). | 
+| GitHub.Workflow.workflow_id | String | The GitHub workflow ID \(per workflow\). | 
+| GitHub.Workflow.url | String | The GitHub workflow API URL. | 
+| GitHub.Workflow.html_url | String | The GitHub workflow HTML URL. | 
+| GitHub.Workflow.created_at | Date | Datetime the GitHub workflow was created at. | 
+| GitHub.Workflow.updated_at | Date | Datetime the GitHub workflow was updated at. | 
 
 #### Command example
 ```!GitHub-list-workflows workflow=nightly.yml limit=1```
