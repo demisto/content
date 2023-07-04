@@ -1,0 +1,21 @@
+{
+    "platform": "cisco_ios",
+    "hostname": "localhost",
+    "port": "22",
+    "username": "someuser",
+    "password": "somepassword",
+    "sshkey": "somekey",
+    "cmds": "whoami",
+    "output": "root",
+    "isConfig": "False",
+    "enable": "False",
+    "require_exit": "False",
+    "exit_argument": "",
+    "raw_print": "False",
+    "disable_context": "False",
+    "override_host": "",
+    "override_port": "",
+    "override_platform": "",
+    "override_username": "",
+    "override_password": ""
+}

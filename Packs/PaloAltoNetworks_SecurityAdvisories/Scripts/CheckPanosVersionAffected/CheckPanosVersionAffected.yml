@@ -15,7 +15,6 @@ comment: Checks if the given PAN-OS version number is affected by the given list
 commonfields:
   id: CheckPanosVersionAffected
   version: -1
-enabled: false
 name: CheckPanosVersionAffected
 outputs:
 - contextPath: MatchingSecurityAdvisory.data_type

@@ -8,19 +8,16 @@ commonfields:
 configuration:
 - defaultvalue: 55f9764e-300a-474a-a2bb-549cece85439
   display: Application ID
-  hidden: false
   name: app_id
   required: false
   type: 0
   section: Connect
 - display: Subscription ID
-  hidden: false
   name: subscription_id
   required: true
   type: 0
   section: Connect
 - display: Resource Group Name
-  hidden: false
   name: resource_group_name
   required: true
   type: 0

@@ -70,7 +70,7 @@ def util_get_json(directory, filename):
 
 @pytest.fixture
 def mocked_client(mocker):
-    client = Client("https://xxx.api.hackuity.io", "N012345654321", "foo", "bar")
+    client = Client("https://xxx.api.hackuity.io", "N012345654321", "apikey")
 
     def mocked_http_request(url_suffix: str = "", **_: Any):
         return util_get_json("api", "_".join(url_suffix.split("/")[-2:]))

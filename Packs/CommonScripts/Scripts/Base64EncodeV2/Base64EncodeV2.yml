@@ -9,7 +9,6 @@ comment: Encodes an input to Base64 format.
 commonfields:
   id: Base64EncodeV2
   version: -1
-enabled: false
 name: Base64EncodeV2
 outputs:
 - contextPath: Base64.encoded

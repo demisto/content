@@ -31,7 +31,6 @@ comment: Returns DNS details for a domain
 commonfields:
   id: GetDomainDNSDetails
   version: -1
-enabled: false
 name: GetDomainDNSDetails
 outputs:
 - contextPath: DomainDNSDetails.A

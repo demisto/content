@@ -4,9 +4,7 @@ commonfields:
 name: RedCanary
 display: Red Canary
 category: Deception & Breach Simulation
-description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
-  Falcon.  The collected data is standardized into a common schema which allows teams
-  to detect, analyze and respond to security incidents.
+description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike Falcon.  The collected data is standardized into a common schema which allows teams to detect, analyze and respond to security incidents.
 configuration:
 - display: Domain (for example, https://demisto.my.redcanary.co)
   name: domain
@@ -17,33 +15,37 @@ configuration:
   name: api_key
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+- name: api_key_creds
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
 - display: Incident type
   name: incidentType
+  required: false
   type: 13
-  required: false
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
+  required: false
+  defaultvalue: 3 days
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   commands:
   - name: redcanary-acknowledge-detection
     arguments:
@@ -68,8 +70,7 @@ script:
       - not_remediated_unwarranted
       description: The way in which the detection was remediated.
     - name: comment
-      description: Describe the reason why the detection was remediated in this manner.
-        This is ignored for 'remediated' state
+      description: Describe the reason why the detection was remediated in this manner. This is ignored for 'remediated' state
       defaultValue: remediated by Demisto.
     description: Update the remediation state of a detection.
   - name: redcanary-list-detections
@@ -188,11 +189,9 @@ script:
       description: Playbook ID for execution.
     - name: detection-id
       required: true
-      description: Detection to execute the playbook on. Can be retrieve from the
-        context
+      description: Detection to execute the playbook on. Can be retrieve from the context
     - name: playbook-name
-      description: Playbook name for execution. if playbook ID is specify, this is
-        ignored.
+      description: Playbook name for execution. if playbook ID is specify, this is ignored.
     description: Execute a predefined playbook on a detection.
   - name: redcanary-get-endpoint
     arguments:

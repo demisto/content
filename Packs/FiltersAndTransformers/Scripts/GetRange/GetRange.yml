@@ -15,7 +15,7 @@ comment: 'Gets specified indexes of a list.'
 commonfields:
   id: GetRange
   version: -1
-enabled: false
+enabled: true
 name: GetRange
 script: '-'
 subtype: python3
@@ -26,5 +26,7 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.11.61265
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

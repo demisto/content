@@ -1,0 +1,16 @@
+{
+  "reply": {
+    "type": "user",
+    "id": "user_test",
+    "score": 95,
+    "reasons": [
+      {
+        "date created": "2023-01-31",
+        "description": "test",
+        "severity": "SEV_050_CRITICAL",
+        "status": "STATUS_010_NEW",
+        "points": 95
+      }
+    ]
+  }
+}

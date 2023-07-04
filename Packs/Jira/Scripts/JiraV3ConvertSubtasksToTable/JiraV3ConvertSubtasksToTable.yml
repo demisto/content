@@ -1,7 +1,6 @@
 commonfields:
   id: JiraV3ConvertSubtasksToTable
   version: -1
-enabled: false
 comment: This script is used to convert Jira subtasks to a table.
 name: JiraV3ConvertSubtasksToTable
 outputs: []

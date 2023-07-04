@@ -45,10 +45,10 @@ class Machine(Enum):
     Represents an XSOAR version.
     Serves as the single source of truth for versions used for collect_tests.
     """
-    V6_5 = Version('6.5')
-    V6_6 = Version('6.6')
     V6_8 = Version('6.8')
     V6_9 = Version('6.9')
+    V6_10 = Version('6.10')
+    V6_11 = Version('6.11')
     MASTER = 'Master'
 
     @staticmethod
@@ -247,7 +247,7 @@ def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:
 
 
 class PackManager:
-    skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules', 'NotSupported'}
+    skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
 
     def __init__(self, path_manager: PathManager):
         self.packs_path = path_manager.packs_path

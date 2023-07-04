@@ -1,11 +1,12 @@
 import copy
 from itertools import product
 from json import JSONDecodeError
-from typing import Tuple, List, Dict, Callable
+from typing import Tuple, List, Dict, Callable, Optional, Any, Union
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
 from requests import Response
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -60,12 +61,6 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "NoSensorDataImpairedCommunication": "Online",
     "Unknown": None,
 }
-
-SECURITY_GCC_RESOURCE = 'https://api-gcc-securitycenter.microsoft.us'
-SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
-SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
-SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
-GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
 
@@ -1030,12 +1025,12 @@ def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP
         observable: File or network observable from API.
 
     Links:
-        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file  # noqa: E501
-        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network  # noqa: E501
+        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file
+        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network
 
     Returns:
         File, IP, URL or Domain object. If observable is not supported, will return None.
-    """
+    """  # noqa: E501
     file_keys = {
         'fileHashType', 'fileHashValue', 'fileName', 'filePath', 'fileSize', 'fileType'
     }
@@ -1107,19 +1102,27 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 auth_type, redirect_uri, auth_code,
-                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None, managed_identities_client_id: Optional[str] = None):
+        self.endpoint_type = endpoint_type
+        if auth_type == 'Authorization Code':
+            token_retrieval_url = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
+                                          '/organizations/oauth2/v2.0/token')
+            grant_type = AUTHORIZATION_CODE
+        else:
+            token_retrieval_url = None
+            grant_type = None
+
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if
-            auth_type == 'Authorization Code' else None,
-            grant_type=AUTHORIZATION_CODE if auth_type == 'Authorization Code' else None,
+            token_retrieval_url=token_retrieval_url,
+            grant_type=grant_type,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope=Scopes.security_center_apt_service,
+            scope=urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
+                          "/windowsatpservice/.default"),
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
             auth_code=auth_code,
@@ -1130,25 +1133,41 @@ class MsClient:
             private_key=private_key,
             retry_on_rate_limit=True,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.security_center
+            managed_identities_resource_uri=MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
-        self.is_gcc = is_gcc
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
         if kwargs.pop('should_use_security_center', None):
-            kwargs['scope'] = Scopes.security_center_apt_service
-            kwargs['resource'] = {True: SECURITY_GCC_RESOURCE, False: SECURITY_CENTER_RESOURCE}[self.is_gcc]
+            kwargs['scope'] = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
+                                      "/windowsatpservice/.default")
+            kwargs['resource'] = MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
         else:
-            kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
+            kwargs['scope'] = self.get_graph_scope()
         return self.ms_client.http_request(*args, **kwargs)
+
+    def get_graph_scope(self):
+        return "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else \
+            urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type], "/.default")
+
+    def get_graph_indicator_endpoint(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type],
+                       "/beta/security/tiIndicators")
+
+    def get_security_center_indicator_endpoint(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+                       '/api/indicators')
+
+    def get_security_center_indicator_endpoint_batch(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+                       '/api/indicators/import')
 
     def offboard_machine(self, machine_id, comment):
         """ Offboard machine from defender.
@@ -1746,8 +1765,8 @@ class MsClient:
                 Returns:
                     List of responses.
                 """
-        cmd_url = urljoin(SECURITY_CENTER_INDICATOR_ENDPOINT,
-                          indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
+        cmd_url = urljoin(self.get_security_center_indicator_endpoint(),
+                          indicator_id) if indicator_id else self.get_security_center_indicator_endpoint()
         params = {'$top': limit}
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
@@ -1775,7 +1794,8 @@ class MsClient:
             List of responses.
         """
         results = {}
-        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id) if indicator_id else GRAPH_INDICATOR_ENDPOINT
+        cmd_url = urljoin(self.get_graph_indicator_endpoint(), indicator_id) \
+            if indicator_id else self.get_graph_indicator_endpoint()
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
@@ -1818,7 +1838,7 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        resp = self.indicators_http_request('POST', full_url=GRAPH_INDICATOR_ENDPOINT, json_data=body,
+        resp = self.indicators_http_request('POST', full_url=self.get_graph_indicator_endpoint(), json_data=body,
                                             url_suffix=None, should_use_security_center=False)
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
@@ -1869,16 +1889,16 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
-                                            url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=self.get_security_center_indicator_endpoint(),
+                                            json_data=body, url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
     def create_update_indicator_batch_security_center_api(self, body):
         """
         https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide
         """
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH, json_data=body,
-                                            url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=self.get_security_center_indicator_endpoint_batch(),
+                                            json_data=body, url_suffix=None, should_use_security_center=True)
         return resp
 
     def update_indicator(
@@ -1896,7 +1916,7 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id)
+        cmd_url = urljoin(self.get_graph_indicator_endpoint(), indicator_id)
         header = {'Prefer': 'return=representation'}
         body = {
             'targetProduct': 'Microsoft Defender ATP',
@@ -2770,26 +2790,26 @@ def get_file_data(file_response):
     Returns:
         dict. File's info
     """
-    file_data = assign_params(**{
-        'Sha1': file_response.get('sha1'),
-        'Size': file_response.get('size'),
-        'Sha256': file_response.get('sha256'),
-        'Md5': file_response.get('md5'),
-        'GlobalPrevalence': file_response.get('globalPrevalence'),
-        'GlobalFirstObserved': file_response.get('globalFirstObserved'),
-        'GlobalLastObserved': file_response.get('globalLastObserved'),
-        'SizeInBytes': file_response.get('size'),
-        'FileType': file_response.get('fileType'),
-        'IsPeFile': file_response.get('isPeFile'),
-        'FilePublisher': file_response.get('filePublisher'),
-        'FileProductName': file_response.get('fileProductName'),
-        'Signer': file_response.get('signer'),
-        'Issuer': file_response.get('issuer'),
-        'SignerHash': file_response.get('signerHash'),
-        'IsValidCertificate': file_response.get('isValidCertificate'),
-        'DeterminationType': file_response.get('determinationType'),
-        'DeterminationValue': file_response.get('determinationValue')
-    })
+    file_data = assign_params(
+        Sha1=file_response.get('sha1'),
+        Size=file_response.get('size'),
+        Sha256=file_response.get('sha256'),
+        Md5=file_response.get('md5'),
+        GlobalPrevalence=file_response.get('globalPrevalence'),
+        GlobalFirstObserved=file_response.get('globalFirstObserved'),
+        GlobalLastObserved=file_response.get('globalLastObserved'),
+        SizeInBytes=file_response.get('size'),
+        FileType=file_response.get('fileType'),
+        IsPeFile=file_response.get('isPeFile'),
+        FilePublisher=file_response.get('filePublisher'),
+        FileProductName=file_response.get('fileProductName'),
+        Signer=file_response.get('signer'),
+        Issuer=file_response.get('issuer'),
+        SignerHash=file_response.get('signerHash'),
+        IsValidCertificate=file_response.get('isValidCertificate'),
+        DeterminationType=file_response.get('determinationType'),
+        DeterminationValue=file_response.get('determinationValue'),
+    )
     return file_data
 
 
@@ -2919,6 +2939,11 @@ def request_download_investigation_package_command(client: MsClient, args: dict)
     return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
                                get_machine_investigation_package,
                                get_machine_action_command, download_file_after_successful_status)
+
+
+def generate_login_url_command(client: MsClient):
+    return generate_login_url(client.ms_client,
+                              MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS[client.endpoint_type])
 
 
 def download_file_after_successful_status(client, res):
@@ -3179,12 +3204,12 @@ def get_domain_statistics_context(domain_stat_response):
     Returns:
         (dict). domain statistics context
     """
-    domain_statistics = assign_params(**{
-        "Host": domain_stat_response.get('host'),
-        "OrgPrevalence": domain_stat_response.get('orgPrevalence'),
-        "OrgFirstSeen": domain_stat_response.get('orgFirstSeen'),
-        "OrgLastSeen": domain_stat_response.get('orgLastSeen')
-    })
+    domain_statistics = assign_params(
+        Host=domain_stat_response.get('host'),
+        OrgPrevalence=domain_stat_response.get('orgPrevalence'),
+        OrgFirstSeen=domain_stat_response.get('orgFirstSeen'),
+        OrgLastSeen=domain_stat_response.get('orgLastSeen'),
+    )
     return domain_statistics
 
 
@@ -3287,28 +3312,28 @@ def get_machine_data(machine):
     Returns:
         dict. Machine's info
     """
-    machine_data = assign_params(**{
-        'ID': machine.get('id'),
-        'ComputerDNSName': machine.get('computerDnsName'),
-        'FirstSeen': machine.get('firstSeen'),
-        'LastSeen': machine.get('lastSeen'),
-        'OSPlatform': machine.get('osPlatform'),
-        'OSVersion': machine.get('version'),
-        'OSProcessor': machine.get('osProcessor'),
-        'LastIPAddress': machine.get('lastIpAddress'),
-        'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
-        'AgentVersion': machine.get('agentVersion'),
-        'OSBuild': machine.get('osBuild'),
-        'HealthStatus': machine.get('healthStatus'),
-        'RBACGroupID': machine.get('rbacGroupId'),
-        'RBACGroupName': machine.get('rbacGroupName'),
-        'RiskScore': machine.get('riskScore'),
-        'ExposureLevel': machine.get('exposureLevel'),
-        'AADDeviceID': machine.get('aadDeviceId'),
-        'IsAADJoined': machine.get('isAadJoined'),
-        'MachineTags': machine.get('machineTags'),
-        'IPAddresses': machine.get('ipAddresses'),
-    })
+    machine_data = assign_params(
+        ID=machine.get('id'),
+        ComputerDNSName=machine.get('computerDnsName'),
+        FirstSeen=machine.get('firstSeen'),
+        LastSeen=machine.get('lastSeen'),
+        OSPlatform=machine.get('osPlatform'),
+        OSVersion=machine.get('version'),
+        OSProcessor=machine.get('osProcessor'),
+        LastIPAddress=machine.get('lastIpAddress'),
+        LastExternalIPAddress=machine.get('lastExternalIpAddress'),
+        AgentVersion=machine.get('agentVersion'),
+        OSBuild=machine.get('osBuild'),
+        HealthStatus=machine.get('healthStatus'),
+        RBACGroupID=machine.get('rbacGroupId'),
+        RBACGroupName=machine.get('rbacGroupName'),
+        RiskScore=machine.get('riskScore'),
+        ExposureLevel=machine.get('exposureLevel'),
+        AADDeviceID=machine.get('aadDeviceId'),
+        IsAADJoined=machine.get('isAadJoined'),
+        MachineTags=machine.get('machineTags'),
+        IPAddresses=machine.get('ipAddresses'),
+    )
     return machine_data
 
 
@@ -3338,15 +3363,15 @@ def get_file_statistics_context(file_stat_response):
     Returns:
         (dict). File statistics context
     """
-    file_stat = assign_params(**{
-        "OrgPrevalence": file_stat_response.get('orgPrevalence'),
-        "OrgFirstSeen": file_stat_response.get('orgFirstSeen'),
-        "OrgLastSeen": file_stat_response.get('orgLastSeen'),
-        "GlobalPrevalence": file_stat_response.get('globalPrevalence'),
-        "GlobalFirstObserved": file_stat_response.get('globalFirstObserved'),
-        "GlobalLastObserved": file_stat_response.get('globalLastObserved'),
-        "TopFileNames": file_stat_response.get('topFileNames')
-    })
+    file_stat = assign_params(
+        OrgPrevalence=file_stat_response.get('orgPrevalence'),
+        OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
+        OrgLastSeen=file_stat_response.get('orgLastSeen'),
+        GlobalPrevalence=file_stat_response.get('globalPrevalence'),
+        GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
+        GlobalLastObserved=file_stat_response.get('globalLastObserved'),
+        TopFileNames=file_stat_response.get('topFileNames'),
+    )
     return file_stat
 
 
@@ -3398,11 +3423,11 @@ def get_ip_statistics_context(ip_statistics_response):
     Returns:
         (dict). IP statistics context
     """
-    ip_statistics = assign_params(**{
-        "OrgPrevalence": ip_statistics_response.get('orgPrevalence'),
-        "OrgFirstSeen": ip_statistics_response.get('orgFirstSeen'),
-        "OrgLastSeen": ip_statistics_response.get('orgLastSeen')
-    })
+    ip_statistics = assign_params(
+        OrgPrevalence=ip_statistics_response.get('orgPrevalence'),
+        OrgFirstSeen=ip_statistics_response.get('orgFirstSeen'),
+        OrgLastSeen=ip_statistics_response.get('orgLastSeen')
+    )
     return ip_statistics
 
 
@@ -3531,11 +3556,15 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
 
 
 def fetch_incidents(client: MsClient, last_run, fetch_evidence):
+
+    demisto.debug("Microsoft-ATP - Start fetching")
+
     first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
                                         settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
     demisto.debug(f'First fetch time: {first_fetch_time}')
 
     if last_run:
+        demisto.debug(f"Microsoft-ATP - Last run: {json.dumps(last_run)}")
         last_fetch_time = last_run.get('last_alert_fetched_time')
         last_fetch_time = datetime.strftime(parse_date_string(last_fetch_time) + timedelta(milliseconds=1), TIME_FORMAT)
         # handling old version of time format:
@@ -3544,13 +3573,14 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
     else:
         last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)  # type: ignore
+        demisto.debug(f"Microsoft-ATP - Last run: {last_fetch_time}")
 
     latest_created_time = dateparser.parse(last_fetch_time,
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
     demisto.debug(f'latest_created_time: {latest_created_time}')
 
     params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
-    demisto.debug(f'getting alerts using {params=}')
+    demisto.debug(f"Microsoft-ATP - Query sent to the server: {params}")
     incidents = []
     # get_alerts:
     try:
@@ -3565,6 +3595,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
                 f'Try using a lower limit.')
         demisto.debug(f'Query crashed API. Params sent to query: {params}')
         raise err
+    skipped_incidents = 0
 
     for alert in alerts:
         alert_time = dateparser.parse(alert['alertCreationTime'],
@@ -3574,8 +3605,9 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
             demisto.debug(f'Checking alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
             if alert_time <= parsed:  # type: ignore
-                demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
-                              f' Skipping.')
+                skipped_incidents += 1
+                demisto.debug(f'Microsoft - ATP - Skipping incident with id={alert["id"]} with time {alert_time} because its'
+                              ' creation time is smaller than the last fetch.')
                 continue
         demisto.debug(f'Adding alert {alert["id"]}')
         incidents.append({
@@ -3591,7 +3623,10 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
-    demisto.debug(f'got {len(incidents)} incidents from the API.')
+    demisto.debug(f'Microsoft-ATP - Next run after incidents fetching: {latest_created_time}')
+    demisto.debug(f"Microsoft-ATP - Number of incidents before filtering: {len(alerts)}")
+    demisto.debug(f"Microsoft-ATP - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"Microsoft-ATP - Number of incidents skipped: {skipped_incidents}")
     last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)  # type: ignore
     return incidents, last_run
 
@@ -3881,14 +3916,14 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
-            Should contain a a network observable:
-            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network  # noqa: E501
+            Should contain a network observable:
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network
     Returns:
         human readable, outputs, raw response
 
     Raises:
         AssertionError: If no file arguments.
-    """
+    """  # noqa: E501
     network_object = assign_params(
         domainName=args.get('domain_name'),
         networkCidrBlock=args.get('network_cidr_block'),
@@ -3980,7 +4015,7 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
         human readable
     """
     indicator_id = args.get('indicator_id', '')
-    client.delete_indicator(indicator_id, GRAPH_INDICATOR_ENDPOINT)
+    client.delete_indicator(indicator_id, client.get_graph_indicator_endpoint())
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
@@ -3995,7 +4030,7 @@ def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> Comma
           An indication of whether the indicator was deleted successfully.
     """
     indicator_id = args['indicator_id']
-    client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
+    client.delete_indicator(indicator_id, client.get_security_center_indicator_endpoint(), use_security_center=True)
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
 
@@ -4568,7 +4603,8 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> li
                                        modified=cve.get('updatedOn')
                                        )
             human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id} by software: {software_id}',
-                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers,
+                                             removeNull=True)
             results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
                                                outputs_key_field='id',
                                                outputs=cve,
@@ -5412,7 +5448,9 @@ def put_file_get_successful_action_results(client, res):
 
 def main():  # pragma: no cover
     params: dict = demisto.params()
-    base_url: str = params.get('url', '').rstrip('/') + '/api'
+    params_endpoint_type = params.get('endpoint_type') or 'Worldwide'
+    params_url = params.get('url')
+    is_gcc = params.get('is_gcc', False)
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     auth_id = params.get('_auth_id') or params.get('auth_id')
     enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
@@ -5427,48 +5465,53 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
-    is_gcc = params.get('is_gcc', False)
     auth_type = params.get('auth_type', 'Client Credentials')
     auth_code = params.get('auth_code', {}).get('password', '')
     redirect_uri = params.get('redirect_uri', '')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed = self_deployed or managed_identities_client_id is not None
+
+    endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc)
+
+    base_url: str = urljoin(params_url, '/api')
+
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-        elif not enc_key and not (certificate_thumbprint and private_key):
+        elif not enc_key and (not certificate_thumbprint or not private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
         if not auth_id:
             raise Exception('Authentication ID must be provided.')
         if not tenant_id:
             raise Exception('Tenant ID must be provided.')
-        if auth_code and redirect_uri:
-            if not self_deployed:
+        if auth_code:
+            if redirect_uri and not self_deployed:
                 raise Exception('In order to use Authorization Code, set Self Deployed: True.')
-        if auth_code and not redirect_uri:
-            raise Exception('In order to use Authorization Code auth flow, you should set: '
-                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
+            if not redirect_uri:
+                raise Exception('In order to use Authorization Code auth flow, you should set: '
+                                '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
     try:
+
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri,
+            auth_type=auth_type, endpoint_type=endpoint_type,
+            auth_code=auth_code, redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id
         )
         if command == 'test-module':
             if auth_type == 'Authorization Code':
                 raise Exception('Test-module is not available when using Authentication-code auth flow. '
                                 'Please use `!microsoft-atp-test` command to test the connection')
-            else:
-                test_module(client)
-                demisto.results('ok')
+            test_module(client)
+            demisto.results('ok')
 
         elif command == 'microsoft-atp-test':
             test_module(client)
@@ -5618,7 +5661,6 @@ def main():  # pragma: no cover
             return_outputs(*update_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-delete':
             return_outputs(delete_indicator_command(client, args))
-        # using security-center api for indicators
         elif command in ('microsoft-atp-sc-indicator-list', 'microsoft-atp-sc-indicator-get-by-id'):
             return_results(sc_list_indicators_command(client, args))
         elif command in ('microsoft-atp-sc-indicator-update', 'microsoft-atp-sc-indicator-create'):
@@ -5662,13 +5704,11 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
         elif command == 'microsoft-atp-generate-login-url':
-            return_results(generate_login_url(client.ms_client))
+            return_results(generate_login_url_command(client))
 
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

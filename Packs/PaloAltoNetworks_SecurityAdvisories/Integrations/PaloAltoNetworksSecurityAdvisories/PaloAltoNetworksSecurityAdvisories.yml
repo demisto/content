@@ -11,7 +11,6 @@ configuration:
 - additionalinfo: The Palo Alto Networks product name to fetch indicators for, such as "PAN-OS"
   defaultvalue: PAN-OS
   display: Fetch indicator product name
-  hidden: false
   name: fetch_product_name
   required: false
   type: 0
@@ -154,7 +153,7 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings
       type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isfetch: false
   longRunning: false

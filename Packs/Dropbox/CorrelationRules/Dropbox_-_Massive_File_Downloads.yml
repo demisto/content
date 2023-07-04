@@ -46,3 +46,4 @@ xql_query: 'datamodel
   | comp values(xdm.source.ipv4) as SourceIP, values(xdm.source.location.country) as Countries, max(_time) as lastTime, values(xdm.target.resource.name) as Files, count() as NumberOfFiles by user
 
   | filter NumberOfFiles > 100'
+fromversion: 6.10.0

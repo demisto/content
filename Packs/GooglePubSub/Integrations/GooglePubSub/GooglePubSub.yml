@@ -18,11 +18,15 @@ configuration:
   section: Connect
 - display: Service account private key file contents (JSON).
   additionalinfo: See the Help tab for details on creating a Service Account file.
-  hidden: false
   name: service_account_json
-  required: true
   type: 4
   section: Connect
+  hidden: true
+- name: credentials
+  type: 9
+  section: Connect
+  displaypassword: Service account private key file contents (JSON).
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -37,26 +41,23 @@ configuration:
   advanced: true
 - additionalinfo: ID of the project to use by default when no project ID is provided.
   display: Default project ID.
-  hidden: false
   name: default_project
   required: true
   type: 0
   section: Connect
 - additionalinfo: Subscription ID from which to fetch incidents.
   display: Fetch incidents using the subscription ID.
-  hidden: false
   name: default_subscription
   required: false
   type: 0
   section: Collect
 - additionalinfo: Maximum number of incidents created per fetch.
-  defaultvalue: '50'
   display: Maximum number of incidents per fetch.
-  hidden: false
   name: default_max_msgs
   required: false
   type: 0
   section: Collect
+  defaultvalue: '50'
 - additionalinfo: Acknowledge fetched incidents. (When toggled off, will not acknowledge fetched messages).
   display: Acknowledge incidents.
   name: ack_incidents
@@ -67,11 +68,10 @@ configuration:
 - additionalinfo: First fetch timestamp (<number> <time unit>. E.g., 12 hours, 7 days).
   defaultvalue: 3 days
   display: First fetch time.
-  hidden: false
   name: first_fetch_time
   required: false
-  type: 0
   section: Collect
+  type: 0
 description: Google Cloud Pub/Sub is a fully-managed real-time messaging service that enables you to send and receive messages between independent applications.
 display: Google Cloud Pub/Sub
 name: GooglePubSub
@@ -828,7 +828,7 @@ script:
     description: Acknowledge previously pulled message or messages.
     execution: false
     name: gcp-pubsub-topic-ack-messages
-  dockerimage: demisto/googleapi-python3:1.0.0.49338
+  dockerimage: demisto/googleapi-python3:1.0.0.64222
   feed: false
   isfetch: true
   longRunning: false

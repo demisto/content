@@ -177,7 +177,6 @@ comment: 'This script is used to simplify the process of creating the incident i
 commonfields:
   id: BMCHelixRemedyforceCreateIncident
   version: -1
-enabled: false
 name: BMCHelixRemedyforceCreateIncident
 outputs:
 - contextPath: BmcRemedyforce.Incident.Id

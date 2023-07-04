@@ -1,0 +1,16 @@
+[MODEL:dataset="barracuda_email_protection_raw"]
+alter 
+    payload = arrayindex(regextract(_raw_log, "\[\d\]: (\{.*?$)"), 0) |
+alter
+     xdm.target.domain = json_extract_scalar(payload, "$.dst_domain")
+    ,xdm.target.user.username = json_extract_scalar(payload, "$.hdr_to")
+    ,xdm.email.sender = arrayindex(regextract(json_extract_scalar(payload, "$.hdr_from"), "\<(.*?)\>"), 0) 
+    ,xdm.email.subject = json_extract_scalar(payload, "$.subject")
+    ,xdm.email.message_id = json_extract_scalar(payload, "$.message_id")
+    ,xdm.email.delivery_timestamp = to_timestamp(parse_epoch("%Y-%m-%dT%H:%M:%S%z", json_extract_scalar(payload, "$.timestamp")) , "SECONDS")
+    ,xdm.email.recipients = arraymap(json_extract_array (payload,"$.recipients"), json_extract_scalar("@element", "$.email"))
+    ,xdm.source.sent_bytes = to_integer(json_extract(payload, "$.size"))
+    ,xdm.source.ipv4 = json_extract_scalar(payload, "$.src_ip")
+    ,xdm.source.user.username = arrayindex(regextract(json_extract_scalar(payload, "$.hdr_from"), "\"(.*?)\""), 0)
+    ,xdm.event.description = to_string(json_extract(payload, "$.recipients"))
+    ;

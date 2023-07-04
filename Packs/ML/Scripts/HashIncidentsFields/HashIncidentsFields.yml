@@ -106,7 +106,6 @@ comment: |-
 commonfields:
   id: HashIncidentsFields
   version: -1
-enabled: false
 name: HashIncidentsFields
 outputs:
 - contextPath: HashIncidentsFields.Filename

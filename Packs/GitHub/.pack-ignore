@@ -14,3 +14,12 @@ assignees
 [file:GitHubEventCollector.yml]
 ignore=BA124
 
+[file:GithubModelingRules.yml]
+ignore=MR108
+
+[file:GitHub_ParsingRules.yml]
+ignore=PR101
+
+[file:GithubModelingRules_1_3.yml]
+ignore=MR108
+

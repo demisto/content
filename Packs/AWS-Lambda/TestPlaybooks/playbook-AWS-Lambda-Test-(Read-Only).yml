@@ -16,20 +16,24 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4af32f5d-b314-4b4f-8c5f-1512014566f3
+      id: f8639114-251b-4613-8f86-c8072f6ebfdc
       iscommand: false
       name: ""
       version: -1
-    taskid: 4af32f5d-b314-4b4f-8c5f-1512014566f3
+      description: ''
+    taskid: f8639114-251b-4613-8f86-c8072f6ebfdc
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 480,
           "y": 50
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     ignoreworker: false
@@ -41,26 +45,27 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: AWS - Lambda
-      description: Returns a list of your Lambda functions. For each function, the
-        response includes the function configuration information. You must use GetFunction
-        to retrieve the code for your function.
-      id: b590a0cf-4298-4599-8ff2-a5f1c7a690da
+      brand: ""
+      description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information. You must use GetFunction to retrieve the code for your function.
+      id: e0d26f3f-1a56-4120-85d9-bf455742525b
       iscommand: true
       name: aws-lambda-list-functions
-      script: AWS - Lambda|||aws-lambda-list-functions
+      script: '|||aws-lambda-list-functions'
       type: regular
       version: -1
-    taskid: b590a0cf-4298-4599-8ff2-a5f1c7a690da
+    taskid: e0d26f3f-1a56-4120-85d9-bf455742525b
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 480,
+          "y": 195
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     ignoreworker: false
@@ -72,25 +77,27 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: AWS - Lambda
-      description: Retrieves details about your account's limits and usage in an AWS
-        Region.
-      id: 4ca6e783-65a5-4012-89ca-7b3e1059c788
+      brand: ""
+      description: Retrieves details about your account's limits and usage in an AWS Region.
+      id: 637b330e-a065-4d0f-8df7-43bc7442ed24
       iscommand: true
       name: aws-lambda-get-account-settings
-      script: AWS - Lambda|||aws-lambda-get-account-settings
+      script: '|||aws-lambda-get-account-settings'
       type: regular
       version: -1
-    taskid: 4ca6e783-65a5-4012-89ca-7b3e1059c788
+    taskid: 637b330e-a065-4d0f-8df7-43bc7442ed24
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 480,
           "y": 370
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     ignoreworker: false
@@ -101,50 +108,36 @@ tasks:
     quietmode: 0
     reputationcalc: 1
     scriptarguments:
-      clientContext: {}
       functionName:
-        simple: test_echo
-      invocationType: {}
+        simple: XSIAM-Dev
       logType:
         simple: Tail
       payload:
         simple: ${AWS.Lambda.Functions}
-      qualifier: {}
-      region: {}
-      retries: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      timeout: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Invokes a Lambda function. Specify just a function name to invoke
-        the latest version of the function. To invoke a published version, use the
-        Qualifier parameter to specify a version or alias .  If you use the RequestResponse
-        (synchronous) invocation option, the function will be invoked only once. If
-        you use the Event (asynchronous) invocation option, the function will be invoked
-        at least once in response to an event and the function must be idempotent
-        to handle this.  For functions with a long timeout, your client may be disconnected
-        during synchronous invocation while it waits for a response. Configure your
-        demisto server to allow for long connections with timeout or keep-alive settings.
-      id: a40054d8-51c5-4844-86e5-234dd232b98d
+      description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias .  If you use the RequestResponse (synchronous) invocation option, the function will be invoked only once. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.  For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Configure your demisto server to allow for long connections with timeout or keep-alive settings.
+      id: 59dc1988-5d27-4437-837a-daec2d2f3c31
       iscommand: true
       name: aws lambda invoke
       script: '|||aws-lambda-invoke'
       type: regular
       version: -1
-    taskid: a40054d8-51c5-4844-86e5-234dd232b98d
+    taskid: 59dc1988-5d27-4437-837a-daec2d2f3c31
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 550
+          "x": 480,
+          "y": 545
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     conditions:
     - condition:
@@ -155,15 +148,7 @@ tasks:
           operator: containsGeneral
           right:
             value:
-              simple: '"FunctionName":"test_echo"'
-      - - left:
-            iscontext: true
-            value:
-              simple: AWS.Lambda.InvokedFunctions.LogResult
-          operator: containsGeneral
-          right:
-            value:
-              simple: Billed Duration
+              simple: '{"statusCode":200,"body":"\"Hello from Lambda!\""}'
       label: "yes"
     id: "4"
     ignoreworker: false
@@ -178,21 +163,24 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 76d3fc24-ce98-4ac5-8c32-a70917dac3f8
+      id: 2b5659b9-b025-4ade-85e9-0913c1a2eb36
       iscommand: false
       name: Check returned invoke result
       type: condition
       version: -1
-    taskid: 76d3fc24-ce98-4ac5-8c32-a70917dac3f8
+    taskid: 2b5659b9-b025-4ade-85e9-0913c1a2eb36
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 700
+          "x": 480,
+          "y": 720
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     continueonerror: true
     id: "5"
@@ -204,51 +192,38 @@ tasks:
     quietmode: 0
     reputationcalc: 1
     scriptarguments:
-      clientContext: {}
       functionName:
         simple: test_sleep
-      invocationType: {}
-      logType: {}
       payload:
         simple: '{"sleep":"20"}'
-      qualifier: {}
-      region: {}
       retries:
         simple: "0"
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       timeout:
         simple: "10"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Invokes a Lambda function. Specify just a function name to invoke
-        the latest version of the function. To invoke a published version, use the
-        Qualifier parameter to specify a version or alias .  If you use the RequestResponse
-        (synchronous) invocation option, the function will be invoked only once. If
-        you use the Event (asynchronous) invocation option, the function will be invoked
-        at least once in response to an event and the function must be idempotent
-        to handle this.  For functions with a long timeout, your client may be disconnected
-        during synchronous invocation while it waits for a response. Configure your
-        demisto server to allow for long connections with timeout or keep-alive settings.
-      id: 1da9d5c5-a955-48dc-8e80-45cc3bd32bf5
+      description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias .  If you use the RequestResponse (synchronous) invocation option, the function will be invoked only once. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.  For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Configure your demisto server to allow for long connections with timeout or keep-alive settings.
+      id: 05df7565-1d9f-4279-871c-5fc779598179
       iscommand: true
       name: Invoke Sleep with timeout (should fail)
       script: '|||aws-lambda-invoke'
       type: regular
       version: -1
-    taskid: 1da9d5c5-a955-48dc-8e80-45cc3bd32bf5
+    taskid: 05df7565-1d9f-4279-871c-5fc779598179
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 930
+          "x": 265,
+          "y": 895
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     ignoreworker: false
@@ -262,22 +237,25 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 6d5145e3-2388-453d-8fcf-7f1ab9c69540
+      id: a480e868-77b9-48c2-8288-6185f81da8b7
       iscommand: false
       name: Invoke Error
-      script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 6d5145e3-2388-453d-8fcf-7f1ab9c69540
+      scriptName: PrintErrorEntry
+    taskid: a480e868-77b9-48c2-8288-6185f81da8b7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 860
+          "x": 695,
+          "y": 895
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     ignoreworker: false
@@ -285,7 +263,7 @@ tasks:
       "no":
       - "8"
       "yes":
-      - "9"
+      - "10"
     note: false
     quietmode: 0
     scriptarguments:
@@ -295,25 +273,26 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      id: d9c31c25-62fc-4f37-8814-91718370e59d
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      id: 5ceba1a1-75d2-4c4c-8cfd-433323ec45d9
       iscommand: false
       name: Check that we failed
-      script: isError
       type: condition
       version: -1
-    taskid: d9c31c25-62fc-4f37-8814-91718370e59d
+      scriptName: isError
+    taskid: 5ceba1a1-75d2-4c4c-8cfd-433323ec45d9
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1120
+          "x": 265,
+          "y": 1070
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     ignoreworker: false
@@ -327,22 +306,25 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: bb1bbfbd-8980-4312-845b-d75b4f2db893
+      id: efeca55f-4279-4322-8685-4485b49292c6
       iscommand: false
       name: Expected to timeout
-      script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: bb1bbfbd-8980-4312-845b-d75b4f2db893
+      scriptName: PrintErrorEntry
+    taskid: efeca55f-4279-4322-8685-4485b49292c6
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 1240
+          "x": 50,
+          "y": 1245
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     ignoreworker: false
@@ -352,32 +334,341 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e8b95477-7369-4023-893f-fcce6e621d41
+      id: ef8c2cad-1cbe-41b8-86b4-21560f23483e
       iscommand: false
       name: All is good
       type: title
       version: -1
-    taskid: e8b95477-7369-4023-893f-fcce6e621d41
+      description: ''
+    taskid: ef8c2cad-1cbe-41b8-86b4-21560f23483e
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1390
+          "x": 480,
+          "y": 2645
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 68574d28-4fe7-4b32-8f4c-b3e9b6a56476
+    type: regular
+    task:
+      id: 68574d28-4fe7-4b32-8f4c-b3e9b6a56476
+      version: -1
+      name: aws-lambda-list-versions-by-function
+      description: Returns a list of versions, with the version-specific configuration of each.
+      script: '|||aws-lambda-list-versions-by-function'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      functionName:
+        simple: XSIAM-Dev
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e7b42d38-642b-4a43-8d5b-497987afa94b
+    type: condition
+    task:
+      id: e7b42d38-642b-4a43-8d5b-497987afa94b
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.Lambda.Versions.FunctionName
+            iscontext: true
+          right:
+            value:
+              simple: XSIAM-Dev
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3cc8970e-148d-46b5-836c-3bf51ca450e3
+    type: regular
+    task:
+      id: 3cc8970e-148d-46b5-836c-3bf51ca450e3
+      version: -1
+      name: aws-lambda-get-policy
+      description: Returns the resource-based IAM policy for a function, version, or alias.
+      script: '|||aws-lambda-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      functionName:
+        simple: test-csv-java
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b2d93e11-7cd0-44cc-8b11-5f66883482b9
+    type: condition
+    task:
+      id: b2d93e11-7cd0-44cc-8b11-5f66883482b9
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.Lambda.Policy.Id
+            iscontext: true
+          right:
+            value:
+              simple: default
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6e4dc5d4-bfaf-4954-88b3-d53f6daeff51
+    type: regular
+    task:
+      id: 6e4dc5d4-bfaf-4954-88b3-d53f6daeff51
+      version: -1
+      name: aws-lambda-get-function-url-config
+      description: Returns details about a Lambda function URL.
+      script: '|||aws-lambda-get-function-url-config'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      functionName:
+        simple: guy-miner-test-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 62abb776-5002-4362-804e-aaef37c244e5
+    type: condition
+    task:
+      id: 62abb776-5002-4362-804e-aaef37c244e5
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.Lambda.FunctionURLConfig.InvokeMode
+            iscontext: true
+          right:
+            value:
+              simple: BUFFERED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: cd2884c5-c55e-457c-8686-7c755a0cd515
+    type: regular
+    task:
+      id: cd2884c5-c55e-457c-8686-7c755a0cd515
+      version: -1
+      name: aws-lambda-get-function-configuration
+      description: Returns the version-specific settings of a Lambda function or version. The output includes only options that can vary between versions of a function.
+      script: '|||aws-lambda-get-function-configuration'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      functionName:
+        simple: XSIAM-Dev
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 06c9b022-62c4-40ce-8b6c-067f20896881
+    type: condition
+    task:
+      id: 06c9b022-62c4-40ce-8b6c-067f20896881
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.Lambda.FunctionConfig.FunctionName
+            iscontext: true
+          right:
+            value:
+              simple: XSIAM-Dev
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1405,
-        "width": 890,
-        "x": 450,
+        "height": 2660,
+        "width": 1025,
+        "x": 50,
         "y": 50
       }
     }
   }
-fromversion: 5.0.0
+fromversion: 6.8.0
+description: ''

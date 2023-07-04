@@ -1,7 +1,6 @@
 args:
 - default: false
-  description: The action to make. If update is chosen and the key does not exist, a
-    new key will be added.
+  description: The action to make. If update is chosen and the key does not exist, a new key will be added.
   isArray: false
   name: action
   required: true
@@ -22,12 +21,10 @@ args:
   name: value
   required: false
   secret: false
-comment: Edit the server configuration (under *settings/troubleshooting*). You can
-  either add a new configuration or update and remove an existing one.
+comment: Edit the server configuration (under *settings/troubleshooting*). You can either add a new configuration or update and remove an existing one.
 commonfields:
   id: EditServerConfig
   version: -1
-enabled: false
 name: EditServerConfig
 script: '-'
 system: false
@@ -39,5 +36,5 @@ fromversion: 6.0.0
 tests:
 - TestEditServerConfig
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
