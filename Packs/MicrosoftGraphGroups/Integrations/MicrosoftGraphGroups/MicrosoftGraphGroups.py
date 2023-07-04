@@ -1,4 +1,3 @@
-from typing import Any
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
