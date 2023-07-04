@@ -20,7 +20,7 @@ MOCK_PARAMS = {
 
 
 def load_test_data(json_path):
-    with open(json_path, mode='r') as f:
+    with open(json_path) as f:
         return json.load(f)
 
 
@@ -62,6 +62,7 @@ def mock_http_request(method, url_suffix, params=None, data=None, headers=None, 
         return [{"login": 'test1', 'id': '12345'}]
     elif url_suffix == "/orgs/demisto/teams/content/members" and params.get('page') == 2:
         return []
+    return None
 
 
 SEARCH_CASES = [
@@ -303,7 +304,7 @@ def test_releases_list_command(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'repository': 'demisto-sdk', 'organization': 'demisto',
                                                        'limit': 2})
     GitHub.TOKEN, GitHub.USE_SSL = '', ''
-    GitHub.HEADERS = dict()
+    GitHub.HEADERS = {}
     GitHub.BASE_URL = 'https://api.github.com/'
     test_releases_list_command_data = load_test_data(
         './test_data/releases_get_response.json')
@@ -329,7 +330,7 @@ def test_get_branch(requests_mock, mocker):
     """
     mocker.patch.object(demisto, 'args', return_value={'branch_name': 'my-branch'})
     GitHub.TOKEN, GitHub.USE_SSL = '', ''
-    GitHub.HEADERS = dict()
+    GitHub.HEADERS = {}
     GitHub.BASE_URL = 'https://api.github.com/'
     GitHub.USER_SUFFIX = '/repos/user/repo'
     raw_response = load_test_data('./test_data/get_branch_response.json')
@@ -359,7 +360,7 @@ def test_url_parameter_value(mocker, mock_params, expected_url):
 
     main()
 
-    assert GitHub.BASE_URL == expected_url
+    assert expected_url == GitHub.BASE_URL
 
 
 def test_list_issue_comments_no_since(mocker):
