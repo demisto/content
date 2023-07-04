@@ -2325,10 +2325,10 @@ def splunk_job_status(service: client.Service, args: dict) -> CommandResults | N
     try:
         job = service.job(sid)
     except HTTPError as error:
-        if error.message == 'HTTP 404 Not Found -- Unknown sid.':
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':  # pylint: disable=no-member
             demisto.results(f"Not found job for SID: {sid}")
         else:
-            return_error(error.message, error)
+            return_error(error.message, error)  # pylint: disable=no-member
         return None
     else:
         status = job.state.content.get('dispatchState')
