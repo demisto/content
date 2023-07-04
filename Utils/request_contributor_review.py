@@ -2,7 +2,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import Set
 
 import requests
 import sendgrid
@@ -134,7 +133,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
             print(f"Not found {pack} {PACK_METADATA} file.")
             continue
 
-        with open(pack_metadata_path, 'r') as pack_metadata_file:
+        with open(pack_metadata_path) as pack_metadata_file:
             pack_metadata = json.load(pack_metadata_file)
 
         # Notify contributors if this is not new pack
@@ -192,7 +191,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
 
 def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files: list, pack: str,
-                    pr_number: str, github_token: str, verify_ssl: bool, tagged_packs_reviewers: Set[str]) -> bool:
+                    pr_number: str, github_token: str, verify_ssl: bool, tagged_packs_reviewers: set[str]) -> bool:
     """ Tag user on pr and ask for review if there are reviewers, and this is not new pack.
 
     Args:

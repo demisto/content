@@ -4,7 +4,6 @@ import logging
 import os
 from pathlib import Path
 import subprocess
-from typing import Optional
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from Tests.scripts.utils.log_util import install_logging
 
@@ -41,7 +40,7 @@ def download_logs(server_ip: str, aritfacts_dir: str, role: str):
         logging.exception(f'Failed downloading server logs from server {server_ip}')
 
 
-def shutdown(server_ip: str, ttl: Optional[int] = None):
+def shutdown(server_ip: str, ttl: int | None = None):
     try:
         logging.info(f'Destroying instance with IP - {server_ip}')
         shutdown_command = f'sudo shutdown +{ttl}' if ttl else 'sudo shutdown'
@@ -57,7 +56,7 @@ def main():
     time_to_live = os.getenv('TIME_TO_LIVE')
     tests_path = Path('./Tests')
 
-    with open(options.env_file, 'r') as json_file:
+    with open(options.env_file) as json_file:
         env_results = json.load(json_file)
 
     for env in filter(lambda x: x["Role"] == options.instance_role, env_results):

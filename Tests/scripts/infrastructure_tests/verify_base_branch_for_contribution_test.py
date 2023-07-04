@@ -17,8 +17,8 @@ def test_verify_base_branch(requests_mock):
     requests_mock.get(url, json=bad_response)
     msg, is_valid = verify_base_branch('528')
     assert is_valid is False
-    assert 'Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.' == msg
+    assert msg == 'Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.'
     requests_mock.get(url, json=good_response)
     msg, is_valid = verify_base_branch('528')
     assert is_valid is True
-    assert 'Verified pull request #528 base branch successfully.' == msg
+    assert msg == 'Verified pull request #528 base branch successfully.'

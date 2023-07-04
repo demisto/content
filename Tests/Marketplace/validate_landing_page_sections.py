@@ -52,14 +52,14 @@ def validate_file_keys(landing_page_sections_json: dict) -> None:
     logging.info('Validating file keys are valid sections')
     allowed_keys = {'description', 'sections'}
     allowed_keys.update(landing_page_sections_json['sections'])
-    not_allowed_key = [key for key in landing_page_sections_json.keys() if key not in allowed_keys]
+    not_allowed_key = [key for key in landing_page_sections_json if key not in allowed_keys]
     assert not not_allowed_key, f'Unsupported keys found: {not_allowed_key}, please add ' \
                                 f'these keys under the "sections" key or remove them.'
 
 
 def parse_landing_page_sections_to_json():
     try:
-        with open(LANDING_PAGE_SECTIONS_PAGE_PATH, 'r') as file:
+        with open(LANDING_PAGE_SECTIONS_PAGE_PATH) as file:
             return json.load(file)
     except Exception:
         logging.critical('Could not parse the file as json file')

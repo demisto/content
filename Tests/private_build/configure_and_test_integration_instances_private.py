@@ -1,11 +1,9 @@
-from __future__ import print_function
 
 import glob
 import sys
 import zipfile
 from time import sleep
 from ruamel import yaml
-from typing import List
 import logging
 
 from Tests.scripts.utils.log_util import install_logging
@@ -53,7 +51,7 @@ def install_packs_private(build: Build, pack_ids: list = None) -> bool:
     return installed_content_packs_successfully
 
 
-def find_needed_test_playbook_paths(test_playbooks: List[dict], tests_to_run: List,
+def find_needed_test_playbook_paths(test_playbooks: list[dict], tests_to_run: list,
                                     path_to_content: str) -> set:
     """
     Uses the test filter file to determine which test playbooks are needed to run, then will use the
@@ -97,8 +95,8 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
-            with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
+            with open(test_path) as test_file:
+                if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'

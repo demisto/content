@@ -56,7 +56,7 @@ def main():
 
     ready_ami_list: list = []
     env_results_path = os.path.join(ARTIFACTS_FOLDER, 'env_results.json')
-    with open(env_results_path, 'r') as json_file:
+    with open(env_results_path) as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_results]
 
@@ -79,7 +79,7 @@ def main():
                         res = requests.request(method=method, url=url, verify=False)
                     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
                         logging.error(f'{ami_instance_name} encountered an error: {str(exp)}\n')
-                        if SETUP_TIMEOUT != 60 * 10:
+                        if 60 * 10 != SETUP_TIMEOUT:
                             logging.warning('Setting SETUP_TIMEOUT to 10 minutes.')
                             SETUP_TIMEOUT = 60 * 10
                         continue
@@ -87,7 +87,7 @@ def main():
                         logging.exception(f'{ami_instance_name} encountered an error, Will retry this step later')
                         continue
                     if res.status_code == 200:
-                        if SETUP_TIMEOUT != 60 * 60:
+                        if 60 * 60 != SETUP_TIMEOUT:
                             logging.info('Resetting SETUP_TIMEOUT to an hour.')
                             SETUP_TIMEOUT = 60 * 60
                         logging.info(f'{ami_instance_name} is ready to use')

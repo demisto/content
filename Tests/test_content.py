@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import datetime
 import json
@@ -8,7 +7,8 @@ import re
 import sys
 from contextlib import contextmanager
 from queue import Queue
-from typing import Union, Any, Generator
+from typing import Any
+from collections.abc import Generator
 
 import demisto_client.demisto_api
 import pytz
@@ -104,7 +104,7 @@ class DataKeeperTester:
 
 def print_test_summary(tests_data_keeper: DataKeeperTester,
                        is_ami: bool = True,
-                       logging_module: Union[Any, ParallelLoggingManager] = logging) -> None:
+                       logging_module: Any | ParallelLoggingManager = logging) -> None:
     """
     Takes the information stored in the tests_data_keeper and prints it in a human readable way.
     Args:
@@ -268,8 +268,8 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     integrations = []
     test_skipped_integration = []
     for integration in integrations_conf:
-        if integration in skipped_integrations_conf.keys():
-            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+        if integration in skipped_integrations_conf:
+            skipped_integration.add(f"{integration} - reason: {skipped_integrations_conf[integration]}")
             test_skipped_integration.append(integration)
 
         # string description
@@ -282,7 +282,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 
 
 def extract_filtered_tests():
-    with open(FILTER_CONF, 'r') as filter_file:
+    with open(FILTER_CONF) as filter_file:
         filtered_tests = [line.strip('\n') for line in filter_file.readlines()]
 
     return filtered_tests
@@ -308,7 +308,7 @@ def load_env_results_json():
         logging.warning(f"Did not find {env_results_path} file ")
         return {}
 
-    with open(env_results_path, 'r') as json_file:
+    with open(env_results_path) as json_file:
         return json.load(json_file)
 
 
@@ -388,7 +388,7 @@ def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
 
 
 def get_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         return json.loads(json_file.read())
 
 
@@ -431,7 +431,7 @@ def add_pr_comment(comment):
     branch_name = os.environ['CI_COMMIT_BRANCH']
     sha1 = os.environ['CI_COMMIT_SHA']
 
-    query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
+    query = f'?q={sha1}+repo:demisto/content+org:demisto+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
     headers = {'Authorization': 'Bearer ' + token}
     try:

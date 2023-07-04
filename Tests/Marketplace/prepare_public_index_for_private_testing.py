@@ -29,7 +29,7 @@ def lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
 
 
 def change_pack_price_to_zero(path_to_pack_metadata):
-    with open(path_to_pack_metadata, 'r') as pack_metadata_file:
+    with open(path_to_pack_metadata) as pack_metadata_file:
         pack_metadata = json.load(pack_metadata_file)
 
     pack_metadata['price'] = 0
@@ -179,7 +179,7 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
         packs_from_dummy_index = index_json.get('packs', [])
         for pack in private_packs:
             is_pack_in_dummy_index = any(
-                [pack['id'] == dummy_index_pack['id'] for dummy_index_pack in packs_from_dummy_index])
+                pack['id'] == dummy_index_pack['id'] for dummy_index_pack in packs_from_dummy_index)
             if not is_pack_in_dummy_index:
                 packs_from_dummy_index.append(pack)
 

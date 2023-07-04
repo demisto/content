@@ -18,7 +18,7 @@ def get_base_branch(pr_num):
     import urllib3
     urllib3.disable_warnings()
 
-    url = 'https://api.github.com/repos/demisto/content/pulls/{}'.format(pr_num)
+    url = f'https://api.github.com/repos/demisto/content/pulls/{pr_num}'
 
     try:
         res = requests.get(url, verify=False)
@@ -32,7 +32,7 @@ def get_base_branch(pr_num):
     except (requests.exceptions.HTTPError, ValueError) as e:
         # If we didn't succeed to fetch pr for any http error / res.json() we raise an error
         # then we don't want the build to fail
-        print('Unable to fetch pull request #{0}.\nError: {1}'.format(pr_num, str(e)))
+        print(f'Unable to fetch pull request #{pr_num}.\nError: {str(e)}')
         return ''
 
 
@@ -46,12 +46,12 @@ def verify_base_branch(pr_num):
         True if valid, False otherwise. And attaches the appropriate message to the user.
     """
 
-    print('Fetching the base branch of pull request #{}.'.format(pr_num))
+    print(f'Fetching the base branch of pull request #{pr_num}.')
     base_branch = get_base_branch(pr_num)
     if base_branch == 'master':
         return 'Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.', False
     else:
-        return 'Verified pull request #{} base branch successfully.'.format(pr_num), True
+        return f'Verified pull request #{pr_num} base branch successfully.', True
 
 
 if __name__ == '__main__':

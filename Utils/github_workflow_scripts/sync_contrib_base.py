@@ -5,7 +5,6 @@ import sys
 import urllib3
 from github import Github, enable_console_debug_logging
 from github.Repository import Repository
-from typing import List
 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -37,7 +36,7 @@ def arguments_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
+def get_branch_names_with_contrib(repo: Repository) -> list[str]:  # noqa: E999
     '''Return the list of branches that have the prefix of "contrib/" and that are base branches of open PRs
 
     Args:

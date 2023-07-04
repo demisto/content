@@ -4,11 +4,11 @@ import argparse
 
 def main(image_id, confile):
     print("Extracting instance conf file")
-    with open(confile, 'r') as conf_file:
+    with open(confile) as conf_file:
         conf = json.load(conf_file)
 
     print("Getting new image ID")
-    with open(image_id, 'r') as image_id_file:
+    with open(image_id) as image_id_file:
         image_id_lines = image_id_file.readlines()
         image_id_lines = [line.strip('\n') for line in image_id_lines]
         print(image_id_lines)

@@ -26,7 +26,7 @@ def update_playbook_task_name(playbook):
     :param playbook: playbook dict loaded from yaml
     :return: updated playbook dict
     """
-    for task_id, task in playbook.get("tasks", {}).items():
+    for _task_id, task in playbook.get("tasks", {}).items():
         if task.get("type") == "playbook":
             task["task"]["name"] = task["task"]["playbookName"]
 
@@ -114,14 +114,14 @@ def update_playbook(source_path, destination_path):
         destination_path = ntpath.basename(source_path)
 
     if not destination_path.startswith("playbook-"):
-        destination_path = "playbook-{}".format(destination_path)
+        destination_path = f"playbook-{destination_path}"
 
     # Configure safe dumper (multiline for strings)
     yaml.SafeDumper.org_represent_str = yaml.SafeDumper.represent_str  # type: ignore[attr-defined]
 
     def repr_str(dumper, data):
         if '\n' in data:
-            return dumper.represent_scalar(u'tag:yaml.org,2002:str', data, style='|')
+            return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
         return dumper.org_represent_str(data)
     yaml.add_representer(str, repr_str, Dumper=yamlordereddictloader.SafeDumper)
 
@@ -132,7 +132,7 @@ def update_playbook(source_path, destination_path):
             Dumper=yamlordereddictloader.SafeDumper,
             default_flow_style=False)
 
-    print("Finished - new yml saved at {}".format(destination_path))
+    print(f"Finished - new yml saved at {destination_path}")
 
 
 def main(argv):

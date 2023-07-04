@@ -1,6 +1,5 @@
 from pathlib import Path
 from itertools import pairwise
-from typing import List
 import urllib3
 import argparse
 from blessings import Terminal
@@ -109,7 +108,7 @@ class BranchAutoBumper:
         self,
         pr: PullRequest,
         git_repo: Repo,
-        packs_to_autobump: List[PackAutoBumper],
+        packs_to_autobump: list[PackAutoBumper],
         run_id: str,
     ):
         """

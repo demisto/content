@@ -40,23 +40,23 @@ def check_md_file(spellchecker, md_data, unknown_words):
 
 
 def spell_checker(path, is_md=False):
-    unknown_words: set = set([])
+    unknown_words: set = set()
     spellchecker = SpellChecker()
     spellchecker.word_frequency.load_text_file('Tests/known_words.txt')
 
     if is_md:
-        with open(path, 'r') as md_file:
+        with open(path) as md_file:
             md_data = md_file.readlines()
 
         check_md_file(spellchecker, md_data, unknown_words)
     else:
-        with open(path, 'r') as yaml_file:
+        with open(path) as yaml_file:
             yml_info = yaml.safe_load(yaml_file)
 
         check_yaml(spellchecker, yml_info, unknown_words)
 
     if unknown_words:
-        print(u"Found the problematic words:\n{}".format('\n'.join(unknown_words)))
+        print("Found the problematic words:\n{}".format('\n'.join(unknown_words)))
         return 1
 
     print("No problematic words found")

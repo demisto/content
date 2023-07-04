@@ -7,7 +7,6 @@ Validate commit hash is in master's history.
 import argparse
 import sys
 import os
-from typing import Tuple
 
 from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client
 from Tests.Marketplace.upload_packs import download_and_extract_index
@@ -114,7 +113,7 @@ def check_commit_in_branch_history(index_commit_hash: str, circle_branch: str) -
     Returns: True if commit hash is in branch's commit history, False otherwise.
     """
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    branch_commits = list(map(lambda commit: commit.hexsha, list(content_repo.iter_commits(f"origin/{circle_branch}"))))
+    branch_commits = [commit.hexsha for commit in list(content_repo.iter_commits(f"origin/{circle_branch}"))]
 
     return log_message_if_statement(statement=(index_commit_hash in branch_commits),
                                     error_message=f"Commit hash {index_commit_hash} is not in {circle_branch} history",
@@ -122,7 +121,7 @@ def check_commit_in_branch_history(index_commit_hash: str, circle_branch: str) -
 
 
 def get_index_json_data(service_account: str, production_bucket_name: str, extract_path: str, storage_base_path: str) \
-        -> Tuple[dict, str]:
+        -> tuple[dict, str]:
     """Retrieve the index.json file from production bucket.
 
     Args:

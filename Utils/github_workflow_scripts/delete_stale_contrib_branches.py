@@ -6,7 +6,6 @@ import urllib3
 from blessings import Terminal
 from github import Github, enable_console_debug_logging
 from github.Repository import Repository
-from typing import List
 from dateparser import parse
 from datetime import datetime, timezone
 from utils import timestamped_print
@@ -15,7 +14,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 
-def get_stale_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
+def get_stale_branch_names_with_contrib(repo: Repository) -> list[str]:  # noqa: E999
     """Return the list of branches that have the prefix of "contrib/" without open pull requests
     and that have not been updated for 2 months (stale)
 

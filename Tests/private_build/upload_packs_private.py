@@ -5,7 +5,7 @@ import shutil
 import uuid
 import glob
 import logging
-from typing import Any, Tuple, Union
+from typing import Any
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json, \
     get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
@@ -26,7 +26,7 @@ def is_pack_paid_or_premium(path_to_pack_metadata_in_index: str) -> bool:
     tested pack.
     :return: Boolean response if pack is paid or premium.
     """
-    with open(path_to_pack_metadata_in_index, 'r') as pack_metadata_file:
+    with open(path_to_pack_metadata_in_index) as pack_metadata_file:
         pack_metadata = json.load(pack_metadata_file)
 
     is_pack_paid = 'price' in pack_metadata and pack_metadata['price'] > 0
@@ -107,7 +107,7 @@ def add_changed_private_pack(private_packs, extract_destination_path, changed_pa
     changed_pack_metadata_path = os.path.join(extract_destination_path, changed_pack_id, "pack_metadata.json")
     logging.info(f'Getting changed pack metadata from the artifacts, in path: {changed_pack_metadata_path}')
     try:
-        with open(changed_pack_metadata_path, 'r') as metadata_file:
+        with open(changed_pack_metadata_path) as metadata_file:
             changed_pack_metadata = json.load(metadata_file)
         private_packs = add_private_pack(private_packs, changed_pack_metadata, changed_pack_id)
     except FileNotFoundError:
@@ -131,7 +131,7 @@ def add_existing_private_packs_from_index(metadata_files, changed_pack_id):
         # Adding all the existing private packs, already found in the index
         logging.info(f'Getting existing metadata files from the index, in path: {metadata_file_path}')
         try:
-            with open(metadata_file_path, 'r') as metadata_file:
+            with open(metadata_file_path) as metadata_file:
                 metadata = json.load(metadata_file)
 
             pack_id = metadata.get('id')
@@ -194,7 +194,7 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
                                    index_folder_path: str, pack_names: set, is_private_build: bool,
-                                   storage_base_path: str) -> Tuple[Union[list, list], str, Any]:
+                                   storage_base_path: str) -> tuple[list | list, str, Any]:
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:

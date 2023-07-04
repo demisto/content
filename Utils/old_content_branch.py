@@ -1,7 +1,6 @@
 import subprocess
 import argparse
 import os
-from typing import Dict
 
 import click
 import ujson
@@ -19,7 +18,7 @@ NON_CIRCLE_TEST_PLAYBOOKS_DIRECTORY = 'TestPlaybooks'
 DEPRECATED_NON_CIRCLE_TESTS_DIRECTORY = os.path.join('TestPlaybooks', 'NonCircleTests', 'Deprecated')
 
 
-def should_keep_yml_file(yml_content: Dict, new_to_version: str) -> bool:
+def should_keep_yml_file(yml_content: dict, new_to_version: str) -> bool:
     """Check if yml file should stay in the feature branch"""
     if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(yml_content.get('fromversion', '0.0.0')) >= parse_version(new_to_version):
@@ -28,7 +27,7 @@ def should_keep_yml_file(yml_content: Dict, new_to_version: str) -> bool:
     return True
 
 
-def should_keep_json_file(json_content: Dict, new_to_version: str) -> bool:
+def should_keep_json_file(json_content: dict, new_to_version: str) -> bool:
     """Check if json file should stay in the feature branch"""
     if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(json_content.get('fromVersion', '0.0.0')) >= parse_version(new_to_version):
@@ -78,7 +77,7 @@ def delete_json(file_path: str):
         os.remove(changelog_file)
 
 
-def rewrite_json(file_path: str, json_content: Dict, new_to_version: str):
+def rewrite_json(file_path: str, json_content: dict, new_to_version: str):
     """Updating json file to new toVersion"""
     json_content['toVersion'] = new_to_version
 
@@ -89,7 +88,7 @@ def rewrite_json(file_path: str, json_content: Dict, new_to_version: str):
         print(f" - Updating {file_path}")
 
 
-def rewrite_yml(file_path: str, yml_content: Dict, new_to_version: str):
+def rewrite_yml(file_path: str, yml_content: dict, new_to_version: str):
     """Updating yml file to new toversion"""
     yml_content['toversion'] = new_to_version
 
@@ -111,7 +110,7 @@ def rewrite_yml(file_path: str, yml_content: Dict, new_to_version: str):
         print(f" - Updating {file_path}")
 
 
-def check_dockerimage45(yml_content: Dict, new_to_version: str):
+def check_dockerimage45(yml_content: dict, new_to_version: str):
     """Changing dockerimage to fit the new toversion"""
     # check in scripts
     if 'dockerimage45' in yml_content:
@@ -133,7 +132,7 @@ def edit_json_content_entity_directory(new_to_version: str, dir_path: str):
         if os.path.isfile(file_path) and file_name.endswith('.json') and \
                 file_path != "Packs/NonSupported/IndicatorTypes/reputations.json":
 
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 json_content = ujson.load(f)
 
             if should_keep_json_file(json_content, new_to_version):
@@ -150,15 +149,11 @@ def edit_scripts_or_integrations_directory(new_to_version: str, dir_path: str):
         if package_path.endswith('.md'):
             continue
 
-        if os.path.isfile(package_path):
-            yml_file_path = package_path
-
-        else:
-            yml_file_path = os.path.join(package_path, script_name + '.yml')
+        yml_file_path = package_path if os.path.isfile(package_path) else os.path.join(package_path, script_name + '.yml')
 
         # prevent going to pipfiles and non yml content
         if yml_file_path.endswith('.yml'):
-            with open(yml_file_path, 'r') as yml_file:
+            with open(yml_file_path) as yml_file:
                 yml_content = ryaml.load(yml_file)
 
             if should_keep_yml_file(yml_content, new_to_version):
@@ -177,7 +172,7 @@ def edit_playbooks_directory(new_to_version: str, dir_path: str):
 
         if os.path.isfile(file_path):
             if file_path.endswith('.yml'):
-                with open(file_path, 'r') as yml_file:
+                with open(file_path) as yml_file:
                     yml_content = ryaml.load(yml_file)
 
                 if should_keep_yml_file(yml_content, new_to_version):
@@ -193,7 +188,7 @@ def edit_playbooks_directory(new_to_version: str, dir_path: str):
             for inner_file_name in os.listdir(inner_dir_path):
                 file_path = os.path.join(inner_dir_path, inner_file_name)
                 if file_path.endswith('.yml'):
-                    with open(file_path, 'r') as yml_file:
+                    with open(file_path) as yml_file:
                         yml_content = ryaml.load(yml_file)
 
                     if should_keep_yml_file(yml_content, new_to_version):
@@ -236,7 +231,7 @@ def edit_reputations_json(new_to_version: str):
     """Edit reputations.json file to fit the branch"""
     print("Updating reputations.json\n")
     rep_json_path = "Packs/NonSupported/IndicatorTypes/reputations.json"
-    with open(rep_json_path, 'r') as f:
+    with open(rep_json_path) as f:
         rep_content = ujson.load(f)
 
     for reputation in rep_content.get('reputations', []):

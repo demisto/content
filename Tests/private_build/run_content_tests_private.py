@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 import time
 import argparse
@@ -279,9 +278,9 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
 
     failed_playbooks: list = []
     succeed_playbooks: list = []
-    skipped_tests: set = set([])
-    skipped_integration: set = set([])
-    playbook_skipped_integration: set = set([])
+    skipped_tests: set = set()
+    skipped_integration: set = set()
+    playbook_skipped_integration: set = set()
 
     #  Private builds do not use mocking. Here we copy the mocked test list to the unmockable list.
     private_tests = get_test_records_of_given_test_names(tests_settings, all_tests)

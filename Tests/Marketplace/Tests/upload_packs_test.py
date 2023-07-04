@@ -546,7 +546,7 @@ class TestCorepacksFiles:
         assert set(os.listdir(artifacts_dir)) == {corepacks_version, GCPConfig.CORE_PACK_FILE_NAME}
 
         # Assert that the paths in the corepacks.json file are the full paths:
-        with open(os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME), 'r') as corepacks_file:
+        with open(os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)) as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             pack_paths = corepacks_file_contents.get('corePacks')
             assert set(pack_paths) == {'https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_1/1.4.0'
@@ -555,7 +555,7 @@ class TestCorepacksFiles:
                                        '/pack_2.zip'}
 
         # Assert that the paths in the versioned corepacks file are relative paths:
-        with open(os.path.join(artifacts_dir, corepacks_version), 'r') as corepacks_file:
+        with open(os.path.join(artifacts_dir, corepacks_version)) as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             pack_paths = corepacks_file_contents.get('corePacks')
             assert set(pack_paths) == {'pack_1/1.4.0/pack_1.zip', 'pack_2/2.2.3/pack_2.zip'}
@@ -689,7 +689,7 @@ class TestCorepacksFiles:
         override_locked_corepacks_file(build_number='456', artifacts_dir=artifacts_dir)
 
         # Assert that the file was created in the artifacts folder with the build number as expected:
-        with open(os.path.join(artifacts_dir, 'corepacks-8.2.0.json'), 'r') as corepacks_file:
+        with open(os.path.join(artifacts_dir, 'corepacks-8.2.0.json')) as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             assert corepacks_file_contents.get('buildNumber') == '456'
             assert corepacks_file_contents.get('corePacks') == ['pack1', 'pack2']
@@ -706,7 +706,7 @@ class TestUpdatedPrivatePacks:
     @staticmethod
     def get_pack_metadata():
         metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json')
-        with open(metadata_path, 'r') as metadata_file:
+        with open(metadata_path) as metadata_file:
             pack_metadata = json.load(metadata_file)
 
         return pack_metadata
@@ -756,8 +756,9 @@ class TestUpdatedPrivatePacks:
 
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
-        assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
-            updated_private_packs[0] != "second_non_updated_pack"
+        assert updated_private_packs[0] == "updated_pack"
+        assert updated_private_packs[0] != "first_non_updated_pack"
+        assert updated_private_packs[0] != "second_non_updated_pack"
 
     def test_is_private_packs_updated(self, mocker):
         """
@@ -779,7 +780,7 @@ class TestUpdatedPrivatePacks:
          """
         index_folder_path = self.get_index_folder_path()
         index_file_path = os.path.join(index_folder_path, "index.json")
-        with open(index_file_path, 'r') as public_index_json_file:
+        with open(index_file_path) as public_index_json_file:
             public_index_json = json.load(public_index_json_file)
 
         private_index_json = copy.deepcopy(public_index_json)

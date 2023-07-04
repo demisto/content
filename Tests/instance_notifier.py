@@ -101,7 +101,7 @@ def get_attachments(secret_conf_path, server, user, password, build_url):
     fields = []
     if failed_integration:
         field_failed_tests = {
-            "title": "Found {0} Problematic Instances. See CircleCI for errors.".format(len(failed_integration)),
+            "title": f"Found {len(failed_integration)} Problematic Instances. See CircleCI for errors.",
             "value": '\n'.join(failed_integration),
             "short": False
         }
@@ -135,7 +135,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
             'username': 'Instances nightly report',
             'as_user': 'False',
             'attachments': attachments,
-            'text': "You have {0} instances configurations".format(integrations_counter)
+            'text': f"You have {integrations_counter} instances configurations"
         }
     )
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     options = options_handler()
     if options.instance_tests:
         env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')
-        with open(env_results_path, 'r') as json_file:
+        with open(env_results_path) as json_file:
             env_results = json.load(json_file)
             server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 

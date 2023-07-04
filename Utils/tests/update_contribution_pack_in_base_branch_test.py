@@ -86,7 +86,7 @@ github_response_4: list = []
 
 
 def pack_names(files):
-    return set(map(lambda x: x.split(os.path.sep)[1], files))
+    return {x.split(os.path.sep)[1] for x in files}
 
 
 def test_get_pr_files(requests_mock):

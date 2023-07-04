@@ -1,9 +1,8 @@
-from __future__ import print_function
 import sys
 
 
 def add_descriptions(file_path, output_path):
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         lines = f.readlines()
 
     new_lines = lines[:]

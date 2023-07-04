@@ -1,7 +1,8 @@
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
-from typing import Any, Iterator, Optional, Union, NamedTuple
+from typing import Any, NamedTuple
+from collections.abc import Iterator
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -56,7 +57,7 @@ class Machine(Enum):
         return tuple(machine for machine in Machine if isinstance(machine.value, Version))
 
     @staticmethod
-    def get_suitable_machines(version_range: Optional[VersionRange]) -> tuple['Machine', ...]:
+    def get_suitable_machines(version_range: VersionRange | None) -> tuple['Machine', ...]:
         """
 
         :param version_range: range of versions. If None, all versions are returned.
@@ -87,7 +88,7 @@ class DictBased:
         self.from_version: Version | NegativeInfinityType = self._calculate_from_version()
         self.to_version: Version | InfinityType = self._calculate_to_version()
         self.version_range = VersionRange(self.from_version, self.to_version)
-        self.marketplaces: Optional[tuple[MarketplaceVersions, ...]] = \
+        self.marketplaces: tuple[MarketplaceVersions, ...] | None = \
             tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True, warning_comment: str = ''):
@@ -180,7 +181,7 @@ class ContentItem(DictFileBased):
             and self.path.suffix == '.json'
 
     @property
-    def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
+    def id_(self) -> str | None:  # Optional as some content items don't have an id
         if self._has_no_id:
             return None
         # todo use get_id from the SDK once https://github.com/demisto/demisto-sdk/pull/2345 is merged & released
@@ -300,23 +301,23 @@ class PackManager:
         if support_level.lower() != 'xsoar':
             raise NonXsoarSupportedPackException(pack, support_level)
 
-    def get_support_level(self, pack_id: str) -> Optional[str]:
+    def get_support_level(self, pack_id: str) -> str | None:
         return self.get_pack_metadata(pack_id).get('support', '').lower() or None
 
 
-def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> tuple:
+def to_tuple(value: str | int | MarketplaceVersions | list) -> tuple:
     if value is None:
-        return tuple()
+        return ()
     if not value:
         return ()
     if isinstance(value, tuple):
         return value
-    if isinstance(value, (str, int, MarketplaceVersions)):
+    if isinstance(value, str | int | MarketplaceVersions):
         return value,
     return tuple(value)
 
 
-def find_yml_content_type(yml_path: Path) -> Optional[FileType]:
+def find_yml_content_type(yml_path: Path) -> FileType | None:
     """
     :param yml_path: path to some yml of a content item
     :return: matching FileType, based on the yml path

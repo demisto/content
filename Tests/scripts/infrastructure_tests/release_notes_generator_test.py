@@ -206,13 +206,14 @@ class TestGenerateReleaseNotesSummary:
             'FakePack2': {}
         }
 
-        assert '1.1.0' in rn_dict['FakePack1'].keys()
-        assert '2.0.0' in rn_dict['FakePack1'].keys()
-        assert '1.1.0' in rn_dict['FakePack2'].keys()
+        assert '1.1.0' in rn_dict['FakePack1']
+        assert '2.0.0' in rn_dict['FakePack1']
+        assert '1.1.0' in rn_dict['FakePack2']
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
-        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert VERSION in rn_summary
+        assert ASSET_ID in rn_summary
         assert '### FakePack1 Pack v2.0.0' in rn_summary
         assert '##### FakePack1_Integration1' in rn_summary
         assert 'This is a fake1 minor release note.' in rn_summary
@@ -251,12 +252,13 @@ class TestGenerateReleaseNotesSummary:
             'FakePack2': {'support': 'xsoar'}
         }
 
-        assert '2.0.0' in rn_dict['FakePack1'].keys()
-        assert '1.1.0' in rn_dict['FakePack2'].keys()
+        assert '2.0.0' in rn_dict['FakePack1']
+        assert '1.1.0' in rn_dict['FakePack2']
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
-        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert VERSION in rn_summary
+        assert ASSET_ID in rn_summary
         assert '### FakePack1 Pack v2.0.0 (Partner Supported)' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
         assert '### FakePack2 Pack v1.1.0 (Partner Supported)' not in rn_summary
@@ -291,12 +293,13 @@ class TestGenerateReleaseNotesSummary:
             'FakePack2': {'support': 'xsoar'}
         }
 
-        assert '2.0.0' in rn_dict['FakePack1'].keys()
-        assert '1.1.0' in rn_dict['FakePack2'].keys()
+        assert '2.0.0' in rn_dict['FakePack1']
+        assert '1.1.0' in rn_dict['FakePack2']
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
-        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert VERSION in rn_summary
+        assert ASSET_ID in rn_summary
         assert '### FakePack1 Pack v2.0.0 (Community Contributed)' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
         assert '### FakePack2 Pack v1.1.0 (Community Contributed)' not in rn_summary
@@ -324,7 +327,7 @@ class TestGenerateReleaseNotesSummary:
 
         rn_dict, _ = get_release_notes_dict(release_notes_files)
 
-        assert '1.0.1' in rn_dict['FakePack3'].keys()
+        assert '1.0.1' in rn_dict['FakePack3']
         assert len(rn_dict) == 1
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
@@ -360,7 +363,7 @@ class TestGenerateReleaseNotesSummary:
 
         rn_dict, _ = get_release_notes_dict(release_notes_files)
 
-        assert '1.1.0' in rn_dict['FakePack4'].keys()
+        assert '1.1.0' in rn_dict['FakePack4']
         assert len(rn_dict) == 1
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)

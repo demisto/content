@@ -2,7 +2,6 @@ import argparse
 from datetime import datetime, timedelta
 import logging
 import os
-from typing import Tuple, Optional
 import gitlab
 from slack_sdk import WebClient
 
@@ -47,7 +46,7 @@ def options_handler():
     return options
 
 
-def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[str]:
+def get_artifact_data(artifact_folder, artifact_relative_path: str) -> str | None:
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
@@ -62,7 +61,7 @@ def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[
         file_name = os.path.join(artifact_folder, artifact_relative_path)
         if os.path.isfile(file_name):
             logging.info(f'Extracting {artifact_relative_path}')
-            with open(file_name, 'r') as file_data:
+            with open(file_name) as file_data:
                 artifact_data = file_data.read()
         else:
             logging.info(f'Did not find {artifact_relative_path} file')
@@ -134,14 +133,14 @@ def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: 
     if successful_packs:
         steps_fields += [{
             'title': f'Successful {marketplace_name} Packs:',
-            'value': ', '.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
             'short': False
         }]
 
     if failed_packs:
         steps_fields += [{
             'title': f'Failed {marketplace_name} Packs:',
-            'value': ', '.join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted({*failed_packs}, key=lambda s: s.lower())),
             'short': False
         }]
 
@@ -149,8 +148,7 @@ def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: 
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
         steps_fields += [{
             'title': 'Successful Private Packs:',
-            'value': ', '.join(sorted([pack_name for pack_name in {*successful_private_packs}],
-                                      key=lambda s: s.lower())),
+            'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
             'short': False
         }]
 
@@ -219,7 +217,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     return slack_msg
 
 
-def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> Tuple[str, list]:
+def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> tuple[str, list]:
     project = gitlab_client.projects.get(int(project_id))
     pipeline = project.pipelines.get(int(pipeline_id))
     jobs = pipeline.jobs.list()

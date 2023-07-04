@@ -6,7 +6,6 @@ from pandas.core.frame import DataFrame, Series
 from google.cloud.bigquery.client import Client
 from google.cloud import bigquery
 from datetime import timedelta
-from typing import List, Dict
 
 import Tests.Marketplace.marketplace_services as mp_services
 from Tests.Marketplace.marketplace_constants import Metadata, LANDING_PAGE_SECTIONS_PATH
@@ -144,16 +143,16 @@ class StatisticsHandler:
         # ignore missing package warning
         warnings.filterwarnings("ignore", message="Cannot create BigQuery Storage client, the dependency ")
         packs_statistic_table = self._bq_client.query(query).result().to_dataframe()
-        packs_statistic_table.set_index('pack_name', inplace=True)
+        packs_statistic_table = packs_statistic_table.set_index('pack_name')
 
         return packs_statistic_table
 
     @staticmethod
-    def get_landing_page_sections() -> Dict:
+    def get_landing_page_sections() -> dict:
         """ Returns the landing page sections file content """
         return mp_services.load_json(LANDING_PAGE_SECTIONS_PATH)
 
-    def _filter_packs_from_before_3_months(self, pack_list_to_filter: list) -> List[str]:
+    def _filter_packs_from_before_3_months(self, pack_list_to_filter: list) -> list[str]:
         """
         Filtering packs from 'pack_list_to_filter' that were created more than 3 months ago by checking in the index file
         Args:

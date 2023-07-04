@@ -21,7 +21,7 @@ SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.js
 
 
 def sort_dict(dct: dict):
-    for k, v in dct.items():
+    for _k, v in dct.items():
         if isinstance(v, dict):
             sort_dict(v)
         if isinstance(v, list):
@@ -57,9 +57,8 @@ def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path
 def compare_dirs(dir1: str, dir2: str, output_path: Path) -> list[str]:
     dir_compare = filecmp.dircmp(dir1, dir2)
     full_report_path = output_path / "full_report.log"
-    with open(full_report_path, "w") as f:
-        with redirect_stdout(f):
-            dir_compare.report_full_closure()
+    with open(full_report_path, "w") as f, redirect_stdout(f):
+        dir_compare.report_full_closure()
     diff_files: list[str] = []
     compare_files(dir_compare, dir1, dir2, output_path, diff_files)
     return diff_files
@@ -93,15 +92,14 @@ def compare_files(
 def file_diff_text(file1_path: Path, file2_path: Path, output_path_file: Path):
     output_path_file.unlink(missing_ok=True)
 
-    with output_path_file.open("w") as f:
-        with open(file1_path) as f1, open(file2_path) as f2:
-            f1lines = f1.readlines()
-            f2lines = f2.readlines()
-            d = difflib.Differ()
-            diffs = [x for x in d.compare(f1lines, f2lines) if x[0] in ("+", "-")]
-            if diffs:
-                f.writelines(diffs)
-                return True
+    with output_path_file.open("w") as f, open(file1_path) as f1, open(file2_path) as f2:
+        f1lines = f1.readlines()
+        f2lines = f2.readlines()
+        d = difflib.Differ()
+        diffs = [x for x in d.compare(f1lines, f2lines) if x[0] in ("+", "-")]
+        if diffs:
+            f.writelines(diffs)
+            return True
     return False
 
 
@@ -126,20 +124,19 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
             return
         output_dict_diff = output_path / f"{file}-dictdiff.json"
         output_dict_diff.unlink(missing_ok=True)
-        with open(output_dict_diff, "w") as f:
-            with open(file1_path) as f1, open(file2_path) as f2:
-                dct1 = load_func(f1)
-                dct2 = load_func(f2)
-                remove_known_diffs(dct1, dct2, ["updated", "downloads", "created"])
-                if file == "metadata.json":
-                    sort_dict(dct1)
-                    sort_dict(dct2)
-                diff_found = list(dictdiffer.diff(dct1, dct2))
-                if diff_found:
-                    json.dump(diff_found, f, indent=4)
-                    shutil.copyfile(file1_path, output_path / f"id-set-{file1_path.name}")
-                    shutil.copyfile(file2_path, output_path / f"graph-{file2_path.name}")
-                    diff_files.append(file1_path.name)
+        with open(output_dict_diff, "w") as f, open(file1_path) as f1, open(file2_path) as f2:
+            dct1 = load_func(f1)
+            dct2 = load_func(f2)
+            remove_known_diffs(dct1, dct2, ["updated", "downloads", "created"])
+            if file == "metadata.json":
+                sort_dict(dct1)
+                sort_dict(dct2)
+            diff_found = list(dictdiffer.diff(dct1, dct2))
+            if diff_found:
+                json.dump(diff_found, f, indent=4)
+                shutil.copyfile(file1_path, output_path / f"id-set-{file1_path.name}")
+                shutil.copyfile(file2_path, output_path / f"graph-{file2_path.name}")
+                diff_files.append(file1_path.name)
 
     except Exception as e:
         print(f"could not diff files {file1_path}:{file2_path}: {e}")

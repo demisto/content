@@ -10,7 +10,6 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Lock
 from time import sleep
-from typing import List
 
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
@@ -70,7 +69,7 @@ def get_pack_display_name(pack_id: str) -> str:
     """
     metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
     if pack_id and os.path.isfile(metadata_path):
-        with open(metadata_path, 'r') as json_file:
+        with open(metadata_path) as json_file:
             pack_metadata = json.load(json_file)
         return pack_metadata.get('name')
     return ''
@@ -86,7 +85,7 @@ def is_pack_hidden(pack_id: str) -> bool:
     """
     metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
     if pack_id and os.path.isfile(metadata_path):
-        with open(metadata_path, 'r') as json_file:
+        with open(metadata_path) as json_file:
             pack_metadata = json.load(json_file)
             return pack_metadata.get('hidden', False)
     else:
@@ -110,7 +109,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
 
     for dependency in response_data:
         dependants = dependency.get('dependants', {})
-        for dependant in dependants.keys():
+        for dependant in dependants:
             is_required = dependants[dependant].get('level', '') == 'required'
             if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
                 dependencies_data.append({
@@ -222,7 +221,7 @@ def search_pack(client: demisto_client,
     return {}
 
 
-def find_malformed_pack_id(body: str) -> List:
+def find_malformed_pack_id(body: str) -> list:
     """
     Find the pack ID from the installation error message in the case the error is that the pack is not found or
     in case that the error is that the pack's version is invalid.
@@ -270,7 +269,7 @@ def handle_malformed_pack_ids(malformed_pack_ids, packs_to_install):
                             f'though it was not in the installation list')
 
 
-def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_path: str, pack_ids_to_install: List):
+def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_path: str, pack_ids_to_install: list):
     """
     Installs all the packs located in the artifacts folder of the BitHub actions build. Please note:
     The server always returns a 200 status even if the pack was not installed.
@@ -294,7 +293,7 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
 
 def install_packs_private(client: demisto_client,
                           host: str,
-                          pack_ids_to_install: List,
+                          pack_ids_to_install: list,
                           test_pack_path: str):
     """ Make a packs installation request.
 

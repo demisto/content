@@ -3,7 +3,6 @@
 Check the server configured on master.
 Validate the pack id's in the index file are present on the server and the prices match.
 """
-from typing import Tuple
 
 import demisto_client
 import argparse
@@ -45,7 +44,7 @@ def options_handler():
 def get_paid_packs_page(client: demisto_client,
                         page: int = 0,
                         size: int = DEFAULT_PAGE_SIZE,
-                        request_timeout: int = 999999) -> Tuple[list, int]:
+                        request_timeout: int = 999999) -> tuple[list, int]:
     """Get premium packs from client.
 
     Trigger an API request to demisto server.
@@ -115,10 +114,7 @@ def get_premium_packs(client: demisto_client, request_timeout: int = 999999) -> 
                                               request_timeout=request_timeout)
     if total <= DEFAULT_PAGE_SIZE:
         return server_packs
-    if total % DEFAULT_PAGE_SIZE == 0:
-        pages_until_all = int(total / DEFAULT_PAGE_SIZE)
-    else:
-        pages_until_all = int(total / DEFAULT_PAGE_SIZE) + 1
+    pages_until_all = int(total / DEFAULT_PAGE_SIZE) if total % DEFAULT_PAGE_SIZE == 0 else int(total / DEFAULT_PAGE_SIZE) + 1
 
     for page in range(1, pages_until_all):
         next_server_packs, _ = get_paid_packs_page(client=client,
@@ -206,7 +202,7 @@ def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs:
     return all([all_index_packs_in_server, all_server_packs_in_index])
 
 
-def extract_credentials_from_secret(secret_path: str) -> Tuple[str, str]:
+def extract_credentials_from_secret(secret_path: str) -> tuple[str, str]:
     """Extract Credentials from secret file.
 
     Args:

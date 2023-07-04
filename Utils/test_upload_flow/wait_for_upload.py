@@ -55,6 +55,7 @@ def get_job_status(job_name, pipelines_jobs_response):
     for job in pipelines_jobs_response:
         if job.get('name') == job_name:
             return job.get('status')
+    return None
 
 
 def main():

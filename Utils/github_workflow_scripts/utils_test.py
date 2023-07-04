@@ -3,7 +3,7 @@ import pytest
 from utils import get_env_var, EnvVariableError
 
 
-class TestGetEnvVar(object):
+class TestGetEnvVar:
     def test_no_env_var(self):
         """
         Scenario: Try getting an environment variable

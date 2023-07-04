@@ -67,7 +67,7 @@ class GraphTester:
         self.clusters = clusters
 
     def build_tests_graph_from_conf_json(self, tests_file_path, dependent_tests):
-        with open(tests_file_path, 'r') as myfile:
+        with open(tests_file_path) as myfile:
             conf_json_string = myfile.read()
 
         tests_data = json.loads(conf_json_string)["tests"]
@@ -103,7 +103,7 @@ def get_used_integrations(test_playbook_record):
 
 
 def get_dependent_and_independent_integrations(tests_file_path):
-    with open(tests_file_path, 'r') as myfile:
+    with open(tests_file_path) as myfile:
         conf_json_string = myfile.read()
 
     conf_json_obj = json.loads(conf_json_string)
@@ -127,7 +127,7 @@ def get_dependent_and_independent_integrations(tests_file_path):
 def get_test_dependencies(tests_file_path):
     dependent_integrations = get_dependent_and_independent_integrations(tests_file_path)[0]
 
-    with open(tests_file_path, 'r') as myfile:
+    with open(tests_file_path) as myfile:
         conf_json_string = myfile.read()
     conf_json_obj = json.loads(conf_json_string)
 

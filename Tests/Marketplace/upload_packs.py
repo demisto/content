@@ -11,7 +11,7 @@ import requests
 from datetime import datetime
 from pathlib import Path
 from zipfile import ZipFile
-from typing import Any, List, Tuple, Union, Optional
+from typing import Any
 
 from requests import Response
 
@@ -65,7 +65,7 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
 
 
 def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
-        -> Tuple[str, Any, int]:
+        -> tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
@@ -156,9 +156,8 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
                 elif (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
-                        and pack_versions_to_keep:
-                    if metadata_version[0] not in pack_versions_to_keep:
-                        os.remove(d.path)
+                        and pack_versions_to_keep and metadata_version[0] not in pack_versions_to_keep:
+                    os.remove(d.path)
 
         # skipping index update in case hidden is set to True
         if hidden_pack:
@@ -175,7 +174,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
                 logging.info(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
 
             shutil.copy(d.path, index_pack_path)
-            if pack_version and Pack.METADATA == d.name:
+            if pack_version and d.name == Pack.METADATA:
                 shutil.copy(d.path, new_metadata_path)
 
         task_status = True
@@ -186,7 +185,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str, content_packs: List[Pack], marketplace: str = 'xsoar') -> bool:
+                             storage_base_path: str, content_packs: list[Pack], marketplace: str = 'xsoar') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -236,7 +235,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
                 # important to add trailing slash at the end of path in order to avoid packs with same prefix
                 invalid_pack_gcs_path = os.path.join(storage_base_path, invalid_pack_name, "")  # by design
 
-                for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
+                for invalid_blob in list(storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)):
                     logging.warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
                     invalid_blob.delete()  # delete invalid pack in gcs
         except Exception:
@@ -297,7 +296,7 @@ def upload_index_to_storage(index_folder_path: str,
                             index_blob: Any,
                             index_generation: int,
                             is_private: bool = False,
-                            artifacts_dir: Optional[str] = None,
+                            artifacts_dir: str | None = None,
                             index_name: str = GCPConfig.INDEX_NAME
                             ):
     """
@@ -424,7 +423,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
                     packs_missing_metadata.add(pack.name)
                     continue
 
-                with open(pack_metadata_path, 'r') as metadata_file:
+                with open(pack_metadata_path) as metadata_file:
                     metadata = json.load(metadata_file)
 
                 pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
@@ -536,7 +535,7 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
 
 
 def add_private_content_to_index(private_index_path: str, extract_destination_path: str, index_folder_path: str,
-                                 pack_names: set) -> Tuple[Union[list, list], list]:
+                                 pack_names: set) -> tuple[list | list, list]:
     """ Adds a list of priced packs data-structures to the public index.json file.
     This step should not be skipped even if there are no new or updated private packs.
 
@@ -628,13 +627,12 @@ def get_private_packs(private_index_path: str, pack_names: set = None,
     logging.info(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
-            with open(metadata_file_path, "r") as metadata_file:
+            with open(metadata_file_path) as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
-                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
-                          "r") as metadata_file:
+                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json")) as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
                 private_packs.append({
@@ -894,7 +892,7 @@ def get_packs_summary(packs_list):
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
-                           public_pack_names, storage_base_path: str) -> Tuple[bool, list, list]:
+                           public_pack_names, storage_base_path: str) -> tuple[bool, list, list]:
     """
     1. Add private packs to public index.json.
     2. Checks if there are private packs that were added/deleted/updated.
@@ -1056,8 +1054,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
 
 
 def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
-                                               current_marketplace_packs: List[Pack],
-                                               private_packs: List[dict]):
+                                               current_marketplace_packs: list[Pack],
+                                               private_packs: list[dict]):
     """
     Delete from index packs that not relevant in the current marketplace from index.
     Args:

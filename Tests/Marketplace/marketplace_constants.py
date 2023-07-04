@@ -36,7 +36,7 @@ TAGS_BY_MP = {
 }
 
 
-class BucketUploadFlow(object):
+class BucketUploadFlow:
     """ Bucket Upload Flow constants
 
     """
@@ -65,7 +65,7 @@ class BucketUploadFlow(object):
     INTEGRATION_DIR_REGEX = r"^integration-(.+).yml$"
 
 
-class GCPConfig(object):
+class GCPConfig:
     """ Google cloud storage basic configurations
 
     """
@@ -91,27 +91,26 @@ class GCPConfig(object):
     COREPACKS_OVERRIDE_FILE = 'corepacks_override.json'
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_xsoar_list_file:
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json')) as core_packs_xsoar_list_file:
         packs_list = json.load(core_packs_xsoar_list_file)
         CORE_PACKS_LIST = packs_list.get('core_packs_list')
         CORE_PACKS_LIST_TO_UPDATE = packs_list.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_xsiam_list_file:
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json')) as core_packs_xsiam_list_file:
         packs_list_xsiam = json.load(core_packs_xsiam_list_file)
         CORE_PACKS_MPV2_LIST = packs_list_xsiam.get('core_packs_list')
         CORE_PACKS_MPV2_LIST_TO_UPDATE = packs_list_xsiam.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json'),
-              'r') as core_packs_xpanse_list_file:
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json')) as core_packs_xpanse_list_file:
         packs_list_xpanse = json.load(core_packs_xpanse_list_file)
         CORE_PACKS_XPANSE_LIST = packs_list_xpanse.get('core_packs_list')
         CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list_xpanse.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), VERSIONS_METADATA_FILE), 'r') as server_versions_metadata:
+    with open(os.path.join(os.path.dirname(__file__), VERSIONS_METADATA_FILE)) as server_versions_metadata:
         versions_metadata_contents = json.load(server_versions_metadata)
         core_packs_file_versions = versions_metadata_contents.get('version_map')
 
-    with open(os.path.join(os.path.dirname(__file__), COREPACKS_OVERRIDE_FILE), 'r') as corepacks_override_file:
+    with open(os.path.join(os.path.dirname(__file__), COREPACKS_OVERRIDE_FILE)) as corepacks_override_file:
         corepacks_override_contents = json.load(corepacks_override_file)
 
     @classmethod
@@ -138,7 +137,7 @@ class GCPConfig(object):
         Find the current server versions that are unlocked and return the matching corepacks files.
         """
         unlocked_corepacks_files = []
-        for version, core_pack_file_value in cls.core_packs_file_versions.items():
+        for _version, core_pack_file_value in cls.core_packs_file_versions.items():
             # check if the file is unlocked
             if not core_pack_file_value.get('core_packs_file_is_locked'):
                 # check if version should be used for this marketplace (all are used by default if none was specified)
@@ -148,7 +147,7 @@ class GCPConfig(object):
         return unlocked_corepacks_files
 
 
-class PackTags(object):
+class PackTags:
     """ Pack tag constants """
     TRENDING = "Trending"
     NEW = "New"
@@ -160,7 +159,7 @@ class PackTags(object):
     DATA_SOURCE = "Data Source"
 
 
-class Metadata(object):
+class Metadata:
     """ Metadata constants and default values that are used in metadata parsing.
     """
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -286,7 +285,7 @@ class PackFolders(enum.Enum):
         }
 
 
-class PackIgnored(object):
+class PackIgnored:
     """ A class that represents all pack files/directories to be ignored if a change is detected in any of them
 
     ROOT_FILES: The files in the pack root directory
@@ -381,7 +380,7 @@ SKIPPED_STATUS_CODES = {
 }
 
 
-class Changelog(object):
+class Changelog:
     """
     A class that represents all the keys that are present in a Changelog entry.
     """

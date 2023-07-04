@@ -91,7 +91,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
     signature_file_path = os.path.join(path, 'signatures.sf')
     test_playbooks = [file_ for file_ in filenames if 'TestPlaybooks' in file_]
     if os.path.isfile(signature_file_path):
-        with open(signature_file_path, 'r') as signature_file:
+        with open(signature_file_path) as signature_file:
             signature = json.load(signature_file)
             for test_playbook in test_playbooks:
                 del signature[test_playbook]

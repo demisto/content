@@ -39,7 +39,7 @@ def remove_old_pack_from_private_id_set(private_id_set, new_pack_name):
 
 
 def get_and_set_private_id_set_by_path(private_id_set_path, new_pack_name):
-    with open(private_id_set_path, 'r') as id_set_file:
+    with open(private_id_set_path) as id_set_file:
         private_id_set = json.load(id_set_file)
 
     private_id_set = remove_old_pack_from_private_id_set(private_id_set, new_pack_name)

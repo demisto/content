@@ -5,7 +5,6 @@ import sys
 
 import click
 from demisto_sdk.commands.doc_reviewer.doc_reviewer import DocReviewer
-from typing import List
 
 import urllib3
 from Utils.github_workflow_scripts.utils import timestamped_print
@@ -14,7 +13,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 
-def pass_files_to_docs_review(files_for_review: List[str]) -> int:
+def pass_files_to_docs_review(files_for_review: list[str]) -> int:
     """
     This function passes each file of the files_for_review list to the demisto-sdk docs reviewer.
     Args:

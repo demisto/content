@@ -4,10 +4,9 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Tuple
 
 
-def run_command(cmd: str) -> Tuple[str, str]:
+def run_command(cmd: str) -> tuple[str, str]:
     return subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
 
 
