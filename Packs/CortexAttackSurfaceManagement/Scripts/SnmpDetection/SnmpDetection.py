@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import ipaddress
 import socket
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 # Hex value of the Snmp probes for each version.
 long_hex_v3 = "303a020103300f02024a69020300ffe30401040201030410300e0"
