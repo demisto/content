@@ -44,21 +44,20 @@ def cidr_command(args: Dict[str, str]) -> Tuple[str, dict, str]:
 
     """
     cidr_list = argToList(args.get('cidr'))
-    ec = {'Network': [ip_cidr(cidr) for cidr in cidr_list]}
+    ec = [ip_cidr(cidr) for cidr in cidr_list]
     markdown = tableToMarkdown(name=f'CIDR - {args.get("cidr")}',
-                               t=ec.get('Network'),
+                               t=ec,
                                removeNull=True)
-
-    return (
-        markdown,
-        ec,
-        ""
+    return CommandResults(
+        outputs_prefix = 'Network',
+        outputs = ec,
+        readable_output = markdown
     )
 
 
 def main():
     try:
-        return_outputs(*cidr_command(demisto.args()))
+        return_results(cidr_command(demisto.args()))
     except Exception as ex:
         return_error(f'Failed to execute IPNetwork script. Error: {str(ex)}')
 
