@@ -3,7 +3,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -20,10 +20,10 @@ class Client(BaseClient):
         self.api_key = api_key
         self.reliability = reliability
 
-    def ipinfo_ip(self, ip: str) -> Dict[str, Any]:
+    def ipinfo_ip(self, ip: str) -> dict[str, Any]:
         return self.http_request(ip)
 
-    def http_request(self, ip: str) -> Dict[str, Any]:
+    def http_request(self, ip: str) -> dict[str, Any]:
         """ constructs url with token (if existent), then returns request """
         return self._http_request(method='GET',
                                   url_suffix=f'{ip}/json',
@@ -48,7 +48,7 @@ def ipinfo_ip_command(client: Client, ip: str) -> List[List[CommandResults]]:
     return ip_results
 
 
-def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List[CommandResults]:
+def parse_results(ip: str, raw_result: dict[str, Any], reliability: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     # default values
@@ -211,12 +211,10 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
 
-
         elif command == 'ip':
             ip_command = ipinfo_ip_command(client, **args)
             return_results(ip_command)
-            
-            
+
         else:
             raise NotImplementedError(f"command {command} is not supported")
 
