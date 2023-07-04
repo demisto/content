@@ -3,7 +3,7 @@ import os
 import ssl
 import email
 from datetime import timezone
-from typing import Any
+from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
 from mailparser import parse_from_bytes, parse_from_string
