@@ -1,5 +1,5 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version xx of CheckPointHEC
+This integration was integrated and tested with version 1.0.0 of CheckPointHEC
 
 ## Configure CheckPointHEC on Cortex XSOAR
 
