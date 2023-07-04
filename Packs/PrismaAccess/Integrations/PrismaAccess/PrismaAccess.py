@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import sys
 from base64 import b64encode
@@ -5,8 +7,6 @@ from typing import Any, Dict
 
 import requests
 
-import demistomock as demisto
-from CommonServerPython import *
 from netmiko import Netmiko
 
 ''' Common setup '''
