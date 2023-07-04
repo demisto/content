@@ -170,12 +170,13 @@ def convert_to_timestamp(date: datetime | None) -> int:
 """*****COMMAND FUNCTIONS****"""
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
+def test_module(client: Client, first_fetch_time: int, last_run: Dict[str, Any]) -> str:
     """
      Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
     try:
-        client.get_events(start_time=first_fetch_time, end_time=int(datetime.now().timestamp()))
+        fetch_events(client, max_fetch=1, last_run=last_run, start_time=first_fetch_time,
+                     end_time=convert_to_timestamp(datetime.now()))
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -251,7 +252,8 @@ def main() -> None:  # pragma: no cover
         )
 
         if demisto.command() == 'test-module':
-            return_results(test_module(client, first_fetch_time_timestamp))
+            last_run = demisto.getLastRun()
+            return_results(test_module(client, first_fetch_time_timestamp, last_run))
         elif demisto.command() == 'darktrace-get-events':
             events, results = get_events_command(client=client,
                                                  args=args,
