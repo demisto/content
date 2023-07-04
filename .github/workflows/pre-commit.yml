@@ -45,17 +45,6 @@ jobs:
         source .venv/bin/activate
         npm install
         demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
-    - name: Run git diff
-      id: git-diff
-      if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
-      run: |
-        echo GIT_DIFF=$(git diff) >> $GITHUB_OUTPUT
-    - name: Comment the changes
-      if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true && steps.git-diff.outputs.GIT_DIFF != ''
-      uses: thollander/actions-comment-pull-request@v2
-      with:
-        message: |
-          Pre-Commit will push the following changes:<br/>```<br/>${{ steps.git-diff.outputs.GIT_DIFF }}<br/>```<br/>Please review the changes and merge the PR if you are satisfied.
     - name: Commit and push changes
       if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
       uses: stefanzweifel/git-auto-commit-action@v4
