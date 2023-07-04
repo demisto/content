@@ -191,10 +191,8 @@ validate-content-conf:
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
         echo "Creating Instances, only for XSOAR."
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP --zone $GCP_ZONE
       fi
-    - section_end "Create Instances for XSOAR"
-
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
@@ -254,7 +252,7 @@ xpanse-prepare-testing-bucket:
         job-done
         exit 0
       fi
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - |
       # workaround for the hard-coded value in the sdk
@@ -284,18 +282,9 @@ xpanse-prepare-testing-bucket:
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
         TIME_TO_LIVE=300
       fi
-      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+      python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
     - job-done
     - exit $EXIT_CODE
-
-xsoar_server_6_6:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.6"
 
 xsoar_server_6_8:
   extends: .test_content_on_xsoar_server_instances_base
@@ -323,6 +312,15 @@ xsoar_server_6_10:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     INSTANCE_ROLE: "Server 6.10"
+
+xsoar_server_6_11:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.11"
 
 xsoar_server_master:
   extends:
@@ -376,13 +374,13 @@ jobs-done-check-on-push:
       optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_6
-      optional: true
     - job: xsoar_server_6_8
       optional: true
     - job: xsoar_server_6_9
       optional: true
     - job: xsoar_server_6_10
+      optional: true
+    - job: xsoar_server_6_11
       optional: true
     - job: xsoar_server_master
       optional: true
