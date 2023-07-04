@@ -1360,7 +1360,7 @@ if __name__ == '__main__':
     branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
-    if marketplace.value == MarketplaceVersions.XSOAR_SAAS:
+    if marketplace == MarketplaceVersions.XSOAR_SAAS:
         # When collecting test xsoar is equivalent to xsoar saas
         marketplace = MarketplaceVersions.XSOAR
 
