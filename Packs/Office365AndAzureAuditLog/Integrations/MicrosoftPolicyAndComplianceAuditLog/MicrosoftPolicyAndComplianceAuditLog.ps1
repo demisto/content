@@ -207,16 +207,11 @@ function Main {
             Command: $command
             Arguments: $($command_arguments | ConvertTo-Json)
             Error: $($_.Exception.Message)")
-        if ($command -ne "test-module") {
-            ReturnError "Error:
+        ReturnError "Error:
             Integration: $script:INTEGRATION_NAME
             Command: $command
             Arguments: $($command_arguments | ConvertTo-Json)
             Error: $($_.Exception)" | Out-Null
-        }
-        else {
-            ReturnError $_.Exception.Message
-        }
     }
 }
 
