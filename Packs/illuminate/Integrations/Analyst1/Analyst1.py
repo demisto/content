@@ -735,7 +735,7 @@ def main():
     commands = {
         'analyst1-enrich-domain': domain_command,
         'analyst1-enrich-email': email_command,
-        'analyst1-enrich-hash': file_command,
+        'analyst1-enrich-file': file_command,
         'analyst1-enrich-ipv4': ip_command,
         'analyst1-enrich-url': url_command,
         'analyst1-enrich-string': analyst1_enrich_string_command,

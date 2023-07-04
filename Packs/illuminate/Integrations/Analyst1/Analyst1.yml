@@ -138,7 +138,7 @@ script:
       description: The AlienVault OTX vendor.
       type: String
     description: Queries the Analyst1 REST API and enriches the given domain with
-      Analyst1 Indicator data
+      Analyst1 Indicator data.
   - name: analyst1-enrich-email
     arguments:
     - name: email
@@ -151,7 +151,7 @@ script:
       description: The sender of the email.
       type: string
     - contextPath: Analyst1.Email.ID
-      description: The unique identifier of the given Indicator in Analyst1
+      description: The unique identifier of the given Indicator in Analyst1.
       type: number
     - contextPath: Analyst1.Email.EvidenceCount
       description: The number of evidence reports of the given indicator in Analyst1.
@@ -250,10 +250,10 @@ script:
       description: The dates this indicator had reported activity in Analyst1.
       type: date
     - contextPath: Analyst1.Ip.Malwares.ID
-      description: Each matched malware unique identifier in Analyst1
+      description: Each matched malware unique identifier in Analyst1.
       type: number
     - contextPath: Analyst1.Ip.Malwares.Name
-      description: Each matched malware name in Analyst1
+      description: Each matched malware name in Analyst1.
       type: string
     - contextPath: Analyst1.Ip.Actors.ID
       description: Each matched actor unique identifier in Analyst1.
@@ -278,7 +278,7 @@ script:
       type: String
     description: Queries the Analyst1 REST API and enriches the given IP address with
       Analyst1 indicator data.
-  - name: analyst1-enrich-hash
+  - name: analyst1-enrich-file
     arguments:
     - name: file
       required: true
@@ -831,7 +831,7 @@ script:
         If an id is returned but blank, this is false, indicating the upload is still
         in progress.
     description: Check on the status of the analyst1-evidence-submit action by using
-      its output UUID
+      its output UUID.
   dockerimage: demisto/python3:3.10.11.61265
   runonce: false
   subtype: python3
