@@ -5,14 +5,13 @@ import io
 import json
 import re
 from datetime import datetime, timedelta
-
 import dateparser
 import pytz
 import requests
+
 from splunklib import client
 from splunklib import results
 from splunklib.data import Record
-from CommonServerPython import *  # noqa: F401
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 
