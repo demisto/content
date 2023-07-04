@@ -116,7 +116,7 @@ def get_raw_events(client, days):
     for item in events["data"]:
         result = dict(zip(outcome, item))
         event_list.append(result)
-    event_list.sort(key=lambda item: item["inc_mtime"])
+    event_list.sort(key=lambda item: (item["inc_mtime"], item["dg_guid"]))
     return event_list
 
 
@@ -154,7 +154,7 @@ def fetch_events(client: Client, last_run: Dict[str, int],first_fetch_time: Opti
     event_list = get_raw_events(client, fetch_time)
     for event in event_list:
         if last_time:
-            if event.get("inc_mtime") <= last_time:
+            if event.get("inc_mtime") < last_time:
                 continue
             if event.get("dg_guid") == last_id:
                 continue
