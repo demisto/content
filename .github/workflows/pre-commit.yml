@@ -6,7 +6,7 @@ on:
 concurrency:
   group: ${{ github.head_ref }}
   cancel-in-progress: true
-  
+
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
@@ -51,11 +51,11 @@ jobs:
       run: |
         echo GIT_DIFF=$(git diff) >> $GITHUB_OUTPUT
     - name: Comment the changes
-      if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
+      if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true && steps.git-diff.outputs.GIT_DIFF != ''
       uses: thollander/actions-comment-pull-request@v2
       with:
         message: |
-          "Pre-Commit will push the following changes:\n\n\`\`\`\n${{ steps.git-diff.outputs.GIT_DIFF }}\n\`\`\`"
+          Pre-Commit will push the following changes:\n\n\`\`\`\n${{ steps.git-diff.outputs.GIT_DIFF }}\n\`\`\`\n\nPlease review the changes and merge the PR if you are satisfied.
     - name: Commit and push changes
       if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
       uses: stefanzweifel/git-auto-commit-action@v4
