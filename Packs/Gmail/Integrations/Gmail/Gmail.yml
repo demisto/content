@@ -15,6 +15,7 @@ configuration:
   section: Connect
 - display: Events search query
   name: query
+  defaultvalue: "label:Inbox"
   required: false
   type: 0
   additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example, "from:example@demisto.com is:unread".
