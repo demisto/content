@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Main file for BitSightForSecurityPerformanceManagement Integration."""
 import requests
 import urllib3
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 '''CONSTANTS'''
 BITSIGHT_DATE_TIME_FORMAT = '%Y-%m-%d'
