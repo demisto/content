@@ -3025,6 +3025,65 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
+  - name: azure-sentinel-subscriptions-list
+    description: Lists all subscriptions.
+    outputs:
+    - contextPath: AzureSentinel.SubscriptionId
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.displayName
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.authorizationSource
+      description: The authorization source of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.managedByTenants
+      description: The subscriptions that are managed by tenants of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.tenetId
+      description: The tenet ID of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.state
+      description: The state of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.subscriptionPolicies
+      description: The subscription policies of the resource.
+      type: String
+  - name: azure-sentinel-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided."
+      type: String
+      required: false
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+      isArray: false
+      type: String
+    - name: limit
+      description: The maximum number of resource groups to return.
+      defaultValue: 50
+      isArray: false
+      type: Number
+    outputs:
+    - contextPath: AzureSentinel.ResourceGroup.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.type
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.location
+      description: The location of the resource group.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.tags
+      description: The tags of the resource group.
+      type: Dictionary
+    - contextPath: AzureSentinel.ResourceGroup.properties
+      description: The properties of the resource group.
+      type: dictionary
   dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: true

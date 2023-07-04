@@ -137,7 +137,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isfetch: false
   longRunning: false
