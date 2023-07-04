@@ -167,11 +167,11 @@ def test_write_test_pack_zip(tmpdir):
         #  Check that file from DeveloperTools is present
         dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
         expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
-                                                           'TestCreateIncidentsFile.yml'
+            'TestCreateIncidentsFile.yml'
         assert expected_test_script_file_path in dir_containing_test_script
         #  Check that item collected in needed_test_playbook_paths is present.
         expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
-                                                                'playbook-HelloWorld_Scan-Test.yml'
+            'playbook-HelloWorld_Scan-Test.yml'
         assert expected_hello_world_test_file_path in dir_containing_test_script
 
 
