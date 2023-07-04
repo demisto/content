@@ -30,14 +30,18 @@ To generate a new token:
 7. Click **Create personal access token** and copy the api key generated.-+
 
 #### Create a Trigger Token
-Trigger tokens allows you to trigger a pipeline for a branch using it to authenticate on an API call.
-Prerequisite:
-- You must have at least the Maintainer role for the project.
-To generate a new token:
+Trigger tokens allow you to trigger a pipeline for a branch using it to authenticate on an API call.
+
+**Prerequisite:**
+
+You must have at least the Maintainer role for the project.
+
+**To generate a new token:**
+
 1. Navigate to your project.
-2. Select Settings > CI/CD.
+2. Select **Settings** > **CI/CD**.
 3. Expand Pipeline triggers.
-4. Enter a description and select Add trigger.
+4. Enter a description and select **Add trigger**.
    - You can view and copy the full token for all triggers you have created.
    - You can only see the first 4 characters for tokens created by other project members.
 

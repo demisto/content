@@ -1012,7 +1012,7 @@ def test_trigger_pipeline(mocker, trigger_token, args, expected_result):
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'},
                     trigger_token=trigger_token)
-    expected_outputs: List[Dict] = expected_result['expected_outputs']
+    expected_outputs: List[dict] = expected_result['expected_outputs']
     expected_prefix: str = expected_result['expected_prefix']
     expected_key_field: str = expected_result['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=expected_result['mock_response'])

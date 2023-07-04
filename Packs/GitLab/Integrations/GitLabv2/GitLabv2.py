@@ -319,7 +319,7 @@ class Client(BaseClient):
         """Triggers a pipeline on GitLab.
 
         Args:
-            project_id: Project ID on winch to run the pipeline.
+            project_id: Project ID on which to run the pipeline.
             data: The request body in JSON format.
 
         Returns:
