@@ -6,7 +6,6 @@ import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
-from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -807,7 +806,7 @@ def detection_to_incident(detection: dict, detection_date: str) -> dict:
     return incident
 
 
-def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> Tuple[List[Dict[str, str]], str]:  # pragma: no cover  # noqa
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> tuple[List[Dict[str, str]], str]:  # pragma: no cover  # noqa
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
     """

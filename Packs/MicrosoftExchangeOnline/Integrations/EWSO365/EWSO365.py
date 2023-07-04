@@ -96,16 +96,10 @@ CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
                           f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
                           f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
 
-CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{} == obj.{})".format(
-    ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID
-)
-CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(
-    ATTACHMENT_ID
-)
-CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(
-    ATTACHMENT_ID
-)
-CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
+CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
+CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FILE_ATTACHMENT = f".FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FOLDER = f"EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})"
 
 # fetch params
 LAST_RUN_TIME = "lastRunTime"
@@ -494,7 +488,7 @@ class ExpandGroup(EWSService):
     def call(self, email_address, recursive_expansion=False):      # pragma: no cover
         try:
             if recursive_expansion == "True":
-                group_members: dict = {}
+                group_members = {}
                 self.expand_group_recursive(email_address, group_members)
                 return list(group_members.values())
             else:
@@ -1237,7 +1231,7 @@ def search_items_in_mailbox(
     selected_all_fields = selected_fields == "all"
 
     if selected_all_fields:
-        restricted_fields = [x.name for x in Message.FIELDS]  # type: ignore
+        restricted_fields = [x.name for x in Message.FIELDS]
     else:
         restricted_fields = set(argToList(selected_fields))  # type: ignore
         restricted_fields.update(["id", "message_id"])  # type: ignore

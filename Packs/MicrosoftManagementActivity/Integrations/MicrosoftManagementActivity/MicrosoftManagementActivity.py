@@ -466,7 +466,7 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
 
 
 def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
-    all_content_records: List = []
+    all_content_records = []
     content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str \
         else content_types_to_fetch
     for content_type in content_types_to_fetch:

@@ -310,7 +310,7 @@ def get_single_ip_details_from_list_of_ip_details(list_of_ip_details: list, ip_a
 
     Args:
         list_of_ip_details (list):  List of PublicIPAddressListResult objects.
-        ip_address (_type_): IP Address to search for in list of PublicIPAddressListResult objects.
+        ip_address (list | dict): IP Address to search for in list of PublicIPAddressListResult objects.
     """
     def search_entry_for_ip(data, key, value):
         if isinstance(data, list):
@@ -1146,7 +1146,7 @@ def main():
         if command == 'azure-vm-auth-reset':
             return_results(reset_auth())
         else:
-            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+            human_readable, entry_context, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as e:

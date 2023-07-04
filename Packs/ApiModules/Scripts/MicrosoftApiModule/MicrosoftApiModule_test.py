@@ -110,6 +110,14 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
      'invalid_grant. \nThe refresh token has expired due to inactivity.\nYou can run the ***command_prefix-auth-reset*** '
      'command to reset the authentication process.')])
 def test_error_parser(mocker, error_content, status_code, expected_response):
+    """
+    Given:
+        - The error_content, status_code, and expected_response for testing the error_parser function.
+    When:
+        - The error_parser function is called with the given error_content and status_code.
+    Then:
+        - Assert that the response from the error_parser matches the expected_response.
+    """
     mocker.patch.object(demisto, 'error')
     client = self_deployed_client()
     err = Response()
@@ -676,6 +684,7 @@ def test_generate_login_url():
         - Self-deployed are true and auth code are the auth flow
     When:
         - Calling function generate_login_url
+     Then:
         - Ensure the generated url are as expected.
     """
     from MicrosoftApiModule import generate_login_url
