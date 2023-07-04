@@ -1178,7 +1178,7 @@ script:
         defaultValue: 50
       - default: false
         name: tag
-        description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+        description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
         required: false
         outputs:
         - contextPath: AzureStorage.ResourceGroup.id

@@ -308,7 +308,7 @@ Gets a list of managed clusters in the specified subscription.
                     "loadBalancerProfile": {
                         "effectiveOutboundIPs": [
                             {
-                                "id": "/subscriptions/00000000/resourceGroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.Network/publicIPAddresses/81661302-1ebc-450b-80a3-1e5d351ec2c0"
+                                "id": "/subscriptions/00000000/resourceGroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.Network/publicIPAddresses/81661302-1ebc-450b"
                             }
                         ],
                         "managedOutboundIPs": {
