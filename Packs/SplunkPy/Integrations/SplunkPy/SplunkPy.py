@@ -15,7 +15,7 @@ from splunklib.data import Record
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 
-OUTPUT_MODE = 'json'  # type of response from splunk-sdk query
+OUTPUT_MODE = 'json'  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
