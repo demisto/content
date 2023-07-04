@@ -10,8 +10,14 @@ configuration:
   type: 0
 - display: API Token
   name: token
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Token
+  name:  credentials_api_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default is "clean")'
   name: good_disp
   options:
@@ -206,5 +212,5 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
