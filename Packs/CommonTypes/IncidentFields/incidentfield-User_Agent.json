@@ -23,6 +23,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0",
-    "marketplaces": "xsoar"
+    "fromVersion": "6.8.0"
 }
