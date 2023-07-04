@@ -64,6 +64,16 @@ def test_module(client: Client):
     return 'ok'
 
 
+def get_cvss_verion(cvss_vector: str) -> float:
+    # Checks for the CVSS score version according to its vector
+    if not cvss_vector:
+        return 0
+    elif cvss_version_regex := re.match('CVSS:(?P<version>.+?)/', cvss_vector):
+        return float(cvss_version_regex.group("version"))
+    else:
+        return 2.0
+
+
 def cve_latest_command(client: Client, limit) -> list[CommandResults]:
     """
     Returns the 30 latest updated CVEs.
@@ -224,6 +234,7 @@ def generate_indicator(data: dict) -> Common.CVE:
         id=cve_id,
         cvss=data.get('cvss'),
         cvss_vector=data.get('cvss-vector'),
+        cvss_version=get_cvss_verion(data.get('cvss-vector', '')),
         cvss_table=cvss_table,
         published=data.get('Published'),
         modified=data.get('Modified'),
