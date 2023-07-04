@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 import hmac
 import json
@@ -8,9 +10,7 @@ from typing import Any, cast
 from collections.abc import Mapping
 
 import dateparser
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
 
 """Darktrace Integration for Cortex XSOAR (aka Demisto)"""
 
