@@ -10,7 +10,7 @@ In this version, the custom scores are derived from certain pre-defined factors 
 1. Factor values can be of different types.
 	1. Continuous: Values of a factor can be in a range, like *relatedIncidentCount*. This is true for factors that have a numerical format.
 	2. Discrete: Values of a factor can be discrete and mapped to individual keys. For example, *geocountry* value can be *US*.
-1. Factor values can be obtained from an indicator in different ways.
+2. Factor values can be obtained from an indicator in different ways.
 	1. Derived: It can be derived from a field. For example, *age* can be calculated from indicator field *firstSeen*. There are custom calculations required for derived factors, and so these cannot be added dynamically to the list of factors. The derived factors are:
 		1. *age*: An indicator’s age is calculated as the time difference between *now* and when the indicator was first seen.
 		2. *weightedScore*: An indicator’s weighted score is calculated as by taking each source’s reliability as weight and associated verdict as value.
