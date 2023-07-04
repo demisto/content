@@ -762,7 +762,7 @@ def session_list_command(client: Client,
 
 
 def sessions_csv_get_command(client: Client,
-                             date: int = DEFAULT_DATE,
+                             # date: int = DEFAULT_DATE,
                              expression: str = None,
                              start_time: str = None,
                              stop_time: str = None,
@@ -775,6 +775,7 @@ def sessions_csv_get_command(client: Client,
                              offset: int = DEFAULT_OFFSET) -> Dict:
     length = length_validness(arg_to_number(limit), MAX_LENGTH)
     start = arg_to_number(offset)
+
 
     response = client.sessions_csv_request(date=date,
                                            expression=expression,
@@ -1064,6 +1065,8 @@ def test_module(client: Client) -> None:
 
 
 def main() -> None:
+    a = None
+    a == 3
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get('url')
