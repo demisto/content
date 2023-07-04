@@ -149,7 +149,7 @@ MOCK_SENSOR_IOCS: list = [
     {
         "id": 2,
         "type": "IPv4",
-        "value": "11.22.33.44",
+        "value": "0.154.17.105",
         "classification": "U",
         "fileHashes": {},
         "links": [
@@ -617,7 +617,7 @@ def assert_sensor_iocs(output_list: list):
     assert output_list[0]['id'] == '1'
     assert output_list[0]['value'] == 'example.com'
     assert output_list[1]['id'] == '2'
-    assert output_list[1]['value'] == '11.22.33.44'
+    assert output_list[1]['value'] == '0.154.17.105'
     assert output_list[2]['id'] == '3-SHA256'
     assert output_list[2]['value'] == 'F5A64DE9087B138608CCF036B067D91A47302259269FB05B3349964CA4060E7A'
     assert output_list[3]['id'] == '3-SHA1'
