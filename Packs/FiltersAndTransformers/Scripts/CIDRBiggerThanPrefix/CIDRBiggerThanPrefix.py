@@ -1,7 +1,7 @@
-import ipaddress
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import ipaddress
+
 
 
 def cidr_network_addresses_lower_from_const(ip_cidr: str, max_prefix: int) -> bool:
