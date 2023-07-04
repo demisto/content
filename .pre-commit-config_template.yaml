@@ -49,6 +49,28 @@ repos:
   - repo: https://github.com/demisto/demisto-sdk
     rev: ""
     hooks:
+      - id: update-additional-dependencies
+        args: [--pre_commit_config, .pre-commit-config_template.yaml]
+
+      # enable with --test
+      - id: run-unit-tests
+
+      - id: format
+        # update docker image to the latest version, assume no
+        args: ["-ud", "-n", "--no-validate", "-g"]
+
+      - id: validate
+        args: ["-g", "--skip-pack-dependencies",]
+
+      - id: secrets
+        args: ["--ignore-entropy"]
+
+      - id: no-implicit-optional
+        # remove this argument when this hook is ready to use
+        skip: true
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.982
+    hooks:
       - id: mypy
         args:
           [
@@ -62,19 +84,3 @@ repos:
           ]
         exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests"
 
-      # enable with --test
-      - id: run-unit-tests
-
-      - id: format
-        # update docker image to the latest version, assume no
-        args: ["-ud", "-n", "--no-validate", "-g"]
-
-      - id: validate
-        args: ["-g"]
-
-      - id: secrets
-        args: ["--ignore-entropy"]
-
-      - id: no-implicit-optional
-        # remove this argument when this hook is ready to use
-        skip: true
