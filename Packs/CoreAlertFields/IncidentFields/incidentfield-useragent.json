@@ -28,10 +28,6 @@
     "version": -1,
     "fromVersion": "6.5.0",
     "x2_fields": "user_agent",
-    "marketplaces": [
-        "marketplacev2",
-        "xpanse"
-    ],
     "Aliases": [
         {
             "cliName": "googlecloudsccfindingsourcepropertiesuseragent",
