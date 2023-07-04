@@ -48,7 +48,7 @@ script:
   - arguments:
     - default: false
       description: Command to run on the remote machine.
-      isArray: false
+      isArray: true
       name: cmd
       required: true
       secret: false
