@@ -126,8 +126,8 @@ def test_create_iplist_command(mocker):
     assert response.outputs.get('Name') == 'name'
 
 
-@pytest.mark.parametrize('is_overwrite,returned_iplist', [(True, ['1.2.3.4']), (False, ['1.1.1.1', '1.2.3.4'])])
-def test_update_iplist_command(mocker, is_overwrite, returned_iplist):
+@pytest.mark.parametrize('is_override,returned_iplist', [(True, ['1.2.3.4']), (False, ['1.1.1.1', '1.2.3.4'])])
+def test_update_iplist_command(mocker, is_override, returned_iplist):
     """
     Given:
         - demisto args
@@ -142,8 +142,7 @@ def test_update_iplist_command(mocker, is_overwrite, returned_iplist):
     args = {
         'name': 'name',
         'addresses': '1.2.3.4',
-        'comment': 'new_comment',
-        'is_overwrite': is_overwrite
+        'is_override': is_override
     }
     ip_list = mock_IPList(name='name', iplist=returned_iplist, comment='new_comment')
     mocker.patch.object(CollectionManager, 'filter', return_value=[ip_list])
@@ -245,8 +244,8 @@ def test_list_host_command(mocker, args, returned_results):
     assert len(response.outputs) == returned_results
 
 
-@pytest.mark.parametrize('is_overwrite,returned_host', [(True, ['1.2.3.4']), (False, ['1.1.1.1', '1.2.3.4'])])
-def test_update_host_command(mocker, is_overwrite, returned_host):
+@pytest.mark.parametrize('is_override,returned_host', [(True, ['1.2.3.4']), (False, ['1.1.1.1', '1.2.3.4'])])
+def test_update_host_command(mocker, is_override, returned_host):
     """
     Given:
         - demisto args
@@ -262,7 +261,7 @@ def test_update_host_command(mocker, is_overwrite, returned_host):
         'name': 'name',
         'address': '1.2.3.4',
         'comment': 'new_comment',
-        'is_overwrite': is_overwrite
+        'is_override': is_override
     }
     host = mock_Host(name='name', address='1.1.1.1', ipv6_address='', secondary=returned_host, comment='comment')
     mocker.patch.object(CollectionManager, 'filter', return_value=[host])
@@ -543,7 +542,7 @@ def test_delete_rule_command_no_rule(mocker):
         - Ensure the results holds the expected data in case of an ElementNotFound exception
     """
     rule = mock_Rule()
-    policy = mock_Policy('name', 'comment')  
+    policy = mock_Policy('name', 'comment')
     mocker.patch.object(CollectionManager, 'filter', return_value=[policy])
     mocker.patch('ForcepointSecurityManagementCenter.get_all_policy_rules', return_value=[rule])
     args = {'policy_name': 'name', 'rule_id': 'test'}
@@ -560,7 +559,7 @@ def test_create_rule_command(mocker):
     Then:
         - Ensure the results holds the expected data
     """
-    
+
     mocker.patch.object(CollectionManager, 'filter', return_value=[mock_Domain('name', 'comment')])
     args = {
         'policy_name': 'name',
@@ -591,7 +590,7 @@ def test_create_rule_command_no_sources_or_destinations(mocker):
     Then:
         - Ensure the results holds the expected data
     """
-    
+
     mocker.patch.object(CollectionManager, 'filter', return_value=[mock_Domain('name', 'comment')])
     args = {
         'policy_name': 'name',

@@ -74,15 +74,11 @@ script:
       name: addresses
       required: false
     - default: false
-      description: The comment to add to the ip list.
-      isArray: false
-      name: comment
-      required: false
-    - default: false
+      auto: PREDEFINED
       description: If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False.
       isArray: false
-      name: is_overwrite
-      options:
+      name: is_override
+      predefined:
       - 'False'
       - 'True'
       defaultvalue: False
@@ -102,7 +98,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a specific IP List to fetch. If selected, returns only the specific
+      description: The name of a specific IP List to fetch, overrides the other arguments if used.
       isArray: false
       name: name
       required: false
@@ -113,7 +109,7 @@ script:
       name: limit
       required: false
     - default: false
-      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      description: Whether to return all of the results or not. Default value is False.
       isArray: false
       name: all_results
       required: false
@@ -450,11 +446,11 @@ script:
       name: rule_name
       required: true
     - default: false
-      description: The name of the rule to create.
+      description: The ip_version of the rule. Default value is V4.
       isArray: false
       name: ip_version
       required: false
-      options:
+      predefined:
       - V4
       - V6
       defaultvalue: V4
@@ -489,11 +485,12 @@ script:
       name: destination_domain
       required: false
     - default: false
+      auto: PREDEFINED
       description: The action of the rule.
       isArray: false
       name: action
-      required: false
-      options:
+      required: true
+      predefined:
       - allow
       - continue
       - discard
@@ -518,6 +515,9 @@ script:
     - contextPath: ForcepointSMC.Rule.ID
       description: 'The id of the rule.'
       type: String
+    - contextPath: ForcepointSMC.Rule.IP_version
+      description: 'The IP version of the rule.'
+      type: String
     - contextPath: ForcepointSMC.Rule.Action
       description: 'The action of the rule.'
       type: String
@@ -536,14 +536,25 @@ script:
       name: rule_name
       required: true
     - default: false
-      description: Override the existing values or not. Default value id False.
+      auto: PREDEFINED
+      description: Override the existing values or not. Default value is False.
       isArray: false
-      name: is_overwrite
+      name: is_override
       required: false
-      options:
+      predefined:
       - 'False'
       - 'True'
       defaultvalue: False
+    - default: false
+      description: The ip_version of the rule. Default value is V4.
+      isArray: false
+      auto: PREDEFINED
+      name: ip_version
+      required: true
+      predefined:
+      - 'V4'
+      - 'V6'
+      defaultvalue: 'V4'
     - default: false
       description: A comma-seperated list of ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
       isArray: false
@@ -575,11 +586,12 @@ script:
       name: destination_domain
       required: false
     - default: false
+      auto: PREDEFINED
       description: The action of the rule.
       isArray: false
       name: action
-      required: true
-      options:
+      required: false
+      predefined:
       - allow
       - continue
       - discard
@@ -630,20 +642,34 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the policy to delete.
+      description: The name of the firewall policy.
       isArray: false
-      name: name
+      name: policy_name
       required: true
-      secret: false
+    - default: false
+      description: The name of the rule to delete.
+      isArray: false
+      name: rule_name
+      required: true
+    - default: false
+      auto: PREDEFINED
+      description: The ip_version of the rule. Default value is V4.
+      isArray: false
+      name: ip_version
+      required: true
+      predefined:
+      - 'V4'
+      - 'V6'
+      defaultvalue: 'V4'
     description: 'Deletes a rule.'
     execution: false
     name: forcepoint-smc-rule-delete
     outputs:
-    - contextPath: ForcepointSMC.Rule.Name
-      description: 'The name of the firewall policy'
+    - contextPath: ForcepointSMC.Rule.ID
+      description: 'The id of the rule'
       type: String
     - contextPath: ForcepointSMC.Rule.Deleted
-      description: 'Was the policy deleted or not'
+      description: 'Was the rule deleted or not'
       type: Boolean
   - arguments:
     - default: false

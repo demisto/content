@@ -8,7 +8,7 @@ from smc.base.model import Element
 from smc.policy.layer3 import FirewallTemplatePolicy, FirewallPolicy
 from smc.api.exceptions import ElementNotFound
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -87,22 +87,29 @@ def handle_rule_entities(ip_lists: list, host_list: list, domain_list: list):
     return entities
 
 
-def get_rule_from_policy(policy: FirewallPolicy, rule_id: str):
+def get_rule_from_policy(policy: FirewallPolicy, rule_name: str, ip_version: str = '', all_rules: bool = True):
     """Gets a rule from a policy based on its ID"""
 
-    rules = get_all_policy_rules(policy)
+    rules = get_policy_rules(policy, ip_version, all_rules)
     for rule in rules:
-        if rule.tag == rule_id:
+        if rule.name == rule_name:
             return rule
 
-    raise DemistoException(f"Rule with id {rule_id} was not found in policy {policy.name}.")
+    raise DemistoException(f"Rule with name {rule_name} was not found in policy {policy.name}.")
 
 
-def get_all_policy_rules(policy: FirewallPolicy):
-    """Gets all of the rules from a specific policy"""
+def get_policy_rules(policy: FirewallPolicy, ip_version: str = '', all_rules: bool = True):
+    """Gets rules from a specific policy"""
+    ipv4_rules = list(policy.fw_ipv4_access_rules.all())
+    ipv6_rules = list(policy.fw_ipv6_access_rules.all())
 
-    rules = list(policy.fw_ipv4_access_rules.all()) + list(policy.fw_ipv6_access_rules.all())
-    return rules
+    if all_rules:
+        return ipv4_rules + ipv6_rules
+    else:
+        if ip_version == 'V4':
+            return ipv4_rules
+        else:
+            return ipv6_rules
 
 
 ''' COMMAND FUNCTIONS '''
@@ -133,11 +140,11 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def create_iplist_command(args: Dict[str, Any]) -> CommandResults:
+def create_iplist_command(args: dict[str, Any]) -> CommandResults:
     """Creating IP List with a list of addresses.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -150,8 +157,7 @@ def create_iplist_command(args: Dict[str, Any]) -> CommandResults:
 
     outputs = {'Name': ip_list.name,
                'Addresses': ip_list.iplist,
-               'Comment': ip_list.comment,
-               'Deleted': False}
+               'Comment': ip_list.comment}
     return CommandResults(
         outputs_prefix='ForcepointSMC.IPList',
         outputs=outputs,
@@ -161,24 +167,23 @@ def create_iplist_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def update_iplist_command(args: Dict[str, Any]) -> CommandResults:
+def update_iplist_command(args: dict[str, Any]) -> CommandResults:
     """Updating an IP List.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
     """
     name = args.get('name')
     addresses = argToList(args.get('addresses', []))
-    comment = args.get('comment', '')
-    is_overwrite = args.get('is_overwrite', False)
+    is_override = args.get('is_override', False)
 
     if not list(IPList.objects.filter(name)):
         raise DemistoException(f'IP List {name} was not found.')
 
-    ip_list = IPList.update_or_create(name=name, append_lists=not is_overwrite, iplist=addresses, comment=comment)
+    ip_list = IPList.update_or_create(name=name, append_lists=not is_override, iplist=addresses)
 
     outputs = {'Name': ip_list.name,
                'Addresses': ip_list.iplist,
@@ -193,11 +198,11 @@ def update_iplist_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_iplist_command(args: Dict[str, Any]) -> CommandResults:
+def list_iplist_command(args: dict[str, Any]) -> CommandResults:
     """Lists the IP Lists in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -229,11 +234,11 @@ def list_iplist_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_iplist_command(args: Dict[str, Any]) -> CommandResults:
+def delete_iplist_command(args: dict[str, Any]) -> CommandResults:
     """Deleting IP List with a list of addresses.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -257,11 +262,11 @@ def delete_iplist_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_host_command(args: Dict[str, Any]) -> CommandResults:
+def list_host_command(args: dict[str, Any]) -> CommandResults:
     """Lists the Hosts in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -296,11 +301,11 @@ def list_host_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def create_host_command(args: Dict[str, Any]) -> CommandResults:
+def create_host_command(args: dict[str, Any]) -> CommandResults:
     """Creating a Host.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -310,6 +315,9 @@ def create_host_command(args: Dict[str, Any]) -> CommandResults:
     ipv6_address = args.get('ipv6_address', '')
     secondary = args.get('secondary_address', '')
     comment = args.get('comment', '')
+
+    if address and ipv6_address:
+        raise DemistoException('Both address and ipv6_address were provided, choose just one.')
 
     Host.create(name=name, address=address, ipv6_address=ipv6_address, secondary=secondary, comment=comment)
 
@@ -328,11 +336,11 @@ def create_host_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def update_host_command(args: Dict[str, Any]) -> CommandResults:
+def update_host_command(args: dict[str, Any]) -> CommandResults:
     """Updating an Host.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -366,11 +374,11 @@ def update_host_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_host_command(args: Dict[str, Any]) -> CommandResults:
+def delete_host_command(args: dict[str, Any]) -> CommandResults:
     """Deleting Host.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -394,11 +402,11 @@ def delete_host_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def create_domain_command(args: Dict[str, Any]) -> CommandResults:
+def create_domain_command(args: dict[str, Any]) -> CommandResults:
     """Creating a Domain.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -420,11 +428,11 @@ def create_domain_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_domain_command(args: Dict[str, Any]) -> CommandResults:
+def list_domain_command(args: dict[str, Any]) -> CommandResults:
     """Lists the Domains in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -455,11 +463,11 @@ def list_domain_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_domain_command(args: Dict[str, Any]) -> CommandResults:
+def delete_domain_command(args: dict[str, Any]) -> CommandResults:
     """Deleting domain.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -483,11 +491,11 @@ def delete_domain_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_policy_template_command(args: Dict[str, Any]) -> CommandResults:
+def list_policy_template_command(args: dict[str, Any]) -> CommandResults:
     """Lists the policy templates in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -515,11 +523,11 @@ def list_policy_template_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
+def list_firewall_policy_command(args: dict[str, Any]) -> CommandResults:
     """Lists the policy templates in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -547,11 +555,11 @@ def list_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def create_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
+def create_firewall_policy_command(args: dict[str, Any]) -> CommandResults:
     """Creating a Domain.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -565,7 +573,7 @@ def create_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
                'Comment': firewall_policy.comment}
 
     return CommandResults(
-        outputs_prefix='ForcepointSMC.Domain',
+        outputs_prefix='ForcepointSMC.Policy',
         outputs=outputs,
         raw_response=outputs,
         outputs_key_field='Name',
@@ -573,11 +581,11 @@ def create_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
+def delete_firewall_policy_command(args: dict[str, Any]) -> CommandResults:
     """Deleting domain.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -601,11 +609,11 @@ def delete_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def create_rule_command(args: Dict[str, Any]) -> CommandResults:
+def create_rule_command(args: dict[str, Any]) -> CommandResults:
     """Creating a rule.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -641,6 +649,7 @@ def create_rule_command(args: Dict[str, Any]) -> CommandResults:
                'Sources': [source.name for source in rule.sources.all()],
                'Destinations': [dest.name for dest in rule.destinations.all()],
                'Services': [service.name for service in rule.services.all()],
+               'IP_version': ip_version,
                'Comment': rule.comment}
 
     return CommandResults(
@@ -652,17 +661,18 @@ def create_rule_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def update_rule_command(args: Dict[str, Any]) -> CommandResults:
-    """Creating a Domain.
+def update_rule_command(args: dict[str, Any]) -> CommandResults:
+    """Creating a Rule.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
     """
     policy_name = args.get('policy_name', '')
-    rule_id = args.get('rule_id', '')
+    rule_name = args.get('rule_name', '')
+    ip_version = args.get('ip_version', '')
     is_override = args.get('is_override', False)
     source_ip_list = argToList(args.get('source_ip_list', []))
     source_host = argToList(args.get('source_host', []))
@@ -674,7 +684,7 @@ def update_rule_command(args: Dict[str, Any]) -> CommandResults:
     comment = args.get('comment', '')
 
     policy = FirewallPolicy(policy_name)
-    rule = get_rule_from_policy(policy, rule_id)
+    rule = get_rule_from_policy(policy, rule_name, ip_version, all_rules=False)
     sources = handle_rule_entities(source_ip_list, source_host, source_domain)
     destinations = handle_rule_entities(dest_ip_list, dest_host, dest_domain)
 
@@ -692,11 +702,11 @@ def update_rule_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_rule_command(args: Dict[str, Any]) -> CommandResults:
+def list_rule_command(args: dict[str, Any]) -> CommandResults:
     """Lists the policy templates in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -705,7 +715,7 @@ def list_rule_command(args: Dict[str, Any]) -> CommandResults:
     policy = FirewallPolicy(policy_name)
 
     rules = []
-    policy_rules = get_all_policy_rules(policy)
+    policy_rules = get_policy_rules(policy)
     for rule in policy_rules:
         rules.append({'Name': rule.name,
                       'ID': rule.tag,
@@ -725,41 +735,42 @@ def list_rule_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_rule_command(args: Dict[str, Any]) -> CommandResults:
+def delete_rule_command(args: dict[str, Any]) -> CommandResults:
     """Deleting domain.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
     """
     policy_name = args.get('policy_name', '')
-    rule_id = args.get('rule_id', '')
+    rule_name = args.get('rule_name', '')
+    ip_version = args.get('ip_version', '')
 
     if not list(FirewallPolicy.objects.filter(policy_name)):
         raise DemistoException(f'Firewall policy {policy_name} was not found.')
 
     policy = FirewallPolicy(policy_name)
-    rule = get_rule_from_policy(policy, rule_id)
+    rule = get_rule_from_policy(policy, rule_name, ip_version)
     rule.delete()
 
-    outputs = {'ID': rule_id,
+    outputs = {'Name': rule_name,
                'Deleted': True}
 
     return CommandResults(
         outputs_prefix='ForcepointSMC.Rule',
-        outputs_key_field='ID',
+        outputs_key_field='Name',
         outputs=outputs,
-        readable_output=f'Rule {rule_id} was deleted successfully.'
+        readable_output=f'Rule {rule_name} was deleted successfully.'
     )
 
 
-def list_engine_command(args: Dict[str, Any]) -> CommandResults:
+def list_engine_command(args: dict[str, Any]) -> CommandResults:
     """Lists the policy templates in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
@@ -787,11 +798,11 @@ def list_engine_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def commit_changes_command(args: Dict[str, Any]) -> CommandResults:
+def commit_changes_command(args: dict[str, Any]) -> CommandResults:
     """commits all of the changes in the system.
 
     Args:
-        args (Dict[str, Any]): The command args.
+        args (dict[str, Any]): The command args.
 
     Returns:
         CommandResults
