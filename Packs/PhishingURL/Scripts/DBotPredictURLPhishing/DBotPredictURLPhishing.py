@@ -29,6 +29,11 @@ OOB_MINOR_VERSION_INFO_KEY = 'minor'
 MAJOR_VERSION = 1
 MINOR_DEFAULT_VERSION = 0
 
+KEY_IMAGE_RASTERIZE = "image_b64"
+KEY_IMAGE_HTML = "html"
+KEY_CURRENT_URL_RASTERIZE = 'current_url'
+
+MSG_MISSING_INFORMATION_RASTERIZE = f"Missing required Rastarize data ({KEY_IMAGE_HTML} / {KEY_IMAGE_RASTERIZE})."
 MSG_SOMETHING_WRONG_IN_RASTERIZE = "Something went wrong with rasterize"
 MSG_ENABLE_WHOIS = "Please enable whois integration for more accurate prediction"
 MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
@@ -98,15 +103,11 @@ KEY_HR_DOMAIN = "Domain"
 KEY_HR_URL = 'Url'
 KEY_HR_SEO = "Search engine optimisation"
 KEY_HR_LOGIN = "Is there a Login form ?"
-KEY_HR_LOGO = "Suspiscious use of company logo"
+KEY_HR_LOGO = "Suspicious use of company logo"
 KEY_HR_URL_SCORE = "URL severity score (from 0 to 1)"
 
 KEY_CONTENT_SUMMARY_URL = 'URL'
 KEY_CONTENT_SUMMARY_FINAL_VERDICT = 'FinalVerdict'
-
-KEY_IMAGE_RASTERIZE = "image_b64"
-KEY_IMAGE_HTML = "html"
-KEY_CURRENT_URL_RASTERIZE = 'current_url'
 
 KEY_FINAL_VERDICT = "Final Verdict"
 
@@ -512,8 +513,8 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
     if len(res_rasterize) > 0 and isinstance(res_rasterize[0]['Contents'], str):
         return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
-    if not res_rasterize[0]['Contents'].get(KEY_IMAGE_RASTERIZE) or not res_rasterize[0]['Contents'].get(KEY_IMAGE_HTML):
-        return create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
+    if not all((res_rasterize[0]['Contents'].get(KEY_IMAGE_RASTERIZE), res_rasterize[0]['Contents'].get(KEY_IMAGE_HTML))):
+        return create_dict_context(url, url, MSG_MISSING_INFORMATION_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
     if len(res_rasterize) > 0:
         output_rasterize = res_rasterize[0]['Contents']
