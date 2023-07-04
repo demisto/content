@@ -2397,3 +2397,137 @@ Updates an alert rule.
 >|ID|Name|Kind|Display Name|Enabled|Etag|
 >|---|---|---|---|---|---|---|---|
 >| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing updating Display Name | true | "097809060-0000-6hd400" |
+
+### azure-sentinel-subscriptions-list
+
+***
+Lists all subscriptions.
+
+#### Base Command
+
+`azure-sentinel-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.SubscriptionId | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.Subscription.displayName | String | The name of the resource. | 
+| AzureSentinel.Subscription.authorizationSource | String | The authorization source of the resource. | 
+| AzureSentinel.Subscription.managedByTenants | String | The subscriptions that are managed by tenants of the resource. | 
+| AzureSentinel.Subscription.tenetId | String | The tenet ID of the resource. | 
+| AzureSentinel.Subscription.state | String | The state of the resource. | 
+| AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
+
+#### Command example
+```!azure-sentinel-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "Subscription": {
+            "authorizationSource": "RoleBased",
+            "displayName": "Pay-As-You-Go",
+            "id": "/subscriptions/0000000000000",
+            "managedByTenants": [],
+            "state": "Enabled",
+            "subscriptionId": "0000000000000",
+            "subscriptionPolicies": {
+                "locationPlacementId": "Public_2014-09-01",
+                "quotaId": "PayAsYouGo_2014-09-01",
+                "spendingLimit": "Off"
+            },
+            "tenantId": "000000000000000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Subscriptions
+>|Subscriptionid|Tenantid|Displayname|State|
+>|---|---|---|---|
+>| 0000000000000 | 000000000000000 | Pay-As-You-Go | Enabled |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
+| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
+| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
+| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+### azure-sentinel-resource-group-list
+
+***
+Lists all resource groups.
+
+#### Base Command
+
+`azure-sentinel-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional | 
+| tag | The tag name. Input should be `{“Tag Name:Tag Value”}``. Operator is “equals”. | Optional | 
+| limit | The maximum number of items to return. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
+| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
+| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
+| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+
+#### Command example
+```!azure-sentinel-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-/resourceGroups/cloud-shell",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4/resourceGroups/demi",
+                "location": "centralus",
+                "name": "demi",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demi"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+    ]}
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Resource Groups
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell | eastus |  |
+>| demi | centralus | Owner: Demi |
