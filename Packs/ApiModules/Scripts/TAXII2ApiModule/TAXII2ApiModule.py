@@ -419,9 +419,9 @@ class Taxii2FeedClient:
 
     @staticmethod
     def parse_report_relationships(report_obj: dict[str, Any],
-                                   id_to_object: dict[str, dict[str, Any]]) -> list[EntityRelationship]:
+                                   id_to_object: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
         obj_refs = report_obj.get('object_refs', [])
-        relationships: list[EntityRelationship] = []
+        relationships: list[dict[str, Any]] = []
         for related_obj in obj_refs:
             # relationship-- objects ref handled in parse_relationships
             if not related_obj.startswith('relationship--') and (entity_b_obj := id_to_object.get(related_obj, {})):
@@ -433,7 +433,7 @@ class Taxii2FeedClient:
                         entity_a_type=ThreatIntel.ObjectsNames.REPORT,
                         entity_b=entity_b_obj.get('name'),
                         entity_b_type=entity_b_type
-                    )
+                    ).to_indicator()
                 )
         return relationships
 
@@ -1213,7 +1213,12 @@ class Taxii2FeedClient:
                 break
 
             # we should build the id_to_object dict before iteration as some object reference each other
-            self.id_to_object.update({obj.get('id'): obj for obj in stix_objects})
+            self.id_to_object.update(
+                {
+                    obj.get('id'): obj for obj in stix_objects
+                    if obj.get('type') not in ['extension-definition', 'relationship']
+                }
+            )
 
             # now we have a list of objects, go over each obj, save id with obj, parse the obj
             for obj in stix_objects:
