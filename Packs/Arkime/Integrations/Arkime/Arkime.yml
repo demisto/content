@@ -74,10 +74,6 @@ script:
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
       required: false
       isArray: false
-    - name: baseline_date
-      description: 'The baseline date range to compare connections against. Default is 0, disabled. Options include: 1x - 1 times query range. 2x - 2 times query range. 4x - 4 times query range. 6x - 6 times query range. 8x - 8 times query range. 10x - 10 times query range. 1 - 1 hour. 6 - 6 hours. 24 - 1 day. 48 - 2 days. 72 - 3 days. 168 - 1 week. 336 - 2 weeks. 720 - 1 month. 1440 - 2 months. 4380 - 6 months. 8760 - 1 year.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.Connection.nodes.id
       description: The source IP address of the connection nodes.
