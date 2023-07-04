@@ -1,0 +1,29 @@
+args:
+- default: true
+  description: An array for which to return the length.
+  isArray: true
+  name: value
+  required: true
+comment: Returns the length of an array.
+commonfields:
+  id: LengthArray
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: LengthArray
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- general
+- transformer
+- entirelist
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
