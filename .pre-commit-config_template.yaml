@@ -15,6 +15,15 @@ repos:
       - id: name-tests-test
         files: .+_test.py$
 
+  - repo: https://github.com/python-poetry/poetry
+    rev: "1.5.1"
+    hooks:
+    - id: poetry-check
+    - id: poetry-lock
+      args: [--check]
+    - id: poetry-export
+      args: [--with, dev, --without-hashes, "-o", "requirements.txt"]
+
   - repo: https://github.com/hadialqattan/pycln
     rev: v2.1.2
     hooks:
