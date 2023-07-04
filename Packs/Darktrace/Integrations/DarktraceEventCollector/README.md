@@ -16,10 +16,6 @@ Use this integration to fetch a list of model breaches, filtered by the specifie
     | Max events per fetch | Maximum number of Darktrace model breaches to fetch at a time. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Time to start fetching the first incidents. Limited to 1 Year.| False |
 
-
-
-
-
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
