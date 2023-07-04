@@ -46,5 +46,6 @@
     "openEnded": true,
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "sourcezonename"
 }

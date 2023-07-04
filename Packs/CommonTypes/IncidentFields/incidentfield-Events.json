@@ -45,7 +45,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "openEnded": true,
-	"marketplaces": [
-		"xsoar"
-	]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

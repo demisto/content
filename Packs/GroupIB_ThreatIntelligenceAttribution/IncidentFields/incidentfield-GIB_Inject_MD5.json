@@ -28,5 +28,6 @@
     "fromVersion": "6.0.0",
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "filemd5"
 }

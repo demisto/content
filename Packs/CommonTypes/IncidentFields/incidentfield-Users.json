@@ -29,5 +29,6 @@
     "openEnded": true,
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "username"
 }

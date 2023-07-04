@@ -29,5 +29,6 @@
     "version": -1,
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "timestamp"
 }

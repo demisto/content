@@ -30,5 +30,6 @@
     "threshold": 72,
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "hostip"
 }

@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Expanse Issue", "Expanse Issue - Generic"
+        "Expanse Issue",
+        "Expanse Issue - Generic"
     ],
     "caseInsensitive": true,
     "cliName": "expansecategory",
@@ -27,6 +28,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "marketplaces": [
-		"xsoar"
-	]
+        "xsoar"
+    ],
+    "aliasTo": "categoryname"
 }

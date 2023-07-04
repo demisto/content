@@ -1,9 +1,9 @@
 {
-	"associatedTypes": [
-		"Cyren Inbox Security"
-	],
-	"systemAssociatedTypes": null,
-	"associatedToAll": false,
+    "associatedTypes": [
+        "Cyren Inbox Security"
+    ],
+    "systemAssociatedTypes": null,
+    "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "cyrenfromaddress",
     "closeForm": false,
@@ -28,6 +28,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "marketplaces": [
-       "xsoar"
-    ]
+        "xsoar"
+    ],
+    "aliasTo": "emailsender"
 }

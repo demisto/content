@@ -25,8 +25,8 @@
         "Symantec DLP Endpoint Incident"
     ],
     "systemAssociatedTypes": [
-    "Symantec DLP Endpoint Incident"
-  ],
+        "Symantec DLP Endpoint Incident"
+    ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
@@ -36,5 +36,6 @@
     "fromVersion": "5.0.0",
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "appid"
 }

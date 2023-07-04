@@ -39,5 +39,6 @@
     "validationRegex": "",
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "useragent"
 }

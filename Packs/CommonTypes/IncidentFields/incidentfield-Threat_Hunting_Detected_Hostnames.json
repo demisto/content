@@ -28,6 +28,7 @@
     "fromVersion": "5.5.0",
     "openEnded": true,
     "marketplaces": [
-       "xsoar"
-    ]
+        "xsoar"
+    ],
+    "aliasTo": "hostname"
 }

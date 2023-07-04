@@ -45,6 +45,7 @@
     "fromVersion": "6.0.0",
     "openEnded": true,
     "marketplaces": [
-       "xsoar"
-    ]
+        "xsoar"
+    ],
+    "aliasTo": "localip"
 }

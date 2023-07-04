@@ -38,5 +38,6 @@
     "validationRegex": "",
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "timestamp"
 }

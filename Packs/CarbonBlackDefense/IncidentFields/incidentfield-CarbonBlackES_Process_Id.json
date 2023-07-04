@@ -29,5 +29,6 @@
     "fromVersion": "5.5.0",
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "aliasTo": "initiatorpid"
 }
