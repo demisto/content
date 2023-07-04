@@ -1,7 +1,7 @@
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import traceback
-import demistomock as demisto
 from typing import Callable, Dict, Tuple, Any
 import urllib3
 
