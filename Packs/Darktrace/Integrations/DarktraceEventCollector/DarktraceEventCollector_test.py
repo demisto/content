@@ -98,7 +98,7 @@ def test_test_module_ok(client, mocker):
     params = {"max_fetch": "1", "first_fetch": "3 days"}
 
     mock_params(mocker, params)
-    assert test_module(client, convert_to_timestamp(arg_to_datetime(params.get('first_fetch')))) == "ok"
+    assert test_module(client, convert_to_timestamp(arg_to_datetime(params.get('first_fetch'))), last_run={}) == "ok"
 
 
 @pytest.mark.parametrize(
