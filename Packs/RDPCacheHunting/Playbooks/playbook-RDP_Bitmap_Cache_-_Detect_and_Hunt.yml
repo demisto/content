@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -1570
+          "y": -1605
         }
       }
     note: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b22cfe1e-5e21-4e31-8f14-5c11c13e84b3
+    taskid: c1f17bf2-68b5-4e89-8a68-2aa65f6719f2
     type: regular
     task:
-      id: b22cfe1e-5e21-4e31-8f14-5c11c13e84b3
+      id: c1f17bf2-68b5-4e89-8a68-2aa65f6719f2
       version: -1
       name: OCR
       description: Extracts text from an image.
@@ -64,29 +64,10 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: grayscale
-              ignorecase: true
-            - operator: startWith
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: sharpen
-            - operator: startWith
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
                   simple: original
           accessor: EntryID
-          transformers:
-          - operator: uniq
       execution-timeout:
-        simple: "300"
+        simple: "500"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -156,10 +137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a545fdfe-b3a9-4919-89d3-eaa9c44d13ca
+    taskid: b569bf58-99a2-4238-86df-539977f711cd
     type: regular
     task:
-      id: a545fdfe-b3a9-4919-89d3-eaa9c44d13ca
+      id: b569bf58-99a2-4238-86df-539977f711cd
       version: -1
       name: Suspicious tools hunting
       description: This automation calculates the similarity ratio between a Text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
@@ -509,10 +490,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 5a935b29-cd06-4cc7-8205-041f2251043b
+    taskid: a49ebc08-91f6-43c2-87c8-955d43094de5
     type: regular
     task:
-      id: 5a935b29-cd06-4cc7-8205-041f2251043b
+      id: a49ebc08-91f6-43c2-87c8-955d43094de5
       version: -1
       name: Set strings similarity results in the layout
       description: Creates a Grid table from items or key-value pairs.
@@ -527,12 +508,9 @@ tasks:
       columns:
         simple: Found String,MITRE ATT&CK Tool,Similarity Ratio
       context_path:
-        complex:
-          root: StringSimilarity
+        simple: StringSimilarity
       grid_id:
         simple: incidentrdpachehuntingstringssimilarity
-      keys:
-        simple: StringA,StringB,SimilarityRatio
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1345,10 +1323,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: e9b330dc-d584-4ddb-8000-c6a61bb42093
+    taskid: 2c88b6f8-a009-4f12-8088-5361c0f64338
     type: regular
     task:
-      id: e9b330dc-d584-4ddb-8000-c6a61bb42093
+      id: 2c88b6f8-a009-4f12-8088-5361c0f64338
       version: -1
       name: Convert image to png
       description: 'Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
@@ -1383,6 +1361,8 @@ tasks:
                   simple: bin_collage
               ignorecase: true
           accessor: EntryID
+      execution-timeout:
+        simple: "120"
       format:
         simple: png
     separatecontext: false
@@ -1529,10 +1509,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3665,
+        "height": 3700,
         "width": 2530,
         "x": -840,
-        "y": -1570
+        "y": -1605
       }
     }
   }
