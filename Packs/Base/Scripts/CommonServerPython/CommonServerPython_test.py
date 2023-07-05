@@ -7829,9 +7829,9 @@ class TestFetchWithLookBack:
         [
             (
                     {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]],
-                    [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+                    [INCIDENTS[4]], [],
                     {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
                     [NEW_INCIDENTS[0]], 2
             ),
             (
@@ -7843,9 +7843,9 @@ class TestFetchWithLookBack:
             ),
             (
                     {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
-                    [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+                    [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]], [],
                     {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
-                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
                     [NEW_INCIDENTS[0]], 2
             ),
             (
@@ -7858,9 +7858,9 @@ class TestFetchWithLookBack:
 
             (
                     {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
-                    [NEW_INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[4]], [],
+                    [INCIDENTS_TIME_AWARE[4]], [],
                     {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
                     [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
@@ -7872,11 +7872,10 @@ class TestFetchWithLookBack:
             ),
             (
                     {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
-                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [NEW_INCIDENTS_TIME_AWARE[0],
-                                                                                                  INCIDENTS_TIME_AWARE[3],
+                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                   INCIDENTS_TIME_AWARE[4]], [],
                     {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
-                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
                     [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
@@ -7923,7 +7922,6 @@ class TestFetchWithLookBack:
         for inc in incidents_phase1:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
 
-        next_run_phase1 = self.LAST_RUN['time']
         source_incidents = incidents[:index] + new_incidents + incidents[index:]
         if time_aware:
             self.INCIDENTS_TIME_AWARE = source_incidents
@@ -7937,10 +7935,7 @@ class TestFetchWithLookBack:
         assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
         assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
 
-        if len(incidents_phase2) >= params.get('limit'):
-            assert next_run_phase1 == self.LAST_RUN['time']
-        else:
-            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+        assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
 
         for inc in incidents_phase2:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
