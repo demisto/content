@@ -453,7 +453,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test

@@ -295,7 +295,7 @@ script:
     description: Detailed information from any particular alert. Alerts more than 90 days old are not available.
   isfetch: true
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No Test
 

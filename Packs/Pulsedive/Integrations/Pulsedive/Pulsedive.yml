@@ -437,7 +437,7 @@ script:
     - contextPath: URL.DATA
       description: The URL.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.63474
   script: ''
   subtype: python3
   type: python
