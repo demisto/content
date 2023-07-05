@@ -35,13 +35,8 @@ script:
   commands:
   - name: o365-defender-safelinks-policy-list
     arguments:
-    - default: false
-      isArray: false
-      name: identity
+    - name: identity
       description: "The identity of the Safe Links policy that you want to view. Available identity fields of the policy are: Name, Distinguished name (DN), and GUID."
-      required: false
-      secret: false
-    deprecated: false
     outputs:
     - contextPath: O365Defender.SafeLinks.AdminDisplayName
       description: Policy description.
@@ -128,95 +123,67 @@ script:
       description: "The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ."
       type: Date
     description: List the Safe Links policies in your cloud-based organization.
-    execution: false
   - name: o365-defender-safelinks-policy-create
     arguments:
     - name: name
       description: A unique name for the Safe Links policy.
       required: true
-      isArray: false
-    - default: false
-      isArray: false
-      name: admin_display_name
+    - name: admin_display_name
       description: The description for the policy.
-      required: false
-      secret: false
     - name: custom_notification_text
       description: The custom notification text to show to users.
-      required: false
-      isArray: false
     - name: deliver_message_after_scan
       description: Whether to deliver email messages only after Safe Links scanning was completed. When true, messages that contain malicious links are not delivered. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: do_not_allow_click_through
       description: Whether to allow users to click through to the original URL on warning pages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: do_not_rewrite_urls
       description: Comma-separated list of URLs that are not rewritten by Safe Links scanning.
-      required: false
-      isArray: false
     - name: do_not_track_user_clicks
       description: Whether to track user clicks related to Safe Links protection of links in email messages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_for_internal_senders
       description: Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization.Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_organization_branding
       description: Whether to display the organization's logo on Safe Links warning and notification pages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_safe_links_for_teams
       description: Whether to enable Safe Links for Microsoft Teams. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: is_enabled
       description: Whether to enable Safe Links protection for email messages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: scan_urls
       description: Whether to enable or disable real-time scanning of clicked links in email messages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: use_translated_notification_text
       description: Whether to use Microsoft Translator to automatically localize the custom notification text that you specified with the CustomNotificationText parameter. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -306,97 +273,68 @@ script:
     - contextPath: O365Defender.SafeLinks.Policy.WhenCreatedUTC
       description: "The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ"
       type: Date
-    deprecated: false
     description: Create a new Safe Links policy.
-    execution: false
   - name: o365-defender-safelinks-policy-update
     arguments:
     - name: name
       description: A unique name for the Safe Links policy.
       required: true
-      isArray: false
-    - default: false
-      isArray: false
-      name: admin_display_name
+    - name: admin_display_name
       description: The description for the policy.
-      required: false
-      secret: false
     - name: custom_notification_text
       description: The custom notification text to show to users.
-      required: false
-      isArray: false
     - name: deliver_message_after_scan
       description: Whether to deliver email messages only after Safe Links scanning was completed. When true, messages that contain malicious links are not delivered. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: do_not_allow_click_through
       description: Whether to allow users to click through to the original URL on warning pages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: do_not_rewrite_urls
       description: Comma-separated list of URLs that are not rewritten by Safe Links scanning.
-      required: false
-      isArray: false
     - name: do_not_track_user_clicks
       description: Whether to track user clicks related to Safe Links protection of links in email messages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_for_internal_senders
       description: Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_organization_branding
       description: Whether to display the organization's logo on Safe Links warning and notification pages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_safe_links_for_teams
       description: Whether to enable the Safe Links for Microsoft Teams. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: is_enabled
       description: Whether to enable Safe Links protection for email messages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: scan_urls
       description: Whether to enable or disable real-time scanning of clicked links in email messages. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: use_translated_notification_text
       description: Whether to use Microsoft Translator to automatically localize the custom notification text that you specified with the CustomNotificationText parameter. Default is false.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -486,40 +424,24 @@ script:
     - contextPath: O365Defender.SafeLinks.Policy.WhenCreatedUTC
       description: "The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ."
       type: Date
-    deprecated: false
     description: Update a Safe Links policy.
-    execution: false
   - name: o365-defender-safelinks-policy-remove
     arguments:
-    - default: false
-      isArray: false
-      name: identity
+    - name: identity
       description: "The identity of the Safe Links policy that you want to remove. Available identity fields of the policy are: Name, Distinguished name (DN), and GUID."
       required: true
-      secret: false
-    deprecated: false
     outputs: []
     description: Remove a Safe Links policy.
-    execution: false
   - name: o365-defender-safelinks-rule-list
     arguments:
-    - default: false
-      isArray: false
-      name: identity
+    - name: identity
       description: "The identity of the Safe Links rule that you want to view. Available identity fields are: Name, Distinguished name (DN), and GUID."
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: state
+    - name: state
       description: The state of the rules.
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - Enabled
       - Disabled
-    deprecated: false
     outputs:
     - contextPath: O365Defender.SafeLinks.Rule.Comments
       description: Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters.
@@ -588,58 +510,42 @@ script:
       description: "The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00."
       type: Date
     description: List Safe Links rules in your cloud-based organization.
-    execution: false
   - name: o365-defender-safelinks-rule-create
     description: Create a Safe Links rule in your cloud-based organization.
-    deprecated: false
     arguments:
     - name: name
       description: A unique name for the Safe Links rule.
       required: true
-      isArray: false
     - name: safe_links_policy
       description: The Safe Links policy to associate with this Safe Links rule.
       required: true
-      isArray: false
     - name: comments
       description: An informative comment for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters.
-      required: false
-      isArray: false
     - name: enabled
       description: Whether the rule is enabled.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: except_if_recipient_domain_is
       description: A comma-separated list of exceptions of recipients with email address in the specified domains.
-      required: false
       isArray: true
     - name: except_if_sent_to
       description: A comma-separated list of exceptions of recipients in messages.
-      required: false
       isArray: true
     - name: except_if_sent_to_member_of
       description: A comma-separated list of exceptions of messages sent to members of groups.
-      required: false
       isArray: true
     - name: priority
       description: The priority value for the rule to determines the order of rule processing. A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules cannot have the same priority value.
-      required: false
-      isArray: false
     - name: recipient_domain_is
       description: A comma-separated list of recipients with email address in the specified domains.
-      required: false
       isArray: true
     - name: sent_to
       description: A comma-separated list of recipients in messages. You can use any value that uniquely identifies the recipient.
-      required: false
       isArray: true
     - name: sent_to_member_of
       description: A comma-separated list of messages sent to members of distribution groups, dynamic distribution groups, or mail-enabled security groups. You can use any value that uniquely identifies the group.
-      required: false
       isArray: true
     outputs:
     - contextPath: O365Defender.SafeLinks.Rule.Comments
@@ -710,55 +616,40 @@ script:
       type: Date
   - name: o365-defender-safelinks-rule-update
     description: Update a given Safe Links rule.
-    deprecated: false
     arguments:
     - name: name
       description: A unique name for the Safe Links rule.
       required: true
-      isArray: false
     - name: safe_links_policy
       description: The Safe Links policy to associate with this Safe Links rule.
       required: true
-      isArray: false
     - name: comments
       description: An informative comment for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters.
-      required: false
-      isArray: false
     - name: enabled
       description: Whether the rule is enabled.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: except_if_recipient_domain_is
       description: A comma-separated list of exceptions of recipients with an email address in the specified domains.
-      required: false
       isArray: true
     - name: except_if_sent_to
       description: A comma-separated list of exceptions of recipients in messages.
-      required: false
       isArray: true
     - name: except_if_sent_to_member_of
       description: A comma-separated list of exceptions of messages sent to members of groups.
-      required: false
       isArray: true
     - name: priority
       description: The priority value for the rule to determines the order of rule processing. A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules cannot have the same priority value.
-      required: false
-      isArray: false
     - name: recipient_domain_is
       description: A comma-separated list of recipients with an email address in the specified domains.
-      required: false
       isArray: true
     - name: sent_to
       description: A comma-separated list of recipients in messages. You can use any value that uniquely identifies the recipient.
-      required: false
       isArray: true
     - name: sent_to_member_of
       description: A comma-separated list of messages sent to members of distribution groups, dynamic distribution groups, or mail-enabled security groups. You can use any value that uniquely identifies the group.
-      required: false
       isArray: true
     outputs:
     - contextPath: O365Defender.SafeLinks.Rule.Comments
@@ -829,32 +720,27 @@ script:
       type: Date
   - name: o365-defender-safelinks-detailed-report-get
     description: Get detailed information about Safe Links results for the last 7 days. Yesterday is the most recent date that you can specify.
-    deprecated: false
     arguments:
     - name: start_date
       description: Start date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: end_date
       description: End date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: domain
       description: " filters the results by the domain in the URL."
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
       - ""
     - name: app_names
       description: " filters the results by the app where the link was found. You can enter multiple values separated by commas e.g \"Value1,Value2,...ValueN\"."
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
@@ -864,7 +750,6 @@ script:
       auto: PREDEFINED
     - name: action
       description: filters the results by action. You can enter multiple values separated by commas e.g Value1,Value2,...ValueN.
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
@@ -879,22 +764,17 @@ script:
       auto: PREDEFINED
     - name: recipient_address
       description: " filters the results by the recipient's email address."
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: Page number of the results you want to view. Valid input for this parameter is an integer between 1 and 1000. The default value is 1.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page_size
       description: Specifies the maximum number of entries per page. Valid input for this parameter is an integer between 1 and 5000. The default value is 1000.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -946,25 +826,21 @@ script:
       type: Number
   - name: o365-defender-safelinks-aggregate-report-get
     description: general information about Safe Links results for the last 90 days. Yesterday is the most recent date that you can specify.
-    deprecated: false
     arguments:
     - name: start_date
       description: Start date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: end_date
       description: End date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: app_names
       description: " filters the results by the app where the link was found. You can enter multiple values separated by commas e.g \"Value1,Value2,...ValueN\"."
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
@@ -974,7 +850,6 @@ script:
       auto: PREDEFINED
     - name: action
       description: filters the results by action. You can enter multiple values separated by commas e.g Value1,Value2,...ValueN.
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
@@ -989,8 +864,6 @@ script:
       auto: PREDEFINED
     - name: summerize_by
       description: Returns totals based on the values you specify. Summarizing reduces the amount of data that's retrieved for the report, and delivers the report faster. By default the summrize is by Action.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - Action
@@ -1014,7 +887,6 @@ script:
       type: Number
   - name: o365-defender-safelinks-atp-policy-get
     description: Get APT policy. In order to manage BlockURLs, use the o365-defender-safelinks-global-url-blocklist command.
-    deprecated: false
     outputs:
     - contextPath: O365Defender.SafeLinks.AtpPolicy.Name
       description: ATP policy name.
@@ -1045,33 +917,25 @@ script:
       type: String
   - name: o365-defender-safelinks-atp-policy-set
     description: Set the ATP policy.
-    deprecated: false
     arguments:
     - name: allow_safe_docs_open
       description: Whether users can click through and bypass the Protected View container even when Safe Documents identifies a file as malicious.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_atp_spo_teams_odb
       description: Enable or disable O365 Defender for SharePoint, OneDrive, and Microsoft Teams
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - name: enable_safe_docs
       description: Enable or disable safe Documents in organizations with Microsoft 365 A5 or Microsoft 365 E5 Security licenses.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-  isfetch: false
   runonce: false
   script: "-"
   type: powershell
