@@ -1,8 +1,8 @@
 {
   "os_type": "AGENT_OS_WINDOWS",
   "profile_type": "WINLOGBEAT",
-  "name": "MicrosoftADFS",
+  "name": "MicrosoftADFS (Deprecated)",
   "content_global_id": "MicrosoftADFS",
-  "from_xdr_version": "8.5.0",
+  "from_xdr_version": "3.5.0",
   "yaml_template": ""
 }
