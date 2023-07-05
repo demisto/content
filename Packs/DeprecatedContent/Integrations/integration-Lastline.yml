@@ -27,17 +27,14 @@ configuration:
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Threshold
   name: threshold
   defaultvalue: "70"
   type: 0
-  required: false
 script:
   script: >-
     //GLOBALS//
@@ -1030,7 +1027,6 @@ script:
       description: The status of the submission.
       type: string
     description: Checks the status of a submission.
-  runonce: false
 tests:
 - No tests - deprecated
 fromversion: 5.0.0

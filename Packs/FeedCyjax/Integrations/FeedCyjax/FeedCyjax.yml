@@ -19,17 +19,14 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   defaultvalue: 'false'
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Fetch indicators
   defaultvalue: 'true'
   name: feed
-  required: false
   type: 8
 - display: Indicator Reputation
   additionalinfo: Indicators from this integration instance will be marked with this reputation
@@ -40,7 +37,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data
@@ -59,28 +55,24 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   options:
-    - RED
-    - AMBER
-    - GREEN
-    - WHITE
-  required: false
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
   type: 15
 - name: use_cyjax_tlp
   display: Use Cyjax feed TLP
   additionalinfo: Whether to use TLP set by Cyjax. Will override TLP set above.
-  required: false
   defaultvalue: 'true'
   type: 8
 - name: feedTags
   display: Tags
   additionalinfo: Supports CSV values.
-  required: false
   type: 0
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: never
   type: 17
-  required: false
   options:
   - never
   - interval
@@ -88,26 +80,22 @@ configuration:
   - suddenDeath
 - name: feedExpirationInterval
   defaultvalue: "20160"
-  required: false
   type: 1
   display: ""
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: 'true'
-  required: false
   type: 8
   hidden: true
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
   additionalinfo: |-
     When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - name: feedFetchInterval
   defaultvalue: '60'
   display: Feed Fetch Interval
-  required: false
   type: 19
 - defaultvalue: 3 days
   display: First fetch time
@@ -118,40 +106,30 @@ configuration:
 script:
   commands:
   - arguments:
-      - name: since
-        description: The start date time in ISO 8601 format
-        required: false
-      - name: until
-        description: The end date time in ISO 8601 format
-        required: false
-      - name: type
-        description: 'The indicator type. If not specified all indicators are returned. Allowed values are IPv4, IPv6,
-          Domain, Hostname, Email, FileHash-SHA1, FileHash-SHA256, FileHash-MD5, FileHash-SSDEEP'
-        required: false
-      - name: source_type
-        description: The indicators source type. Allowed values are incidnet-report, my-report
-        required: false
-      - name: source_id
-        description: The indicators source ID
-        required: false
-      - name: limit
-        description: The maximum number of indicators to get. The default value is 50.
-        defaultValue: '50'
-        required: false
+    - name: since
+      description: The start date time in ISO 8601 format
+    - name: until
+      description: The end date time in ISO 8601 format
+    - name: type
+      description: 'The indicator type. If not specified all indicators are returned. Allowed values are IPv4, IPv6, Domain, Hostname, Email, FileHash-SHA1, FileHash-SHA256, FileHash-MD5, FileHash-SSDEEP'
+    - name: source_type
+      description: The indicators source type. Allowed values are incidnet-report, my-report
+    - name: source_id
+      description: The indicators source ID
+    - name: limit
+      description: The maximum number of indicators to get. The default value is 50.
+      defaultValue: '50'
     name: cyjax-get-indicators
     description: Get indicators
   - arguments:
-      - description: Indicator value
-        name: value
-        required: true
+    - description: Indicator value
+      name: value
+      required: true
     name: cyjax-indicator-sighting
     description: Get sighting of a indicator
   - name: cyjax-unset-indicators-last-fetch-date
-    description: 'Unset the indicators feed last fetch date. Should only be used if user needs to use `re-fetch` button
-     and wants to fetch old indicators from Cyjax. Next feed will use date set in first_fetch (default is last 3 days)'
-  isfetch: false
+    description: 'Unset the indicators feed last fetch date. Should only be used if user needs to use `re-fetch` button and wants to fetch old indicators from Cyjax. Next feed will use date set in first_fetch (default is last 3 days)'
   feed: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

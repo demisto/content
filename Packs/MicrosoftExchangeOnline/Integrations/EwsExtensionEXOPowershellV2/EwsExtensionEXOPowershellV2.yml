@@ -567,7 +567,6 @@ script:
       description: The value of the entry that was removed
       type: string
     description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
-  runonce: false
   script: ''
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
