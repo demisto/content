@@ -14,11 +14,9 @@ configuration:
   type: 4
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
 description: Deprecated. Use ACTI Vulnerability Query instead.
 display: Accenture Deepsight Intelligence (Deprecated)
@@ -28,13 +26,9 @@ script:
   - arguments:
     - default: true
       description: ip to be enriched.
-      isArray: false
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Enrich an IP address from Symantec Deepsight Intelligence
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -133,13 +127,9 @@ script:
   - arguments:
     - default: true
       description: Domain to enrich
-      isArray: false
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Enrich a domain from Symantec Deepsight intelligence
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -259,13 +249,9 @@ script:
   - arguments:
     - default: true
       description: sha256 or md5 hash only
-      isArray: false
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Enrich a file from Symantec Deepsight Intelligence
-    execution: false
     name: file
     outputs:
     - contextPath: DBotScore.Indicator
@@ -316,13 +302,9 @@ script:
   - arguments:
     - default: true
       description: URL to enrich, Should contain HTTP(S)://
-      isArray: false
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Enrich an URL from Symantec Deepsight Intelligence
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -355,15 +337,9 @@ script:
     - contextPath: Deepsight.URL.Malicious.Vendor
       description: The vendor of the data about the malicious URL
       type: string
-  - deprecated: false
-    description: Get API Usage status for current license period
-    execution: false
+  - description: Get API Usage status for current license period
     name: deepsight-get-request-status
   dockerimage: demisto/python:2.7.18.24398
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python2
