@@ -877,7 +877,7 @@ class CloudBuild(Build):
                 # were added, they will not appear on the cloud marketplace without sync.
                 _ = demisto_client.generic_request_func(
                     self=server.client, method='POST',
-                    path='/contentpacks/marketplace/sync')
+                    path='/contentpacks/marketplace/sync?hard=true')
             except Exception as e:
                 logging.error(f'Filed to sync marketplace. Error: {e}')
         logging.info('Finished copying successfully.')
