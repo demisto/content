@@ -77,3 +77,6 @@ x
 gcc
 n
 
+[file:AzureKeyVault.yml]
+ignore=IN145
+
