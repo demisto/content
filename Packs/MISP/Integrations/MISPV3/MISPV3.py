@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # type: ignore
-from typing import Union, List, Dict
+from typing import Union, List
 from urllib.parse import urlparse
 import urllib3
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute, MISPUser
@@ -29,7 +29,6 @@ def warn(*args):
     """
     Do nothing with warnings
     """
-    pass
 
 
 # Disable requests warnings

@@ -780,6 +780,17 @@ def test_add_tag(demisto_args: dict, is_attribute: bool, expected_result: dict, 
 
 
 def test_add_user_to_misp(mocker):
+    """
+    Given:
+    - A mocker object for patching the 'add_user' function.
+    - A mock response representing the user details.
+
+    When:
+    - Calling the `add_user_to_misp` function with a set of arguments.
+
+    Then:
+    - Ensure that the function successfully adds a new user to MISP and returns the expected output.
+    """
     from MISPV3 import add_user_to_misp
     mock_response = {
         'User' :
@@ -829,6 +840,16 @@ def test_add_user_to_misp(mocker):
 
 
 def test_get_organizations_info(mocker):
+    """
+    Given:
+    - A mocker object for patching the `organisations` function.
+
+    When:
+    - Calling the `get_organizations_info` function.
+
+    Then:
+    - Ensure that the function successfully retrieves the organizations information and returns the expected output.
+    """
     from MISPV3 import get_organizations_info
 
     mock_organizations = [
@@ -847,6 +868,16 @@ def test_get_organizations_info(mocker):
 
 
 def test_get_role_info(mocker):
+    """
+    Given:
+    - A mocker object for patching the `roles` function.
+
+    When:
+    - Calling the `get_role_info` function.
+
+    Then:
+    - Ensure that the function successfully retrieves the role information and returns the expected output.
+    """
     from MISPV3 import get_role_info
     mock_roles = [
         {'Role': {'id': 1, 'name': 'Role1'}},
