@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
 from RankServiceOwners import score, main, rank, _canonicalize, aggregate, _get_k
+from contextlib import nullcontext as does_not_raise
 
 
 @pytest.mark.parametrize('owners,expected_out', [
@@ -504,3 +505,23 @@ def test_get_k():
             num_correct += 1
 
     assert (num_correct / len(cases)) >= 0.8
+
+
+@pytest.mark.parametrize('target_k, k_tol, a_tol, min_score_proportion, expected_raises', [
+    (-1, 2, 1.0, 0.75, pytest.raises(ValueError, match="target_k must be non-negative")),
+    (5, -1, 1.0, 0.75, pytest.raises(ValueError, match="k_tol must be non-negative")),
+    (5, 2, -1, 0.75, pytest.raises(ValueError, match="a_tol must be non-negative")),
+    (5, 2, 1.0, -1, pytest.raises(ValueError, match="min_score_proportion must be a value between 0 and 1")),
+    (5, 2, 1.0, 1.1, pytest.raises(ValueError, match="min_score_proportion must be a value between 0 and 1")),
+    (5, 2, 1.0, 0.75, does_not_raise()),
+])
+def test_get_k_bad_values(target_k, k_tol, a_tol, min_score_proportion, expected_raises):
+    scores = [1, 1, 1]
+    with expected_raises:
+        assert _get_k(
+            scores,
+            target_k=target_k,
+            k_tol=k_tol,
+            a_tol=a_tol,
+            min_score_proportion=min_score_proportion,
+        )

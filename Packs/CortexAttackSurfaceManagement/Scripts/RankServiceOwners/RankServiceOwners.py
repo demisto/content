@@ -178,7 +178,6 @@ def _get_k(
     if min_score_proportion < 0 or min_score_proportion > 1:
         raise ValueError("min_score_proportion must be a value between 0 and 1")
 
-
     # get up to target_k scores that comprise the desired score proportion
     scores_desc = list(sorted(scores, reverse=True))
     min_score_proportion = sum(scores_desc) * min_score_proportion
