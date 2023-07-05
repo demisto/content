@@ -911,7 +911,8 @@ def get_images_data(packs_list: list, readme_images_dict: dict):
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
-    pack_image_data[BucketUploadFlow.README_IMAGES] = readme_images_dict
+    images_data[BucketUploadFlow.README_IMAGES] = readme_images_dict
+    logging.info(f'{images_data=}')
     return images_data
 
 
