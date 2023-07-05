@@ -740,6 +740,7 @@ script:
     name: ms-graph-security-auth-reset
     arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
+  isfetch: true
   runonce: false
   script: '-'
   subtype: python3
