@@ -10,7 +10,6 @@ enabled: true
 comment: "Display warroom entries in a dynamic section which are tagged with 'report'"
 name: DisplayTaggedWarroomEntries
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
