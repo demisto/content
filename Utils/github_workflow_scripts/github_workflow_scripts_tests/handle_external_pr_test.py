@@ -1,5 +1,6 @@
 import os
 import pytest
+from handle_external_pr import is_requires_security_reviewer
 
 
 @pytest.mark.parametrize(
@@ -95,3 +96,13 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
         assert get_packs_support_level_label(
             file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
         ) == 'Xsoar Support Level'
+
+
+@pytest.mark.parametrize('pr_files,expected', [
+    (['Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json'], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py'], False),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      'Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json'], True)
+])
+def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
+    assert is_requires_security_reviewer(pr_files) == expected
