@@ -5,7 +5,8 @@ from those surfaced by Cortex ASM Enrichment.
 """
 
 
-from typing import Dict, List, Any, Iterable
+from typing import Any
+from collections.abc import Iterable
 import traceback
 from itertools import groupby
 import math
@@ -13,7 +14,7 @@ import math
 STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
 
 
-def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def score(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Owner score is the number of observations on that owner divided by the max number of observations
     for any owner in the list
@@ -28,7 +29,7 @@ def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return owners
 
 
-def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def rank(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Sort owners by ranking score and use data-driven algorithm to return the top k,
     where k is a dynamic value based on the relative scores
@@ -39,7 +40,7 @@ def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)[:k]
 
 
-def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     """
     For now, `Justification` is the same as `Source`; in the future, will sophisticate
     """
@@ -48,7 +49,7 @@ def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
     return owners
 
 
-def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
+def _canonicalize(owner: dict[str, Any]) -> dict[str, Any]:
     """
     Canonicalizes an owner dictionary and adds a deduplication key
     `Canonicalization` whose value is either:
@@ -67,7 +68,7 @@ def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
     return owner
 
 
-def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def canonicalize(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     """
     Calls _canonicalize on each well-formatted owner; drops and logs malformated inputs
     """
@@ -83,7 +84,7 @@ def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     return canonicalized
 
 
-def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     """
     Aggregate owners by their canonicalization.
 
@@ -106,7 +107,7 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         name = names[0] if names else ''
         # aggregate Source by union
         source = STRING_DELIMITER.join(sorted(
-            set(owner.get('source', '') for owner in duplicates if owner.get('source', ''))
+            {owner.get('source', '') for owner in duplicates if owner.get('source', '')}
         ))
         # take max Timestamp if there's at least one; else empty string
         timestamps = sorted(
@@ -122,8 +123,8 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         }
 
         # aggregate remaining keys according to type
-        all_keys = set(k for owner in duplicates for k in owner.keys())
-        keys_to_types = {k: type(owner[k]) for owner in duplicates for k in owner.keys()}
+        all_keys = {k for owner in duplicates for k in owner}
+        keys_to_types = {k: type(owner[k]) for owner in duplicates for k in owner}
         other_keys = []
         for key in all_keys:
             if key.lower() not in {'name', 'email', 'source', 'timestamp', 'canonicalization'}:
@@ -132,7 +133,7 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
             if keys_to_types[other] == str:
                 # union over strings
                 owner[other] = STRING_DELIMITER.join(sorted(
-                    set(owner.get(other, '') for owner in duplicates if owner.get(other, ''))
+                    {owner.get(other, '') for owner in duplicates if owner.get(other, '')}
                 ))
             elif keys_to_types[other] in (int, float):
                 # max over numerical types
@@ -179,7 +180,7 @@ def _get_k(
         raise ValueError("min_score_proportion must be a value between 0 and 1")
 
     # get up to target_k scores that comprise the desired score proportion
-    scores_desc = list(sorted(scores, reverse=True))
+    scores_desc = sorted(scores, reverse=True)
     min_score_proportion = sum(scores_desc) * min_score_proportion
     k = 0
     cumulative_score = 0.0
