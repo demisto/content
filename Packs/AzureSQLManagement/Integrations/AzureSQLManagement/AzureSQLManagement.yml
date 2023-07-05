@@ -9,18 +9,15 @@ configuration:
 - defaultvalue: 8f9010bb-4efe-4cfa-a197-98a2694b7e0c
   display: Application ID
   name: app_id
-  required: false
   type: 0
   section: Connect
 - display: Default Subscription ID
   name: subscription_id
-  required: false
   type: 0
   section: Connect
   additionalinfo: This value can be overridden on a command basis.
 - display: Default Resource Group Name
   name: resource_group_name
-  required: false
   type: 0
   section: Connect
   additionalinfo: This value can be overridden on a command basis.
@@ -37,19 +34,16 @@ configuration:
   section: Connect
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
-  required: false
   type: 0
   section: Connect
 - display: Client Secret (for authorization code mode)
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
   name: credentials
-  required: false
   type: 9
   section: Connect
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -58,13 +52,11 @@ configuration:
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
   hiddenusername: true
   name: auth_code
-  required: false
   type: 9
   section: Connect
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
@@ -76,20 +68,17 @@ configuration:
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
-  required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -98,62 +87,34 @@ display: Azure SQL Management
 name: Azure SQL Management
 script:
   commands:
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the instructions in the command results.
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: azure-sql-auth-start
-  - deprecated: false
-    description: Run this command to complete the authorization process. Should be used after running the azure-sql-auth-start command.
-    execution: false
+  - description: Run this command to complete the authorization process. Should be used after running the azure-sql-auth-start command.
     name: azure-sql-auth-complete
-  - deprecated: false
-    description: Run this command if you need to rerun the authentication process.
-    execution: false
+  - description: Run this command if you need to rerun the authentication process.
     name: azure-sql-auth-reset
-  - deprecated: false
-    description: Tests the connectivity to the Azure SQL Management.
-    execution: false
+  - description: Tests the connectivity to the Azure SQL Management.
     name: azure-sql-auth-test
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: (Int) The maximum number of servers returned to the War Room. Default is "50".
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Offset in the data set. Default is "0".
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Subscription ID. This value will override the instance param 'subscription_id'.
-      isArray: false
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
-      required: false
-      secret: false
-    - default: false
-      description: If true, returns the server lists that match the given resource groups. Else, returns a list of all the servers. Default value is False.
+    - description: If true, returns the server lists that match the given resource groups. Else, returns a list of all the servers. Default value is False.
       isArray: true
       name: list_by_resource_group
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Lists all the servers.
-    execution: false
     name: azure-sql-servers-list
     outputs:
     - contextPath: AzureSQL.Server
@@ -199,41 +160,20 @@ script:
       description: Whether or not to restrict outbound network access for this server. Value is optional but if passed in, must be 'Enabled' or 'Disabled'.
       type: Unknown
   - arguments:
-    - default: false
-      description: Server name.
-      isArray: false
+    - description: Server name.
       name: server_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of databases returned to the War Room. Default is "50".
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Offset in the data set. Default is "0'.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Subscription ID. This value will override the instance param 'subscription_id'.
-      isArray: false
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: Resource group name. This value will override the instance param 'resource_group_name'.
-      isArray: false
+    - description: Resource group name. This value will override the instance param 'resource_group_name'.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all of the databases for the server.
-    execution: false
     name: azure-sql-db-list
     outputs:
     - contextPath: AzureSQL.DB
@@ -318,47 +258,24 @@ script:
       description: Infra encryption is enabled for this database.
       type: Boolean
   - arguments:
-    - default: false
-      description: Server name.
-      isArray: false
+    - description: Server name.
       name: server_name
       required: true
-      secret: false
-    - default: false
-      description: Database name.
-      isArray: false
+    - description: Database name.
       name: db_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of database audit policies returned to the War Room. Default is "50".
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Offset in the data set. Default is "0".
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Subscription ID. This value will override the instance param 'subscription_id'.
-      isArray: false
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the audit settings of the specified database.
-    execution: false
     name: azure-sql-db-audit-policy-list
     outputs:
     - contextPath: AzureSQL.DBAuditPolicy
@@ -398,33 +315,17 @@ script:
       description: Specifies whether Managed Identity is used to access blob storage.
       type: Boolean
   - arguments:
-    - default: false
-      description: Server name.
-      isArray: false
+    - description: Server name.
       name: server_name
       required: true
-      secret: false
-    - default: false
-      description: Database name.
-      isArray: false
+    - description: Database name.
       name: db_name
       required: true
-      secret: false
-    - default: false
-      description: Subscription ID. This value will override the instance param 'subscription_id'.
-      isArray: false
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: Resource group name. This value will override the instance param 'resource_group_name'.
-      isArray: false
+    - description: Resource group name. This value will override the instance param 'resource_group_name'.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the threat detection policy of the specified database.
-    execution: false
     name: azure-sql-db-threat-policy-get
     outputs:
     - contextPath: AzureSQL.DBThreatPolicy
@@ -479,109 +380,56 @@ script:
       description: The name of server that the threat policy is related to.
       type: String
   - arguments:
-    - default: false
-      description: Server name.
-      isArray: false
+    - description: Server name.
       name: server_name
       required: true
-      secret: false
-    - default: false
-      description: Database name.
-      isArray: false
+    - description: Database name.
       name: db_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Set the state of the policy. Possible values: "Enable" or "Disable". When state is enabled, storage_endpoint or is_azure_monitor_target_enabled is required.'
-      isArray: false
       name: state
       predefined:
       - Enabled
       - Disabled
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15.
+    - description: Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15.
       isArray: true
       name: audit_actions_groups
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false".'
-      isArray: false
       name: is_azure_monitor_target_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the storage Account Access Key value is the storage''s secondary key. Possible values: "true" and "false".'
-      isArray: false
       name: is_storage_secondary_key_in_use
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second).
-      isArray: false
+    - description: Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second).
       name: queue_delay_ms
-      required: false
-      secret: false
-    - default: false
-      description: Number of days to keep the policy in the audit logs.
-      isArray: false
+    - description: Number of days to keep the policy in the audit logs.
       name: retention_days
-      required: false
-      secret: false
-    - default: false
-      description: Identifier key of the auditing storage account.
-      isArray: false
+    - description: Identifier key of the auditing storage account.
       name: storage_account_access_key
-      required: false
-      secret: false
-    - default: false
-      description: Storage subscription ID.
-      isArray: false
+    - description: Storage subscription ID.
       name: storage_account_subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: Storage endpoint. If the value for the state argument is enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required.
-      isArray: false
+    - description: Storage endpoint. If the value for the state argument is enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required.
       name: storage_endpoint
-      required: false
-      secret: false
-    - default: false
-      description: Subscription ID. This value will override the instance param 'subscription_id'.
-      isArray: false
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether Managed Identity is used to access blob storage.
-      isArray: false
       name: is_managed_identity_in_use
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Creates or updates the database's auditing policy.
-    execution: false
     name: azure-sql-db-audit-policy-create-update
     outputs:
     - contextPath: AzureSQL.DBAuditPolicy.kind
@@ -633,93 +481,49 @@ script:
       description: Specifies whether Managed Identity is used to access blob storage.
       type: Boolean
   - arguments:
-    - default: false
-      description: Server name
-      isArray: false
+    - description: Server name
       name: server_name
       required: true
-      secret: false
-    - default: false
-      description: Database name
-      isArray: false
+    - description: Database name
       name: db_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The state of the policy. Possible values: "Enabled" and "Disabled".'
-      isArray: false
       name: state
       predefined:
       - Enabled
       - Disabled
       required: true
-      secret: false
-    - default: false
-      description: Number of days to keep the policy in the audit logs.
-      isArray: false
+    - description: Number of days to keep the policy in the audit logs.
       name: retention_days
-      required: false
-      secret: false
-    - default: false
-      description: The identifier key of the threat detection audit storage account.
-      isArray: false
+    - description: The identifier key of the threat detection audit storage account.
       name: storage_account_access_key
-      required: false
-      secret: false
-    - default: false
-      description: The blob storage endpoint. This blob storage will hold all Threat Detection audit logs.
-      isArray: false
+    - description: The blob storage endpoint. This blob storage will hold all Threat Detection audit logs.
       name: storage_endpoint
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of alerts that are disabled. Possible values: "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", and "Unsafe_Action".'
+    - description: 'Comma-separated list of alerts that are disabled. Possible values: "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", and "Unsafe_Action".'
       isArray: true
       name: disabled_alerts
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of email addresses to which the alert is sent.
+    - description: Comma-separated list of email addresses to which the alert is sent.
       isArray: true
       name: email_addresses
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the alert is sent to the account administrators. Possible values: "true" and "false".'
-      isArray: false
       name: email_account_admins
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to use the default server policy. Possible values: "Enabled" and "Disabled".'
-      isArray: false
       name: use_server_default
       predefined:
       - Enabled
       - Disabled
-      required: false
-      secret: false
-    - default: false
-      description: Subscription ID. This value will override the instance param 'subscription_id'.
-      isArray: false
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Creates or updates the database's threat detection policy.
-    execution: false
     name: azure-sql-db-threat-policy-create-update
     outputs:
     - contextPath: AzureSQL.DBThreatPolicy.kind
@@ -771,13 +575,10 @@ script:
       description: The name of server that the threat policy is related to.
       type: String
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: azure-sql-generate-login-url
     arguments: []
   - arguments: []
-    deprecated: false
     description: Gets all subscriptions for a tenant.
-    execution: false
     name: azure-sql-subscriptions-list
     outputs:
     - contextPath: AzureSQL.Subscription.id
@@ -811,27 +612,14 @@ script:
       description: The subscription spending limit.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of subscription ID.s This value will override the instance param 'subscription_id'.
+    - description: A comma-separated list of subscription ID.s This value will override the instance param 'subscription_id'.
       isArray: true
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The tag and value that is attached to the resource group. Input should be “Tag Name:Tag Value”.
-      isArray: false
+    - description: The tag and value that is attached to the resource group. Input should be “Tag Name:Tag Value”.
       name: tag
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to return. Default value is 50.
-      isArray: false
+    - description: The number of results to return. Default value is 50.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets all the resource groups for a subscription.
-    execution: false
     name: azure-sql-resource-group-list
     outputs:
     - contextPath: AzureSQL.ResourceGroup.id
@@ -853,10 +641,6 @@ script:
       description: The tags attached to the resource group.
       type: String
   dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

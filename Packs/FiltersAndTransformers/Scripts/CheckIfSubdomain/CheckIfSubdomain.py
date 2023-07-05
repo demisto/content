@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import tldextract
 
 
-
 def main():
     """
     Checks if a given domain (or domains) are subdomains of the specified internal domains.
