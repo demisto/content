@@ -10,8 +10,7 @@ args:
   name: Query
   required: true
 - name: Port
-  description: Specify specific port to use when creating the EDL instance., else
-    it will be random (3000-50000)
+  description: Specify specific port to use when creating the EDL instance., else it will be random (3000-50000)
 comment: Use this automation to create an EDL instance on XSOAR.
 commonfields:
   id: CreateEDLInstance
@@ -20,7 +19,6 @@ dockerimage: demisto/python3:3.10.1.25933
 enabled: true
 name: CreateEDLInstance
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,10 +1,8 @@
 args:
 - default: true
   description: domain or IP indicator value that need to enrich
-  isArray: false
   name: indicator_value
   required: true
-  secret: false
 comment: Enhancement script to enrich PDNS information for Domain and IP type of indicators.
 commonfields:
   id: RiskIQPassiveTotalPDNSScript
@@ -15,7 +13,6 @@ subtype: python3
 dependson:
   must:
   - '|||pt-get-pdns-details'
-system: false
 tags:
 - enhancement
 timeout: '0'
