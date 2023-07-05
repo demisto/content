@@ -194,7 +194,7 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) ->
         raise Exception("The bind variables lists are not is the same length")
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
+def mtest_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     """
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
@@ -537,7 +537,7 @@ def main():
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
                         pool_ttl=pool_ttl)
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
-            'test-module': test_module,
+            'test-module': mtest_module,
             'query': sql_query_execute,
             'pgsql-query': sql_query_execute,
             'sql-command': sql_query_execute

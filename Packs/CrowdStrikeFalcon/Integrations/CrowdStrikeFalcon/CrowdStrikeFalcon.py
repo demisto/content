@@ -3059,11 +3059,11 @@ def run_command():
         timer.start()
         try:
             if scope == 'read':
-                response = run_batch_read_cmd(batch_id, command_type, full_command, timeout)
+                response = run_batch_read_cmd(batch_id, command_type, full_command, timeout=timeout)
             elif scope == 'write':
                 response = run_batch_write_cmd(batch_id, command_type, full_command, timeout=timeout)
             else:  # scope = admin
-                response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout)
+                response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout=timeout)
         finally:
             timer.cancel()
 
@@ -3096,11 +3096,11 @@ def run_command():
         responses = []
         for host_id in host_ids:
             if scope == 'read':
-                response1 = run_single_read_cmd(host_id, command_type, full_command, offline, timeout)
+                response1 = run_single_read_cmd(host_id, command_type, full_command, offline, timeout=timeout)
             elif scope == 'write':
-                response1 = run_single_write_cmd(host_id, command_type, full_command, offline, timeout)
+                response1 = run_single_write_cmd(host_id, command_type, full_command, offline, timeout=timeout)
             else:  # scope = admin
-                response1 = run_single_admin_cmd(host_id, command_type, full_command, offline, timeout)
+                response1 = run_single_admin_cmd(host_id, command_type, full_command, offline, timeout=timeout)
             responses.append(response1)
 
             for resource in response1.get('resources', []):
