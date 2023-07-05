@@ -2048,11 +2048,12 @@ def github_trigger_workflow_command():
     response = http_request('POST', url_suffix=suffix, headers=headers, data=data)
 
     if response.status_code == 204:
-        message = "Workflow triggered successfully."
+        return_results(CommandResults(readable_output="Workflow triggered successfully."))
     else:
-        message = f"Failed to trigger workflow. {response.json().get('message')}"
-
-    return_results(CommandResults(raw_response=response, readable_output=message))
+        return_results(CommandResults(
+            raw_response=response,
+            readable_output=f"Failed to trigger workflow. {response.json().get('message')}"
+        ))
 
 
 def github_list_workflows_command():
