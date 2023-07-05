@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Union
-import demistomock as demisto
-from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics
