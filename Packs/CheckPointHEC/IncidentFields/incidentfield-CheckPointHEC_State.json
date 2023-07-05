@@ -4,6 +4,7 @@
     "modified": "2023-07-02T04:30:31.299631188Z",
     "name": "CheckPointHEC State",
     "ownerOnly": false,
+    "placeholder": "CP Event State",
     "description": "State",
     "cliName": "checkpointhecstate",
     "type": "shortText",

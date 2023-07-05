@@ -4,6 +4,7 @@
     "modified": "2023-07-02T04:30:15.829662037Z",
     "name": "CheckPointHEC Entity",
     "ownerOnly": false,
+    "placeholder": "CP Entity ID",
     "description": "Entity",
     "cliName": "checkpointhecentity",
     "type": "shortText",

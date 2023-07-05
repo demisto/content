@@ -7,9 +7,9 @@
     "url": "https://supportcenter.checkpoint.com/",
     "email": "EmailSecurity_Support@checkpoint.com",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Email"
     ],
-    "tags": [],
+    "tags": ["Email", "Security"],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

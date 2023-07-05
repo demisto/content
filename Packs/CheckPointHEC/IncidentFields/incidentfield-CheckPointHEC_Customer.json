@@ -4,6 +4,7 @@
     "modified": "2023-07-02T03:39:22.498231281Z",
     "name": "CheckPointHEC Customer",
     "ownerOnly": false,
+    "placeholder": "CP Customer",
     "description": "Customer",
     "cliName": "checkpointheccustomer",
     "type": "shortText",

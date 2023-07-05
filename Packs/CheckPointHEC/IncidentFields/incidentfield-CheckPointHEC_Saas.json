@@ -4,6 +4,7 @@
     "modified": "2023-07-02T04:30:00.142598958Z",
     "name": "CheckPointHEC Saas",
     "ownerOnly": false,
+    "placeholder": "CP Saas Identifier",
     "description": "Saas",
     "cliName": "checkpointhecsaas",
     "type": "shortText",

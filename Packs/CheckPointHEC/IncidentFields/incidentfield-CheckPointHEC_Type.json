@@ -4,6 +4,7 @@
     "modified": "2023-07-02T04:30:44.192922335Z",
     "name": "CheckPointHEC Type",
     "ownerOnly": false,
+    "placeholder": "CP Event Type",
     "description": "Type",
     "cliName": "checkpointhectype",
     "type": "shortText",
