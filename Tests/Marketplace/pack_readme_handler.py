@@ -115,11 +115,11 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
             pc_uploaded_readme_images = pack_readme_images_list
 
             if not pc_uploaded_readme_images:
-                logging.debug(f"No added/modified readme images were detected in {pack_name} pack.")
+                logging.info(f"No added/modified readme images were detected in {pack_name} pack.")
                 continue
 
             for readme_image_name in pc_uploaded_readme_images:
-                logging.debug(f'copying image {readme_image_name}')
+                logging.info(f'copying image {readme_image_name}')
                 build_bucket_readme_image_path = os.path.join(build_bucket_base_path, pack_name,
                                                               BucketUploadFlow.README_IMAGES, readme_image_name)
                 build_bucket_image_blob = build_bucket.blob(build_bucket_readme_image_path)
