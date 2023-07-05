@@ -83,7 +83,6 @@ outputs:
   description: The incoming data stream in base64.
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

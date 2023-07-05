@@ -40,8 +40,7 @@ script:
         The path to the symbolic link that should point to the real executable.
         This option is always required on RHEL-based distributions. On Debian-based distributions this option is required when the alternative `name` is unknown to the system.
       name: link
-    - default: false
-      defaultValue: "50"
+    - defaultValue: "50"
       description: The priority of the alternative.
       name: priority
     description: Manages alternative programs for common commands
@@ -68,15 +67,13 @@ script:
       - weeks
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The state dictates if the command or script file should be evaluated as present(added) or absent(deleted).
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If a matching job is present a new job will not be added.
       name: unique
     description: Schedule the execution of a command or script file via the at command
@@ -96,8 +93,7 @@ script:
         Alternate path to the authorized_keys file.
         When unset, this value defaults to `~/.ssh/authorized_keys`.
       name: path
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Whether this module should manage the directory of the authorized key file.
         If set to `yes`, the module will create the directory, as well as set the owner and permissions of an existing directory.
@@ -105,7 +101,6 @@ script:
         See the example below.
       name: manage_dir
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the given key (with the given key_options) should or should not be in the file.
       name: state
@@ -114,16 +109,14 @@ script:
       - present
     - description: A string of ssh key options to be prepended to the key in the authorized_keys file.
       name: key_options
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Whether to remove all other non-specified keys from the authorized_keys file.
         Multiple keys can be specified in a single `key` string value by separating them by newlines.
         This option is not loop aware, so if you use `with_` , it will be exclusive per iteration of the loop.
         If you want multiple keys in the file you need to pass them all to `key` in a single batch as mentioned above.
       name: exclusive
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         This only applies if using a https url as the source of the keys.
         If set to `no`, the SSL certificates will not be validated.
@@ -135,8 +128,7 @@ script:
         Rewriting the comment is useful in cases such as fetching it from GitHub or GitLab.
         If no comment is specified, the existing comment will be kept.
       name: comment
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Follow path symlink instead of replacing it.
       name: follow
     description: Adds or removes an SSH authorized key
@@ -153,7 +145,6 @@ script:
       name: capability
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the entry should be present or absent in the file's capabilities.
       name: state
@@ -183,7 +174,6 @@ script:
         Required if `state=present`.
       name: job
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether to ensure the job or environment variable is present or absent.
       name: state
@@ -197,32 +187,25 @@ script:
         Many linux distros expect (and some require) the filename portion to consist solely of upper- and lower-case letters, digits, underscores, and hyphens.
         To use the `cron_file` parameter you must specify the `user` as well.
       name: cron_file
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If set, create a backup of the crontab before it is modified. The location of the backup is returned in the `backup_file` variable by this module.
       name: backup
-    - default: false
-      defaultValue: '*'
+    - defaultValue: '*'
       description: Minute when the job should run ( 0-59, *, */2, etc )
       name: minute
-    - default: false
-      defaultValue: '*'
+    - defaultValue: '*'
       description: Hour when the job should run ( 0-23, *, */2, etc )
       name: hour
-    - default: false
-      defaultValue: '*'
+    - defaultValue: '*'
       description: Day of the month the job should run ( 1-31, *, */2, etc )
       name: day
-    - default: false
-      defaultValue: '*'
+    - defaultValue: '*'
       description: Month of the year the job should run ( 1-12, *, */2, etc )
       name: month
-    - default: false
-      defaultValue: '*'
+    - defaultValue: '*'
       description: Day of the week that the job should run ( 0-6 for Sunday-Saturday, *, etc )
       name: weekday
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If the job should be run at reboot. This option is deprecated. Users should use special_time.
       name: reboot
     - auto: PREDEFINED
@@ -236,14 +219,12 @@ script:
       - reboot
       - weekly
       - yearly
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         If the job should be disabled (commented out) in the crontab.
         Only has effect if `state=present`.
       name: disabled
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         If set, manages a crontab's environment variable.
         New variables are added on top of crontab.
@@ -278,7 +259,6 @@ script:
     - description: Used with `state=present`. If specified, the variable will be inserted just before the variable specified.
       name: insertbefore
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether to ensure that the variable is present or absent.
       name: state
@@ -294,8 +274,7 @@ script:
         Without a leading `/`, this is assumed to be in `/etc/cron.d`.
         With a leading `/`, this is taken as absolute.
       name: cron_file
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If set, create a backup of the crontab before it is modified. The location of the backup is returned in the `backup` variable by this module.
       name: backup
     description: Manage variables in crontabs
@@ -311,7 +290,6 @@ script:
     - description: Value to set for the specified dconf key. Value should be specified in GVariant format. Due to complexity of this format, it is best to have a look at existing values in the dconf database. Required for `state=present`.
       name: value
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The action to take upon the key/value.
       name: state
@@ -350,8 +328,7 @@ script:
       - title
     - description: Value to set the configuration to.
       name: value
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Do not set 'seen' flag when pre-seeding.
       name: unseen
     description: Configure a .deb package
@@ -389,12 +366,10 @@ script:
     - description: Target path to device or image file.
       name: dev
       required: true
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If `yes`, allows to create new filesystem on devices that already has filesystem.
       name: force
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         If `yes`, if the block device and filesystem size differ, grow the filesystem into the space.
         Supported for `ext2`, `ext3`, `ext4`, `ext4dev`, `f2fs`, `lvm`, `xfs`, `vfat`, `swap` filesystems.
@@ -439,8 +414,7 @@ script:
         As of Ansible 2.3, permanent operations can operate on firewalld configs when it is not running (requires firewalld >= 3.0.9).
         Note that if this is `no`, immediate is assumed `yes`.
       name: permanent
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Should this configuration be applied immediately, if set as permanent.
       name: immediate
     - auto: PREDEFINED
@@ -455,8 +429,7 @@ script:
       - enabled
       - present
       required: true
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: The amount of time the rule should be in effect for when non-permanent.
       name: timeout
     - description: The masquerade setting you would like to enable/disable to/from zones within firewalld.
@@ -504,8 +477,7 @@ script:
       required: true
     - description: Specify a configuration source to use rather than the default path. See man gconftool-2(1)
       name: config_source
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Access the config database directly, bypassing server.  If direct is specified then the config_source must be specified as well. See man gconftool-2(1)
       name: direct
     description: Edit GNOME Configurations
@@ -518,8 +490,7 @@ script:
     - description: The name of a getent database supported by the target system (passwd, group, hosts, etc).
       name: database
       required: true
-    - default: false
-      description: Key from which to return values from the specified database, otherwise the full contents are returned.
+    - description: Key from which to return values from the specified database, otherwise the full contents are returned.
       name: key
     - description: |-
         Override all databases with the specified service
@@ -527,8 +498,7 @@ script:
       name: service
     - description: "Character used to split the database values into lists/arrays such as ':' or '\t', otherwise  it will try to pick one depending on the database."
       name: split
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: If a supplied key is missing this will make the task fail if `yes`.
       name: fail_key
     description: A wrapper to the unix getent utility
@@ -544,26 +514,22 @@ script:
     - description: Optional `GID` to set for the group.
       name: gid
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the group should be present or not on the remote host.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If `yes`, indicates that the group created is a system group.
       name: system
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Forces the use of "local" command alternatives on platforms that implement it.
         This is useful in environments that use centralized authentication when you want to manipulate the local groups. (e.g. it uses `lgroupadd` instead of `groupadd`).
         This requires that these commands exist on the targeted host, otherwise it will be a fatal error.
       name: local
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         This option allows to change the group ID to a non-unique value. Requires `gid`.
         Not supported on macOS or BusyBox distributions.
@@ -601,8 +567,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: /etc/network/interfaces
+    - defaultValue: /etc/network/interfaces
       description: Path to the interfaces file
       name: dest
     - description: Name of the interface, required for value changes or option remove
@@ -613,12 +578,10 @@ script:
       name: option
     - description: If `option` is not presented for the `interface` and `state` is `present` option will be added. If `option` already exists and is not `pre-up`, `up`, `post-up` or `down`, it's value will be updated. `pre-up`, `up`, `post-up` and `down` options can't be updated, only adding new options, removing existing ones or cleaning the whole option set are supported
       name: value
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: If set to `absent` the option or section will be removed if present instead of created.
       name: state
@@ -650,15 +613,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -682,7 +643,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: filter
       description: |-
         This option specifies the packet matching table which the command should operate on.
@@ -695,7 +655,6 @@ script:
       - raw
       - security
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the rule should be absent or present.
       name: state
@@ -703,7 +662,6 @@ script:
       - absent
       - present
     - auto: PREDEFINED
-      default: false
       defaultValue: append
       description: |-
         Whether the rule should be appended at the bottom or inserted at the top.
@@ -717,7 +675,6 @@ script:
         This works only with `action=insert`.
       name: rule_num
     - auto: PREDEFINED
-      default: false
       defaultValue: ipv4
       description: Which version of the IP protocol this rule should apply to.
       name: ip_version
@@ -748,15 +705,13 @@ script:
         Hostnames will be resolved once only, before the rule is submitted to the kernel. Please note that specifying any name to be resolved with a remote query such as DNS is a really bad idea.
         The mask can be either a network mask or a plain number, specifying the number of 1's at the left side of the network mask. Thus, a mask of 24 is equivalent to 255.255.255.0. A `!` argument before the address specification inverts the sense of the address.
       name: destination
-    - default: false
-      defaultValue: '{}'
+    - defaultValue: '{}'
       description: |-
         TCP flags specification.
         `tcp_flags` expects a dict with the two keys `flags` and `flags_set`.
       isArray: true
       name: tcp_flags
-    - default: false
-      defaultValue: '[]'
+    - defaultValue: '[]'
       description: |-
         Specifies a match to use, that is, an extension module that tests for a specific property.
         The set of matches make up the condition under which a target is invoked.
@@ -842,7 +797,6 @@ script:
         Without this, the source address is never altered.
       name: to_source
     - auto: PREDEFINED
-      default: false
       defaultValue: ignore
       description: |-
         This allows matching packets that have the SYN bit set and the ACK and RST bits unset.
@@ -862,8 +816,7 @@ script:
       name: set_dscp_mark_class
     - description: This specifies a comment that will be added to the rule.
       name: comment
-    - default: false
-      defaultValue: '[]'
+    - defaultValue: '[]'
       description: |-
         `ctstate` is a list of the connection states to match in the conntrack module.
         Possible states are `INVALID`, `NEW`, `ESTABLISHED`, `RELATED`, `UNTRACKED`, `SNAT`, `DNAT`
@@ -917,8 +870,7 @@ script:
         Basic URL to fetch SSL certificate from.
         One of `cert_url` or `cert_path` is required to load certificate.
       name: cert_url
-    - default: false
-      defaultValue: "443"
+    - defaultValue: "443"
       description: |-
         Port to connect to URL.
         This will be used to create server URL:PORT.
@@ -933,8 +885,7 @@ script:
       name: cert_alias
     - description: Local path to load PKCS12 keystore from.
       name: pkcs12_path
-    - default: false
-      description: Password for importing from PKCS12 keystore.
+    - description: Password for importing from PKCS12 keystore.
       name: pkcs12_password
     - description: Alias in the PKCS12 keystore.
       name: pkcs12_alias
@@ -947,12 +898,10 @@ script:
       name: keystore_create
     - description: Keystore type (JCEKS, JKS).
       name: keystore_type
-    - default: false
-      defaultValue: keytool
+    - defaultValue: keytool
       description: Path to keytool binary if not used we search in PATH for it.
       name: executable
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Defines action which can be either certificate import or removal.
       name: state
@@ -987,8 +936,7 @@ script:
       name: group
     - description: Mode the file should be.
       name: mode
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Key store will be created even if it already exists.
       name: force
     description: Create or delete a Java keystore in JKS format.
@@ -1002,7 +950,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the module should be present in the block list or absent.
       name: state
@@ -1028,16 +975,13 @@ script:
         Specifically, the key should not match the format that is found in an SSH pubkey file, but should rather have the hostname prepended to a line that includes the pubkey, the same way that it would appear in the known_hosts file. The value prepended to the line must also match the value of the name parameter.
         Should be of format `<hostname[,IP]> ssh-rsa <pubkey>`
       name: key
-    - default: false
-      defaultValue: (homedir)+/.ssh/known_hosts
+    - defaultValue: (homedir)+/.ssh/known_hosts
       description: The known_hosts file to edit
       name: path
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Hash the hostname in the known_hosts file
       name: hash_host
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: '`present` to add the host key, `absent` to remove it.'
       name: state
@@ -1067,7 +1011,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the locale shall be present.
       name: state
@@ -1085,15 +1028,13 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the module should be present or absent.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      description: Modules parameters.
+    - description: Modules parameters.
       name: params
     description: Load or unload kernel modules
     name: linux-modprobe
@@ -1117,15 +1058,13 @@ script:
       name: fstype
     - description: Mount options (see fstab(5), or vfstab(4) on Solaris).
       name: opts
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: |-
         Dump (see fstab(5)).
         Note that if set to `null` and `state` set to `present`, it will cease to work and duplicate entries will be made with subsequent runs.
         Has no effect on Solaris systems.
       name: dump
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: |-
         Passno (see fstab(5)).
         Note that if set to `null` and `state` set to `present`, it will cease to work and duplicate entries will be made with subsequent runs.
@@ -1153,14 +1092,12 @@ script:
         OpenBSD does not allow specifying alternate fstab files with mount so do not use this on OpenBSD with any state that operates on the live filesystem.
         This parameter defaults to /etc/fstab or /etc/vfstab on Solaris.
       name: fstab
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Determines if the filesystem should be mounted on boot.
         Only applies to Solaris systems.
       name: boot
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     description: Control active and configured mount points
@@ -1172,16 +1109,14 @@ script:
       required: true
     - description: The IP address of the iSCSI target.
       name: portal
-    - default: false
-      defaultValue: "3260"
+    - defaultValue: "3260"
       description: The port on which the iSCSI target process listens.
       name: port
     - description: The iSCSI target name.
       name: target
     - description: Whether the target node should be connected.
       name: login
-    - default: false
-      defaultValue: CHAP
+    - defaultValue: CHAP
       description: The value for `discovery.sendtargets.auth.authmethod`.
       name: node_auth
     - description: The value for `discovery.sendtargets.auth.username`.
@@ -1241,24 +1176,19 @@ script:
     - description: The value of the limit.
       name: value
       required: true
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If set to `yes`, the minimal value will be used or conserved. If the specified value is inferior to the value in the file, file content is replaced with the new value, else content is not modified.
       name: use_min
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If set to `yes`, the maximal value will be used or conserved. If the specified value is superior to the value in the file, file content is replaced with the new value, else content is not modified.
       name: use_max
-    - default: false
-      defaultValue: /etc/security/limits.conf
+    - defaultValue: /etc/security/limits.conf
       description: Modify the limits.conf path.
       name: dest
-    - default: false
-      description: Comment associated with the limit.
+    - description: Comment associated with the limit.
       name: comment
     description: Modify Linux PAM limits
     name: linux-pam-limits
@@ -1320,7 +1250,6 @@ script:
       isArray: true
       name: module_arguments
     - auto: PREDEFINED
-      default: false
       defaultValue: updated
       description: |-
         The default of `updated` will modify an existing rule if type, control and module_path all match an existing rule.
@@ -1337,12 +1266,10 @@ script:
       - args_absent
       - args_present
       - updated
-    - default: false
-      defaultValue: /etc/pam.d
+    - defaultValue: /etc/pam.d
       description: This is the path to the PAM service files.
       name: path
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     description: Manage PAM Modules
@@ -1356,7 +1283,6 @@ script:
       name: device
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: optimal
       description: Set alignment for newly created partitions.
       name: align
@@ -1370,7 +1296,6 @@ script:
         Required when performing any action on the disk, except fetching information.
       name: number
     - auto: PREDEFINED
-      default: false
       defaultValue: KiB
       description: |-
         Selects the current default unit that Parted will use to display locations and capacities on the disk and to interpret those given by the user if they are not suffixed by an unit.
@@ -1392,7 +1317,6 @@ script:
       - chs
       - compact
     - auto: PREDEFINED
-      default: false
       defaultValue: msdos
       description: Creates a new disk label.
       name: label
@@ -1408,7 +1332,6 @@ script:
       - pc98
       - sun
     - auto: PREDEFINED
-      default: false
       defaultValue: primary
       description: |-
         May be specified only with 'msdos' or 'dvh' partition tables.
@@ -1419,14 +1342,12 @@ script:
       - extended
       - logical
       - primary
-    - default: false
-      defaultValue: 0%
+    - defaultValue: 0%
       description: |-
         Where the partition will start as offset from the beginning of the disk, that is, the "distance" from the start of the disk.
         The distance can be specified with all the units supported by parted (except compat) and it is case sensitive, e.g. `10GiB`, `15%`.
       name: part_start
-    - default: false
-      defaultValue: 100%
+    - defaultValue: 100%
       description: |-
         Where the partition will end as offset from the beginning of the disk, that is, the "distance" from the start of the disk.
         The distance can be specified with all the units supported by parted (except compat) and it is case sensitive, e.g. `10GiB`, `15%`.
@@ -1437,7 +1358,6 @@ script:
       isArray: true
       name: flags
     - auto: PREDEFINED
-      default: false
       defaultValue: info
       description: |-
         Whether to create or delete a partition.
@@ -1469,8 +1389,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: pong
+    - defaultValue: pong
       description: |-
         Data to return for the `ping` return value.
         If this parameter is set to `crash`, the module will cause an exception.
@@ -1492,21 +1411,18 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: |-
         Seconds to wait before reboot. Passed as a parameter to the reboot command.
         On Linux, macOS and OpenBSD, this is converted to minutes and rounded down. If less than 60, it will be set to 0.
         On Solaris and FreeBSD, this will be seconds.
       name: pre_reboot_delay
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: |-
         Seconds to wait after the reboot command was successful before attempting to validate the system rebooted successfully.
         This is useful if you want wait for something to settle despite your connection already working.
       name: post_reboot_delay
-    - default: false
-      defaultValue: "600"
+    - defaultValue: "600"
       description: |-
         Maximum seconds to wait for machine to reboot and respond to a test command.
         This timeout is evaluated separately for both reboot verification and test command success so the maximum execution time for the module is twice this amount.
@@ -1515,16 +1431,13 @@ script:
         Maximum seconds to wait for a successful connection to the managed hosts before trying again.
         If unspecified, the default setting for the underlying connection plugin is used.
       name: connect_timeout
-    - default: false
-      defaultValue: whoami
+    - defaultValue: whoami
       description: Command to run on the rebooted host and expect success from to determine the machine is ready for further tasks.
       name: test_command
-    - default: false
-      defaultValue: Reboot initiated by Ansible
+    - defaultValue: Reboot initiated by Ansible
       description: Message to display to users before reboot.
       name: msg
-    - default: false
-      defaultValue: '[''/sbin'', ''/usr/sbin'', ''/usr/local/sbin'']'
+    - defaultValue: '[''/sbin'', ''/usr/sbin'', ''/usr/local/sbin'']'
       description: |-
         Paths to search on the remote machine for the `shutdown` command.
         `Only` these paths will be searched for the `shutdown` command. `PATH` is ignored in the remote node when searching for the `shutdown` command.
@@ -1540,15 +1453,13 @@ script:
     - description: Name of the boolean to configure.
       name: name
       required: true
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Set to `yes` if the boolean setting should survive a reboot.
       name: persistent
     - description: Desired boolean value
       name: state
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Useful for scenarios (chrooted environment) that you can't get the real SELinux state.
       name: ignore_selinux_state
     description: Toggles SELinux booleans
@@ -1562,7 +1473,6 @@ script:
       name: target
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: a
       description: |-
         The file type that should have SELinux contexts applied.
@@ -1593,21 +1503,18 @@ script:
     - description: SELinux range for the specified target.
       name: selevel
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the SELinux file context must be `absent` or `present`.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Reload SELinux policy after commit.
         Note that this does not apply SELinux file contexts to existing files.
       name: reload
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Useful for scenarios (chrooted environment) that you can't get the real SELinux state.
       name: ignore_selinux_state
     description: Manages SELinux file context mapping definitions
@@ -1627,8 +1534,7 @@ script:
       - enforcing
       - permissive
       required: true
-    - default: false
-      defaultValue: /etc/selinux/config
+    - defaultValue: /etc/selinux/config
       description: The path to the SELinux configuration file, if non-standard.
       name: configfile
     description: Change policy and state of SELinux
@@ -1638,15 +1544,13 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      description: The domain that will be added or removed from the list of permissive domains.
+    - description: The domain that will be added or removed from the list of permissive domains.
       name: domain
       required: true
     - description: Indicate if the domain should or should not be set as permissive.
       name: permissive
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Disable reloading of the SELinux policy after making change to a domain's permissive setting.
         The default is `no`, which causes policy to be reloaded when a domain changes state.
@@ -1667,12 +1571,10 @@ script:
     - description: SELinux user name
       name: seuser
       required: true
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: MLS/MCS Security Range (MLS/MCS Systems only) SELinux Range for SELinux login mapping defaults to the SELinux user record range.
       name: selevel
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Desired mapping value.
       name: state
@@ -1680,12 +1582,10 @@ script:
       - present
       - absent
       required: true
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Reload SELinux policy after commit.
       name: reload
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Run independent of selinux runtime state
       name: ignore_selinux_state
     description: Manages linux user to SELinux user mapping
@@ -1712,19 +1612,16 @@ script:
       name: setype
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Desired boolean value.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Reload SELinux policy after commit.
       name: reload
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Run independent of selinux runtime state
       name: ignore_selinux_state
     description: Manages SELinux network port type definitions
@@ -1763,16 +1660,14 @@ script:
         Whether the service should start on boot.
         `At least one of state and enabled are required.`
       name: enabled
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: |-
         For OpenRC init scripts (e.g. Gentoo) only.
         The runlevel that this service belongs to.
       name: runlevel
     - description: Additional arguments provided on the command line.
       name: arguments
-    - default: false
-      defaultValue: auto
+    - defaultValue: auto
       description: |-
         The service module actually uses system specific modules, normally through auto detection, this setting can force a specific module.
         Normally it uses the value of the 'ansible_service_mgr' fact and falls back to the old 'service' module when none matching is found.
@@ -1794,20 +1689,16 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: all
+    - defaultValue: all
       description: 'If supplied, restrict the additional facts collected to the given subset. Possible values: `all`, `min`, `hardware`, `network`, `virtual`, `ohai`, and `facter`. Can specify a list of values to specify a larger subset. Values can also be used with an initial `!` to specify that that specific subset should not be collected.  For instance: `!hardware,!network,!virtual,!ohai,!facter`. If `!all` is specified then only the min subset is collected. To avoid collecting even the min subset, specify `!all,!min`. To collect only specific facts, use `!all,!min`, and specify the particular fact subsets. Use the filter parameter if you do not want to display some collected facts.'
       name: gather_subset
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Set the default timeout in seconds for individual fact gathering.
       name: gather_timeout
-    - default: false
-      defaultValue: '*'
+    - defaultValue: '*'
       description: If supplied, only return facts that match this shell-style (fnmatch) wildcard.
       name: filter
-    - default: false
-      defaultValue: /etc/ansible/facts.d
+    - defaultValue: /etc/ansible/facts.d
       description: Path used for local ansible facts (`*.fact`) - files in this dir will be run (if executable) and their results be added to `ansible_local` facts if a file is not executable it is read. Check notes for Windows options. (from 2.1 on) File/results format can be JSON or INI-format. The default `fact_path` can be specified in `ansible.cfg` for when setup is automatically called as part of `gather_facts`.
       name: fact_path
     description: Gathers facts about remote hosts
@@ -1823,27 +1714,22 @@ script:
     - description: Desired value of the sysctl key.
       name: value
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the entry should be present or absent in the sysctl file.
       name: state
       predefined:
       - present
       - absent
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Use this option to ignore errors about unknown keys.
       name: ignoreerrors
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: If `yes`, performs a `/sbin/sysctl -p` if the `sysctl_file` is updated. If `no`, does not reload `sysctl` even if the `sysctl_file` is updated.
       name: reload
-    - default: false
-      defaultValue: /etc/sysctl.conf
+    - defaultValue: /etc/sysctl.conf
       description: Specifies the absolute path to `sysctl.conf`, if not `/etc/sysctl.conf`.
       name: sysctl_file
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Verify token value with the sysctl command and set with -w if necessary
       name: sysctl_set
     description: Manage entries in sysctl.conf.
@@ -1871,18 +1757,15 @@ script:
       name: force
     - description: Whether the unit should be masked or not, a masked unit is impossible to start.
       name: masked
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Run daemon-reload before doing any other operations, to make sure systemd has read any changes.
         When set to `yes`, runs daemon-reload even if the module does not start or stop anything.
       name: daemon_reload
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Run daemon_reexec command before doing any other operations, the systemd manager will serialize the manager state.
       name: daemon_reexec
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         (deprecated) run ``systemctl`` talking to the service manager of the calling user, rather than the service manager of the system.
         This option is deprecated and will eventually be removed in 2.11. The ``scope`` option should be used instead.
@@ -1896,8 +1779,7 @@ script:
       - system
       - user
       - global
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Do not synchronously wait for the requested operation to finish. Enqueued job will continue without Ansible blocking on its completion.
       name: no_block
     description: Manage services
@@ -1920,8 +1802,7 @@ script:
       - reloaded
     - description: Whether the service should start on boot. `At least one of state and enabled are required.`
       name: enabled
-    - default: false
-      defaultValue: "1"
+    - defaultValue: "1"
       description: If the service is being `restarted` or `reloaded` then sleep this many seconds between the stop and start command. This helps to workaround badly behaving services.
       name: sleep
     - description: |-
@@ -1935,8 +1816,7 @@ script:
       name: runlevels
     - description: Additional arguments provided on the command line that some init scripts accept.
       name: arguments
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Have the module daemonize as the service itself might not do so properly.
         This is useful with badly written init scripts or daemons, which commonly manifests as the task hanging as it is still holding the tty or the service dying when the task is over as the connection closes the session.
@@ -2019,7 +1899,6 @@ script:
         Note that ufw numbers rules starting with 1.
       name: insert
     - auto: PREDEFINED
-      default: false
       defaultValue: zero
       description: |-
         Allows to interpret the index in `insert` relative to a position.
@@ -2045,14 +1924,12 @@ script:
       - reject
     - description: Log new connections matched to this rule
       name: log
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: Source IP address.
       name: from_ip
     - description: Source port.
       name: from_port
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: Destination IP address.
       name: to_ip
     - description: Destination port.
@@ -2097,8 +1974,7 @@ script:
         macOS only, optionally hide the user from the login window and system preferences.
         The default will be `yes` if the `system` option is used.
       name: hidden
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Optionally when used with the -u option, this option allows to change the user ID to a non-unique value.
       name: non_unique
     - description: Optionally sets the seuser type (user_u) on selinux enabled systems.
@@ -2111,8 +1987,7 @@ script:
         Mutually exclusive with `local`
       isArray: true
       name: groups
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         If `yes`, add the user to the groups specified in `groups`.
         If `no`, user will only be added to the groups specified in `groups`, removing them from all other groups.
@@ -2137,56 +2012,47 @@ script:
         See `https://docs.ansible.com/ansible/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module` for details on various ways to generate these password values.
       name: password
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the account should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Unless set to `no`, a home directory will be made for the user when the account is created or if the home directory does not exist.
         Changed from `createhome` to `create_home` in Ansible 2.5.
       name: create_home
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: 'If set to `yes` when used with `home: `, attempt to move the user''s old home directory to the specified directory if it isn''t there already and the old home exists.'
       name: move_home
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         When creating an account `state=present`, setting this to `yes` makes the user a system account.
         This setting cannot be changed on existing users.
       name: system
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         This only affects `state=absent`, it forces removal of the user and associated directories on supported platforms.
         The behavior is the same as `userdel --force`, check the man page for `userdel` on your system for details and support.
         When used with `generate_ssh_key=yes` this forces an existing key to be overwritten.
       name: force
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         This only affects `state=absent`, it attempts to remove directories associated with the user.
         The behavior is the same as `userdel --remove`, check the man page for details and support.
       name: remove
     - description: Optionally sets the user's login class, a feature of most BSD OSs.
       name: login_class
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Whether to generate a SSH key for the user in question.
         This will `not` overwrite an existing SSH key unless used with `force=yes`.
       name: generate_ssh_key
-    - default: false
-      defaultValue: default set by ssh-keygen
+    - defaultValue: default set by ssh-keygen
       description: Optionally specify number of bits in SSH key to create.
       name: ssh_key_bits
-    - default: false
-      defaultValue: rsa
+    - defaultValue: rsa
       description: |-
         Optionally specify the type of SSH key to generate.
         Available SSH key types will depend on implementation present on target host.
@@ -2196,8 +2062,7 @@ script:
         If this is a relative filename then it will be relative to the user's home directory.
         This parameter defaults to `.ssh/id_rsa`.
       name: ssh_key_file
-    - default: false
-      defaultValue: ansible-generated on $HOSTNAME
+    - defaultValue: ansible-generated on $HOSTNAME
       description: Optionally define the comment for the SSH key.
       name: ssh_key_comment
     - description: |-
@@ -2205,7 +2070,6 @@ script:
         If no passphrase is provided, the SSH key will default to having no passphrase.
       name: ssh_key_passphrase
     - auto: PREDEFINED
-      default: false
       defaultValue: always
       description: |-
         `always` will update passwords if they differ.
@@ -2225,8 +2089,7 @@ script:
         This option does not disable the user, only lock the password. Do not change the password in the same task.
         Currently supported on Linux, FreeBSD, DragonFlyBSD, NetBSD, OpenBSD.
       name: password_lock
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Forces the use of "local" command alternatives on platforms that implement it.
         This is useful in environments that use centralized authentification when you want to manipulate the local users (i.e. it uses `luseradd` instead of `useradd`).
@@ -2296,7 +2159,6 @@ script:
         This argument supports human readable sizes.
       name: rtbsoft
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: |-
         Whether to apply the limits or remove them.
@@ -2323,7 +2185,6 @@ script:
         Must be specified if user does not exist yet.
       name: password
     - auto: PREDEFINED
-      default: false
       defaultValue: apr_md5_crypt
       description: Encryption scheme to be used.  As well as the four choices listed here, you can also use any other hash supported by passlib, such as md5_crypt and sha256_crypt, which are linux passwd hashes.  If you do so the password file will not be compatible with Apache or Nginx
       name: crypt_scheme
@@ -2333,15 +2194,13 @@ script:
       - ldap_sha1
       - plaintext
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the user entry should be present or not
       name: state
       predefined:
       - present
       - absent
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Used with `state=present`. If specified, the file will be created if it does not already exist. If set to "no", will fail if the file does not exist
       name: create
     - description: |-
@@ -2369,15 +2228,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -2434,7 +2291,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the host or user certificate should exist or not, taking action if the state is different from what is stated.
       name: state
@@ -2449,8 +2305,7 @@ script:
       predefined:
       - host
       - user
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Should the certificate be regenerated even if it already exists and is valid.
       name: force
     - description: Path of the file containing the certificate.
@@ -2524,15 +2379,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -2553,7 +2406,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the private and public keys should exist or not, taking action if the state is different from what is stated.
       name: state
@@ -2563,7 +2415,6 @@ script:
     - description: 'Specifies the number of bits in the private key to create. For RSA keys, the minimum size is 1024 bits and the default is 4096 bits. Generally, 2048 bits is considered sufficient.  DSA keys must be exactly 1024 bits as specified by FIPS 186-2. For ECDSA keys, size determines the key length by selecting from one of three elliptic curve sizes: 256, 384 or 521 bits. Attempting to use bit lengths other than these three values for ECDSA keys will cause this module to fail. Ed25519 keys have a fixed length and the size will be ignored.'
       name: size
     - auto: PREDEFINED
-      default: false
       defaultValue: rsa
       description: The algorithm used to generate the SSH private key. `rsa1` is for protocol version 1. `rsa1` is deprecated and may not be supported by every version of ssh-keygen.
       name: type
@@ -2573,8 +2424,7 @@ script:
       - rsa1
       - ecdsa
       - ed25519
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Should the key be regenerated even if it already exists
       name: force
     - description: Name of the files containing the public and private key. The file containing the public key will have the extension `.pub`.
@@ -2607,15 +2457,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -2639,7 +2487,6 @@ script:
       name: path
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: query
       description: |-
         Define whether the ACL should be present or not.
@@ -2649,12 +2496,10 @@ script:
       - absent
       - present
       - query
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Whether to follow symlinks on the path if a symlink is encountered.
       name: follow
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         If the target is a directory, setting this to `yes` will make it the default ACL for entities created inside the directory.
         Setting `default` to `yes` causes an error if the path is a file.
@@ -2679,18 +2524,15 @@ script:
         `-` can be used as placeholder when you do not care about permissions.
         This is now superseded by entity, type and permissions fields.
       name: entry
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Recursively sets the specified ACL.
         Incompatible with `state=query`.
       name: recursive
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Use NFSv4 ACLs instead of POSIX ACLs.
       name: use_nfsv4_acls
     - auto: PREDEFINED
-      default: false
       defaultValue: default
       description: |-
         Select if and when to recalculate the effective right masks of the files.
@@ -2713,7 +2555,6 @@ script:
       name: path
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: gz
       description: |-
         The type of compression to use.
@@ -2732,14 +2573,12 @@ script:
     - description: Remote absolute path, glob, or list of paths or globs for the file or files to exclude from the archive.
       isArray: true
       name: exclude_path
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Allow you to force the module to treat this as an archive even if only a single file is specified.
         By default behaviour is maintained. i.e A when a single file is specified it is compressed only (not archived).
       name: force_archive
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Remove any added source files and trees after adding to archive.
       name: remove
     - description: |-
@@ -2767,15 +2606,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -2801,14 +2638,12 @@ script:
     - description: A file to create using the concatenation of all of the source files.
       name: dest
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file (if `yes`), including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - description: A delimiter to separate the file contents.
       name: delimiter
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         If `no`, it will search for src at originating/master machine.
         If `yes`, it will go to the remote/target machine for the src.
@@ -2819,8 +2654,7 @@ script:
         Every "\" (backslash) must be escaped as "\\" to comply to YAML syntax.
         Uses `Python regular expressions,http://docs.python.org/2/library/re.html`.
       name: regexp
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: A boolean that controls if files that start with a '.' will be included or not.
       name: ignore_hidden
     - description: |-
@@ -2828,8 +2662,7 @@ script:
         The path to the file to validate is passed in via '%s' which must be present as in the sshd example below.
         The command is passed securely so shell features like expansion and pipes won't work.
       name: validate
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: This option controls the autodecryption of source files using vault.
       name: decrypt
     - description: |-
@@ -2857,15 +2690,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -2891,27 +2722,23 @@ script:
       name: path
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the block should be there or not.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: '# {mark} ANSIBLE MANAGED BLOCK'
+    - defaultValue: '# {mark} ANSIBLE MANAGED BLOCK'
       description: |-
         The marker line template.
         `{mark}` will be replaced with the values `in marker_begin` (default="BEGIN") and `marker_end` (default="END").
         Using a custom marker without the `{mark}` variable may result in the block being repeatedly inserted on subsequent playbook runs.
       name: marker
-    - default: false
-      description: |-
+    - description: |-
         The text to insert inside the marker lines.
         If it is missing or an empty string, the block will be removed as if `state` were specified to `absent`.
       name: block
     - auto: PREDEFINED
-      default: false
       defaultValue: EOF
       description: |-
         If specified, the block will be inserted after the last match of specified regular expression.
@@ -2930,20 +2757,16 @@ script:
       predefined:
       - BOF
       - '*regex*'
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a new file if it does not exist.
       name: create
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
-    - default: false
-      defaultValue: BEGIN
+    - defaultValue: BEGIN
       description: This will be inserted at `{mark}` in the opening ansible block marker.
       name: marker_begin
-    - default: false
-      defaultValue: END
+    - defaultValue: END
       description: This will be inserted at `{mark}` in the closing ansible block marker.
       name: marker_end
     - description: |-
@@ -2971,15 +2794,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -3008,7 +2829,6 @@ script:
       name: path
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: file
       description: |-
         If `absent`, directories will be recursively deleted, and files or symlinks will be unlinked. In the case of a directory, if `diff` is declared, you will see the files and folders deleted listed under `path_contents`. Note that `absent` will not cause `file` to fail if the `path` does not exist as the state did not change.
@@ -3031,18 +2851,15 @@ script:
         For `state=link`, this will also accept a non-existing path.
         Relative paths are relative to the file being created (`path`) which is how the Unix command `ln -s SRC DEST` treats relative paths.
       name: src
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Recursively set the specified file attributes on directory contents.
         This applies only when `state` is set to `directory`.
       name: recurse
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: 'Force the creation of the symlinks in two cases: the source file does not exist (but will appear later); the destination exists and is a file (so, we need to unlink the `path` file and create symlink to the `src` file in place of it).'
       name: force
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         This flag indicates that filesystem links, if they exist, should be followed.
         Previous to Ansible 2.5, this was `no` by default.
@@ -3052,8 +2869,7 @@ script:
         Should be `preserve` when no modification is required, `YYYYMMDDHHMM.SS` when using default time format, or `now`.
         Default is None meaning that `preserve` is the default for `state=[file,directory,link,hard]` and `now` is default for `state=touch`.
       name: modification_time
-    - default: false
-      defaultValue: '%Y%m%d%H%M.%S'
+    - defaultValue: '%Y%m%d%H%M.%S'
       description: |-
         When used with `modification_time`, indicates the time format that must be used.
         Based on default Python format (see time.strftime doc).
@@ -3063,8 +2879,7 @@ script:
         Should be `preserve` when no modification is required, `YYYYMMDDHHMM.SS` when using default time format, or `now`.
         Default is `None` meaning that `preserve` is the default for `state=[file,directory,link,hard]` and `now` is default for `state=touch`.
       name: access_time
-    - default: false
-      defaultValue: '%Y%m%d%H%M.%S'
+    - defaultValue: '%Y%m%d%H%M.%S'
       description: |-
         When used with `access_time`, indicates the time format that must be used.
         Based on default Python format (see time.strftime doc).
@@ -3094,15 +2909,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -3127,8 +2940,7 @@ script:
         Use a negative age to find files equal to or less than the specified time.
         You can choose seconds, minutes, hours, days, or weeks by specifying the first letter of any of those words (e.g., "1w").
       name: age
-    - default: false
-      defaultValue: '*'
+    - defaultValue: '*'
       description: |-
         One or more (shell or regex) patterns, which type is controlled by `use_regex` option.
         The patterns restrict the list of files to be returned to those whose basenames match at least one of the patterns specified. Multiple patterns can be specified using a list.
@@ -3149,7 +2961,6 @@ script:
       name: paths
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: file
       description: |-
         Type of file to select.
@@ -3160,8 +2971,7 @@ script:
       - directory
       - file
       - link
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If target is a directory, recursively descend into the directory looking for files.
       name: recurse
     - description: |-
@@ -3171,7 +2981,6 @@ script:
         Size is not evaluated for directories.
       name: size
     - auto: PREDEFINED
-      default: false
       defaultValue: mtime
       description: Choose the file property against which we compare age.
       name: age_stamp
@@ -3179,20 +2988,16 @@ script:
       - atime
       - ctime
       - mtime
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Set this to `yes` to include hidden files, otherwise they will be ignored.
       name: hidden
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Set this to `yes` to follow symlinks in path for systems with python 2.6+.
       name: follow
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Set this to `yes` to retrieve a file's SHA1 checksum.
       name: get_checksum
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         If `no`, the patterns are file globs (shell).
         If `yes`, they are python regexes.
@@ -3228,30 +3033,25 @@ script:
         The string value to be associated with an `option`.
         May be omitted when removing an `option`.
       name: value
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: If set to `absent` the option or section will be removed if present instead of created.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Do not insert spaces before and after '=' symbol.
       name: no_extra_spaces
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         If set to `no`, the module will fail if the file does not already exist.
         By default it will create the file if it is missing.
       name: create
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Allow option without value and without '=' symbol.
       name: allow_no_value
     - description: |-
@@ -3279,15 +3079,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -3319,15 +3117,13 @@ script:
       isArray: true
       name: files
       required: true
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         If `yes`, which will replace the remote file when contents are different than the source.
         If `no`, the file will only be extracted and copied if the destination does not already exist.
         Alias `thirsty` has been deprecated and will be removed in 2.13.
       name: force
-    - default: false
-      defaultValue: 7z
+    - defaultValue: 7z
       description: The path to the `7z` executable to use for extracting files from the ISO.
       name: executable
     description: Extract files from an ISO image
@@ -3351,7 +3147,6 @@ script:
         Uses Python regular expressions. See `http://docs.python.org/2/library/re.html`.
       name: regexp
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether the line should be there or not.
       name: state
@@ -3363,8 +3158,7 @@ script:
         Required for `state=present`.
         If `backrefs` is set, may contain backreferences that will get expanded with the `regexp` capture groups if the regexp matches.
       name: line
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Used with `state=present`.
         If set, `line` can contain backreferences (both positional and named) that will get populated if the `regexp` matches.
@@ -3372,7 +3166,6 @@ script:
         If the `regexp` does match, the last matching line will be replaced by the expanded line parameter.
       name: backrefs
     - auto: PREDEFINED
-      default: false
       defaultValue: EOF
       description: |-
         Used with `state=present`.
@@ -3400,19 +3193,16 @@ script:
       predefined:
       - BOF
       - '*regex*'
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Used with `state=present`.
         If specified, the file will be created if it does not already exist.
         By default it will fail if the file is missing.
       name: create
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Used with `insertafter` or `insertbefore`.
         If set, `insertafter` and `insertbefore` will work with the first line that matches the given regular expression.
@@ -3444,15 +3234,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -3509,14 +3297,12 @@ script:
         Uses Python regular expressions; see `http://docs.python.org/2/library/re.html`.
         Uses DOTALL, which means the `.` special character `can match newlines`.
       name: before
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - description: All arguments accepted by the `file` module also work here.
       name: others
-    - default: false
-      defaultValue: utf-8
+    - defaultValue: utf-8
       description: The character encoding for reading and writing the file.
       name: encoding
     - description: |-
@@ -3544,15 +3330,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -3580,16 +3364,13 @@ script:
     - description: The full path of the file/object to get the facts of.
       name: path
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Whether to follow symlinks.
       name: follow
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Whether to return a checksum of the file.
       name: get_checksum
     - auto: PREDEFINED
-      default: false
       defaultValue: sha1
       description: |-
         Algorithm to determine checksum of file.
@@ -3603,15 +3384,13 @@ script:
       - sha256
       - sha384
       - sha512
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Use file magic and return data about the nature of the file. this uses the 'file' utility found on most Linux/Unix systems.
         This will add both `mime_type` and 'charset' fields to the return, if possible.
         In Ansible 2.3 this option changed from 'mime' to 'get_mime' and the default changed to 'Yes'.
       name: get_mime
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Get file attributes using lsattr tool if present.
       name: get_attributes
     description: Retrieve file or file system status
@@ -3760,7 +3539,6 @@ script:
         This parameter defaults to the value of `ansible_ssh_port` or `ansible_port`, the `remote_port` config setting or the value from ssh client configuration if none of the former have been set.
       name: dest_port
     - auto: PREDEFINED
-      default: false
       defaultValue: push
       description: |-
         Specify the direction of the synchronization.
@@ -3770,33 +3548,27 @@ script:
       predefined:
       - pull
       - push
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Mirrors the rsync archive flag, enables recursive, links, perms, times, owner, group flags and -D.
       name: archive
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Skip based on checksum, rather than mod-time & size; Note that that "archive" option is still enabled by default - the "checksum" option will not disable it.
       name: checksum
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Compress file data during the transfer.
         In most cases, leave this enabled unless it causes problems.
       name: compress
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Skip creating new files on receiver.
       name: existing_only
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Delete files in `dest` that don't exist (after transfer, not before) in the `src` path.
         This option requires `recursive=yes`.
         This option ignores excluded files and behaves like the rsync opt --delete-excluded.
       name: delete
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Transfer directories without recursing.
       name: dirs
     - description: |-
@@ -3807,8 +3579,7 @@ script:
         Copy symlinks as symlinks.
         This parameter defaults to the value of the archive option.
       name: links
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Copy symlinks as the item that they point to (the referent) is copied, rather than the symlink.
       name: copy_links
     - description: |-
@@ -3831,18 +3602,15 @@ script:
         Specify the rsync command to run on the remote host. See `--rsync-path` on the rsync man page.
         To specify the rsync command to run on the local host, you need to set this your task var `ansible_rsync_path`.
       name: rsync_path
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: Specify a `--timeout` for the rsync command in seconds.
       name: rsync_timeout
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Put user@ for the remote paths.
         If you have a custom ssh config to define the remote user for a host that does not match the inventory user, you should set this parameter to `no`.
       name: set_remote_user
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Use the ssh_args specified in ansible.cfg.
       name: use_ssh_args
     - description: |-
@@ -3850,12 +3618,10 @@ script:
         Note that an empty string in `rsync_opts` will end up transfer the current working directory.
       isArray: true
       name: rsync_opts
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Tells rsync to keep the partial file which should make a subsequent transfer of the rest of the file much faster.
       name: partial
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Verify destination host key.
       name: verify_host
     - description: Specify the private key to use for SSH-based rsync connections (e.g. `~/.ssh/id_rsa`).
@@ -3871,7 +3637,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: file
       description: Whether to create file or directory.
       name: state
@@ -3882,12 +3647,10 @@ script:
         Location where temporary file or directory should be created.
         If path is not specified, the default system temporary directory will be used.
       name: path
-    - default: false
-      defaultValue: ansible.
+    - defaultValue: ansible.
       description: Prefix of file/directory name created by module.
       name: prefix
-    - default: false
-      description: Suffix of file/directory name created by module.
+    - description: Suffix of file/directory name created by module.
       name: suffix
     description: Creates temporary files and directories
     name: linux-tempfile
@@ -3904,8 +3667,7 @@ script:
     - description: Remote absolute path where the archive should be unpacked.
       name: dest
       required: true
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         If true, the file is copied from local 'master' to the target machine, otherwise, the plugin will look for src archive at the target machine.
         This option has been deprecated in favor of `remote_src`.
@@ -3913,39 +3675,33 @@ script:
       name: copy
     - description: If the specified absolute path (file or directory) already exists, this step will `not` be run.
       name: creates
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If set to True, return the list of files that are contained in the tarball.
       name: list_files
     - description: List the directory and file entries that you would like to exclude from the unarchive action.
       isArray: true
       name: exclude
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Do not replace existing files that are newer than files from the archive.
       name: keep_newer
-    - default: false
-      description: |-
+    - description: |-
         Specify additional options by passing in an array.
         Each space-separated command-line option should be a new element of the array. See examples.
         Command-line options with multiple elements must use multiple lines in the array, one for each element.
       isArray: true
       name: extra_opts
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Set to `yes` to indicate the archived file is already on the remote system and not local to the Ansible controller.
         This option is mutually exclusive with `copy`.
       name: remote_src
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         This only applies if using a https URL as the source of the file.
         This should only set to `no` used on personally controlled sites using self-signed certificate.
         Prior to 2.2 the code worked as if this was set to `yes`.
       name: validate_certs
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: This option controls the autodecryption of source files using vault.
       name: decrypt
     - description: |-
@@ -3973,15 +3729,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -4022,7 +3776,6 @@ script:
       isArray: true
       name: namespaces
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Set or remove an xpath selection (node(s), attribute(s)).
       name: state
@@ -4052,20 +3805,17 @@ script:
         This parameter requires `xpath` to be set.
       isArray: true
       name: set_children
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Search for a given `xpath` and provide the count of any matches.
         This parameter requires `xpath` to be set.
       name: count
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Search for a given `xpath` and print out any matches.
         This parameter requires `xpath` to be set.
       name: print_match
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Pretty print XML output.
       name: pretty_print
     - auto: PREDEFINED
@@ -4077,32 +3827,27 @@ script:
       - attribute
       - text
     - auto: PREDEFINED
-      default: false
       defaultValue: yaml
       description: Type of input for `add_children` and `set_children`.
       name: input_type
       predefined:
       - xml
       - yaml
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Remove CDATA tags surrounding text values.
         Note that this might break your XML file if text values contain characters that could be interpreted as XML.
       name: strip_cdata_tags
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Add additional child-element(s) before the first selected element for a given `xpath`.
         Child elements must be given in a list and each item may be either a string (eg. `children=ansible` to add an empty `<ansible/>` child element), or a hash where the key is an element name and the value is the element value.
         This parameter requires `xpath` to be set.
       name: insertbefore
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Add additional child-element(s) after the last selected element for a given `xpath`.
         Child elements must be given in a list and each item may be either a string (eg. `children=ansible` to add an empty `<ansible/>` child element), or a hash where the key is an element name and the value is the element value.
@@ -4128,12 +3873,10 @@ script:
       isArray: true
       name: responses
       required: true
-    - default: false
-      defaultValue: "30"
+    - defaultValue: "30"
       description: Amount of time in seconds to wait for the expected strings. Use `null` to disable timeout.
       name: timeout
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Whether or not to echo out your response strings.
       name: echo
     description: Executes a command and responds to prompts.
@@ -4145,12 +3888,10 @@ script:
       required: true
     - description: The name of a bower package to install
       name: name
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Install packages from local cache, if the packages were installed before
       name: offline
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Install with --production flag
       name: production
     - description: The base path where to install the bower packages
@@ -4159,7 +3900,6 @@ script:
     - description: Relative path to bower executable from install path
       name: relative_execpath
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The state of the bower package
       name: state
@@ -4179,41 +3919,33 @@ script:
     - description: The path to the bundler executable
       name: executable
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The desired state of the Gem bundle. `latest` updates gems to the most recent, acceptable version
       name: state
       predefined:
       - present
       - latest
-    - default: false
-      defaultValue: temporary working directory
+    - defaultValue: temporary working directory
       description: The directory to execute the bundler commands from. This directory needs to contain a valid Gemfile or .bundle/ directory
       name: chdir
     - description: A list of Gemfile groups to exclude during operations. This only applies when state is `present`. Bundler considers this a 'remembered' property for the Gemfile and will automatically exclude groups in future operations even if `exclude_groups` is not set
       name: exclude_groups
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Only applies if state is `present`. If set removes any gems on the target host that are not in the gemfile
       name: clean
-    - default: false
-      defaultValue: Gemfile in current directory
+    - defaultValue: Gemfile in current directory
       description: Only applies if state is `present`. The path to the gemfile to use to install gems.
       name: gemfile
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If set only installs gems from the cache on the target host
       name: local
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Only applies if state is `present`. If set it will install gems in ./vendor/bundle instead of the default location. Requires a Gemfile.lock file to have been created prior
       name: deployment_mode
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Only applies if state is `present`. Installs gems in the local user's cache or for all users
       name: user_install
-    - default: false
-      defaultValue: RubyGems gem paths
+    - defaultValue: RubyGems gem paths
       description: Only applies if state is `present`. Specifies the directory to install the gems into. If `chdir` is set then this path is relative to `chdir`
       name: gem_path
     - description: Only applies if state is `present`. Specifies the directory to install any gem bins files to. When executed the bin files will run within the context of the Gemfile and fail if any required gem dependencies are not installed. If `chdir` is set then this path is relative to `chdir`
@@ -4227,8 +3959,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: install
+    - defaultValue: install
       description: Composer command like "install", "update" and so on.
       name: command
     - description: Composer arguments like required package, version and so on.
@@ -4239,50 +3970,40 @@ script:
         Directory of your project (see --working-dir). This is required when the command is not run globally.
         Will be ignored if `global_command=true`.
       name: working_dir
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Runs the specified command globally.
       name: global_command
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Forces installation from package sources when possible (see --prefer-source).
       name: prefer_source
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Forces installation from package dist even for dev versions (see --prefer-dist).
       name: prefer_dist
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Disables installation of require-dev packages (see --no-dev).
       name: no_dev
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Skips the execution of all scripts defined in composer.json (see --no-scripts).
       name: no_scripts
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Disables all plugins ( see --no-plugins ).
       name: no_plugins
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Optimize autoloader during autoloader dump (see --optimize-autoloader).
         Convert PSR-0/4 autoloading to classmap to get a faster autoloader.
         Recommended especially for production, but can take a bit of time to run.
       name: optimize_autoloader
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Autoload classes from classmap only.
         Implicitely enable optimize_autoloader.
         Recommended especially for production, but can take a bit of time to run.
       name: classmap_authoritative
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Uses APCu to cache found/not-found classes
       name: apcu_autoloader
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Ignore php, hhvm, lib-* and ext-* requirements and force the installation even if the local machine does not fulfill these.
       name: ignore_platform_reqs
     description: Dependency Manager for PHP
@@ -4296,26 +4017,22 @@ script:
       name: name
     - description: The local directory from where to install
       name: from_path
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Do not run unit tests
       name: notest
     - description: Specify the install base to install modules
       name: locallib
     - description: Specifies the base URL for the CPAN mirror to use
       name: mirror
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Use the mirror's index file instead of the CPAN Meta DB
       name: mirror_only
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Only install dependencies
       name: installdeps
     - description: minimum version of perl module to consider acceptable
       name: version
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Use this if you want to install modules to the system perl include path. You must be root or have "passwordless" sudo for this to work.
         This uses the cpanm commandline option '--sudo', which has nothing to do with ansible privilege escalation.
@@ -4333,7 +4050,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The desired state of the gem. `latest` ensures that the latest version is installed.
       name: state
@@ -4343,38 +4059,32 @@ script:
       - latest
     - description: The path to a local gem used as installation source.
       name: gem_source
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Whether to include dependencies or not.
       name: include_dependencies
     - description: The repository from which the gem will be installed
       name: repository
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Install gem in user's local gems cache or for all users
       name: user_install
     - description: Override the path to the gem executable
       name: executable
     - description: Install the gems into a specific directory. These gems will be independent from the global installed ones. Specifying this requires user_install to be false.
       name: install_dir
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Rewrite the shebang line on installed scripts to use /usr/bin/env.
       name: env_shebang
     - description: Version of the gem to be installed/removed.
       name: version
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Allow installation of pre-release versions of the gem.
       name: pre_release
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Install with or without docs.
       name: include_doc
     - description: Allow adding build flags for gem compilation
       name: build_flags
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Force gem to install, bypassing dependency checks.
       name: force
     description: Manage Ruby gems
@@ -4390,18 +4100,15 @@ script:
     - description: The maven artifactId coordinate
       name: artifact_id
       required: true
-    - default: false
-      defaultValue: latest
+    - defaultValue: latest
       description: The maven version coordinate
       name: version
     - description: The maven classifier coordinate
       name: classifier
-    - default: false
-      defaultValue: jar
+    - defaultValue: jar
       description: The maven type/extension coordinate
       name: extension
-    - default: false
-      defaultValue: http://repo1.maven.org/maven2
+    - defaultValue: http://repo1.maven.org/maven2
       description: |-
         The URL of the Maven Repository to download from.
         Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.
@@ -4420,29 +4127,24 @@ script:
       name: dest
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The desired state of the artifact
       name: state
       predefined:
       - present
       - absent
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Specifies a timeout in seconds for the connection attempt
       name: timeout
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: If `no`, SSL certificates will not be validated. This should only be set to `no` when no other option exists.
       name: validate_certs
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         If `yes`, the downloaded artifact's name is preserved, i.e the version number remains part of it.
         This option only has effect when `dest` is a directory and `version` is set to `latest`.
       name: keep_name
     - auto: PREDEFINED
-      default: false
       defaultValue: download
       description: |-
         If `never`, the md5 checksum will never be downloaded and verified.
@@ -4480,15 +4182,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -4514,34 +4214,28 @@ script:
       name: path
     - description: The version to be installed
       name: version
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Install the node.js library globally
       name: global
     - description: |-
         The executable location for npm.
         This is useful if you are using a version manager, such as nvm
       name: executable
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Use the `--ignore-scripts` flag when installing.
       name: ignore_scripts
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Use the `--unsafe-perm` flag when installing.
       name: unsafe_perm
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Install packages based on package-lock file, same as running npm ci
       name: ci
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Install dependencies in production mode, excluding devDependencies
       name: production
     - description: The registry to install modules from.
       name: registry
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The state of the node.js library
       name: state
@@ -4560,7 +4254,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Desired state of the package.
       name: state
@@ -4588,18 +4281,15 @@ script:
       name: requirements
     - description: An optional path to a `virtualenv` directory to install into. It cannot be specified together with the 'executable' parameter (added in 2.1). If the virtualenv does not exist, it will be created before installing packages. The optional virtualenv_site_packages, virtualenv_command, and virtualenv_python options affect the creation of the virtualenv.
       name: virtualenv
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Whether the virtual environment will inherit packages from the global site-packages directory.  Note that if this setting is changed on an already existing virtual environment it will not have any effect, the environment must be deleted and newly created.
       name: virtualenv_site_packages
-    - default: false
-      defaultValue: virtualenv
+    - defaultValue: virtualenv
       description: The command or a pathname to the command to create the virtual environment with. For example `pyvenv`, `virtualenv`, `virtualenv2`, `~/bin/virtualenv`, `/usr/local/bin/virtualenv`.
       name: virtualenv_command
     - description: The Python executable used for creating the virtual environment. For example `python3.5`, `python2.7`. When not specified, the Python version used to run the ansible module is used. This parameter should not be used when `virtualenv_command` is using `pyvenv` or the `-m venv` module.
       name: virtualenv_python
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: |-
         The state of module
@@ -4612,8 +4302,7 @@ script:
       - present
     - description: Extra arguments passed to pip.
       name: extra_args
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Pass the editable flag.
       name: editable
     - description: cd into this directory before running the command
@@ -4633,8 +4322,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: '[''pip'']'
+    - defaultValue: '[''pip'']'
       description: A list of the pip executables that will be used to get the packages. They can be supplied with the full path or just the executable name, i.e `pip3.7`.
       isArray: true
       name: clients
@@ -4660,18 +4348,15 @@ script:
         The version of the library to be installed.
         Must be in semver format. If "latest" is desired, use "state" arg instead
       name: version
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Install the node.js library globally
       name: global
     - description: The executable location for yarn.
       name: executable
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Use the --ignore-scripts flag when installing.
       name: ignore_scripts
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Install dependencies in production mode.
         Yarn will ignore any dependencies under devDependencies in package.json
@@ -4679,7 +4364,6 @@ script:
     - description: The registry to install modules from.
       name: registry
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: |-
         Installation state of the named node.js library
@@ -4696,8 +4380,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: During upgrade, reset versioned world dependencies and change logic to prefer replacing or downgrading packages (instead of holding them) if the currently installed package is no longer available from any repository.
       name: available
     - description: A package name, like `foo`, or multiple packages, like `foo, bar`.
@@ -4705,7 +4388,6 @@ script:
     - description: A package repository or multiple repositories. Unlike with the underlying apk command, this list will override the system repositories rather than supplement them.
       name: repository
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: |-
         Indicates the desired package(s) state.
@@ -4717,12 +4399,10 @@ script:
       - present
       - absent
       - latest
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Update repository indexes. Can be run with other steps or on it's own.
       name: update_cache
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Upgrade all installed packages to their latest version.
       name: upgrade
     description: Manages apk packages
@@ -4735,7 +4415,6 @@ script:
     - description: A list of package names, like `foo`, or package specifier with version, like `foo=1.0`. Name wildcards (fnmatch) like `apt*` and version wildcards like `foo=1.0*` are also supported.
       name: name
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Indicates the desired package state. `latest` ensures that the latest version is installed. `build-dep` ensures the package build dependencies are installed. `fixed` attempt to correct a system with broken dependencies in place.
       name: state
@@ -4745,40 +4424,34 @@ script:
       - latest
       - present
       - fixed
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Run the equivalent of `apt-get update` before the operation. Can be run as part of the package installation or as a separate step.
       name: update_cache
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: |-
         Update the apt cache if its older than the `cache_valid_time`. This option is set in seconds.
         As of Ansible 2.4, if explicitly set, this sets `update_cache=yes`.
       name: cache_valid_time
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Will force purging of configuration files if the module state is set to `absent`.
       name: purge
     - description: Corresponds to the `-t` option for `apt` and sets pin priorities
       name: default_release
     - description: Corresponds to the `--no-install-recommends` option for `apt`. `yes` installs recommended packages.  `no` does not install recommended packages. By default, Ansible will use the same defaults as the operating system. Suggested packages are never installed.
       name: install_recommends
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Corresponds to the `--force-yes` to `apt-get` and implies `allow_unauthenticated: yes`
         This option will disable checking both the packages' signatures and the certificates of the web servers they are downloaded from.
         This option *is not* the equivalent of passing the `-f` flag to `apt-get` on the command line
         **This is a destructive operation with the potential to destroy your system, and it should almost never be used.** Please also see `man apt-get` for more information.
       name: force
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Ignore if packages cannot be authenticated. This is useful for bootstrapping environments that manage their own apt-key setup.
         `allow_unauthenticated` is only supported with state: `install`/`present`
       name: allow_unauthenticated
     - auto: PREDEFINED
-      default: false
       defaultValue: "no"
       description: |-
         If yes or safe, performs an aptitude safe-upgrade.
@@ -4793,8 +4466,7 @@ script:
       - "no"
       - safe
       - "yes"
-    - default: false
-      defaultValue: force-confdef,force-confold
+    - defaultValue: force-confdef,force-confold
       description: |-
         Add dpkg options to apt command. Defaults to '-o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"'
         Options should be supplied as comma separated list
@@ -4804,14 +4476,12 @@ script:
         If :// in the path, ansible will attempt to download deb before installing. (Version added 2.1)
         Requires the `xz-utils` package to extract the control file of the deb package to install.
       name: deb
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         If `yes`, remove unused dependency packages for all module states except `build-dep`. It can also be used as the only option.
         Previous to version 2.4, autoclean was also an alias for autoremove, now it is its own separate command. See documentation for further information.
       name: autoremove
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If `yes`, cleans the local repository of retrieved package files that can no longer be downloaded.
       name: autoclean
     - description: |-
@@ -4820,12 +4490,10 @@ script:
         If /usr/sbin/policy-rc.d already exist, it is backed up and restored after the package installation.
         If `null`, the /usr/sbin/policy-rc.d isn't created/changed.
       name: policy_rc_d
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Only upgrade a package if it is already installed.
       name: only_upgrade
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Force usage of apt-get instead of aptitude
       name: force_apt_get
     description: Manages apt-packages
@@ -4852,15 +4520,13 @@ script:
     - description: The keyserver to retrieve key from.
       name: keyserver
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Ensures that the key is present (added) or absent (revoked).
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: If `no`, SSL certificates for the target url will not be validated. This should only be used on personally controlled sites using self-signed certificates.
       name: validate_certs
     description: Add or remove an apt key
@@ -4874,21 +4540,18 @@ script:
       name: repo
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Indicates the desired repository state.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Remove other then added repositories
         Used if `state=present`
       name: remove_others
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Update the package database after changing repositories.
       name: update
     description: Manage APT repositories via apt-repo
@@ -4902,23 +4565,19 @@ script:
       name: repo
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: A source string state.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "0644"
+    - defaultValue: "0644"
       description: The octal mode for newly created files in sources.list.d
       name: mode
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Run the equivalent of `apt-get update` when a change occurs.  Cache updates are run after making changes.
       name: update_cache
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: If `no`, SSL certificates for the target repo will not be validated. This should only be used on personally controlled sites using self-signed certificates.
       name: validate_certs
     - description: Sets the name of the source list file in sources.list.d. Defaults to a file name based on the repository source url. The .list extension will be automatically added.
@@ -4936,15 +4595,13 @@ script:
       name: pkg
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Indicates the desired package state.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: update the package database first `apt-get update`.
       name: update_cache
     description: apt_rpm package manager
@@ -4973,14 +4630,12 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: flatpak
+    - defaultValue: flatpak
       description: |-
         The path to the `flatpak` executable to use.
         By default, this module looks for the `flatpak` executable on the path.
       name: executable
     - auto: PREDEFINED
-      default: false
       defaultValue: system
       description: |-
         The installation method to use.
@@ -4997,15 +4652,13 @@ script:
         When supplying an `http(s`) URL with `state=absent`, the module will try to match the installed flatpak based on the name of the flatpakref to remove it. However, there is no guarantee that the names of the flatpakref file and the reverse DNS name of the installed flatpak do match.
       name: name
       required: true
-    - default: false
-      defaultValue: flathub
+    - defaultValue: flathub
       description: |-
         The flatpak remote (repository) to install the flatpak from.
         By default, `flathub` is assumed, but you do need to add the flathub flatpak_remote before you can use this.
         See the `flatpak_remote` module for managing flatpak remotes.
       name: remote
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Indicates the desired package state.
       name: state
@@ -5019,8 +4672,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: flatpak
+    - defaultValue: flatpak
       description: |-
         The path to the `flatpak` executable to use.
         By default, this module looks for the `flatpak` executable on the path.
@@ -5032,7 +4684,6 @@ script:
         Required when `state=present`.
       name: flatpakrepo_url
     - auto: PREDEFINED
-      default: false
       defaultValue: system
       description: |-
         The installation method to use.
@@ -5048,7 +4699,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Indicates the desired package state.
       name: state
@@ -5064,12 +4714,10 @@ script:
       required: true
     - description: list of names of packages to install/remove
       name: name
-    - default: false
-      defaultValue: /usr/local/bin
+    - defaultValue: /usr/local/bin
       description: A ':' separated list of paths to search for 'brew' executable. Since a package (`formula` in homebrew parlance) location is prefixed relative to the actual path of `brew` command, providing an alternative `brew` path enables managing different set of packages in an alternative location in the system.
       name: path
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: state of the package
       name: state
@@ -5080,12 +4728,10 @@ script:
       - absent
       - linked
       - unlinked
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: update homebrew itself first
       name: update_homebrew
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: upgrade all homebrew packages
       name: upgrade_all
     - description: options flags to install a package
@@ -5100,12 +4746,10 @@ script:
     - description: name of cask to install/remove
       name: name
       required: true
-    - default: false
-      defaultValue: /usr/local/bin
+    - defaultValue: /usr/local/bin
       description: ''':'' separated list of paths to search for ''brew'' executable.'
       name: path
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: state of the cask
       name: state
@@ -5115,26 +4759,21 @@ script:
       - upgraded
     - description: The sudo password to be passed to SUDO_ASKPASS.
       name: sudo_password
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: update homebrew itself first. Note that `brew cask update` is a synonym for `brew update`.
       name: update_homebrew
     - description: options flags to install a package
       name: install_options
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: allow external apps
       name: accept_external_apps
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: upgrade all casks (mutually exclusive with `upgrade`)
       name: upgrade_all
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: upgrade all casks (mutually exclusive with `upgrade_all`)
       name: upgrade
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: upgrade casks that auto update; passes --greedy to brew cask outdated when checking if an installed cask has a newer version available
       name: greedy
     description: Install/uninstall homebrew casks.
@@ -5152,7 +4791,6 @@ script:
         `name` option may not be a list of multiple taps (but a single tap instead) when this option is provided.
       name: url
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: state of the repository.
       name: state
@@ -5172,7 +4810,6 @@ script:
     - description: An URL of the alternative overlays list that defines the overlay to install. This list will be fetched and saved under `${overlay_defs}`/${name}.xml), where `overlay_defs` is readed from the Layman's configuration.
       name: list_url
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether to install (`present`), sync (`updated`), or uninstall (`absent`) the overlay.
       name: state
@@ -5180,8 +4817,7 @@ script:
       - present
       - absent
       - updated
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: If `no`, SSL certificates will not be validated. This should only be set to `no` when no other option exists.  Prior to 1.9.3 the code defaulted to `no`.
       name: validate_certs
     description: Manage Gentoo overlays
@@ -5202,8 +4838,7 @@ script:
         You can use other states like `latest` ONLY if they are supported by the underlying package module(s) executed.
       name: state
       required: true
-    - default: false
-      defaultValue: auto
+    - defaultValue: auto
       description: |-
         The required package manager module to use (yum, apt, etc). The default 'auto' will use existing facts or try to autodetect it.
         You should only use this field if the automatic selection is not working for some reason.
@@ -5216,7 +4851,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: '[''auto'']'
       description: |-
         The package manager used by the system so we can query the package information.
@@ -5231,7 +4865,6 @@ script:
       - portage
       - pkg
     - auto: PREDEFINED
-      default: false
       defaultValue: first
       description: This option controls how the module queries the package managers on the system. `first` means it will return only information for the first supported package manager available. `all` will return information for all supported and available package managers on the system.
       name: strategy
@@ -5249,7 +4882,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: auto
       description: |-
         This module supports `yum` (as it always has), this is known as `yum3`/`YUM3`/`yum-deprecated` by upstream yum developers. As of Ansible 2.7+, this module also supports `YUM4`, which is the "new yum" and it has an `dnf` backend.
@@ -5297,45 +4929,36 @@ script:
       name: disablerepo
     - description: The remote yum configuration file to use for the transaction.
       name: conf_file
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Whether to disable the GPG checking of signatures of packages being installed. Has an effect only if state is `present` or `latest`.
       name: disable_gpg_check
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Skip packages with broken dependencies(devsolve) and are causing problems.
       name: skip_broken
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Force yum to check if cache is out of date and redownload if needed. Has an effect only if state is `present` or `latest`.
       name: update_cache
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: |-
         This only applies if using a https url as the source of the rpm. e.g. for localinstall. If set to `no`, the SSL certificates will not be validated.
         This should only set to `no` used on personally controlled sites using self-signed certificates as it avoids verifying the source site.
         Prior to 2.1 the code worked as if this was set to `yes`.
       name: validate_certs
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         When using latest, only update installed packages. Do not install packages.
         Has an effect only if state is `latest`
       name: update_only
-    - default: false
-      defaultValue: /
+    - defaultValue: /
       description: Specifies an alternative installroot, relative to which all packages will be installed.
       name: installroot
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If set to `yes`, and `state=latest` then only installs updates that have been marked security related.
       name: security
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If set to `yes`, and `state=latest` then only installs updates that have been marked bugfix related.
       name: bugfix
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Specify if the named package and version is allowed to downgrade a maybe already installed higher version of that package. Note that setting allow_downgrade=True can make this module behave in a non-idempotent way. The task could end up with a set of packages that does not match the complete list of specified packages to install (because dependencies between the downgraded package and others can cause changes to the packages which were in the earlier transaction).
       name: allow_downgrade
     - description: '`Plugin` name to enable for the install/update operation. The enabled plugin will not persist beyond the transaction.'
@@ -5344,8 +4967,7 @@ script:
       name: disable_plugin
     - description: Specifies an alternative release from which all packages will be installed.
       name: releasever
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         If `yes`, removes all "leaf" packages from the system that were originally installed as dependencies of user-installed packages but which are no longer required by any such package. Should be used alone or when state is `absent`
         NOTE: This feature requires yum >= 3.4.3 (RHEL/CentOS 7+)
@@ -5356,16 +4978,13 @@ script:
         If set to `main`, disable excludes defined in [main] in yum.conf.
         If set to `repoid`, disable excludes defined for given repo id.
       name: disable_excludes
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Only download the packages, do not install them.
       name: download_only
-    - default: false
-      defaultValue: "30"
+    - defaultValue: "30"
       description: Amount of time to wait for the yum lockfile to be freed.
       name: lock_timeout
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: |-
         Will also install all packages linked by a weak dependency relation.
         NOTE: This feature requires yum >= 4 (RHEL/CentOS 8+)
@@ -5381,12 +5000,10 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: If set to `yes` Yum will download packages and metadata from this repo in parallel, if possible.
       name: async
-    - default: false
-      defaultValue: "0"
+    - defaultValue: "0"
       description: |-
         Maximum available network bandwidth in bytes/second. Used with the `throttle` option.
         If `throttle` is a percentage and bandwidth is `0` then bandwidth throttling will be disabled. If `throttle` is expressed as a data rate (bytes/sec) then this option is ignored. Default is `0` (no bandwidth throttling).
@@ -5396,28 +5013,23 @@ script:
         It can also be a list of multiple URLs.
         This, the `metalink` or `mirrorlist` parameters are required if `state` is set to `present`.
       name: baseurl
-    - default: false
-      defaultValue: "1000"
+    - defaultValue: "1000"
       description: Relative cost of accessing this repository. Useful for weighing one repo's packages as greater/less than any other.
       name: cost
-    - default: false
-      defaultValue: "100"
+    - defaultValue: "100"
       description: When the relative size of deltarpm metadata vs pkgs is larger than this, deltarpm metadata is not downloaded from the repo. Note that you can give values over `100`, so `200` means that the metadata is required to be half the size of the packages. Use `0` to turn off this check, and always download metadata.
       name: deltarpm_metadata_percentage
-    - default: false
-      defaultValue: "75"
+    - defaultValue: "75"
       description: When the relative size of delta vs pkg is larger than this, delta is not used. Use `0` to turn off delta rpm processing. Local repositories (with file:// `baseurl`) have delta rpms turned off by default.
       name: deltarpm_percentage
     - description: |-
         A human readable string describing the repository. This option corresponds to the "name" property in the repo file.
         This parameter is only required if `state` is set to `present`.
       name: description
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: This tells yum whether or not use this repository.
       name: enabled
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Determines whether yum will allow the use of package groups for this repository.
       name: enablegroups
     - description: |-
@@ -5425,7 +5037,6 @@ script:
         The list can also be a regular YAML array.
       name: exclude
     - auto: PREDEFINED
-      default: false
       defaultValue: roundrobin
       description: |-
         `roundrobin` randomly selects a URL out of the list of URLs to start with and proceeds through each of them as it encounters a failure contacting the host.
@@ -5447,7 +5058,6 @@ script:
         It can also be a list of multiple URLs.
       name: gpgkey
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: |-
         Determines how upstream HTTP caches are instructed to handle any HTTP downloads that Yum does.
@@ -5466,7 +5076,6 @@ script:
         The list can also be a regular YAML array.
       name: includepkgs
     - auto: PREDEFINED
-      default: false
       defaultValue: whatever
       description: |-
         Determines how yum resolves host names.
@@ -5479,26 +5088,22 @@ script:
       - IPv4
       - IPv6
       - whatever
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: This tells yum whether or not HTTP/1.1 keepalive should be used with this repository. This can improve transfer speeds by using one connection when downloading multiple files from a repository.
       name: keepalive
     - auto: PREDEFINED
-      default: false
       defaultValue: "1"
       description: Either `1` or `0`. Determines whether or not yum keeps the cache of headers and packages after successful installation.
       name: keepcache
       predefined:
       - "0"
       - "1"
-    - default: false
-      defaultValue: "21600"
+    - defaultValue: "21600"
       description: |-
         Time (in seconds) after which the metadata will expire.
         Default value is 6 hours.
       name: metadata_expire
     - auto: PREDEFINED
-      default: false
       defaultValue: read-only:present
       description: |-
         Filter the `metadata_expire` time, allowing a trade of speed for accuracy if a command doesn't require it. Each yum command can specify that it requires a certain level of timeliness quality from the remote repos. from "I'm about to install/upgrade, so this better be current" to "Anything that's available is good enough".
@@ -5521,8 +5126,7 @@ script:
         Specifies a URL to a file containing a list of baseurls.
         This, the `baseurl` or `metalink` parameters are required if `state` is set to `present`.
       name: mirrorlist
-    - default: false
-      defaultValue: "21600"
+    - defaultValue: "21600"
       description: |-
         Time (in seconds) after which the mirrorlist locally cached will expire.
         Default value is 6 hours.
@@ -5534,14 +5138,12 @@ script:
       required: true
     - description: Password to use with the username for basic authentication.
       name: password
-    - default: false
-      defaultValue: "99"
+    - defaultValue: "99"
       description: |-
         Enforce ordered protection of repositories. The value is an integer from 1 to 99.
         This option only works if the YUM Priorities plugin is installed.
       name: priority
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Protect packages from updates from other repositories.
       name: protect
     - description: URL to the proxy server that yum should use. Set to `_none_` to disable the global proxy setting.
@@ -5550,30 +5152,24 @@ script:
       name: proxy_password
     - description: Username to use for proxy.
       name: proxy_username
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: This tells yum whether or not it should perform a GPG signature check on the repodata from this repository.
       name: repo_gpgcheck
-    - default: false
-      defaultValue: /etc/yum.repos.d
+    - defaultValue: /etc/yum.repos.d
       description: Directory where the `.repo` files will be stored.
       name: reposdir
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Set the number of times any attempt to retrieve a file should retry before returning an error. Setting this to `0` makes yum try forever.
       name: retries
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Enables support for S3 repositories.
         This option only works if the YUM S3 plugin is installed.
       name: s3_enabled
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: If set to `yes` yum will continue running if this repository cannot be contacted for any reason. This should be set carefully as all repos are consulted for any given command.
       name: skip_if_unavailable
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Whether yum should check the permissions on the paths for the certificates on the repository (both remote and local).
         If we can't read any of the files then yum will force `skip_if_unavailable` to be `yes`. This is most useful for non-root processes which use yum on repos that have client cert files which are readable only by root.
@@ -5584,12 +5180,10 @@ script:
       name: sslclientcert
     - description: Path to the SSL client key yum should use to connect to repos/remote sites.
       name: sslclientkey
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Defines whether yum should verify SSL certificates/hosts at all.
       name: sslverify
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the repo file.
       name: state
@@ -5600,12 +5194,10 @@ script:
         Enable bandwidth throttling for downloads.
         This option can be expressed as a absolute data rate in bytes/sec. An SI prefix (k, M or G) may be appended to the bandwidth value.
       name: throttle
-    - default: false
-      defaultValue: "30"
+    - defaultValue: "30"
       description: Number of seconds to wait for a connection before timing out.
       name: timeout
-    - default: false
-      defaultValue: releasever basearch
+    - defaultValue: releasever basearch
       description: When a repository id is displayed, append these yum variables to the string if they are used in the `baseurl`/etc. Variables are appended in the order listed (and found).
       name: ui_repoid_vars
     - description: Username to use for basic authentication to a repo or really any url.
@@ -5635,15 +5227,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -5671,7 +5261,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: |-
         `present` will make sure the package is installed. `latest`  will make sure the latest version of the package is installed. `absent`  will make sure the specified package is not installed. `dist-upgrade` will make sure the latest version of all installed packages from all enabled repositories is installed.
@@ -5683,7 +5272,6 @@ script:
       - absent
       - dist-upgrade
     - auto: PREDEFINED
-      default: false
       defaultValue: package
       description: The type of package to be operated on.
       name: type
@@ -5698,24 +5286,19 @@ script:
         Add additional global target options to `zypper`.
         Options should be supplied in a single line as if given in the command line.
       name: extra_args_precommand
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Whether to disable to GPG signature checking of the package signature being installed. Has an effect only if state is `present` or `latest`.
       name: disable_gpg_check
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Corresponds to the `--no-recommends` option for `zypper`. Default behavior (`yes`) modifies zypper's default behavior; `no` does install recommended packages.
       name: disable_recommends
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Adds `--force` option to `zypper`. Allows to downgrade packages and change vendor or architecture.
       name: force
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Run the equivalent of `zypper refresh` before the operation. Disabled in check mode.
       name: update_cache
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Adds `--oldpackage` option to `zypper`. Allows to downgrade packages with less side-effects than force. This is implied as soon as a version is specified as part of the package name.
       name: oldpackage
     - description: |-
@@ -5734,7 +5317,6 @@ script:
     - description: URI of the repository or .repo file. Required when state=present.
       name: repo
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: A source string state.
       name: state
@@ -5743,40 +5325,34 @@ script:
       - present
     - description: A description of the repository
       name: description
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Whether to disable GPG signature checking of all packages. Has an effect only if state is `present`.
         Needs zypper version >= 1.6.2.
       name: disable_gpg_check
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Enable autorefresh of the repository.
       name: autorefresh
     - description: |-
         Set priority of repository. Packages will always be installed from the repository with the smallest priority number.
         Needs zypper version >= 1.12.25.
       name: priority
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Overwrite multiple repository entries, if repositories with both name and URL already exist.
       name: overwrite_multiple
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Automatically import the gpg signing key of the new or changed repository.
         Has an effect only if state is `present`. Has no effect on existing (unchanged) repositories or in combination with `absent`.
         Implies runrefresh.
         Only works with `.repo` files if `name` is given explicitly.
       name: auto_import_keys
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Refresh the package list of the given repository.
         Can be used with repo=* to refresh all repositories.
       name: runrefresh
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Set repository to enabled (or disabled).
       name: enabled
     description: Add and remove Zypper repositories
@@ -5790,19 +5366,16 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Desired state of the package.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Confinement policy. The classic confinement allows a snap to have the same level of access to the system as "classic" packages, like those managed by APT. This option corresponds to the --classic argument. This option can only be specified if there is a single snap in the task.
       name: classic
-    - default: false
-      defaultValue: stable
+    - defaultValue: stable
       description: Define which release of a snap is installed and tracked for updates. This option can only be specified if there is a single snap in the task.
       name: channel
     description: Manages snaps
@@ -5813,7 +5386,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: whether to register and subscribe (`present`), or unregister (`absent`) a system
       name: state
@@ -5840,8 +5412,7 @@ script:
       name: server_proxy_user
     - description: Specify a password for HTTP proxy with basic authentication
       name: server_proxy_password
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: |-
         Upon successful registration, auto-consume available subscriptions
         Added in favor of deprecated autosubscribe in 2.5.
@@ -5852,14 +5423,12 @@ script:
       name: org_id
     - description: Register with a specific environment in the destination org. Used with Red Hat Satellite 6.x or Katello
       name: environment
-    - default: false
-      defaultValue: ^$
+    - defaultValue: ^$
       description: |-
         Specify a subscription pool name to consume.  Regular expressions accepted. Use `pool_ids` instead if
         possible, as it is much faster. Mutually exclusive with `pool_ids`.
       name: pool
-    - default: false
-      defaultValue: '[]'
+    - defaultValue: '[]'
       description: |-
         Specify subscription pool IDs to consume. Prefer over `pool` when possible as it is much faster.
         A pool ID may be specified as a `string` - just the pool ID (ex. `0123456789abcdef0123456789abcdef`),
@@ -5877,14 +5446,12 @@ script:
         this option allows it to resume using its previous identity and subscriptions.
         The default is to not specify a consumer ID so a new ID is created.
       name: consumer_id
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Register the system even if it is already registered
       name: force_register
     - description: Set a release version
       name: release
-    - default: false
-      defaultValue: '{}'
+    - defaultValue: '{}'
       description: Set syspurpose attributes in file `/etc/rhsm/syspurpose/syspurpose.json` and synchronize these attributes with RHSM server. Syspurpose attributes help attach the most appropriate subscriptions to the system automatically. When `syspurpose.json` file already contains some attributes, then new attributes overwrite existing attributes. When some attribute is not listed in the new list of attributes, the existing attribute will be removed from `syspurpose.json` file. Unknown attributes are ignored.
       isArray: true
       name: syspurpose
@@ -5901,8 +5468,7 @@ script:
     - description: Name of the system as it is known in RHN/Satellite.
       name: sysname
       required: true
-    - default: false
-      defaultValue: present
+    - defaultValue: present
       description: Whether the channel should be present or not, taking action if the state is different from what is stated.
       name: state
     - description: The full URL to the RHN/Satellite API.
@@ -5922,7 +5488,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Whether to register (`present`), or unregister (`absent`) a system.
       name: state
@@ -5945,17 +5510,14 @@ script:
       name: ca_cert
     - description: Supply an organizational id for use with registration.
       name: systemorgid
-    - default: false
-      defaultValue: '[]'
+    - defaultValue: '[]'
       description: Optionally specify a list of channels to subscribe to upon successful registration.
       isArray: true
       name: channels
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If `no`, extended update support will be requested.
       name: enable_eus
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: If `yes`, the registered node will not upload its installed packages information to Satellite server.
       name: nopackages
     description: Manage Red Hat Network registration using the C(rhnreg_ks) command
@@ -5976,7 +5538,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: If state is equal to present or disabled, indicates the desired repository state.
       name: state
@@ -5991,8 +5552,7 @@ script:
         To operate on several repositories this can accept a comma separated list or a YAML list.
       name: name
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Disable all currently enabled repositories that are not not specified in `name`. Only set this to `True` if passing in a list of repositories to the `name` field. Using this with `loop` will most likely not have the desired result.
       name: purge
     description: Manage RHSM repositories using the subscription-manager command
@@ -6006,15 +5566,13 @@ script:
       name: key
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: If the key will be imported or removed from the rpm db.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: |-
         If `no` and the `key` is a url starting with https, SSL certificates will not be validated.
         This should only be used on personally controlled sites using self-signed certificates.
@@ -6045,39 +5603,32 @@ script:
         When run on Ansible prior to 2.5, it defaults to `TMPDIR`, `TEMP` or `TMP` env variables or a platform specific value.
         `https://docs.python.org/2/library/tempfile.html#tempfile.tempdir`
       name: tmp_dest
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         If `yes` and `dest` is not a directory, will download the file every time and replace the file if the contents change. If `no`, the file will only be downloaded if the destination does not exist. Generally should be `yes` only for small local files.
         Prior to 0.6, this module behaved as if `yes` was the default.
         Alias `thirsty` has been deprecated and will be removed in 2.13.
       name: force
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
-    - default: false
-      description: If a SHA-256 checksum is passed to this parameter, the digest of the destination file will be calculated after it is downloaded to ensure its integrity and verify that the transfer completed successfully. This option is deprecated. Use `checksum` instead.
+    - description: If a SHA-256 checksum is passed to this parameter, the digest of the destination file will be calculated after it is downloaded to ensure its integrity and verify that the transfer completed successfully. This option is deprecated. Use `checksum` instead.
       name: sha256sum
-    - default: false
-      description: |-
+    - description: |-
         If a checksum is passed to this parameter, the digest of the destination file will be calculated after it is downloaded to ensure its integrity and verify that the transfer completed successfully. Format: <algorithm>:<checksum|url>, e.g. checksum="sha256:D98291AC[...]B6DC7B97", checksum="sha256:http://example.com/path/sha256sum.txt"
         If you worry about portability, only the sha1 algorithm is available on all platforms and python versions.
         The third party hashlib library can be installed for access to additional algorithms.
         Additionally, if a checksum is passed to this parameter, and the file exist under the `dest` location, the `destination_checksum` would be calculated, and if checksum equals `destination_checksum`, the file download would be skipped (unless `force` is true). If the checksum does not equal `destination_checksum`, the destination file is deleted.
       name: checksum
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: if `no`, it will not use a proxy, even if one is defined in an environment variable on the target hosts.
       name: use_proxy
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         If `no`, SSL certificates will not be validated.
         This should only be used on personally controlled sites using self-signed certificates.
       name: validate_certs
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Timeout in seconds for URL request.
       name: timeout
     - description: |-
@@ -6096,8 +5647,7 @@ script:
         If the `url_username` parameter is not specified, the `url_password` parameter will not be used.
         Since version 2.8 you can also use the 'password' alias for this option.
       name: url_password
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Force the sending of the Basic authentication header upon initial request.
         httplib2, the library used by the uri module only sends authentication information when a webservice responds to an initial request with a 401 status. Since some basic auth services do not properly send a 401, logins will fail.
@@ -6110,8 +5660,7 @@ script:
         PEM formatted file that contains your private key to be used for SSL client authentication.
         If `client_cert` contains both the certificate and key, this option is not required.
       name: client_key
-    - default: false
-      defaultValue: ansible-httpget
+    - defaultValue: ansible-httpget
       description: Header to identify as, generally appears in web server logs.
       name: http_agent
     - description: |-
@@ -6139,15 +5688,13 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: false
-      defaultValue: s0
+    - defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
         By default this module uses atomic operations to prevent data corruption or inconsistent reads from the target files, but sometimes systems are configured or just broken in ways that prevent this. One example is docker mounted files, which cannot be updated atomically from inside the container and can only be written in an unsafe manner.
@@ -6163,7 +5710,6 @@ script:
     description: Downloads files from HTTP, HTTPS, or FTP to node
     name: linux-get-url
   dockerimage: demisto/ansible-runner:1.0.0.21184
-  runonce: false
   script: ''
   subtype: python3
   type: python
