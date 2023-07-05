@@ -7,7 +7,6 @@ This pack includes Cortex XSIAM content.
 Syslog messages can be sent to multiple syslog servers in two different ways.
 - One message can be sent to multiple servers by configuring an XSLT file.
 - Multiple messages can be sent to different servers and formatted differently for each server by configuring multiple XSLT files, formats, and code-message lists. The code-message lists must be matched. They must contain the same number of items in the same order.
-
 ```http
   Note: The .ini file contains these configuration values.
 ```
