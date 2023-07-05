@@ -13,18 +13,15 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
 - defaultvalue: UNHANDLED
@@ -34,7 +31,6 @@ configuration:
   - UNHANDLED
   - SUPPRESSED
   - RESOLVED
-  required: false
   type: 16
   section: Collect
   advanced: true
@@ -45,7 +41,6 @@ configuration:
   - Policy Violation
   - System Policy Violation
   - Anomaly Detection
-  required: false
   type: 16
   section: Collect
   advanced: true
@@ -62,12 +57,10 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -79,14 +72,12 @@ configuration:
 - additionalinfo: Use this parameter to fetch incidents using a free AQL string rather than the simpler alert type, severity, etc.
   display: Fetch Alerts AQL
   name: free_fetch_string
-  required: false
   type: 0
   section: Collect
   advanced: true
 - additionalinfo: Whether to use the system proxy.
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -96,47 +87,24 @@ name: Armis
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to fetch.
-      isArray: false
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 3 days
+    - defaultValue: 3 days
       description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
-      isArray: false
       name: time_frame
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the alert.
-      isArray: false
+    - description: The ID of the alert.
       name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of alert severity levels by which to filter the search results. Possible values: "Low", "Medium", and "High".'
+    - description: 'A comma-separated list of alert severity levels by which to filter the search results. Possible values: "Low", "Medium", and "High".'
       isArray: true
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of alert statuses by which to filter the search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED".'
+    - description: 'A comma-separated list of alert statuses by which to filter the search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED".'
       isArray: true
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of alert types by which to filter the search results. Possible values: "Policy Violation", "System Policy Violation", and "Anomaly Detection".'
+    - description: 'A comma-separated list of alert types by which to filter the search results. Possible values: "Policy Violation", "System Policy Violation", and "Anomaly Detection".'
       isArray: true
       name: alert_type
-      required: false
-      secret: false
-    deprecated: false
     description: Search Armis alerts.
-    execution: false
     name: armis-search-alerts
     outputs:
     - contextPath: Armis.Alert.activityIds
@@ -173,44 +141,27 @@ script:
       description: The type of the alert.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the alert to update.
-      isArray: false
+    - description: The ID of the alert to update.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'New status of the alert. Possible values: "UNHANDLED", "RESOLVED", and "SUPPRESSED".'
-      isArray: false
       name: status
       predefined:
       - UNHANDLED
       - RESOLVED
       - SUPPRESSED
       required: true
-      secret: false
-    deprecated: false
     description: Update the status for an alert.
-    execution: false
     name: armis-update-alert-status
   - arguments:
-    - default: false
-      description: The AQL string to by which to search.
-      isArray: false
+    - description: The AQL string to by which to search.
       name: aql_string
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to fetch.
-      isArray: false
       name: max_results
-      required: false
-      secret: false
-    deprecated: false
     description: Search the alerts with a raw AQL string.
-    execution: false
     name: armis-search-alerts-by-aql-string
     outputs:
     - contextPath: Armis.Alert.activityIds
@@ -247,92 +198,46 @@ script:
       description: The type of the alert.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the device to add a tag to.
-      isArray: false
+    - description: The ID of the device to add a tag to.
       name: device_id
       required: true
-      secret: false
-    - default: false
-      description: The tags to add to the device.
+    - description: The tags to add to the device.
       isArray: true
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Add a tag to a device.
-    execution: false
     name: armis-tag-device
   - arguments:
-    - default: false
-      description: The ID of the device to remove a tag from.
-      isArray: false
+    - description: The ID of the device to remove a tag from.
       name: device_id
       required: true
-      secret: false
-    - default: false
-      description: The tags to remove from the device.
+    - description: The tags to remove from the device.
       isArray: true
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Remove a tag from a device.
-    execution: false
     name: armis-untag-device
   - arguments:
-    - default: false
-      description: The name of the device to search for.
-      isArray: false
+    - description: The name of the device to search for.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the device to search for.
-      isArray: false
+    - description: The ID of the device to search for.
       name: device_id
-      required: false
-      secret: false
-    - default: false
-      description: The MAC address of the device to search for.
-      isArray: false
+    - description: The MAC address of the device to search for.
       name: mac_address
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the device to search for.
-      isArray: false
+    - description: The IP address of the device to search for.
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of device types by which to filter the results. for example "Routers", "Laptops", "IP Cameras" (there are many device types. for a full list access your Armis instance).
+    - description: A comma-separated list of device types by which to filter the results. for example "Routers", "Laptops", "IP Cameras" (there are many device types. for a full list access your Armis instance).
       isArray: true
       name: device_type
-      required: false
-      secret: false
-    - default: false
-      description: The time frame of the device to search for.
-      isArray: false
+    - description: The time frame of the device to search for.
       name: time_frame
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to get.
-      isArray: false
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High".'
+    - description: 'A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High".'
       isArray: true
       name: risk_level
-      required: false
-      secret: false
-    deprecated: false
     description: Search devices by identifiers.
-    execution: false
     name: armis-search-devices
     outputs:
     - contextPath: Armis.Device.accessSwitch
@@ -399,22 +304,13 @@ script:
       description: The visibility of the device.
       type: String
   - arguments:
-    - default: false
-      description: The AQL string.
-      isArray: false
+    - description: The AQL string.
       name: aql_string
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to get.
-      isArray: false
       name: max_results
-      required: false
-      secret: false
-    deprecated: false
     description: Search devices with a custom AQL search string.
-    execution: false
     name: armis-search-devices-by-aql
     outputs:
     - contextPath: Armis.Device.accessSwitch
@@ -481,10 +377,7 @@ script:
       description: The visibility of the device.
       type: String
   dockerimage: demisto/python3:3.10.11.54132
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

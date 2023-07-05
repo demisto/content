@@ -32,7 +32,6 @@ outputs:
   description: All incidents entries (raw JSON)
 scripttarget: 0
 runonce: false
-deprecated: false
 tests:
 - No test - cannot create a dummy integration inorder to test that
 dockerimage: demisto/python3:3.10.6.33415

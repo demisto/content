@@ -21,28 +21,22 @@ configuration:
 - defaultvalue: '50'
   display: How many incidents to fetch each time.
   name: max_fetch
-  required: false
   type: 0
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
-  required: false
   type: 0
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: |-
   Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
@@ -53,78 +47,38 @@ name: DatadogCloudSIEM
 script:
   commands:
   - arguments:
-    - default: false
-      description: "A description of the event.\nLimited to 4000 characters.\nThe description supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% "
-      isArray: false
+    - description: "A description of the event.\nLimited to 4000 characters.\nThe description supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% "
       name: text
       required: true
-      secret: false
-    - default: false
-      description: The title of an event.
-      isArray: false
+    - description: The title of an event.
       name: title
       required: true
-      secret: false
-    - default: false
-      description: "The timestamp cannot be older than 18 hours.\nFormat :  \nyyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
-      isArray: false
+    - description: "The timestamp cannot be older than 18 hours.\nFormat :  \nyyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
       name: date_happened
-      required: false
-      secret: false
-    - default: false
-      description: A device name.
-      isArray: false
+    - description: A device name.
       name: device_name
-      required: false
-      secret: false
-    - default: false
-      description: Host name to associate with the event.
-      isArray: false
+    - description: Host name to associate with the event.
       name: host_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The priority of the event.
 
         Restricted value : low
         Permitted value : normal (Bug will be fixed in the near future.)
-      isArray: false
       name: priority
       predefined:
       - normal
       - low
-      required: false
-      secret: false
-    - default: false
-      description: ID of the parent event.
-      isArray: false
+    - description: ID of the parent event.
       name: related_event_id
-      required: false
-      secret: false
-    - default: false
-      description: "A comma-separated list of tags to apply to the event. \nEx: \"environment:production, region:East” "
-      isArray: false
+    - description: "A comma-separated list of tags to apply to the event. \nEx: \"environment:production, region:East” "
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: "An arbitrary string to use for aggregation. \nIf you specify a key, all events using that key are grouped together in the Event Stream. \nLimited to 100 characters."
-      isArray: false
+    - description: "An arbitrary string to use for aggregation. \nIf you specify a key, all events using that key are grouped together in the Event Stream. \nLimited to 100 characters."
       name: aggregation_key
-      required: false
-      secret: false
-    - default: false
-      description: 'The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.'
-      isArray: false
+    - description: 'The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.'
       name: source_type_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If an alert event is enabled, set its type.
-      isArray: false
       name: alert_type
       predefined:
       - error
@@ -134,11 +88,7 @@ script:
       - user_update
       - recommendation
       - snapshot
-      required: false
-      secret: false
-    deprecated: false
     description: This endpoint allows you to post events to the stream.
-    execution: false
     name: datadog-event-create
     outputs:
     - contextPath: Datadog.Event.date_happened
@@ -178,89 +128,43 @@ script:
       description: Host name to associate with the event. Any tags associated with the host are also applied to this event.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the event.
-      isArray: false
+    - description: The ID of the event.
       name: event_id
-      required: false
-      secret: false
-    - default: false
-      description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
-      isArray: false
+    - description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"-1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
-      isArray: false
+    - description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"-1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
       name: end_date
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The priority of the event.
-      isArray: false
       name: priority
       predefined:
       - normal
       - low
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of sources.
         A complete list of source attribute values is available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.
-      isArray: false
       name: sources
-      required: false
-      secret: false
-    - default: false
-      description: "A comma-separated list indicating what tags, if any, should be used to filter the list of events. \nEx: \"environment:production, region:East\"."
-      isArray: false
+    - description: "A comma-separated list indicating what tags, if any, should be used to filter the list of events. \nEx: \"environment:production, region:East\"."
       name: tags
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set unaggregated to 'true' to return all events within the specified [start,end] timeframe.
-      isArray: false
       name: unaggregated
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set exclude_aggregate to 'true' to only return unaggregated events where is_aggregate=false in the response.
-      isArray: false
       name: exclude_aggregate
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of records to return from the collection. Default is 50. If the page_size argument is set by the user then the limit argument will be ignored.
-      isArray: false
+    - description: The maximum number of records to return from the collection. Default is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of events / Get the details of a particular event.
-    execution: false
     name: datadog-event-list
     outputs:
     - contextPath: Datadog.Event.alert_type
@@ -300,35 +204,17 @@ script:
       description: The type of event being posted.
       type: String
   - arguments:
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
-      isArray: false
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Source to filter.
         Ex: user, datadog.
-      isArray: false
       name: source
-      required: false
-      secret: false
-    deprecated: false
     description: Return a mapping of tags to hosts for your whole infrastructure.
-    execution: false
     name: datadog-tag-list
     outputs:
     - contextPath: Datadog.Tag
@@ -338,21 +224,13 @@ script:
       description: The host name.
       type: Unknown
   - arguments:
-    - default: false
-      description: The host name.
-      isArray: false
+    - description: The host name.
       name: host_name
       required: true
-      secret: false
-    - default: false
-      description: "A list of tags to apply to the host. \nComma-seperated values. Ex: \"environment:production, region:East” "
-      isArray: false
+    - description: "A list of tags to apply to the host. \nComma-seperated values. Ex: \"environment:production, region:East” "
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: This endpoint allows you to add new tags to a host, optionally specifying where these tags come from.
-    execution: false
     name: datadog-host-tag-create
     outputs:
     - contextPath: Datadog.Tag
@@ -362,41 +240,20 @@ script:
       description: The host name.
       type: String
   - arguments:
-    - default: false
-      description: The host name.
-      isArray: false
+    - description: The host name.
       name: host_name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Source to filter.
         Ex: user, datadog.
-      isArray: false
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: "The number of requested results per page. \nDefault is 50. "
-      isArray: false
+    - description: "The number of requested results per page. \nDefault is 50. "
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
-      isArray: false
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Return the list of tags that apply to a given host.
-    execution: false
     name: datadog-host-tag-get
     outputs:
     - contextPath: Datadog.Tag
@@ -406,21 +263,12 @@ script:
       description: The host name.
       type: String
   - arguments:
-    - default: false
-      description: The host name.
-      isArray: false
+    - description: The host name.
       name: host_name
       required: true
-      secret: false
-    - default: false
-      description: "A comma-separated list of tags to apply to the host  \nPrevious tags will be replaced by new tags. Ex: \"environment:production, region:East” "
-      isArray: false
+    - description: "A comma-separated list of tags to apply to the host  \nPrevious tags will be replaced by new tags. Ex: \"environment:production, region:East” "
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: This endpoint allows you to replace all tags in an integration source with those supplied in the request.
-    execution: false
     name: datadog-host-tag-update
     outputs:
     - contextPath: Datadog.Tag
@@ -430,61 +278,31 @@ script:
       description: The host name.
       type: String
   - arguments:
-    - default: false
-      description: Host name from which to remove associated tags.
-      isArray: false
+    - description: Host name from which to remove associated tags.
       name: host_name
       required: true
-      secret: false
-    deprecated: false
     description: This endpoint allows you to remove all user-assigned tags for a single host.
-    execution: false
     name: datadog-host-tag-delete
   - arguments:
-    - default: false
-      description: "List of actively reporting metrics from a given time until now.\nFormat :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' "
-      isArray: false
+    - description: "List of actively reporting metrics from a given time until now.\nFormat :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' "
       name: from
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Hostname for filtering the list of metrics.
 
         Please do not complete this field (Bug will be fixed in the near future.)
-      isArray: false
       name: host_name
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter metrics that have been submitted with the given tags.
         Ex: “region:east,env:prod”
-      isArray: false
       name: tag_filter
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
-      isArray: false
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of actively reporting metrics.
-    execution: false
     name: datadog-active-metric-list
     outputs:
     - contextPath: Datadog.Metric.from
@@ -494,32 +312,22 @@ script:
       description: List of metric names.
       type: Unknown
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Query string to search metrics from last 24 hours in Datadog.
         A complete list of query string values are available here: https://app.datadoghq.com/metric/summary
-      isArray: false
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Search for metrics from the last 24 hours in Datadog.
-    execution: false
     name: datadog-metric-search
     outputs:
     - contextPath: Datadog.Metric.metric_name
       description: List of metrics that match the search query.
       type: Unknown
   - arguments:
-    - default: false
-      description: Name of the metric for which to get metadata.
-      isArray: false
+    - description: Name of the metric for which to get metadata.
       name: metric_name
       required: true
-      secret: false
-    deprecated: false
     description: Get metadata about a specific metric.
-    execution: false
     name: datadog-metric-metadata-get
     outputs:
     - contextPath: Datadog.MetricMetadata.description
@@ -547,40 +355,19 @@ script:
       description: The metric name.
       type: String
   - arguments:
-    - default: false
-      description: Name of the metric for which to edit metadata.
-      isArray: false
+    - description: Name of the metric for which to edit metadata.
       name: metric_name
       required: true
-      secret: false
-    - default: false
-      description: Metric description.
-      isArray: false
+    - description: Metric description.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: "Per unit of the metric  \nA complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list."
-      isArray: false
+    - description: "Per unit of the metric  \nA complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list."
       name: per_unit
-      required: false
-      secret: false
-    - default: false
-      description: A human-readable and abbreviated version of the metric name.
-      isArray: false
+    - description: A human-readable and abbreviated version of the metric name.
       name: short_name
-      required: false
-      secret: false
-    - default: false
-      description: StatsD flush interval of the metric in seconds if applicable.
-      isArray: false
+    - description: StatsD flush interval of the metric in seconds if applicable.
       name: statsd_interval
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Metric type.
-      isArray: false
       name: type
       predefined:
       - count
@@ -589,17 +376,9 @@ script:
       - set
       - histogram
       - distribution
-      required: false
-      secret: false
-    - default: false
-      description: Primary unit of the metric.
-      isArray: false
+    - description: Primary unit of the metric.
       name: unit
-      required: false
-      secret: false
-    deprecated: false
     description: Edit metadata of a specific metric.
-    execution: false
     name: datadog-metric-metadata-update
     outputs:
     - contextPath: Datadog.MetricMetadata.description
@@ -624,18 +403,13 @@ script:
       description: The metric name.
       type: String
   - arguments:
-    - default: false
-      description: The title of the incident, which summarizes what happened.
-      isArray: false
+    - description: The title of the incident, which summarizes what happened.
       name: title
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The severity of the incident.
         Default value=unknown
-      isArray: false
       name: severity
       predefined:
       - SEV-1
@@ -644,23 +418,15 @@ script:
       - SEV-4
       - SEV-5
       - UNKNOWN
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The state of the incident.
-      isArray: false
       name: state
       predefined:
       - active
       - stable
       - resolved
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify how the incident was detected.
-      isArray: false
       name: detection_method
       predefined:
       - customer
@@ -668,53 +434,25 @@ script:
       - monitor
       - other
       - unknown
-      required: false
-      secret: false
-    - default: false
-      description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
-      isArray: false
+    - description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
       name: root_cause
-      required: false
-      secret: false
-    - default: false
-      description: Summary of the incident.
-      isArray: false
+    - description: Summary of the incident.
       name: summary
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The Markdown content of the cell  that is used to format using the Markdown syntax rules.
         If content is provided, important attribute is required.
-      isArray: false
       name: content
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A flag indicating whether the timeline cell is important and should be highlighted.
-      isArray: false
       name: important
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The name of the notified handle.
-      isArray: false
+    - description: The name of the notified handle.
       name: display_name
-      required: false
-      secret: false
-    - default: false
-      description: The email address used for the notification.
-      isArray: false
+    - description: The email address used for the notification.
       name: handle
-      required: false
-      secret: false
-    deprecated: false
     description: Create an incident.
-    execution: false
     name: datadog-incident-create
     outputs:
     - contextPath: Datadog.Incident.id
@@ -847,59 +585,33 @@ script:
       description: The unique identifier of the role.
       type: String
   - arguments:
-    - default: false
-      description: The UUID of the incident.
-      isArray: false
+    - description: The UUID of the incident.
       name: incident_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete an existing incident.
-    execution: false
     name: datadog-incident-delete
   - arguments:
-    - default: false
-      description: The UUID of the incident.
-      isArray: false
+    - description: The UUID of the incident.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specifies the end of the search time frame.
         Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
-      isArray: false
       name: customer_impact_end
-      required: false
-      secret: false
-    - default: false
-      description: A summary of the impact customers experienced during the incident.
-      isArray: false
+    - description: A summary of the impact customers experienced during the incident.
       name: customer_impact_scope
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Timestamp when customers began being impacted by the incident.
         Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
-      isArray: false
       name: customer_impact_start
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Timestamp when the incident was detected.
         Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
-      isArray: false
       name: detected
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The severity of the incident.
         Default value=unknown
-      isArray: false
       name: severity
       predefined:
       - SEV-1
@@ -908,23 +620,15 @@ script:
       - SEV-4
       - SEV-5
       - UNKNOWN
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The state of the incident.
-      isArray: false
       name: state
       predefined:
       - active
       - stable
       - resolved
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify how the incident was detected.
-      isArray: false
       name: detection_method
       predefined:
       - customer
@@ -932,41 +636,17 @@ script:
       - monitor
       - other
       - unknown
-      required: false
-      secret: false
-    - default: false
-      description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
-      isArray: false
+    - description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
       name: root_cause
-      required: false
-      secret: false
-    - default: false
-      description: Summary of the incident.
-      isArray: false
+    - description: Summary of the incident.
       name: summary
-      required: false
-      secret: false
-    - default: false
-      description: The name of the notified handle.
-      isArray: false
+    - description: The name of the notified handle.
       name: display_name
-      required: false
-      secret: false
-    - default: false
-      description: The email address used for the notification.
-      isArray: false
+    - description: The email address used for the notification.
       name: handle
-      required: false
-      secret: false
-    - default: false
-      description: The title of the incident, which summarizes what happened.
-      isArray: false
+    - description: The title of the incident, which summarizes what happened.
       name: title
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an incident. Provide only the attributes that should be updated as this request is a partial update.
-    execution: false
     name: datadog-incident-update
     outputs:
     - contextPath: Datadog.Incident.id
@@ -1096,27 +776,17 @@ script:
       description: The unique identifier of the role.
       type: String
   - arguments:
-    - default: false
-      description: The UUID of the incident.
-      isArray: false
+    - description: The UUID of the incident.
       name: incident_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The status of the incident.
-      isArray: false
       name: state
       predefined:
       - active
       - stable
       - resolved
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The severity of the incident.
-      isArray: false
       name: severity
       predefined:
       - SEV-1
@@ -1125,22 +795,14 @@ script:
       - SEV-4
       - SEV-5
       - UNKNOWN
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A flag indicating whether the incident caused customer impact.
-      isArray: false
       name: customer_impacted
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify how the incident was detected.
-      isArray: false
       name: detection_method
       predefined:
       - customer
@@ -1148,51 +810,27 @@ script:
       - monitor
       - other
       - unknown
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies the order of returned incidents
-      isArray: false
       name: sort
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
-      isArray: false
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Specifies which types of related objects should be included in the response.
         Allowed enum values: users, attachments
-      isArray: false
       name: include
       predefined:
       - users
       - attachments
-      required: false
-      secret: false
-    deprecated: false
     description: Get all incidents for the user’s organization / Get the details of an incident using incident_id.
-    execution: false
     name: datadog-incident-list
     outputs:
     - contextPath: Datadog.Incident.id
@@ -1325,31 +963,20 @@ script:
       description: The unique identifier of the role.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Start of the queried time period.
         Format : YYYY-MM-dd’T’HH:mm:ssZ Or '-1days'.
-      isArray: false
       name: from
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         End of the queried time period.
         Format : yyyy-MM-dd’T’HH:mm:ssZ Or '-1days'.
-      isArray: false
       name: to
       required: true
-      secret: false
-    - default: false
-      description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list of query string values are available here: https://app.datadoghq.com/metric/summary."
-      isArray: false
+    - description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list of query string values are available here: https://app.datadoghq.com/metric/summary."
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Query of sequence of data points that are collected over time intervals, allowing us to track changes over time.
-    execution: false
     name: datadog-time-series-point-query
     outputs:
     - contextPath: Datadog.TimeSeriesPoint.from_date
@@ -1428,10 +1055,7 @@ script:
       description: End of requested time window in milliseconds since Unix epoch.
       type: Date
   dockerimage: demisto/datadog-api-client:1.0.0.63675
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

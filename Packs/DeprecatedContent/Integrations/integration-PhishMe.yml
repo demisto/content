@@ -27,31 +27,25 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: URL Threshold (None, Minor, Moderate or Major). Minimum severity to consider the URL malicious
   name: urlThreshold
   defaultvalue: Major
   type: 0
-  required: false
 - display: File Threshold (None, Minor, Moderate or Major). Minimum severity to consider the file malicious
   name: fileThreshold
   defaultvalue: Major
   type: 0
-  required: false
 - display: IP Threshold (None, Minor, Moderate or Major). Minimum severity to consider the IP malicious
   name: ipThreshold
   defaultvalue: Major
   type: 0
-  required: false
 - display: Email Threshold (None, Minor, Moderate or Major). Minimum severity to consider the email malicious
   name: emailThreshold
   defaultvalue: Major
   type: 0
-  required: false
 script:
   script: >
     var auth = 'Basic ' + Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
@@ -650,7 +644,6 @@ script:
     - contextPath: PhishMe.Email.PhishMe.ThreatIDs
       description: The thread ids retrieved by the vendor.
     description: Check the reputation of an email address.
-  runonce: false
 deprecated: true
 tests:
 - No test - Replaced by Cofense Integration

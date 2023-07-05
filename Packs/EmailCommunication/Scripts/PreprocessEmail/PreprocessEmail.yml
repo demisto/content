@@ -6,7 +6,6 @@ args:
 - description: Files
   name: files
 - name: CreateIncidentUntaggedEmail
-  required: false
   description: Allow the creation of an email for which we can't find an existing incident.
   defaultValue: 'true'
 comment: |-
@@ -36,4 +35,3 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
 scripttarget: 0
-runonce: false

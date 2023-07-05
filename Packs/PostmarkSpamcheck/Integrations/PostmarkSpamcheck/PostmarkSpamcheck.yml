@@ -16,13 +16,11 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
   additionalinfo: When ‘trust any certificate’ is selected, the integration ignores TLS/SSL certificate validation errors. Used to test connection issues or connect to a server without a valid certificate.
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
   additionalinfo: Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.
 script:
   script: ''
@@ -50,7 +48,6 @@ script:
       description: Detailed SpamAssassin report
     description: Check the spamscore of your email message
   dockerimage: demisto/python3:3.10.10.48392
-  runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:

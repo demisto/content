@@ -48,7 +48,6 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in file entries).
   type: String
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

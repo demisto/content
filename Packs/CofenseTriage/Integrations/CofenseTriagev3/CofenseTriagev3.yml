@@ -17,16 +17,12 @@ configuration:
 - additionalinfo: The maximum limit is 200.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
-  hidden: false
   name: max_fetch
-  required: false
   type: 0
 - additionalinfo: 'Date or relative timestamp to start fetching incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
-  required: false
   type: 0
 - additionalinfo: Fetches the report based on the location within Cofense Triage. If not specified, it fetches all the reports.
   display: Report Location
@@ -35,7 +31,6 @@ configuration:
   - Inbox
   - Reconnaissance
   - Processed
-  required: false
   type: 16
 - additionalinfo: Fetches reports based on the priority of the rules that match the reports. If not specified, it fetches all the reports.
   display: Match Priority
@@ -47,28 +42,23 @@ configuration:
   - '3'
   - '4'
   - '5'
-  required: false
   type: 16
 - additionalinfo: |-
     Fetches reports based on the unique identifier of the category. If not specified, it fetches all the reports.
     Note: Only the reports that have been processed will be retrieved.
   display: Category ID
   name: category_id
-  required: false
   type: 0
 - additionalinfo: "Fetches reports based on the tags associated with the reports. If not specified, it fetches all the reports.\nSupports comma separated values. \nNote: Tags are associated with reports which are in Reconnaissance."
   display: Tags
   name: tags
-  required: false
   type: 0
 - additionalinfo: |-
     Fetches reports based on the tags assigned when the reported email was processed. If not specified, it fetches all the reports.
     Supports comma separated values.
     Note: Categorization tags are associated with the reports which are processed.
   display: Categorization Tags
-  hidden: false
   name: categorization_tags
-  required: false
   type: 0
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cofense Triage to XSOAR).'
   defaultvalue: None
@@ -79,34 +69,25 @@ configuration:
   options:
   - None
   - Incoming
-  required: false
   type: 15
 - additionalinfo: |-
     Fetches incidents based on the advanced filters and type of the incident to be fetched. Specify the filters to filter the incidents by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas.
     Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}
     For example: {"updated_at_gt":"2020-10-26T10:48:16.834Z","categorization_tags_any":"test, snow"}
   display: Advanced Filters
-  hidden: false
   name: filter_by
-  required: false
   type: 12
 - display: Use system proxy settings
-  hidden: false
   name: proxy
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 description: The integration uses the Cofense Triage v2 API that allows users to ingest phishing reports as incident alerts and execute commands such as threat indicators, reporters, categorize reports, and more.
 display: Cofense Triage v3
@@ -114,88 +95,44 @@ name: Cofense Triage v3
 script:
   commands:
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the threat indicator to retrieve a specific threat indicator.
         Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of threat indicators to retrieve per page. Note: Possible values are between 1 and 200.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the threat indicators.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the threat indicators. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: threat_level, -created_at'
+    - description: 'Specify the attributes to sort the threat indicators. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: threat_level, -created_at'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of threat indicators by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"threat_level_eq\":\"Malicious,Benign\", \"updated_at_gt\":\"2020-10-26T10:48:16.834Z\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: threat_level, threat_type, threat_value'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: threat_level, threat_type, threat_value'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the level of the threat to retrieve the threat indicators. Some possible values are: Malicious, Suspicious, Benign.'
+    - description: 'Specify the level of the threat to retrieve the threat indicators. Some possible values are: Malicious, Suspicious, Benign.'
       isArray: true
       name: threat_level
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the type of the threat to retrieve the threat indicators. Some possible values are: Sender, Subject, Domain, URL, MD5, SHA256, Hostname, or Header.'
+    - description: 'Specify the type of the threat to retrieve the threat indicators. Some possible values are: Sender, Subject, Domain, URL, MD5, SHA256, Hostname, or Header.'
       isArray: true
       name: threat_type
-      required: false
-      secret: false
-    - default: false
-      description: Specify the value corresponding to the type of threat indicated in threat_type to retrieve the threat indicators.
+    - description: Specify the value corresponding to the type of threat indicated in threat_type to retrieve the threat indicators.
       isArray: true
       name: threat_value
-      required: false
-      secret: false
-    - default: false
-      description: Specify the value corresponding to the source of the threat indicator.
+    - description: Specify the value corresponding to the source of the threat indicator.
       isArray: true
       name: threat_source
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: "Retrieves the list of threat indicators based on the provided parameters. \nThreat indicators identify the threat level of an email's subject, sender, domains, URLs, and MD5 and SHA256 attachment hash signatures."
-    execution: false
     name: cofense-threat-indicator-list
     outputs:
     - contextPath: Cofense.ThreatIndicator.id
@@ -250,100 +187,47 @@ script:
       description: Link to retrieve the detailed information of the comments containing the threat indicator.
       type: String
   - arguments:
-    - default: false
-      description: "Specify the ID of the report to retrieve a specific report.  \nNote: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected."
-      isArray: false
+    - description: "Specify the ID of the report to retrieve a specific report.  \nNote: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected."
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of reports to retrieve per page. Note: Possible values are between 1 and 200. '
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the reports.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the reports. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -received_at, match_priority'
+    - description: 'Specify the attributes to sort the reports. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -received_at, match_priority'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of reports by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"updated_at_gt\":\"2020-10-26T10:48:16.834Z\",\"categorization_tags_any\":\"test, snow\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: location, from_address'
-      isArray: false
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: location, from_address'
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the priority to retrieve the reports based on the priority of the rules that match the reports. Possible values are: 0, 1, 2, 3, 4, 5.'
+    - description: 'Specify the priority to retrieve the reports based on the priority of the rules that match the reports. Possible values are: 0, 1, 2, 3, 4, 5.'
       isArray: true
       name: match_priority
-      required: false
-      secret: false
-    - default: false
-      description: Specify the tags to retrieve the reports based on the tags associated with the reports.
+    - description: Specify the tags to retrieve the reports based on the tags associated with the reports.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Specify the categorization tags to retrieve the reports based on the tags assigned when the reported email was processed.
+    - description: Specify the categorization tags to retrieve the reports based on the tags assigned when the reported email was processed.
       isArray: true
       name: categorization_tags
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the location to retrieve the reports based on the location of the reported email within Cofense Triage. Some possible values are: inbox, reconnaissance, processed.'
+    - description: 'Specify the location to retrieve the reports based on the location of the reported email within Cofense Triage. Some possible values are: inbox, reconnaissance, processed.'
       isArray: true
       name: report_location
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the category to retrieve the reports based on the category of the reports. Note: When both category_id and cluster_id are provided, higher priority will be given to category_id.
         Note: To retrieve category_id, execute cofense-category-list command.
-      isArray: false
       name: category_id
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    - default: false
-      description: "Specify the ID of the cluster to retrieve the reports present in the specific cluster. Note: When both category_id and cluster_id are provided, higher priority will be given to category_id. \nNote: To retrieve cluster_id, execute cofense-cluster-list command."
-      isArray: false
+    - description: "Specify the ID of the cluster to retrieve the reports present in the specific cluster. Note: When both category_id and cluster_id are provided, higher priority will be given to category_id. \nNote: To retrieve cluster_id, execute cofense-cluster-list command."
       name: cluster_id
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a report or a list of reports based on the filter values provided in the command arguments.
-    execution: false
     name: cofense-report-list
     outputs:
     - contextPath: Cofense.Report.id
@@ -522,17 +406,12 @@ script:
       description: Number of the rules associated with the report.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the report to download the email file.
         Note: To retrieve id, execute cofense-report-list command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Downloads the raw email for the report that matches the specified report ID.
-    execution: false
     name: cofense-report-download
     outputs:
     - contextPath: File.Size
@@ -569,115 +448,61 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the report to be categorized.
         Note: To retrieve id, execute cofense-report-list command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the category in which report is to be categorized.
         Note: To retrieve category_id, execute cofense-category-list command.
-      isArray: false
       name: category_id
       required: true
-      secret: false
-    - default: false
-      description: Specify the tags that are to be assigned to the report.
-      isArray: false
+    - description: Specify the tags that are to be assigned to the report.
       name: categorization_tags
-      required: false
-      secret: false
-    deprecated: false
     description: Categorizes a report into a specific category provided by the user.
-    execution: false
     name: cofense-report-categorize
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the category to retrieve a specific category.
         Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of categories to retrieve per page. Note: Possible values are between 1 and 200. '
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the categories.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the categories. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: score, -name'
+    - description: 'Specify the attributes to sort the categories. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: score, -name'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of categories by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"score_gteq\":\"2,10\", \"updated_at_gt\":\"2020-10-26T10:48:16.834Z\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: name, score'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: name, score'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: Specify the name of the category to retrieve the category accordingly.
+    - description: Specify the name of the category to retrieve the category accordingly.
       isArray: true
       name: name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Specify that the categories to be retrieved should be malicious or not. Possible values are: true, false.'
-      isArray: false
       name: is_malicious
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Specify the score of the categories to be retrieved.
+    - description: Specify the score of the categories to be retrieved.
       isArray: true
       name: score
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieves categories based on the provided parameters.
       Categories are applied while processing the email to indicate the type of threat (or non-threat) that reports and clusters pose to the organization.
-    execution: false
     name: cofense-category-list
     outputs:
     - contextPath: Cofense.Category.id
@@ -723,112 +548,58 @@ script:
       description: Link to retrieve the detailed information of the reports processed with the category.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the rule to retrieve a specific rule.
         Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of rules to retrieve per page. Note: Possible values are between 1 and 200.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the rules.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the rules. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -name, priority'
+    - description: 'Specify the attributes to sort the rules. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -name, priority'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of rules by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"priority_eq\":\"2,3\", \"name_cont\":\"Test\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: name, description'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: name, description'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: Specify the name of the rule to retrieve the rule.
+    - description: Specify the name of the rule to retrieve the rule.
       isArray: true
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the priority of the rule to retrieve the rule. Some possible values are: 1, 2, 3, 4, 5.'
+    - description: 'Specify the priority of the rule to retrieve the rule. Some possible values are: 1, 2, 3, 4, 5.'
       isArray: true
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: Specify the tags associated with the rule to retrieve the rule.
+    - description: Specify the tags associated with the rule to retrieve the rule.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the scope of the rule to retrieve the rule. Some possible values are: email, attachment, header, reporter email.'
+    - description: 'Specify the scope of the rule to retrieve the rule. Some possible values are: email, attachment, header, reporter email.'
       isArray: true
       name: scope
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Specify if the rule is active or not. Possible values are: true, false.'
-      isArray: false
       name: active
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Specify the author name of the rule to retrieve the rule.
+    - description: Specify the author name of the rule to retrieve the rule.
       isArray: true
       name: author_name
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the rule context of the rule to retrieve the rule. Some possible values are: internal safe, unwanted, threat hunting, phishing tactic, cleanup, unknown. '
+    - description: 'Specify the rule context of the rule to retrieve the rule. Some possible values are: internal safe, unwanted, threat hunting, phishing tactic, cleanup, unknown. '
       isArray: true
       name: rule_context
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieves rules based on the filter values provided in the command arguments.
       Rules identify specific characteristics for categorizing the reported emails.
-    execution: false
     name: cofense-rule-list
     outputs:
     - contextPath: Cofense.Rule.id
@@ -934,70 +705,34 @@ script:
       description: Link to retrieve the detailed information of the reports that match the rule.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the URL to retrieve a specific URL.
         Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of URLs to retrieve per page. Note: Possible values are between 1 and 200.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the URLs.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the URLs. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -created_at, -updated_at'
+    - description: 'Specify the attributes to sort the URLs. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -created_at, -updated_at'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of urls by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"risk_score_eq\":\"1,2\", \"updated_at_gt\":\"2020-10-26T10:48:16.834Z\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: url, risk_score'
-      isArray: false
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: url, risk_score'
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: Specify the risk scores to retrieve the urls.
+    - description: Specify the risk scores to retrieve the urls.
       isArray: true
       name: risk_score
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: "Retrieves URLs based on the filter values provided in the command arguments. \nURLs are the threats (or non-threat)  that are detected in the reported emails."
-    execution: false
     name: cofense-url-list
     outputs:
     - contextPath: Cofense.Url.id
@@ -1059,20 +794,15 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'Specify the level of the threat indicator that is to be created. Some possible values are: Malicious, Suspicious, Benign.'
-      isArray: false
       name: threat_level
       predefined:
       - Malicious
       - Suspicious
       - Benign
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Specify the type of the threat indicator that is to be created. Some possible values are: Sender, Subject, Domain, URL, MD5, SHA256, Hostname, or Header.'
-      isArray: false
       name: threat_type
       predefined:
       - Sender
@@ -1084,25 +814,15 @@ script:
       - Hostname
       - Header
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the value corresponding to the type of threat indicated in threat_type that is to be created.
         Note: It should have at least 3 characters. It must be unique and valid.
-      isArray: false
       name: threat_value
       required: true
-      secret: false
-    - default: false
-      defaultValue: XSOAR-UI
+    - defaultValue: XSOAR-UI
       description: "Specify the value corresponding to the source of the threat indicator that is to be created. \nNote: This attribute supports only one threat_type/threat_value pair per source."
-      isArray: false
       name: threat_source
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a threat indicator based on the values provided in the command arguments.
-    execution: false
     name: cofense-threat-indicator-create
     outputs:
     - contextPath: Cofense.ThreatIndicator.id
@@ -1157,86 +877,44 @@ script:
       description: Link to retrieve the detailed information of the comments containing the threat indicator.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the reporter to retrieve a specific reporter.
         Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of reporters to retrieve per page. Note: Possible values are between 1 and 200.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the reporters.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the reporters. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: reports_count, -email'
+    - description: 'Specify the attributes to sort the reporters. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: reports_count, -email'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of reporters by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"reputation_score_eq\":\"1,2\", \"reports_count_gt\":\"3\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: email, reports_count'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: email, reports_count'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: Specify reputation score to retrieve the reporters.
+    - description: Specify reputation score to retrieve the reporters.
       isArray: true
       name: reputation_score
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Specify that the reporter to be retrieved is VIP or non-VIP. Possible values are: true, false.'
-      isArray: false
       name: vip
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Specify emails of the reporter to retrieve the reporter.
+    - description: Specify emails of the reporter to retrieve the reporter.
       isArray: true
       name: email
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: "Retrieves the reporters that match the provided parameters. \nReporters are employees of an organization who send, or report, suspicious emails to Cofense Triage."
-    execution: false
     name: cofense-reporter-list
     outputs:
     - contextPath: Cofense.Reporter.id
@@ -1282,92 +960,48 @@ script:
       description: Link to retrieve the detailed information of the reports the individual reported.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify URL ID  or attachment payload ID to retrieve an integration submission.
         Note: To retrieve URL ID, execute cofense-url-list command. To retrieve  attachment ID, execute cofense-attachment-payload-list command.
-      isArray: false
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: urls
       description: 'Type of the integration submission the user wants to retrieve. Possible values are: urls, attachment_payloads.'
-      isArray: false
       name: type
       predefined:
       - urls
       - attachment_payloads
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of integration submissions to retrieve per page. Note: Possible values are between 1 and 200.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Specify a page number to retrieve the integration submissions.
-      isArray: false
+    - description: Specify a page number to retrieve the integration submissions.
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the integration submissions. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: status, -id'
+    - description: 'Specify the attributes to sort the integration submissions. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: status, -id'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of integration submissions by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"status_eq\":\"complete\", \"risk_score_eq\":\"0,1\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: status, kind'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: status, kind'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the status to retrieve the integration submission. Some possible values are: ending, complete, target_not_found, error, running, or hash_not_found.'
+    - description: 'Specify the status to retrieve the integration submission. Some possible values are: ending, complete, target_not_found, error, running, or hash_not_found.'
       isArray: true
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the kind to retrieve the integration submission. Some possible values are: File, Hash, URL.'
+    - description: 'Specify the kind to retrieve the integration submission. Some possible values are: File, Hash, URL.'
       isArray: true
       name: kind
-      required: false
-      secret: false
-    - default: false
-      description: Specify the risk scores to retrieve the attachment payloads.
+    - description: Specify the risk scores to retrieve the attachment payloads.
       isArray: true
       name: risk_score
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves integration submission based on the filter values provided in the command arguments.
-    execution: false
     name: cofense-integration-submission-get
     outputs:
     - contextPath: Cofense.IntegrationSubmission.id
@@ -1426,72 +1060,37 @@ script:
       description: Unique Identifier of the target associated with the integration submission.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify ID of the attachment payload to retrieve a specific attachment payload.
         Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of attachment payloads to retrieve per page. Note: Possible values are between 1 and 200. '
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the attachment payloads.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the attachment payloads. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: risk_score, -id'
+    - description: 'Specify the attributes to sort the attachment payloads. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: risk_score, -id'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of attachment payloads by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"risk_score\":\"0,1\", \"created_at_gteq\":\"2020-04-13T10:48:16.834Z\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: md5, risk_score'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: md5, risk_score'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: Specify the risk scores to retrieve the attachment payloads.
+    - description: Specify the risk scores to retrieve the attachment payloads.
       isArray: true
       name: risk_score
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieves attachment payloads based on the filter values provided in the command arguments.
       Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email.
-    execution: false
     name: cofense-attachment-payload-list
     outputs:
     - contextPath: Cofense.AttachmentPayload.id
@@ -1546,94 +1145,46 @@ script:
       description: Link to retrieve the detailed information of the report with attachments containing the payload.
       type: String
   - arguments:
-    - default: false
-      description: 'Specify the ID of the comment to retrieve a specific comment. Note: If ''id'' argument is provided, then apart from ''fields_to_retrieve'', all arguments will be neglected.'
-      isArray: false
+    - description: 'Specify the ID of the comment to retrieve a specific comment. Note: If ''id'' argument is provided, then apart from ''fields_to_retrieve'', all arguments will be neglected.'
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of comments to retrieve per page. Note: Possible values are between 1 and 200.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the comments.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the comments. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -created_at, body'
-      isArray: false
+    - description: 'Specify the attributes to sort the comments. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -created_at, body'
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of comments by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"body_format_eq\":\"json\", \"created_at_gteq\":\"2021-04-13T10:48:16.834Z\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: body, body_format'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: body, body_format'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Specify the format of the comment body to retrieve the comments. Possible values are: text, json.'
-      isArray: false
       name: body_format
       predefined:
       - text
       - json
-      required: false
-      secret: false
-    - default: false
-      description: Specify the tags to retrieve the comments based on the tags associated with the comments.
+    - description: Specify the tags to retrieve the comments based on the tags associated with the comments.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the report to retrieve the comments specific to the report. Note: When both report_id and threat_indicator_id are provided, higher priority will be given to report_id.
         Note: To retrieve report_id, execute cofense-report-list command.
-      isArray: false
       name: report_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the threat indicator to retrieve the comments specific to the threat indicator. Note: When both report_id and threat_indicator_id are provided, higher priority will be given to report_id.
         Note: To retrieve threat_indicator_id, execute cofense-threat-indicator-list command.
-      isArray: false
       name: threat_indicator_id
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves comments based on the filter values provided in the command arguments.
-    execution: false
     name: cofense-comment-list
     outputs:
     - contextPath: Cofense.Comment.id
@@ -1805,97 +1356,48 @@ script:
       description: Unique identifier of the owner associated with the comment.
       type: String
   - arguments:
-    - default: false
-      description: The report ID.
-      isArray: false
+    - description: The report ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Date string representing the local time.The incident is only returned if it was modified after the last update time.
-      isArray: false
+    - description: Date string representing the local time.The incident is only returned if it was modified after the last update time.
       name: lastUpdate
       required: true
-      secret: false
-    deprecated: false
     description: Get remote data from a remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
-    execution: false
     name: get-remote-data
   - arguments:
-    - default: false
-      description: "Specify the ID of the cluster to retrieve a specific cluster. \nNote: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected."
-      isArray: false
+    - description: "Specify the ID of the cluster to retrieve a specific cluster. \nNote: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected."
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of clusters to retrieve per page. Note: Possible values are between 1 and 200.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Specify a page number to retrieve the clusters.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the clusters. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: created_at, -updated_at'
+    - description: 'Specify the attributes to sort the clusters. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: created_at, -updated_at'
       isArray: true
       name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the filters to filter the list of clusters by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
         Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
         For example: {\"risk_score_eq\":\"1,2\",  \"updated_at_gt\":\"2020-10-26T10:48:16.834Z\"}
-      isArray: false
       name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only. For example: unprocessed_reports_count, processed_reports_count'
+    - description: 'Specify the fields to retrieve the mentioned attributes only. For example: unprocessed_reports_count, processed_reports_count'
       isArray: true
       name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: Specify the tags to retrieve the cluster.
+    - description: Specify the tags to retrieve the cluster.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the priority to retrieve the cluster based on the priority of the rules that match the reports in the cluster. Possible values are: 0, 1, 2, 3, 4, 5.'
+    - description: 'Specify the priority to retrieve the cluster based on the priority of the rules that match the reports in the cluster. Possible values are: 0, 1, 2, 3, 4, 5.'
       isArray: true
       name: match_priority
-      required: false
-      secret: false
-    - default: false
-      description: Specify the number of reports to be present in the cluster.
+    - description: Specify the number of reports to be present in the cluster.
       isArray: true
       name: total_reports_count
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves clusters based on the filter values provided in the command arguments.
-    execution: false
     name: cofense-cluster-list
     outputs:
     - contextPath: Cofense.Cluster.id
@@ -2010,32 +1512,20 @@ script:
       description: Link to retrieve the detailed information of the URLs associated with reports in the cluster.
       type: String
   - arguments:
-    - default: false
-      description: 'Specify ID of the threat indicator that is to be updated. Note: To retrieve id, execute cofense-threat-indicator-list command.'
-      isArray: false
+    - description: 'Specify ID of the threat indicator that is to be updated. Note: To retrieve id, execute cofense-threat-indicator-list command.'
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Specify the level of the threat indicator that is to be updated. Some possible values are: Malicious, Suspicious, Benign.'
-      isArray: false
       name: threat_level
       predefined:
       - Malicious
       - Suspicious
       - Benign
       required: true
-      secret: false
-    - default: false
-      description: Specify the value corresponding to the source of the threat indicator that is to be updated.
-      isArray: false
+    - description: Specify the value corresponding to the source of the threat indicator that is to be updated.
       name: threat_source
-      required: false
-      secret: false
-    deprecated: false
     description: Updates a threat indicator based on the values provided in the command arguments.
-    execution: false
     name: cofense-threat-indicator-update
     outputs:
     - contextPath: Cofense.ThreatIndicator.id
@@ -2090,41 +1580,27 @@ script:
       description: Link to retrieve the detailed information of the comments containing the threat indicator.
       type: String
   - arguments:
-    - default: false
-      description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
-      isArray: false
+    - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Gets the list of incidents that were modified since the last update time.
       Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a mirroring feature, which is available from Cortex XSOAR version 6.1.
-    execution: false
     name: get-modified-remote-data
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the report to download the image file.
         Note: To retrieve id, execute cofense-report-list command.
-      isArray: false
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: png
       description: 'The image type of the report the user wants to download. Some possible values are: jpg, png.'
-      isArray: false
       name: type
       predefined:
       - jpg
       - png
-      required: false
-      secret: false
-    deprecated: false
     description: Downloads the image of the report that matches the specified report ID.
-    execution: false
     name: cofense-report-image-download
     outputs:
     - contextPath: InfoFile.Name
@@ -2146,43 +1622,22 @@ script:
       description: File extension.
       type: String
   - arguments:
-    - default: false
-      description: 'Specify ID of the report to retrieve the attachment payloads.'
-      isArray: false
+    - description: 'Specify ID of the report to retrieve the attachment payloads.'
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Specify the number of attachment payloads to retrieve per page. Note: Possible values are between 1 and 200. '
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: 'Specify a page number to retrieve the attachment payloads.'
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of creation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
+    - description: 'Specify the date and time of updation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       name: updated_at
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieves attachment payloads based on provided report id in the command arguments.
       Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email attachment.
-    execution: false
     name: cofense-report-attachment-payload-list
     outputs:
     - contextPath: Cofense.AttachmentPayload.id
@@ -2237,11 +1692,8 @@ script:
       description: Link to retrieve the detailed information of the report with attachments containing the payload.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   isremotesyncin: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

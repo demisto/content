@@ -4,8 +4,7 @@ commonfields:
 name: Spamcop
 display: Spamcop
 category: Data Enrichment & Threat Intelligence
-description: SpamCop is an email spam reporting service, integration allow checking
-  the reputation of an IP address
+description: SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -19,7 +18,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -29,12 +27,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 script:
   script: ''

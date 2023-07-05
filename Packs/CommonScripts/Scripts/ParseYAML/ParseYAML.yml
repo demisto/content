@@ -13,7 +13,6 @@ outputs:
 - contextPath: ParseYAML
   description: JSON data loaded from YAML string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

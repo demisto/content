@@ -25,7 +25,6 @@ outputs:
   type: boolean
 polling: true
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

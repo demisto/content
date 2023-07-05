@@ -8,7 +8,6 @@ commonfields:
 configuration:
 - displaypassword: API Key (only required for scanning URLs)
   name: creds_apikey
-  required: false
   type: 9
   hiddenusername: true
   display: ''
@@ -41,14 +40,12 @@ configuration:
 - defaultvalue: '1'
   display: URL Threshold. Minimum number of positive results from urlscan.io to consider the URL malicious.
   name: url_threshold
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: User Agent
   name: useragent
   type: 0
-  required: false
   additionalinfo: User Agent to perform requests
   section: Connect
   advanced: true
@@ -56,33 +53,28 @@ configuration:
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
   section: Collect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
 - defaultvalue: 'false'
   display: Enable public submissions by default.
   name: is_public
-  required: false
   type: 8
   hidden: true
   section: Connect
   advanced: true
 - display: API Key (only required for scanning URLs)
   name: apikey
-  required: false
   type: 4
   hidden: true
   section: Connect
@@ -170,7 +162,6 @@ script:
     - name: useragent
       description: User agent to perform request
     - name: use_url_as_name
-      default: false
       description: Whether to use the URL as the file name.
       auto: PREDEFINED
       predefined:
@@ -289,7 +280,6 @@ script:
     - name: useragent
       description: User agent to perform request
     - name: use_url_as_name
-      default: false
       description: Whether to use the URL as the file name.
       auto: PREDEFINED
       predefined:
@@ -460,7 +450,6 @@ script:
     deprecated: true
     description: Returns the results page for the specified UUID.
     name: urlscan-get-result-page
-  runonce: false
   script: ''
   subtype: python3
   type: python

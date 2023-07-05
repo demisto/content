@@ -17,16 +17,12 @@ args:
   description: Comma separated list of URLs to verify.
   isArray: true
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: Set the URL as suspicious in case it starts with HTTP and not HTTPS.
-  isArray: false
   name: set_http_as_suspicious
   predefined:
-   - 'false'
-   - 'true'
-  required: false
-  secret: false
+  - 'false'
+  - 'true'
 outputs:
 - contextPath: URL
   description: The URL object
@@ -50,7 +46,6 @@ outputs:
   description: The reputation score
   type: number
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.6.33415
 tests:

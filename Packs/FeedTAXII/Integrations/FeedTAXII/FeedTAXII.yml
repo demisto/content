@@ -6,7 +6,6 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
@@ -16,7 +15,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
@@ -38,7 +36,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ''
   name: feedExpirationPolicy
@@ -47,21 +44,17 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
   display: Discovery Service
@@ -71,63 +64,51 @@ configuration:
 - additionalinfo: Collection name to fetch indicators from.
   display: Collection
   name: collection
-  required: false
   type: 0
 - additionalinfo: Subscription ID for the TAXII consumer.
   display: Subscription ID
   name: subscription_id
-  required: false
   type: 0
 - display: Name (To use the API key click the "?" icon)
   name: credentials
-  required: false
   type: 9
 - display: Certificate File as Text
   name: creds_certificate
-  required: false
   type: 9
   displaypassword: Key File as Text
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: cert_text
-  required: false
   type: 12
   hidden: true
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
   name: key_text
-  required: false
   type: 4
   hidden: true
 - additionalinfo: Time (in seconds) before HTTP requests timeout.
   display: Request Timeout
   name: polling_timeout
-  required: false
   type: 0
   defaultvalue: '20'
 - additionalinfo: Used by a TAXII Client to request information from a TAXII Server.
   display: Poll Service
   name: poll_service
-  required: false
   type: 0
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
   display: First Fetch Time
   name: initial_interval
-  required: false
   type: 0
   defaultvalue: 1 day
 - display: Tags
   name: feedTags
-  required: false
   type: 0
   additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Ingests indicator feeds from TAXII 1.x servers.
 display: TAXII Feed
@@ -135,23 +116,13 @@ name: TAXIIFeed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 1 day
+    - defaultValue: 1 day
       description: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
-      isArray: false
       name: initial_interval
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the the feed.
-    execution: false
     name: get-indicators
     outputs:
     - contextPath: TAXII.Indicator.Value
@@ -195,9 +166,6 @@ script:
       type: Unknown
   dockerimage: demisto/taxii:1.0.0.45815
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

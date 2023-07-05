@@ -1,16 +1,12 @@
 args:
-- default: false
-  description: A comma-separated list of indicators values. For example, for IP indicators, "1.1.1.1,2.2.2.2".
+- description: A comma-separated list of indicators values. For example, for IP indicators, "1.1.1.1,2.2.2.2".
   isArray: true
   name: indicators_values
   required: true
-  secret: false
-- default: false
-  description: A comma-separated list of tags to add to the indicators. For example, "tag1,tag2,tag3".
+- description: A comma-separated list of tags to add to the indicators. For example, "tag1,tag2,tag3".
   isArray: true
   name: tags
   required: true
-  secret: false
 comment: |-
   A wrapper script to the 'AppendindicatorField' script that enables adding tags to certain indicators.
   Note: You can use this script in an incident Layout button to allow tags to be added to indicators through the incident.
@@ -20,7 +16,6 @@ commonfields:
 name: AppendindicatorFieldWrapper
 script: '-'
 subtype: python3
-system: false
 tags:
 - incident-action-button
 timeout: '0'

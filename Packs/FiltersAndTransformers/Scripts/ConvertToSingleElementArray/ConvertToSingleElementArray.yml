@@ -16,7 +16,6 @@ args:
   isArray: true
 scripttarget: 0
 subtype: python3
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

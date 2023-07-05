@@ -21,27 +21,22 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
-    consider the indicator malicious.(low, medium, high)
+- display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to consider the indicator malicious.(low, medium, high)
   name: threshold
   defaultvalue: high
   type: 0
-  required: false
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: "true"
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Support indicator API V2
   name: version
   defaultvalue: "true"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -168,24 +163,15 @@ script:
     - name: limit
       description: Number of results for the page
     - name: sort
-      description: Sort is field_name.order, field_name.order where order is either
-        asc or desc
+      description: Sort is field_name.order, field_name.order where order is either asc or desc
     - name: slug
       description: 'Search by ''slug'' or short descriptive name. Ex: "anchor-panda"'
-    description: Search known actors based on the given parameters. Dates are formatted
-      as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time. Origins,
-      targetCountries, targetIndustries and motivations can all receive multiple values
-      separated by ",". Offset is 0 based. Sort is field_name.order, field_name.order
-      where order is either asc or desc.
+    description: Search known actors based on the given parameters. Dates are formatted as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time. Origins, targetCountries, targetIndustries and motivations can all receive multiple values separated by ",". Offset is 0 based. Sort is field_name.order, field_name.order where order is either asc or desc.
   - name: cs-indicators
     arguments:
     - name: parameter
       required: true
-      description: Based on what parameter to search. See CrowdStrike documentation
-        for details. Can be one of indicator, type, report, actor, malicious_confidence,
-        published_date, last_updated, malware_family, kill_chain, labels, DomainType,
-        EmailAddressType, IntelNews, IPAddressType, Malware, Status, Target, ThreatType,
-        Vulnerability
+      description: Based on what parameter to search. See CrowdStrike documentation for details. Can be one of indicator, type, report, actor, malicious_confidence, published_date, last_updated, malware_family, kill_chain, labels, DomainType, EmailAddressType, IntelNews, IPAddressType, Malware, Status, Target, ThreatType, Vulnerability
     - name: filter
       required: true
       auto: PREDEFINED
@@ -201,9 +187,7 @@ script:
       required: true
       description: The value for the given parameter
     - name: sort
-      description: Sort by a field. Should be field_name.order where order is either
-        asc or desc. Fields are indicator, type, report, actor, malicious_confidence,
-        published_date, last_updated.
+      description: Sort by a field. Should be field_name.order where order is either asc or desc. Fields are indicator, type, report, actor, malicious_confidence, published_date, last_updated.
     - name: page
       description: The page to retrieve - 1 based
     - name: pageSize
@@ -285,8 +269,7 @@ script:
     - name: name
       description: Search for keywords across report names (i.e. the report’s title)
     - name: actor
-      description: Search for a report related to a particular actor. For a list of
-        actors, refer to the Intel Actors API
+      description: Search for a report related to a particular actor. For a list of actors, refer to the Intel Actors API
     - name: targetCountries
       description: Search reports by targeted country/countries
     - name: targetIndustries
@@ -316,22 +299,16 @@ script:
     - name: tags
       description: Tags associated with a report (managed internally by CS)
     - name: minLastModifiedDate
-      description: Constrain results to those modified on or after a certain date
-        - format YYYY-MM-DD
+      description: Constrain results to those modified on or after a certain date - format YYYY-MM-DD
     - name: maxLastModifiedDate
-      description: Constrain results to those modified on or before a certain date
-        - format YYYY-MM-DD
+      description: Constrain results to those modified on or before a certain date - format YYYY-MM-DD
     - name: offset
-      description: Used to paginate the response. You can then use limit to set the
-        number of results for the next page.
+      description: Used to paginate the response. You can then use limit to set the number of results for the next page.
     - name: limit
       description: Limits the number of results to return
     - name: sort
-      description: 'The field and direction to sort results on in the format of: <field>.<asc>
-        or <field>.<desc>. Valid values include: name, target_countries, target_industries,
-        type, created_date, last_modified_date'
-    description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
-      publications.
+      description: 'The field and direction to sort results on in the format of: <field>.<asc> or <field>.<desc>. Valid values include: name, target_countries, target_industries, type, created_date, last_modified_date'
+    description: The Falcon Intel Reports API allows to query CrowdStrike intelligence publications.
   - name: cs-report-pdf
     arguments:
     - name: id
@@ -339,7 +316,6 @@ script:
       default: true
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
-  runonce: false
 tests:
 - No tests - deprecated
 fromversion: 5.0.0

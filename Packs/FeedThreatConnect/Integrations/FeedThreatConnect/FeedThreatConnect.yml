@@ -28,16 +28,13 @@ configuration:
   additionalinfo: The number of indicators to get per fetch.
   display: Indicators to get per fetch
   name: fetch_limit
-  required: false
   type: 0
 - additionalinfo: A comma-separated list of tags to filter by.
   display: Tags to filter results by
   name: tags
-  required: false
   type: 0
 - display: Owners
   name: owners
-  required: false
   type: 0
   additionalinfo: A comma-separated list of owners to fetch indicators from.
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
@@ -45,16 +42,13 @@ configuration:
   display: Incremental feed
   hidden: true
   name: feedIncremental
-  required: false
   type: 8
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - display: Indicator Reputation
   type: 18
-  required: false
   options:
   - None
   - Good
@@ -83,12 +77,10 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
 - display: Indicator types
   name: indicator_type
-  required: false
   type: 16
   options:
   - All
@@ -108,7 +100,6 @@ configuration:
   defaultvalue: All
 - display: Group types
   name: group_type
-  required: false
   type: 16
   additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
   defaultvalue: All
@@ -123,23 +114,19 @@ configuration:
   - Vulnerability
 - display: Active Indicators Only
   name: indicator_active
-  required: false
   type: 8
   defaultvalue: 'true'
   additionalinfo: Fetch active only indicators when true. Default is "True".
 - display: Create Relationships
   name: createRelationships
-  required: false
   type: 8
   additionalinfo: Fetch related indicators. Default is "False".
   defaultvalue: 'false'
 - additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
   display: Indicator Query
   name: indicator_query
-  required: false
   type: 12
 - display: Confidence Threshold
-  required: false
   type: 0
   additionalinfo: |
     Minimal confidence value to fetch indicators by (an integer between 0 to 100). Note: this parameter is not relevant for groups.
@@ -149,12 +136,10 @@ configuration:
     Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000). Note: this parameter is not relevant for groups.
   display: Threat Assess Score Threshold
   name: threat_assess_score
-  required: false
   type: 0
   defaultvalue: 0
 - display: ''
   name: feedExpirationPolicy
-  required: false
   type: 17
   options:
   - never
@@ -163,24 +148,19 @@ configuration:
   - suddenDeath
 - display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
   defaultvalue: '240'
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - display: Tags
-  required: false
   type: 0
   additionalinfo: Supports CSV values.
   name: feedTags
@@ -191,40 +171,22 @@ name: ThreatConnect Feed
 script:
   commands:
   - arguments:
-    - default: false
-      description: |
+    - description: |
         Comma-separated list of owners to fetch indicators from. (If
         not specified will retrieve only indicators owned by the account. If you supply this argument, it overwrites the "Owners" parameter.)
-      isArray: false
       name: owners
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The index of the first indicator to fetch.
-      isArray: false
       name: offset
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: Filter results using ThreatConnect Query Language (TQL), will override all other arguments. For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
-      isArray: false
+    - description: Filter results using ThreatConnect Query Language (TQL), will override all other arguments. For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
       name: tql_query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Comma-separated list that will allow filtering of the retrieved indicators.
-      isArray: false
       name: indicator_type
       predefined:
       - All
@@ -237,44 +199,23 @@ script:
       - Mutex
       - Registry Key
       - Address
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: If true, fetches only active indicators.
-      isArray: false
       name: active_indicators
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: This will fetch indicators with confidence of “greater than” the (integer) input.
-      isArray: false
+    - description: This will fetch indicators with confidence of “greater than” the (integer) input.
       name: confidence
-      required: false
-      secret: false
-    - default: false
-      description: An integer that will determine the threshold (an integer between 0 to 1000).
-      isArray: false
+    - description: An integer that will determine the threshold (an integer between 0 to 1000).
       name: threat_assess_score
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from ThreatConnect.
-    execution: false
     name: tc-get-indicators
-  - deprecated: false
-    description: Gets available indicators owners.
-    execution: false
+  - description: Gets available indicators owners.
     name: tc-get-owners
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

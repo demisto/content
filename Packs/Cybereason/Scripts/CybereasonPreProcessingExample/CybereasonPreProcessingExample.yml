@@ -14,7 +14,6 @@ comment: |-
   Will check if malop was already fetched, and will then update the existing incident, otherwise will create a new incident.
 enabled: true
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - Cybereason Pre Processing Test

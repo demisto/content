@@ -5,14 +5,12 @@ args:
   isArray: true
   name: main_domains
   required: true
-  secret: false
 - auto: PREDEFINED
   default: true
   description: A comma-separated list of subdomains. These subdomains will be compared to the list of main domains.
   isArray: true
   name: possible_sub_domains_to_test
   required: true
-  secret: false
 comment: This script accepts multiple values for both arguments and will iterate through each of the domains to check if the specified subdomains are located in at least one of the specified main domains. If the tested subdomain is in one of the main domains, the result will be true. For example, if the domain_to_check values are apps.paloaltonetworks.com and apps.paloaltonetworks.bla and the domains_to_compare values are paloaltonetworks.com and demisto.com, the result for apps.paloaltonetworks.com will be true since it is a part of the paloaltonetworks.com domain. The result for apps.paloaltonetworks.bla will be false since it is not a part of the paloaltonetworks.com or demisto.com domain.
 commonfields:
   id: IsInternalDomainName
@@ -30,7 +28,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - Utility
 timeout: '0'

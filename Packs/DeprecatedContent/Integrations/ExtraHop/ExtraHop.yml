@@ -18,12 +18,10 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
 description: Deprecated. We recommend using ExtraHop Reveal(x) instead. ExtraHop performs real-time stream analysis of the packets that carry data across a network.
 display: ExtraHop (Deprecated)
 name: ExtraHop
@@ -31,7 +29,6 @@ script:
   commands:
   - deprecated: true
     description: Get alerts from ExtraHop
-    execution: false
     name: extrahop-get-alert-rules
     outputs:
     - contextPath: Extrahop.Alert.Operator
@@ -92,40 +89,21 @@ script:
       description: The statistic name for the alert.
       type: String
   - arguments:
-    - default: false
-      description: The name of the field in the record to filter.
-      isArray: false
+    - description: The name of the field in the record to filter.
       name: field
-      required: false
-      secret: false
-    - default: false
-      description: The value that the query attempts to match.
-      isArray: false
+    - description: The value that the query attempts to match.
       name: value
-      required: false
-      secret: false
-    - default: false
-      description: The compare method applied when matching the operand value against the field contents.
-      isArray: false
+    - description: The compare method applied when matching the operand value against the field contents.
       name: operator
       required: true
-      secret: false
-    - default: false
-      description: The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with records created at a time in the past. For example, specify -600000ms to begin the search with records created 10 minutes before the time of the request.
-      isArray: false
+    - description: The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with records created at a time in the past. For example, specify -600000ms to begin the search with records created 10 minutes before the time of the request.
       name: query_from
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: Queries records from ExtraHop.
-    execution: false
     name: extrahop-query
     outputs:
     - contextPath: ExtraHop.Query.Id
@@ -276,23 +254,13 @@ script:
       description: The type of query.
       type: String
   - arguments:
-    - default: false
-      description: The beginning timestamp for the request. Returns only devices active after this time. Time is expressed in milliseconds since the epoch.
-      isArray: false
+    - description: The beginning timestamp for the request. Returns only devices active after this time. Time is expressed in milliseconds since the epoch.
       name: active_from
-      required: false
-      secret: false
-    - default: false
-      description: The ending timestamp for the request.
-      isArray: false
+    - description: The ending timestamp for the request.
       name: active_until
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: any
       description: Indicates the field to search.
-      isArray: false
       name: search_type
       predefined:
       - any
@@ -307,17 +275,11 @@ script:
       - node
       - vlan
       required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of devices to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: View Devices from ExtraHop
-    execution: false
     name: extrahop-devices
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
@@ -381,25 +343,17 @@ script:
       description: The ID of VLan.
       type: Number
   - arguments:
-    - default: false
-      description: The IDs of the resources to assign.
+    - description: The IDs of the resources to assign.
       isArray: true
       name: add
-      required: false
-      secret: false
-    - default: false
-      description: The IDs of the resources to unassign.
+    - description: The IDs of the resources to unassign.
       isArray: true
       name: remove
-      required: false
-      secret: false
     deprecated: true
     description: Modifies an allow list from ExtraHop.
-    execution: false
     name: extrahop-whitelist-modify
   - deprecated: true
     description: Retrieves the allow list from ExtraHop.
-    execution: false
     name: extrahop-whitelist-retrieve
     outputs:
     - contextPath: Extrahop.Device.Macaddr
@@ -467,45 +421,31 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Indicates whether the alert is assigned to all available data sources.
-      isArray: false
       name: apply_all
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether the alert is disabled.
-      isArray: false
       name: disabled
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    - default: false
-      description: The unique, friendly name for the alert.
-      isArray: false
+    - description: The unique, friendly name for the alert.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether to send an SNMP trap when an alert is generated.
-      isArray: false
       name: notify_snmp
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The time interval in which alert conditions are monitored, expressed in seconds. '
-      isArray: false
       name: refire_interval
       predefined:
       - '300'
@@ -516,61 +456,32 @@ script:
       - '7200'
       - '14400'
       required: true
-      secret: false
-    - default: false
-      description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
-      isArray: false
+    - description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
       name: severity
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of alert. '
-      isArray: false
       name: type
       predefined:
       - detection
       - threshold
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of metric source monitored by the alert configuration. Only applicable to detection alerts. '
-      isArray: false
       name: object_type
       predefined:
       - application
       - device
-      required: false
-      secret: false
-    - default: false
-      description: The list of monitored protocols. Only applicable to detection alerts.
-      isArray: false
+    - description: The list of monitored protocols. Only applicable to detection alerts.
       name: protocols
-      required: false
-      secret: false
-    - default: false
-      description: The name of the monitored metric. Only applicable to threshold alerts.
-      isArray: false
+    - description: The name of the monitored metric. Only applicable to threshold alerts.
       name: field_name
-      required: false
-      secret: false
-    - default: false
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
-      isArray: false
+    - description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
       name: field_name2
-      required: false
-      secret: false
-    - default: false
-      description: The statistic name for the alert. Only applicable to threshold alerts.
-      isArray: false
+    - description: The statistic name for the alert. Only applicable to threshold alerts.
       name: stat_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\""
-      isArray: false
       name: units
       predefined:
       - none
@@ -578,13 +489,9 @@ script:
       - 1 sec
       - 1 min
       - 1 hr
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: '30'
       description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800"
-      isArray: false
       name: interval_length
       predefined:
       - '30'
@@ -595,18 +502,10 @@ script:
       - '900'
       - '1200'
       - '1800'
-      required: false
-      secret: false
-    - default: false
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
-      isArray: false
+    - description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
       name: operand
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
-      isArray: false
       name: operator
       predefined:
       - ==
@@ -614,93 +513,53 @@ script:
       - <
       - '>='
       - <=
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
-      isArray: false
       name: field_op
       predefined:
       - /
       - 'null'
-      required: false
-      secret: false
-    - default: false
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-      isArray: false
+    - description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
       name: param
-      required: false
-      secret: false
-    - default: false
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-      isArray: false
+    - description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
       name: param2
-      required: false
-      secret: false
     deprecated: true
     description: Adds an alert to ExtraHop.
-    execution: false
     name: extrahop-add-alert-rule
   - arguments:
-    - default: false
-      description: The unique identifier for the alert.
-      isArray: false
+    - description: The unique identifier for the alert.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether the alert is assigned to all available data sources.
-      isArray: false
       name: apply_all
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether the alert is disabled.
-      isArray: false
       name: disabled
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    - default: false
-      description: The unique, friendly name for the alert.
-      isArray: false
+    - description: The unique, friendly name for the alert.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether to send an SNMP trap when an alert is generated.
-      isArray: false
       name: notify_snmp
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    - default: false
-      description: The name of the monitored metric. Only applicable to threshold alerts.
-      isArray: false
+    - description: The name of the monitored metric. Only applicable to threshold alerts.
       name: field_name
-      required: false
-      secret: false
-    - default: false
-      description: The statistic name for the alert. Only applicable to threshold alerts.
-      isArray: false
+    - description: The statistic name for the alert. Only applicable to threshold alerts.
       name: stat_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The interval in which to evaluate the alert condition. Only applicable to threshold alerts.
-      isArray: false
       name: units
       predefined:
       - none
@@ -708,12 +567,8 @@ script:
       - 1 sec
       - 1 min
       - 1 hr
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The length of the alert interval, expressed in seconds. Only applicable to threshold alerts.
-      isArray: false
       name: interval_length
       predefined:
       - '30'
@@ -724,18 +579,10 @@ script:
       - '900'
       - '1200'
       - '1800'
-      required: false
-      secret: false
-    - default: false
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
-      isArray: false
+    - description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
       name: operand
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time interval in which alert conditions are monitored, expressed in seconds.
-      isArray: false
       name: refire_interval
       predefined:
       - '300'
@@ -746,11 +593,8 @@ script:
       - '7200'
       - '14400'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps.
-      isArray: false
       name: severity
       predefined:
       - '0'
@@ -762,37 +606,23 @@ script:
       - '6'
       - '7'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of alert.'
-      isArray: false
       name: type
       predefined:
       - detection
       - threshold
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of metric source monitored by the alert configuration. Only applicable to detection alerts.
-      isArray: false
       name: object_type
       predefined:
       - application
       - device
-      required: false
-      secret: false
-    - default: false
-      description: The list of monitored protocols. Only applicable to detection alerts.
-      isArray: false
+    - description: The list of monitored protocols. Only applicable to detection alerts.
       name: protocols
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
-      isArray: false
       name: operator
       predefined:
       - ==
@@ -800,42 +630,22 @@ script:
       - <
       - '>='
       - <=
-      required: false
-      secret: false
-    - default: false
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
-      isArray: false
+    - description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
       name: field_name2
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
-      isArray: false
       name: field_op
       predefined:
       - /
       - 'null'
-      required: false
-      secret: false
-    - default: false
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-      isArray: false
+    - description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
       name: param
-      required: false
-      secret: false
-    - default: false
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-      isArray: false
+    - description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
       name: param2
-      required: false
-      secret: false
     deprecated: true
     description: Modifies an alert in ExtraHop.
-    execution: false
     name: extrahop-modify-alert-rule
   dockerimage: demisto/python3:3.8.2.6981
-  isfetch: false
   runonce: false
   script: ''
   type: python

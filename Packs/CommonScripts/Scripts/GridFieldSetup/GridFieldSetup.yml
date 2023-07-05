@@ -43,7 +43,6 @@ dockerimage: demisto/python3:3.10.11.59581
 enabled: true
 name: GridFieldSetup
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

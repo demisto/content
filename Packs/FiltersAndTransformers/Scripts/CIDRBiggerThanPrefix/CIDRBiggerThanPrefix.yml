@@ -18,7 +18,6 @@ args:
 comment: Checks whether a given CIDR prefix is bigger than the defined maximum prefix.
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.4.28442
 runas: DBotWeakRole
 fromversion: 6.0.0

@@ -6,8 +6,7 @@ args:
   predefined:
   - "false"
   - "true"
-comment: This script will show all installed content packs and whether they have an
-  update.
+comment: This script will show all installed content packs and whether they have an update.
 commonfields:
   id: ListInstalledContentPacks
   version: -1
@@ -28,7 +27,6 @@ outputs:
   description: Is there an update available
   type: boolean
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

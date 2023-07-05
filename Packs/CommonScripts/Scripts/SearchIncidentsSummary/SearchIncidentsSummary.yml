@@ -95,7 +95,6 @@ outputs:
   description: The value provided in the searchresultslabel argument.
   type: String
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,5 +1,4 @@
-comment: Gets all available devices from the IoT cloud and sends them to the ServiceNow.
-  server
+comment: Gets all available devices from the IoT cloud and sends them to the ServiceNow. server
 commonfields:
   id: SendAllPANWIoTDevicesToServiceNow
   version: -1
@@ -7,7 +6,6 @@ dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: SendAllPANWIoTDevicesToServiceNow
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

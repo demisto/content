@@ -18,7 +18,6 @@ commonfields:
 dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: PerformActionOnCampaignIncidents
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

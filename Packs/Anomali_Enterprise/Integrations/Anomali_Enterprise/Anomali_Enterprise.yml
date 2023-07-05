@@ -15,11 +15,9 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -33,7 +31,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -43,12 +40,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 description: Use Anomali Match to search indicators and enrich domains.
 display: Anomali Match
@@ -56,27 +51,15 @@ name: Anomali Enterprise
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'The time the indicators first appeared, in the format: <number> <time unit>, e.g., 1 hour, 30 minutes. Default is 1 day ago.'
-      isArray: false
+    - description: 'The time the indicators first appeared, in the format: <number> <time unit>, e.g., 1 hour, 30 minutes. Default is 1 day ago.'
       name: from
-      required: false
-      secret: false
-    - default: false
-      description: 'The time the indicators last appeared, in the format: <number> <time unit>, e.g., 1 hour, 30 minutes. Default is now.'
-      isArray: false
+    - description: 'The time the indicators last appeared, in the format: <number> <time unit>, e.g., 1 hour, 30 minutes. Default is now.'
       name: to
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of indicators to search.
+    - description: A comma-separated list of indicators to search.
       isArray: true
       name: indicators
       required: true
-      secret: false
-    deprecated: false
     description: Initiates a forensic search of the indicators.
-    execution: false
     name: anomali-enterprise-retro-forensic-search
     outputs:
     - contextPath: AnomaliEnterprise.ForensicSearch.job_id
@@ -86,33 +69,21 @@ script:
       description: The status of the search.
       type: String
   - arguments:
-    - default: false
-      description: The forensic search job ID.
+    - description: The forensic search job ID.
       isArray: true
       name: job_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Limit the stream results to return. Default is 20.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to print the stream results to the War Room. Default is "true".
       predefined:
-        - 'false'
-        - 'true'
-      isArray: false
+      - 'false'
+      - 'true'
       name: verbose
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the forensic search results.
-    execution: false
     name: anomali-enterprise-retro-forensic-search-results
     outputs:
     - contextPath: AnomaliEnterprise.ForensicSearch.job_id
@@ -143,15 +114,11 @@ script:
       description: The stream results for the search.
       type: Unknown
   - arguments:
-    - default: false
-      description: A comma-separated list of domains to search.
+    - description: A comma-separated list of domains to search.
       isArray: true
       name: domains
       required: true
-      secret: false
-    deprecated: false
     description: The search domains Domain Generation Algorithm (DGA).
-    execution: false
     name: anomali-enterprise-dga-domain-status
     outputs:
     - contextPath: AnomaliEnterprise.DGA.domain
@@ -168,11 +135,7 @@ script:
       description: A comma-separated list of domains to search.
       isArray: true
       name: domain
-      required: false
-      secret: false
-    deprecated: false
     description: The search domains Domain Generation Algorithm (DGA). Includes DBotScore and domain information.
-    execution: false
     name: domain
     outputs:
     - contextPath: AnomaliEnterprise.DGA.domain
@@ -206,10 +169,6 @@ script:
       description: A description of the malicious domain.
       type: String
   dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

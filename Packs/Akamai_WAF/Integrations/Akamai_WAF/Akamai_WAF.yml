@@ -10,41 +10,33 @@ configuration:
   type: 0
 - display: Client token
   name: clientToken
-  required: false
   type: 4
   hidden: true
 - display: Access token
   name: accessToken
-  required: false
   type: 4
   hidden: true
 - display: Client secret
   name: clientSecret
-  required: false
   type: 4
   hidden: true
 - displaypassword: Client token
-  name:  credentials_client_token
-  required: false
+  name: credentials_client_token
   hiddenusername: true
   type: 9
 - displaypassword: Access token
-  name:  credentials_access_token
-  required: false
+  name: credentials_access_token
   hiddenusername: true
   type: 9
 - displaypassword: Client secret
-  name:  credentials_client_secret
-  required: false
+  name: credentials_client_secret
   hiddenusername: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: |-
   Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
@@ -1349,7 +1341,6 @@ script:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
   dockerimage: demisto/akamai:1.0.0.62965
-  runonce: false
   script: ''
   subtype: python3
   type: python

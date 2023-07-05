@@ -192,7 +192,6 @@ outputs:
 - contextPath: File.Pages
   description: Number of pages in PDF file
 scripttarget: 0
-runonce: false
 dockerimage: demisto/pdfx
 runas: DBotWeakRole
 tests:

@@ -23,48 +23,41 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
 - defaultvalue: 'true'
   display: Allow creating users
   name: create-user-enabled
-  required: false
   type: 8
   section: Collect
   advanced: true
 - defaultvalue: 'true'
   display: Allow updating users
   name: update-user-enabled
-  required: false
   type: 8
   section: Collect
   advanced: true
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable-user-enabled
-  required: false
   type: 8
   section: Collect
   advanced: true
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable-user-enabled
-  required: false
   type: 8
   section: Collect
   advanced: true
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create-if-not-exists
-  required: false
   type: 8
   section: Collect
   advanced: true
@@ -83,44 +76,37 @@ configuration:
 - defaultvalue: '50'
   display: Fetch limit (recommended value is less than 200)
   name: max_fetch
-  required: false
   type: 0
   section: Collect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta apps you wish to sync to XSOAR. Further information about IAM configuration is detailed in the Help (the "?" icon).
   defaultvalue: 'true'
   display: Query only application events configured in IAM Configuration
   name: auto_generate_query_filter
-  required: false
   type: 8
   section: Collect
   advanced: true
 - additionalinfo: 'Use a query filter expression in SCIM format. Note: make sure the "Query only application events configured in IAM Configuration" is unchecked to use this parameter. See the Help (the "?" icon) to learn more about the filter parameter.'
   display: Fetch Query Filter (Okta system log events)
   name: fetch_query_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
 - defaultvalue: 0 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   section: Collect
 description: Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
@@ -129,24 +115,16 @@ name: Okta IAM
 script:
   commands:
   - arguments:
-    - default: false
-      description: User Profile indicator details.
-      isArray: false
+    - description: User Profile indicator details.
       name: user-profile
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
-      isArray: false
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a user.
     execution: true
     name: iam-create-user
@@ -182,24 +160,16 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
-      isArray: false
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
@@ -235,15 +205,10 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a single user resource.
-    execution: false
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
@@ -277,13 +242,9 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Disable an active user.
     execution: true
     name: iam-disable-user
@@ -318,26 +279,16 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
-  - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
-    execution: false
+  - description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
   - arguments:
-    - default: false
-      description: ID of the user for which to get information.
-      isArray: false
+    - description: ID of the user for which to get information.
       name: user_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the application for which to get information.
-      isArray: false
+    - description: ID of the application for which to get information.
       name: application_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns information about application's user assignment.
-    execution: false
     name: okta-get-app-user-assignment
     outputs:
     - contextPath: Okta.AppUserAssignment.UserID
@@ -353,29 +304,15 @@ script:
       description: The user profile data in the application.
       type: unknown
   - arguments:
-    - default: false
-      description: Search for applications by their names.
-      isArray: false
+    - description: Search for applications by their names.
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (0-based).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of apps to retrieve (maximal value is 200).
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of Okta applications data.
-    execution: false
     name: okta-iam-list-applications
     outputs:
     - contextPath: Okta.Application.ID
@@ -391,19 +328,12 @@ script:
       description: Logo of the application.
       type: string
   - arguments:
-    - default: false
-      description: IAM configuration data.
-      isArray: false
+    - description: IAM configuration data.
       name: configuration
       required: true
-      secret: false
-    deprecated: false
     description: Updates IAM configuration data in the integration context.
-    execution: false
     name: okta-iam-set-configuration
-  - deprecated: false
-    description: Gets the IAM configuration data from the integration context.
-    execution: false
+  - description: Gets the IAM configuration data from the integration context.
     name: okta-iam-get-configuration
     outputs:
     - contextPath: Okta.IAMConfiguration.ApplicationID
@@ -422,15 +352,10 @@ script:
       description: An XSOAR IAM integration instance name.
       type: String
   - arguments:
-    - default: false
-      description: ID of the user for which to get the information.
-      isArray: false
+    - description: ID of the user for which to get the information.
       name: user_id
       required: true
-      secret: false
-    deprecated: false
     description: List all applications assigned to a user.
-    execution: false
     name: okta-iam-list-user-applications
     outputs:
     - contextPath: Okta.Application.ID
@@ -446,26 +371,18 @@ script:
       description: Status of the application.
       type: String
   - arguments:
-    - default: false
-      description: Group SCIM Data
-      isArray: false
+    - description: Group SCIM Data
       name: scim
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: 'Field to indicate if members need to be included in the response. '
-      isArray: false
       name: includeMembers
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the group information, including its members.
-    execution: false
     name: iam-get-group
     outputs:
     - contextPath: GetGroup.id
@@ -490,38 +407,20 @@ script:
       description: Reason why the API failed.
       type: String
   - arguments:
-    - default: false
-      description: 'Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" -Events that have a specific action; eventType target.id eq ":id" - Events published with a specific target id; actor.id eq ":id"- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering'
-      isArray: false
+    - description: 'Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" -Events that have a specific action; eventType target.id eq ":id" - Events published with a specific target id; actor.id eq ":id"- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
-      isArray: false
+    - description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
-      isArray: false
+    - description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
       name: until
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASCENDING
       description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
-      isArray: false
       name: sortOrder
       predefined:
       - ASCENDING
       - DESCENDING
-      required: false
-      secret: false
-    deprecated: false
     description: Gets logs by providing optional filters.
-    execution: false
     name: okta-get-logs
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
@@ -618,10 +517,7 @@ script:
       description: Display name of a target.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

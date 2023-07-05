@@ -9,11 +9,9 @@ configuration:
   type: 0
 - display: Username of Account to be used.
   name: username
-  required: false
   type: 0
 - display: Password of Account to be used.
   name: password
-  required: false
   type: 4
 description: |-
   Deprecated. Use CortexXDR instead.
@@ -24,38 +22,24 @@ beta: true
 script:
   commands:
   - arguments:
-    - default: false
-      isArray: false
-      name: hash
+    - name: hash
       required: true
-      secret: false
       description: ''
-    deprecated: false
     description: Retrieve details about a specific hash
-    execution: false
     name: traps-esm-hash-detail
   - arguments:
-    - default: false
-      description: Hash to be changed.
-      isArray: false
+    - description: Hash to be changed.
       name: hash
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Verdict of the hash.
-      isArray: false
       name: verdict
       predefined:
       - Benign
       - Malware
       required: true
-      secret: false
-    deprecated: false
     description: Override a verdict for a specific hash.
-    execution: false
     name: traps-esm-override-hash-verdict
-  isfetch: false
   runonce: false
   script: ''
   type: python

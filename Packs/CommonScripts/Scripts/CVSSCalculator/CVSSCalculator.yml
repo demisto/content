@@ -3,12 +3,9 @@ commonfields:
   version: -1
 name: CVSSCalculator
 script: '-'
-system: false
 type: python
 tags: []
-comment: This script calculates the CVSS Base Score, Temporal Score, and Environmental
-  Score using either the CVSS 3.0 or CVSS 3.1 calculator according to https://www.first.org/cvss/
-  calculation documentation.
+comment: This script calculates the CVSS Base Score, Temporal Score, and Environmental Score using either the CVSS 3.0 or CVSS 3.1 calculator according to https://www.first.org/cvss/ calculation documentation.
 enabled: true
 args:
 - name: version

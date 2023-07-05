@@ -4,7 +4,6 @@ commonfields:
   version: -1
 name: CortexXDRAdditionalAlertInformationWidget
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'

@@ -20,7 +20,6 @@ args:
   required: true
   description: Range to check against with the form of from,to (e.g. 2,8).
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

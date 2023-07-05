@@ -26,7 +26,6 @@ outputs:
 - contextPath: LevenshteinDistance
   description: The closeness of the sender domain to our configured domains.
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.7.33922
 tests:

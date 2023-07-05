@@ -5,11 +5,9 @@ commonfields:
 configuration:
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Long running instance
   name: longRunning
-  required: false
   type: 8
 - additionalinfo: The port on which the integration instance will listen
   display: Server Listening Port
@@ -101,7 +99,6 @@ script:
   dockerimage: demisto/bottle:1.0.0.32745
   longRunning: true
   longRunningPort: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

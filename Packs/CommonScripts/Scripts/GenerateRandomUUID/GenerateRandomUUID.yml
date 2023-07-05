@@ -8,7 +8,6 @@ outputs:
 - contextPath: GeneratedUUID
   description: The generated UUID.
   type: string
-runonce: false
 script: ''
 subtype: python3
 tags: []

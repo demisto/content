@@ -3,156 +3,69 @@ args:
   description: A comma-separated list of incident IDs by which to filter the results.
   isArray: true
   name: id
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of incident names by which to filter the results.
+- description: A comma-separated list of incident names by which to filter the results.
   isArray: true
   name: name
-  required: false
-  secret: false
-- default: false
-  description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
+- description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
   isArray: true
   name: status
-  required: false
-  secret: false
-- default: false
-  description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
+- description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
   isArray: true
   name: notstatus
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of incident close reasons by which to filter the results.
+- description: A comma-separated list of incident close reasons by which to filter the results.
   isArray: true
   name: reason
-  required: false
-  secret: false
-- default: false
-  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-  isArray: false
+- description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   name: fromdate
-  required: false
-  secret: false
-- default: false
-  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-  isArray: false
+- description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   name: todate
-  required: false
-  secret: false
-- default: false
-  description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-  isArray: false
+- description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   name: fromclosedate
-  required: false
-  secret: false
-- default: false
-  description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-  isArray: false
+- description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   name: toclosedate
-  required: false
-  secret: false
-- default: false
-  description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-  isArray: false
+- description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   name: fromduedate
-  required: false
-  secret: false
-- default: false
-  description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-  isArray: false
+- description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   name: toduedate
-  required: false
-  secret: false
-- default: false
-  description: Filter by Severity
+- description: Filter by Severity
   isArray: true
   name: level
-  required: false
-  secret: false
-- default: false
-  description: Filter by incident owners
+- description: Filter by incident owners
   isArray: true
   name: owner
-  required: false
-  secret: false
-- default: false
-  description: Filter by incident details
-  isArray: false
+- description: Filter by incident details
   name: details
-  required: false
-  secret: false
-- default: false
-  description: Filter by incident type
+- description: Filter by incident type
   isArray: true
   name: type
-  required: false
-  secret: false
-- default: false
-  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
-  isArray: false
+- description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
   name: query
-  required: false
-  secret: false
-- default: false
-  description: Filter by the page number
-  isArray: false
+- description: Filter by the page number
   name: page
-  required: false
-  secret: false
   deprecated: true
-- default: false
-  description: |-
+- description: |-
     The number of events to return from the alert JSON. The default is 0, which returns all events.
     Note that the count is from the head of the list, regardless of event time or other properties.
-  isArray: false
   name: trimevents
-  required: false
-  secret: false
   hidden: true
-- default: false
-  description: Number of incidents per page (per fetch)
-  isArray: false
+- description: Number of incidents per page (per fetch)
   name: size
-  required: false
-  secret: false
   deprecated: true
-- default: false
-  description: The maximum number of incidents to be returned.
-  isArray: false
+- description: The maximum number of incidents to be returned.
   name: limit
-  required: false
-  secret: false
   defaultValue: '100'
-- default: false
-  description: Sort in format of field.asc,field.desc,...
-  isArray: false
+- description: Sort in format of field.asc,field.desc,...
   name: sort
-  required: false
-  secret: false
-- default: false
-  description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
-  isArray: false
+- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
   name: searchresultslabel
-  required: false
-  secret: false
-- default: false
-  description: If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false.
-  isArray: false
+- description: If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false.
   name: summarizedversion
-  required: false
-  secret: false
   auto: PREDEFINED
   predefined:
   - "false"
   - "true"
-- default: false
-  description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed)
-  isArray: false
+- description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed)
   name: add_fields_to_summarize_context
-  required: false
-  secret: false
 comment: |-
   Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
 
@@ -206,7 +119,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - Utility
 timeout: '0'

@@ -16,24 +16,20 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - defaultvalue: '50'
   display: Max incidents to fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
-  required: false
   type: 0
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - defaultvalue: 'concise'
@@ -43,18 +39,15 @@ configuration:
   - 'concise'
   - 'normal'
   - 'extended'
-  required: false
   type: 15
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -64,14 +57,9 @@ name: FireEye Central Management
 script:
   commands:
   - arguments:
-    - default: false
-      description: The ID number of the alert to retrieve.
-      isArray: false
+    - description: The ID number of the alert to retrieve.
       name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: "The time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only the duration is specified, the end_time defaults to the current_time."
+    - description: "The time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only the duration is specified, the end_time defaults to the current_time."
       auto: PREDEFINED
       predefined:
       - '1_hour'
@@ -80,68 +68,32 @@ script:
       - '12_hours'
       - '24_hours'
       - '48_hours'
-      isArray: false
       name: duration
-      required: false
-    - default: false
-      description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day."
-      isArray: false
+    - description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day."
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om."
-      isArray: false
+    - description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om."
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: Searches for alerts that include callbacks to the specified domain.
-      isArray: false
+    - description: Searches for alerts that include callbacks to the specified domain.
       name: callback_domain
-      required: false
-    - default: false
-      description: The destination IPv4 address related to the malware alert.
-      isArray: false
+    - description: The destination IPv4 address related to the malware alert.
       name: dst_ip
-      required: false
-    - default: false
-      description: The source IPv4 address related to the malware alert.
-      isArray: false
+    - description: The source IPv4 address related to the malware alert.
       name: src_ip
-      required: false
-    - default: false
-      description: The name of the malware file.
-      isArray: false
+    - description: The name of the malware file.
       name: file_name
-      required: false
-      secret: false
-    - default: false
-      description: The malware file type.
-      isArray: false
+    - description: The malware file type.
       name: file_type
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'concise'
+    - defaultValue: 'concise'
       description: 'The level of information to be returned. Possible values: "concise", "normal", and "extended".'
       auto: PREDEFINED
       predefined:
       - 'concise'
       - 'normal'
       - 'extended'
-      isArray: false
       name: info_level
-      required: false
-      secret: false
-    - default: false
-      description: The name of the malware object.
-      isArray: false
+    - description: The name of the malware object.
       name: malware_name
-      required: false
-      secret: false
-    - default: false
-      description: 'The type of the malware object. Possible values: "domain_match", "malware_callback", "malware_object", "web_infection", "infection_match", "riskware-infection", "riskware-callback", "riskware-object".'
+    - description: 'The type of the malware object. Possible values: "domain_match", "malware_callback", "malware_object", "web_infection", "infection_match", "riskware-infection", "riskware-callback", "riskware-object".'
       predefined:
       - 'domain_match'
       - 'malware_callback'
@@ -151,44 +103,19 @@ script:
       - 'riskware-infection'
       - 'riskware-callback'
       - 'riskware-object'
-      isArray: false
       name: malware_type
-      required: false
-      secret: false
-    - default: false
-      description: Searches for alerts that include a specific MD5 hash.
-      isArray: false
+    - description: Searches for alerts that include a specific MD5 hash.
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: The email address of the malware object receiver.
-      isArray: false
+    - description: The email address of the malware object receiver.
       name: recipient_email
-      required: false
-      secret: false
-    - default: false
-      description: The email address of the malware object sender.
-      isArray: false
+    - description: The email address of the malware object sender.
       name: sender_email
-      required: false
-      secret: false
-    - default: false
-      description: Searches for a specific alert URL.
-      isArray: false
+    - description: Searches for a specific alert URL.
       name: url
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of alerts to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Searches and retrieves FireEye CM alerts based on several filters.
-    execution: false
     name: fireeye-cm-get-alerts
     outputs:
     - contextPath: FireEyeCM.Alerts.id
@@ -240,20 +167,14 @@ script:
       description: The explanation data of the alert.
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the alert for which to retrieve its details.
+    - description: The ID of the alert for which to retrieve its details.
       isArray: true
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: Timeout (in seconds) to retrieve the alert details.
-      isArray: false
       name: timeout
-    deprecated: false
     description: Searches and retrieves the details of a single alert.
-    execution: false
     name: fireeye-cm-get-alert-details
     outputs:
     - contextPath: FireEyeCM.Alerts.id
@@ -305,33 +226,21 @@ script:
       description: The explanation data of the alert.
       type: Unknown
   - arguments:
-    - default: false
-      description: The universally unique identifier (UUID) for the alert.
+    - description: The universally unique identifier (UUID) for the alert.
       isArray: true
       name: uuid
       required: true
-      secret: false
-    deprecated: false
     description: Confirms that the alert has been reviewed.
-    execution: false
     name: fireeye-cm-alert-acknowledge
   - arguments:
-    - default: false
-      description: The universally unique identifier (UUID) for the alert.
+    - description: The universally unique identifier (UUID) for the alert.
       isArray: true
       name: uuid
       required: true
-      secret: false
-    - default: false
-      defaultValue: '120'
+    - defaultValue: '120'
       description: Timeout (in seconds) to retrieve the artifacts.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Downloads malware artifacts data for the specified UUID as a zip file.
-    execution: false
     name: fireeye-cm-get-artifacts-by-uuid
     outputs:
     - contextPath: InfoFile.EntryID
@@ -353,15 +262,11 @@ script:
       description: The type of the artifact file.
       type: string
   - arguments:
-    - default: false
-      description: The universally unique identifier (UUID) for the alert.
+    - description: The universally unique identifier (UUID) for the alert.
       isArray: true
       name: uuid
       required: true
-      secret: false
-    deprecated: false
     description: Gets artifacts metadata for the specified UUID.
-    execution: false
     name: fireeye-cm-get-artifacts-metadata-by-uuid
     outputs:
     - contextPath: FireEyeCM.Alerts.uuid
@@ -377,8 +282,7 @@ script:
       description: The zipped artifact size in bytes.
       type: string
   - arguments:
-    - default: false
-      description: The time interval in which to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
+    - description: The time interval in which to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
       auto: PREDEFINED
       predefined:
       - '1_hour'
@@ -387,37 +291,20 @@ script:
       - '12_hours'
       - '24_hours'
       - '48_hours'
-      isArray: false
       name: duration
-      required: false
-      secret: false
-    - default: false
-      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
-      isArray: false
+    - description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
       description: 'Specifies whether to include all IPS events or MVX-correlated events only. Possible values: "true" and "false".'
-      isArray: false
       name: mvx_correlated_only
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of events to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves information about existing IPS NX events. An IPS enabled appliance is a prerequisite to be able to retrieve IPS event data.
-    execution: false
     name: fireeye-cm-get-events
     outputs:
     - contextPath: FireEyeCM.Events.eventId
@@ -487,47 +374,21 @@ script:
       description: The incident ID of the event on FireEye.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '1 day'
+    - defaultValue: '1 day'
       description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
-      isArray: false
+    - description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: The sender email.
-      isArray: false
+    - description: The sender email.
       name: from
-      required: false
-      secret: false
-    - default: false
-      description: The email subject. Must be URL encoded.
-      isArray: false
+    - description: The email subject. Must be URL encoded.
       name: subject
-      required: false
-      secret: false
-    - default: false
-      description: The appliance ID.
-      isArray: false
+    - description: The appliance ID.
       name: appliance_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Number of emails to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Searches and retrieves quarantined emails.
-    execution: false
     name: fireeye-cm-get-quarantined-emails
     outputs:
     - contextPath: FireEyeCM.QuarantinedEmail.appliance_id
@@ -555,62 +416,36 @@ script:
       description: The quarantined email subject.
       type: string
   - arguments:
-    - default: false
-      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+    - description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
       isArray: true
       name: queue_ids
       required: true
-      secret: false
-    - default: false
-      description: The sensor display name.
-      isArray: false
+    - description: The sensor display name.
       name: sensor_name
       required: true
-      secret: false
-    deprecated: false
     description: Releases and deletes quarantined emails. This is not available when Email Security is in Drop mode.
-    execution: false
     name: fireeye-cm-release-quarantined-emails
   - arguments:
-    - default: false
-      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+    - description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
       isArray: true
       name: queue_ids
       required: true
-      secret: false
-    - default: false
-      description: The sensor display name.
-      isArray: false
+    - description: The sensor display name.
       name: sensor_name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes quarantined emails. This is not available when Email Security is in Drop mode.
-    execution: false
     name: fireeye-cm-delete-quarantined-emails
   - arguments:
-    - default: false
-      description: The quarantined emails queue ID.
-      isArray: false
+    - description: The quarantined emails queue ID.
       name: queue_id
       required: true
-      secret: false
-    - default: false
-      description: The sensor display name.
-      isArray: false
+    - description: The sensor display name.
       name: sensor_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '120'
+    - defaultValue: '120'
       description: Timeout (in seconds) to retrieve the reports.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Download quarantined emails.
-    execution: false
     name: fireeye-cm-download-quarantined-emails
     outputs:
     - contextPath: File.Name
@@ -635,8 +470,7 @@ script:
       description: The SSDeep hash of the email.
       type: String
   - arguments:
-    - default: false
-      description: "The report type. Requests for ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention System (IPS)-enabled appliance to be able to generate the IPS reports."
+    - description: "The report type. Requests for ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention System (IPS)-enabled appliance to be able to generate the IPS reports."
       auto: PREDEFINED
       predefined:
       - 'empsEmailAVReport'
@@ -654,55 +488,28 @@ script:
       - 'ipsTopNVictim'
       - 'ipsTopNMvxVerified'
       - 'alertDetailsReport'
-      isArray: false
       name: report_type
       required: true
-      secret: false
-    - default: false
-      defaultValue: '1 week'
+    - defaultValue: '1 week'
       description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
-      isArray: false
+    - description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The maximum number of items covered by each report. This option is required only for IPS TopN reports.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       predefined:
       - 'A'
       - 'B'
       - 'AB'
       description: The internet interface to one of the values. This option is required only for IPS reports.
-      isArray: false
       name: interface
-      required: false
-      secret: false
-    - default: false
-      description: Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport.
-      isArray: false
+    - description: Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport.
       name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument.
-      isArray: false
+    - description: Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument.
       name: infection_id
-      required: false
-      secret: false
-    - default: false
-      description: 'Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.'
+    - description: 'Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.'
       auto: PREDEFINED
       predefined:
       - 'malware-object'
@@ -711,18 +518,10 @@ script:
       - 'domain-match'
       - 'web-infection'
       name: infection_type
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '120'
+    - defaultValue: '120'
       description: Timeout (in seconds) to retrieve the reports.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Returns reports on selected alerts.
-    execution: false
     name: fireeye-cm-get-reports
     outputs:
     - contextPath: InfoFile.EntryID
@@ -744,7 +543,6 @@ script:
       description: The type of the artifact file.
       type: string
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

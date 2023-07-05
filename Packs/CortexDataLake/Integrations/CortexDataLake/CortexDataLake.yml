@@ -5,44 +5,36 @@ commonfields:
 configuration:
 - display: Token
   name: refresh_token
-  required: false
   type: 4
   hidden: true
 - display: ID
   name: reg_id
-  required: false
   type: 4
   hidden: true
 - display: Key
   name: auth_key
-  required: false
   type: 4
   hidden: true
 - displaypassword: Key
   name: credentials_auth_key
-  required: false
   hiddenusername: true
   type: 9
 - displaypassword: Token
   additionalinfo: The API Key to use for connection
   name: credentials_refresh_token
-  required: false
   hiddenusername: true
   type: 9
 - displaypassword: ID
   name: credentials_reg_id
-  required: false
   type: 9
   hiddenusername: true
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
-  required: false
   type: 0
 - additionalinfo: Choose which table incidents will be fetched from.
   defaultvalue: firewall.threat
@@ -62,7 +54,6 @@ configuration:
   - firewall.userid
   - log.system
   - log.config
-  required: false
   type: 15
 - display: Severity of events to fetch (Firewall)
   name: firewall_severity
@@ -74,7 +65,6 @@ configuration:
   - Low
   - Informational
   - Unused
-  required: false
   type: 16
 - display: Subtype of events to fetch (Firewall)
   name: firewall_subtype
@@ -108,38 +98,31 @@ configuration:
   - spyware-wpc-raven
   - wpc-virus
   - sctp
-  required: false
   type: 16
 - additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
   name: fetch_fields
-  required: false
   type: 12
 - additionalinfo: 'Filter the fetched incidents according to the given query. Query example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: Can not be used in combination with `Severity` and `Subtype` parameters.'
   display: Fetch Filter
   name: filter_query
-  required: false
   type: 12
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - additionalinfo: "The maximum number of incidents to fetch per query.\t\nCaution: A large number could create overload. Default is 10."
   defaultvalue: '10'
   display: Max. number of incidents fetched per query
   name: limit
-  required: false
   type: 0
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: Palo Alto Networks Cortex Data Lake XSOAR Connector provides cloud-based, centralized log storage and aggregation for your organization on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
 display: Cortex Data Lake XSOAR Connector
@@ -147,35 +130,22 @@ name: Cortex Data Lake
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: SELECT * FROM `firewall.traffic`
+    - defaultValue: SELECT * FROM `firewall.traffic`
       description: |-
         A free-text SQL query. For example, query="SELECT * FROM `firewall.traffic`".
         There are multiple tables in Loggings, for example: threat, traffic, and so on.
         Refer to the Cortex Logging service schema reference for the full list.
-      isArray: false
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: If set to false, query results are not mapped into the standard command context. Default is "true".
-      isArray: false
       name: transform_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Runs a query on  any table or field.
     execution: true
     name: cdl-query-logs
@@ -235,47 +205,25 @@ script:
       description: Time when the log was generated on the firewall's data plane.
       type: Date
   - arguments:
-    - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+    - defaultValue: '''1970-01-01 00:00:00'''
       description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The query end time. For example, end_time="2018-04-26 00:00:00"
-      isArray: false
+    - description: The query end time. For example, end_time="2018-04-26 00:00:00"
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
-      isArray: false
       name: time_range
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: If set to false, query results are not mapped into the standard command context. Default is "true".
-      isArray: false
       name: transform_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Runs a query on the threat table according to preset queries.
-    execution: false
     name: cdl-get-critical-threat-logs
     outputs:
     - contextPath: CDL.Logging.Threat.SessionID
@@ -405,36 +353,18 @@ script:
       description: Source port utilized by the session.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+    - defaultValue: '''1970-01-01 00:00:00'''
       description: Query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Query end time. For example, end_time="2018-04-26 00:00:00".
-      isArray: false
+    - description: Query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: Runs a query on traffic table where app_sub_category = "social networking".
-    execution: false
     name: cdl-get-social-applications
     outputs:
     - contextPath: CDL.Logging.Traffic.Action
@@ -552,42 +482,21 @@ script:
       description: Type of tunnel.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+    - defaultValue: '''1970-01-01 00:00:00'''
       description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The query end time. For example, end_time="2018-04-26 00:00:00".
-      isArray: false
+    - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
-      isArray: false
+    - description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       name: SHA256
       required: true
-      secret: false
-    deprecated: false
     description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'
-    execution: false
     name: cdl-search-by-file-hash
     outputs:
     - contextPath: CDL.Logging.Threat.SessionID
@@ -714,53 +623,23 @@ script:
       description: Source port utilized by the session.
       type: Number
   - arguments:
-    - default: false
-      description: A source IP address or an array of source IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: A source IP address or an array of source IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: source_ip
-      required: false
-      secret: false
-    - default: false
-      description: A rule name or an array of rule names to search.
-      isArray: false
+    - description: A rule name or an array of rule names to search.
       name: rule
-      required: false
-      secret: false
-    - default: false
-      description: A source zone name or an array of source zone names to search.
-      isArray: false
+    - description: A source zone name or an array of source zone names to search.
       name: from_zone
-      required: false
-      secret: false
-    - default: false
-      description: A destination zone name or an array of zone names to search.
-      isArray: false
+    - description: A destination zone name or an array of zone names to search.
       name: to_zone
-      required: false
-      secret: false
-    - default: false
-      description: Source port utilized by the session. Can be a port number or an array of destination port numbers to search. For example '443' or '443,445'
-      isArray: false
+    - description: Source port utilized by the session. Can be a port number or an array of destination port numbers to search. For example '443' or '443,445'
       name: source_port
-      required: false
-      secret: false
-    - default: false
-      description: An action name or an array of action names to search.
-      isArray: false
+    - description: An action name or an array of action names to search.
       name: action
-      required: false
-      secret: false
-    - default: false
-      description: A free-text query for which to search. This forms the WHERE part of the query, for example, !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value='8.8.8.8' And dest_port=1234".
-      isArray: false
+    - description: A free-text query for which to search. This forms the WHERE part of the query, for example, !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value='8.8.8.8' And dest_port=1234".
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
-      isArray: false
       name: fields
       predefined:
       - all
@@ -900,62 +779,26 @@ script:
       - record_size
       - source_device_host
       - dest_device_host
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+    - defaultValue: '''1970-01-01 00:00:00'''
       description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The query end time. For example, end_time="2018-04-26 00:00:00".
-      isArray: false
+    - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: dest_ip
-      required: false
-      secret: false
-    - default: false
-      description: Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445'.
-      isArray: false
+    - description: Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445'.
       name: dest_port
-      required: false
-      secret: false
-    - default: false
-      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
-      isArray: false
+    - description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: A port or array of ports to search. Used instead of the source/destination port.
-      isArray: false
+    - description: A port or array of ports to search. Used instead of the source/destination port.
       name: port
-      required: false
-      secret: false
-    deprecated: false
     description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session.
-    execution: false
     name: cdl-query-traffic-logs
     outputs:
     - contextPath: CDL.Logging.Traffic.Action
@@ -1079,52 +922,22 @@ script:
       description: Hostname of the device session destination.
       type: String
   - arguments:
-    - default: false
-      description: Original source IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: Original source IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: source_ip
-      required: false
-      secret: false
-    - default: false
-      description: Original destination IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: Original destination IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: dest_ip
-      required: false
-      secret: false
-    - default: false
-      description: Name of the security policy rule that the network traffic matched. Enter a rule name or array of rule names to search.
-      isArray: false
+    - description: Name of the security policy rule that the network traffic matched. Enter a rule name or array of rule names to search.
       name: rule_matched
-      required: false
-      secret: false
-    - default: false
-      description: The networking zone from which the traffic originated. Enter the zone or array of zones to search.
-      isArray: false
+    - description: The networking zone from which the traffic originated. Enter the zone or array of zones to search.
       name: from_zone
-      required: false
-      secret: false
-    - default: false
-      description: The networking zone to which the traffic was sent. Enter the zone or array of zones to search.
-      isArray: false
+    - description: The networking zone to which the traffic was sent. Enter the zone or array of zones to search.
       name: to_zone
-      required: false
-      secret: false
-    - default: false
-      description: Source port utilized by the session. Enter a port or array of ports to search.
-      isArray: false
+    - description: Source port utilized by the session. Enter a port or array of ports to search.
       name: source_port
-      required: false
-      secret: false
-    - default: false
-      description: Network traffic's destination port. Enter a port or array of ports to search.
-      isArray: false
+    - description: Network traffic's destination port. Enter a port or array of ports to search.
       name: dest_port
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The action that the firewall took for the network traffic. Enter an action or array of actions to search.
-      isArray: false
       name: action
       predefined:
       - unknown
@@ -1145,28 +958,13 @@ script:
       - shutdown-from-endpoint
       - abort-from-endpoint
       - split-tunnel
-      required: false
-      secret: false
-    - default: false
-      description: The binary hash (SHA256) of the file. Enter a SHA256 hash or array of SHA256 hashes to search.
-      isArray: false
+    - description: The binary hash (SHA256) of the file. Enter a SHA256 hash or array of SHA256 hashes to search.
       name: file_sha_256
-      required: false
-      secret: false
-    - default: false
-      description: The name of the file that is blocked. Enter a file name or array of file names to search.
-      isArray: false
+    - description: The name of the file that is blocked. Enter a file name or array of file names to search.
       name: file_name
-      required: false
-      secret: false
-    - default: false
-      description: Free input query to search. This is the WHERE part of the query. so an example will be !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'".
-      isArray: false
+    - description: Free input query to search. This is the WHERE part of the query. so an example will be !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'".
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all" (same as *) or or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
       isArray: true
@@ -1303,50 +1101,22 @@ script:
       - record_size
       - source_device_host
       - dest_device_host
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+    - defaultValue: '''1970-01-01 00:00:00'''
       description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The query end time. For example, end_time="2018-04-26 00:00:00".
-      isArray: false
+    - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
-      isArray: false
+    - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The port or array of ports to search. Used instead of the source/destination port.
-      isArray: false
+    - description: The port or array of ports to search. Used instead of the source/destination port.
       name: port
-      required: false
-      secret: false
-    deprecated: false
     description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
-    execution: false
     name: cdl-query-threat-logs
     outputs:
     - contextPath: CDL.Logging.Threat.SessionID
@@ -1482,52 +1252,22 @@ script:
       description: Hostname of the device session destination.
       type: String
   - arguments:
-    - default: false
-      description: A source IP address or an array of IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: A source IP address or an array of IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
       name: source_ip
-      required: false
-      secret: false
-    - default: false
-      description: A destination IP address or an array of IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: A destination IP address or an array of IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
       name: dest_ip
-      required: false
-      secret: false
-    - default: false
-      description: The name of the security policy rule or an array of rule names to search.
-      isArray: false
+    - description: The name of the security policy rule or an array of rule names to search.
       name: rule_matched
-      required: false
-      secret: false
-    - default: false
-      description: The networking zone or array of zones to search.
-      isArray: false
+    - description: The networking zone or array of zones to search.
       name: from_zone
-      required: false
-      secret: false
-    - default: false
-      description: The networking zone or array of zones to search.
-      isArray: false
+    - description: The networking zone or array of zones to search.
       name: to_zone
-      required: false
-      secret: false
-    - default: false
-      description: The source port or array of ports to search.
-      isArray: false
+    - description: The source port or array of ports to search.
       name: source_port
-      required: false
-      secret: false
-    - default: false
-      description: The network traffic's destination port or array of ports to search.
-      isArray: false
+    - description: The network traffic's destination port or array of ports to search.
       name: dest_port
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The action or array of actions that the firewall undertook to search.
-      isArray: false
       name: action
       predefined:
       - unknown
@@ -1548,16 +1288,9 @@ script:
       - shutdown-from-endpoint
       - abort-from-endpoint
       - split-tunnel
-      required: false
-      secret: false
-    - default: false
-      description: Free input query to search. This is the WHERE part of the query. For example, !cdl-query-url-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'".
-      isArray: false
+    - description: Free input query to search. This is the WHERE part of the query. For example, !cdl-query-url-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'".
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. List of fields can be found after viewing all the outputted fields with "all".
       isArray: true
@@ -1694,55 +1427,23 @@ script:
       - record_size
       - source_device_host
       - dest_device_host
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+    - defaultValue: '''1970-01-01 00:00:00'''
       description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The query end time. For example, end_time="2018-04-26 00:00:00".
-      isArray: false
+    - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of logs to return. Default is 5.
-      isArray: false
+    - description: The maximum number of logs to return. Default is 5.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
-      isArray: false
+    - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The port or array of ports to search. Used instead of the source/destination port.
-      isArray: false
+    - description: The port or array of ports to search. Used instead of the source/destination port.
       name: port
-      required: false
-      secret: false
-    - default: false
-      description: "This argument allows to perform a LIKE search of the specified values on the URL and URI fields. \nAn example value will be paloaltonetworks.com, demisto\twhich will provide results like https://apps.paloaltonetworks.com and https://demisto.com."
-      isArray: false
+    - description: "This argument allows to perform a LIKE search of the specified values on the URL and URI fields. \nAn example value will be paloaltonetworks.com, demisto\twhich will provide results like https://apps.paloaltonetworks.com and https://demisto.com."
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Searches the URL log table.
-    execution: false
     name: cdl-query-url-logs
     outputs:
     - contextPath: CDL.Logging.URL.SessionID
@@ -1873,9 +1574,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Identifies the action that the firewall took for the network traffic.
-      isArray: false
       name: action
       predefined:
       - unknown
@@ -1896,104 +1595,40 @@ script:
       - shutdown-from-endpoint
       - abort-from-endpoint
       - split-tunnel
-      required: false
-      secret: false
-    - default: false
-      description: Application associated with the network traffic.
-      isArray: false
+    - description: Application associated with the network traffic.
       name: app
-      required: false
-      secret: false
-    - default: false
-      description: Identifies the high-level family of the application.
-      isArray: false
+    - description: Identifies the high-level family of the application.
       name: app_category
-      required: false
-      secret: false
-    - default: false
-      description: Hostname of the device to which the session was directed.
-      isArray: false
+    - description: Hostname of the device to which the session was directed.
       name: dest_device_host
-      required: false
-      secret: false
-    - default: false
-      description: Original destination IP address.
-      isArray: false
+    - description: Original destination IP address.
       name: dest_ip
-      required: false
-      secret: false
-    - default: false
-      description: The name of the external dynamic list that contains the destination IP address of the traffic.
-      isArray: false
+    - description: The name of the external dynamic list that contains the destination IP address of the traffic.
       name: dest_edl
-      required: false
-      secret: false
-    - default: false
-      description: The dynamic address group that Device-ID identifies as the destination for the traffic.
-      isArray: false
+    - description: The dynamic address group that Device-ID identifies as the destination for the traffic.
       name: dest_dynamic_address_group
-      required: false
-      secret: false
-    - default: false
-      description: Destination country or internal region for private addresses.
-      isArray: false
+    - description: Destination country or internal region for private addresses.
       name: dest_location
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Network traffic's destination port. If this value is 0, then the app is using
         its standard port.
-      isArray: false
       name: dest_port
-      required: false
-      secret: false
-    - default: false
-      description: The username to which the network traffic was destined.
-      isArray: false
+    - description: The username to which the network traffic was destined.
       name: dest_user
-      required: false
-      secret: false
-    - default: false
-      description: The name of the file that is blocked.
-      isArray: false
+    - description: The name of the file that is blocked.
       name: file_name
-      required: false
-      secret: false
-    - default: false
-      description: The binary hash (SHA256) of the file. Enter a SHA256 hash or array of SHA256 hashes to search.
-      isArray: false
+    - description: The binary hash (SHA256) of the file. Enter a SHA256 hash or array of SHA256 hashes to search.
       name: file_sha_256
-      required: false
-      secret: false
-    - default: false
-      description: Palo Alto Networks textual identifier for the threat.
-      isArray: false
+    - description: Palo Alto Networks textual identifier for the threat.
       name: file_type
-      required: false
-      secret: false
-    - default: false
-      description: The networking zone from which the traffic originated.
-      isArray: false
+    - description: The networking zone from which the traffic originated.
       name: from_zone
-      required: false
-      secret: false
-    - default: false
-      description: Indicates if the direction of traffic is from server to client.
-      isArray: false
+    - description: Indicates if the direction of traffic is from server to client.
       name: is_server_to_client
-      required: false
-      secret: false
-    - default: false
-      description: Indicates whether the session was denied due to a URL filtering rule.
-      isArray: false
+    - description: Indicates whether the session was denied due to a URL filtering rule.
       name: is_url_denied
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Identifies the log type.
-      isArray: false
       name: log_type
       predefined:
       - traffic
@@ -2022,96 +1657,36 @@ script:
       - action
       - scan
       - sam
-      required: false
-      secret: false
-    - default: false
-      description: If destination NAT performed, the post-NAT destination IP address.
-      isArray: false
+    - description: If destination NAT performed, the post-NAT destination IP address.
       name: nat_dest
-      required: false
-      secret: false
-    - default: false
-      description: Post-NAT destination port.
-      isArray: false
+    - description: Post-NAT destination port.
       name: nat_dest_port
-      required: false
-      secret: false
-    - default: false
-      description: If source NAT was performed, the post-NAT source IP address.
-      isArray: false
+    - description: If source NAT was performed, the post-NAT source IP address.
       name: nat_source
-      required: false
-      secret: false
-    - default: false
-      description: Post-NAT source port.
-      isArray: false
+    - description: Post-NAT source port.
       name: nat_source_port
-      required: false
-      secret: false
-    - default: false
-      description: Name of the security policy rule that the network traffic matched.
-      isArray: false
+    - description: Name of the security policy rule that the network traffic matched.
       name: rule_matched
-      required: false
-      secret: false
-    - default: false
-      description: Unique identifier for the security policy rule that the network traffic matched.
-      isArray: false
+    - description: Unique identifier for the security policy rule that the network traffic matched.
       name: rule_matched_uuid
-      required: false
-      secret: false
-    - default: false
-      description: Severity as defined by the platform.
-      isArray: false
+    - description: Severity as defined by the platform.
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: Hostname of the device from which the session originated.
-      isArray: false
+    - description: Hostname of the device from which the session originated.
       name: source_device_host
-      required: false
-      secret: false
-    - default: false
-      description: Original source IP address.
-      isArray: false
+    - description: Original source IP address.
       name: source_ip
-      required: false
-      secret: false
-    - default: false
-      description: The name of the external dynamic list that contains the source IP address of the traffic.
-      isArray: false
+    - description: The name of the external dynamic list that contains the source IP address of the traffic.
       name: source_edl
-      required: false
-      secret: false
-    - default: false
-      description: The dynamic address group that Device-ID identifies as the source of the traffic.
-      isArray: false
+    - description: The dynamic address group that Device-ID identifies as the source of the traffic.
       name: source_dynamic_address_group
-      required: false
-      secret: false
-    - default: false
-      description: Source country or internal region for private addresses.
-      isArray: false
+    - description: Source country or internal region for private addresses.
       name: source_location
-      required: false
-      secret: false
-    - default: false
-      description: Source port utilized by the session.
-      isArray: false
+    - description: Source port utilized by the session.
       name: source_port
-      required: false
-      secret: false
-    - default: false
-      description: The username that initiated the network traffic.
-      isArray: false
+    - description: The username that initiated the network traffic.
       name: source_user
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Identifies the log subtype.
-      isArray: false
       name: sub_type
       predefined:
       - attack
@@ -2142,49 +1717,21 @@ script:
       - spyware-wpc-raven
       - wpc-virus
       - sctp
-      required: false
-      secret: false
-    - default: false
-      description: The URL category.
-      isArray: false
+    - description: The URL category.
       name: url_category
-      required: false
-      secret: false
-    - default: false
-      description: The name of the internet domain that was visited in this session.
-      isArray: false
+    - description: The name of the internet domain that was visited in this session.
       name: url_domain
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+    - defaultValue: '''1970-01-01 00:00:00'''
       description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The query end time. For example, end_time="2018-04-26 00:00:00".
-      isArray: false
+    - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
-      isArray: false
+    - description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Searches the Cortex firewall.file_data table.
-    execution: false
     name: cdl-query-file-data
     outputs:
     - contextPath: CDL.Logging.File.App
@@ -2426,15 +1973,10 @@ script:
     - contextPath: CDL.Logging.File.LogSource
       description: Identifies the origin of the data (the system that produced the data.
       type: String
-  - deprecated: false
-    description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
-    execution: false
+  - description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     name: cdl-reset-authentication-timeout
   dockerimage: demisto/python_pancloud_v2:1.0.0.62401
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

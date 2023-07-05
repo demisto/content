@@ -11,11 +11,9 @@ configuration:
 - display: Username
   displaypassword: Password
   name: credentials
-  required: false
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: Checks an XSOAR hosted EDL to make sure it's returning a valid response.   Supports PAN-OS (text), CSV, or JSON EDLs.
 display: XSOAR EDL Checker

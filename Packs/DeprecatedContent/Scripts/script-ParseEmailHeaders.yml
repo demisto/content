@@ -86,7 +86,6 @@ outputs:
   description: A unique string assigned by the mail system when the message is first created. These can easily be forged. (e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com)
   type: String
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 deprecated: true
 fromversion: 5.0.0

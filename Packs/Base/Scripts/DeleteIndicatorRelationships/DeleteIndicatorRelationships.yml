@@ -4,14 +4,12 @@ args:
   isArray: true
   name: ids
   required: true
-  secret: false
 comment: This automation allows to delete a relationship between indicator objects based on the relationship id.
 commonfields:
   id: DeleteIndicatorRelationships
   version: -1
 name: DeleteIndicatorRelationships
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'

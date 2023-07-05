@@ -13,7 +13,6 @@ type: python
 tags: []
 enabled: true
 scripttarget: 0
-runonce: false
 dockerimage: demisto/python3:3.10.10.48392
 subtype: python3
 tests:

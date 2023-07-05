@@ -19,18 +19,15 @@ configuration:
   - General
   - Europe
   - Asia
-  required: false
   type: 15
   section: Connect
 - display: Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.
   name: malicious_categories
-  required: false
   type: 12
   section: Collect
   advanced: true
 - display: Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.
   name: suspicious_categories
-  required: false
   type: 12
   section: Collect
   advanced: true
@@ -40,7 +37,6 @@ configuration:
   - high
   - medium
   - low
-  required: false
   type: 16
   section: Collect
   advanced: true
@@ -50,19 +46,16 @@ configuration:
   - high
   - medium
   - low
-  required: false
   type: 16
   section: Collect
   advanced: true
 - display: Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.
   name: override_confidence_score_malicious_threshold
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.
   name: override_confidence_score_suspicious_threshold
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -74,7 +67,6 @@ configuration:
   - low
   - medium
   - high
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -88,18 +80,15 @@ configuration:
   - low
   - medium
   - high
-  required: false
   type: 15
   section: Collect
   advanced: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - additionalinfo: |-
@@ -111,13 +100,11 @@ configuration:
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
 - defaultvalue: '100'
   display: How many incidents to fetch each time
   name: max_fetch
-  required: false
   type: 0
   section: Collect
 - additionalinfo: Select Chronicle alert type to create actionable incident. Available options are IOC Domain matches(Default), Assets with alerts, Detection alerts and User alerts.
@@ -129,7 +116,6 @@ configuration:
   - Assets with alerts
   - Detection alerts
   - User alerts
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -140,21 +126,18 @@ configuration:
   - Medium
   - Low
   - Unspecified
-  required: false
   type: 15
   section: Collect
   advanced: true
 - additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add multiple. Entered rules have precedence over the "Fetch all rules detections" checkbox.'
   display: Detections to fetch by Rule ID or Version ID
   name: fetch_detection_by_ids
-  required: false
   type: 0
   section: Collect
   advanced: true
 - additionalinfo: Fetch detections for all versions of all the rules.
   display: Fetch all rules detections
   name: fetch_all_detections
-  required: false
   type: 8
   section: Collect
   advanced: true
@@ -164,7 +147,6 @@ configuration:
   options:
   - ALERTING
   - NOT_ALERTING
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -177,7 +159,6 @@ configuration:
   - '30'
   - '45'
   - '60'
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -188,19 +169,16 @@ configuration:
   options:
   - CREATED_TIME
   - DETECTION_TIME
-  required: false
   type: 15
   section: Collect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -216,7 +194,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Collect
 - defaultvalue: indicatorType
@@ -227,14 +204,12 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
   section: Collect
   advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   section: Collect
   advanced: true
@@ -245,33 +220,19 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument.
-      isArray: false
       name: preset_time_range
       predefined:
       - Last 1 day
       - Last 7 days
       - Last 15 days
       - Last 30 days
-      required: false
-      secret: false
-    - default: false
-      description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10000'
+    - defaultValue: '10000'
       description: The maximum number of IOCs to return. You can specify between 1 and 10000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
-    execution: false
     name: gcb-list-iocs
     outputs:
     - contextPath: Domain.Name
@@ -307,44 +268,24 @@ script:
   - arguments:
     - default: true
       description: ' The artifact indicator associated with assets. The artifact type can be one of the following: IP, Domain, MD5, SHA1, or SHA256. '
-      isArray: false
       name: artifact_value
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Fetches assets that accessed the artifact during the interval specified. If configured, overrides the start_time and end_time arguments.
-      isArray: false
       name: preset_time_range
       predefined:
       - Last 1 day
       - Last 7 days
       - Last 15 days
       - Last 30 days
-      required: false
-      secret: false
-    - default: false
-      description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: 'The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10000'
+    - defaultValue: '10000'
       description: The maximum number of IOCs to return. You can specify between 1 and 10000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of the assets that accessed the input artifact (IP, domain, MD5, SHA1 and SHA256) during the specified time.
-    execution: false
     name: gcb-assets
     outputs:
     - contextPath: GoogleChronicleBackstory.Asset.HostName
@@ -398,10 +339,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -458,10 +396,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of a domain.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -513,15 +448,10 @@ script:
       description: Impact of the artifact on the enterprise.
       type: String
   - arguments:
-    - default: false
-      description: The artifact indicator value. The supported artifact types are IP and domain.
-      isArray: false
+    - description: The artifact indicator value. The supported artifact types are IP and domain.
       name: artifact_value
       required: true
-      secret: false
-    deprecated: false
     description: Accepts an artifact indicator and returns any threat intelligence associated with the artifact. The threat intelligence information is drawn from your enterprise security systems and from Chronicle's IoC partners (for example, the DHS threat feed).
-    execution: false
     name: gcb-ioc-details
     outputs:
     - contextPath: Domain.Name
@@ -559,62 +489,36 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Fetch alerts for the specified time range. If preset_time_range is configured, overrides the start_time and end_time arguments.
-      isArray: false
       name: preset_time_range
       predefined:
       - Last 1 day
       - Last 7 days
       - Last 15 days
       - Last 30 days
-      required: false
-      secret: false
-    - default: false
-      description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: 'The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10000'
+    - defaultValue: '10000'
       description: The maximum number of IOCs to return. You can specify between 1 and 100000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The severity by which to filter the returned alerts. If not supplied, all alerts are fetched. This is applicable for asset alerts only. The possible values are "High", "Medium", "Low", or "Unspecified".
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Unspecified
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Asset Alerts
       description: Specify which type of alerts you want. The possible values are "Asset Alerts" or "User Alerts".
-      isArray: false
       name: alert_type
       predefined:
       - Asset Alerts
       - User Alerts
-      required: false
-      secret: false
-    deprecated: false
     description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
-    execution: false
     name: gcb-list-alerts
     outputs:
     - contextPath: GoogleChronicleBackstory.Alert.AssetName
@@ -655,9 +559,7 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Specify the identifier type of the asset you are investigating. The possible values are Host Name, IP Address, MAC Address or Product ID.
-      isArray: false
       name: asset_identifier_type
       predefined:
       - Host Name
@@ -665,53 +567,27 @@ script:
       - MAC Address
       - Product ID
       required: true
-      secret: false
-    - default: false
-      description: Value of the asset identifier.
-      isArray: false
+    - description: Value of the asset identifier.
       name: asset_identifier
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Get events that are discovered during the interval specified. If configured, overrides the start_time and end_time arguments.
-      isArray: false
       name: preset_time_range
       predefined:
       - Last 1 day
       - Last 7 days
       - Last 15 days
       - Last 30 days
-      required: false
-      secret: false
-    - default: false
-      description: ' The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: ' The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: 'The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10000'
+    - defaultValue: '10000'
       description: Specify the maximum number of events to fetch. You can specify between 1 and 10000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
-      isArray: false
+    - description: 'Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: reference_time
-      required: false
-      secret: false
-    deprecated: false
     description: List all of the events discovered within your enterprise on a particular device within the specified time range. If you receive the maximum number of events you specified using the page_size parameter (or 100, the default), there might still be more events within your Chronicle account. You can narrow the time range and issue the call again to ensure you have visibility into all possible events. This command returns more than 60 different types of events. Any event would have only specific output context set. Refer the UDM documentation to figure out the output properties specific to the event types.
-    execution: false
     name: gcb-list-events
     outputs:
     - contextPath: GoogleChronicleBackstory.Events.eventType
@@ -1803,101 +1679,60 @@ script:
         Unique identifier for a rule or specific version of a rule, defined and returned by the server. You can specify exactly one rule identifier.
         Use the following format to specify the id:
          ru_{UUID} or {ruleId}@v_{int64}_{int64}. If not specified then detections for all versions of all rules are returned.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         (Deprecated: use `start_time` instead) Time to begin returning detections, filtering on a detection's "detectionTime". If not specified, the start time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
-      isArray: false
       name: detection_start_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         (Deprecated: use `end_time` instead) Time to stop returning detections, filtering on a detection's "detectionTime". If not specified, the end time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
-      isArray: false
       name: detection_end_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Filter detections on if they are ALERTING or NOT_ALERTING.
         Avoid specifying to return all detections.
-      isArray: false
       name: alert_state
       predefined:
       - ALERTING
       - NOT_ALERTING
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Specify the limit on the number of detections to display. You can specify between 1 and 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments.
-      isArray: false
+    - description: A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments.
       name: page_token
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: |-
         Whether the user wants to retrieve detections for all versions of a rule with a given rule identifier.
 
         Note: If this option is set to true, rule id is required.
-      isArray: false
       name: detection_for_all_versions
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "DETECTION_TIME". Detections are returned in descending order of the timestamp.
 
         Note: Requires either "start_time" or "end_time" argument.
-      isArray: false
       name: list_basis
       predefined:
       - DETECTION_TIME
       - CREATED_TIME
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Time to begin returning detections, filtering by the detection field specified in the listBasis parameter. If not specified, the start time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Time to stop returning detections, filtering by the detection field specified by the listBasis parameter. If not specified, the end time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
-      isArray: false
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Return the detections for the specified version of a rule, the latest version of a rule, all versions of a rule, or all versions of all rules.
-    execution: false
     name: gcb-list-detections
     outputs:
     - contextPath: GoogleChronicleBackstory.Detections.id
@@ -3041,32 +2876,18 @@ script:
       description: A page token that can be provided to the next call to view the next page of detections. Absent if this is the last page.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Specify the maximum number of Rules to return. You can specify between 1 and 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A page token, received from a previous call.  Provide this to retrieve the subsequent page.
-      isArray: false
+    - description: A page token, received from a previous call.  Provide this to retrieve the subsequent page.
       name: page_token
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: To filter live rules.
-      isArray: false
       name: live_rule
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: List the latest versions of all Rules.
-    execution: false
     name: gcb-list-rules
     outputs:
     - contextPath: GoogleChronicleBackstory.Rules.ruleId
@@ -3121,15 +2942,10 @@ script:
       description: A page token that can be provided to the next call to view the next page of Rules. Absent if this is the last page.
       type: String
   - arguments:
-    - default: false
-      description: Rule text in YARA-L 2.0 format for the rule to be created.
-      isArray: false
+    - description: Rule text in YARA-L 2.0 format for the rule to be created.
       name: rule_text
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new rule. By default the live rule status will be set to disabled.
-    execution: false
     name: gcb-create-rule
     outputs:
     - contextPath: GoogleChronicleBackstory.Rules.ruleId
@@ -3181,15 +2997,10 @@ script:
       description: Time at which the rule is updated.
       type: String
   - arguments:
-    - default: false
-      description: Rule ID or Version ID of the rule to be retrieved.
-      isArray: false
+    - description: Rule ID or Version ID of the rule to be retrieved.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the rule details of specified Rule ID or Version ID.
-    execution: false
     name: gcb-get-rule
     outputs:
     - contextPath: GoogleChronicleBackstory.Rules.ruleId
@@ -3241,15 +3052,10 @@ script:
       description: Time at which the rule is updated.
       type: String
   - arguments:
-    - default: false
-      description: ID of the rule to be deleted.
-      isArray: false
+    - description: ID of the rule to be deleted.
       name: rule_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the rule specified by Rule ID.
-    execution: false
     name: gcb-delete-rule
     outputs:
     - contextPath: GoogleChronicleBackstory.DeleteRule.ruleId
@@ -3259,21 +3065,13 @@ script:
       description: Whether the rule is successfully deleted or not.
       type: String
   - arguments:
-    - default: false
-      description: Rule ID for a Rule for which to create a new version.
-      isArray: false
+    - description: Rule ID for a Rule for which to create a new version.
       name: rule_id
       required: true
-      secret: false
-    - default: false
-      description: Rule text in YARA-L 2.0 format for the new version of the rule to be created.
-      isArray: false
+    - description: Rule text in YARA-L 2.0 format for the new version of the rule to be created.
       name: rule_text
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new version of an existing rule.
-    execution: false
     name: gcb-create-rule-version
     outputs:
     - contextPath: GoogleChronicleBackstory.Rules.ruleId
@@ -3325,25 +3123,17 @@ script:
       description: Time at which the rule is updated.
       type: String
   - arguments:
-    - default: false
-      description: ID of the rule.
-      isArray: false
+    - description: ID of the rule.
       name: rule_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: New alerting status for the Rule. Possible values are 'enable' or 'disable'.
-      isArray: false
       name: alerting_status
       predefined:
       - enable
       - disable
       required: true
-      secret: false
-    deprecated: false
     description: Updates the alerting status for a rule specified by Rule ID.
-    execution: false
     name: gcb-change-rule-alerting-status
     outputs:
     - contextPath: GoogleChronicleBackstory.RuleAlertingChange.ruleId
@@ -3356,25 +3146,17 @@ script:
       description: New alerting status for the rule.
       type: String
   - arguments:
-    - default: false
-      description: ID of the rule.
-      isArray: false
+    - description: ID of the rule.
       name: rule_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: New live rule status for the Rule. Possible values are 'enable' or 'disable'.
-      isArray: false
       name: live_rule_status
       predefined:
       - enable
       - disable
       required: true
-      secret: false
-    deprecated: false
     description: Updates the live rule status for a rule specified by Rule ID.
-    execution: false
     name: gcb-change-live-rule-status
     outputs:
     - contextPath: GoogleChronicleBackstory.LiveRuleStatusChange.ruleId
@@ -3387,35 +3169,22 @@ script:
       description: New live rule status for the rule.
       type: String
   - arguments:
-    - default: false
-      description: Rule ID or Version ID of the rule whose retrohunt is to be started.
-      isArray: false
+    - description: Rule ID or Version ID of the rule whose retrohunt is to be started.
       name: rule_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 1 week
+    - defaultValue: 1 week
       description: |-
         Start time for the time range of logs being processed. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 1 week earlier than current time.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 10 min
+    - defaultValue: 10 min
       description: |-
         End time for the time range of logs being processed. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 10 minutes earlier than current time.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
-      isArray: false
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Initiate a retrohunt for the specified rule.
-    execution: false
     name: gcb-start-retrohunt
     outputs:
     - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
@@ -3440,21 +3209,13 @@ script:
       description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE, or CANCELLED.
       type: String
   - arguments:
-    - default: false
-      description: Rule ID or Version ID of the rule whose retrohunt is to be retrieved.
-      isArray: false
+    - description: Rule ID or Version ID of the rule whose retrohunt is to be retrieved.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier.
-      isArray: false
+    - description: Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier.
       name: retrohunt_id
       required: true
-      secret: false
-    deprecated: false
     description: Get retrohunt for a specific version of rule.
-    execution: false
     name: gcb-get-retrohunt
     outputs:
     - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
@@ -3485,52 +3246,30 @@ script:
       description: Percentage progress towards retrohunt completion (0.00 to 100.00).
       type: Number
   - arguments:
-    - default: false
-      description: Rule ID or Version ID of the rule whose retrohunts are to be listed. If not supplied, retohunts for all versions of all rules will be listed.
-      isArray: false
+    - description: Rule ID or Version ID of the rule whose retrohunts are to be listed. If not supplied, retohunts for all versions of all rules will be listed.
       name: id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: |-
         Whether to retrieve retrohunts for all versions of a rule with a given rule identifier.
         Note: If this option is set to true, rule id is required.
-      isArray: false
       name: retrohunts_for_all_versions
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter retrohunts based on their status. The possible values are "RUNNING", "DONE", or "CANCELLED".
-      isArray: false
       name: state
       predefined:
       - RUNNING
       - DONE
       - CANCELLED
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Specify the maximum number of retohunts to return. You can specify between 1 and 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A page token, received from a previous call. Provide this to retrieve the subsequent page.
-      isArray: false
+    - description: A page token, received from a previous call. Provide this to retrieve the subsequent page.
       name: page_token
-      required: false
-      secret: false
-    deprecated: false
     description: List retrohunts for a rule.
-    execution: false
     name: gcb-list-retrohunts
     outputs:
     - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
@@ -3561,21 +3300,13 @@ script:
       description: Percentage progress towards retrohunt completion (0.00 to 100.00).
       type: Number
   - arguments:
-    - default: false
-      description: Rule ID or Version ID of the rule whose retrohunt is to be cancelled.
-      isArray: false
+    - description: Rule ID or Version ID of the rule whose retrohunt is to be cancelled.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier.
-      isArray: false
+    - description: Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier.
       name: retrohunt_id
       required: true
-      secret: false
-    deprecated: false
     description: Cancel a retrohunt for a specified rule.
-    execution: false
     name: gcb-cancel-retrohunt
     outputs:
     - contextPath: GoogleChronicleBackstory.RetroHunt.id
@@ -3588,38 +3319,24 @@ script:
       description: Whether the retrohunt is cancelled or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: Provide a unique name of the list to create a reference list.
-      isArray: false
+    - description: Provide a unique name of the list to create a reference list.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the list.
-      isArray: false
+    - description: Description of the list.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Enter the content to be added into the reference list.
         Format accepted is: "Line 1, Line 2, Line 3".
-      isArray: false
       name: lines
       required: true
-      secret: false
     - default: true
       defaultValue: ','
       description: |-
         Delimiter by which the content of the list is seperated.
         Eg:  " , " , " : ", " ; "
-      isArray: false
       name: delimiter
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new reference list.
-    execution: false
     name: gcb-create-reference-list
     outputs:
     - contextPath: GoogleChronicleBackstory.ReferenceList.name
@@ -3638,30 +3355,17 @@ script:
     - default: true
       defaultValue: '100'
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The next page token to retrieve the next set of results.
-      isArray: false
+    - description: The next page token to retrieve the next set of results.
       name: page_token
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: BASIC
       description: Select option to control the returned response. BASIC will return the metadata for the list, but not the full contents. FULL will return everything.
-      isArray: false
       name: view
       predefined:
       - BASIC
       - FULL
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve all the reference lists.
-    execution: false
     name: gcb-list-reference-list
     outputs:
     - contextPath: GoogleChronicleBackstory.ReferenceLists.name
@@ -3677,26 +3381,18 @@ script:
       description: List of line items.
       type: String
   - arguments:
-    - default: false
-      description: Provide a unique name of the list to retrieve the result.
-      isArray: false
+    - description: Provide a unique name of the list to retrieve the result.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: FULL
       description: Select option to control the returned response. BASIC will return the metadata for the list, but not the full contents. FULL will return everything.
-      isArray: false
       name: view
       predefined:
       - FULL
       - BASIC
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the specified list.
-    execution: false
     name: gcb-get-reference-list
     outputs:
     - contextPath: GoogleChronicleBackstory.ReferenceList.name
@@ -3712,40 +3408,24 @@ script:
       description: List of line items.
       type: String
   - arguments:
-    - default: false
-      description: Provide a unique name of the list to update.
-      isArray: false
+    - description: Provide a unique name of the list to update.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Enter the content to be updated into the reference list.
         Format accepted is: "Line 1, Line 2, Line 3".
 
         Note: Use gcb-get-reference-list to retrieve the content and description of the list.
-      isArray: false
       name: lines
       required: true
-      secret: false
-    - default: false
-      description: Description to be updated of the list.
-      isArray: false
+    - description: Description to be updated of the list.
       name: description
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ','
+    - defaultValue: ','
       description: |-
         Delimiter by which the content of the list is seperated.
         Eg:  " , " , " : ", " ; "
-      isArray: false
       name: delimiter
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing reference list.
-    execution: false
     name: gcb-update-reference-list
     outputs:
     - contextPath: GoogleChronicleBackstory.ReferenceList.name
@@ -3761,34 +3441,20 @@ script:
       description: Time when the list was created.
       type: Date
   - arguments:
-    - default: false
-      description: Rule text in YARA-L 2.0 format for the rule to stream.
-      isArray: false
+    - description: Rule text in YARA-L 2.0 format for the rule to stream.
       name: rule_text
       required: true
-      secret: false
-    - default: false
-      description: "Start time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\nExample: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.\n\n\nNote: The time window between start_time and end_time cannot be greater than 2 weeks."
-      isArray: false
+    - description: "Start time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\nExample: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.\n\n\nNote: The time window between start_time and end_time cannot be greater than 2 weeks."
       name: start_time
       required: true
-      secret: false
-    - default: false
-      description: "End time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\nExample: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.\n\nNote: The time window between start_time and end_time cannot be greater than 2 weeks."
-      isArray: false
+    - description: "End time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\nExample: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.\n\nNote: The time window between start_time and end_time cannot be greater than 2 weeks."
       name: end_time
       required: true
-      secret: false
     - default: true
       defaultValue: '1000'
       description: 'Maximum number of results to return. Specify a value between 1 and 10,000. '
-      isArray: false
       name: max_results
-      required: false
-      secret: false
-    deprecated: false
     description: Test a rule over a specified time range. Return any errors and any detections up to the specified maximum.
-    execution: false
     name: gcb-test-rule-stream
     outputs:
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.type
@@ -3921,10 +3587,7 @@ script:
       description: The time period the detection was found in.
       type: Date
   dockerimage: demisto/googleapi-python3:1.0.0.64384
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

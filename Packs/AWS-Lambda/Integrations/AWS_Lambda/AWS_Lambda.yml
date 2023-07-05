@@ -24,66 +24,53 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
-  required: false
   type: 15
 - display: Role Arn
   name: roleArn
-  required: false
   type: 0
 - display: Role Session Name
   name: roleSessionName
-  required: false
   type: 0
 - display: Role Session Duration
   name: sessionDuration
-  required: false
   type: 0
 - display: Access Key
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret Key
 - display: Access Key
   name: access_key
-  required: false
   type: 0
   hidden: true
 - display: Secret Key
   name: secret_key
-  required: false
   type: 4
   hidden: true
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
   additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used. You may also override the value at the aws-lambda-invoke command."
-  required: false
   type: 0
 - display: Retries
   name: retries
-  required: false
   type: 0
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command."
 - display: PrivateLink service URL.
   name: endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: STS PrivateLink URL
   name: sts_endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Amazon Web Services Serverless Compute service (lambda).
 display: AWS - Lambda
@@ -91,22 +78,13 @@ name: AWS - Lambda
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the Lambda function.
-      isArray: false
+    - description: The name of the Lambda function.
       name: functionName
       required: true
-      secret: false
-    - default: false
-      description: Specify a version or alias to get details about a published version of the function.
-      isArray: false
+    - description: Specify a version or alias to get details about a published version of the function.
       name: qualifier
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -125,29 +103,13 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the configuration information of the Lambda function and a presigned URL link to the .zip file you uploaded with CreateFunction so you can download the .zip file. Note that the URL is valid for up to 10 minutes. The configuration information is the same information you provided as parameters when uploading the function.  Use the Qualifier parameter to retrieve a published version of the function. Otherwise, returns the unpublished version ($LATEST ).
-    execution: false
     name: aws-lambda-get-function
     outputs:
     - contextPath: AWS.Lambda.Functions.Configuration.FunctionName
@@ -238,10 +200,8 @@ script:
       description: The number of concurrent executions reserved for this function.
       type: string
   - arguments:
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -260,29 +220,13 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information. You must use GetFunction to retrieve the code for your function.
-    execution: false
     name: aws-lambda-list-functions
     outputs:
     - contextPath: AWS.Lambda.Functions.FunctionName
@@ -361,22 +305,13 @@ script:
       description: The size of the layer archive in bytes.
       type: string
   - arguments:
-    - default: false
-      description: The name of the Lambda function.
-      isArray: false
+    - description: The name of the Lambda function.
       name: functionName
       required: true
-      secret: false
-    - default: false
-      description: If you specify this optional parameter, the API returns only the aliases that are pointing to the specific Lambda function version, otherwise the API returns all of the aliases created for the Lambda function.
-      isArray: false
+    - description: If you specify this optional parameter, the API returns only the aliases that are pointing to the specific Lambda function version, otherwise the API returns all of the aliases created for the Lambda function.
       name: functionVersion
-      required: false
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -395,29 +330,13 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of aliases created for a Lambda function. For each alias, the response includes information such as the alias ARN, description, alias name, and the function version to which it points.
-    execution: false
     name: aws-lambda-list-aliases
     outputs:
     - contextPath: AWS.Lambda.Aliases.AliasArn
@@ -439,55 +358,30 @@ script:
       description: Represents the latest updated revision of the function or alias.
       type: string
   - arguments:
-    - default: false
-      description: The name of the Lambda function.
-      isArray: false
+    - description: The name of the Lambda function.
       name: functionName
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Choose from the following options.  RequestResponse (default) - Invoke the function synchronously. Keep the connection open until the function returns a response or times out. Event - Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if configured). DryRun - Validate parameter values and verify that the user or role has permission to invoke the function.
-      isArray: false
       name: invocationType
       predefined:
       - Event
       - RequestResponse
       - DryRun
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: You can set this optional parameter to Tail in the request only if you specify the InvocationType parameter with value RequestResponse . In this case, AWS Lambda returns the base64-encoded last 4 KB of log data produced by your Lambda function in the x-amz-log-result header.
-      isArray: false
       name: logType
       predefined:
       - None
       - Tail
-      required: false
-      secret: false
-    - default: false
-      description: Using the ClientContext you can pass client-specific information to the Lambda function you are invoking.
-      isArray: false
+    - description: Using the ClientContext you can pass client-specific information to the Lambda function you are invoking.
       name: clientContext
-      required: false
-      secret: false
-    - default: false
-      description: JSON that you want to provide to your Lambda function as input.
-      isArray: false
+    - description: JSON that you want to provide to your Lambda function as input.
       name: payload
-      required: false
-      secret: false
-    - default: false
-      description: Specify a version or alias to invoke a published version of the function.
-      isArray: false
+    - description: Specify a version or alias to invoke a published version of the function.
       name: qualifier
-      required: false
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -506,39 +400,16 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. If not specified, will use the instances configured default timeout.
-      isArray: false
+    - description: The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. If not specified, will use the instances configured default timeout.
       name: retries
-      required: false
-      secret: false
-    - default: false
-      description: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If not specified, will use the instances configured default timeout.
-      isArray: false
+    - description: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If not specified, will use the instances configured default timeout.
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias.  If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
     execution: true
     name: aws-lambda-invoke
@@ -562,9 +433,7 @@ script:
       description: The AWS Region.
       type: string
   - arguments:
-    - default: false
-      description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
+    - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       name: region
       predefined:
@@ -584,29 +453,13 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves details about your account's limits and usage in an AWS Region.
-    execution: false
     name: aws-lambda-get-account-settings
     outputs:
     - contextPath: AWS.Lambda.AccountLimit.TotalCodeSize
@@ -631,9 +484,7 @@ script:
       description: The number of Lambda functions.
       type: number
   - arguments:
-    - default: false
-      description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
+    - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       name: region
       predefined:
@@ -653,28 +504,13 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
     description: Returns the resource-based IAM policy for a function, version, or alias.
@@ -705,9 +541,7 @@ script:
       description: A unique identifier for the current revision of the policy.
       type: String
   - arguments:
-    - default: false
-      description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
+    - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       name: region
       predefined:
@@ -727,35 +561,18 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
-    - default: false
-      description: Specify the pagination token that’s returned by a previous request to retrieve the next page of results.
+    - description: Specify the pagination token that’s returned by a previous request to retrieve the next page of results.
       name: Marker
-    - default: false
-      description: The maximum number of versions to return. Note that ListVersionsByFunction returns a maximum of 50 items in each response, even if you set the number higher.
+    - description: The maximum number of versions to return. Note that ListVersionsByFunction returns a maximum of 50 items in each response, even if you set the number higher.
       name: MaxItems
     description: Returns a list of versions, with the version-specific configuration of each.
     name: aws-lambda-list-versions-by-function
@@ -869,9 +686,7 @@ script:
       description: The image configuration values.
       type: Object
   - arguments:
-    - default: false
-      description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
+    - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       name: region
       predefined:
@@ -891,32 +706,16 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
-    - default: false
-      description: The alias name.
+    - description: The alias name.
       name: qualifier
     description: Returns details about a Lambda function URL.
     name: aws-lambda-get-function-url-config
@@ -958,9 +757,7 @@ script:
       description: "Use one of the following options: BUFFERED – This is the default option. Lambda invokes your function using the Invoke API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB. RESPONSE_STREAM – Your function streams payload results as they become available. Lambda invokes your function using the InvokeWithResponseStream API operation. The maximum response payload size is 20 MB, however, you can request a quota increase."
       type: String
   - arguments:
-    - default: false
-      description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
+    - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       name: region
       predefined:
@@ -980,32 +777,16 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
-    - default: false
-      description: Specify a version or alias to get details about a published version of the function.
+    - description: Specify a version or alias to get details about a published version of the function.
       name: qualifier
     description: Returns the version-specific settings of a Lambda function or version. The output includes only options that can vary between versions of a function.
     name: aws-lambda-get-function-configuration
@@ -1116,9 +897,7 @@ script:
       description: The image configuration values.
       type: Object
   - arguments:
-    - default: false
-      description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
+    - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       name: region
       predefined:
@@ -1138,39 +917,21 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
-    - default: false
-      description: Specify a version or alias to get details about a published version of the function.
+    - description: Specify a version or alias to get details about a published version of the function.
       name: qualifier
     description: Deletes a Lambda function URL. When you delete a function URL, you can’t recover it. Creating a new function URL results in a different URL address.
     name: aws-lambda-delete-function-url-config
   - arguments:
-    - default: false
-      description: The AWS Region. If not specified, the default region will be used.
-      isArray: false
+    - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       name: region
       predefined:
@@ -1190,37 +951,20 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
-    - default: false
-      description: Specify a version or alias to get details about a published version of the function.
+    - description: Specify a version or alias to get details about a published version of the function.
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
   dockerimage: demisto/boto3py3:1.0.0.63019
-  isfetch: false
   runonce: false
   subtype: python3
   script: ''

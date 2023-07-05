@@ -25,12 +25,11 @@ dependson:
   must:
   - demisto-api-post
   - demisto-api-get
-runonce: false
 dockerimage: demisto/python3:3.10.6.33415
 runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2

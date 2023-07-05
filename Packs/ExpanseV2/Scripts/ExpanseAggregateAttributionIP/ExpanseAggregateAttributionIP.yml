@@ -8,7 +8,6 @@ args:
   description: Input list.
   isArray: true
 - name: current
-  required: false
   description: Current aggregation state.
   isArray: true
 - name: source_ip_fields
@@ -34,7 +33,6 @@ outputs:
   description: Number of sessions seen on this device
   type: number
 script: '-'
-system: false
 tags: []
 timeout: '0'
 type: python

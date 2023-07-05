@@ -1,34 +1,19 @@
 args:
-- default: false
-  description: Parameters that were changed and caused the integration to run successfully.
+- description: Parameters that were changed and caused the integration to run successfully.
   isArray: true
   name: succeeded_changed_params
-  required: false
-  secret: false
-- default: false
-  description: All file entry IDs in the incident.
+- description: All file entry IDs in the incident.
   isArray: true
   name: file_names
-  required: false
-  secret: false
-- default: false
-  description: The raw configuration output.
-  isArray: false
+- description: The raw configuration output.
   name: configuration
   required: true
-  secret: false
-- default: false
-  description: The errors when testing the instance.
+- description: The errors when testing the instance.
   isArray: true
   name: errors
-  required: false
-  secret: false
-- default: false
-  description: Errors from the ExecuteCommand automation.
+- description: Errors from the ExecuteCommand automation.
   isArray: true
   name: execute_command_errors
-  required: false
-  secret: false
 comment: Collects all results from previous tasks. (Available from Cortex XSOAR 5.0.0.)
 commonfields:
   id: TroubleshootAggregateResults
@@ -43,7 +28,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - troubleshoot
 timeout: '0'

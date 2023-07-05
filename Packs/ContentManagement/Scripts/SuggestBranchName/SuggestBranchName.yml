@@ -5,7 +5,6 @@ args:
 - auto: PREDEFINED
   description: Which command to use.
   name: use_command
-  required: false
   predefined:
   - gitlab-branch-list
   - GitHub-get-branch
@@ -28,7 +27,6 @@ outputs:
   description: Available branch name based on the pack name.
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,16 +1,11 @@
 args:
-- default: false
-  description: 'Device IDs to isolate or unisolate.'
+- description: 'Device IDs to isolate or unisolate.'
   isArray: true
   name: device_ids
   required: true
-  secret: false
-- default: false
-  description: 'The action to apply to device IDs - isolate or unisolate.'
-  isArray: false
+- description: 'The action to apply to device IDs - isolate or unisolate.'
   name: action
   required: true
-  secret: false
   auto: PREDEFINED
   predefined:
   - 'isolate'
@@ -73,7 +68,6 @@ outputs:
   # CrowdStrike outputs
 
 script: '-'
-system: false
 tags:
 - basescript
 - incident-action-button

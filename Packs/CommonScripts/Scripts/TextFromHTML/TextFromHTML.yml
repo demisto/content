@@ -15,12 +15,10 @@ args:
   default: true
   description: The HTML to strip tags from
 - name: html_tag
-  required: false
   default: true
   defaultValue: body
   description: Specify HTML tag to extract the text from within.
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.12.63474
 tests:

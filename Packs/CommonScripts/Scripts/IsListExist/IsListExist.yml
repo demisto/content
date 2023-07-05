@@ -13,7 +13,6 @@ args:
 - name: listName
   description: List name to check.
 scripttarget: 0
-runonce: false
 tests:
 - No test
 fromversion: 5.0.0

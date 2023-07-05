@@ -33,7 +33,6 @@ outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file (only in case of report type=json)
 scripttarget: 0
-runonce: false
 tests:
 - JSONtoCSV-Test
 fromversion: 5.0.0

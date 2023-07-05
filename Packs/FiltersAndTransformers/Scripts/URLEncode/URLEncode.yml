@@ -21,7 +21,6 @@ enabled: true
 name: URLEncode
 script: '-'
 subtype: python3
-system: false
 tags:
 - transformer
 timeout: '0'

@@ -15,41 +15,27 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: The Threat Context module provides SOC, Incident Response, and Threat Intelligence teams with continuously updated and intuitive information around threat actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs.
 display: Blueliv ThreatContext
 name: Blueliv ThreatContext
 script:
   commands:
-  - deprecated: false
-    description: Authenticates and gets the API token.
-    execution: false
+  - description: Authenticates and gets the API token.
     name: blueliv-authenticate
     outputs:
     - contextPath: BluelivThreatContext.token
       description: Authentication token.
       type: String
   - arguments:
-    - default: false
-      description: Internal Blueliv malware hash ID.
-      isArray: false
+    - description: Internal Blueliv malware hash ID.
       name: hash_id
-      required: false
-      secret: false
-    - default: false
-      description: Malware file hash to search for.
-      isArray: false
+    - description: Malware file hash to search for.
       name: hash
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about malware, by ID.
-    execution: false
     name: blueliv-tc-malware
     outputs:
     - contextPath: BluelivThreatContext.malware.hash.sha256
@@ -149,21 +135,11 @@ script:
       description: Malware IP addresses' internal IDs.
       type: Unknown
   - arguments:
-    - default: false
-      description: Internal Blueliv IP address ID.
-      isArray: false
+    - description: Internal Blueliv IP address ID.
       name: IP_id
-      required: false
-      secret: false
-    - default: false
-      description: IP address to get information for.
-      isArray: false
+    - description: IP address to get information for.
       name: IP
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about an IP address.
-    execution: false
     name: blueliv-tc-indicator-ip
     outputs:
     - contextPath: BluelivThreatContext.indicator.lastSeen
@@ -224,21 +200,11 @@ script:
       description: Indicator bots' internal IDs.
       type: Unknown
   - arguments:
-    - default: false
-      description: CVE to get information for.
-      isArray: false
+    - description: CVE to get information for.
       name: CVE
-      required: false
-      secret: false
-    - default: false
-      description: Internal Blueliv CVE ID.
-      isArray: false
+    - description: Internal Blueliv CVE ID.
       name: CVE_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about a CVE.
-    execution: false
     name: blueliv-tc-cve
     outputs:
     - contextPath: BluelivThreatContext.cve.name
@@ -296,21 +262,11 @@ script:
       description: CVE platforms.
       type: Unknown
   - arguments:
-    - default: false
-      description: Internal Blueliv FQDN ID.
-      isArray: false
+    - description: Internal Blueliv FQDN ID.
       name: FQDN_id
-      required: false
-      secret: false
-    - default: false
-      description: FQDN to get information for.
-      isArray: false
+    - description: FQDN to get information for.
       name: FQDN
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about an FQDN.
-    execution: false
     name: blueliv-tc-indicator-fqdn
     outputs:
     - contextPath: BluelivThreatContext.indicator.lastSeen
@@ -362,21 +318,11 @@ script:
       description: Indicator IP addresses' internal IDs.
       type: Unknown
   - arguments:
-    - default: false
-      description: Internal Blueliv Crime Server ID.
-      isArray: false
+    - description: Internal Blueliv Crime Server ID.
       name: CS_id
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Crime Server to get information for.
-      isArray: false
+    - description: The name of the Crime Server to get information for.
       name: CS
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about a Crime Server.
-    execution: false
     name: blueliv-tc-indicator-cs
     outputs:
     - contextPath: BluelivThreatContext.indicator.lastSeen
@@ -431,21 +377,11 @@ script:
       description: Indicator sources' internal IDs.
       type: Unknown
   - arguments:
-    - default: false
-      description: Threat actor to get information for.
-      isArray: false
+    - description: Threat actor to get information for.
       name: threatActor
-      required: false
-      secret: false
-    - default: false
-      description: Internal Blueliv Threat Actor ID.
-      isArray: false
+    - description: Internal Blueliv Threat Actor ID.
       name: threatActor_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about a Threat Actor.
-    execution: false
     name: blueliv-tc-threat-actor
     outputs:
     - contextPath: BluelivThreatContext.threatActor.name
@@ -533,21 +469,11 @@ script:
       description: Threat actor targets' internal IDs.
       type: Unknown
   - arguments:
-    - default: false
-      description: Name of the campaign to get information for.
-      isArray: false
+    - description: Name of the campaign to get information for.
       name: campaign
-      required: false
-      secret: false
-    - default: false
-      description: Blueliv internal campaign ID.
-      isArray: false
+    - description: Blueliv internal campaign ID.
       name: campaign_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about a campaign.
-    execution: false
     name: blueliv-tc-campaign
     outputs:
     - contextPath: BluelivThreatContext.campaign.name
@@ -605,21 +531,11 @@ script:
       description: Campaign threat actors' internal IDs.
       type: Number
   - arguments:
-    - default: false
-      description: The name of the Attack Pattern name to get information for.
-      isArray: false
+    - description: The name of the Attack Pattern name to get information for.
       name: attackPattern
-      required: false
-      secret: false
-    - default: false
-      description: Interanl Blueliv ID for the Attack Pattern.
-      isArray: false
+    - description: Interanl Blueliv ID for the Attack Pattern.
       name: attackPattern_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about an Attack Pattern.
-    execution: false
     name: blueliv-tc-attack-pattern
     outputs:
     - contextPath: BluelivThreatContext.attackPattern.name
@@ -659,21 +575,11 @@ script:
       description: Attack pattern CVEs' internal IDs.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the tool to get information for.
-      isArray: false
+    - description: The name of the tool to get information for.
       name: tool
-      required: false
-      secret: false
-    - default: false
-      description: Internal Blueliv ID of the tool.
-      isArray: false
+    - description: Internal Blueliv ID of the tool.
       name: tool_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about a Tool.
-    execution: false
     name: blueliv-tc-tool
     outputs:
     - contextPath: BluelivThreatContext.tool.name
@@ -704,21 +610,11 @@ script:
       description: Tool threat actors' internal IDs.
       type: Unknown
   - arguments:
-    - default: false
-      description: Name of the signature to get information for.
-      isArray: false
+    - description: Name of the signature to get information for.
       name: signature
-      required: false
-      secret: false
-    - default: false
-      description: Internal Blueliv ID for the signature.
-      isArray: false
+    - description: Internal Blueliv ID for the signature.
       name: signature_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about a Signature.
-    execution: false
     name: blueliv-tc-signature
     outputs:
     - contextPath: BluelivThreatContext.signature.name
@@ -740,10 +636,6 @@ script:
       description: Signature type.
       type: String
   dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -6,8 +6,7 @@ name: DomainTools
 fromversion: 5.0.0
 display: DomainTools
 category: Data Enrichment & Threat Intelligence
-description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and
-  cybercrime forensics products and data
+description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data
 configuration:
 - display: DomainTools API URL
   name: server
@@ -18,26 +17,21 @@ configuration:
   displaypassword: API Key
   name: credentials
   type: 9
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: API Key (Deprecated)
   hidden: true
   name: key
   defaultvalue: ""
   type: 4
-  required: false
 - display: API Username
   name: username
   defaultvalue: ""
   type: 0
-  required: false
   hidden: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -51,7 +45,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -61,12 +54,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 script:
   script: ''
@@ -80,11 +71,9 @@ script:
     - name: long
       description: Should we return full response with detected URLs
     - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format
     - name: threshold
-      description: 'If number of positive detected domains is bigger than the threshold
-        we will consider it malicious'
+      description: 'If number of positive detected domains is bigger than the threshold we will consider it malicious'
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
     - name: retries
@@ -110,11 +99,9 @@ script:
     - name: query
       required: true
       default: true
-      description: (mandatory and default) Query strings. Each term in the query string
-        must be at least three characters long. Use spaces to separate multiple terms
+      description: (mandatory and default) Query strings. Each term in the query string must be at least three characters long. Use spaces to separate multiple terms
     - name: pageNumber
-      description: 'Sets the page of results to retrieve from the server. Each page
-        is limited to 100 results. Default: 1'
+      description: 'Sets the page of results to retrieve from the server. Each page is limited to 100 results. Default: 1'
       defaultValue: "1"
     - name: maxLength
       description: 'Limit the maximum domain character count. Default: 25'
@@ -123,8 +110,7 @@ script:
       description: 'Limit the minimum domain character count. Default: 1'
       defaultValue: "1"
     - name: hesHyphen
-      description: '(true or false) Return results with hyphens in the domain name.
-        Default: true'
+      description: '(true or false) Return results with hyphens in the domain name. Default: true'
     - name: exclude
       description: Terms to exclude from matching
     - name: activeOnly
@@ -132,40 +118,35 @@ script:
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains currently registered.Default:
-        false'
+      description: '(true or false) Return only domains currently registered.Default: false'
       defaultValue: "false"
     - name: deletedOnly
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains previously registered but
-        not currently registered. Default: false'
+      description: '(true or false) Return only domains previously registered but not currently registered. Default: false'
       defaultValue: "false"
     - name: anchorLeft
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains that start with the query
-        term. Default: false'
+      description: '(true or false) Return only domains that start with the query term. Default: false'
       defaultValue: "false"
     - name: anchorRight
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains that end with the query term.
-        Default: false'
+      description: '(true or false) Return only domains that end with the query term. Default: false'
       defaultValue: "false"
     - name: hasNumber
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: '(true or false) Return results with numbers in the domain name.
-        Default: true'
+      description: '(true or false) Return results with numbers in the domain name. Default: true'
       defaultValue: "true"
     outputs:
     - contextPath: Domain.Name
@@ -177,11 +158,9 @@ script:
       default: true
       description: (default) specify IP address
     - name: domain
-      description: 'If you provide a domain name, DomainTools will respond with the
-        list of other domains that share the same IP'
+      description: 'If you provide a domain name, DomainTools will respond with the list of other domains that share the same IP'
     - name: limit
-      description: Limits the size of the domain list than can appear in a response.
-        The limit is applied per-IP address, not for the entire request.
+      description: Limits the size of the domain list than can appear in a response. The limit is applied per-IP address, not for the entire request.
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -193,8 +172,7 @@ script:
     - name: nameServer
       required: true
       default: true
-      description: '(default and mandatory) specify the name of the primary or secondary
-        name server'
+      description: '(default and mandatory) specify the name of the primary or secondary name server'
     - name: limit
       description: Limit the size of the domain list than can appear in a response
     outputs:
@@ -206,12 +184,9 @@ script:
     - name: terms
       required: true
       default: true
-      description: '(mandatory and default) List of one or more terms to search for
-        in the Whois record, separated with the pipe character ( | ).'
+      description: '(mandatory and default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).'
     - name: exclude
-      description: Domain names with Whois records that match these terms will be
-        excluded from the result set. Separate multiple terms with the pipe character
-        ( | ).
+      description: Domain names with Whois records that match these terms will be excluded from the result set. Separate multiple terms with the pipe character ( | ).
     - name: onlyHistoricScope
       auto: PREDEFINED
       predefined:
@@ -220,9 +195,7 @@ script:
       description: Show only historic records
       defaultValue: "false"
     - name: quoteMode
-      description: 'Only lists the size and retail price of the query if you have
-        per-domain pricing access purchase : includes the complete list of domain
-        names that match the query'
+      description: 'Only lists the size and retail price of the query if you have per-domain pricing access purchase : includes the complete list of domain names that match the query'
       defaultValue: purchase
     outputs:
     - contextPath: Domain.Name
@@ -233,8 +206,7 @@ script:
     - name: query
       required: true
       default: true
-      description: '(mandatory and default) enter domain (do not use full URL). e.g.
-        !whois [query=]demisto.com'
+      description: '(mandatory and default) enter domain (do not use full URL). e.g. !whois [query=]demisto.com'
     - name: parsed
       description: Should return parsed or raw response. Default is true
       auto: PREDEFINED

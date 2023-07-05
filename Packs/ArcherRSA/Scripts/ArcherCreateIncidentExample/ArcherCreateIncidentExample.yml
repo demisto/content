@@ -1,25 +1,17 @@
 args:
-- default: false
-  description: Incident summary
-  isArray: false
+- description: Incident summary
   name: summary
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Incident priority
-  isArray: false
   name: priority
   predefined:
   - Low
   - Medium
   - High
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Incident category
-  isArray: false
   name: category
   predefined:
   - Fraud
@@ -27,7 +19,6 @@ args:
   - Physical
   - Threat
   required: true
-  secret: false
 comment: This script is an example script of how to create Incident in Archer. The script generates the create incident data in JSON format and execute the command archer-create-record.
 commonfields:
   id: ArcherCreateIncidentExample
@@ -40,12 +31,10 @@ outputs:
   type: Number
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.11.58677
 runas: DBotWeakRole
-runonce: false
 fromversion: 5.0.0
 skipprepare:
 - script-name-incident-to-alert

@@ -10,7 +10,6 @@ configuration:
   name: limit_results
   defaultvalue: "30"
   type: 0
-  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -28,11 +27,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: ThreatMiner API URL
   name: threatminer_url
   defaultvalue: https://api.threatminer.org/v2/

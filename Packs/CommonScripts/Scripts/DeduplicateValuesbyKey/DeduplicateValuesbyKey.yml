@@ -28,7 +28,6 @@ outputs:
 - contextPath: DeduplicatedValues
   description: List of unique values for the specified key
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

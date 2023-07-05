@@ -10,7 +10,6 @@ comment: Helps to fetch ACTI Intelligence Report/Alert URL and converts it to uu
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.1.27636
 runas: DBotWeakRole
 fromversion: 5.5.0

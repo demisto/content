@@ -21,7 +21,6 @@ args:
 - name: header
   description: Add a header text to the output
 scripttarget: 0
-runonce: false
 fromversion: 6.5.0
 dockerimage: demisto/python3:3.10.7.33922
 tests:

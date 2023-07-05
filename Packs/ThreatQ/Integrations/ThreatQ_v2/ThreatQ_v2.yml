@@ -18,16 +18,13 @@ configuration:
 - defaultvalue: '8'
   display: Indicator threshold (minimum TQ score to consider the indicator malicious).
   name: threshold
-  required: false
   type: 0
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -41,7 +38,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -51,15 +47,12 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
-description: A threat intelligence platform that collects and interprets intelligence
-  data from open sources and manages indicator scoring, types, and attributes.
+description: A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.
 display: ThreatQ v2
 name: ThreatQ v2
 script:
@@ -455,8 +448,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The type of indicator, such as email address, IP address, Registry
-        key, binary string, and so on.
+      description: The type of indicator, such as email address, IP address, Registry key, binary string, and so on.
       name: type
       predefined:
       - Binary String
@@ -493,8 +485,7 @@ script:
       - X-Mailer
       required: true
     - auto: PREDEFINED
-      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect",
-        "Review", or "Whitelisted".'
+      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
       name: status
       predefined:
       - Active
@@ -509,14 +500,10 @@ script:
     - description: List of Sources names, separated by commas.
       isArray: true
       name: sources
-    - description: Attributes names list, separated by commas. The i-th element in
-        the attributes names list corresponds to the i-th element in the attributes
-        values list.
+    - description: Attributes names list, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
       isArray: true
       name: attributes_names
-    - description: Attributes values list, separated by commas. The i-th element in
-        the attributes values list corresponds to the i-th element in the attributes
-        names list.
+    - description: Attributes values list, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
       isArray: true
       name: attributes_values
     description: Creates a new indicator in ThreatQ.
@@ -569,8 +556,7 @@ script:
       name: value
       required: true
     - auto: PREDEFINED
-      description: 'The type of the object to add. Can be: "indicator", "event", "adversary",
-        or "attachment".'
+      description: 'The type of the object to add. Can be: "indicator", "event", "adversary", or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -585,8 +571,7 @@ script:
     name: threatq-add-attribute
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of the object. Can be: "indicator", "event", "adversary",
-        or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -613,8 +598,7 @@ script:
       name: obj2_id
       required: true
     - auto: PREDEFINED
-      description: 'The type of the first object. Can be: "indicator", "adversary",
-        or "event".'
+      description: 'The type of the first object. Can be: "indicator", "adversary", or "event".'
       name: obj1_type
       predefined:
       - indicator
@@ -622,8 +606,7 @@ script:
       - event
       required: true
     - auto: PREDEFINED
-      description: 'The type of the second object. Can be: "indicator", "adversary",
-        or "event".'
+      description: 'The type of the second object. Can be: "indicator", "adversary", or "event".'
       name: obj2_type
       predefined:
       - indicator
@@ -639,14 +622,10 @@ script:
     - description: List of sources names, separated by commas.
       isArray: true
       name: sources
-    - description: List of attributes names, separated by commas. The i-th element
-        in the attributes names list corresponds to the i-th element in the attributes
-        values list.
+    - description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
       isArray: true
       name: attributes_names
-    - description: List of attributes values, separated by commas. The i-th element
-        in the attributes values list corresponds to the i-th element in the attributes
-        names list.
+    - description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
       isArray: true
       name: attributes_values
     description: Creates a new adversary in ThreatQ.
@@ -684,8 +663,7 @@ script:
       name: title
       required: true
     - auto: PREDEFINED
-      description: The type of the event, such as malware, watchlist, command and
-        control, and so on.
+      description: The type of the event, such as malware, watchlist, command and control, and so on.
       name: type
       predefined:
       - Spearphish
@@ -708,14 +686,10 @@ script:
     - description: List of sources names, separated by commas.
       isArray: true
       name: sources
-    - description: List of attributes names, separated by commas. The i-th element
-        in the attributes names list corresponds to the i-th element in the attributes
-        values list.
+    - description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
       isArray: true
       name: attributes_names
-    - description: List of attributes values, separated by commas. The i-th element
-        in the attributes values list corresponds to the i-th element in the attributes
-        names list.
+    - description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
       isArray: true
       name: attributes_values
     description: Creates a new event in ThreatQ.
@@ -903,8 +877,7 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      description: 'The new status of the indicator. Can be: "Active", "Expired",
-        "Indirect", "Review", or "Whitelisted".'
+      description: 'The new status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
       name: status
       predefined:
       - Active
@@ -1164,8 +1137,7 @@ script:
       name: entry_id
       required: true
     - auto: PREDEFINED
-      description: Category of the file, such as CrowdStrike Intelligence, FireEye
-        Analysis, PDF, and so on.
+      description: Category of the file, such as CrowdStrike Intelligence, FireEye Analysis, PDF, and so on.
       name: file_category
       predefined:
       - Cuckoo
@@ -1195,8 +1167,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: off
-      description: 'Zips malware files for safer downloading. Can be: "on", or "off".
-        Default is off.'
+      description: 'Zips malware files for safer downloading. Can be: "on", or "off". Default is off.'
       name: malware_safety_lock
       predefined:
       - on
@@ -1253,8 +1224,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of the object. Can be: "indicator", "event", "attachment"
-        or "adversary".'
+      description: 'The type of the object. Can be: "indicator", "event", "attachment" or "adversary".'
       name: obj_type
       predefined:
       - indicator
@@ -1265,8 +1235,7 @@ script:
     - description: The ID of the Object.
       name: obj_id
       required: true
-    description: Searches for an object by object type and ID. Generic and DBotScore
-      contexts also may be generated.
+    description: Searches for an object by object type and ID. Generic and DBotScore contexts also may be generated.
     name: threatq-search-by-id
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -1421,8 +1390,7 @@ script:
       name: obj1_id
       required: true
     - auto: PREDEFINED
-      description: 'The type of the first object. Can be: "adversary", "indicator",
-        or "event".'
+      description: 'The type of the first object. Can be: "adversary", "indicator", or "event".'
       name: obj1_type
       predefined:
       - adversary
@@ -1433,8 +1401,7 @@ script:
       name: obj2_id
       required: true
     - auto: PREDEFINED
-      description: 'The type of the second object. Can be: "adversary", "indicator",
-        or "event".'
+      description: 'The type of the second object. Can be: "adversary", "indicator", or "event".'
       name: obj2_type
       predefined:
       - adversary
@@ -1448,8 +1415,7 @@ script:
       name: obj_id
       required: true
     - auto: PREDEFINED
-      description: 'The type of the object. Can be: "indicator", "event", "adversary"
-        or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary" or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1464,8 +1430,7 @@ script:
       name: obj_id
       required: true
     - auto: PREDEFINED
-      description: 'The type of the object. Can be: "indicator", "event", "adversary",
-        or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1486,8 +1451,7 @@ script:
       name: obj_id
       required: true
     - auto: PREDEFINED
-      description: 'The type of the object. Can be: "indicator", "event", "adversary",
-        or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1505,8 +1469,7 @@ script:
       name: obj_id
       required: true
     - auto: PREDEFINED
-      description: 'The type of the object. Can be: "indicator", "event", "adversary",
-        or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1560,8 +1523,7 @@ script:
     - description: The value of the new indicator.
       name: value
     - auto: PREDEFINED
-      description: The type of the new indicator, such as email address, Filename,
-        Binary string and so on.
+      description: The type of the new indicator, such as email address, Filename, Binary string and so on.
       name: type
       predefined:
       - Binary String
@@ -1649,8 +1611,7 @@ script:
     - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
       name: date
     - auto: PREDEFINED
-      description: Type of the event, such as DoS Attack, Malware, Watchlist, and
-        so on.
+      description: Type of the event, such as DoS Attack, Malware, Watchlist, and so on.
       name: type
       predefined:
       - Spearphish
@@ -1712,8 +1673,7 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      description: 'The manual indicator score. Can be: "Generated Score" or "1",
-        "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
+      description: 'The manual indicator score. Can be: "Generated Score" or "1", "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
       name: score
       predefined:
       - Generated Score
@@ -1729,8 +1689,7 @@ script:
       - '9'
       - '10'
       required: true
-    description: Modifies an indicator's score in ThreatQ. The final indicator score
-      is the highest of the manual and generated scores.
+    description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of the manual and generated scores.
     name: threatq-update-score
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -1878,8 +1837,7 @@ script:
       description: The result page number to return. Default is 0.
       name: page
     - defaultValue: '50'
-      description: The maximum number of objects to return in one response (maximum
-        is 200).
+      description: The maximum number of objects to return in one response (maximum is 200).
       name: limit
     description: Returns all adversaries in ThreatQ.
     name: threatq-get-all-adversaries
@@ -1918,19 +1876,13 @@ script:
     - defaultValue: '10'
       description: The maximum number of results to return. Default is 10.
       name: limit
-    - description: 'The indicator type for which to search. Can be either the name
-        or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address,
-        Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN,
-        Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password,
-        Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509
-        Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer'
+    - description: 'The indicator type for which to search. Can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer'
       name: indicator_type
       required: true
     deprecated: true
     description: Runs an advanced indicator search.
     name: threatq-advanced-search
   dockerimage: demisto/python3:3.10.10.49934
-  runonce: false
   script: ''
   subtype: python3
   type: python

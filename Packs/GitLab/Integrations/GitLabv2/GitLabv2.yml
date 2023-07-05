@@ -20,11 +20,9 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Integration to GitLab API
 display: GitLab v2
@@ -45,12 +43,8 @@ script:
     arguments:
     - name: file_path
       description: The file path.
-      required: false
-      isArray: false
     - name: ref
       description: The name of the branch, tag or commit.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GitLab.File.file_name
       description: The file name.
@@ -90,37 +84,23 @@ script:
     arguments:
     - name: entry_id
       description: Entry ID of the file.
-      required: false
-      isArray: false
     - name: file_path
       description: URL-encoded full path to the new file.
-      required: false
-      isArray: false
     - name: file_content
       description: The file's content.
-      required: false
-      isArray: false
     - name: branch
       description: Name of the new branch to create. The commit is added to this branch.
       required: true
-      isArray: false
     - name: author_email
       description: The commit author's email address.
-      required: false
-      isArray: false
     - name: author_name
       description: The commit author's name.
-      required: false
-      isArray: false
     - name: commit_message
       description: The commit message.
       required: true
-      isArray: false
     - auto: PREDEFINED
       name: execute_filemode
       description: Enables or disables the execute flag on the file.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -137,54 +117,36 @@ script:
     - name: file_path
       description: URL-encoded full path to the new file.
       required: true
-      isArray: false
       type: String
     - name: branch
       description: Name of the new branch to create. The commit is added to this branch.
       required: true
-      isArray: false
     - name: start_branch
       description: Name of the base branch to create the new branch from.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: encoding
       description: Change encoding to base64.
-      required: false
-      isArray: false
       type: String
       predefined:
       - text
       - base64
     - name: author_email
       description: The commit author email address.
-      required: false
-      isArray: false
     - name: author_name
       description: The commit author name address.
-      required: false
-      isArray: false
     - name: entry_id
       description: Entry ID of the file.
-      required: false
-      isArray: false
     - name: file_content
       description: The file content.
       required: true
-      isArray: false
     - name: commit_message
       description: The commit message.
       required: true
-      isArray: false
     - name: last_commit_id
       description: Last known file commit ID.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: execute_filemode
       description: Enables or disables the execute flag on the file.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -201,55 +163,36 @@ script:
     - name: file_path
       description: URL-encoded full path of the file.
       required: true
-      isArray: false
       type: String
     - name: branch
       description: Name of the new branch to delete.
       required: true
-      isArray: false
     - name: commit_message
       description: The commit message.
       required: true
-      isArray: false
     outputs: []
   - name: gitlab-issue-list
     description: Get a list of a project's issues.
     arguments:
     - name: assignee_id
       description: The ID assigned to the user. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: assignee_username
       description: The username assigned to the user.
-      required: false
-      isArray: false
     - name: author_id
       description: The ID of the author of the issue. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: author_username
       description: The username of the author of the issue.
-      required: false
-      isArray: false
     - name: confidential
       description: Whether to filter confidential or public issues.
       type: Boolean
-      required: false
-      isArray: false
     - name: created_after
       description: Return issues created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - name: created_before
       description: Return issues created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -257,8 +200,6 @@ script:
       name: due_date
       description: Return issues based on this due date.
       type: List
-      required: false
-      isArray: false
       predefined:
       - 0 (no due date)
       - any
@@ -270,30 +211,21 @@ script:
       - next_month_and_previous_two_weeks
     - name: epic_id
       description: Return issues associated with the given epic ID. None returns issues that are not associated with an epic.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: issue_type
       description: Filter to a given type of issue.
-      required: false
-      isArray: false
       predefined:
       - issue
       - incident
       - test_case
     - name: labels
       description: Comma-separated list of label names. Issues must have all labels to be returned. None lists all issues with no labels.
-      required: false
-      isArray: false
     - name: milestone
       description: The milestone title. None lists all issues with no milestone. Any lists all issues that have an assigned milestone.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
       description: The method used to order the retrieved issues.
-      required: false
       predefined:
       - created_at
       - updated_at
@@ -308,51 +240,35 @@ script:
       name: scope
       defaultValue: all
       description: Return issues for the given scope.
-      required: false
-      isArray: false
       predefined:
       - created_by_me
       - assigned_to_me
       - all
     - name: search
       description: Search project issues against their title and description.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: sort
       defaultValue: desc
       description: Return issues sorted in asc or desc order.
-      required: false
-      isArray: false
       predefined:
       - desc
       - asc
     - auto: PREDEFINED
       name: state
       description: Return all issues or just those that are opened or closed
-      required: false
-      isArray: false
       predefined:
       - opened
       - closed
     - name: updated_after
       description: Return issues updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - name: updated_before
       description: Return issues updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - defaultValue: 50
       name: limit
       description: Maximum number of results to return.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: GitLab.Issue.iid
@@ -384,76 +300,47 @@ script:
     - name: issue_iid
       description: The internal ID of a project's issue.
       required: true
-      isArray: false
       type: integer
     - name: add_labels
       description: Comma-separated list of label names to add to an issue.
-      required: false
-      isArray: false
     - name: assignee_ids
       description: The ID of the users to assign the issue to. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: confidential
       description: Updates an issue to be confidential.
-      required: false
-      isArray: false
     - name: description
       description: The description of an issue.
-      required: false
-      isArray: false
     - name: discussion_locked
       description: Flag indicating if the issue's discussion is locked. If the discussion is locked only project members can add or edit comments.
       type: Boolean
-      required: false
-      isArray: false
     - name: due_date
       description: The due date. Date time string in the format YYYY-MM-DD, for example 2016-03-11.
-      required: false
-      isArray: false
     - name: epic_id
       description: ID of the epic to add the issue to. Valid values are greater than or equal to 0.
       type: integer
-      required: false
-      isArray: false
     - name: epic_iid
       description: Internal ID of the epic to add the issue to. Valid values are greater than or equal to 0.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: issue_type
       description: Updates the type of issue.
-      required: false
-      isArray: false
       predefined:
       - issue
       - incident
       - test_case
     - name: milestone_id
       description: The global ID of a milestone to assign the issue to. Set to 0 or provide an empty value to unassign a milestone.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
     - name: remove_labels
       description: Comma-separated list of label names to remove from an issue.
-      required: false
-      isArray: false
     - name: state_event
       description: The state event of an issue. Set "close" to close the issue and "reopen" to reopen it.
-      required: false
-      isArray: false
     - name: title
       description: The title of an issue.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GitLab.Issue.id
       description: The issue ID.
@@ -584,63 +471,39 @@ script:
     arguments:
     - name: commit_id
       description: If the user provided a value, a specific commit will be retrieved. otherwise, all the commits will be retrieved (SHA).
-      required: false
-      isArray: false
     - name: ref_name
       description: The name of a repository branch, tag, or revision range, or if not given the default branch.
-      required: false
-      isArray: false
     - name: created_before
       description: Only commits before or on this date are returned (until) in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days).
-      required: false
-      isArray: false
     - name: created_after
       description: Only commits after or on this date are returned(since) in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days).
-      required: false
-      isArray: false
     - name: path
       description: The file path.
-      required: false
-      isArray: false
     - name: all
       description: Whether to retrieve every commit from the repository.
       type: Boolean
-      required: false
-      isArray: false
     - name: with_stats
       type: Boolean
       description: Whether to retrieve the stats about each commit.
-      required: false
-      isArray: false
     - name: first_parent
       description: Follow only the first parent commit upon seeing a merge commit.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: order
       description: List commits in order. Defaults to default, the commits are shown in reverse chronological order.
       type: List
-      required: false
-      isArray: false
       predefined:
       - default
       - topo
     - defaultValue: 50
       name: limit
       description: Total number of commits to show.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -690,7 +553,6 @@ script:
     - auto: PREDEFINED
       name: state
       description: The state of the merge requests to return.
-      required: false
       predefined:
       - opened
       - closed
@@ -700,7 +562,6 @@ script:
       name: order_by
       defaultValue: created_at
       description: The method used to order the retrieved issues.
-      required: false
       predefined:
       - created_at
       - updated_at
@@ -709,92 +570,54 @@ script:
       name: sort
       defaultValue: desc
       description: Return requests sorted in asc or desc order.
-      required: false
-      isArray: false
       predefined:
       - asc
       - desc
     - name: milestone
       description: Return merge requests for a specific milestone. None returns merge requests with no milestone. Any returns merge requests that have an assigned milestone.
-      required: false
-      isArray: false
     - name: labels
       description: Return merge requests matching a comma-separated list of labels. None lists all merge requests with no labels. Any lists all merge requests with at least one label. Predefined names are case-insensitive.
-      required: false
-      isArray: false
     - name: created_after
       description: Return merge requests created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - name: created_before
       description: Return merge requests created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - name: updated_after
       description: Return merge requests updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - name: updated_before
       description: Return merge requests updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: scope
       description: Return merge requests for the given scope.
-      required: false
-      isArray: false
       predefined:
       - created_by_me
       - assigned_to_me
       - all
     - name: author_id
       description: Returns merge requests created by the given user id. Mutually exclusive with author_username. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: author_username
       description: Returns merge requests created by the given username. Mutually exclusive with author_id. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: assignee_id
       description: Returns merge requests assigned to the given user ID. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: reviewer_id
       description: Returns merge requests that have the user as a reviewer with the given user ID. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: reviewer_username
       description: Returns merge requests that have the user as a reviewer with the given username. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: source_branch
       description: Return merge requests with the given source branch.
-      required: false
-      isArray: false
     - name: target_branch
       description: Return merge requests with the given target branch.
-      required: false
-      isArray: false
     - name: search
       description: Search merge requests against their title and description.
-      required: false
-      isArray: false
     - defaultValue: 50
       name: limit
       description: Total merge requests to show.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -832,65 +655,38 @@ script:
     - name: source_branch
       description: The merge request source branch.
       required: true
-      isArray: false
     - name: target_branch
       description: The merge request target branch.
       required: true
-      isArray: false
     - name: title
       description: The merge request title.
       required: true
-      isArray: false
     - name: assignee_ids
       description: The ID of the users to assign the merge request to. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: reviewer_ids
       description: The ID of the users added as a reviewer to the merge request. The command gitlab-project-user-list gives a list of all relevant users.
-      required: false
-      isArray: false
     - name: description
       description: Description of the merge request. Limited to 1,048,576 characters.
-      required: false
-      isArray: false
     - name: target_project_id
       description: The target project (numeric ID).
-      required: false
-      isArray: false
     - name: labels
       description: The global ID of a milestone.
-      required: false
-      isArray: false
     - name: milestone_id
       description: A comma-separated list of labels for a merge request.
-      required: false
-      isArray: false
     - name: remove_source_branch
       description: Flag indicating if a merge request should remove the source branch when merging.
-      required: false
-      isArray: false
     - name: allow_collaboration
       description: Allow commits from members who can merge to the target branch.
-      required: false
-      isArray: false
     - name: allow_maintainer_to_push
       description: Alias of allow_collaboration.
-      required: false
-      isArray: false
     - name: approvals_before_merge
       description: Number of approvals required before this can be merged.
-      required: false
-      isArray: false
     - name: squash
       description: Squash commits into a single commit when merging.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -1129,82 +925,51 @@ script:
     - name: merge_request_id
       description: The ID of a merge request. Can be taken from the gitlab-merge-request-list command.
       required: true
-      isArray: false
     - name: target_branch
       description: The target branch.
       required: true
-      isArray: false
     - name: title
       description: Title of the merge request.
       required: true
-      isArray: false
     - name: assignee_ids
       description: The ID of the users to assign the merge request to. The gitlab-project-user-list command provides a list of all relevant users.
-      required: false
       isArray: true
     - name: reviewer_ids
       description: The ID of the users set as a reviewer to the merge request. The gitlab-project-user-list command provides a list of all relevant users.
-      required: false
       isArray: true
     - name: description
       description: Description of the merge request. Limited to 1,048,576 characters.
-      required: false
-      isArray: false
     - name: target_project_id
       description: The target project ID.
-      required: false
-      isArray: false
     - name: labels
       description: Comma-separated list of label names for a merge request. Set to an empty string to unassign all labels.
-      required: false
-      isArray: false
     - name: add_labels
       description: Comma-separated list of label names to add to a merge request.
-      required: false
-      isArray: false
     - name: remove_labels
       description: Comma-separated list of label names to remove from a merge request.
-      required: false
-      isArray: false
     - name: milestone_id
       description: The global ID of a milestone to assign the merge request to. Set to 0 or provide an empty value to unassign a milestone.
-      required: false
-      isArray: false
     - name: state_event
       description: New state (close/reopen).
-      required: false
-      isArray: false
     - name: remove_source_branch
       description: Flag indicating if a merge request should remove the source branch when merging.
-      required: false
-      isArray: false
       type: Boolean
     - name: squash
       description: Whether to squash commits into a single commit when merging.
-      required: false
-      isArray: false
       type: Boolean
     - name: discussion_locked
       description: Flag indicating if the merge request's discussion is locked. If the discussion is locked only project members can add, edit, or resolve comments.
-      required: false
-      isArray: false
       type: Boolean
     - name: allow_collaboration
       description: Whether to allow commits from members who can merge to the target branch.
-      required: false
-      isArray: false
       type: Boolean
     - name: allow_maintainer_to_push
       description: Alias of allow_collaboration.
-      required: false
-      isArray: false
       type: Boolean
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -1515,23 +1280,17 @@ script:
     - name: issue_iid
       description: The internal ID of an issue.
       required: true
-      isArray: false
     - name: body
       description: The content of a note. Limited to 1,000,000 characters.
       required: true
-      isArray: false
       type: String
     - name: confidential
       description: Will be removed in GitLab 16.0 and renamed to internal. The confidential flag of a note. Default is false.
-      required: false
-      isArray: false
       type: Boolean
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -1599,11 +1358,9 @@ script:
     - name: issue_iid
       description: The internal ID of an issue.
       required: true
-      isArray: false
     - name: note_id
       description: The ID of a note.
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: GitLab.IssueNote.message
@@ -1614,21 +1371,16 @@ script:
     - name: issue_iid
       description: The issue internal ID.
       required: true
-      isArray: false
     - name: note_id
       description: The note ID.
       required: true
-      isArray: false
     - name: body
       description: The content of a note.
       required: true
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -1696,12 +1448,10 @@ script:
     - name: issue_iid
       description: The internal ID of an issue in order to get a specific issue note.
       required: true
-      isArray: false
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
       description: The method used to order the retrieved issues.
-      required: false
       predefined:
       - created_at
       - updated_at
@@ -1709,27 +1459,19 @@ script:
       name: sort
       defaultValue: desc
       description: Return requests sorted in asc or desc order.
-      required: false
       predefined:
       - desc
       - asc
     - defaultValue: 50
       description: Maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
     - defaultValue: 1
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -1797,13 +1539,10 @@ script:
     - name: merge_request_iid
       description: The internal ID of a project merge request.
       required: true
-      isArray: false
     - auto: PREDEFINED
       defaultValue: desc
       name: sort
       description: Return merge request notes sorted in asc or desc order.
-      required: false
-      isArray: false
       predefined:
       - desc
       - asc
@@ -1811,27 +1550,19 @@ script:
       defaultValue: created_at
       name: order_by
       description: The method used to order the retrieved issues.
-      required: false
-      isArray: false
       predefined:
       - created_at
       - updated_at
     - defaultValue: 50
       name: limit
       description: Total merge requests to show.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -1899,17 +1630,13 @@ script:
     - name: merge_request_iid
       description: The internal ID of a project merge request.
       required: true
-      isArray: false
     - name: body
       description: The content of a note. Limited to 1,000,000 characters.
       required: true
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -1977,21 +1704,16 @@ script:
     - name: merge_request_iid
       description: The internal ID of a project merge request.
       required: true
-      isArray: false
     - name: note_id
       description: The ID of a note.
       required: true
-      isArray: false
     - name: body
       description: The content of a note. Limited to 1,000,000 characters.
       required: true
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -2059,33 +1781,25 @@ script:
     - name: merge_request_iid
       description: The internal ID of a merge request.
       required: true
-      isArray: false
     - name: note_id
       description: The ID of a note.
       required: true
-      isArray: false
     outputs: []
   - name: gitlab-issue-create
     description: Create an issue.
     arguments:
     - name: labels
       description: Comma-separated list of labels to add to the issue.
-      isArray: false
-      required: false
     - name: title
       description: The issue title.
       required: true
-      isArray: false
     - name: description
       description: The issue description.
       required: true
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -2224,13 +1938,10 @@ script:
     arguments:
     - name: membership
       description: Limit by projects that the current user is a member of.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
       description: The method used to order the retrieved issues. repository_size, storage_size, packages_size or wiki_size fields are only allowed for administrators.
-      required: false
       predefined:
       - id
       - name
@@ -2242,51 +1953,34 @@ script:
     - name: owned
       description: Whether to limit by projects explicitly owned by the current user.
       type: boolean
-      required: false
-      isArray: false
     - name: search
       description: Return list of projects matching the search criteria.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: sort
       description: Return projects sorted in asc or desc order.
       defaultValue: desc
-      required: false
       predefined:
       - asc
       - desc
     - name: visibility
       description: Limit by visibility public, internal, or private.
       type: Boolean
-      required: false
-      isArray: false
     - name: with_issues_enabled
       description: Whether to limit by enabled issues feature.
       type: boolean
-      required: false
-      isArray: false
     - name: with_merge_requests_enabled
       type: boolean
       description: Whether to limit by enabled merge requests feature.
-      required: false
-      isArray: false
     - name: page
       defaultValue: 1
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     - defaultValue: 50
       description: Maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -2624,24 +2318,15 @@ script:
   - name: gitlab-group-project-list
     description: Get the list of projects of a given group.
     arguments:
-    - default: false
-      description: Group ID from which to retrieve the projects.
-      isArray: false
+    - description: Group ID from which to retrieve the projects.
       name: group_id
       required: true
-      secret: false
     - defaultValue: 50
       description: Total number of projects for display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - defaultValue: 1
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
     outputs:
     - type: Number
       contextPath: GitLab.GroupProject.id
@@ -2965,13 +2650,10 @@ script:
     description: Get the file in a raw format.
     arguments:
     - description: The file path.
-      isArray: false
       name: file_path
       required: true
     - description: The branch to retrieve the file from. Default is master.
-      isArray: false
       name: ref
-      required: false
     outputs:
     - contextPath: GitLab.File.ref
       description: The branch the file's content was taken from.
@@ -2986,19 +2668,15 @@ script:
     description: Creates a new branch in the repository.
     arguments:
     - description: The name of the branch.
-      isArray: false
       name: branch
       required: true
     - description: Branch name, or commit SHA to create a branch from.
-      isArray: false
       name: ref
       required: true
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -3064,7 +2742,6 @@ script:
     description: Deletes a branch from the repository.
     arguments:
     - description: The name of the branch.
-      isArray: false
       name: branch
       required: true
   - description: Deletes all branches that are merged into the project's default branch.
@@ -3074,28 +2751,18 @@ script:
     arguments:
     - name: branch_name
       description: Optional URL parameter. If you provide a value, a single branch will be returned.
-      required: false
-      isArray: false
     - name: search
       description: Returns a list of branches containing the search string. You can use ^term and term$ to find branches that begin and end with term respectively.
-      required: false
-      isArray: false
     - defaultValue: 50
       name: limit
       description: Maximum number of results to return.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
       description: Return a partial API response in context data if true, otherwise returns full API response.
-      required: false
-      isArray: false
       predefined:
       - 'true'
       - 'false'
@@ -3162,22 +2829,15 @@ script:
     arguments:
     - name: skip_groups
       description: A comma-separated list of group IDs to skip.
-      required: false
       isArray: true
     - name: all_available
       description: Show all the groups you have access to. (Defaults to false for authenticated users, true for administrators).
-      required: false
-      isArray: false
     - name: search
       description: Return the list of authorized groups matching the search criteria.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       defaultValue: name
       name: order_by
       description: The method used to order the retrieved issues.
-      required: false
-      isArray: false
       predefined:
       - name
       - path
@@ -3186,34 +2846,22 @@ script:
       defaultValue: asc
       name: sort
       description: Order groups in asc or desc order.
-      required: false
-      isArray: false
       predefined:
       - asc
       - desc
     - name: owned
       description: Limit to groups explicitly owned by the current user.
-      required: false
-      isArray: false
       type: Boolean
     - name: min_access_level
       description: Limit to groups where the current user has at least this access level.
-      required: false
-      isArray: false
     - name: top_level_only
       description: Limit to top level groups, excluding all subgroups.
-      required: false
-      isArray: false
     - defaultValue: 50
       name: limit
       description: Maximum number of results to return.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GitLab.Group.id
       description: The group's ID.
@@ -3359,13 +3007,9 @@ script:
     - defaultValue: 50
       name: limit
       description: Maximum number of results to return.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GitLab.Code.basename
       description: The base name of the code.
@@ -3396,18 +3040,13 @@ script:
     arguments:
     - name: search
       description: The search query.
-      required: false
       isArray: true
     - defaultValue: 50
       name: limit
       description: Maximum number of results to return.
-      required: false
-      isArray: false
     - defaultValue: 1
       name: page
       description: The page number of the results to retrieve. Minimum value is 1.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GitLab.User.id
       description: The user's ID.
@@ -3429,28 +3068,14 @@ script:
       type: String
   - name: gitlab-pipelines-list
     arguments:
-    - default: false
-      description: Project ID from which to retrieve pipelines.
-      isArray: false
+    - description: Project ID from which to retrieve pipelines.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of specific pipeline from which to retrieve its details.
-      isArray: false
+    - description: ID of specific pipeline from which to retrieve its details.
       name: pipeline_id
-      required: false
-      secret: false
-    - default: false
-      description: Reference name of the pipelines, e.g., 'master'.
-      isArray: false
+    - description: Reference name of the pipelines, e.g., 'master'.
       name: ref
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Retrieves pipelines of which status matches the given status.
-      isArray: false
       name: status
       predefined:
       - 'created'
@@ -3464,10 +3089,7 @@ script:
       - 'skipped'
       - 'manual'
       - 'scheduled'
-      required: false
-      secret: false
     description: Gets the details of the pipelines.
-    execution: false
     outputs:
     - contextPath: GitLab.Pipeline.id
       description: Pipeline ID.
@@ -3522,20 +3144,11 @@ script:
       type: String
   - name: gitlab-pipelines-schedules-list
     arguments:
-    - default: false
-      description: Project ID from which to retrieve pipeline schedules.
-      isArray: false
+    - description: Project ID from which to retrieve pipeline schedules.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the specific pipeline schedule from which to retrieve its details.
-      isArray: false
+    - description: ID of the specific pipeline schedule from which to retrieve its details.
       name: pipeline_schedule_id
-      required: false
-      secret: false
     description: Gets the details of the pipeline schedules.
-    execution: false
     outputs:
     - contextPath: GitLab.PipelineSchedule.id
       description: Pipeline schedule ID.
@@ -3569,23 +3182,15 @@ script:
       type: String
     - contextPath: GitLab.PipelineSchedule.last_pipeline.status
       description: Status of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given.
-      type: String 
+      type: String
   - name: gitlab-jobs-list
     arguments:
-    - default: false
-      description: Project ID from which to retrieve jobs details.
-      isArray: false
+    - description: Project ID from which to retrieve jobs details.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the pipeline from which to retrieve its jobs.
-      isArray: false
+    - description: ID of the pipeline from which to retrieve its jobs.
       name: pipeline_id
       required: true
-      secret: false
     description: Gets job details.
-    execution: false
     outputs:
     - contextPath: GitLab.Job.status
       description: The status of the job.
@@ -3634,26 +3239,15 @@ script:
       type: String
   - name: gitlab-artifact-get
     arguments:
-    - default: false
-      description: Project ID from which to retrieve an artifact.
-      isArray: false
+    - description: Project ID from which to retrieve an artifact.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of a specific job from which to retrieve its artifact.
-      isArray: false
+    - description: ID of a specific job from which to retrieve its artifact.
       name: job_id
       required: true
-      secret: false
-    - default: false
-      description: Suffix to the path of an artifact from which to retrieve its data.
-      isArray: false
+    - description: Suffix to the path of an artifact from which to retrieve its data.
       name: artifact_path_suffix
       required: true
-      secret: false 
     description: Gets an artifact from a given artifact path, corresponding to a given job ID.
-    execution: false
     outputs:
     - contextPath: GitLab.Artifact.job_id
       description: Job ID from which the artifact was taken.
@@ -3664,7 +3258,6 @@ script:
     - contextPath: GitLab.Artifact.artifact_data
       description: Data of the artifact requested.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
