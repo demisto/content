@@ -1515,7 +1515,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "relatedreports",
+                                "fieldId": "relatedreport",
                                 "height": 22,
                                 "id": "f782bd20-8c31-11ed-a026-b1d5b381234f",
                                 "index": 1,
