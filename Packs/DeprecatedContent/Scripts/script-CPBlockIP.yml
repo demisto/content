@@ -105,7 +105,6 @@ args:
 - name: ipname
   description: Base name for added ip/hosts inside checkpoint db
 scripttarget: 0
-runonce: false
 deprecated: true
 dependson:
   must:
