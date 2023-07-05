@@ -9,7 +9,6 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: API Key
   name: apikey
   type: 4
@@ -21,13 +20,11 @@ configuration:
   additionalinfo: 'The Project ID to fetch issues from '
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   defaultvalue: Recorded Future ASI Alert
 - display: Minimum severity of alerts to fetch
   name: min_severity
   defaultvalue: 'Informational'
-  required: false
   type: 15
   options:
   - Informational
@@ -36,7 +33,6 @@ configuration:
 - defaultvalue: 'By Issue'
   display: How to group new issues
   name: issue_grouping
-  required: false
   type: 15
   options:
   - By Host
@@ -44,18 +40,15 @@ configuration:
 - defaultvalue: 'false'
   display: Expand grouped By Host rules into separate Incidents (applicable if grouping By Host)
   name: expand_issues
-  required: false
   type: 8
 - display: Fetch limit
   additionalinfo: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "200"
-  required: false
   type: 0
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
-  required: false
   type: 0
 script:
   script: '-'
@@ -72,7 +65,6 @@ script:
     description: Gets the issues for a project from a particular snapshot (defaults to recent)
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 6.5.0
 tests:

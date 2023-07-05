@@ -456,9 +456,6 @@ script:
       type: number
     description: Get events
   dockerimage: demisto/py3-tools:1.0.0.64013
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

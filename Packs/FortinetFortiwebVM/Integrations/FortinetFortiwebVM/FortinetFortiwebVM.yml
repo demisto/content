@@ -24,12 +24,10 @@ configuration:
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: "Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and host names."
 display: Fortiweb VM
@@ -38,62 +36,42 @@ script:
   commands:
   - arguments:
     - description: Protected host name group name.
-      isArray: false
       name: name
       required: true
     - auto: PREDEFINED
       defaultValue: Allow
       description: Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you add to this protected hosts group.
-      isArray: false
       name: default_action
       predefined:
       - Allow
       - Deny (no log)
       - Deny
-      required: false
-    deprecated: false
     description: Create protected host name group.
-    execution: false
     name: fortiwebvm-protected-hostname-group-create
   - arguments:
     - description: Protected host name group name.
-      isArray: false
       name: name
       required: true
     - auto: PREDEFINED
       description: Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you will add to this protected hosts group.
-      isArray: false
       name: default_action
       predefined:
       - Allow
       - Deny (no log)
       - Deny
-      required: false
-    deprecated: false
     description: Update protected host name group.
-    execution: false
     name: fortiwebvm-protected-hostname-group-update
   - arguments:
     - description: Protected host name group name.
-      isArray: false
       name: name
-      required: false
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the Protected host name group.
-    execution: false
     name: fortiwebvm-protected-hostname-group-list
     outputs:
     - contextPath: FortiwebVM.ProtectedHostnameGroup.id
@@ -110,44 +88,34 @@ script:
       type: Boolean
   - arguments:
     - description: Protected host name group name.
-      isArray: false
       name: group_name
       required: true
     - auto: PREDEFINED
       defaultValue: Allow
       description: Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you add to this protected hosts group.
-      isArray: false
       name: action
       predefined:
       - Allow
       - Deny (no log)
       - Deny
-      required: false
     - description: Enter the IP address or FQDN of a virtual or real web host, as it appears in the Host field of HTTP headers, such as www.example.com. The maximum length is 256 characters.
-      isArray: false
       name: host
       required: true
     - auto: PREDEFINED
       defaultValue: disable
       description: Whether host names with a port number will be protected. Supports API version 2 only.
-      isArray: false
       name: ignore_port
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       defaultValue: disable
       description: Whether sub-domains of the host will be protected. Supports API version 2 only.
-      isArray: false
       name: include_subdomains
       predefined:
       - enable
       - disable
-      required: false
-    deprecated: false
     description: Create protected host name member.
-    execution: false
     name: fortiwebvm-protected-hostname-member-create
     outputs:
     - contextPath: FortiwebVM.ProtectedHostnameMember.id
@@ -155,72 +123,49 @@ script:
       type: String
   - arguments:
     - description: Protected host name group name.
-      isArray: false
       name: group_name
       required: true
     - description: Protected host name member ID.
-      isArray: false
       name: member_id
       required: true
     - auto: PREDEFINED
       description: Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you add to this protected hosts group. Required in V1.
-      isArray: false
       name: action
       predefined:
       - Allow
       - Deny (no log)
       - Deny
-      required: false
     - description: Enter the IP address or FQDN of a virtual or real web host, as it appears in the Host field of HTTP headers, such as www.example.com. The maximum length is 256 characters.
-      isArray: false
       name: host
-      required: false
     - auto: PREDEFINED
       description: Whether host names with a port number will be protected. Supports API version 2 only.
-      isArray: false
       name: ignore_port
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       description: Whether sub-domains of the host will be protected. Supports API version 2 only.
-      isArray: false
       name: include_subdomains
       predefined:
       - enable
       - disable
-      required: false
-    deprecated: false
     description: Update a protected host name member.
-    execution: false
     name: fortiwebvm-protected-hostname-member-update
   - arguments:
     - description: Protected host name group name.
-      isArray: false
       name: group_name
       required: true
     - description: Protected host name member ID.
-      isArray: false
       name: member_id
-      required: false
     - defaultValue: '25'
       description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: A number of hostname members per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List all the protected host name members.
-    execution: false
     name: fortiwebvm-protected-hostname-member-list
     outputs:
     - contextPath: FortiwebVM.ProtectedHostnameMember.group_name
@@ -248,127 +193,91 @@ script:
     - description: Protected host name member ID.
       name: member_id
       required: true
-    deprecated: false
     description: Delete protected host name member.
-    execution: false
     name: fortiwebvm-protected-hostname-member-delete
   - arguments:
     - description: Protected host name group name.
       name: name
       required: true
-    deprecated: false
     description: Delete a protected host name.
-    execution: false
     name: fortiwebvm-protected-hostname-group-delete
   - arguments:
     - description: IP list group name.
-      isArray: false
       name: name
       required: true
     - auto: PREDEFINED
       defaultValue: Alert deny
       description: The action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only.
-      isArray: false
       name: action
       predefined:
       - Alert deny
       - Block period
       - Deny (no log)
-      required: false
     - defaultValue: '600'
       description: Enter the number of seconds to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only.
-      isArray: false
       name: block_period
-      required: false
     - auto: PREDEFINED
       defaultValue: Low
       description: The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 2 only.
-      isArray: false
       name: severity
       predefined:
       - Low
       - Medium
       - High
       - Info
-      required: false
     - auto: PREDEFINED
       defaultValue: disable
       description: Whether IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only.
-      isArray: false
       name: ignore_x_forwarded_for
       predefined:
       - enable
       - disable
-      required: false
     - description: The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 2 only.
       name: trigger_policy
-      required: false
-    deprecated: false
     description: Create IP List.
-    execution: false
     name: fortiwebvm-ip-list-group-create
   - arguments:
     - description: IP list group name.
-      isArray: false
       name: name
       required: true
     - auto: PREDEFINED
       description: The action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only.
-      isArray: false
       name: action
       predefined:
       - Alert deny
       - Block period
       - Deny (no log)
-      required: false
     - description: The number of seconds to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only.
-      isArray: false
       name: block_period
-      required: false
     - auto: PREDEFINED
       description: The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 2 only.
-      isArray: false
       name: severity
       predefined:
       - Low
       - Medium
       - High
       - Info
-      required: false
     - auto: PREDEFINED
       description: Whether the IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only.
-      isArray: false
       name: ignore_x_forwarded_for
       predefined:
       - enable
       - disable
-      required: false
     - description: The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 2 only.
       name: trigger_policy
-      required: false
-    deprecated: false
     description: Update an IP list.
-    execution: false
     name: fortiwebvm-ip-list-group-update
   - arguments:
     - description: IP list name.
       name: name
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: Supports API versions 1 & 2.
-    execution: false
     name: fortiwebvm-ip-list-group-list
     outputs:
     - contextPath: FortiwebVM.IpListGroup.id
@@ -410,7 +319,6 @@ script:
       required: true
     - auto: PREDEFINED
       description: The type of the source IP address.
-      isArray: false
       name: type
       predefined:
       - Trust IP
@@ -418,27 +326,20 @@ script:
       - Allow Only Ip
       required: true
     - description: IPv4/IPv6/IP range.
-      isArray: false
       name: ip_address
       required: true
     - auto: PREDEFINED
       defaultValue: Medium
       description: The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\".
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Informative
-      required: false
     - description: The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\".
-      isArray: false
       name: trigger_policy
-      required: false
-    deprecated: false
     description: Create an IP list member. Supports API versions 1 & 2.
-    execution: false
     name: fortiwebvm-ip-list-member-create
     outputs:
     - contextPath: FortiwebVM.IpListMember.id
@@ -453,58 +354,39 @@ script:
       required: true
     - auto: PREDEFINED
       description: The type of the source IP address.
-      isArray: false
       name: type
       predefined:
       - Trust IP
       - Black IP
       - Allow Only Ip
-      required: false
     - description: IPv4/IPv6/IP range.
-      isArray: false
       name: ip_address
-      required: false
     - auto: PREDEFINED
       description: The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\".
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Informative
-      required: false
     - description: The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\".
-      isArray: false
       name: trigger_policy
-      required: false
-    deprecated: false
     description: Update IP list policy member.
-    execution: false
     name: fortiwebvm-ip-list-member-update
   - arguments:
     - description: IP list group name.
-      isArray: false
       name: group_name
       required: true
     - description: IP list member ID.
       name: member_id
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the IP list policy members.
-    execution: false
     name: fortiwebvm-ip-list-member-list
     outputs:
     - contextPath: FortiwebVM.IpListMember.group_name
@@ -527,74 +409,50 @@ script:
       type: String
   - arguments:
     - description: IP list group name.
-      isArray: false
       name: group_name
       required: true
     - description: IP list policy member ID.
-      isArray: false
       name: member_id
       required: true
-    deprecated: false
     description: Delete an IP list policy member.
-    execution: false
     name: fortiwebvm-ip-list-member-delete
   - arguments:
     - description: IP list group name.
-      isArray: false
       name: name
       required: true
-    deprecated: false
     description: Supports API versions 1 & 2.
-    execution: false
     name: fortiwebvm-ip-list-group-delete
   - arguments:
     - description: Predefined global whitelist ID.
-      isArray: false
       name: id
       required: true
     - auto: PREDEFINED
       description: Status
-      isArray: false
       name: status
       predefined:
       - 'enable'
       - 'disable'
-      required: false
-    deprecated: false
     description: Update the custom predefined global whitelist.
-    execution: false
     name: fortiwebvm-custom-predefined-whitelist-update
   - arguments:
     - description: Custom predefined whitelist ID.
-      isArray: false
       name: id
-      required: false
     - auto: PREDEFINED
       description: Type of the custom predefined whitelist.
-      isArray: false
       name: type
-      required: false
       predefined:
       - URL
       - Parameter
       - Cookie
       - Header Field
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: Get custom predefined global whitelist.
-    execution: false
     name: fortiwebvm-custom-predefined-whitelist-list
     outputs:
     - contextPath: FortiwebVM.CustomPredefinedGlobalWhitelist.id
@@ -616,19 +474,14 @@ script:
     - auto: PREDEFINED
       defaultValue: Simple String
       description: Indicate whether the request-file \"<url_str>\" field contains a literal URL (Simple String), or a regular expression designed to match multiple URLs (Regular Expression).
-      isArray: false
       name: request_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: "Depending on your selection in the request-type {plain | regular} field, enter either:  - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html."
-      isArray: false
       name: request_url
       required: true
-    deprecated: false
     description: Create a custom global whitelist URL object.
-    execution: false
     name: fortiwebvm-custom-whitelist-url-create
     outputs:
     - contextPath: FortiwebVM.CustomGlobalWhitelist.id
@@ -638,63 +491,46 @@ script:
     - auto: PREDEFINED
       defaultValue: Simple String
       description: Indicate whether the request-file \"<url_str>\" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Supports API version 2 only. Required when request_url_status= True.
-      isArray: false
       name: request_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: "Depending on your selection in the request-type {plain | regular} field, enter either: - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html. Supports API version 2 only. Required when request_url_status= True."
-      isArray: false
       name: request_url
-      required: false
     - description: Enter the name of the parameter as it appears in the HTTP URL or body, such as rememberme.
-      isArray: false
       name: name
       required: true
     - auto: PREDEFINED
       defaultValue: Simple String
       description: Indicate whether the name \"<name_str>\" field will contain a literal parameter name (Simple String), or a regular expression designed to match all parameter names (Regular Expression). Supports API version 2 only.
-      isArray: false
       name: name_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - auto: PREDEFINED
       defaultValue: disable
       description: Enable to apply this rule only to HTTP requests for specific URLs. Supports API version 2 only.
-      isArray: false
       name: request_url_status
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       defaultValue: disable
       description: Enable to apply this rule only to HTTP requests for specific domains. Supports API version 2 only.
-      isArray: false
       name: domain_status
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       defaultValue: Simple String
       description: Indicate whether the domain \"<cookie_str>\" field will contain a literal domain/IP address (Simple String), or a regular expression designed to match multiple domains/IP addresses (Regular Expression). Supports API version 2 only. Required when request_url_status= True.
-      isArray: false
       name: domain_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: The partial or complete domain name or IP address as it appears in the cookie. Supports API version 2 only. Required when request_url_status= True.
-      isArray: false
       name: domain
-      required: false
-    deprecated: false
     description: Create a custom global whitelist parameter object.
-    execution: false
     name: fortiwebvm-custom-whitelist-parameter-create
     outputs:
     - contextPath: FortiwebVM.CustomGlobalWhitelist.id
@@ -702,20 +538,13 @@ script:
       type: Number
   - arguments:
     - description: The name of the cookie as it appears in the HTTP request, such as NID.
-      isArray: false
       name: name
       required: true
     - description: The partial or complete domain name or IP address as it appears in the cookie.
-      isArray: false
       name: domain
-      required: false
     - description: The path as it appears in the cookie.
-      isArray: false
       name: path
-      required: false
-    deprecated: false
     description: Create a custom global whitelist cookie object.
-    execution: false
     name: fortiwebvm-custom-whitelist-cookie-create
     outputs:
     - contextPath: FortiwebVM.CustomGlobalWhitelist.id
@@ -723,43 +552,32 @@ script:
       type: Number
   - arguments:
     - description: Enter the name of the cookie as it appears in the HTTP header.
-      isArray: false
       name: name
       required: true
     - auto: PREDEFINED
       defaultValue: Simple String
       description: Indicate whether the type field will contain a literal name (Simple String), or a regular expression designed to match multiple names (Regular Expression).
-      isArray: false
       name: header_name_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - auto: PREDEFINED
       description: Enable to also check the value of the HTTP header. Only the HTTP headers that match both the name and the value will be allowlisted.
-      isArray: false
       name: value_status
       predefined:
       - enable
       - disable
-      required: false
       defaultValue: disable
     - auto: PREDEFINED
       defaultValue: Simple String
       description: Indicate whether the header name will contain a literal name (plain), or a regular expression designed to match multiple names (regular).
-      isArray: false
       name: header_value_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: The value of the HTTP header. Required when value_status is enabled.
-      isArray: false
       name: value
-      required: false
-    deprecated: false
     description: Create a custom global whitelist header field object. Supports API version 2 only.
-    execution: false
     name: fortiwebvm-custom-whitelist-header-field-create
     outputs:
     - contextPath: FortiwebVM.CustomGlobalWhitelist.id
@@ -767,215 +585,146 @@ script:
       type: Number
   - arguments:
     - description: Custom global whitelist object ID.
-      isArray: false
       name: id
       required: true
     - auto: PREDEFINED
       description: Enable to exempt this object from all scans.
-      isArray: false
       name: status
       predefined:
       - enable
       - disable
       defaultValue: enable
-      required: false
     - auto: PREDEFINED
       description: Indicate whether the request-file \"<url_str>\" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular).
-      isArray: false
       name: request_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: Depending on your selection in the request-type {plain | regular} field, enter either - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html.
-      isArray: false
       name: request_url
-      required: false
-    deprecated: false
     description: Update a custom global whitelist URL object.
-    execution: false
     name: fortiwebvm-custom-whitelist-url-update
   - arguments:
     - description: Custom global whitelist object ID.
-      isArray: false
       name: id
       required: true
     - auto: PREDEFINED
       description: Enable to exempt this object from all scans.
-      isArray: false
       name: status
       predefined:
       - enable
       - disable
-      required: false
       defaultValue: enable
     - auto: PREDEFINED
       description: Indicate whether the request-file \"<url_str>\" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Supports API version 2 only. Required when request_url_status= True.
-      isArray: false
       defaultValue: enable
       name: request_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: "Depending on your selection in the request-type {plain | regular} field, enter either: - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html. Supports API version 2 only. Required when request_url_status= True."
-      isArray: false
       name: request_url
-      required: false
     - description: Name.
-      isArray: false
       name: name
-      required: false
     - auto: PREDEFINED
       description: Indicate whether the name \"<name_str>\" field will contain a literal parameter name (Simple String), or a regular expression designed to match all parameter names (Regular Expression). Supports API version 2 only.
-      isArray: false
       name: name_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - auto: PREDEFINED
       description: Enable to apply this rule only to HTTP requests for specific URLs. Supports
-      isArray: false
       name: request_url_status
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       description: Enable to apply this rule only to HTTP requests for specific domains. Supports
-      isArray: false
       name: domain_status
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       description: Indicate whether the domain \"<cookie_str>\" field will contain a literal domain/IP address (Simple String), or a regular expression designed to match multiple domains/IP addresses (Regular Expression). Supports API version 2 only. Required when request_url_status= True.
-      isArray: false
       name: domain_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: Enter the partial or complete domain name or IP address as it appears in the cookie. Supports API version 2 only. Required when request_url_status= True.
-      isArray: false
       name: domain
-      required: false
-    deprecated: false
     description: Update custom global whitelist parameter object.
-    execution: false
     name: fortiwebvm-custom-whitelist-parameter-update
   - arguments:
     - description: Custom global whitelist object ID.
-      isArray: false
       name: id
       required: true
     - auto: PREDEFINED
       description: Enable to exempt this object from all scans.
-      isArray: false
       name: status
       predefined:
       - enable
       - disable
-      required: false
       defaultValue: enable
     - description: Enter the name of the cookie as it appears in the HTTP request, such as NID.
-      isArray: false
       name: name
-      required: false
     - description: Enter the partial or complete domain name or IP address as it appears in the cookie.
-      isArray: false
       name: domain
-      required: false
     - description: Enter the path as it appears in the cookie.
-      isArray: false
       name: path
-      required: false
-    deprecated: false
     description: Update a custom global whitelist cookie object.
-    execution: false
     name: fortiwebvm-custom-whitelist-cookie-update
   - arguments:
     - description: Custom global whitelist object ID.
-      isArray: false
       name: id
       required: true
     - auto: PREDEFINED
       description: Enable to exempt this object from all scans.
-      isArray: false
       name: status
       predefined:
       - enable
       - disable
       defaultValue: enable
-      required: false
     - auto: PREDEFINED
       description: Indicate whether the type field will contain a literal name (Simple String), or a regular expression designed to match multiple names (Regular Expression).
-      isArray: false
       name: header_name_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - description: The name of the cookie as it appears in the HTTP header.
-      isArray: false
       name: name
-      required: false
     - auto: PREDEFINED
       description: Indicate whether the header name will contain a literal name (Simple String), or a regular expression designed to match multiple names (Regular Expression).
-      isArray: false
       name: header_value_type
       predefined:
       - Simple String
       - Regular Expression
-      required: false
     - auto: PREDEFINED
       description: Enable to also check the value of the HTTP header. Only the HTTP headers that match both the name and the value will be allowlisted.
-      isArray: false
       name: value_status
       predefined:
       - enable
       - disable
-      required: false
     - description: The value of the HTTP header. Required when value_status is enabled.
-      isArray: false
       name: value
-      required: false
-    deprecated: false
     description: Update a custom global whitelist header field object. Supports API version 2 only.
-    execution: false
     name: fortiwebvm-custom-whitelist-header-field-update
   - arguments:
     - description: Object ID number.
-      isArray: false
       name: id
       required: true
-    deprecated: false
     description: Delete a custom global whitelist object from the custom global whitelist.
-    execution: false
     name: fortiwebvm-custom-whitelist-delete
   - arguments:
     - description: Custom global whitelist object ID.
-      isArray: false
       name: id
-      required: false
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the custom global whitelist objects.
-    execution: false
     name: fortiwebvm-custom-whitelist-list
     outputs:
     - contextPath: FortiwebVM.CustomGlobalWhitelist.id
@@ -1028,13 +777,11 @@ script:
       type: String
   - arguments:
     - description: Geo IP group name.
-      isArray: false
       name: group_name
       required: true
     - auto: PREDEFINED
       defaultValue: Low
-      description: Comma-separated list of country names to add to the GEO IP list name. 
-      isArray: false
+      description: Comma-separated list of country names to add to the GEO IP list name.
       name: countries
       predefined:
       - Afghanistan
@@ -1278,48 +1025,31 @@ script:
       - Zambia
       - Zimbabwe
       required: true
-    deprecated: false
     description: Create Geo IP member.
-    execution: false
     name: fortiwebvm-geo-ip-member-add
   - arguments:
     - description: Geo IP group name.
-      isArray: false
       name: group_name
       required: true
     - description: Geo IP member ID number. (The ID of the Geo IP member is the ID of the country in the Geo IP list.)
-      isArray: false
       name: member_id
       required: true
-    deprecated: false
     description: Delete Geo IP member .
-    execution: false
     name: fortiwebvm-geo-ip-member-delete
   - arguments:
     - description: Geo IP Name.
-      isArray: false
       name: group_name
       required: true
     - description: Geo IP member ID number. (The ID of the Geo IP Member is the ID of the country in the Geo IP list.)
-      isArray: false
       name: member_id
-      required: false
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: Get Geo IP member.
-    execution: false
     name: fortiwebvm-geo-ip-member-list
     outputs:
     - contextPath: FortiwebVM.GeoIpMember.group_name
@@ -1333,133 +1063,90 @@ script:
       type: Number
   - arguments:
     - description: Geo IP group name.
-      isArray: false
       name: name
       required: true
     - description: Enter the name of the trigger to apply when this rule is violated.
-      isArray: false
       name: trigger_policy
-      required: false
     - auto: PREDEFINED
       defaultValue: Low
       description: The severity level to use in logs and reports generated when a violation of the rule occurs.
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Info
-      required: false
     - description: Geo IP exception groups.
-      isArray: false
       name: exception_rule
-      required: false
     - auto: PREDEFINED
       defaultValue: Block period
       description: "Select which action FortiWeb will take when it detects a violation of the rule: alert_deny — Block the request (or reset the connection) and generate an alert and/or log message. deny_no_log — Block the request (or reset the connection). block-period — Block subsequent requests from the client for a number of seconds. Also configure block-period. Supports API version 2 only."
-      isArray: false
       name: action
       predefined:
       - Alert deny
       - Block period
       - Deny (no log)
-      required: false
     - defaultValue: '600'
       description: The number of seconds to block subsequent requests. The valid range is 1–3,600 seconds. Relevant when action=Block period True. Supports API version 2 only.
-      isArray: false
       name: block_period
-      required: false
     - auto: PREDEFINED
       predefined:
       - enable
       - disable
       description: Whether to enable so that IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only.
-      isArray: false
       name: ignore_x_forwarded_for
-      required: false
-    deprecated: false
     description: Create Geo IP.
-    execution: false
     name: fortiwebvm-geo-ip-group-create
   - arguments:
     - description: Geo IP group name.
-      isArray: false
       name: name
       required: true
     - description: Enter the name of the trigger to apply when this rule is violated.
-      isArray: false
       name: trigger_policy
-      required: false
     - auto: PREDEFINED
       description: The severity level to use in logs and reports generated when a violation of the rule occurs.
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Info
-      required: false
     - description: Geo IP exception groups.
-      isArray: false
       name: exception_rule
-      required: false
     - auto: PREDEFINED
       description: "The action FortiWeb will take when it detects a violation of the rule: alert_deny — Block the request (or reset the connection) and generate an alert and/or log message.deny_no_log — Block the request (or reset the connection). block-period — Block subsequent requests from the client for a number of seconds. Also configure block-period. Supports API version 2 only."
-      isArray: false
       name: action
       predefined:
       - Alert deny
       - Block period
       - Deny (no log)
-      required: false
     - description: The number of seconds to block subsequent requests. The valid range is 1–3,600 seconds. Supports API version 2 only.
-      isArray: false
       name: block_period
-      required: false
     - auto: PREDEFINED
       predefined:
       - enable
       - disable
       description: Whether to enable so that the IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only.
-      isArray: false
       name: ignore_x_forwarded_for
-      required: false
-    deprecated: false
     description: Update Geo IP.
-    execution: false
     name: fortiwebvm-geo-ip-group-update
   - arguments:
     - description: Geo IP group name.
-      isArray: false
       name: name
       required: true
-    deprecated: false
     description: Delete Geo IP.
-    execution: false
     name: fortiwebvm-geo-ip-group-delete
   - arguments:
     - description: Geo IP group name.
-      isArray: false
       name: name
-      required: false
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: Get Geo IP list.
-    execution: false
     name: fortiwebvm-geo-ip-group-list
     outputs:
     - contextPath: FortiwebVM.GeoIpGroup.id
@@ -1489,35 +1176,21 @@ script:
     - contextPath: FortiwebVM.GeoIpGroup.ignore_x_forwarded_for
       description: Whether IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only.
       type: String
-  - deprecated: false
-    description: Get operation status.
-    execution: false
+  - description: Get operation status.
     name: fortiwebvm-system-operation-status-get
-  - deprecated: false
-    description: Get policy status.
-    execution: false
+  - description: Get policy status.
     name: fortiwebvm-system-policy-status-get
-  - deprecated: false
-    description: Get system status.
-    execution: false
+  - description: Get system status.
     name: fortiwebvm-system-status-get
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the virtual servers.
-    execution: false
     name: fortiwebvm-virtual-server-list
     outputs:
     - contextPath: FortiwebVM.VirtualServer.id
@@ -1525,21 +1198,13 @@ script:
       type: String
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the Geo exception groups.
-    execution: false
     name: fortiwebvm-geo-exception-list
     outputs:
     - contextPath: FortiwebVM.GeoExceptionGroup.id
@@ -1547,21 +1212,13 @@ script:
       type: String
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the trigger policy rules.
-    execution: false
     name: fortiwebvm-trigger-policy-list
     outputs:
     - contextPath: FortiwebVM.TriggerPolicy.id
@@ -1569,21 +1226,13 @@ script:
       type: String
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the certificate intermediate groups.
-    execution: false
     name: fortiwebvm-certificate-intermediate-group-list
     outputs:
     - contextPath: FortiwebVM.CertificateIntermediateGroup.id
@@ -1591,21 +1240,13 @@ script:
       type: String
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the server pools.
-    execution: false
     name: fortiwebvm-server-pool-list
     outputs:
     - contextPath: FortiwebVM.ServerPool.id
@@ -1613,21 +1254,13 @@ script:
       type: String
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the  HTTP services.
-    execution: false
     name: fortiwebvm-http-service-list
     outputs:
     - contextPath: FortiwebVM.HttpServiceList.id
@@ -1635,21 +1268,13 @@ script:
       type: String
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the inline protection profiles.
-    execution: false
     name: fortiwebvm-inline-protection-profile-list
     outputs:
     - contextPath: FortiwebVM.InlineProtectionProfile.id
@@ -1657,165 +1282,113 @@ script:
       type: String
   - arguments:
     - description: Policy Name.
-      isArray: false
       name: name
       required: true
     - description: Allows the use of the server policy JSON template. All of the arguments listed below will be overridden.
-      isArray: false
       name: json_template_id
-      required: false
     - auto: PREDEFINED
       description: The distribution method that FortiWeb uses when it forwards connections accepted by this policy.
-      isArray: false
       name: deployment_mode
       predefined:
       - HTTP Content Routing
       - Single Server/Server Balance
-      required: false
     - description: The name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters.
-      isArray: false
       name: virtual_server
-      required: false
     - auto: PREDEFINED
       description: 'Enable to forward subsequent requests from an identified client connection to the same server pool as the initial connection from the client. Required when: deployment_mode = "HTTP Content Routing".'
-      isArray: false
       name: match_once
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: 'The name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance".'
-      isArray: false
       name: server_pool
-      required: false
     - description: The name of a protected hosts group to allow or reject connections based upon their host.
-      isArray: false
       name: protected_hostnames
-      required: false
     - auto: PREDEFINED
-      isArray: false
       name: client_real_ip
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
       description: Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client.
     - description: 'An IP address or address range to directly connect to the back-end server. Required when: client_real_ip = "enable". Supports API version 2 only.'
-      isArray: false
       name: ip_range
-      required: false
     - auto: PREDEFINED
       description: Enable to detect TCP SYN flood attacks.
-      isArray: false
       name: syn_cookie
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: The maximum number of TCP SYN packets, including retransmissions, that FortiWeb allows to be sent per second to a destination address. If this threshold is exceeded, the FortiWeb appliance treats the traffic as a DoS attack and ignores additional traffic from that source address. The valid range is 10–10,000.
-      isArray: false
       name: half_open_thresh
-      required: false
       defaultValue: 8192
     - description: Custom or predefined service that defines the port number on which the virtual server receives HTTP traffic.
-      isArray: false
       name: http_service
-      required: false
     - description: Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic.
-      isArray: false
       name: https_service
-      required: false
     - description: Enable to allow FortiWeb to use multiple local certificates.
-      isArray: false
       name: multi_certificate
-      required: false
     - description: "The multi-certificate file you created. Required when:  multi_certificate is enabled."
-      isArray: false
       name: certificate_group
-      required: false
     - description: Certificate group name.
-      isArray: false
       name: proxy
-      required: false
     - auto: PREDEFINED
       description: Enable to automatically redirect all HTTP requests to the HTTPS service with the same URL and parameters.
-      isArray: false
       name: redirect_to_https
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: Inline web protection profile name.
-      isArray: false
       name: inline_protection_profile
-      required: false
     - auto: PREDEFINED
       description: Enable to override deny and redirect actions defined in the server protection rules for the selected policy. This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules.
-      isArray: false
       name: monitor_mode
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       description: Enable to differentiate uniform resource locators (URLs) according to upper case and lower case letters for features that act upon the URLs in the headers of HTTP requests, such as block list rules, and allow list rules.
-      isArray: false
       name: url_case_sensitivity
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: A description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes ( " ). The maximum length is 999 characters.
-      isArray: false
       name: comments
-      required: false
     - auto: PREDEFINED
       description: Certificate type. Supports API version 2 only.
-      isArray: false
       name: certificate_type
       defaultValue: Local
       predefined:
       - Local
       - Multi Certificate
       - Letsencrypt
-      required: false
     - description: "Select the Letsencrypt certificate you created. Supports API version 2 only. Required when: certificate_type is 'Letsencrypt'."
-      isArray: false
       name: lets_certificate
-      required: false
     - auto: PREDEFINED
       defaultValue: disable
       description: Enable to configure whether to retry a failed TCP connection or HTTP request in Reverse Proxy mode. Supports API version 2 only.
-      isArray: false
       name: retry_on
       predefined:
       - enable
       - disable
-      required: false
     - defaultValue: '512'
       description: "A cache size limit for the HTTP request packet. Supports API version 2 only. Required when: retry_on is enabled."
-      isArray: false
       name: retry_on_cache_size
-      required: false
     - auto: PREDEFINED
       description: "Enable to configure the retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enabled."
-      isArray: false
       name: retry_on_connect_failure
       predefined:
       - enable
       - disable
       defaultValue: disable
-      required: false
     - auto: PREDEFINED
       defaultValue: '3'
       description: "The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on_connect_failure and retry_on are enabled."
-      isArray: false
       name: retry_times_on_connect_failure
       predefined:
       - '1'
@@ -1823,20 +1396,16 @@ script:
       - '3'
       - '4'
       - '5'
-      required: false
     - auto: PREDEFINED
       description: "Enable to configure the retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only. Required when: retry_on is enabled."
-      isArray: false
       name: retry_on_http_layer
       predefined:
       - enable
       - disable
-      required: false
       defaultValue: disable
     - auto: PREDEFINED
       defaultValue: '3'
       description: "The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled."
-      isArray: false
       name: retry_times_on_http_layer
       predefined:
       - '1'
@@ -1844,7 +1413,6 @@ script:
       - '3'
       - '4'
       - '5'
-      required: false
     - auto: PREDEFINED
       description: "The failure return code when the pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled."
       isArray: true
@@ -1857,189 +1425,123 @@ script:
       - '502'
       - '503'
       - '504'
-      required: false
     - auto: PREDEFINED
       description: Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only.
-      isArray: false
       name: scripting
       predefined:
       - enable
       - disable
-      required: false
     - description: "Scripting list to perform actions that are not currently supported by the built-in feature set. Required when: scripting is enabled. Supports API version 2 only."
-      isArray: false
       name: scripting_list
-      required: false
     - description: The Policy Based Allow list to use instead of the Global Allow List. Supports API version 2 only.
-      isArray: false
       name: allow_list
-      required: false
     - description: The replacement message to apply to the policy. Supports API version 2 only.
-      isArray: false
       name: replace_msg
-      required: false
-    deprecated: false
     description: Create a server policy.
-    execution: false
     name: fortiwebvm-server-policy-create
   - arguments:
     - description: Policy name.
-      isArray: false
       name: name
       required: true
     - auto: PREDEFINED
       description: Deployment mode.
-      isArray: false
       name: deployment_mode
       predefined:
       - HTTP Content Routing
       - Single Server/Server Balance
-      required: false
     - description: The name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters.
-      isArray: false
       name: virtual_server
-      required: false
     - auto: PREDEFINED
       description: 'Enable to forward subsequent requests from an identified client connection to the same server pool as the initial connection from the client. Required when: deployment_mode = "HTTP Content Routing".'
-      isArray: false
       name: match_once
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: 'Enter the name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance".'
-      isArray: false
       name: server_pool
-      required: false
     - description: Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon their host.
-      isArray: false
       name: protected_hostnames
-      required: false
     - description: Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client.
-      isArray: false
       name: client_real_ip
-      required: false
     - description: 'Specify an IP address or address range to directly connect to the back-end server. Required when: client_real_ip = "enable". Supports API version 2 only.'
-      isArray: false
       name: ip_range
-      required: false
     - auto: PREDEFINED
       description: Enable to detect TCP SYN flood attacks.
-      isArray: false
       name: syn_cookie
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: The maximum number of TCP SYN packets, including retransmissions, that FortiWeb allows to be sent per second to a destination address. If this threshold is exceeded, the FortiWeb appliance treats the traffic as a DoS attack and ignores additional traffic from that source address. The valid range is 10–10,000.
-      isArray: false
       name: half_open_thresh
-      required: false
     - description: Custom or predefined service that defines the port number on which the virtual server receives HTTP traffic.
-      isArray: false
       name: http_service
-      required: false
     - description: HTTPS service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic.
-      isArray: false
       name: https_service
-      required: false
     - auto: PREDEFINED
       description: 'Enable HTTP/2. Required when: HTTPSService is not null.'
-      isArray: false
       name: http2
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: Enable to allow FortiWeb to use multiple local certificates.
-      isArray: false
       name: multi_certificate
-      required: false
     - description: "Required  when:  multi-certificate is enabled. Select the multi-certificate file you created."
-      isArray: false
       name: certificate_group
-      required: false
     - description: "Certificate group name. Required when:  multi-certificate is disabled."
-      isArray: false
       name: certificate
-      required: false
     - description: "Certificate intermediate group. Required when: HTTPSService is not null."
-      isArray: false
       name: intergroup
-      required: false
     - auto: PREDEFINED
       description: Enable this option when proxy servers or load balancers are installed before FortiWeb.
-      isArray: false
       name: proxy
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: Enable to automatically redirect all HTTP requests to the HTTPS service with the same URL and parameters.
       name: redirect_to_https
-      required: false
     - description: Inline web protection profile name.
-      isArray: false
       name: inline_protection_profile
-      required: false
     - auto: PREDEFINED
       description: Enable to override deny and redirect actions defined in the server protection rules for the selected policy. This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules.
-      isArray: false
       name: monitor_mode
       defaultValue: disable
       predefined:
       - enable
       - disable
-      required: false
     - description: Enable to differentiate uniform resource locators (URLs) according to upper case and lower case letters for features that act upon the URLs in the headers of HTTP requests, such as block list rules, and allow list rules.
-      isArray: false
       name: url_case_sensitivity
-      required: false
     - description: A description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes ( " ). The maximum length is 999 characters.
-      isArray: false
       name: comments
-      required: false
     - auto: PREDEFINED
       description: Certificate type. Supports API version 2 only.
-      isArray: false
       name: certificate_type
       defaultValue: Local
       predefined:
       - Local
       - Multi Certificate
       - Letsencrypt
-      required: false
     - description: "Select the Letsencrypt certificate you created. Supports API version 2 only. Required when: certificate-type is enabled."
-      isArray: false
       name: lets_certificate
-      required: false
     - auto: PREDEFINED
       description: Enable to configure whether to retry a failed TCP connection or HTTP request in Reverse Proxy mode. Supports API version 2 only.
-      isArray: false
       name: retry_on
       predefined:
       - enable
       - disable
-      required: false
     - description: "The cache size limit for the HTTP request packet. Supports API version 2 only. Required when: retry_on is enabled."
-      isArray: false
       name: retry_on_cache_size
-      required: false
     - auto: PREDEFINED
       description: "Enable to configure the retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enabled."
-      isArray: false
       name: retry_on_connect_failure
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       description: "The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on_connect_failure and retry_on are enabled."
-      isArray: false
       name: retry_times_on_connect_failure
       predefined:
       - '1'
@@ -2047,18 +1549,14 @@ script:
       - '3'
       - '4'
       - '5'
-      required: false
     - auto: PREDEFINED
       description: "Enable to configure the retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only. Required when: retry_on is enabled."
-      isArray: false
       name: retry_on_http_layer
       predefined:
       - enable
       - disable
-      required: false
     - auto: PREDEFINED
       description: "The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled."
-      isArray: false
       name: retry_times_on_http_layer
       predefined:
       - '1'
@@ -2066,10 +1564,8 @@ script:
       - '3'
       - '4'
       - '5'
-      required: false
     - auto: PREDEFINED
       description: "The failure return code when the pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled."
-      isArray: false
       name: retry_on_http_response_codes
       predefined:
       - '404'
@@ -2079,61 +1575,35 @@ script:
       - '502'
       - '503'
       - '504'
-      required: false
     - description: Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only.
-      isArray: false
       name: scripting
-      required: false
     - description: "Scripting list to perform actions that are not currently supported by the built-in feature set. Required when: scripting is enabled. Supports API version 2 only."
-      isArray: false
       name: scripting_list
-      required: false
     - description: The Policy Based Allow list to use instead of the Global Allow List. Supports API version 2 only.
-      isArray: false
       name: allow_list
-      required: false
     - description: The replacement message to apply to the policy. Supports API version 2 only.
-      isArray: false
       name: replacemsg
-      required: false
     - description: Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration.
-      isArray: false
       name: json_template_id
-      required: false
-    deprecated: false
     description: Update the server policy.
-    execution: false
     name: fortiwebvm-server-policy-update
   - arguments:
     - description: Policy name.
-      isArray: false
       name: name
       required: true
-    deprecated: false
     description: Delete the server policy.
-    execution: false
     name: fortiwebvm-server-policy-delete
   - arguments:
     - description: Server policy name.
-      isArray: false
       name: name
-      required: false
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the server policies.
-    execution: false
     name: fortiwebvm-server-policy-list
     outputs:
     - contextPath: FortiwebVM.ServerPolicy.name
@@ -2220,21 +1690,13 @@ script:
       type: String
   - arguments:
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the HTTP content routing policies.
-    execution: false
     name: fortiwebvm-content-routing-policy-list
     outputs:
     - contextPath: FortiwebVM.HttpContentRoutingPolicy.id
@@ -2242,47 +1704,35 @@ script:
       type: String
   - arguments:
     - description: Policy name.
-      isArray: false
       name: policy_name
       required: true
     - auto: PREDEFINED
       defaultValue: 'no'
       description: Whether FortiWeb applies the protection profile to any traffic that does not match conditions specified in the HTTP content routing policies.
-      isArray: false
       name: is_default
       predefined:
       - 'yes'
       - 'no'
-      required: false
     - description: HTTP content routing policy name.
-      isArray: false
       name: http_content_routing_policy
       required: true
     - auto: PREDEFINED
       defaultValue: disable
       description: Whether to enable the inherit web protection profile.
-      isArray: false
       name: inherit_web_protection_profile
       predefined:
       - enable
       - disable
-      required: false
     - description: Web protection profile. This is required when inherit web protection profile is disabled.
-      isArray: false
       name: profile
-      required: false
     - auto: PREDEFINED
       defaultValue: enable
       description: HTTP content routing member status. Supports API version 2 only.
-      isArray: false
       name: status
       predefined:
       - enable
       - disable
-      required: false
-    deprecated: false
     description: Create the server policy HTTP content routing member.
-    execution: false
     name: fortiwebvm-http-content-routing-member-add
     outputs:
     - contextPath: FortiwebVM.HttpContentRoutingMember.id
@@ -2290,87 +1740,58 @@ script:
       type: Number
   - arguments:
     - description: Policy name.
-      isArray: false
       name: policy_name
       required: true
     - description: HTTP content routing policy name.
-      isArray: false
       name: http_content_routing_policy
-      required: false
     - description: Server policy HTTP content routing member ID.
-      isArray: false
       name: id
       required: true
     - auto: PREDEFINED
       description: Whether FortiWeb applies the protection profile to any traffic that does not match conditions specified in the HTTP content routing policies.
-      isArray: false
       name: is_default
       predefined:
       - 'yes'
       - 'no'
-      required: false
     - auto: PREDEFINED
       description: Whether to enable inherit web protection profile.
-      isArray: false
       name: inherit_web_protection_profile
       predefined:
       - enable
       - disable
-      required: false
     - description: Web protection profile. This is required when inherit web protection profile is disabled. Supports API version 1 only.
-      isArray: false
       name: profile
-      required: false
     - auto: PREDEFINED
       description: HTTP content routing member status. Supports API version 2 only.
-      isArray: false
       name: status
       predefined:
       - enable
       - disable
-      required: false
-    deprecated: false
     description: Update the server policy HTTP content routing member.
-    execution: false
     name: fortiwebvm-http-content-routing-member-update
   - arguments:
     - description: Policy name.
-      isArray: false
       name: policy_name
       required: true
     - description: Server policy HTTP content routing member ID.
-      isArray: false
       name: id
       required: true
-    deprecated: false
     description: Delete the server policy HTTP content routing member.
-    execution: false
     name: fortiwebvm-http-content-routing-member-delete
   - arguments:
     - description: Policy name.
-      isArray: false
       name: policy_name
       required: true
     - description: Server policy HTTP content routing member ID.
-      isArray: false
       name: id
-      required: false
     - description: The page number of the results to retrieve.
-      isArray: false
       name: page
-      required: false
     - description: The maximum number of records to retrieve per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List the Server policy HTTP content routing members.
-    execution: false
     name: fortiwebvm-http-content-routing-member-list
     outputs:
     - contextPath: FortiwebVM.HttpContentRoutingMember.policy_name
@@ -2395,9 +1816,6 @@ script:
       description: HTTP content routing status. Supports API version 2 only.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
