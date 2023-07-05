@@ -782,6 +782,7 @@ def get_search_detection_logs(
     """
     def parse_search_detection_logs(_search_detection_logs):
         for _log in _search_detection_logs:
+            # add the None to any field that does not exist because of a bug in xsiam.
             for field in [
                 'actResult', 'app', 'blocking', 'cat', 'component', 'deviceProcessName', 'processName', 'deviceMacAddress',
                 'endpointMacAddress', 'interestedMacAddress', 'dhost', 'domainName', 'endpointHostName', 'hostName',
