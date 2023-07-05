@@ -17,8 +17,10 @@ configuration:
   type: 0
 - display: Commvault API Token
   name: CommvaultAPIToken
+  hiddenusername: true
+  displaypassword: API Token
   required: true
-  type: 4
+  type: 9
 - display: Azure KeyVault Url
   name: AzureKeyVaultUrl
   required: false
@@ -33,8 +35,10 @@ configuration:
   type: 4
 - display: Azure KeyVault Client Secret
   name: AzureKeyVaultClientSecret
+  hiddenusername: true
+  displaypassword: Azure KeyVault Client Secret
   required: false
-  type: 4
+  type: 9
 - display: 'Port mapping (<port> or <host port>:<docker port>) '
   name: longRunningPort
   required: false

@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
 	  "associatedTypes": [
-        "Suspicious File Activity"
+        "Commvault Suspicious File Activity"
     ],
     "caseInsensitive": true,
-    "cliName": "modifiedfilescount",
+    "cliName": "commvaultmodifiedfilescount",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_modifiedfilescount",
+    "id": "incident_commvaultmodifiedfilescount",
     "isReadOnly": false,
     "locked": false,
-    "name": "Modified Files Count",
+    "name": "Commvault Modified Files Count",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

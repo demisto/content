@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
 	  "associatedTypes": [
-        "Suspicious File Activity"
+        "Commvault Suspicious File Activity"
     ],
     "caseInsensitive": true,
-    "cliName": "eventtime",
+    "cliName": "commvaulteventtime",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_eventtime",
+    "id": "incident_commvaulteventtime",
     "isReadOnly": false,
     "locked": false,
-    "name": "Event Time",
+    "name": "Commvault Event Time",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

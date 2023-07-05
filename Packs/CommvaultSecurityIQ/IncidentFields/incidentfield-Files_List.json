@@ -1,10 +1,10 @@
 {
     "associatedToAll": false,
 	  "associatedTypes": [
-        "Suspicious File Activity"
+        "Commvault Suspicious File Activity"
     ],
     "caseInsensitive": true,
-    "cliName": "fileslist",
+    "cliName": "commvaultfileslist",
     "closeForm": false,
     "columns": [
         {
@@ -54,10 +54,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_fileslist",
+    "id": "incident_commvaultfileslist",
     "isReadOnly": false,
     "locked": false,
-    "name": "Files List",
+    "name": "Commvault Files List",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

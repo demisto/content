@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
 	  "associatedTypes": [
-        "Suspicious File Activity"
+        "Commvault Suspicious File Activity"
     ],
     "caseInsensitive": true,
-    "cliName": "jobid",
+    "cliName": "commvaultjobid",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_jobid",
+    "id": "incident_commvaultjobid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Job Id",
+    "name": "Commvault Job Id",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

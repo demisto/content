@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
 	  "associatedTypes": [
-        "Suspicious File Activity"
+        "Commvault Suspicious File Activity"
     ],
     "caseInsensitive": true,
-    "cliName": "renamedfilescount",
+    "cliName": "commvaultrenamedfilescount",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_renamedfilescount",
+    "id": "incident_commvaultrenamedfilescount",
     "isReadOnly": false,
     "locked": false,
-    "name": "Renamed Files Count",
+    "name": "Commvault Renamed Files Count",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

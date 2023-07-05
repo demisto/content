@@ -1,27 +1,21 @@
 {
     "description": "",
     "feed": false,
-    "id": "Suspicious File Activity Mapper",
+    "id": "Commvault Suspicious File Activity Mapper",
     "mapping": {
-        "Suspicious File Activity": {
+        "Commvault Suspicious File Activity": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Affected Files Count": {
+                "Commvault Affected Files Count": {
                     "simple": "affected_files_count"
                 },
                 "Appliance Name": {
                     "simple": "app_name"
                 },
-                "Backup Type": {
-                    "simple": "backuplevel"
-                },
-                "Backupset": {
-                    "simple": "backupset"
-                },
-                "Created Files Count": {
+                "Commvault Created Files Count": {
                     "simple": "created_files_count"
                 },
-                "Deleted Files Count": {
+                "Commvault Deleted Files Count": {
                     "simple": "deleted_files_count"
                 },
                 "Description": {
@@ -30,45 +24,35 @@
                 "End Time": {
                     "simple": "job_end_time"
                 },
-                "Event ID": {
+                "Commvault Event ID": {
                     "simple": "event_id"
                 },
-                "Event Time": {
+                "Commvault Event Time": {
                     "simple": "event_time"
                 },
                 "External Link": {
                     "simple": "external_link"
                 },
-                "Facility": {
-                    "complex": {
-                        "filters": [],
-                        "root": "facility",
-                        "transformers": []
-                    }
-                },
-                "Files List": {
+                "Commvault Files List": {
                     "simple": "files_list"
                 },
                 "Host Name": {
                     "simple": "host_name"
                 },
-                "Job Id": {
+                "Commvault Job Id": {
                     "simple": "job_id"
                 },
-                "Media Agent": {
-                    "simple": "destinationclient"
-                },
-                "Modified Files Count": {
+                "Commvault Modified Files Count": {
                     "simple": "modified_files_count"
                 },
-                "Originating Client": {
+                "Commvault Originating Client": {
                     "complex": {
                         "filters": [],
                         "root": "originating_client",
                         "transformers": []
                     }
                 },
-                "Originating Program": {
+                "Commvault Originating Program": {
                     "complex": {
                         "filters": [],
                         "root": "originating_program",
@@ -78,10 +62,10 @@
                 "Process ID": {
                     "simple": "process_id"
                 },
-                "Renamed Files Count": {
+                "Commvault Renamed Files Count": {
                     "simple": "renamed_files_count"
                 },
-                "Scanned Folder List": {
+                "Commvault Scanned Folder List": {
                     "simple": "scanned_folder_list"
                 },
                 "Source Create time": {
@@ -94,14 +78,8 @@
                         "transformers": []
                     }
                 },
-                "Subclient": {
-                    "simple": "subclient"
-                },
                 "Subtype": {
                     "simple": "anomaly_sub_type"
-                },
-                "Version": {
-                    "simple": "version"
                 },
                 "occurred": {
                     "complex": {
@@ -142,7 +120,7 @@
             "internalMapping": {}
         }
     },
-    "name": "Suspicious File Activity Mapper",
+    "name": "Commvault Suspicious File Activity Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.8.0"
