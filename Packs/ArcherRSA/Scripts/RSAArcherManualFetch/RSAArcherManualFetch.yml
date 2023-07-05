@@ -16,7 +16,6 @@ args:
   required: true
   description: 'The Incident IDs to get details for, separated by commas. For example: IncidentIds="12345,67891" '
 scripttarget: 0
-runonce: false
 deprecated: true
 dependson:
   must:

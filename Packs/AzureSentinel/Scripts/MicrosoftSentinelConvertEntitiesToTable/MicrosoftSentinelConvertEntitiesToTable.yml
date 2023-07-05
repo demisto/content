@@ -5,7 +5,6 @@ comment: This script is used to convert entities to a table.
 name: MicrosoftSentinelConvertEntitiesToTable
 outputs:
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'
