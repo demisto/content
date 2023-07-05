@@ -28,6 +28,7 @@ subtask
 onprem
 subtasks
 issuejson
+xpanse
 
 [file:JiraParsingRules.yml]
 ignore=PR101
