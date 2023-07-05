@@ -1,5 +1,17 @@
 id: MISP V3 Test
-version: -1
+version: 3
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: ""
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    propagationLabels:
+    - all
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: MISP V3 Test
 description: Test playbook for MISP V3 integration
 starttaskid: "0"
@@ -14,11 +26,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,7 +45,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
     taskid: e9efb446-1043-4b5e-8332-12bbf15a732e
@@ -53,6 +64,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -67,7 +79,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 872ea36d-6921-45b7-8fa8-223da1ebf1ee
@@ -82,7 +93,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+      - "3"
     scriptarguments:
       event_id:
         simple: ${MISP.Event.ID}
@@ -91,6 +102,7 @@ tasks:
       page:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -105,7 +117,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
     taskid: a8e01606-cb13-4e42-8357-afcccf8e4f96
@@ -119,7 +130,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "73"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -183,11 +194,12 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1740
+          "y": 1215
         }
       }
     note: false
@@ -197,7 +209,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
     taskid: b4321401-5d95-47c7-8e9c-d2dcd40ee4f3
@@ -218,11 +229,12 @@ tasks:
       domain:
         simple: google.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5560
+          "y": 6085
         }
       }
     note: false
@@ -232,7 +244,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
     taskid: d366fcbc-eda8-4529-83d4-bc2f30f5bdc3
@@ -291,11 +302,12 @@ tasks:
           right:
             value:
               simple: google.com
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5735
+          "y": 6260
         }
       }
     note: false
@@ -305,7 +317,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "6":
     id: "6"
     taskid: dd994f7d-a22e-4810-8387-a1559cdce0d4
@@ -326,11 +337,12 @@ tasks:
       email:
         simple: email@email.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5560
+          "y": 6085
         }
       }
     note: false
@@ -340,7 +352,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 3713de1e-f830-482c-8b69-ed4dea634cc1
@@ -399,11 +410,12 @@ tasks:
           right:
             value:
               simple: "3"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5735
+          "y": 6260
         }
       }
     note: false
@@ -413,7 +425,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 35986bb8-1d3e-4275-8fbc-e8b16ac3bbb2
@@ -434,11 +445,12 @@ tasks:
       file:
         simple: 098f6bcd4621d373cade4e832627b4f6
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 5560
+          "y": 6085
         }
       }
     note: false
@@ -448,7 +460,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "9":
     id: "9"
     taskid: c1bd90c4-9203-417a-806b-64b1381f1f91
@@ -507,11 +518,12 @@ tasks:
           right:
             value:
               simple: "3"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 5735
+          "y": 6260
         }
       }
     note: false
@@ -521,7 +533,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "10":
     id: "10"
     taskid: c20bed57-15dc-48ea-8e3e-9ba31feadcef
@@ -542,11 +553,12 @@ tasks:
       url:
         simple: https://www.example.com/test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 5560
+          "y": 6085
         }
       }
     note: false
@@ -556,7 +568,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "11":
     id: "11"
     taskid: dcd097e5-8301-423f-8aa8-e7fcea4e8aae
@@ -615,11 +626,12 @@ tasks:
           right:
             value:
               simple: "3"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 5735
+          "y": 6260
         }
       }
     note: false
@@ -629,7 +641,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "12":
     id: "12"
     taskid: 198a73ee-0b81-4cd0-8cb0-cdeaa61e9db8
@@ -650,11 +661,12 @@ tasks:
       ip:
         simple: 1.2.3.4
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 5560
+          "y": 6085
         }
       }
     note: false
@@ -664,7 +676,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 701c5396-e179-4e40-80d1-04d516515869
@@ -723,11 +734,12 @@ tasks:
           right:
             value:
               simple: "3"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 5735
+          "y": 6260
         }
       }
     note: false
@@ -737,7 +749,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "14":
     id: "14"
     taskid: 550165bf-ab22-4127-860c-0964c851d9ca
@@ -761,6 +772,7 @@ tasks:
       value:
         simple: 1.1.1.1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -775,7 +787,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "15":
     id: "15"
     taskid: de473dbf-bc35-47d4-8f98-f5cc17af5a74
@@ -909,6 +920,7 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -923,7 +935,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 6b2c357d-35f9-4d0c-8647-dc8ea6a3f3b5
@@ -947,11 +958,12 @@ tasks:
       value:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1915
+          "y": 2440
         }
       }
     note: false
@@ -961,7 +973,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "17":
     id: "17"
     taskid: 3d32c7f4-36b2-4de3-82cd-7770fb8d02c7
@@ -1081,11 +1092,12 @@ tasks:
             value:
               simple: MISP.Attribute.Event.UUID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2090
+          "y": 2615
         }
       }
     note: false
@@ -1095,7 +1107,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "19":
     id: "19"
     taskid: 190b869c-2554-457e-864b-4a996e2d81cf
@@ -1117,11 +1128,12 @@ tasks:
       uuid:
         simple: ${MISP.Event.UUID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 6580
+          "y": 7105
         }
       }
     note: false
@@ -1131,7 +1143,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "20":
     id: "20"
     taskid: 37c7555a-aede-48bb-877a-a47da5992d68
@@ -1183,11 +1194,12 @@ tasks:
             value:
               simple: MISP.Event.Tag.is_galaxy
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 6755
+          "y": 7280
         }
       }
     note: false
@@ -1197,7 +1209,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "21":
     id: "21"
     taskid: f94b1ebb-a8d3-44f3-8124-2af8356cd8c1
@@ -1219,11 +1230,12 @@ tasks:
       uuid:
         simple: ${MISP.Attribute.UUID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2615
+          "y": 3140
         }
       }
     note: false
@@ -1233,7 +1245,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
     taskid: fe82a65a-749a-4f31-835d-0ff2e9c0ff19
@@ -1278,11 +1289,12 @@ tasks:
           right:
             value:
               simple: TestPlaybook
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2965
+          "y": 3490
         }
       }
     note: false
@@ -1292,7 +1304,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
     taskid: c6f5736c-937f-47ab-8e47-01ed372ab0b9
@@ -1314,11 +1325,12 @@ tasks:
       type:
         simple: sighting
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2790
+          "y": 3315
         }
       }
     note: false
@@ -1328,7 +1340,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "24":
     id: "24"
     taskid: cf7924ce-0a3b-47d6-8d55-7d9f33e4df95
@@ -1350,11 +1361,12 @@ tasks:
       limit:
         simple: "0"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 4540
+          "y": 5065
         }
       }
     note: false
@@ -1364,7 +1376,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "26":
     id: "26"
     taskid: 2f27dde0-2195-4dfb-8123-a7feaefaf611
@@ -1386,11 +1397,12 @@ tasks:
       event_id:
         simple: ${MISP.Event.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 9205
+          "y": 9730
         }
       }
     note: false
@@ -1400,7 +1412,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 184ca6cb-564d-4406-887e-3d1f2ea9a1c8
@@ -1428,11 +1439,12 @@ tasks:
       text:
         simple: DomainTPB
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 8680
+          "y": 9205
         }
       }
     note: false
@@ -1442,7 +1454,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "29":
     id: "29"
     taskid: fa6041de-6159-4287-8626-4a1ccd68911c
@@ -1513,11 +1524,12 @@ tasks:
             value:
               simple: ${MISP.Event.Object.Attribute.Value}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 8855
+          "y": 9380
         }
       }
     note: false
@@ -1527,7 +1539,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "30":
     id: "30"
     taskid: 0ebbd143-a31f-42cf-80cb-4514486e9166
@@ -1551,11 +1562,12 @@ tasks:
       url:
         simple: www.example.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 8330
+          "y": 8855
         }
       }
     note: false
@@ -1565,7 +1577,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "32":
     id: "32"
     taskid: 2a5a04ca-b5b6-4a41-8a40-a2a7e7f7e71c
@@ -1583,17 +1594,19 @@ tasks:
       - "57"
     scriptarguments:
       attributes:
-        simple: '{''description'': ''Manager Ferrari'', ''make'': ''Ferrari'', ''model'': ''308 GTS''}'
+        simple: '{''description'': ''Manager Ferrari'', ''make'': ''Ferrari'', ''model'':
+          ''308 GTS''}'
       event_id:
         simple: ${MISP.Event.ID}
       template:
         simple: vehicle
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 7980
+          "y": 8505
         }
       }
     note: false
@@ -1603,7 +1616,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "34":
     id: "34"
     taskid: aef461d3-7b54-4cd3-897b-4c1aaf9cb3df
@@ -1625,11 +1637,12 @@ tasks:
       ip:
         simple: 3.3.3.3
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 7105
+          "y": 7630
         }
       }
     note: false
@@ -1639,7 +1652,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "36":
     id: "36"
     taskid: 1b00532d-91e0-4576-8c58-01a89a20c111
@@ -1663,11 +1675,12 @@ tasks:
       value:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3490
+          "y": 4015
         }
       }
     note: false
@@ -1677,7 +1690,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "37":
     id: "37"
     taskid: 59a744e1-2d62-4907-8868-db03de7c74be
@@ -1704,11 +1716,12 @@ tasks:
             value:
               simple: ${MISP.Attribute}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3665
+          "y": 4190
         }
       }
     note: false
@@ -1718,7 +1731,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "38":
     id: "38"
     taskid: 4f6f4907-4d4a-4f67-814a-3989ff2c96ca
@@ -1730,13 +1742,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 9730
+          "y": 10255
         }
       }
     note: false
@@ -1746,7 +1758,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "39":
     id: "39"
     taskid: c39aba09-32b3-4c1a-831e-c8c51a27b3d7
@@ -1776,11 +1787,12 @@ tasks:
       value:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 4015
+          "y": 4540
         }
       }
     note: false
@@ -1790,7 +1802,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "40":
     id: "40"
     taskid: 1a817b58-4fdf-441f-8016-a3a83fef3fa3
@@ -1887,11 +1898,12 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 4190
+          "y": 4715
         }
       }
     note: false
@@ -1901,7 +1913,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "41":
     id: "41"
     taskid: a9502902-e4c6-424c-883d-c72ae05adb0e
@@ -1921,11 +1932,12 @@ tasks:
       key:
         simple: MISP.Attribute
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3315
+          "y": 3840
         }
       }
     note: false
@@ -1935,7 +1947,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "42":
     id: "42"
     taskid: db684776-d06b-4a81-83f9-af6c1084d478
@@ -1955,11 +1966,12 @@ tasks:
       key:
         simple: MISP.Attribute
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3840
+          "y": 4365
         }
       }
     note: false
@@ -1969,7 +1981,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "43":
     id: "43"
     taskid: a3210739-65fe-4f5d-865b-90c6c1c28e9c
@@ -1991,11 +2002,12 @@ tasks:
       value:
         simple: google.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5385
+          "y": 5910
         }
       }
     note: false
@@ -2005,7 +2017,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "44":
     id: "44"
     taskid: fc3d1097-c9ea-4f97-83ae-3d338f3a6fae
@@ -2027,11 +2038,12 @@ tasks:
       value:
         simple: email@email.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5385
+          "y": 5910
         }
       }
     note: false
@@ -2041,7 +2053,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "45":
     id: "45"
     taskid: b2955658-b6dd-41b7-8aba-768b2286c00b
@@ -2063,11 +2074,12 @@ tasks:
       value:
         simple: 098f6bcd4621d373cade4e832627b4f6
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 5385
+          "y": 5910
         }
       }
     note: false
@@ -2077,7 +2089,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "46":
     id: "46"
     taskid: e27861c0-63d2-49a8-8d48-729f898394e9
@@ -2099,11 +2110,12 @@ tasks:
       value:
         simple: 1.2.3.4
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 5385
+          "y": 5910
         }
       }
     note: false
@@ -2113,7 +2125,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "47":
     id: "47"
     taskid: 4b4e5c23-2edd-4727-8b33-e73b2c360213
@@ -2135,11 +2146,12 @@ tasks:
       value:
         simple: www.example.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 5385
+          "y": 5910
         }
       }
     note: false
@@ -2149,7 +2161,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "48":
     id: "48"
     taskid: a777ca4b-3dc4-4892-8d0b-28e152469dc7
@@ -2230,11 +2241,12 @@ tasks:
             value:
               simple: ${MISP.Event.Object.Attribute.Value}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 8505
+          "y": 9030
         }
       }
     note: false
@@ -2244,7 +2256,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "49":
     id: "49"
     taskid: 0015183f-ebb0-4226-81c8-a963de9de15b
@@ -2256,7 +2267,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -2265,11 +2275,12 @@ tasks:
       - "46"
       - "47"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 5240
+          "y": 5765
         }
       }
     note: false
@@ -2279,7 +2290,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "50":
     id: "50"
     taskid: db8babfd-0ae6-4b5c-8f62-fc0f1a25e6e4
@@ -2291,11 +2301,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2310,7 +2320,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "51":
     id: "51"
     taskid: 69009aa8-3cfe-40cd-8247-36ca0dec2765
@@ -2331,11 +2340,12 @@ tasks:
       event_id:
         simple: ${MISP.Event.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 5910
+          "y": 6435
         }
       }
     note: false
@@ -2345,7 +2355,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "52":
     id: "52"
     taskid: 92cbc379-74ae-4e66-8f7b-e6a2a80a6a4c
@@ -2357,16 +2366,16 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "53"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 6085
+          "y": 6610
         }
       }
     note: false
@@ -2376,7 +2385,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "53":
     id: "53"
     taskid: 14746754-66e0-4849-8701-8638de795228
@@ -2396,11 +2404,12 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 6230
+          "y": 6755
         }
       }
     note: false
@@ -2410,7 +2419,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 8f382793-e835-4d1d-82c5-08cd0ef47528
@@ -2431,11 +2439,12 @@ tasks:
       event_id:
         simple: ${MISP.Event.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 9555
+          "y": 10080
         }
       }
     note: false
@@ -2445,7 +2454,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "55":
     id: "55"
     taskid: b49b8540-493a-4594-8d5b-0f3fb3d6072d
@@ -2469,11 +2477,12 @@ tasks:
       value:
         simple: 1.1.1.1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 6405
+          "y": 6930
         }
       }
     note: false
@@ -2483,7 +2492,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "56":
     id: "56"
     taskid: 6a6067bc-4a4a-4a0f-8d05-2682756da28d
@@ -2548,11 +2556,12 @@ tasks:
             value:
               simple: ${MISP.Event.Object.Attribute.Value}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 7280
+          "y": 7805
         }
       }
     note: false
@@ -2562,7 +2571,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "57":
     id: "57"
     taskid: fc2ecab9-07b3-447b-8fd1-03d1848c8451
@@ -2643,11 +2651,12 @@ tasks:
             value:
               simple: ${MISP.Event.Object.Attribute.Value}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 8155
+          "y": 8680
         }
       }
     note: false
@@ -2657,7 +2666,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "58":
     id: "58"
     taskid: 7f196613-f2e8-4111-894d-d549dfeca289
@@ -2682,11 +2690,12 @@ tasks:
       url:
         simple: https://github.com/demisto/content/blob/master/TestData/regular_english_file.txt
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 9030
+          "y": 9555
         }
       }
     note: false
@@ -2696,7 +2705,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "59":
     id: "59"
     taskid: 6ab69cb2-599a-465b-8182-809745d516a3
@@ -2743,11 +2751,12 @@ tasks:
             value:
               simple: MISP.Event.Object.Description
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 9380
+          "y": 9905
         }
       }
     note: false
@@ -2757,7 +2766,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "60":
     id: "60"
     taskid: be886583-e745-4ab7-8306-c5dd541d129a
@@ -2780,11 +2788,12 @@ tasks:
       uuid:
         simple: ${MISP.Event.UUID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 6930
+          "y": 7455
         }
       }
     note: false
@@ -2794,7 +2803,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "61":
     id: "61"
     taskid: 5f7a88ba-b3fa-4862-8a08-270f855ea554
@@ -2817,11 +2825,12 @@ tasks:
       uuid:
         simple: ${MISP.Attribute.UUID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3140
+          "y": 3665
         }
       }
     note: false
@@ -2831,7 +2840,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "62":
     id: "62"
     taskid: 54e34600-1a37-4c2b-8d46-8dca0ecb42b1
@@ -2852,11 +2860,12 @@ tasks:
       event_id:
         simple: ${MISP.Event.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 4715
+          "y": 5240
         }
       }
     note: false
@@ -2866,7 +2875,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "63":
     id: "63"
     taskid: b3ec1173-ba96-45cd-8fc7-2a7c0091b527
@@ -2890,11 +2898,12 @@ tasks:
       value:
         simple: 1.1.1.1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 5065
+          "y": 5590
         }
       }
     note: false
@@ -2904,7 +2913,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "64":
     id: "64"
     taskid: 625c891e-8261-4c5e-8d2c-a3f04dbbbb0a
@@ -2924,11 +2932,12 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 4890
+          "y": 5415
         }
       }
     note: false
@@ -2938,7 +2947,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "65":
     id: "65"
     taskid: ca541ecb-7b4f-4c7d-89ac-eca7d9745c34
@@ -2963,11 +2971,12 @@ tasks:
       comment:
         simple: updated comment
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2265
+          "y": 2790
         }
       }
     note: false
@@ -2977,7 +2986,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "66":
     id: "66"
     taskid: 0e5b31be-ae3f-4541-8ea5-2d2cc790f3df
@@ -3097,11 +3105,12 @@ tasks:
             value:
               simple: MISP.Attribute.Event.UUID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2440
+          "y": 2965
         }
       }
     note: false
@@ -3111,7 +3120,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "67":
     id: "67"
     taskid: b595d5ea-6eef-473d-803d-4b6f39b38765
@@ -3132,11 +3140,12 @@ tasks:
       attribute_id:
         simple: ${MISP.Attribute.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 4365
+          "y": 4890
         }
       }
     note: false
@@ -3146,7 +3155,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "68":
     id: "68"
     taskid: a500d8bc-5863-4c3a-8ea8-3a85564e5022
@@ -3167,6 +3175,7 @@ tasks:
       event_id:
         simple: ${MISP.Event.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3181,7 +3190,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "69":
     id: "69"
     taskid: e7136947-3629-4fd9-89f9-66e1d49088af
@@ -3206,11 +3214,12 @@ tasks:
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/CheckEmailAuthenticity_test_mail.eml
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 7455
+          "y": 7980
         }
       }
     note: false
@@ -3220,7 +3229,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "70":
     id: "70"
     taskid: a19819e1-2540-4e29-84ff-21759f4b5fb6
@@ -3243,11 +3251,12 @@ tasks:
       event_id:
         simple: ${MISP.Event.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 7630
+          "y": 8155
         }
       }
     note: false
@@ -3257,7 +3266,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "72":
     id: "72"
     taskid: 77eb016f-c33e-4ac4-8b0a-c68c0456add6
@@ -3324,11 +3332,12 @@ tasks:
             value:
               simple: ${MISP.Event.Object.Attribute.Value}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 7805
+          "y": 8330
         }
       }
     note: false
@@ -3338,13 +3347,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "73":
     id: "73"
-    taskid: 60ca2259-7390-475c-8009-c459adec83c8
+    taskid: a0e07231-d645-4ba7-89dc-8847caaa5597
     type: regular
     task:
-      id: 60ca2259-7390-475c-8009-c459adec83c8
+      id: a0e07231-d645-4ba7-89dc-8847caaa5597
       version: -1
       name: misp-add-user
       description: Adding a new user to MISP.
@@ -3354,10 +3362,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "74"
+      - "76"
     scriptarguments:
       email:
-        simple: test@example.com
+        complex:
+          root: MISP.Event
+          accessor: PublishTimestamp
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: test@example.com
       org_id:
         simple: "1"
       password:
@@ -3370,7 +3390,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1215
+          "y": 1390
         }
       }
     note: false
@@ -3395,14 +3415,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "75"
+      - "77"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1390
+          "y": 1740
         }
       }
     note: false
@@ -3427,14 +3447,154 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "78"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: e08bd47e-0453-45c5-886a-8f44a95535be
+    type: condition
+    task:
+      id: e08bd47e-0453-45c5-886a-8f44a95535be
+      version: -1
+      name: |
+        Verify Add User Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.User.email
+            iscontext: true
+          right:
+            value:
+              simple: test@example.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
           "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: ead0c246-ad18-4bfa-8847-788211a128ab
+    type: condition
+    task:
+      id: ead0c246-ad18-4bfa-8847-788211a128ab
+      version: -1
+      name: Verify Get Organization Info Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Organization.organisation_id
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Organization.organisation_name
+            iscontext: true
+          right:
+            value:
+              simple: org
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: c13914dd-f4e4-437c-8eb0-264f87080ac4
+    type: condition
+    task:
+      id: c13914dd-f4e4-437c-8eb0-264f87080ac4
+      version: -1
+      name: Verify Get Role Info Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Role.role_id
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Role.role_name
+            iscontext: true
+          right:
+            value:
+              simple: role
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2265
         }
       }
     note: false
@@ -3453,7 +3613,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 9745,
+        "height": 10270,
         "width": 2100,
         "x": 50,
         "y": 50
@@ -3462,8 +3622,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
