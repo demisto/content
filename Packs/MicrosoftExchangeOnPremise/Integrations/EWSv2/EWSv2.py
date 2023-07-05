@@ -201,7 +201,6 @@ if (!$session)
 Import-PSSession $session -CommandName Get-ComplianceSearch -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
 
 
-
 $searchStatus = Get-ComplianceSearch $searchName
 #"Search status: " + $searchStatus.Status
 $searchStatus.Status
