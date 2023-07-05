@@ -508,8 +508,8 @@ Sends commands to hosts.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                 | **Required** |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | host_ids          | A comma-separated list of host agent IDs for which to run commands. (Can be retrieved by running the 'cs-falcon-search-device' command.)                                                                        | Required | 
 | command_type      | The type of command to run.                                                                                                                                                                                     | Required | 
 | full_command      | The full command to run.                                                                                                                                                                                        | Required | 
