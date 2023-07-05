@@ -2,16 +2,13 @@
 ignore=PA116
 
 [file:Sixgill_Darkfeed.yml]
-ignore=BA108,BA109,IN145
+ignore=BA108,BA109
 
 [file:Sixgill_Darkfeed_Enrichment.yml]
-ignore=BA108,BA109,IN145
+ignore=BA108,BA109
 
 [file:Darkfeed_IOC_detonation_and_proactive_blocking.yml]
 ignore=PB115
-
-[file:SixgillDVEFeed.yml]
-ignore=IN145
 
 [file:SixgillDVEFeed_image.png]
 ignore=IM111
@@ -21,3 +18,4 @@ ignore=IM111
 
 [file:Sixgill_Darkfeed_Enrichment_image.png]
 ignore=IM111
+
