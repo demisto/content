@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 
 import cv2
-import demistomock as demisto
 import numpy as np
-from CommonServerPython import *  # noqa: F401
 
 # The command demisto.command() holds the command sent from the user.
 if demisto.command() == 'test-module':

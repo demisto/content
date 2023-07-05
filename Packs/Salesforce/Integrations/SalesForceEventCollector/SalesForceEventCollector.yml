@@ -44,15 +44,12 @@ configuration:
   name: after
   type: 0
   defaultvalue: 3 days
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
-  required: false
 script:
   script: ""
   type: python
@@ -63,19 +60,15 @@ script:
     - name: files_limit
       defaultValue: 1
       description: 'The maximum number of log files to fetch.'
-      required: false
-      isArray: false
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'True'
       - 'False'
       required: true
   dockerimage: demisto/fastapi:1.0.0.32142
-  runonce: false
   isfetchevents: true
   subtype: python3
 fromversion: 6.8.0
