@@ -1,5 +1,5 @@
 id: MISP V3 Test
-version: 3
+version: 4
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -3466,10 +3466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: e08bd47e-0453-45c5-886a-8f44a95535be
+    taskid: 35ddc0da-f6b1-489b-86e6-2cd3e445a7ba
     type: condition
     task:
-      id: e08bd47e-0453-45c5-886a-8f44a95535be
+      id: 35ddc0da-f6b1-489b-86e6-2cd3e445a7ba
       version: -1
       name: |
         Verify Add User Outputs
@@ -3483,14 +3483,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               simple: MISP.User.email
             iscontext: true
-          right:
-            value:
-              simple: test@example.com
     continueonerrortype: ""
     view: |-
       {
@@ -3508,10 +3505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: ead0c246-ad18-4bfa-8847-788211a128ab
+    taskid: 073f79b0-bf8f-4001-8f7c-c1f65de6c210
     type: condition
     task:
-      id: ead0c246-ad18-4bfa-8847-788211a128ab
+      id: 073f79b0-bf8f-4001-8f7c-c1f65de6c210
       version: -1
       name: Verify Get Organization Info Outputs
       type: condition
@@ -3524,22 +3521,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               simple: MISP.Organization.organisation_id
             iscontext: true
-          right:
-            value:
-              simple: "1"
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               simple: MISP.Organization.organisation_name
             iscontext: true
-          right:
-            value:
-              simple: org
     continueonerrortype: ""
     view: |-
       {
@@ -3557,10 +3548,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: c13914dd-f4e4-437c-8eb0-264f87080ac4
+    taskid: 34ed5805-cf84-419c-8bfc-d6ebcc98cdea
     type: condition
     task:
-      id: c13914dd-f4e4-437c-8eb0-264f87080ac4
+      id: 34ed5805-cf84-419c-8bfc-d6ebcc98cdea
       version: -1
       name: Verify Get Role Info Outputs
       type: condition
@@ -3573,22 +3564,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               simple: MISP.Role.role_id
             iscontext: true
-          right:
-            value:
-              simple: "1"
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               simple: MISP.Role.role_name
             iscontext: true
-          right:
-            value:
-              simple: role
     continueonerrortype: ""
     view: |-
       {
