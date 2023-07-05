@@ -28,7 +28,6 @@ outputs:
 - contextPath: DataCollectionURL.user
   description: The user for which the data collection link was generated
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

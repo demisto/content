@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Dict, TypedDict
 
 
-
 class Task(TypedDict):
     name: str
     completed: int

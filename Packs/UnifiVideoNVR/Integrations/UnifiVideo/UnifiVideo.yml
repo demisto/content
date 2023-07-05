@@ -14,7 +14,6 @@ configuration:
 - defaultvalue: '7080'
   display: Port number
   name: port
-  required: false
   type: 0
 - defaultvalue: http
   display: Schema
@@ -22,30 +21,24 @@ configuration:
   options:
   - http
   - https
-  required: false
   type: 15
 - defaultvalue: 'true'
   display: Verify CA cert
   name: verify_cert
-  required: false
   type: 8
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  required: false
   type: 0
 - defaultvalue: '50'
   display: Fetch Limit (unlimited=0)
   name: fetch_limit
-  required: false
   type: 0
 description: |-
   Connect to UnifiVideo NVR and manage CCTV cameras!
@@ -57,141 +50,90 @@ display: UnifiVideo
 name: UnifiVideo
 script:
   commands:
-  - deprecated: false
-    description: Gets the list of cameras bound with the NVR
-    execution: false
+  - description: Gets the list of cameras bound with the NVR
     name: unifivideo-get-camera-list
     outputs:
     - contextPath: UnifiVideo.Cameras
       description: The camera list
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the camera
-      isArray: false
+    - description: The name of the camera
       name: camera_name
       required: true
-      secret: false
-    deprecated: false
     description: The name of the camera to take the snapshot from. If empty then all camera snapshots will be taken
-    execution: false
     name: unifivideo-get-snapshot
   - arguments:
-    - default: false
-      description: The id of the recording
-      isArray: false
+    - description: The id of the recording
       name: recording_id
       required: true
-      secret: false
-    deprecated: false
     description: Download a recording to file
-    execution: false
     name: unifivideo-get-recording
     outputs:
     - contextPath: UnifiVideo.Recordings
       description: The recording list
       type: Unknown
   - arguments:
-    - default: false
-      description: The camera name
-      isArray: false
+    - description: The camera name
       name: camera_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: motion
       description: Recording setting, motion,fulltime or disable
-      isArray: false
       name: rec_set
       predefined:
       - fulltime
       - motion
       - disable
       required: true
-      secret: false
-    deprecated: false
     description: Set the recording settings
     execution: true
     name: unifivideo-set-recording-settings
   - arguments:
-    - default: false
-      description: The camera name
-      isArray: false
+    - description: The camera name
       name: camera_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: auto
       description: The Infra-Red LED mode
-      isArray: false
       name: ir_leds
       predefined:
       - auto
       - 'on'
       - 'off'
       required: true
-      secret: false
-    deprecated: false
     description: Turn ON or OFF the camera Infra-Red LED
     execution: true
     name: unifivideo-ir-leds
-  - deprecated: false
-    description: Get the list of all recordings
+  - description: Get the list of all recordings
     execution: true
     name: unifivideo-get-recording-list
   - arguments:
-    - default: false
-      description: File entryID of the video file
-      isArray: false
+    - description: File entryID of the video file
       name: entryid
       required: true
-      secret: false
-    - default: false
-      description: Frame to take from the video.
-      isArray: false
+    - description: Frame to take from the video.
       name: frame
       required: true
-      secret: false
-    deprecated: false
     description: Get a snapshot from video file based on the frame number
-    execution: false
     name: unifivideo-get-snapshot-at-frame
   - arguments:
-    - default: false
-      defaultValue: '150'
+    - defaultValue: '150'
       description: The frame to snapshot
-      isArray: false
       name: frame
       required: true
-      secret: false
-    - default: false
-      description: the ubnt_id of the recording
-      isArray: false
+    - description: the ubnt_id of the recording
       name: recording_id
       required: true
-      secret: false
-    deprecated: false
     description: Get the recording snapshot (at frame) based on the recording id
-    execution: false
     name: unifivideo-get-recording-snapshot
   - arguments:
-    - default: false
-      description: the ubnt_id of the recording
-      isArray: false
+    - description: the ubnt_id of the recording
       name: recording_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the frame snapshot that has triggered the motion event
-    execution: false
     name: unifivideo-get-recording-motion-snapshot
   dockerimage: demisto/unifi-video:1.0.0.16705
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: true
   script: '-'
   subtype: python3
