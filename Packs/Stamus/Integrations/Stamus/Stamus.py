@@ -167,7 +167,7 @@ def get_command_results(data: dict[str, Any], table: str, context: str) -> Comma
 def fetch_by_ioc(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch events from indicator of compromise
     """
-    results = client.get_by_ioc(args['key'], args['value']).get('results', [])
+    results = client.get_by_ioc(args['indicator_key'], args['indicator_value']).get('results', [])
     table = tableToMarkdown('IOC Matches', results, headers=['timestamp', 'src_ip', 'dest_ip', 'event_type'])
     return get_command_results(results, table, 'IOC')
 
