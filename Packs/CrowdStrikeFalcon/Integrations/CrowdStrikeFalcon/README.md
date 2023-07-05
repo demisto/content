@@ -3679,7 +3679,7 @@ Uploads a batch of indicators.
 
 #### Input
 
-| **Argument Name**        | **Description** | **Required** |
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
