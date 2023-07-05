@@ -1,16 +1,8 @@
 args:
-- default: false
-  description: Instance on which to check the command.
-  isArray: false
+- description: Instance on which to check the command.
   name: instance_name
-  required: false
-  secret: false
-- default: false
-  description: Command line to process.
-  isArray: false
+- description: Command line to process.
   name: command_line
-  required: false
-  secret: false
 comment: Gets a command with its arguments, validates the command and the arguments, and then parses it to use in the Cortex XSOAR context.
 commonfields:
   id: TroubleshootGetCommandandArgs
@@ -31,7 +23,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - troubleshoot
 timeout: '0'

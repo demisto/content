@@ -1,10 +1,7 @@
 args:
-- default: false
-  description: The entry ID of the STIX file.
-  isArray: false
+- description: The entry ID of the STIX file.
   name: entry_id
   required: true
-  secret: false
 comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x. This automation creates indicators and adds an indicator's relationships if available.
 commonfields:
   id: CreateIndicatorsFromSTIX
@@ -12,7 +9,6 @@ commonfields:
 name: CreateIndicatorsFromSTIX
 script: '-'
 subtype: python3
-system: false
 tags:
 - stix
 - ioc
