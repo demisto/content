@@ -50,7 +50,7 @@ script:
       - 'true'
       - 'false'
       required: true
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true
   script: '-'
   subtype: python3
