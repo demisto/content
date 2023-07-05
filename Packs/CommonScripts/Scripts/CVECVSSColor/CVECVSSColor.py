@@ -45,10 +45,19 @@ def get_color(cvss: int | float) -> str:
 def main():
     indicator = demisto.callingContext.get('args', '').get('indicator', '')
     cvss = indicator.get('CustomFields', '').get('cvss', '')
-    cvss = json.loads(cvss)
-    cvss = float(cvss.get('Score', 0))
+    theme = demisto.callingContext.get('context', 'light').get('User', 'light').get('theme', 'light')
+
+    try:
+        cvss = json.loads(cvss)
+        cvss = float(cvss.get('Score', 0))
+    except json.JSONDecodeError:
+        cvss = 0
+
     if cvss == 0:
-        return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\A**)"))
+        if theme != 'light':
+            return_results(CommandResults(readable_output="# <-:->{{color:#FFFFFF}}(**N\A**)"))
+        else:
+            return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\A**)"))
     else:
         color = get_color(cvss)
         return_results(CommandResults(readable_output=f"# <-:->{{{{color:{color}}}}}(**{cvss}**)"))
