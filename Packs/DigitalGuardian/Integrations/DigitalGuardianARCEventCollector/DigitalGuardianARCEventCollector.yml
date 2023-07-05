@@ -6,12 +6,12 @@ commonfields:
   id: DigitalGuardianARCEventCollector
   version: -1
 configuration:
-- display: Auth Server URL (e.g. https://some_url.com)
+- display: Auth Server URL (e.g. https://SomeUrl.com)
   name: Auth Server URL
   required: true
   type: 0
   section: Connect
-- display: Gateway Base URL (e.g. https://some_url.com)
+- display: Gateway Base URL (e.g. https://SomeUrl.com)
   name: Gateway Base URL
   required: true
   type: 0
@@ -87,7 +87,7 @@ script:
     description: Gets events from Hello World.
     execution: false
     name: digital-guardian-get-events
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true
   runonce: false
   script: '-'

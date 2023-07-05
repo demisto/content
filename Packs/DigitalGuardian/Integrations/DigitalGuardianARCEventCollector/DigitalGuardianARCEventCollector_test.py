@@ -1,6 +1,5 @@
 import json
 import io
-from datetime import datetime
 
 
 def util_load_json(path):
@@ -38,7 +37,7 @@ def test_get_raw_events_command(mocker):
     """
     from DigitalGuardianARCEventCollector import Client, get_raw_events
 
-    raw_events = util_load_json(f'test_data/events_mock_request.json')
+    raw_events = util_load_json('test_data/events_mock_request.json')
     mocker.patch.object(Client, 'get_token', return_value='token')
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
     days = 7
@@ -63,7 +62,7 @@ def test_get_events_command(mocker):
     """
     from DigitalGuardianARCEventCollector import Client, get_events
 
-    raw_events = util_load_json(f'test_data/events_mock_request.json')
+    raw_events = util_load_json('test_data/events_mock_request.json')
     mocker.patch.object(Client, 'get_token', return_value='aaa')
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
 
@@ -76,6 +75,30 @@ def test_get_events_command(mocker):
 
     assert events == mock_events
 
+
+def test_create_events_for_push():
+    """
+        Given:
+            - Digital Guardian events list from API response, last_time, list of id's and limit
+        When:
+            - Calling create_events_for_push command, which will run after the get_raw_events in fetch events function
+              and will return results according to the limit that was provided
+        Then:
+            - Ensure the events, id_list and last_time are returned as expected
+    """
+    from DigitalGuardianARCEventCollector import create_events_for_push
+
+    events = util_load_json('test_data/events_for_create_and_push.json')
+    events_result = util_load_json('test_data/results_for_create_and_push.json')
+
+    last_time = None
+    id_list = []
+    limit = 3
+    event_list, l_time, ids = create_events_for_push(events, last_time, id_list, limit)
+
+    assert ids == ['c742c377-b429-428a-b0c9-515cbbf143ae']
+    assert l_time == '2023-04-23 11:53:11'
+    assert event_list == events_result
 
 def test_fetch_events_command(mocker):
     """
@@ -95,8 +118,6 @@ def test_fetch_events_command(mocker):
     next_run, events = fetch_events(client, limit=2, last_run={}, first_fetch_time={})
 
     mock_events = util_load_json('test_data/events.json')
-    today = datetime.now()
-    response_date = datetime.strptime('2023-05-23 11:53:11', '%Y-%m-%d %H:%M:%S')
-    days = (today - response_date).days + 1
     assert events == mock_events
-    assert next_run == {'start_time': '2023-05-23 11:53:11', 'days': days, 'last_id': 'c742c377-b429-428a-b0c9-515cbbf143be'}
+    assert next_run == {'start_time': '2023-05-23 11:53:11',
+                        'id_list': ['1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e', 'c742c377-b429-428a-b0c9-515cbbf143be']}

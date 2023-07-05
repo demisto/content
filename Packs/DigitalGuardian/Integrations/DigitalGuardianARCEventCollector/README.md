@@ -1,5 +1,5 @@
 This is the Digital Guardian ARC event collector integration for XSIAM.
-This integration was integrated and tested with version xx of DigitalGuardianARCEventCollector
+This integration was integrated and tested with version 3.10.0 of DigitalGuardianARCEventCollector
 
 ## Configure Digital Guardian ARC Event Collector on Cortex XSOAR
 

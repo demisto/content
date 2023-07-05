@@ -1,5 +1,3 @@
-import uuid
-import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from datetime import datetime
@@ -27,7 +25,8 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def __init__(self,  verify, proxy, auth_url, gateway_url, client_id,client_secret, export_profile, headers=None, base_url=None ):
+    def __init__(self, verify, proxy, auth_url, gateway_url, client_id, client_secret, export_profile,
+                 headers=None, base_url=None):
         self.auth_url = auth_url
         self.gateway_url = gateway_url
         self.client_id = client_id
@@ -45,11 +44,12 @@ class Client(BaseClient):
             if time_now < valid_until:
                 # Token is still valid - did not expire yet
                 return token
+        sec = self.client_secret.get("password")
         response = self._http_request(
             method='POST',
-            full_url=self.auth_url + f'/as/token.oauth2',
+            full_url=f'{self.auth_url}/as/token.oauth2',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data='client_id=' + self.client_id + '&client_secret=' + self.client_secret.get("password") + '&grant_type=client_credentials'
+            data=f'client_id={self.client_id}&client_secret={sec}&grant_type=client_credentials',
         )
         integration_context = {
             'token': response.get("access_token"),
@@ -58,13 +58,14 @@ class Client(BaseClient):
         set_integration_context(integration_context)
         return response.get("access_token")
 
-    def get_events (self, days, token):
+    def get_events(self, days, token):
         headers = {
             'Authorization': 'Bearer ' + token
         }
+        sdays = str(days)
         response = self._http_request(
             method='GET',
-            full_url=self.gateway_url + f'/rest/2.0/export_profiles/' + self.export_profile + '/export?q=dg_time:last_n_days,' + str(days),
+            full_url=f'{self.gateway_url}/rest/2.0/export_profiles/{self.export_profile}/export?q=dg_time:last_n_days,{sdays}',
             headers=headers,
         )
         return response
@@ -99,7 +100,6 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-    
     return 'ok'
 
 
@@ -130,43 +130,55 @@ def get_events(client, args):
     return event_list, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, int],first_fetch_time: Optional[int], limit: [int]):
+def create_events_for_push(event_list, last_time, id_list, limit):
+    index = 0
+    event_list_for_push = []
+    for event in event_list:
+        if last_time:
+            if event.get("inc_mtime") < last_time:
+                continue
+            if event.get("dg_guid") in id_list:
+                continue
+            if last_time[:10] == event.get("inc_mtime")[:10]:
+                id_list.append(event.get("dg_guid"))
+            else:
+                id_list = [event.get("dg_guid")]
+        else:
+            id_list = [event.get("dg_guid")]
+        event_list_for_push.append(event)
+        last_time = event.get("inc_mtime")
+        index += 1
+        if index == limit:
+            break
+    return event_list_for_push, last_time, id_list
+
+def fetch_events(client: Client, last_run: dict[str, list], first_fetch_time: int, limit: int):
     """
     Args:
         client (Client): HelloWorld client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
         first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching events.
+        limit (int):
+
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    index = 0
-    event_list_for_push = []
+    id_list = last_run.get('id_list', [])
+
     last_time = last_run.get('start_time', None)
-    last_id = last_run.get('last_id', None)
-    if last_time:
-        today = datetime.now()
-        last_time_date = arg_to_datetime(last_time)
-        fetch_time = (today - last_time_date).days + 1
+    last_time_date = arg_to_datetime(last_time)
+    if last_time_date:
+        fetch_time = (datetime.now() - last_time_date).days + 1
     else:
         fetch_time = first_fetch_time
+
     event_list = get_raw_events(client, fetch_time)
-    for event in event_list:
-        if last_time:
-            if event.get("inc_mtime") < last_time:
-                continue
-            if event.get("dg_guid") == last_id:
-                continue
-        event_list_for_push.append(event)
-        last_time = event.get("inc_mtime")
-        last_id = event.get("dg_guid")
-        index += 1
-        if index == limit:
-            break
+    event_list_for_push, time_of_event, id_list = create_events_for_push(event_list, last_time, id_list, limit)
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'start_time': last_time, 'last_id': last_id}
+    next_run = {'start_time': time_of_event, 'id_list': id_list}
     demisto.info(f'Setting next run {next_run}.')
     return next_run, event_list_for_push
 
@@ -188,7 +200,7 @@ def add_time_to_events(events):
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
-def main() -> None:
+def main() -> None: # pragma: no cover
     """
     main function, parses params and runs command functions
     """
