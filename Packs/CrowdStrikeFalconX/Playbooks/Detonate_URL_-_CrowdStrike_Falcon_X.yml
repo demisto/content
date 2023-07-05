@@ -1,15 +1,17 @@
 id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
 version: -1
 name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
-description: This playbook uploads, detonates, and analyzes URLs for the CrowdStrike Falcon Intelligence Sandbox.
+description: Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d6740543-d7a7-44f8-82c0-9b63ba206946
+    taskid: 5efceda5-4236-42ed-882f-e26acb6f4756
     type: start
     task:
-      id: d6740543-d7a7-44f8-82c0-9b63ba206946
+      id: 5efceda5-4236-42ed-882f-e26acb6f4756
       version: -1
       name: ""
       iscommand: false
@@ -17,13 +19,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 270
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -31,32 +33,149 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isautoswitchedtoquietmode: false
-    isoversize: false
+  "5":
+    id: "5"
+    taskid: fc1f205f-4605-402d-805d-57b7d4b4cef7
+    type: condition
+    task:
+      id: fc1f205f-4605-402d-805d-57b7d4b4cef7
+      version: -1
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
+      description: |
+        Verify that there is a valid instance of CrowdStrike enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike Falcon X
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 66063116-5734-4166-82b3-aa4c0f629285
+    type: title
+    task:
+      id: 66063116-5734-4166-82b3-aa4c0f629285
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 254c3c66-ea3b-4ce6-873e-bc1608d9412b
+    taskid: 9ab16bf8-de8e-4201-8561-992345b51280
     type: regular
     task:
-      id: 254c3c66-ea3b-4ce6-873e-bc1608d9412b
+      id: 9ab16bf8-de8e-4201-8561-992345b51280
       version: -1
-      name: CrowdStrike Falcon Intelligence Sandbox upload and detonate
-      description: Submits a URL or FTP for sandbox analysis.
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report
+      description: Get a full version of a sandbox report.
+      script: CrowdStrike Falcon X|||cs-fx-get-full-report
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        simple: ${csfalconx.resource.submitted_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 251b7acf-b9ad-4122-8968-788528be9bc1
+    type: regular
+    task:
+      id: 251b7acf-b9ad-4122-8968-788528be9bc1
+      version: -1
+      name: CrowdStrike Falcon Intelligence Sandbox Submit URL
+      description: Submit a URL or FTP for sandbox analysis.
       script: '|||cs-fx-submit-url'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "17"
     scriptarguments:
+      action_script: {}
+      command_line: {}
+      document_password: {}
+      enable_tor: {}
       environment_id:
         simple: '160: Windows 10'
-      execution-timeout:
-        simple: "600"
-      polling:
-        simple: "true"
+      submit_name: {}
+      system_date: {}
+      system_time: {}
       url:
         complex:
           root: inputs.URL
@@ -64,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 1140
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -73,190 +192,222 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    evidencedata:
-      customfields: {}
-      description:
-        simple: Falcon Intelligence Sandbox report
-    isautoswitchedtoquietmode: false
-    isoversize: false
-  "3":
-    continueonerrortype: ""
-    id: "3"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      "no":
-      - "10"
-      "yes":
-      - "7"
-    note: false
-    quietmode: 0
-    results:
-    - brandInstances
-    scriptarguments:
-      brandname:
-        simple: CrowdStrike Falcon X
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Returns 'yes' if the Falcon Intelligence Sandbox integration is available.
-      id: 956621f4-df96-43d3-8214-2cb1f168520a
-      iscommand: false
-      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
-      scriptName: IsIntegrationAvailable
-      type: condition
-      version: -1
-    taskid: 956621f4-df96-43d3-8214-2cb1f168520a
-    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 7bda06fb-0f5a-487b-8242-69d776363760
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": 410
-        }
-      }
-  "7":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.URL
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "7"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    task:
+      id: 7bda06fb-0f5a-487b-8242-69d776363760
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks whether there's a file to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
-      - "10"
+      - "6"
       "yes":
-      - "8"
-    note: false
-    quietmode: 0
+      - "13"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks that there is a file in the playbook input.
-      id: bb857ed2-d759-4fb8-8939-4b371d011280
-      iscommand: false
-      name: Is there a URL to Detonate?
-      type: condition
-      version: -1
-    taskid: bb857ed2-d759-4fb8-8939-4b371d011280
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 600
+          "x": 162.5,
+          "y": 370
         }
       }
-  "10":
-    continueonerrortype: ""
-    id: "10"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
     skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
+    type: playbook
     task:
-      brand: ""
-      id: bb0060f5-6110-463f-8023-ac1f336e6b48
-      iscommand: false
-      name: Done
-      type: title
+      id: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
       version: -1
-      description: ''
-    taskid: bb0060f5-6110-463f-8023-ac1f336e6b48
-    timertriggers: []
-    type: title
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: csfalconx
+          accessor: resource.submitted_id
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: cs-fx-get-analysis-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: csfalconx(val.resource.state !== 'success').resource.id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1320
+          "x": 50,
+          "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: fb7377bf-b9ae-443f-86ab-7bb11a490480
+    type: regular
+    task:
+      id: fb7377bf-b9ae-443f-86ab-7bb11a490480
+      version: -1
+      name: Sleep before first polling
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {
-      "3_10_no": 0.11
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 670,
-        "x": 410,
-        "y": 270
+        "height": 1260,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
 inputs:
 - key: URL
-  value: {}
+  value:
+    complex:
+      root: URL
+      accessor: Data
   required: false
-  description: The details of the URL to detonate.
+  description: URL to detonate.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "5"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "30"
+  required: false
+  description: How much time to wait before a timeout occurs  (minutes)
   playbookInputQuery:
 outputs:
-- contextPath: DBotScore
-  description: The Dbot Score of the analyzed URL
-  type: unknown
-- contextPath: csfalconx.resource
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.http_requests
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.processes
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.processes.handles
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.extracted_files
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.file_metadata
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.dns_requests
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.contacted_hosts
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.contacted_hosts.associated_runtime
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.mitre_attacks
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.mitre_attacks.parent
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.sandbox.signatures
-  description: URL analysis report info
-  type: unknown
-- contextPath: csfalconx.resource.intel
-  description: URL analysis report info
-  type: unknown
-fromversion: 6.8.0
+    - contextPath: csfalconx.resource.id
+      description: Analysis ID.
+      type: String
+    - contextPath: csfalconx.resource.verdict
+      description: Analysis verdict.
+      type: String
+    - contextPath: csfalconx.resource.created_timestamp
+      description: Analysis start time.
+      type: String
+    - contextPath: csfalconx.resource.environment_id
+      description: Environment ID.
+      type: String
+    - contextPath: csfalconx.resource.environment_description
+      description: Environment description.
+      type: String
+    - contextPath: csfalconx.resource.threat_score
+      description: Score of the threat.
+      type: Int
+    - contextPath: csfalconx.resource.submit_url
+      description: URL submitted for analysis.
+      type: String
+    - contextPath: csfalconx.resource.submission_type
+      description: Type of submitted artifact, for example file, URL, etc.
+      type: String
+    - contextPath: csfalconx.resource.sha256
+      description: SHA256 hash of the submitted file.
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
+      description: ID of the IOC pack to download (CSV).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
+      description: ID of the IOC pack to download (CSV).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
+      description: ID of the IOC pack to download (JSON).
+      type: Int
+    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
+      description: ID of the IOC pack to download (JSON).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
+      description: ID of the IOC pack to download (STIX).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
+      description: ID of the IOC pack to download (STIX).
+      type: Int
+    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
+      description: ID of the IOC pack to download (MAEC).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
+      description: ID of the IOC pack to download (MAEC).
+      type: String
+fromversion: 5.0.0
+quiet: true
 tests:
-- No tests (auto formatted)
+ -  No tests
