@@ -56,7 +56,7 @@ script:
     - contextPath: QueryAI.query.markdown_string
       description: Readable Response after running query
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3
