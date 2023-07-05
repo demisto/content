@@ -156,7 +156,7 @@ script:
     - name: role
       auto: PREDEFINED
       predefined:
-      - end_user
+      - end-user
       - agent
       - admin
       description: The user's role.
@@ -468,7 +468,7 @@ script:
     - name: role
       auto: PREDEFINED
       predefined:
-      - end_user
+      - end-user
       - agent
       - admin
       description: The user's role. Possible values are "end-user", "agent", or "admin".
@@ -1045,6 +1045,13 @@ script:
       description: A comment to add to the ticket.
     - name: html_comment
       description: An HTML comment to add to the ticket.
+    - name: public
+      description: true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     - name: collaborators
       isArray: true
       description: Users to add as CC's when creating a ticket.
@@ -1242,6 +1249,13 @@ script:
       description: A comment to add to the ticket.
     - name: html_comment
       description: An HTML comment to add to the ticket.
+    - name: public
+      description: true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status
