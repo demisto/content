@@ -12,7 +12,7 @@
     },
     "hours": 0,
     "hoursR": 0,
-    "id": "Stamus Networks",
+    "id": "Stamus Networks DoC",
     "layout": "Stamus Networks DoC Layout",
     "locked": false,
     "name": "Stamus Networks DoC",
@@ -24,5 +24,5 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.9.0"
 }
