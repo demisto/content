@@ -156,7 +156,7 @@ script:
     - name: role
       auto: PREDEFINED
       predefined:
-      - end_user
+      - end-user
       - agent
       - admin
       description: The user's role.
@@ -468,7 +468,7 @@ script:
     - name: role
       auto: PREDEFINED
       predefined:
-      - end_user
+      - end-user
       - agent
       - admin
       description: The user's role. Possible values are "end-user", "agent", or "admin".
