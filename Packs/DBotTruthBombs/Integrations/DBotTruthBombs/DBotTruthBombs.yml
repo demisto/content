@@ -6,11 +6,9 @@ configuration:
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: You thought you know DBot... guess again! Here are some super secrete facts about DBot we bet you didn't know.
 display: DBot Truth Bombs
@@ -33,7 +31,7 @@ script:
       - Travel
     description: Returns a previously undisclosed fact about DBot.
     name: dbot-truth-bomb
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3
