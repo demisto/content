@@ -3022,6 +3022,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         # If last_fetch_id is equal to zero, and the user wants to fetch using the issue ID, then we automatically
         # acquire the smallest issue ID with respect to the query
         _, smallest_id_offset = get_smallest_id_offset_for_query(client=client, query=fetch_query)
+        # TODO raise Exception here if smallest_id_offset is None
         last_fetch_id = smallest_id_offset or last_fetch_id
         demisto.debug(f'The smallest ID offset with respect to the fetch query is {last_fetch_id}' if last_fetch_id else
                       'No smallest ID found since the fetch query returns 0 results')
