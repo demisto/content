@@ -1,5 +1,5 @@
 
-# CyberArk Enterprise Password Vault (EPV)
+# CyberArk Enterprise Password Vault
 This pack includes Cortex XSIAM content.
 
 
