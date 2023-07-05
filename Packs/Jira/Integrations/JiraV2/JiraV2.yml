@@ -13,6 +13,7 @@ configuration:
 - display: Password (Deprecated - Use API token)
   name: password
   type: 4
+  hidden: true
 - displaypassword: API token (Recommended)
   name: credentials
   type: 9
@@ -91,6 +92,7 @@ configuration:
   name: APItoken
   type: 4
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
+  hidden: true
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
