@@ -133,6 +133,7 @@ outputs:
 - contextPath: ExtractedFiles
   description: A list of file names that were extracted from the ZIP file.
 scripttarget: 0
+runonce: false
 dockerimage: demisto/python:2.7.17.5734
 tests:
-- ZipFile-Test
+  - ZipFile-Test
