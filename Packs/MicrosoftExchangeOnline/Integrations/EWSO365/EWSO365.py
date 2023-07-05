@@ -56,7 +56,7 @@ from exchangelib import (
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import EXCHANGE_O365
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from MicrosoftApiModule import *  # noqa: E402
+from MicrosoftApiModule import *
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -488,7 +488,7 @@ class ExpandGroup(EWSService):
     def call(self, email_address, recursive_expansion=False):      # pragma: no cover
         try:
             if recursive_expansion == "True":
-                group_members = {}
+                group_members: dict = {}
                 self.expand_group_recursive(email_address, group_members)
                 return list(group_members.values())
             else:
