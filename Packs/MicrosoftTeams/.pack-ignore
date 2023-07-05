@@ -2,11 +2,11 @@
 ignore=RM106
 
 [file:MicrosoftTeams.yml]
-ignore=DS107,IN145
+ignore=DS107
 
 [known_words]
-AAD
-membershipType
+aad
+membershiptype
 
 [file:ConfigureAzureApplicationAccessPolicy.yml]
 ignore=CJ105

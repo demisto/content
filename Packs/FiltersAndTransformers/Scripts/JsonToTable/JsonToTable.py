@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 
 
-
 def main():
     args = demisto.args()
 

@@ -1,10 +1,8 @@
 args:
 - default: true
   description: CSV list of IP addresses to identify.
-  isArray: false
   name: ip
   required: true
-  secret: false
 comment: Search Carbon Black for connection to specified IP addresses.
 commonfields:
   id: CBFindIP
@@ -37,7 +35,6 @@ outputs:
   description: The endpoint of the process.
   type: String
 script: '-'
-system: false
 tags:
 - carbon-black
 - endpoint
@@ -46,7 +43,6 @@ timeout: '0'
 type: python
 subtype: python3
 runas: DBotWeakRole
-runonce: false
 tests:
 - CBFindIP - Test
 dependson:

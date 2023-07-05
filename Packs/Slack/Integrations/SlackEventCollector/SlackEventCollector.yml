@@ -22,27 +22,23 @@ configuration:
 - defaultvalue: 1000
   display: The maximum number of audit logs to fetch
   name: limit
-  required: false
   type: 0
   section: Collect
 - defaultvalue: 3 days ago
   display: First fetch time interval
   name: oldest
-  required: false
   type: 0
   additionalinfo: Data is not available prior to March 2018.
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   additionalinfo:
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   additionalinfo:
   section: Connect
   advanced: true
@@ -55,67 +51,34 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - default: false
-      description: Number of results to return, maximum is 9999. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
-      isArray: false
+    - description: Number of results to return, maximum is 9999. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
       name: limit
       defaultValue: 10
-      required: false
-      secret: false
-    - default: false
-      description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the Audit Logs API call. For further information, visit Slack documentation - https://api.slack.com/docs/pagination#cursors
-      isArray: false
+    - description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the Audit Logs API call. For further information, visit Slack documentation - https://api.slack.com/docs/pagination#cursors
       name: cursor
-      required: false
-      secret: false
-    - default: false
-      description: Occurrence time of the least recent audit event to include (inclusive). Data is not available prior to March 2018.
-      isArray: false
+    - description: Occurrence time of the least recent audit event to include (inclusive). Data is not available prior to March 2018.
       name: oldest
       defaultValue: 3 days
-      required: false
-      secret: false
-    - default: false
-      description: Occurrence time of the most recent audit event to include (inclusive).
-      isArray: false
+    - description: Occurrence time of the most recent audit event to include (inclusive).
       name: latest
-      required: false
-      secret: false
-    - default: false
-      description: Name of the action.
-      isArray: false
+    - description: Name of the action.
       name: action
-      required: false
-      secret: false
-    - default: false
-      description: ID of the user who initiated the action.
-      isArray: false
+    - description: ID of the user who initiated the action.
       name: actor
-      required: false
-      secret: false
-    - default: false
-      description: ID of the target entity of the action (such as a channel, workspace, organization, file).
-      isArray: false
+    - description: ID of the target entity of the action (such as a channel, workspace, organization, file).
       name: entity
-      required: false
-      secret: false
-    deprecated: false
     description: Gets audit log events from Slack.
-    execution: false
     name: slack-get-events
-  runonce: false
   script: '-'
   type: python
   subtype: python3
   isfetchevents: true
   dockerimage: demisto/python3:3.10.9.42476
-  feed: false
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0
