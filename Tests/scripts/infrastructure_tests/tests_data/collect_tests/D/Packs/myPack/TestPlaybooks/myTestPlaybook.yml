@@ -1,7 +1,7 @@
 id: myTestPlaybook
 version: -1
-fromversion: 6.5.0
-toversion: 6.5.0
+fromversion: 6.8.0
+toversion: 6.8.0
 vcShouldKeepItemLegacyProdMachine: false
 name: myTestPlaybook
 starttaskid: "0"

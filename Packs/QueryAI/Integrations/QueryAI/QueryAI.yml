@@ -23,15 +23,12 @@ configuration:
 - display: Request Timeout (in seconds).
   additionalinfo: Default value is 60 seconds.
   name: timeout
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.
 display: Query.AI
@@ -39,39 +36,18 @@ name: Query.AI
 script:
   commands:
   - arguments:
-    - default: false
-      description: Search Query.
-      isArray: false
+    - description: Search Query.
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Platform Alias.
-      isArray: false
+    - description: Platform Alias.
       name: alias
-      required: false
-      secret: false
-    - default: false
-      description: Connection params as JSON object. Eg- {"platform_alias":{"username":"my_username","password":"my_password"}}
-      isArray: false
+    - description: Connection params as JSON object. Eg- {"platform_alias":{"username":"my_username","password":"my_password"}}
       name: connection_params
-      required: false
-      secret: false
-    - default: false
-      description: Workflow params as JSON object.(If workflow requires params) Eg- {"param1":"value1","param2":"value2"}
-      isArray: false
+    - description: Workflow params as JSON object.(If workflow requires params) Eg- {"param1":"value1","param2":"value2"}
       name: workflow_params
-      required: false
-      secret: false
-    - default: false
-      description: Search time period. Eg- "search 1 year ago to now"
-      isArray: false
+    - description: Search time period. Eg- "search 1 year ago to now"
       name: time_text
-      required: false
-      secret: false
-    deprecated: false
     description: Returns response for the query being run on Query.AI.
-    execution: false
     name: queryai-run-query
     outputs:
     - contextPath: QueryAI.query.result
@@ -81,10 +57,6 @@ script:
       description: Readable Response after running query
       type: String
   dockerimage: demisto/python3:3.9.8.24399
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
