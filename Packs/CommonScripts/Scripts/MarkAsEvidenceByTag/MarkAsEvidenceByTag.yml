@@ -16,7 +16,6 @@ contentitemexportablefields:
 enabled: true
 name: MarkAsEvidenceByTag
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

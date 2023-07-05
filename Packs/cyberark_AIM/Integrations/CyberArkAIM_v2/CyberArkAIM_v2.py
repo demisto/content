@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from requests_ntlm import HttpNtlmAuth
 import tempfile
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # disable insecure warnings

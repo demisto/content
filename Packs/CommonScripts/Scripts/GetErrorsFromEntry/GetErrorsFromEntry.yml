@@ -10,7 +10,6 @@ comment: Get the error(s) associated with a given entry/entries. Use ${lastCompl
 enabled: true
 args:
 - name: entry_id
-  required: false
   default: true
   description: Entry to check
   isArray: true
@@ -19,7 +18,6 @@ outputs:
   description: Contents of the errors associated with the entry/entries
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.4.29342
 runas: DBotWeakRole
 fromversion: 6.2.0
