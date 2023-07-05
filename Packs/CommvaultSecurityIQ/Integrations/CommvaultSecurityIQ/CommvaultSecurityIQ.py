@@ -27,7 +27,6 @@ from urllib.parse import urlparse
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -107,6 +106,7 @@ async def handle_post(
         ]
         hostname = request.client.host  # type: ignore
         incident_body = {
+            "facility": Constants.facility,
             "msg": None,
             "msg_id": None,
             "process_id": None,
@@ -131,36 +131,6 @@ async def handle_post(
         logging.error(f"could not print REQUEST: {err}")
         return {"status": "ERR"}
 
-    credentials_param = demisto.params().get("credentials")
-    if credentials_param and credentials_param.get("identifier"):
-        username = credentials_param.get("identifier")
-        password = credentials_param.get("password", "")
-        auth_failed = False
-        header_name = None
-        if username.startswith("_header"):
-            header_name = username.split(":")[1]
-            token_auth.model.name = header_name
-            if not token or not compare_digest(token, password):
-                auth_failed = True
-        elif (not credentials) or (
-                not (
-                        compare_digest(credentials.username, username)
-                        and compare_digest(credentials.password, password)
-                )
-        ):
-            auth_failed = True
-        if auth_failed:
-            request_headers = dict(request.headers)
-            secret_header = (header_name or "Authorization").lower()
-            if secret_header in request_headers:
-                request_headers[secret_header] = "***"
-            demisto.debug(
-                f"Authorization failed - request headers {request_headers}"
-            )
-            return Response(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content="Authorization failed.",
-            )
 
     client.create_incident(incident_body, timestamp, incidentType, False)  # type: ignore
 
@@ -192,6 +162,7 @@ def parse_no_length_limit(data: bytes) -> syslogmp.parser.Message:
     message = parser._parse_msg_part()
 
     return syslogmp.parser.Message(
+        facility=priority_value.facility,
         severity=priority_value.severity,
         timestamp=timestamp,
         hostname=hostname,
@@ -281,6 +252,7 @@ class Constants:
     renamed_files_count: str = "renamed_files_count"
     created_files_count: str = "created_files_count"
     severity_high: str = "High"
+    facility: str = "Commvault"
     severity_info: str = "Informational"
     path_key: str = "path"
     source_syslog: str = "syslog"
@@ -662,8 +634,8 @@ class Client(BaseClient):
         &showMajor=true&showCritical=false&showAnomalous=true
         &fromTime={fromtime}&toTime={seconds_since_epoch}&showAnomalous=true"""
         headers = self.headers
-		if max_fetch is None:
-			max_fetch=50
+        if max_fetch is None:
+            max_fetch=50
         headers["pagingInfo"] = "0,{mfetch}".format(mfetch=max_fetch)
         resp = self.http_request("GET", event_endpoint, None, headers=headers)
         last_run_new = {'last_fetch': seconds_since_epoch}
@@ -764,6 +736,7 @@ class Client(BaseClient):
             ),
         )
         incident = {
+            "facility": Constants.facility,
             "host_name": syslog_message.hostname,
             "msg": None,
             "msg_id": None,
@@ -1246,6 +1219,7 @@ def fetch_incidents(client, last_run, first_fetch_time) -> List:
                 )
             ]
             incident = {
+                "facility": Constants.facility,
                 "msg": None,
                 "msg_id": None,
                 "process_id": None,
@@ -1377,7 +1351,9 @@ def main() -> None:
     certificate: Optional[str] = params.get("certificate")
     private_key: Optional[str] = params.get("private_key")
     cv_webservice_url: str = params.get("CVWebserviceUrl")
-    cv_api_token: str = params.get("CommvaultAPIToken")
+
+
+    cv_api_token: str = demisto.get(params, 'CommvaultAPIToken.password')
     is_fetch: List[str] = params.get("isFetch")
     if not cv_webservice_url.endswith("/") :
         cv_webservice_url=cv_webservice_url+"/"
@@ -1387,7 +1363,7 @@ def main() -> None:
     client.keyvault_url = params.get("AzureKeyVaultUrl")
     client.keyvault_tenant_id = params.get("AzureKeyVaultTenantId")
     client.keyvault_client_id = params.get("AzureKeyVaultClientId")
-    client.keyvault_client_secret = params.get("AzureKeyVaultClientSecret")
+    client.keyvault_client_secret = demisto.get(params, 'AzureKeyVaultClientSecret.password')
     is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
     forwarding_rule_type: Optional[str] = params.get("forwardingRule")
     port: int = 0
