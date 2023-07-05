@@ -1,0 +1,11 @@
+!domaintools-iris-detect-blocklist-domains watchlist_domain_ids="7WbwkN9wga"
+!domaintools-iris-detect-escalate-domains watchlist_domain_ids="ba476NwNjW"
+!domaintools-iris-detect-get-blocklist-domains limit="2"
+!domaintools-iris-detect-get-escalated-domains limit="2"
+!domaintools-iris-detect-get-ignored-domains limit="2"
+!domaintools-iris-detect-get-monitors-list datetime_counts_since="2022-01-01"
+!domaintools-iris-detect-get-new-domains limit="2"
+!domaintools-iris-detect-get-watched-domains limit="2"
+!domaintools-iris-detect-ignore-domains watchlist_domain_ids="XEmKQoLBpW"
+!domaintools-iris-detect-reset-fetch-indicators
+!domaintools-iris-detect-watch-domains watchlist_domain_ids="Ya2q68ldNW"
