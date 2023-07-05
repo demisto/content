@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import re
 import os
 import demistomock as demisto  # noqa: F401
