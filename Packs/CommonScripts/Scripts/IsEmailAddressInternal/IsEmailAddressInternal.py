@@ -4,7 +4,6 @@ import re
 from distutils.util import strtobool
 
 
-
 def main():
     email = demisto.args()['email']
     domains = [x.lower() for x in argToList(demisto.get(demisto.args(), 'domain'))]

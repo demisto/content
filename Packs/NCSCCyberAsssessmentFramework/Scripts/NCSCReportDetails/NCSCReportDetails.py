@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 
 
-
 def calculate_overall(data: dict = None) -> str:
     if not data:
         return ""

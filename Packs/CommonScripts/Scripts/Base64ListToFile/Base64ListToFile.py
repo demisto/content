@@ -4,7 +4,6 @@ import base64
 import zlib
 
 
-
 def base64_list_to_file(args):
     # Output file name
     if 'filename' in args:

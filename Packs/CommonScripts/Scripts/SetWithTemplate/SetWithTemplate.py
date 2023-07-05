@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any, Callable, Dict, Optional, Tuple
 
 
-
 class ContextData:
     def __init__(self, context: Optional[Dict[str, Any]] = None):
         self.__context = context or demisto.context()

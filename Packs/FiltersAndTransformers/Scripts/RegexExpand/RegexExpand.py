@@ -4,7 +4,6 @@ import re
 from typing import List
 
 
-
 def concat_values(item1: Any, item2: Any) -> List[Any]:
     """
     Concatinate item1 and item2 into a list

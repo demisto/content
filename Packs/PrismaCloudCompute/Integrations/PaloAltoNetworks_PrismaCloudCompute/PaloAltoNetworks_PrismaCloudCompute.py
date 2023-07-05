@@ -4,7 +4,6 @@ import urllib.parse
 from collections import defaultdict
 
 
-
 ''' IMPORTS '''
 import urllib3
 import ipaddress

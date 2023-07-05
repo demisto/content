@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import ipaddress
 
 
-
 def validate_cidr(cidr: str):
     """
     Validates CIDR format.

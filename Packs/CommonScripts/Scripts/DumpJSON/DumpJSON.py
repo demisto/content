@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 
 
-
 def main():
     key = demisto.args()['key']
     obj_str = json.dumps(demisto.get(demisto.context(), key))

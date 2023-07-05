@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import pycountry
 
 
-
 def main():
     try:
         loc_names = demisto.args().get('value', [])

@@ -5,7 +5,6 @@ import random
 from typing import Counter
 
 
-
 def parse_data(failed_commands):
     commands_data = []
 

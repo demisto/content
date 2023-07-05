@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import subprocess
 
 
-
 def main():
     ret = []
     sysargs = None
