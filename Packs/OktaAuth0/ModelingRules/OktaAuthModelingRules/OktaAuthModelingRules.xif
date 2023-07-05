@@ -1,0 +1,31 @@
+[MODEL: dataset=auth0_identity_raw]
+alter
+    ipv4_address = arrayindex(regextract(ip, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6_address = arrayindex(regextract(ip, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
+| alter
+	xdm.event.type = type,
+	xdm.event.description = description,
+	xdm.event.operation_sub_type = connection,
+	xdm.session_context_id = connection_id,
+	xdm.source.agent.identifier = client_id,
+	xdm.source.agent.content_version = client_name,
+	xdm.source.ipv4 = ipv4_address,
+	xdm.source.ipv4 = ipv6_address,
+	xdm.source.host.hostname = hostname,
+	xdm.source.user.identifier = user_id,
+	xdm.source.user.username = coalesce(user_name, json_extract_scalar(request, "$.auth.user.name"), json_extract_scalar(request, "$.auth.user.email")),
+	xdm.observer.content_version = coalesce(audience, json_extract_scalar(response, "$.body.default_audience")),
+	xdm.source.user.scope = scope,
+	xdm.observer.name = coalesce(strategy, json_extract_scalar(request, "$.auth.strategy")),
+	xdm.observer.type = strategy_type,
+	xdm.event.id = log_id,
+	xdm.source.host.device_category = if(isMobile = true, "mobile", isMobile = false, "desktop/laptop/server", null),
+	xdm.network.http.method = json_extract_scalar(request, "$.method"),
+	xdm.target.module.directory = json_extract_scalar(request, "$.path"),
+	xdm.source.user_agent = coalesce(json_extract_scalar(request, "$.userAgent"), user_agent),
+	xdm.network.http.url = json_extract_scalar(request, "$.channel"),
+	xdm.target.host.hostname = coalesce(json_extract_scalar(response, "$.body.name"), json_extract_scalar(response, "$.body.friendly_name")),
+	xdm.auth.auth_method = json_extract_scalar(response, "$.body.default_directory"),
+	xdm.network.http.content_type = json_extract_scalar(response, "$.body.enabled_locales"),
+	xdm.network.rule = json_extract_scalar(response, "$.body.flags"),
+	xdm.network.http.response_code = json_extract_scalar(response, "$.body.statusCode");

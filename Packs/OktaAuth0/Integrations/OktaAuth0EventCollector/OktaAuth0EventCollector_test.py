@@ -16,7 +16,6 @@ def util_load_json(path):
 
 
 MOCK_EVENTS = util_load_json('test_data/mock_events.json')
-MOCK_EVENT_TYPES = util_load_json('test_data/mock_event_types.json')
 
 
 class MockResponse:
@@ -33,9 +32,10 @@ class MockResponse:
 
 
 @pytest.mark.parametrize('params, last_run, expected_params', [
-    ({'limit': '1'}, {}, {'limit': 1}),
-    ({'since': '2022-08-01T09:00:00Z'}, {'q': 'date:[2022-09-01T09:00:00Z TO *]'},
-     {'limit': 1000, 'q': 'date:[2022-09-01T09:00:00Z TO *]'}),
+    ({'limit': '1', 'since': '2022-08-01T09:00:00Z'}, {}, {'q': 'date:[2022-08-01T09:00:00Z TO *]',
+                                                           'sort': 'date:1', 'page': 0, 'per_page': 1}),
+    ({'since': '2022-08-01T09:00:00Z'}, {'query': 'date:[2022-09-01T09:00:00Z TO *]', 'page': 2},
+     {'q': 'date:[2022-09-01T09:00:00Z TO *]', 'sort': 'date:1', 'page': 2, 'per_page': 1000}),
 ])
 def test_auth0_events_params_good(params, last_run, expected_params):
     """
@@ -48,15 +48,11 @@ def test_auth0_events_params_good(params, last_run, expected_params):
     """
     query_params = prepare_query_params(params, last_run)
 
-    if query_params['since']:
-        assert query_params['since'] == '2022-09-01T09:00:00Z' if 'since' in last_run else \
-            query_params['since'] == '2022-08-01T09:00:00Z'
+    if query_params['q']:
+        assert query_params['q'] == 'date:[2022-09-01T09:00:00Z TO *]' if 'query' in last_run else \
+            query_params['q'] == 'date:[2022-08-01T09:00:00Z TO *]'
 
-    if query_params['after_cursor']:
-        assert query_params['after_cursor'] == 'last_run_cursor' if 'after_cursor' in last_run else \
-            query_params['after_cursor'] == 'param_cursor'
-
-    assert expected_params.items() <= prepare_query_params(params, last_run).items()
+    assert query_params == expected_params
 
 
 @pytest.mark.parametrize('params', [

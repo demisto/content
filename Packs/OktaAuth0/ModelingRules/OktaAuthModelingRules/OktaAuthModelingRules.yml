@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: identity_auth0_modeling_rule
+name: Identity Auth0 Modeling Rule
+rules: ''
+schema: ''
+tags: identity

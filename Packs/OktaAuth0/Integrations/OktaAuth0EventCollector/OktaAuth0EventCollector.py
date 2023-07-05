@@ -109,10 +109,10 @@ class Client(BaseClient):
         """
         Send request to get events from Okta Auth0.
         """
+        query_params["per_page"] = 100 if query_params["per_page"] > 100 else query_params["per_page"]
         access_token = self.get_access_token()
         self._headers.update({'Authorization': f'Bearer {access_token}'})
         raw_response = self._http_request(method='GET', url_suffix='/api/v2/logs', params=query_params)
-        # check_response(raw_response)
 
         demisto.info(f'Succesfully got {len(raw_response)} events.')
         return raw_response
@@ -326,7 +326,7 @@ def main() -> None:
             add_time_to_events(events)
             # print(f"first: {', '.join([e['date'] for e in events[:2]])}")
             # print(f"last: {', '.join([e['date'] for e in events[-2:]])}")
-            # print(events)
+            # print(len(events))
             # print(f"{last_run}")
             send_events_to_xsiam(
                 events,
