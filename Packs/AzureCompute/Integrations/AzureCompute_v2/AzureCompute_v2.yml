@@ -551,10 +551,6 @@ script:
     execution: false
     name: azure-vm-auth-reset
   dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
