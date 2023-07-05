@@ -13205,9 +13205,12 @@ def build_tag_element(disable_override: bool, comment: str, new_name: str = None
     Returns:
         str: The element in XML format.
     """
-    api_disable_override = 'yes' if disable_override else 'no'
-    element = f'<disable-override>{api_disable_override}</disable-override>' \
-              f'<comments>{comment}</comments>'
+    element = ""
+    if DEVICE_GROUP:
+        if api_disable_override := 'yes' if disable_override else 'no':
+            element = f'<disable-override>{api_disable_override}</disable-override>'
+    if comment:
+        element += f'<comments>{comment}</comments>'
     if color:
         element += f'<color>{color}</color>'
     if new_name:
