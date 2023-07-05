@@ -29,7 +29,7 @@ def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, stor
             image_name = str(readme_url_data.get('image_name'))
             relative_image_path = str(readme_url_data.get('relative_image_path'))
 
-            logging.debug(f'image_final_storage_des ={final_dst_image_path}')
+            logging.info(f'image_final_storage_des ={final_dst_image_path}')
 
             download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
                                                              relative_image_path,
