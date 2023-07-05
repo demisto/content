@@ -18,6 +18,7 @@ configuration:
   type: 0
   additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example, "from:example@demisto.com is:unread".
   section: Collect
+  defaultvalue: "label:Inbox"
 - display: Events user key
   name: queryUserKey
   type: 0
@@ -1640,7 +1641,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.63203
+  dockerimage: demisto/google-api-py3:1.0.0.64634
   isfetch: true
   runonce: false
   script: '-'
