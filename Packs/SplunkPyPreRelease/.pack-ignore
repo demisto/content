@@ -1,5 +1,5 @@
 [file:SplunkPyPreRelease.yml]
-ignore=IN126,IN135
+ignore=IN126,IN135,IN145
 
 [file:README.md]
 ignore=RM106

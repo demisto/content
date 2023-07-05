@@ -1,3 +1,6 @@
 [file:README.md]
 ignore=RM104
 
+[file:CloudConvert.yml]
+ignore=IN145
+

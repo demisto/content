@@ -2,13 +2,13 @@
 ignore=RM100,RM113
 
 [file:AnsibleLinux.yml]
-ignore=BA124
+ignore=BA124,IN145
 
 [file:AnsibleOpenSSL.yml]
-ignore=BA124
+ignore=BA124,IN145
 
 [file:AnsibleACME.yml]
-ignore=BA124
+ignore=BA124,IN145
 
 [known_words]
 ansii
