@@ -10,7 +10,6 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: XSOAR Server URL
   name: url
   defaultvalue: https://host.docker.internal:443
@@ -20,51 +19,42 @@ configuration:
 - display: API Key
   name: apikey
   type: 4
-  required: false
   additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
   hidden: true
 - displaypassword: API Key
-  name:  credentials_api_key
-  required: false
+  name: credentials_api_key
   hiddenusername: true
   additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
   type: 9
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Maximum number of incidents to pull per fetch
   name: max_fetch
   defaultvalue: "100"
   type: 0
-  required: false
 - display: Fetch only incidents that match the query
   name: query
   type: 0
-  required: false
   additionalinfo: Don't add created time to the query as this field will be addressed in the "First fetch time".
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
-  required: false
   additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
 - display: Entry Categories
   name: categories
   defaultvalue: notes,chats,attachments
   type: 0
-  required: false
   additionalinfo: Which entries to retrieve from the Cortex XSOAR server. The available options are notes, comments (chats), and files. (attachments).
 - display: Incoming Entry tags
   name: tags
   type: 0
-  required: false
   additionalinfo: Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved.
 - additionalinfo: Choose the tags to filter the entries you want to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent.
   defaultvalue: ""
   display: Outgoing Entry Tags
   name: mirror_tag
-  required: false
   type: 0
 - defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
@@ -74,31 +64,25 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
 - display: Disable fetching for incidents that came from this integration
   additionalinfo: Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
   name: disable_from_same_integration
   defaultvalue: "true"
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Debug mode (will print debug logs to info)
   name: debug_mode
   type: 8
-  required: false
 - display: Mirror Playbook ID
   name: mirror_playbook_id
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: 'A parameter integration that removes the playbook ID field from incoming incidents. Note: When set to true (default), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type (if configured locally).'
 script:
   script: ''
@@ -115,13 +99,10 @@ script:
     - name: max_results
       description: How many incidents to retrieve.
       defaultValue: "10"
-    - default: false
-      defaultValue: id,name,type,status,severity,owner,occured
+    - defaultValue: id,name,type,status,severity,owner,occured
       description: Which columns to display. Default is 'id,name,type,status,severity,owner,occured'. To display all columns, insert 'all'.
       isArray: true
       name: columns
-      required: false
-      secret: false
     description: Search remote Cortex XSOAR for incidents.
   - name: xsoar-get-incident
     arguments:
@@ -153,7 +134,6 @@ script:
     description: Retrieves the mapping schema from a remote incident.
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
   ismappable: true
   isremotesyncin: true

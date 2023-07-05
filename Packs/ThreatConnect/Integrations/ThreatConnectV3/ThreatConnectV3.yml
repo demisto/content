@@ -20,12 +20,10 @@ configuration:
   required: true
 - display: Default Organization
   name: defaultOrg
-  required: false
   type: 0
 - additionalinfo: Free text box to add comma-separated tags to filter the fetched incidents by.
   display: Tags filter for the fetch
   name: tags
-  required: false
   type: 0
 - additionalinfo: The group type to filter the fetched incidents by.
   defaultvalue: Incident
@@ -34,7 +32,6 @@ configuration:
   options:
   - Incident
   - Event
-  required: false
   type: 16
 - additionalinfo: The status to filter the fetched incidents by (if not field will fetch all statuses).
   display: Status filter for the fetch
@@ -53,7 +50,6 @@ configuration:
   - No Further Action
   - False Positive
   - Needs Review
-  required: false
   type: 16
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
@@ -70,7 +66,6 @@ configuration:
   - securityLabels
   - associatedVictimAssets
   - attributes
-  required: false
   type: 16
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -90,41 +85,33 @@ configuration:
   defaultvalue: '3'
   display: Rating Threshold for Malicious Indicators (needed for reputation calculation)
   name: rating
-  required: false
   type: 0
 - additionalinfo: Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation.
   defaultvalue: '50'
   display: Confidence Threshold for Malicious Indicators (needed for reputation calculation)
   name: confidence
-  required: false
   type: 0
 - additionalinfo: Indicator Reputation Freshness, it is necessary to calculate reputation.
   defaultvalue: '7'
   display: Indicator Reputation Freshness in days (needed for reputation calculation)
   name: freshness
-  required: false
   type: 0
 - name: max_fetch
   display: Maximum number of incidents to fetch
-  required: false
   type: 0
   defaultvalue: '200'
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 description: ThreatConnect's integration is a intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 display: ThreatConnect v3
 name: ThreatConnect v3
@@ -2133,7 +2120,6 @@ script:
       description: The ID of the group.
       type: string
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   isfetch: true
   script: ''
   subtype: python3

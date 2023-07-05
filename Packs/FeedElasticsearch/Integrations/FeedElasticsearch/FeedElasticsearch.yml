@@ -10,7 +10,6 @@ configuration:
 - additionalinfo: Provide Username + Passoword instead of API key + API ID
   display: Name (see ?->Authentication)
   name: credentials
-  required: false
   type: 9
 - additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
   defaultvalue: OpenSearch
@@ -19,16 +18,13 @@ configuration:
   options:
   - ElasticSearch
   - OpenSearch
-  required: false
   type: 15
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment. Generic Feed contains a feed in a format specified by the user
   defaultvalue: Cortex XSOAR MT Shared Feed
@@ -38,18 +34,15 @@ configuration:
   - Cortex XSOAR Feed
   - Cortex XSOAR MT Shared Feed
   - Generic Feed (requires additional configurations)
-  required: false
   type: 15
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
-  required: false
   type: 8
 - additionalinfo: Determine how far to look back for fetched indicators (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 3 days
   display: First Fetch Time
   name: fetch_time
-  required: false
   type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
@@ -60,7 +53,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
@@ -83,7 +75,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - defaultvalue: indicatorType
   display: ''
@@ -93,47 +84,38 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - additionalinfo: Source field that contains the indicator value in the index
   display: Indicator Value Field
   name: src_val
-  required: false
   type: 0
 - additionalinfo: Source field that contains the indicator type in the index
   display: Indicator Type Field
   name: src_type
-  required: false
   type: 0
 - additionalinfo: Default indicator type used in case no "Indicator Type Field" was provided
   display: Indicator Type
   name: default_type
-  required: false
   type: 0
 - additionalinfo: A comma-separated list of indexes. If empty, searches all indexes.
   display: Index from Which To Fetch Indicators
   name: fetch_index
-  required: false
   type: 0
 - defaultvalue: Simple-Date
   display: Time Field Type
@@ -142,18 +124,15 @@ configuration:
   - Simple-Date
   - Timestamp-Seconds
   - Timestamp-Milliseconds
-  required: false
   type: 15
 - additionalinfo: Used for sorting and limiting data. If empty, results are not sorted.
   display: Index Time Field
   name: time_field
-  required: false
   type: 0
 - additionalinfo: Elasticsearch query to execute when fetching indicators from Elasticsearch
   defaultvalue: '*'
   display: Query
   name: es_query
-  required: false
   type: 0
 description: Fetches indicators stored in an Elasticsearch database.
 display: Elasticsearch Feed
@@ -161,22 +140,14 @@ name: ElasticsearchFeed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators to fetch. The default is 50.
-      isArray: false
       name: limit
       required: true
-      secret: false
-    deprecated: false
     description: Gets indicators available in the configured Elasticsearch database.
-    execution: false
     name: es-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.64131
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

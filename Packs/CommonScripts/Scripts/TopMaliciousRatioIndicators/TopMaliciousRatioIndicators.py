@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Tuple
 
 
-
 def select_indicator_columns(indicator: dict) -> Dict:
     display_indicator = {}
     display_indicator['ID'] = indicator['id']

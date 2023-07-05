@@ -16,18 +16,15 @@ configuration:
 - additionalinfo: 'Supports multiple values such as url, domain, ip-src. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
   display: Types of the indicators to fetch
   name: types
-  required: false
   type: 0
 - additionalinfo: 'Backfill indicators by providing date or relative timestamp. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
-  required: false
   type: 0
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
@@ -38,7 +35,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
@@ -59,27 +55,22 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - display: ''
   defaultvalue: '20160'
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
@@ -89,32 +80,26 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - additionalinfo: To indicate to the Cortex XSOAR server that a feed is incremental. Generally feeds that fetch based on a time range. For example, a daily feed which provides new indicators for the last day or a feed which is immutable and provides indicators from a search date onwards.
   defaultvalue: 'true'
   hidden: true
   name: feedIncremental
-  required: false
   type: 8
 - additionalinfo: Create relationships between indicators as part of Enrichment.
   defaultvalue: 'false'
   display: Create relationships
   name: createRelationship
-  required: false
   type: 8
 - additionalinfo: When selected, all the incoming indicators will map to the Flashpoint Indicator.
   display: Default Indicator Mapping
   name: defaultMap
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Flashpoint Feed Integration allows importing indicators of compromise that occur in the context of an event on the Flashpoint platform which contains finished intelligence reports data, data from illicit forums, marketplaces, chat services, blogs, paste sites, technical data, card shops, and vulnerabilities. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
 display: Flashpoint Feed
@@ -122,38 +107,21 @@ name: FlashpointFeed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of result objects to return. Maximum allowed limit is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 3 days
+    - defaultValue: 3 days
       description: |-
         Only retrieve values after the given timestamp. This parameter operates on the timestamp when an IOC was last updated, i.e. enriched with more metadata. When the user wants the most recent IOCs shared in the past week, the freshest data, we recommend using this parameter.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
-      isArray: false
       name: updated_since
-      required: false
-      secret: false
-    - default: false
-      description: 'Search by Attribute types. Can have multiple terms. Example: url, domain, ip-src. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
-      isArray: false
+    - description: 'Search by Attribute types. Can have multiple terms. Example: url, domain, ip-src. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
       name: types
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves indicators from the Flashpoint API. It displays the content of the fetch-indicators command.
-    execution: false
     name: flashpoint-get-indicators
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
