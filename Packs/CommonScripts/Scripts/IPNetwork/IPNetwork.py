@@ -34,7 +34,7 @@ def ip_cidr(cidr: str) -> Dict[str, str]:
         return {}
 
 
-def cidr_command(args: Dict[str, str]) -> Tuple[str, dict, str]:
+def cidr_command(args: Dict[str, str]) -> CommandResults:
     """ Perform command on given IP/CIDR
 
     Args:
