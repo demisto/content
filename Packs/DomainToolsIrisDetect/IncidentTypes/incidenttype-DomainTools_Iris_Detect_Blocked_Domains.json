@@ -1,0 +1,37 @@
+{
+    "id": "DomainTools Iris Detect Blocked Domains",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "DomainTools Iris Detect Blocked Domains",
+    "prevName": "DomainTools Iris Detect Blocked Domains",
+    "color": "#F50057",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "DomainTools Iris Detect",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {
+            "comment": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            }
+        }
+    },
+    "fromVersion": "6.5.0"
+}
