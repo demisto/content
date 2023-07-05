@@ -309,7 +309,6 @@ script:
     - contextPath: Ticket.LastUpdate
       description: The last time the ticket was updated.
       type: Date
-<<<<<<< HEAD
   - arguments:
     - default: false
       description: The query that will be used to retrieve the first issue ID in it.
@@ -320,9 +319,6 @@ script:
     deprecated: false
     description: Returns the ID offset, which is the id of the first issue that was created in the current Jira instance, or the first issue with respect to the given query argument if given. You can use its result as the initial id when fetching incidents by the issue id field.
     execution: false
-=======
-  - description: Returns the ID offset, which is the id of the first issue that was created in the current Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
->>>>>>> 8d69f4a0fba9760c269982e9c78c3c82b93824b7
     name: jira-get-id-offset
     outputs:
     - contextPath: Ticket.idOffSet
