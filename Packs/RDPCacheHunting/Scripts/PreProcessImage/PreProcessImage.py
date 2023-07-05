@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import cv2   # noqa: F401
 import numpy as np
 from PIL import Image
 import io
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 def sharpened(image: np.ndarray) -> np.ndarray:
