@@ -1,32 +1,17 @@
 args:
-- default: false
-  description: The field to check
-  isArray: false
+- description: The field to check
   name: field
   required: true
-  secret: false
-- default: false
-  description: The regex pattern to check the field for (optional).
-  isArray: false
+- description: The regex pattern to check the field for (optional).
   name: regex
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
   description: Whether character matching will be case-insensitive. Default is "False".
-  isArray: false
   name: ignore_case
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
-comment: This script checks that a field exists (and contains data), and optionally
-  checks the value of the field for a match against an input value. If a regex is
-  not supplied, the script checks that the field is not empty. This script can be
-  used with the "GenericPolling" playbook to poll for field population or that a field
-  contains a specific value.
+comment: This script checks that a field exists (and contains data), and optionally checks the value of the field for a match against an input value. If a regex is not supplied, the script checks that the field is not empty. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value.
 commonfields:
   id: CheckFieldValue
   version: -1
@@ -41,7 +26,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - evaluation
 - polling
@@ -49,7 +33,6 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

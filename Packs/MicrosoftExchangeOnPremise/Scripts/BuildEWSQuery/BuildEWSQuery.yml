@@ -45,7 +45,6 @@ outputs:
   description: The result query
   type: string
 scripttarget: 0
-runonce: false
 tests:
 - buildewsquery_test
 fromversion: 5.0.0

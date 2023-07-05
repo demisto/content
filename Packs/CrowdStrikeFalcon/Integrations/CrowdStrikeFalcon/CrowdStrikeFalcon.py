@@ -4328,7 +4328,8 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     if not args.get('cve_id'):
         raise DemistoException('Please add a filter argument "cve_id".')
     command_results_list = []
-    http_response = cve_request(args.get('cve_id'))
+    cve = args.get("cve") or args.get('cve_id')
+    http_response = cve_request(cve)
     raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
     for cve in raw_cve:
         relationships_list = create_relationships(cve)

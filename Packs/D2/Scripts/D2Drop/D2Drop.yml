@@ -26,7 +26,6 @@ args:
   - "false"
   description: Overwrite file
 scripttarget: 1
-runonce: false
 runas: DBotWeakRole
 tests:
 - No test - D2 tests are not supported yet in content tests

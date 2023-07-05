@@ -7,7 +7,6 @@ args:
   description: The list of fields to retrieve from context. The list can contain comma seperated values. For example key1,key1
   isArray: true
 - name: value
-  required: false
   description: The value to set in context for the key.
 commonfields:
   id: GetValuesOfMultipleFields
@@ -15,11 +14,9 @@ commonfields:
 name: GetValuesOfMultipleFields
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.9.42476
 runas: DBotWeakRole
 script: '-'
-system: false
 tags:
 - transformer
 comment: |-
