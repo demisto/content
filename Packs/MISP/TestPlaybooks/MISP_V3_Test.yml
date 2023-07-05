@@ -1,5 +1,5 @@
 id: MISP V3 Test
-version: 4
+version: 5
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -3505,10 +3505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 073f79b0-bf8f-4001-8f7c-c1f65de6c210
+    taskid: ef77ced5-e9cf-46cd-8730-ba88ac222518
     type: condition
     task:
-      id: 073f79b0-bf8f-4001-8f7c-c1f65de6c210
+      id: ef77ced5-e9cf-46cd-8730-ba88ac222518
       version: -1
       name: Verify Get Organization Info Outputs
       type: condition
@@ -3524,12 +3524,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Organization.organisation_id
+              complex:
+                root: MISP.Organization
+                accessor: organisation_id
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Organization.organisation_name
+              complex:
+                root: MISP.Organization
+                accessor: organisation_name
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -3548,10 +3558,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 34ed5805-cf84-419c-8bfc-d6ebcc98cdea
+    taskid: 2e184e7f-1813-4a38-860b-518c56d26277
     type: condition
     task:
-      id: 34ed5805-cf84-419c-8bfc-d6ebcc98cdea
+      id: 2e184e7f-1813-4a38-860b-518c56d26277
       version: -1
       name: Verify Get Role Info Outputs
       type: condition
@@ -3567,12 +3577,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Role.role_id
+              complex:
+                root: MISP.Role
+                accessor: role_id
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Role.role_name
+              complex:
+                root: MISP.Role
+                accessor: role_name
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
     continueonerrortype: ""
     view: |-
