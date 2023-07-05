@@ -1,8 +1,7 @@
-import re
-import string
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
+import string
 
 
 def strings(args):

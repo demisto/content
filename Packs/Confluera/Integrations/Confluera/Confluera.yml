@@ -9,17 +9,14 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: IQ-HUB Url
   name: url
   type: 0
   required: true
-  additionalinfo: Confluera iq-hub portal address, the integration should connect
-    to.
+  additionalinfo: Confluera iq-hub portal address, the integration should connect to.
 - display: Username
   name: username
   type: 9
@@ -41,8 +38,7 @@ script:
   - name: confluera-fetch-progressions
     arguments:
     - name: hours
-      description: 'Specifies the time duration for which progressions need to be
-        fetched '
+      description: 'Specifies the time duration for which progressions need to be fetched '
       defaultValue: "72"
     outputs:
     - contextPath: Confluera.Progressions
@@ -57,7 +53,7 @@ script:
     - contextPath: Confluera.TrailDetails
       description: Progression Details
     description: Fetches progression details of which provided trailId is a part of.
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   subtype: python3
 fromversion: 6.0.0

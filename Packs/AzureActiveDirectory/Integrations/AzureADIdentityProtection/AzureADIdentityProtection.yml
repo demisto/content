@@ -28,37 +28,29 @@ configuration:
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
-  required: false
   type: 8
 - display: Tenant ID (required for Client Credentials mode)
   name: tenant_id
-  required: false
   type: 0
 - displaypassword: Client Secret (required for Client Credentials mode)
   name: credentials
-  required: false
   type: 9
   additionalinfo: "Client Secret. Required for Client Credentials mode)"
   hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - name: isFetch
   display: Fetch incidents
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - name: first_fetch
   display: First Fetch Time Interval
-  required: false
   defaultvalue: 1 days
   type: 0
   additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
@@ -66,89 +58,48 @@ configuration:
   display: Max fetch interval
   additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
   name: max_fetch
-  required: false
   type: 0
 - display: Fetch filter expression
   name: fetch_filter_expression
-  required: false
   type: 0
 - display: Fetch User ID
   additionalinfo: Comma separated User IDs
   name: fetch_user_id
-  required: false
   type: 0
 - display: Fetch User Principal Name
   name: fetch_user_principal_name
-  required: false
   type: 0
 description: Deprecated. Use Microsoft Graph Identity and Access instead.
 display: Azure Active Directory Identity Protection  (Deprecated)
 name: Azure Active Directory Identity Protection
 script:
   commands:
-  - deprecated: false
-    description: Tests the connectivity to Azure.
-    execution: false
+  - description: Tests the connectivity to Azure.
     name: azure-ad-auth-test
-  - deprecated: false
-    description: Run this command to start the authorization process. Follow the instructions shown.
+  - description: Run this command to start the authorization process. Follow the instructions shown.
     execution: true
     name: azure-ad-auth-start
-  - deprecated: false
-    description: Run this command to complete the authorization process. This should be used after running the azure-ad-auth-start command.
-    execution: false
+  - description: Run this command to complete the authorization process. This should be used after running the azure-ad-auth-start command.
     name: azure-ad-auth-complete
-  - deprecated: false
-    description: Run this command to rerun the authentication process.
-    execution: false
+  - description: Run this command to rerun the authentication process.
     name: azure-ad-auth-reset
   - arguments:
-    - default: false
-      description: The unique ID of the risk detection.
-      isArray: false
+    - description: The unique ID of the risk detection.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the user.
-      isArray: false
+    - description: The unique ID of the user.
       name: user_id
-      required: false
-      secret: false
-    - default: false
-      description: The user principal name (UPN) of the user.
-      isArray: false
+    - description: The user principal name (UPN) of the user.
       name: user_principal_name
-      required: false
-      secret: false
-    - default: false
-      description: The country or region of the activity. For example, `US` or `UK`. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta.
-      isArray: false
+    - description: The country or region of the activity. For example, `US` or `UK`. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta.
       name: country
-      required: false
-      secret: false
-    - default: false
-      description: A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
-      isArray: false
+    - description: A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
       name: filter_expression
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments.
-      isArray: false
+    - description: A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments.
       name: next_link
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the properties of a collection of riskDetection objects.
-    execution: false
     name: azure-ad-identity-protection-risks-list
     outputs:
     - contextPath: AADIdentityProtection.Risks.id
@@ -227,16 +178,10 @@ script:
       description: Additional information associated with the risk detection in JSON format.
       type: string
   - arguments:
-    - default: false
-      description: The date and time that the risky user was last updated, formatted as `<number> <time unit>`. For example, `12 hours`, `7 days`, etc.
-      isArray: false
+    - description: The date and time that the risky user was last updated, formatted as `<number> <time unit>`. For example, `12 hours`, `7 days`, etc.
       name: updated_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The risk level of the detected risky user. Can be: "low", "medium", "high", "hidden", "none", and "unknownFutureValue".'
-      isArray: false
       name: risk_level
       predefined:
       - low
@@ -245,12 +190,8 @@ script:
       - hidden
       - none
       - unknownFeatureValue
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The state of the users risk. Can be: "none", "confirmedSafe", "remediated", "dismissed", "atRisk", "confirmedCompromised", and "unknownFutureValue".'
-      isArray: false
       name: risk_state
       predefined:
       - none
@@ -260,12 +201,8 @@ script:
       - atRisk
       - confirmedCompromised
       - unknownFutureValue
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Details of the detected risk. Can be: "none", "adminGeneratedTemporaryPassword", "userPerformedSecuredPasswordChange", "userPerformedSecuredPasswordReset", "adminConfirmedSigninSafe", "aiConfirmedSigninSafe", "userPassedMFADrivenByRiskBasedPolicy", "adminDismissedAllRiskForUser", "adminConfirmedSigninCompromised", "hidden", "adminConfirmedUserCompromised", and "unknownFutureValue".'
-      isArray: false
       name: risk_detail
       predefined:
       - none
@@ -280,36 +217,16 @@ script:
       - hidden
       - adminConfirmedUserCompromised
       - unknownFutureValue
-      required: false
-      secret: false
-    - default: false
-      description: A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
-      isArray: false
+    - description: A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
       name: filter_expression
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Number of results to provide.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments.
-      isArray: false
+    - description: A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: Risky user principal name.
-      isArray: false
+    - description: Risky user principal name.
       name: user_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the properties of a collection of riskDetection objects.
-    execution: false
     name: azure-ad-identity-protection-risky-user-list
     outputs:
     - contextPath: AADIdentityProtection.RiskyUsers.id
@@ -342,32 +259,16 @@ script:
   - arguments:
     - default: true
       description: The unique ID of the user.
-      isArray: false
       name: user_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The number of results to provide.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
-      isArray: false
+    - description: A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
       name: filter_expression
-      required: false
-      secret: false
-    - default: false
-      description: A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments.
-      isArray: false
+    - description: A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments.
       name: next_link
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the risk history of a riskyUser resource.
-    execution: false
     name: azure-ad-identity-protection-risky-user-history-list
     outputs:
     - contextPath: AADIdentityProtection.RiskyUserHistory.id
@@ -403,8 +304,6 @@ script:
       isArray: true
       name: user_ids
       required: true
-      secret: false
-    deprecated: false
     description: Confirms one or more of the risky user's objects as compromised. This action sets the targeted user's risk level to high.
     execution: true
     name: azure-ad-identity-protection-risky-user-confirm-compromised
@@ -414,16 +313,10 @@ script:
       isArray: true
       name: user_ids
       required: true
-      secret: false
-    deprecated: false
     description: Dismisses the risk of one or more of the risky user's objects. This action sets the targeted user's risk level to none.
-    execution: false
     name: azure-ad-identity-protection-risky-user-dismiss
   dockerimage: demisto/crypto:1.0.0.51288
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
