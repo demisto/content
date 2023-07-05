@@ -158,7 +158,8 @@ def tags_arg_to_request_format(tags):
 
 def test_connection(client, params):
     if not client.ms_client.managed_identities_client_id:
-        if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
+        if (params.get('self_deployed', False) and not params.get('client_credentials')
+           and not(params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
             return_error('You must enter an authorization code in a self-deployed configuration.')
 
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
@@ -331,11 +332,15 @@ def main():
         client_credentials = params.get('client_credentials', False)
         auth_and_token_url = params.get('auth_id') or params.get('credentials', {}).get('identifier')  # client_id
         enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')  # client_secret
-        certificate_thumbprint = params.get('certificate_thumbprint')
+        certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+            'password') or params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed = self_deployed or client_credentials or managed_identities_client_id is not None
-
+        refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
+        auth_code = params.get('credentials_auth_code', {}).get('password') or params.get('auth_code')
+        if not refresh_token:
+            raise DemistoException('Token / Tenant ID must be provided.')
         if not managed_identities_client_id:
             if client_credentials and not enc_key:
                 raise DemistoException("Client Secret must be provided for client credentials flow.")
@@ -348,10 +353,10 @@ def main():
         client = Client(
             self_deployed=self_deployed,
             auth_and_token_url=auth_and_token_url,  # client_id or auth_id
-            refresh_token=params.get('refresh_token'),  # tenant_id or token
+            refresh_token=refresh_token,  # tenant_id or token
             enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
-            auth_code=params.get('auth_code') if not client_credentials else '',
+            auth_code=auth_code if not client_credentials else '',
             subscription_id=params.get('subscriptionID'),
             resource_group_name=params.get('resourceGroupName'),
             workspace_name=params.get('workspaceName'),

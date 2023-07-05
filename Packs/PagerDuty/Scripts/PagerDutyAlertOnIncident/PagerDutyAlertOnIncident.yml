@@ -17,7 +17,6 @@ scripttarget: 0
 dependson:
   must:
   - PagerDuty-submit-event
-runonce: false
 timeout: 0s
 tests:
 - PagerDuty Test

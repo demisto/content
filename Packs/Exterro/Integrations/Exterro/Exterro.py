@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # python 3.9 imports
 from json import JSONDecodeError
 from traceback import format_exc
@@ -6,8 +8,6 @@ from traceback import format_exc
 from accessdata.client import Client
 
 # xsoar imports
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *
 
 
