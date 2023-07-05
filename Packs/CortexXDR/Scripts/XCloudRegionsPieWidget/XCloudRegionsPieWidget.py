@@ -5,7 +5,6 @@ import random
 from typing import Counter
 
 
-
 def parse_data(regions_name):
     regions_name_data = []
 
