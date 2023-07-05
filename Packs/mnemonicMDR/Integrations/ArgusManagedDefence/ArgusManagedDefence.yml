@@ -9,11 +9,9 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: API URL
   name: api_url
   defaultvalue: https://api.mnemonic.no
@@ -40,24 +38,20 @@ configuration:
   name: first_fetch
   defaultvalue: 3 days
   type: 0
-  required: false
   additionalinfo: "How far back should the first run fetch open cases in Argus."
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "0"
   type: 0
-  required: false
   additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to system limit (100 000)"
 - display: Fetch incidents exclude tag
   name: exclude_tag
   type: 0
-  required: false
   additionalinfo: 'Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated string.'
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: Incoming And Outgoing
   type: 15
-  required: false
   options:
   - None
   - Incoming
@@ -69,7 +63,6 @@ configuration:
 - display: Mirroring tag
   name: mirror_tag
   type: 0
-  required: false
   defaultvalue: "argus_mirror"
   additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma separated."
   hidden:
@@ -78,7 +71,6 @@ configuration:
   name: close_argus_case
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored Argus Case'
   hidden:
   - marketplacev2
@@ -86,19 +78,16 @@ configuration:
   name: close_incident
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR Incident'
   hidden:
   - marketplacev2
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   additionalinfo: "Skip HTTPS certification verification."
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   additionalinfo: "Use system proxy settings."
 script:
   script: ''
@@ -6033,7 +6022,6 @@ script:
     description: Download all attachments related to Argus Case.
   dockerimage: demisto/argus-toolbelt:2.0.0.29288
   isfetch: true
-  runonce: false
   subtype: python3
   isremotesyncin: true
   isremotesyncout: true

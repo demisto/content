@@ -874,7 +874,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queu
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
-        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
         :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
@@ -900,7 +900,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str, que
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
-        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
         :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
@@ -925,7 +925,7 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, que
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
-        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
         :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
@@ -3061,7 +3061,7 @@ def run_command():
             if scope == 'read':
                 response = run_batch_read_cmd(batch_id, command_type, full_command, timeout)
             elif scope == 'write':
-                response = run_batch_write_cmd(batch_id, command_type, full_command, timeout)
+                response = run_batch_write_cmd(batch_id, command_type, full_command, timeout=timeout)
             else:  # scope = admin
                 response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout)
         finally:
