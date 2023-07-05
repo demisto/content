@@ -66,15 +66,15 @@
       },
       "cat":{
          "type":"string",
-         "is_array":true
+         "is_array":false
       },
       "component":{
          "type":"string",
-         "is_array":true
+         "is_array":false
       },
       "deviceGUID":{
          "type":"string",
-         "is_array":true
+         "is_array":false
       },
       "deviceProcessName":{
          "type":"string",
