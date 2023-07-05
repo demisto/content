@@ -102,7 +102,7 @@ script:
       name: indicator_type
     description: Gets the feed indicators.
     name: blocklist_de-get-indicators
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   runonce: false
   script: '-'
