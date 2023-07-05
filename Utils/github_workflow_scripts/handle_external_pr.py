@@ -263,7 +263,7 @@ def main():
         reviewers.append(SECURITY_REVIEWER)
         pr.add_to_labels(SECURITY_LABEL)
 
-    pr.add_to_assignees(assignees=content_reviewer)
+    pr.add_to_assignees(assignees=reviewers)  # type: ignore
     pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
 

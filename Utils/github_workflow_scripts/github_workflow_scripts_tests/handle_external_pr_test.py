@@ -105,4 +105,21 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
       'Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json'], True)
 ])
 def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
+    """
+    Test to check whether a security reviewer is needed depending on the PR changed files.
+
+    Given: a list of file paths
+
+    When:
+        - Case A: The provided file is a layout.
+        - Case B: The provided file is an integration.
+        - Case C: The provided files are an integration and a layout.
+
+    Then:
+        - Case A: Requires a security engineer review.
+        - Case B: Doesn't require a security engineer review.
+        - Case C: Requires a security engineer review.
+
+    """
+
     assert is_requires_security_reviewer(pr_files) == expected

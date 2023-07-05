@@ -58,12 +58,6 @@ def main():
     # We want to replace the 'External' with 'Internal' label
     labels = [label.name.replace("External", "Internal") for label in merged_pr.labels]
     for label in labels:
-
-        # TODO check if this is the desired behavior
-        # No need to carry the security label to the external PR
-        if label == SECURITY_LABEL:
-            continue
-
         pr.add_to_labels(label)
         print(f'{t.cyan}"{label}" label added to the Internal PR{t.normal}')
 
