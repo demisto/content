@@ -23,11 +23,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: 'Identify Malicious IP addresses with the CrowdSec CTI API.'
 display: 'CrowdSec'
@@ -40,10 +38,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: 'Check the specified IP Address against the CrowdSec CTI.'
-    execution: false
     name: ip
     outputs:
     - contextPath: CrowdSec.Info.ip_range_score
@@ -181,7 +176,6 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
