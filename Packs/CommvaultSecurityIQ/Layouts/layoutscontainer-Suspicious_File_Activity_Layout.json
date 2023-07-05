@@ -323,16 +323,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "facility",
-								"height": 22,
-								"id": "053c2310-b8fc-11ed-b61a-a316aa5771a8",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "originatingclient",
+								"fieldId": "commvaultoriginatingclient",
 								"height": 22,
 								"id": "7ecb8780-bc1b-11ed-9a47-8f80b8fca606",
 								"index": 6,
@@ -342,7 +333,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "originatingprogram",
+								"fieldId": "commvaultoriginatingprogram",
 								"height": 22,
 								"id": "82a31c60-bc1b-11ed-9a47-8f80b8fca606",
 								"index": 7,
@@ -416,7 +407,7 @@
 							},
 							{
 								"endCol": 1,
-								"fieldId": "eventtime",
+								"fieldId": "commvaulteventtime",
 								"height": 53,
 								"id": "3d7fcff0-dea5-11ed-a290-d7c781065f89",
 								"index": 1,
@@ -522,7 +513,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "eventid",
+								"fieldId": "commvaulteventid",
 								"height": 22,
 								"id": "5c0ff220-f632-11ed-bb13-5149437d4ee9",
 								"index": 2,
@@ -531,7 +522,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "affectedfilescount",
+								"fieldId": "commvaultaffectedfilescount",
 								"height": 22,
 								"id": "27d2ea90-de99-11ed-a290-d7c781065f89",
 								"index": 3,
@@ -540,7 +531,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "createdfilescount",
+								"fieldId": "commvaultcreatedfilescount",
 								"height": 22,
 								"id": "299ef800-de99-11ed-a290-d7c781065f89",
 								"index": 4,
@@ -549,7 +540,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "deletedfilescount",
+								"fieldId": "commvaultdeletedfilescount",
 								"height": 22,
 								"id": "2b42e400-de99-11ed-a290-d7c781065f89",
 								"index": 5,
@@ -558,7 +549,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "modifiedfilescount",
+								"fieldId": "commvaultmodifiedfilescount",
 								"height": 22,
 								"id": "3a43fc50-de99-11ed-a290-d7c781065f89",
 								"index": 6,
@@ -567,7 +558,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "renamedfilescount",
+								"fieldId": "commvaultrenamedfilescount",
 								"height": 22,
 								"id": "3e29e910-de99-11ed-a290-d7c781065f89",
 								"index": 7,
@@ -659,7 +650,7 @@
 						"i": "caseinfoid-field-changed-caseinfoid-4dc5b450-ce3e-11ed-b4f7-3ba099b2af3e",
 						"items": [{
 							"endCol": 6,
-							"fieldId": "fileslist",
+							"fieldId": "commvaultfileslist",
 							"height": 106,
 							"id": "8b226420-d545-11ed-8c39-ad81194154e8",
 							"index": 0,
@@ -682,7 +673,7 @@
 						"i": "caseinfoid-field-changed-caseinfoid-f427c100-d9fe-11ed-8c09-0d1dcab22f95",
 						"items": [{
 								"endCol": 2,
-								"fieldId": "jobid",
+								"fieldId": "commvaultjobid",
 								"height": 22,
 								"id": "3bb85380-dacd-11ed-87f8-a78b181dfc53",
 								"index": 0,
@@ -709,7 +700,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "scannedfolderlist",
+								"fieldId": "commvaultscannedfolderlist",
 								"height": 22,
 								"id": "49bb9030-df75-11ed-81f5-91fd9589a55c",
 								"index": 3,
@@ -742,8 +733,8 @@
 		]
 	},
 	"group": "incident",
-	"id": "Suspicious File Activity Layout",
-	"name": "Suspicious File Activity Layout",
+	"id": "Commvault Suspicious File Activity Layout",
+	"name": "Commvault Suspicious File Activity Layout",
 	"system": false,
 	"version": -1,
 	"fromVersion": "6.8.0"

@@ -2,9 +2,9 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: Suspicious File Activity Remediation
+id: Commvault Suspicious File Activity Remediation
 inputs: []
-name: Suspicious File Activity Remediation
+name: Commvault Suspicious File Activity Remediation
 outputs: []
 quiet: true
 starttaskid: "0"

@@ -93,7 +93,7 @@ async def handle_post(
     global client
     try:
         incidentType: Optional[str] = demisto.params().get(
-            "incidentType", "Suspicious File Activity"
+            "incidentType", "Commvault Suspicious File Activity"
         )
         current_date = datetime.utcnow()
         epoch = datetime(1970, 1, 1)
@@ -107,7 +107,6 @@ async def handle_post(
         ]
         hostname = request.client.host  # type: ignore
         incident_body = {
-            "facility": Constants.facility,
             "msg": None,
             "msg_id": None,
             "process_id": None,
@@ -115,7 +114,6 @@ async def handle_post(
             "timestamp": datetime.fromtimestamp(seconds_since_epoch).strftime(
                 "%Y-%m-%d %H:%M:%S"
             ),
-            "version": None,
             "occurred": None,
             "originating_program": incident[
                 field_mapper(
@@ -194,7 +192,6 @@ def parse_no_length_limit(data: bytes) -> syslogmp.parser.Message:
     message = parser._parse_msg_part()
 
     return syslogmp.parser.Message(
-        facility=priority_value.facility,
         severity=priority_value.severity,
         timestamp=timestamp,
         hostname=hostname,
@@ -283,7 +280,6 @@ class Constants:
     deleted_files_count: str = "deleted_files_count"
     renamed_files_count: str = "renamed_files_count"
     created_files_count: str = "created_files_count"
-    facility: str = "Commvault"
     severity_high: str = "High"
     severity_info: str = "Informational"
     path_key: str = "path"
@@ -606,7 +602,7 @@ class Client(BaseClient):
         Function to start long running loop
         """
         incidentType: str = demisto.params().get(
-            "incidentType", "Suspicious File Activity"
+            "incidentType", "Commvault Suspicious File Activity"
         )
 
         extracted_message = self.parse_incoming_message(socket_data)
@@ -768,7 +764,6 @@ class Client(BaseClient):
             ),
         )
         incident = {
-            "facility": Constants.facility,
             "host_name": syslog_message.hostname,
             "msg": None,
             "msg_id": None,
@@ -777,7 +772,6 @@ class Client(BaseClient):
             "timestamp": syslog_message.timestamp.strftime(
                 "%Y-%m-%d %H:%M:%S"
             ),
-            "version": None,
             "occurred": None,
             "event_time": event_time,
             "event_id": event_id,
@@ -1107,7 +1101,7 @@ class Client(BaseClient):
         Get client id from the client name
         """
 
-        clientname = demisto.incident()["CustomFields"]["originatingclient"]
+        clientname = demisto.incident()["CustomFields"]["commvaultoriginatingclient"]
         resp = self.http_request("GET", "/GetId?clientname=" + clientname)
         return resp["clientId"]
 
@@ -1216,7 +1210,7 @@ class Client(BaseClient):
 
 def fetch_incidents(client, last_run, first_fetch_time) -> List:
     incidentType = demisto.params().get(
-        "incidentType", "Suspicious File Activity"
+        "incidentType", "Commvault Suspicious File Activity"
     )
 
     max_fetch = demisto.params().get('max_fetch')
@@ -1252,7 +1246,6 @@ def fetch_incidents(client, last_run, first_fetch_time) -> List:
                 )
             ]
             incident = {
-                "facility": Constants.facility,
                 "msg": None,
                 "msg_id": None,
                 "process_id": None,
@@ -1261,7 +1254,6 @@ def fetch_incidents(client, last_run, first_fetch_time) -> List:
                 "timestamp": datetime.fromtimestamp(
                     seconds_since_epoch
                 ).strftime("%Y-%m-%d %H:%M:%S"),
-                "version": None,
                 "occurred": None,
                 "event_id": event_id,
                 "event_time": datetime.fromtimestamp(event_time).strftime(
@@ -1301,7 +1293,7 @@ def disable_data_aging(client):
 
 
 def copy_files_to_war_room():
-    files = demisto.incident()["CustomFields"]["fileslist"]
+    files = demisto.incident()["CustomFields"]["commvaultfileslist"]
     out_resp = ""
     for file_ in files:
         out_resp = (

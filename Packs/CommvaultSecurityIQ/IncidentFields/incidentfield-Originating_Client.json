@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Suspicious File Activity"
+        "Commvault Suspicious File Activity"
     ],
     "caseInsensitive": true,
-    "cliName": "originatingclient",
+    "cliName": "commvaultoriginatingclient",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_originatingclient",
+    "id": "incident_commvaultoriginatingclient",
     "isReadOnly": false,
     "locked": false,
-    "name": "Originating Client",
+    "name": "Commvault Originating Client",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
