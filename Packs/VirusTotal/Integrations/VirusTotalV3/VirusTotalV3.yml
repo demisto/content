@@ -41,6 +41,8 @@ configuration:
   name: urlThreshold
   defaultvalue: '10'
   type: 0
+  hidden:
+  - xsoar_saas
 - display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   defaultvalue: '10'

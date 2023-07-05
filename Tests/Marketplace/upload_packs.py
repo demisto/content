@@ -1454,6 +1454,8 @@ def main():
 
     readme_images_dict = download_readme_images_from_artifacts(readme_images_data, storage_bucket=storage_bucket,
                                                                storge_base_path=storage_base_path)
+
+    logging.info(f'{readme_images_dict=}')
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
