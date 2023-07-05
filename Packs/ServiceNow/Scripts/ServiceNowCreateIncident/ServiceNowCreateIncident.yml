@@ -40,7 +40,6 @@ dependson:
   must:
   - servicenow-create-record
   - servicenow-query-table
-runonce: false
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0

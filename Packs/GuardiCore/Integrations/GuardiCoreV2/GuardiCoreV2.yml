@@ -15,29 +15,24 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - name: source
   display: Source
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: GuardiCore source incident (e.g., Environment:*, App:*, Role:*).
 - name: destination
   display: Destination
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: GuardiCore destination incident (e.g., Environment:*, App:*, Role:*).
 - name: tag
   display: Tag
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: GuardiCore tag incident (e.g., Reputation, Internal, Blocked Traffic).
 - name: incident_type
   display: Incident Type
-  required: false
   defaultvalue: All
   type: 16
   additionalinfo: GuardiCore incident types.
@@ -50,7 +45,6 @@ configuration:
   - All
 - name: severity
   display: Incident Severity
-  required: false
   defaultvalue:
   type: 16
   additionalinfo: GuardiCore incident severity
@@ -61,35 +55,29 @@ configuration:
   - All
 - name: max_fetch
   display: Maximum incidents to fetch
-  required: false
   defaultvalue: "50"
   type: 0
   additionalinfo: Limit on incidents to fetch
 - name: first_fetch
   display: First fetch time
-  required: false
   defaultvalue: "7 days"
   type: 0
   additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
 - name: timeout
   display: Global timeout to all requests
-  required: false
   defaultvalue: "10"
   type: 0
   additionalinfo: ""
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   additionalinfo:
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
   additionalinfo:
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 description: GuardiCore v2 Integration enables you to get information about incidents and endpoints (assets) via the GuardiCore API.
 display: GuardiCore v2
@@ -100,37 +88,17 @@ script:
   - arguments:
     - default: true
       description: IP address. (The ip_address argument takes priority over the name argument, if defined).
-      isArray: false
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: Name of endpoint.
-      isArray: false
+    - description: Name of endpoint.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Asset ID. (Must start with :vm).
-      isArray: false
+    - description: Asset ID. (Must start with :vm).
       name: asset_id
-      required: false
-      secret: false
     - defaultValue: "50"
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Offset results.
-      isArray: false
+    - description: Offset results.
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Display information about assets.
-    execution: false
     name: guardicore-search-asset
     outputs:
     - contextPath: Guardicore.Endpoint._id
@@ -305,15 +273,10 @@ script:
       description: The color index of the endpoint's labels.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the incident.
-      isArray: false
+    - description: ID of the incident.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Display information about an incident.
-    execution: false
     name: guardicore-get-incident
     outputs:
     - contextPath: Guardicore.Incident._cls
@@ -977,54 +940,30 @@ script:
       description: Whether the incident is in backwards compatibility format.
       type: String
   - arguments:
-    - default: false
-      description: From time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
-      isArray: false
+    - description: From time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
       name: from_time
       required: true
-      secret: false
-    - default: false
-      description: To time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
-      isArray: false
+    - description: To time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
       name: to_time
       required: true
-      secret: false
     - defaultValue: "50"
       description: The maximum number of incidents returned.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - defaultValue: "0"
       description: Offset the incidents.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Severity (Low, Medium, High). Default is All.
+    - description: Severity (Low, Medium, High). Default is All.
       isArray: true
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: Source (IP or Hostname).
+    - description: Source (IP or Hostname).
       isArray: true
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: Destination (IP or Hostname).
+    - description: Destination (IP or Hostname).
       isArray: true
       name: destination
-      required: false
-      secret: false
-    - default: false
-      description: Tag (e.g., Internal or Known malware).
+    - description: Tag (e.g., Internal or Known malware).
       isArray: true
       name: tag
-      required: false
-      secret: false
     - defaultValue: false
       description: 'Type of the incident. Possible values: "Incident", "Deception", "Network Scan", "Reveal", "Experimental").'
       predefined:
@@ -1035,11 +974,7 @@ script:
       - 'Experimental'
       isArray: true
       name: incident_type
-      required: false
-      secret: false
-    deprecated: false
     description: Display information about incidents.
-    execution: false
     name: guardicore-get-incidents
     outputs:
     - contextPath: Guardicore.Incident._id
@@ -1214,27 +1149,14 @@ script:
       description: The incident's destination asset is inner flag.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the asset. Takes priority over the ip and hostname arguments.
-      isArray: false
+    - description: The ID of the asset. Takes priority over the ip and hostname arguments.
       name: id
-      required: false
-      secret: false
     - default: true
       description: The IP address of the asset. The ip argument has priority over the hostname argument.
-      isArray: false
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The hostname of the asset.
-      isArray: false
+    - description: The hostname of the asset.
       name: hostname
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information regarding endpoints.
-    execution: false
     name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname
@@ -1259,10 +1181,7 @@ script:
       description: The endpoint's MAC address.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3

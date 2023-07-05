@@ -15,21 +15,17 @@ configuration:
   name: api_key
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - name: credentials_api_key
   type: 9
-  required: false
   displaypassword: API Key
   hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -65,7 +61,6 @@ script:
       description: Hardware Sub Type as extracted from UA string
       type: string
     description: Parses a User Agent string
-  runonce: false
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474
 tests:

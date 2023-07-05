@@ -21,19 +21,15 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Incident Mirroring Direction
   defaultvalue: Both
@@ -43,10 +39,9 @@ configuration:
   - Incoming
   - Outgoing
   - Both
-  required: false
   type: 15
   hidden:
-    - marketplacev2
+  - marketplacev2
 - display: Comment entry tag
   additionalinfo: Adding this tag to a Note will sync as a comment in ZTAP
   defaultvalue: comment
@@ -76,12 +71,10 @@ configuration:
 - display: First fetch timestamp
   defaultvalue: 3 days
   name: first_fetch
-  required: false
   type: 0
 - display: Maximum number of incidents to fetch
   defaultvalue: '100'
   name: max_fetch
-  required: false
   type: 0
 description: Zero Trust Analytics Platform (ZTAP) is the underlying investigation platform and user interface for Critical Start's MDR service.
 display: ZeroTrustAnalyticsPlatform
@@ -90,39 +83,26 @@ script:
   commands:
   - name: get-mapping-fields
     arguments: []
-    execution: false
     description: Get mapping fields from remote incident.
   - name: get-remote-data
     arguments:
-    - default: false
-      description: The remote incident id
-      isArray: false
+    - description: The remote incident id
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
-      isArray: false
       name: lastUpdate
-      required: false
-      secret: false
-    execution: false
     description: Get remote data from a remote incident. This command should only be called manually for debugging purposes.
   - name: ztap-get-alert-entries
     arguments:
-    - default: false
-      description: The remote incident id
-      isArray: false
+    - description: The remote incident id
       name: id
       required: true
-      secret: false
     description: Get the entries data from a remote incident.
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3
