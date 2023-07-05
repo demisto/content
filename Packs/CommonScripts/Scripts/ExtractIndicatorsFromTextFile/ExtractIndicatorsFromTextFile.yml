@@ -1,16 +1,9 @@
 args:
-- default: false
-  description: The War-Room entryID of the file to read.
-  isArray: false
+- description: The War-Room entryID of the file to read.
   name: entryID
   required: true
-  secret: false
-- default: false
-  description: Maximal file size to load, in bytes. Default is 1000000 (1MB).
-  isArray: false
+- description: Maximal file size to load, in bytes. Default is 1000000 (1MB).
   name: maxFileSize
-  required: false
-  secret: false
 comment: |-
   Extract indicators from a text-based file.
   Indicators that can be extracted:
@@ -51,12 +44,10 @@ outputs:
   description: Extracted URLs
   type: string
 script: '-'
-system: false
 timeout: '0'
 type: python
 subtype: python3
 runas: DBotRole
-runonce: false
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0

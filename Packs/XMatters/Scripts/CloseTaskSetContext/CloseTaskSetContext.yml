@@ -6,8 +6,7 @@ script: ''
 type: python
 tags:
 - Utilities
-comment: 'Close a task with the closeComplete command, but then also add the "comments"
-  to the incident context. '
+comment: 'Close a task with the closeComplete command, but then also add the "comments" to the incident context. '
 enabled: true
 args:
 - name: entry_id
@@ -23,7 +22,6 @@ args:
   description: The comments to place into the context
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
 
