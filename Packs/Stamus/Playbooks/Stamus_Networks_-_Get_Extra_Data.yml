@@ -45,7 +45,7 @@ tasks:
       version: -1
       name: Get Event
       description: '[Get base events including protocol metadata that can be used as IOCs.]'
-      script: '|||stamus-get-events'
+      script: '|||stamus-get-doc-events'
       type: regular
       iscommand: true
       brand: ""
@@ -54,7 +54,7 @@ tasks:
       - "3"
     scriptarguments:
       id:
-        simple: ${incident.stamusid}
+        simple: ${incident.dbotMirrorId}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -80,7 +80,7 @@ tasks:
       version: -1
       name: Get Host Information
       description: '[Get host-id informations]'
-      script: '|||stamus-get-host-id'
+      script: '|||stamus-get-host-insight'
       type: regular
       iscommand: true
       brand: ""
@@ -89,7 +89,7 @@ tasks:
       - "4"
     scriptarguments:
       ip:
-        simple: ${incident.stamustarget}
+        simple: ${incident.labels.target}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -115,7 +115,7 @@ tasks:
       version: -1
       name: Get By IOC (event by source ip)
       description: '[Get events with IOC key/value filter]'
-      script: '|||stamus-get-by-ioc'
+      script: '|||stamus-check-ioc'
       type: regular
       iscommand: true
       brand: ""
@@ -123,7 +123,7 @@ tasks:
       key:
         simple: src_ip
       value:
-        simple: ${BaseIntegration.Output.[0].src_ip}
+        simple: ${StamusIntegration.RelatedEvents.src_ip}
     separatecontext: false
     continueonerrortype: ""
     view: |-
