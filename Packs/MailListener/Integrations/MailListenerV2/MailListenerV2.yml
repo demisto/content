@@ -101,7 +101,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- displaypassword: Client Certificate And Private Key (PEM)
+- displaypassword: Client Certificate And Private Key (List of PEMs)
   display: ""
   name: clientCertAndKey
   required: false
