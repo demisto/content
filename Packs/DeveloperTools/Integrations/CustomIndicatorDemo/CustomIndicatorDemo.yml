@@ -11,15 +11,12 @@ display: CustomIndicatorDemo
 name: CustomIndicatorDemo
 script:
   commands:
-  - deprecated: false
-    description: This command demonstrates the usage of the CustomIndicator helper class.
-    execution: false
+  - description: This command demonstrates the usage of the CustomIndicator helper class.
     name: test-custom-indicator
     outputs:
     - contextPath: Demo.Result.Output
       description: Dummy output.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
