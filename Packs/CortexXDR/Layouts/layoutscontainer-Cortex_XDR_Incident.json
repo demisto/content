@@ -434,15 +434,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "userengagement",
-                                "height": 22,
-                                "id": "ea44c6c0-8b6f-11ed-afb3-d73a6f2ed22f",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "xdrnotes",
@@ -1515,10 +1506,10 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "relatedreport",
+                                "fieldId": "relatedreports",
                                 "height": 22,
                                 "id": "f782bd20-8c31-11ed-a026-b1d5b381234f",
-                                "index": 1,
+                                "index": 0,
                                 "listId": "1vduzkpmlh-b3c63170-8c31-11ed-a026-b1d5b381234f",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -1529,7 +1520,7 @@
                                 "fieldId": "partofcampaign",
                                 "height": 22,
                                 "id": "0c60e1d0-8c33-11ed-a026-b1d5b381234f",
-                                "index": 2,
+                                "index": 1,
                                 "listId": "1vduzkpmlh-e1c742c0-8b6a-11ed-8534-dd7eadd1d5dd",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -1542,15 +1533,6 @@
                                 "id": "e982e840-8b6d-11ed-8f68-b3bf4a3a1ddf",
                                 "index": 2,
                                 "listId": "1vduzkpmlh-b3c63170-8c31-11ed-a026-b1d5b381234f",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "verdictdetails",
-                                "height": 22,
-                                "id": "8641c240-9650-11ed-8dd2-65d32e26c83b",
-                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
