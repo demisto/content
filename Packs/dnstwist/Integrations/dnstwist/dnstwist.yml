@@ -9,33 +9,21 @@ name: dnstwist
 script:
   commands:
   - arguments:
-    - default: false
-      description: The domain name for which to check for variations.
-      isArray: false
+    - description: The domain name for which to check for variations.
       name: domain
       required: true
-      secret: false
     - default: true
       defaultValue: '30'
       description: Maximum number results to return in the context. This helps manage browser performance. The Markdown entry will display all results.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'no'
       description: Whether to perform a query for the Whois creation or last updated time (slow).
-      isArray: false
       name: whois
       predefined:
       - 'yes'
       - 'no'
-      required: false
-      secret: false
-    deprecated: false
     description: Checks for variations of a phishing domain name.
-    execution: false
     name: dnstwist-domain-variations
     outputs:
     - contextPath: dnstwist.Domain.Domains.Name
@@ -57,7 +45,6 @@ script:
       description: Whois created for domain name variations.
       type: string
   dockerimage: demisto/dnstwist:1.0.0.46433
-  isfetch: false
   runonce: false
   script: '-'
   type: python
