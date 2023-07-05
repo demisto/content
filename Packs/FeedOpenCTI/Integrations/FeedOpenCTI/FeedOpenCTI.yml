@@ -33,12 +33,10 @@ configuration:
 - defaultvalue: '500'
   display: Max. indicators per fetch (default is 500)
   name: max_indicator_to_fetch
-  required: false
   type: 0
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
@@ -49,7 +47,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
@@ -72,7 +69,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ''
   name: feedExpirationPolicy
@@ -81,34 +77,27 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 deprecated: true
 description: Deprecated. Use OpenCTI Feed 4.X instead.
@@ -117,15 +106,10 @@ name: OpenCTI Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators to return per fetch. The default value is "50".
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ALL
       description: 'The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL".'
       isArray: true
@@ -143,17 +127,9 @@ script:
       - IPV6-Addr
       - Registry-Key-Value
       - URL
-      required: false
-      secret: false
-    - default: false
-      description: The last ID from the previous call from which to begin pagination for this call.
-      isArray: false
+    - description: The last ID from the previous call from which to begin pagination for this call.
       name: last_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the feed.
-    execution: false
     name: opencti-get-indicators
     outputs:
     - contextPath: OpenCTI.Indicators.type
@@ -165,15 +141,10 @@ script:
     - contextPath: OpenCTI.LastRunID
       description: the id of the last fetch to use pagination.
       type: String
-  - deprecated: false
-    description: 'WARNING: This command will reset your fetch history.'
-    execution: false
+  - description: 'WARNING: This command will reset your fetch history.'
     name: opencti-reset-fetch-indicators
   dockerimage: demisto/opencti:1.0.0.41469
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
