@@ -143,8 +143,10 @@ class Client(BaseClient):
         params = {'type': indicator_type, 'value': indicator}
         return self._http_request(method='GET', url_suffix='indicator/match', params=params)
 
-    def post_evidence(self, fileName: str, fileContent: str, fileEntryId: str, warRoomFileId: str,
+    def post_evidence(self, fileName: str, fileContent: str, fileEntryId: str,
                       evidenceFileClassification: str, tlp: str, sourceId: str) -> dict:
+        # warRoomFileId: str, may want to be added in as a future capability
+        # but access from those files were inconsistent, so current scope is only content or file entry
         data_to_submit = {
             'evidenceFileClassification': evidenceFileClassification,
             'tlp': tlp,
@@ -512,8 +514,10 @@ def analyst1_batch_check_post(client: Client, args: dict):
 
 def analyst1_evidence_submit(client: Client, args: dict):
     raw_data = client.post_evidence(args.get('fileName'),
-                                    args.get('fileContent'), args.get('fileEntryId'), args.get('warRoomFileId'),
+                                    args.get('fileContent'), args.get('fileEntryId'),
                                     args.get('fileClassification'), args.get('tlp'), args.get('sourceId'))
+    # args.get('warRoomFileId'), may be added back in at a future time
+    # for now it is left out on purpose
     command_results = CommandResults(
         outputs_prefix='Analyst1.EvidenceSubmit',
         outputs_key_field='uuid',
@@ -733,10 +737,10 @@ def analyst1_get_sensor_config_command(client: Client, args):
 
 def main():
     commands = {
-        'analyst1-enrich-domain': domain_command,
-        'analyst1-enrich-email': email_command,
-        'analyst1-enrich-file': file_command,
-        'analyst1-enrich-ipv4': ip_command,
+        'domain': domain_command,
+        'email': email_command,
+        'file': file_command,
+        'ip': ip_command,
         'analyst1-enrich-url': url_command,
         'analyst1-enrich-string': analyst1_enrich_string_command,
         'analyst1-enrich-ipv6': analyst1_enrich_ipv6_command,

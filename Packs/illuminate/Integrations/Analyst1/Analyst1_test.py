@@ -544,7 +544,7 @@ def test_analyst1_evidence_status_200_emptyid(requests_mock, mock_client):
     assert command_results.outputs_prefix == 'Analyst1.EvidenceStatus'
     assert command_results.outputs_key_field == 'id'
     assert command_results.outputs.get('id') == ''
-    assert command_results.outputs.get('processingComplete') == False
+    assert command_results.outputs.get('processingComplete') is False
 
 
 def test_analyst1_evidence_status_200_knownstrid(requests_mock, mock_client):
@@ -557,7 +557,7 @@ def test_analyst1_evidence_status_200_knownstrid(requests_mock, mock_client):
     assert command_results.outputs_prefix == 'Analyst1.EvidenceStatus'
     assert command_results.outputs_key_field == 'id'
     assert command_results.outputs.get('id') == 'finished'
-    assert command_results.outputs.get('processingComplete') == True
+    assert command_results.outputs.get('processingComplete') is True
 
 
 def test_analyst1_evidence_status_200_knownintid(requests_mock, mock_client):
@@ -570,7 +570,7 @@ def test_analyst1_evidence_status_200_knownintid(requests_mock, mock_client):
     assert command_results.outputs_prefix == 'Analyst1.EvidenceStatus'
     assert command_results.outputs_key_field == 'id'
     assert command_results.outputs.get('id') == 1
-    assert command_results.outputs.get('processingComplete') == True
+    assert command_results.outputs.get('processingComplete') is True
 
 
 def test_analyst1_get_sensors_command(requests_mock, mock_client):
