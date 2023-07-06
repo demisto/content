@@ -1984,7 +1984,7 @@ script:
       required: true
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   script: '-'
