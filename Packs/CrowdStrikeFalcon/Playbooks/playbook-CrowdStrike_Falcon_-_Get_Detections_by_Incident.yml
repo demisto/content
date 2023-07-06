@@ -270,7 +270,7 @@ outputs:
   description: 'Indicates whether detections were found. '
   type: string
 tests:
--  No tests
+-  Test Playbook - CrowdStrike Falcon - Get Detections by Incident
 contentitemexportablefields:
   contentitemfields: {}
 system: true
