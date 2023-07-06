@@ -706,7 +706,7 @@ tasks:
       - "38"
     scriptarguments:
       type:
-        simple: Cortex XDR - XCLOUD Cryptojacking
+        simple: Cortex XDR - XCLOUD Cryptomining
     separatecontext: false
     continueonerrortype: ""
     view: |-
