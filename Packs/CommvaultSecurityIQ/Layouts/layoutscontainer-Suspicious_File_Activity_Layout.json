@@ -589,7 +589,7 @@
 								"id": "826546c0-b8ff-11ed-ad59-5391792cfe0f",
 								"index": 0,
 								"name": "Disable Data Aging",
-								"scriptId": "CommvaultSecurityIQ|||commvault-security-disable-data-aging",
+								"scriptId": "CommvaultSecurityIQ|||commvault-security-set-disable-data-aging",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
@@ -615,7 +615,7 @@
 								"index": 2,
 								"listId": "caseinfoid-field-changed-caseinfoid-770215b0-b8ff-11ed-ad59-5391792cfe0f",
 								"name": "Copy Files to War Room",
-								"scriptId": "CommvaultSecurityIQ|||commvault-security-copy-files-list-to-war-room",
+								"scriptId": "CommvaultSecurityIQ|||commvault-security-get-copy-files-list-to-war-room",
 								"sectionItemType": "button",
 								"startCol": 0
 							},

@@ -1465,19 +1465,19 @@ def main() -> None:
                 if private_key_path:
                     os.unlink(private_key_path)
                 time.sleep(5)
-        elif command == "commvault-security-disable-data-aging":
+        elif command == "commvault-security-set-disable-data-aging":
             return_results(disable_data_aging(client))
-        elif command == "commvault-security-generate-token":
+        elif command == "commvault-security-get-generate-token":
             return_results(generate_access_token(client, cv_api_token))
-        elif command == "commvault-security-disable-saml-provider":
+        elif command == "commvault-security-set-disable-saml-provider":
             return_results(fetch_and_disable_saml_identity_provider(client))
-        elif command == "commvault-security-disable-user":
+        elif command == "commvault-security-set-disable-user":
             user_email = demisto.args()["user_email"]
             return_results(disable_user(client, user_email))
         elif command == "commvault-security-get-access-token-from-keyvault":
             client.set_secret_in_key_vault("")
             return_results(client.get_secret_from_key_vault())
-        elif command == "commvault-security-copy-files-list-to-war-room":
+        elif command == "commvault-security-get-copy-files-list-to-war-room":
             return_results(copy_files_to_war_room())
         else:
             raise NotImplementedError(

@@ -32,14 +32,14 @@ This integration was integrated and tested with version 6.8.0 of CommvaultSecuri
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### commvault-security-disable-data-aging
+### commvault-security-set-disable-data-aging
 
 ***
 Disables data aging on CS
 
 #### Base Command
 
-`commvault-security-disable-data-aging`
+`commvault-security-set-disable-data-aging`
 
 #### Input
 
@@ -51,14 +51,14 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | CommvaultSecurityIQ.Response | string | Status returned after calling disable data aging API | 
 
-### commvault-security-generate-token
+### commvault-security-get-generate-token
 
 ***
 Generate Token
 
 #### Base Command
 
-`commvault-security-generate-token`
+`commvault-security-get-generate-token`
 
 #### Input
 
@@ -69,14 +69,14 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CommvaultSecurityIQ.Response | string | Status indicating whether successfully generated access token or not | 
-### commvault-security-disable-saml-provider
+### commvault-security-set-disable-saml-provider
 
 ***
 Disable SAML provider
 
 #### Base Command
 
-`commvault-security-disable-saml-provider`
+`commvault-security-set-disable-saml-provider`
 
 #### Input
 
@@ -87,14 +87,14 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CommvaultSecurityIQ.Response | string | Status indicating whether successfully disabled SAML provider or not | 
-### commvault-security-copy-files-list-to-war-room
+### commvault-security-get-copy-files-list-to-war-room
 
 ***
 Copy the list of affected files list to war room
 
 #### Base Command
 
-`commvault-security-copy-files-list-to-war-room`
+`commvault-security-get-copy-files-list-to-war-room`
 
 #### Input
 
@@ -103,14 +103,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### commvault-security-disable-user
+### commvault-security-set-disable-user
 
 ***
 Disables user
 
 #### Base Command
 
-`commvault-security-disable-user`
+`commvault-security-set-disable-user`
 
 #### Input
 
