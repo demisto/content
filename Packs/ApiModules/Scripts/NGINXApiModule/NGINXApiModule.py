@@ -11,7 +11,7 @@ import gevent
 from signal import SIGUSR1
 import requests
 from flask.logging import default_handler
-from typing import Any
+from typing import Any, Dict
 import os
 import traceback
 from string import Template
@@ -76,7 +76,7 @@ server {
 NGINX_MAX_POLLING_TRIES = 5
 
 
-def create_nginx_server_conf(file_path: str, port: int, params: dict):
+def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     """Create nginx conf file
 
     Args:
@@ -87,7 +87,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     Raises:
         DemistoException: raised if there is a detected config error
     """
-    params = params if params else demisto.params()
+    params = demisto.params() if not params else params
     template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
@@ -101,9 +101,9 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
     if certificate and private_key:
         demisto.debug('Using HTTPS for nginx conf')
-        with open(NGINX_SSL_CRT_FILE, "w") as f:
+        with open(NGINX_SSL_CRT_FILE, 'wt') as f:
             f.write(certificate)
-        with open(NGINX_SSL_KEY_FILE, "w") as f:
+        with open(NGINX_SSL_KEY_FILE, 'wt') as f:
             f.write(private_key)
         ssl = 'ssl'  # to be included in the listen directive
         sslcerts = NGINX_SSL_CERTS
@@ -124,8 +124,8 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         f.write(server_conf)
 
 
-def start_nginx_server(port: int, params: dict = {}) -> subprocess.Popen:
-    params = params if params else demisto.params()
+def start_nginx_server(port: int, params: Dict = {}) -> subprocess.Popen:
+    params = demisto.params() if not params else params
     create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
     nginx_global_directives = 'daemon off;'
     global_directives_conf = params.get('nginx_global_directives')
@@ -179,7 +179,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
             nginx_process.send_signal(int(SIGUSR1))
             gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
         if log_access:
-            with open(old_access) as f:
+            with open(old_access, 'rt') as f:
                 start = 1
                 for lines in batch(f.readlines(), 100):
                     end = start + len(lines)
@@ -187,7 +187,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                     start = end
             Path(old_access).unlink()
         if log_error:
-            with open(old_error) as f:
+            with open(old_error, 'rt') as f:
                 start = 1
                 for lines in batch(f.readlines(), 100):
                     end = start + len(lines)
@@ -210,7 +210,7 @@ def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
         nginx_log_process(nginx_process)
 
 
-def test_nginx_web_server(port: int, params: dict):
+def test_nginx_web_server(port: int, params: Dict):
     polling_tries = 1
     is_test_done = False
     try:
@@ -236,7 +236,7 @@ def test_nginx_web_server(port: int, params: dict):
         raise DemistoException(err_msg) from ex
 
 
-def test_nginx_server(port: int, params: dict):
+def test_nginx_server(port: int, params: Dict):
     nginx_process = start_nginx_server(port, params)
     try:
         test_nginx_web_server(port, params)
@@ -259,11 +259,11 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     return res
 
 
-def get_params_port(params: dict = None) -> int:
+def get_params_port(params: Dict = None) -> int:
     """
     Gets port from the integration parameters
     """
-    params = params if params else demisto.params()
+    params = demisto.params() if not params else params
     port_mapping: str = params.get('longRunningPort', '')
     err_msg: str
     port: int
@@ -278,14 +278,14 @@ def get_params_port(params: dict = None) -> int:
     return port
 
 
-def run_long_running(params: dict = None, is_test: bool = False):
+def run_long_running(params: Dict = None, is_test: bool = False):
     """
     Start the long running server
     :param params: Demisto params
     :param is_test: Indicates whether it's test-module run or regular run
     :return: None
     """
-    params = params if params else demisto.params()
+    params = demisto.params() if not params else params
     nginx_process = None
     nginx_log_monitor = None
 
