@@ -13,36 +13,26 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Use the Imperva WAF integration to manage IP groups and web security
-  policies in Imperva WAF.
+description: Use the Imperva WAF integration to manage IP groups and web security policies in Imperva WAF.
 display: Imperva WAF
 name: Imperva WAF
 script:
   commands:
-  - deprecated: false
-    description: Gets a list of the existing IP group names.
-    execution: false
+  - description: Gets a list of the existing IP group names.
     name: imperva-waf-ip-group-list
     outputs:
     - contextPath: ImpervaWAF.IpGroup.Name
       description: The name of the IP group.
       type: String
   - arguments:
-    - default: false
-      description: The name of the IP group.
-      isArray: false
+    - description: The name of the IP group.
       name: ip-group-name
       required: true
-      secret: false
-    deprecated: false
     description: Returns a list of the entries in the requested IP group.
-    execution: false
     name: imperva-waf-ip-group-list-entries
     outputs:
     - contextPath: ImpervaWAF.IpGroup.Entries.Type
@@ -64,34 +54,22 @@ script:
       description: The name of the IP group.
       type: String
   - arguments:
-    - default: false
-      description: The name of the IP group.
-      isArray: false
+    - description: The name of the IP group.
       name: ip-group-name
       required: true
-      secret: false
-    deprecated: false
     description: Removes all the entries from the IP group indicated by the group name.
-    execution: false
     name: imperva-waf-ip-group-remove-entries
-  - deprecated: false
-    description: Returns a list of the names of all sites in the system.
-    execution: false
+  - description: Returns a list of the names of all sites in the system.
     name: imperva-waf-sites-list
     outputs:
     - contextPath: ImpervaWAF.Site.Name
       description: The name of the site.
       type: String
   - arguments:
-    - default: false
-      description: The name of the site.
-      isArray: false
+    - description: The name of the site.
       name: site-name
       required: true
-      secret: false
-    deprecated: false
     description: Returns a list of all server group names in the specified site.
-    execution: false
     name: imperva-waf-server-group-list
     outputs:
     - contextPath: ImpervaWAF.ServerGroup.Name
@@ -101,21 +79,13 @@ script:
       description: The name of the parent site of the server groups to access.
       type: String
   - arguments:
-    - default: false
-      description: The site name.
-      isArray: false
+    - description: The site name.
       name: site-name
       required: true
-      secret: false
-    - default: false
-      description: The server group name.
-      isArray: false
+    - description: The server group name.
       name: server-group-name
       required: true
-      secret: false
-    deprecated: false
     description: Returns a list of the server groups that applied the web security policies.
-    execution: false
     name: imperva-waf-server-group-list-policies
     outputs:
     - contextPath: ImpervaWAF.SecurityPolicy.PolicyName
@@ -133,25 +103,17 @@ script:
     - contextPath: ImpervaWAF.SecurityPolicy.System
       description: Indicates whether there is an Fi policy.
       type: Boolean
-  - deprecated: false
-    description: Returns a list of names of all web service custom policies in
-      the system.
-    execution: false
+  - description: Returns a list of names of all web service custom policies in the system.
     name: imperva-waf-web-service-custom-policy-list
     outputs:
     - contextPath: ImpervaWAF.CustomWebPolicy.Name
       description: The name of the custom web policy.
       type: String
   - arguments:
-    - default: false
-      description: The name of the custom web policy.
-      isArray: false
+    - description: The name of the custom web policy.
       name: policy-name
       required: true
-      secret: false
-    deprecated: false
     description: Returns a web service custom policy indicated by the policy name.
-    execution: false
     name: imperva-waf-web-service-custom-policy-get
     outputs:
     - contextPath: ImpervaWAF.CustomWebPolicy.Enabled
@@ -164,8 +126,7 @@ script:
       description: The name of the custom web policy.
       type: String
     - contextPath: ImpervaWAF.CustomWebPolicy.OneAlertPerSession
-      description: Indicates whether to allow only one alert to be created for every
-        web session.
+      description: Indicates whether to allow only one alert to be created for every web session.
       type: Boolean
     - contextPath: ImpervaWAF.CustomWebPolicy.DisplayResponsePage
       description: Indicates whether to show the response page in alerts.
@@ -201,56 +162,28 @@ script:
       description: The country name to match.
       type: String
   - arguments:
-    - default: false
-      description: The group name to create.
-      isArray: false
+    - description: The group name to create.
       name: group-name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of address (single, range, or network).
-      isArray: false
       name: entry-type
       predefined:
       - range
       - single
       - network
       required: true
-      secret: false
-    - default: false
-      description: 'The start IP address. Mandatory for types: single, range.'
-      isArray: false
+    - description: 'The start IP address. Mandatory for types: single, range.'
       name: ip-address-from
-      required: false
-      secret: false
-    - default: false
-      description: 'The end IP address. Mandatory for type: range.'
-      isArray: false
+    - description: 'The end IP address. Mandatory for type: range.'
       name: ip-address-to
-      required: false
-      secret: false
-    - default: false
-      description: 'The network address. Mandatory for type: network.'
-      isArray: false
+    - description: 'The network address. Mandatory for type: network.'
       name: network-address
-      required: false
-      secret: false
-    - default: false
-      description: 'Network significant bits. Mandatory for type: network'
-      isArray: false
+    - description: 'Network significant bits. Mandatory for type: network'
       name: cidr-mask
-      required: false
-      secret: false
-    - default: false
-      description: 'A list of entry values in JSON format. For example: [{"type":"single","ipAddressFrom":"1.2.3.4"}].'
-      isArray: false
+    - description: 'A list of entry values in JSON format. For example: [{"type":"single","ipAddressFrom":"1.2.3.4"}].'
       name: json-entries
-      required: false
-      secret: false
-    deprecated: false
     description: Create an IP group.
-    execution: false
     name: imperva-waf-ip-group-create
     outputs:
     - contextPath: ImpervaWAF.IpGroup.Entries.Type
@@ -272,66 +205,35 @@ script:
       description: The name of the IP group.
       type: String
   - arguments:
-    - default: false
-      description: The group name to update.
-      isArray: false
+    - description: The group name to update.
       name: group-name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of address (single, range, or network).
-      isArray: false
       name: entry-type
       predefined:
       - range
       - single
       - network
       required: true
-      secret: false
-    - default: false
-      description: 'The start IP address. Mandatory for types: single, range.'
-      isArray: false
+    - description: 'The start IP address. Mandatory for types: single, range.'
       name: ip-address-from
-      required: false
-      secret: false
-    - default: false
-      description: 'The end IP address. Mandatory for type: range.'
-      isArray: false
+    - description: 'The end IP address. Mandatory for type: range.'
       name: ip-address-to
-      required: false
-      secret: false
-    - default: false
-      description: 'The network address. Mandatory for type: network.'
-      isArray: false
+    - description: 'The network address. Mandatory for type: network.'
       name: network-address
-      required: false
-      secret: false
-    - default: false
-      description: 'The network significant bits. Mandatory for type: network.'
-      isArray: false
+    - description: 'The network significant bits. Mandatory for type: network.'
       name: cidr-mask
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The operation to apply on the entry. Options: add, remove.'
-      isArray: false
       name: operation
       predefined:
       - add
       - remove
       required: true
-      secret: false
-    - default: false
-      description: 'A list of entry values in JSON format. For example: [{"operation":"add","type":"single","ipAddressFrom":"1.2.3.4"}].'
-      isArray: false
+    - description: 'A list of entry values in JSON format. For example: [{"operation":"add","type":"single","ipAddressFrom":"1.2.3.4"}].'
       name: json-entries
-      required: false
-      secret: false
-    deprecated: false
     description: Adds or removes rows in the IP group indicated by the IP group name.
-    execution: false
     name: imperva-waf-ip-group-update-entries
     outputs:
     - contextPath: ImpervaWAF.IpGroup.Entries.Type
@@ -353,38 +255,24 @@ script:
       description: The name of the IP group.
       type: String
   - arguments:
-    - default: false
-      description: The group name to delete.
-      isArray: false
+    - description: The group name to delete.
       name: group-name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the IP group indicated by the group name.
-    execution: false
     name: imperva-waf-ip-group-delete
   - arguments:
-    - default: false
-      description: The name of the policy to create.
-      isArray: false
+    - description: The name of the policy to create.
       name: policy-name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: 'Indicates whether the policy is enabled. Default: True.'
-      isArray: false
       name: enabled
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The alert severity. Options: high, medium, low, informative, noAlert. Default: medium. '
-      isArray: false
       name: severity
       predefined:
       - high
@@ -392,116 +280,59 @@ script:
       - low
       - informative
       - noAlert
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: none
       description: 'The policy action. Options: block, none. Default: none.'
-      isArray: false
       name: action
       predefined:
       - block
       - none
-      required: false
-      secret: false
-    - default: false
-      description: The name of the action that was set.
-      isArray: false
+    - description: The name of the action that was set.
       name: followed-action
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
-      description: 'Indicates whether to allow only one alert to be created for every
-        web session. Default: False'
-      isArray: false
+      description: 'Indicates whether to allow only one alert to be created for every web session. Default: False'
       name: one-alert-per-session
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
-      description: 'Indicates whether to show the response page in alerts. Default:
-        False'
-      isArray: false
+      description: 'Indicates whether to show the response page in alerts. Default: False'
       name: display-response-page
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site to apply.
-      isArray: false
+    - description: Name of the site to apply.
       name: site-name-to-apply
       required: true
-      secret: false
-    - default: false
-      description: Name of the server group to apply.
-      isArray: false
+    - description: Name of the server group to apply.
       name: server-group-name-to-apply
       required: true
-      secret: false
-    - default: false
-      description: Name of the web service to apply.
-      isArray: false
+    - description: Name of the web service to apply.
       name: web-service-name-to-apply
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Match operation for source geolocation. Options: atLeastOne, excludeAll.'
-      isArray: false
       name: geo-location-criteria-operation
       predefined:
       - atLeastOne
       - excludeAll
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of names of IP groups in which to search.
-      isArray: false
+    - description: Comma separated list of names of IP groups in which to search.
       name: ip-groups
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of IP addresses in which to search.
-      isArray: false
+    - description: Comma separated list of IP addresses in which to search.
       name: ip-addresses
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of country names in which to search. Mandatory
-        when geo-location-criteria-operation is set.
-      isArray: false
+    - description: Comma separated list of country names in which to search. Mandatory when geo-location-criteria-operation is set.
       name: country-names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Match operation for source IP addresses. Options: atLeastOne, excludeAll'
-      isArray: false
       name: ip-addresses-criteria-operation
       predefined:
       - atLeastOne
       - excludeAll
-      required: false
-      secret: false
-    - default: false
-      description: 'List of match criteria in JSON format, e.g., [{"type": "sourceIpAddresses","operation":
-        "atLeastOne","userDefined": ["1.2.3.4"]}]'
-      isArray: false
+    - description: 'List of match criteria in JSON format, e.g., [{"type": "sourceIpAddresses","operation": "atLeastOne","userDefined": ["1.2.3.4"]}]'
       name: match-criteria-json
-      required: false
-      secret: false
-    deprecated: false
     description: Create a web service custom policy.
-    execution: false
     name: imperva-waf-web-service-custom-policy-create
     outputs:
     - contextPath: ImpervaWAF.CustomWebPolicy.Enabled
@@ -514,8 +345,7 @@ script:
       description: The name of the policy.
       type: String
     - contextPath: ImpervaWAF.CustomWebPolicy.OneAlertPerSession
-      description: Indicates whether to allow only one alert to be created for every
-        web session.
+      description: Indicates whether to allow only one alert to be created for every web session.
       type: Boolean
     - contextPath: ImpervaWAF.CustomWebPolicy.DisplayResponsePage
       description: Indicates whether to show the response page in the alerts.
@@ -551,26 +381,17 @@ script:
       description: Country name to match.
       type: String
   - arguments:
-    - default: false
-      description: The name of the policy to update.
-      isArray: false
+    - description: The name of the policy to update.
       name: policy-name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether the policy is enabled.
-      isArray: false
       name: enabled
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The alert severity. Options: high, medium, low, informative, noAlert.'
-      isArray: false
       name: severity
       predefined:
       - high
@@ -578,121 +399,59 @@ script:
       - low
       - informative
       - noAlert
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The policy action. Options: block, none.'
-      isArray: false
       name: action
       predefined:
       - block
       - none
-      required: false
-      secret: false
-    - default: false
-      description: The name of the action set.
-      isArray: false
+    - description: The name of the action set.
       name: followed-action
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Indicates whether to allow only one alert to be created for every
-        web session.
-      isArray: false
+      description: Indicates whether to allow only one alert to be created for every web session.
       name: one-alert-per-session
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether to show the response page in alerts.
-      isArray: false
       name: display-response-page
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The name of the site to apply.
-      isArray: false
+    - description: The name of the site to apply.
       name: site-name-to-apply
-      required: false
-      secret: false
-    - default: false
-      description: The name of the server group to apply.
-      isArray: false
+    - description: The name of the server group to apply.
       name: server-group-name-to-apply
-      required: false
-      secret: false
-    - default: false
-      description: The name of the web service to apply.
-      isArray: false
+    - description: The name of the web service to apply.
       name: web-service-name-to-apply
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The match operation for the source geolocation.
-      isArray: false
       name: geo-location-criteria-operation
       predefined:
       - atLeastOne
       - excludeAll
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of names of the IP groups in which to search.
-      isArray: false
+    - description: Comma-separated list of names of the IP groups in which to search.
       name: ip-groups
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of IP addresses in which to search.
-      isArray: false
+    - description: Comma-separated list of IP addresses in which to search.
       name: ip-addresses
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of country names in which to search. Mandatory when
-        geo-location-criteria-operation is set.
-      isArray: false
+    - description: Comma-separated list of country names in which to search. Mandatory when geo-location-criteria-operation is set.
       name: country-names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The match operation for source IP addresses. Options: atLeastOne, excludeAll.'
-      isArray: false
       name: ip-addresses-criteria-operation
       predefined:
       - atLeastOne
       - excludeAll
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Operation to apply. Options: add, remove.'
-      isArray: false
       name: apply-operation
       predefined:
       - add
       - remove
-      required: false
-      secret: false
-    - default: false
-      description: List of match criteria in JSON format, e.g., [{"type":"sourceIpAddresses","operation":"atLeastOne","userDefined":["1.2.3.4"]}].
-      isArray: false
+    - description: List of match criteria in JSON format, e.g., [{"type":"sourceIpAddresses","operation":"atLeastOne","userDefined":["1.2.3.4"]}].
       name: match-criteria-json
-      required: false
-      secret: false
-    deprecated: false
     description: Update a web service custom policy.
-    execution: false
     name: imperva-waf-web-service-custom-policy-update
     outputs:
     - contextPath: ImpervaWAF.CustomWebPolicy.Enabled
@@ -705,8 +464,7 @@ script:
       description: The name of the policy.
       type: String
     - contextPath: ImpervaWAF.CustomWebPolicy.OneAlertPerSession
-      description: Indicates whether to allow only one alert to be created for every
-        web session.
+      description: Indicates whether to allow only one alert to be created for every web session.
       type: Boolean
     - contextPath: ImpervaWAF.CustomWebPolicy.DisplayResponsePage
       description: Indicates whether to show the response page in alerts.
@@ -742,21 +500,12 @@ script:
       description: The country name to match.
       type: String
   - arguments:
-    - default: false
-      description: The name of the policy to delete.
-      isArray: false
+    - description: The name of the policy to delete.
       name: policy-name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a web service custom policy indicated by the policy name.
-    execution: false
     name: imperva-waf-web-service-custom-policy-delete
-  dockerimage: demisto/python3:3.10.8.37233
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

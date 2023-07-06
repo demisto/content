@@ -19,24 +19,20 @@ configuration:
   displaypassword: Key or Client Secret (can be used instead of Certificate Thumbprint and Private Key)
   hiddenusername: true
   name: creds_enc_key
-  required: false
   type: 9
 - display: Certificate Thumbprint (can be used instead of Client Secret)
   displaypassword: Private Key
   name: creds_certificate
-  required: false
   type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   hidden: true
   name: private_key
-  required: false
   type: 14
 - display: ""
   displaypassword: Authorization code (run msgraph-generate-login-url command)
   hiddenusername: true
   name: creds_auth_code
-  required: false
   type: 9
 - display: Application redirect URI
   name: redirect_uri
@@ -44,11 +40,9 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: 'Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.'
 display: Microsoft Graph Search
@@ -85,7 +79,6 @@ script:
     arguments: []
     description: Generate the login url used for Authorization code flow.
   dockerimage: demisto/crypto:1.0.0.49599
-  runonce: false
   script: ''
   subtype: python3
   type: python

@@ -20,11 +20,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Manage FileOrbis operations.
 display: FileOrbis
@@ -32,26 +30,18 @@ name: FileOrbis
 script:
   commands:
   - arguments:
-    - default: false
-      description: Id of the user whose status is to be changed
-      isArray: false
+    - description: Id of the user whose status is to be changed
       name: user_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: New status of the user ( 0 = Passive, 1 = Active, 2 = Deleted )
-      isArray: false
       name: status
       predefined:
       - '0'
       - '1'
       - '2'
       required: true
-      secret: false
-    deprecated: false
     description: Changes user status
-    execution: false
     name: fileorbis-change-user-status
     outputs:
     - contextPath: FileOrbis.UserStatus.UserID
@@ -67,10 +57,6 @@ script:
       description: User friendly result message of the operation
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

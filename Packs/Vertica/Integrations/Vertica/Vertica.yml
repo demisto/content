@@ -25,7 +25,6 @@ configuration:
   name: port
   defaultvalue: "5433"
   type: 0
-  required: false
 script:
   script: ''
   type: python
@@ -47,7 +46,6 @@ script:
       type: string
     description: Executes a query on the Vertica database.
   dockerimage: demisto/py3-tools:0.0.1.30715
-  runonce: false
   subtype: python3
 tests:
 - Vertica Test

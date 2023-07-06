@@ -10,17 +10,14 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: defaultdbotscoreEmail
   defaultvalue: SUSPICIOUS
   type: 0
-  required: false
 - display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or MALICIOUS)'
   name: defaultdbotscoreDomain
   defaultvalue: SUSPICIOUS
   type: 0
-  required: false
 script:
   script: >-
     DEFAULT_DBOT_SCORE_EMAIL = params.defaultdbotscoreEmail == 'SUSPICIOUS' ? 2 : 3;
@@ -344,7 +341,6 @@ script:
       description: Compromised domains.
       related: ""
     description: Checks if a domain has been compromised.
-  runonce: false
 deprecated: true
 tests:
 - No tests
