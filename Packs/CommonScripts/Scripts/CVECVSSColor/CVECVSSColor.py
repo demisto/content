@@ -1,6 +1,5 @@
 
 from CommonServerPython import *
-import json
 import math
 
 
@@ -44,17 +43,12 @@ def get_color(cvss: int | float) -> str:
 
 def main():
     indicator = demisto.callingContext.get('args', '').get('indicator', '')
-    cvss = indicator.get('CustomFields', '').get('cvss', '')
+    cvss = indicator.get('CustomFields', '').get('cvssscore', '')
     theme = demisto.callingContext.get('context', 'light').get('User', 'light').get('theme', 'light')
-
-    try:
-        cvss = json.loads(cvss)
-        cvss = float(cvss.get('Score', 0))
-    except json.JSONDecodeError:
-        cvss = 0
+    cvss = 0 if not cvss else float(cvss)
 
     if cvss == 0:
-        if theme != 'light':
+        if theme not in ('light', ''):
             return_results(CommandResults(readable_output="# <-:->{{color:#FFFFFF}}(**N\A**)"))
         else:
             return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\A**)"))

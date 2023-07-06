@@ -20,12 +20,17 @@ def test_cvss_color(cvss, color):
     assert get_color(cvss) == color
 
 
-@pytest.mark.parametrize('context, result', [({"args": {"indicator": {"CustomFields": {"cvss": "{\"Score\": \"7.1\"}"}}},
+@pytest.mark.parametrize('context, result', [({"args": {"indicator": {"CustomFields": {"cvssscore": "7.1"}}},
                                                "context": {"User": {"theme": "dark"}}}, '# <-:->{{color:#FF6347}}(**7.1**)'),
-                                             ({"args": {"indicator": {"CustomFields": {"cvss": ""}}},
+                                             ({"args": {"indicator": {"CustomFields": {"cvssscore": ""}}},
                                                "context": {"User": {"theme": "dark"}}}, '# <-:->{{color:#FFFFFF}}(**N\\A**)'),
-                                             ({"args": {"indicator": {"CustomFields": {"cvss": ""}}},
-                                               "context": {"User": {"theme": "light"}}}, '# <-:->{{color:#000000}}(**N\\A**)')])
+                                             ({"args": {"indicator": {"CustomFields": {"cvssscore": ""}}},
+                                               "context": {"User": {"theme": "light"}}}, '# <-:->{{color:#000000}}(**N\\A**)'),
+                                             ({"args": {"indicator": {"CustomFields": {"cvssscore": None}}},
+                                               "context": {"User": {"theme": "light"}}}, '# <-:->{{color:#000000}}(**N\\A**)'),
+                                             ({"args": {"indicator": {"CustomFields": {"cvssscore": 7.1}}},
+                                               "context": {"User": {"theme": "light"}}}, '# <-:->{{color:#FF6347}}(**7.1**)'),
+                                             ])
 def test_main(mocker, context, result):
     mocker.patch.object(demisto, 'callingContext', new=context)
     results_mock = mocker.patch.object(demisto, 'results')
