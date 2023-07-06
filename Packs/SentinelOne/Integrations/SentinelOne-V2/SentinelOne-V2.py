@@ -6,7 +6,7 @@ import json
 import traceback
 from datetime import datetime
 import zipfile
-from typing import Callable, List, Optional, Tuple
+from collections.abc import Callable
 
 import urllib3
 
@@ -181,7 +181,7 @@ class Client(BaseClient):
 
     def get_blocklist_request(self, tenant: bool, group_ids: str = None, site_ids: str = None, account_ids: str = None,
                               skip: int = None, limit: int = None, os_type: str = None, sort_by: str = None,
-                              sort_order: str = None, value_contains: str = None) -> List[dict]:
+                              sort_order: str = None, value_contains: str = None) -> list[dict]:
         """
         We use the `value_contains` instead of `value` parameter because in our testing
         (API 2.1) the `value` parameter is case sensitive. So if an analyst put in the hash with uppercase entries
@@ -530,10 +530,10 @@ class Client(BaseClient):
                                os_types=None,
                                exclusion_type: str = None,
                                limit: int = 10,
-                               value_contains: Optional[str] = None,
+                               value_contains: str | None = None,
                                ok_codes: list = [200],
-                               include_children: Optional[bool] = None,
-                               include_parents: Optional[bool] = None):
+                               include_children: bool | None = None,
+                               include_parents: bool | None = None):
         """
         When includeChildren and includeParents are set to True in API request-
         it will return all items in the exclusion list.
@@ -1029,10 +1029,7 @@ def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
     agents_groups = client.move_agent_request(group_id, agents_id)
 
     # Parse response into context & content entries
-    if agents_groups.get('agentsMoved') and int(agents_groups.get('agentsMoved')) > 0:
-        agents_moved = True
-    else:
-        agents_moved = False
+    agents_moved = bool(agents_groups.get("agentsMoved") and int(agents_groups.get("agentsMoved")) > 0)
     date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
     context_entries = {
         'Date': date_time_utc,
@@ -1890,7 +1887,7 @@ def expire_site(client: Client, args: dict) -> CommandResults:
         raw_response=Expired_site)
 
 
-def fetch_threat_file(client: Client, args: dict) -> List[CommandResults]:
+def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
     """
     Fetches the threat file. Relevent to both API Versions
     """
@@ -2153,7 +2150,7 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
         raw_response=exclusion_items)
 
 
-def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> List[Optional[str]]:
+def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
     Limit is set to OS_COUNT here where is OS_COUNT is set to the number of Operating Systems a hash can be blocked.
@@ -2657,10 +2654,7 @@ def uninstall_agent(client: Client, args: dict) -> CommandResults:
     context = {
         "Affected": affected_agents
     }
-    if affected_agents > 0:
-        meta = f'Uninstall was sent to {affected_agents} agent(s).'
-    else:
-        meta = 'No agents were affected.'
+    meta = f"Uninstall was sent to {affected_agents} agent(s)." if affected_agents > 0 else "No agents were affected."
 
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Uninstall Agent', context, metadata=meta, removeNull=True),
@@ -2863,7 +2857,7 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raw_response=result)
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, get_global: bool = True) -> List[Optional[str]]:
+def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, get_global: bool = True) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
@@ -2994,7 +2988,7 @@ def fetch_file(client: Client, args: dict) -> str:
     return f"Intiated fetch-file action for {file_path} on Agent {agent_id}"
 
 
-def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> Tuple[str, bytes]:
+def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> tuple[str, bytes]:
     """
     Helper funciton for `download_fetched_file`
     """
@@ -3017,7 +3011,7 @@ def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> Tuple[s
     return file_name, file_data
 
 
-def download_fetched_file(client: Client, args: dict) -> List[CommandResults]:
+def download_fetched_file(client: Client, args: dict) -> list[CommandResults]:
     """
     Download a file that has been requested by `fetch-file`
     """
@@ -3216,7 +3210,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     remote_incident_id = remote_args.remote_incident_id
 
     mirrored_data = {}
-    entries: List = []
+    entries: list = []
     try:
         demisto.debug(
             f"Performing get-remote-data command with incident id: {remote_incident_id} "
@@ -3264,7 +3258,7 @@ def get_modified_remote_data_command(client: Client, args: dict):
     assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
 
     demisto.debug(f"Remote arguments last_update in UTC is {last_update_utc}")
-    modified_ids_to_mirror = list()
+    modified_ids_to_mirror = []
     last_update_utc = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     raw_threats = client.get_threats_request(updated_from=last_update_utc, limit=1000, include_resolved_param=False)
 
@@ -3368,10 +3362,7 @@ def fetch_handler(client: Client, args):
         alert_incidents, alert_current_fetch = fetch_alerts(client, args)
         threat_incidents, threat_current_fetch = fetch_threats(client, args)
 
-        if alert_current_fetch > threat_current_fetch:
-            current_fetch = alert_current_fetch
-        else:
-            current_fetch = threat_current_fetch
+        current_fetch = alert_current_fetch if alert_current_fetch > threat_current_fetch else threat_current_fetch
 
         incidents = alert_incidents + threat_incidents
 
