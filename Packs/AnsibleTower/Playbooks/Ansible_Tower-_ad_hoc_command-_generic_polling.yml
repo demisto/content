@@ -1,6 +1,6 @@
 id: Launch Adhoc Command Generic - Ansible Tower
 version: -1
-name: Launch Adhoc Command Generic - Ansible Tower
+name: Launch Adhoc Command Generic - Ansible Automation Platform
 starttaskid: "0"
 tasks:
   "0":
@@ -39,7 +39,7 @@ tasks:
     task:
       id: 7630373a-14c4-483f-8ba6-838382463465
       version: -1
-      name: Is Ansible Tower enabled?
+      name: Is Ansible Automation Platform enabled?
       description: ""
       type: condition
       iscommand: false

@@ -7,25 +7,13 @@ args:
   - grayscale
   - sharpened
   - original
-  required: false
-- default: false
-  description: 'The desired width for resizing the image to. For example: image_resize_width=500'
-  isArray: false
+- description: 'The desired width for resizing the image to. For example: image_resize_width=500'
   name: image_resize_width
-  required: false
-  secret: false
-- default: false
-  description: 'The desired height for resizing the image to. For example: image_resize_height=1000'
-  isArray: false
+- description: 'The desired height for resizing the image to. For example: image_resize_height=1000'
   name: image_resize_height
-  required: false
-  secret: false
-- default: false
-  description: The entryID of the file to process.
-  isArray: false
+- description: The entryID of the file to process.
   name: file_entry_id
   required: true
-  secret: false
 comment: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
 commonfields:
   id: PreProcessImage
@@ -41,7 +29,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 timeout: 480ns
 type: python
 dockerimage: demisto/processing-image-file:1.0.0.50961
