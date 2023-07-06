@@ -312,18 +312,25 @@ def functional_similarity_command():
     except Exception as e:
         return_error(str(e))
 
-    results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'functional_similarity': sha1_list},
-        readable_output="Full report is returned in a downloadable file"
-    )
+    results = functional_similarity_output(sha1_list)
 
     file_results = fileResult(
         f'RHA1 Functional Similarity report file for hash {hash_value}',
         json.dumps(sha1_list, indent=4),
         file_type=EntryType.ENTRY_INFO_FILE
     )
+
     return_results([results, file_results])
+
+
+def functional_similarity_output(sha1_list):
+    results = CommandResults(
+        outputs_prefix='ReversingLabs',
+        outputs={'functional_similarity': sha1_list},
+        readable_output="Full report is returned in a downloadable file"
+    )
+
+    return results
 
 
 def rha1_analytics_command():
@@ -1100,7 +1107,7 @@ def yara_retro_matches_feed_command():
 
 
 def yara_retro_matches_feed_output(response_json, time_value):
-    feed = response_json.get("rl", {}).get("feed", {})
+    feed = response_json.get("rl", {}).getj("feed", {})
     entries = tableToMarkdown("Entries", feed.get("entries", []))
     last_timestamp = feed.get("last_timestamp")
     range_from = feed.get("time_range", {}).get("from")
