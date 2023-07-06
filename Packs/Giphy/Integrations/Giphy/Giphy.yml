@@ -16,7 +16,12 @@ configuration:
   name: apikey
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+- displaypassword: API Key
+  hiddenusername: true
+  name: apikey_creds
+  type: 9
+
 script:
   script: ''
   type: javascript

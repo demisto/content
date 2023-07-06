@@ -117,3 +117,18 @@ def test_custom_list_new_line_sep(mocker, data, parse_all, header, value, list_n
     mocker.patch.object(demisto, "executeCommand", return_value=data)
     res = parse_list(parse_all, header, value, list_name, list_separator)
     assert res.outputs.get('Results') == expected
+
+
+@pytest.mark.parametrize(
+    "data, parse_all, header, value, expected_context_key",
+    [
+        (DATA_WITH_NEW_LINE_SEP, "True", "name", "id", ['list_name', 'parse_all']),
+        (DATA_WITH_NEW_LINE_SEP, "False", "name", "name2", ['list_name', 'parse_all', 'header', 'value'])
+    ]
+)
+def test_context_path_are_correct(mocker, data, parse_all, header, value, expected_context_key):
+    from GetListRow import parse_list
+    mocker.patch.object(demisto, "executeCommand", return_value=data)
+    res = parse_list(parse_all, header, value, list_name="getListRow", list_separator='\n')
+    assert res.outputs_prefix == 'GetListRow'
+    assert res.outputs_key_field == expected_context_key
