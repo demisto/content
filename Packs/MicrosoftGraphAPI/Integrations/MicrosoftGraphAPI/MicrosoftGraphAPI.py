@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
 
 import urllib3
-from typing import Any, Dict, Optional
+from typing import Any
 
 urllib3.disable_warnings()
 
@@ -18,9 +18,9 @@ class MsGraphClient:
                  verify: bool,
                  proxy: bool,
                  azure_cloud: AzureCloud,
-                 certificate_thumbprint: Optional[str] = None,
-                 private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None,
+                 certificate_thumbprint: str | None = None,
+                 private_key: str | None = None,
+                 managed_identities_client_id: str | None = None,
                  ):
         client_args = {
             'base_url': azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"),
@@ -52,8 +52,8 @@ class MsGraphClient:
             resource: str,
             http_method: str = 'GET',
             api_version: str = 'v1.0',
-            odata: Optional[str] = None,
-            request_body: Optional[Dict] = None,
+            odata: str | None = None,
+            request_body: dict | None = None,
     ):
         url_suffix = urljoin(api_version, resource)
         if odata:
@@ -64,8 +64,7 @@ class MsGraphClient:
             json_data=request_body,
             resp_type='resp',
         )
-        if res.content:
-            return res.json()
+        return res.json() if res.content else None
 
 
 def start_auth(client: MsGraphClient) -> CommandResults:  # pragma: no cover
@@ -81,7 +80,7 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
 def test_module(client: MsGraphClient,
                 app_secret: str,
                 tenant_id: str,
-                managed_identities_client_id: Optional[str]) -> str:  # pragma: no cover
+                managed_identities_client_id: str | None) -> str:  # pragma: no cover
     if (app_secret and tenant_id) or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'
@@ -95,7 +94,7 @@ def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
     return CommandResults(readable_output='```✅ Success!```')
 
 
-def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResults:
+def generic_command(client: MsGraphClient, args: dict[str, Any]) -> CommandResults:
     request_body = args.get('request_body')
     results: dict
     if request_body and isinstance(request_body, str):
