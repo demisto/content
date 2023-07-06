@@ -7980,7 +7980,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -8000,7 +8000,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-02T10:13:00',
                     'limit': 9,
                     'found_incident_ids': {'1': '', '2': '', '3': '',
                                            '4': '', '5': '', '6': ''}
@@ -8021,8 +8021,8 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
-                    'limit': 12,
+                    'time': '2022-04-03T10:13:00',
+                    'limit': 9,
                     'found_incident_ids': {'1': '', '2': '', '3': '',
                                            '4': '', '5': '', '6': '',
                                            '7': '', '8': '', '9': ''}
@@ -8045,7 +8045,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -8084,7 +8084,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-02T10:12:00',
+                    'time': '2022-04-03T10:13:00',
                     'limit': 8,
                     'found_incident_ids': {'4': '', '5': '',
                                            '7': '', '8': '', '9': ''}
@@ -8107,7 +8107,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -8124,14 +8124,14 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 6,
+                    'limit': 3,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
                     'incidents': [],
                     'fetch_limit': 3,
                     'start_fetch_time': '2022-04-02T10:12:00',
-                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'end_fetch_time': '2022-04-07T10:13:00',
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
@@ -8139,8 +8139,8 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-07T10:11:00',
-                    'limit': 6,
+                    'time': '2022-04-07T10:13:00',
+                    'limit': 3,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )
