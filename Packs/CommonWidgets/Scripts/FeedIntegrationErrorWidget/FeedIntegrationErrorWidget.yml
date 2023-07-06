@@ -4,7 +4,6 @@ commonfields:
   version: -1
 name: FeedIntegrationErrorWidget
 script: '-'
-system: false
 tags:
 - widget
 timeout: '0'

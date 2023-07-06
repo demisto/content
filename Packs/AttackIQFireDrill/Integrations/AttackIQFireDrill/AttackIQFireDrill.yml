@@ -9,21 +9,17 @@ configuration:
   type: 0
 - display: API Token
   name: token
-  required: false
   type: 4
   hidden: true
 - name: token_creds
-  required: false
   type: 9
   displaypassword: API Token
   hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 
 description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
@@ -34,13 +30,9 @@ script:
   - arguments:
     - default: true
       description: The ID of the assessment to return.
-      isArray: false
       name: assessment_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns all assessments by its ID in the AttackIQ FireDrill platform.
-    execution: false
     name: attackiq-get-assessment-by-id
     outputs:
     - contextPath: AttackIQ.Assessment.Id
@@ -122,22 +114,12 @@ script:
       description: The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number to return.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: The maximum page size of the results.
-      isArray: false
+    - description: The maximum page size of the results.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all assessments in a page.
-    execution: false
     name: attackiq-list-assessments
     outputs:
     - contextPath: AttackIQ.Assessment.Id
@@ -215,45 +197,29 @@ script:
   - arguments:
     - default: true
       description: ID of the assessment to activate.
-      isArray: false
       name: assessment_id
       required: true
-      secret: false
     deprecated: true
     description: Deprecated, without available replacement. Activates the assessment, which is required for execution.
-    execution: false
     name: attackiq-activate-assessment
   - arguments:
-    - default: false
-      description: The ID of the assessment.
-      isArray: false
+    - description: The ID of the assessment.
       name: assessment_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Runs only on-demand tests in the assessment. If true, executes tests in the assessment that are not scheduled to run. If false, executes all tests in the assessment including scheduled tests. Default is false.
-      isArray: false
       name: on_demand_only
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Runs all tests in the assessment.
-    execution: false
     name: attackiq-run-all-tests-in-assessment
   - arguments:
     - default: true
       description: The assessment for which to check the status.
-      isArray: false
       name: assessment_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns an assessment execution status when running an on-demand execution only.
-    execution: false
     name: attackiq-get-assessment-execution-status
     outputs:
     - contextPath: AttackIQ.Assessment.Running
@@ -265,13 +231,9 @@ script:
   - arguments:
     - default: true
       description: The ID of the test.
-      isArray: false
       name: test_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns the status of the test.
-    execution: false
     name: attackiq-get-test-execution-status
     outputs:
     - contextPath: AttackIQTest.Detected
@@ -298,26 +260,14 @@ script:
   - arguments:
     - default: true
       description: The ID of the assessment that contains the tests.
-      isArray: false
       name: assessment_id
       required: true
-      secret: false
-    - default: false
-      description: The Maximum page size for the results.
-      isArray: false
+    - description: The Maximum page size for the results.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number to return.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of tests by an assessment.
-    execution: false
     name: attackiq-list-tests-by-assessment
     outputs:
     - contextPath: AttackIQTest.Id
@@ -390,49 +340,28 @@ script:
       description: The total number of tests.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the test in which to show results.
-      isArray: false
+    - description: ID of the test in which to show results.
       name: test_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Shows the last result. If true, shows the last result. Default is false.
-      isArray: false
       name: show_last_result
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the test results.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: The maximum page size of the results.
-      isArray: false
+    - description: The maximum page size of the results.
       name: page_size
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filters results according to user choice. If set to Passed, will return only passed tests. If set to Failed, will return only failed tests.
-      isArray: false
       name: outcome_filter
       predefined:
       - Passed
       - Failed
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the test results of an assessment.
-    execution: false
     name: attackiq-get-test-results
     outputs:
     - contextPath: AttackIQTestResult.Id
@@ -489,9 +418,7 @@ script:
     - contextPath: AttackIQTestResult.Count
       description: The total number of tests.
       type: Number
-  - deprecated: false
-    description: List all available assessment templates.
-    execution: false
+  - description: List all available assessment templates.
     name: attackiq-list-assessment-templates
     outputs:
     - contextPath: AttackIQ.Template.ID
@@ -512,9 +439,7 @@ script:
     - contextPath: AttackIQ.Template.Hidden
       description: Whether the template is hidden.
       type: Boolean
-  - deprecated: false
-    description: List all assets.
-    execution: false
+  - description: List all assets.
     name: attackiq-list-assets
     outputs:
     - contextPath: AttackIQ.Asset.ID
@@ -557,21 +482,13 @@ script:
       description: The name of the asset's group.
       type: String
   - arguments:
-    - default: false
-      description: The name of the new assesment
-      isArray: false
+    - description: The name of the new assesment
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The ID of the template from which to create the assesment.
-      isArray: false
+    - description: The ID of the template from which to create the assesment.
       name: template_id
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new assesment.
-    execution: false
     name: attackiq-create-assessment
     outputs:
     - contextPath: AttackIQ.Assessment.Id
@@ -653,41 +570,24 @@ script:
       description: The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
   - arguments:
-    - default: false
-      description: A comma-seperated list of asset IDs.
+    - description: A comma-seperated list of asset IDs.
       isArray: true
       name: assets
-      required: false
-      secret: false
-    - default: false
-      description: A comma-seperated list of asset group IDs.
+    - description: A comma-seperated list of asset group IDs.
       isArray: true
       name: asset_groups
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the assessment to which the assets will be added.
-      isArray: false
+    - description: The ID of the assessment to which the assets will be added.
       name: assessment_id
       required: true
-      secret: false
-    deprecated: false
     description: Adds assets or asset groups to an assesment.
-    execution: false
     name: attackiq-add-assets-to-assessment
   - arguments:
-    - default: false
-      description: The ID of the assessment to delete.
-      isArray: false
+    - description: The ID of the assessment to delete.
       name: assessment_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an assessment.
-    execution: false
     name: attackiq-delete-assessment
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
   runonce: false
   script: '-'
   type: python
