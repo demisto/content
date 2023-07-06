@@ -1882,7 +1882,7 @@ script:
     deprecated: true
     description: Runs an advanced indicator search.
     name: threatq-advanced-search
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.12.63474
   script: ''
   subtype: python3
   type: python

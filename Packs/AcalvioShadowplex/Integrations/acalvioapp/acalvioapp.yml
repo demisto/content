@@ -146,7 +146,7 @@ script:
     - contextPath: Acalvio.UnmuteDeceptionEndpoint.DateTime
       description: Date including Time
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3
