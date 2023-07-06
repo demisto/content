@@ -402,7 +402,7 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
-def module_test(client: Client, is_fetch: Optional[Any], custom_filter: Optional[str]):
+def test_module(client: Client, is_fetch: Optional[Any], custom_filter: Optional[str]):
     try:
         if client.auth_mode == "device code flow":
             raise DemistoException(
@@ -962,7 +962,7 @@ def main():  # pragma: no cover
         demisto.debug(f'Command being called is {command}')
 
         if command == 'test-module':
-            result = module_test(client, params.get('isFetch'), params.get('custom_filter'))
+            result = test_module(client, params.get('isFetch'), params.get('custom_filter'))
             return_results(result)
 
         elif command == 'fetch-incidents':

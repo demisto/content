@@ -8,7 +8,7 @@ import demistomock as demisto
 
 from freezegun import freeze_time
 from CommonServerPython import DemistoException, timedelta
-from MicrosoftCloudAppSecurity import Client, fetch_incidents, module_test
+from MicrosoftCloudAppSecurity import Client, fetch_incidents, test_module
 from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
@@ -887,7 +887,7 @@ class TestModuleTest:
     Code Analysis
 
     Objective:
-    The module_test function is used to test the connection to the Microsoft Cloud App Security API and verify that the
+    The test_module function is used to test the connection to the Microsoft Cloud App Security API and verify that the
     integration is properly configured. It checks the authentication mode, lists alerts, and optionally lists incidents and
     validates a custom filter.
 
@@ -912,13 +912,13 @@ class TestModuleTest:
     """
 
     #  Tests that the client can list alerts.
-    def test_module_test_alerts(self, mocker):
+    def test_test_module_alerts(self, mocker):
         """
         Given:
         - A client object.
 
         When:
-        - Calling the module_test function with is_fetch=False and custom_filter=None.
+        - Calling the test_module function with is_fetch=False and custom_filter=None.
 
         Then:
         - Ensure the client can list alerts.
@@ -927,19 +927,19 @@ class TestModuleTest:
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_alerts', return_value={})
 
-        result = module_test(client, False, None)
+        result = test_module(client, False, None)
 
         assert result == 'ok'
         client.list_alerts.assert_called_once_with(url_suffix='/alerts/', request_data={})
 
     #  Tests that the client can list incidents.
-    def test_module_test_incidents(self, mocker):
+    def test_test_module_incidents(self, mocker):
         """
         Given:
         - A client object.
 
         When:
-        - Calling the module_test function with is_fetch=True and custom_filter=None.
+        - Calling the test_module function with is_fetch=True and custom_filter=None.
 
         Then:
         - Ensure the client can list incidents.
@@ -948,37 +948,37 @@ class TestModuleTest:
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_incidents', return_value={})
 
-        result = module_test(client, True, None)
+        result = test_module(client, True, None)
 
         assert result == 'ok'
         client.list_incidents.assert_called_once_with(filters={}, limit=1)
 
     #  Tests that an exception is raised if the client is using device code flow.
-    def test_module_test_device_code_flow(self):
+    def test_test_module_device_code_flow(self):
         """
         Given:
         - A client object with auth_mode=device code flow.
 
         When:
-        - Calling the module_test function.
+        - Calling the test_module function.
 
         Then:
         - Ensure a DemistoException is raised.
         """
         client = Client('app_id', True, True, 'com', 'https://test.com', 'device code flow', AZURE_WORLDWIDE_CLOUD)
 
-        assert module_test(
+        assert test_module(
             client, False, None) == 'To test the device code flow Please run !microsoft-cas-auth-start and ' \
                                     '!microsoft-cas-auth-complete and check the connection using !microsoft-cas-auth-test'
 
     #  Tests that a DemistoException is raised if the custom filter is incorrectly formatted.
-    def test_module_test_custom_filter(self, mocker):
+    def test_test_module_custom_filter(self, mocker):
         """
         Given:
         - A client object.
 
         When:
-        - Calling the module_test function with is_fetch=True and an incorrectly formatted custom_filter.
+        - Calling the test_module function with is_fetch=True and an incorrectly formatted custom_filter.
 
         Then:
         - Ensure a DemistoException is raised.
@@ -987,17 +987,17 @@ class TestModuleTest:
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_incidents', return_value={})
 
-        result = module_test(client, True, '{"invalid: "json"}')
+        result = test_module(client, True, '{"invalid: "json"}')
         assert result == 'Custom Filter Error: Your custom filter format is incorrect, please try again.'
 
     #  Tests that a connection error message is returned if there is no connection.
-    def test_module_test_connection_error(self, mocker):
+    def test_test_module_connection_error(self, mocker):
         """
         Given:
         - A client object that raises a connection error.
 
         When:
-        - Calling the module_test function.
+        - Calling the test_module function.
 
         Then:
         - Ensure a connection error message is returned.
@@ -1005,18 +1005,18 @@ class TestModuleTest:
         client = Client('app_id', True, True, 'com', 'https://invalid-url.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('No connection'))
 
-        result = module_test(client, False, None)
+        result = test_module(client, False, None)
 
         assert result == 'Connection Error: The URL you entered is probably incorrect, please try again.'
 
     #  Tests that an authorization error message is returned if the API key is incorrect.
-    def test_module_test_authorization_error(self, mocker):
+    def test_test_module_authorization_error(self, mocker):
         """
         Given:
         - A client object that raises an authorization error.
 
         When:
-        - Calling the module_test function.
+        - Calling the test_module function.
 
         Then:
         - Ensure an authorization error message is returned.
@@ -1024,6 +1024,6 @@ class TestModuleTest:
         client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('Invalid token'))
 
-        result = module_test(client, False, None)
+        result = test_module(client, False, None)
 
         assert result == 'Authorization Error: make sure API Key is correctly set.'
