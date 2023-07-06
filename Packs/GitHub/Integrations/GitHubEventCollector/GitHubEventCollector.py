@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 import urllib3
-from CommonServerPython import *
-import demistomock as demisto
 import dateparser
 from collections.abc import Generator
 from SiemApiModule import *  # noqa: E402

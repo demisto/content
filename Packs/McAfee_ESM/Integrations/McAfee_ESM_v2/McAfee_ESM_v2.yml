@@ -18,11 +18,9 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - defaultvalue: alarms
   display: 'Fetch Types: cases, alarms, both (relevant only for fetch incident mode)'
@@ -31,55 +29,43 @@ configuration:
   - alarms
   - cases
   - both
-  required: false
   type: 15
 - defaultvalue: '0'
   display: 'Start fetch after ID: (relevant only for fetch incident mode)'
   name: startingFetchID
-  required: false
   type: 0
 - defaultvalue: '50'
   display: Fetch cases limit
   name: fetchLimitCases
-  required: false
   type: 0
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetchTime
-  required: false
   type: 0
 - defaultvalue: '50'
   display: Fetch alarms limit
   name: fetchLimitAlarms
-  required: false
   type: 0
 - defaultvalue: '0'
   display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert 3)
   name: timezone
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: This integration runs queries and receives alarms from McAfee Enterprise Security Manager (ESM). Supports version 10 and above.
 display: McAfee ESM v2
 name: McAfee ESM v2
 script:
   commands:
-  - deprecated: false
-    description: Returns all fields that can be used in query filters, including type information for each field.
-    execution: false
+  - description: Returns all fields that can be used in query filters, including type information for each field.
     name: esm-fetch-fields
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
-      isArray: false
       name: timeRange
       predefined:
       - LAST_3_DAYS
@@ -100,64 +86,31 @@ script:
       - CURRENT_MONTH
       - PREVIOUS_WEEK
       - CURRENT_WEEK
-      required: false
-      secret: false
-    - default: false
-      description: Filters the query results in a JSON string, using the format EsmFilter (see - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmFilter)
-      isArray: false
+    - description: Filters the query results in a JSON string, using the format EsmFilter (see - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmFilter)
       name: filters
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of query to run. Can be "EVENT", "FLOW", or "ASSETS". Default is "EVENT".
-      isArray: false
       name: queryType
       predefined:
       - EVENT
       - FLOW
       - ASSETS
-      required: false
-      secret: false
-    - default: false
-      description: Maximum time to wait before timeout (in minutes). Default is 30.
-      isArray: false
+    - description: Maximum time to wait before timeout (in minutes). Default is 30.
       name: timeOut
-      required: false
-      secret: false
-    - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z'
-      isArray: false
+    - description: 'If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z'
       name: customStart
-      required: false
-      secret: false
-    - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z'
-      isArray: false
+    - description: 'If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z'
       name: customEnd
-      required: false
-      secret: false
-    - default: false
-      description: The fields that will be selected when this query is executed.
-      isArray: false
+    - description: The fields that will be selected when this query is executed.
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: Query results can be limited to a maximum row count.
-      isArray: false
+    - description: Query results can be limited to a maximum row count.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Perform a query against McAfee ESM SIEM.
-    execution: false
     name: esm-search
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
-      isArray: false
       name: timeRange
       defaultValue: CURRENT_DAY
       predefined:
@@ -179,32 +132,16 @@ script:
       - CURRENT_MONTH
       - PREVIOUS_WEEK
       - CURRENT_WEEK
-      required: false
-      secret: false
-    - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z'
-      isArray: false
+    - description: 'If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z'
       name: customStart
-      required: false
-      secret: false
-    - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z'
-      isArray: false
+    - description: 'If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z'
       name: customEnd
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'User assigned to handle the triggered alarm. Use the ''ME'' option to use the instance user, or use format EsmUser as given by https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmUser. '
-      isArray: false
       name: assignedUser
       predefined:
       - ME
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of triggered alarms.
-    execution: false
     name: esm-fetch-alarms
     outputs:
     - contextPath: McAfeeESM.Alarm.ID
@@ -235,15 +172,9 @@ script:
       description: Alarm condition type.
       type: number
   - arguments:
-    - default: false
-      description: Filters cases that were opened before this date. In the format "<number><timeunit>". For example, 1 day,30 minutes,2 weeks,6 months,1 year.
-      isArray: false
+    - description: Filters cases that were opened before this date. In the format "<number><timeunit>". For example, 1 day,30 minutes,2 weeks,6 months,1 year.
       name: since
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of cases from McAfee ESM.
-    execution: false
     name: esm-get-case-list
     outputs:
     - contextPath: McAfeeESM.Case.ID
@@ -264,40 +195,20 @@ script:
   - arguments:
     - default: true
       description: The name of the case.
-      isArray: false
       name: summary
       required: true
-      secret: false
-    - default: false
-      defaultValue: Open
+    - defaultValue: Open
       description: The status of the case. Run the esm-get-case-statuses command to view all statuses. Default is Open.
-      isArray: false
       name: status
-      required: false
-      secret: false
-    - default: false
-      defaultValue: me
+    - defaultValue: me
       description: The user assigned to the case.
-      isArray: false
       name: assignee
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The severity of the case (1 - 100). Default is 1.
-      isArray: false
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: The organization assigned to the case. Run the esm-get-organization-list command to view all organizations.
-      isArray: false
+    - description: The organization assigned to the case. Run the esm-get-organization-list command to view all organizations.
       name: organization
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a case to the system.
-    execution: false
     name: esm-add-case
     outputs:
     - contextPath: McAfeeESM.Case.ID
@@ -330,49 +241,21 @@ script:
   - arguments:
     - default: true
       description: The ID of the case.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The name of the case.
-      isArray: false
+    - description: The name of the case.
       name: summary
-      required: false
-      secret: false
-    - default: false
-      description: The new severity of the case (1 - 100).
-      isArray: false
+    - description: The new severity of the case (1 - 100).
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: The user assigned to the case.
-      isArray: false
+    - description: The user assigned to the case.
       name: assignee
-      required: false
-      secret: false
-    - default: false
-      description: The new status of the case. Run the esm-get-case-statuses command to view all statuses.
-      isArray: false
+    - description: The new status of the case. Run the esm-get-case-statuses command to view all statuses.
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: The organization assigned to the case. Run the esm-get-organization-list command to view all organizations.
-      isArray: false
+    - description: The organization assigned to the case. Run the esm-get-organization-list command to view all organizations.
       name: organization
-      required: false
-      secret: false
-    - default: false
-      description: 'Adding general notes to the case. '
-      isArray: false
+    - description: 'Adding general notes to the case. '
       name: notes
-      required: false
-      secret: false
-    deprecated: false
     description: Edit the details of an existing case.
-    execution: false
     name: esm-edit-case
     outputs:
     - contextPath: McAfeeESM.Case.ID
@@ -402,47 +285,30 @@ script:
     - contextPath: McAfeeESM.Case.Notes
       description: List of the case's notes.
       type: Unknown
-  - deprecated: false
-    description: Returns a list of valid case statuses from the system.
-    execution: false
+  - description: Returns a list of valid case statuses from the system.
     name: esm-get-case-statuses
   - arguments:
     - default: true
       description: The name of the case status to edit.
-      isArray: false
       name: original_name
       required: true
-      secret: false
-    - default: false
-      description: The new name for the case status.
-      isArray: false
+    - description: The new name for the case status.
       name: new_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the status will display in the case pane. Can be "True" or "False". Default is "True".
-      isArray: false
       name: show_in_case_pane
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Edits the status of a case.
-    execution: false
     name: esm-edit-case-status
   - arguments:
     - default: true
       description: The ID of the case.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Returns the details of an existing case.
-    execution: false
     name: esm-get-case-detail
     outputs:
     - contextPath: McAfeeESM.Case.ID
@@ -473,15 +339,10 @@ script:
       description: List of the case's notes.
       type: Unknown
   - arguments:
-    - default: false
-      description: Comma-separated list of event IDs.
-      isArray: false
+    - description: Comma-separated list of event IDs.
       name: ids
       required: true
-      secret: false
-    deprecated: false
     description: Returns case event details.
-    execution: false
     name: esm-get-case-event-list
     outputs:
     - contextPath: McAfeeESM.CaseEvent.ID
@@ -496,39 +357,25 @@ script:
   - arguments:
     - default: true
       description: The name of the case status.
-      isArray: false
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Whether the status will display in the case pane. Can be "True" or "False". Default is "True".
-      isArray: false
       name: show_in_case_pane
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a status to the specified case.
-    execution: false
     name: esm-add-case-status
   - arguments:
     - default: true
       description: The name of the case status to delete.
-      isArray: false
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the status of a case.
-    execution: false
     name: esm-delete-case-status
-  - deprecated: false
-    description: Returns a case organization.
-    execution: false
+  - description: Returns a case organization.
     name: esm-get-organization-list
     outputs:
     - contextPath: McAfeeESM.Organization.ID
@@ -537,9 +384,7 @@ script:
     - contextPath: McAfeeESM.Organization.Name
       description: The name of the organization.
       type: string
-  - deprecated: false
-    description: Returns a list of all users.
-    execution: false
+  - description: Returns a list of all users.
     name: esm-get-user-list
     outputs:
     - contextPath: McAfeeESM.User.ID
@@ -566,10 +411,7 @@ script:
       isArray: true
       name: alarmIds
       required: true
-      secret: false
-    deprecated: false
     description: Marks triggered alarms, as acknowledged.
-    execution: false
     name: esm-acknowledge-alarms
   - arguments:
     - default: true
@@ -577,10 +419,7 @@ script:
       isArray: true
       name: alarmIds
       required: true
-      secret: false
-    deprecated: false
     description: Marks triggered alarms, as unacknowledged.
-    execution: false
     name: esm-unacknowledge-alarms
   - arguments:
     - default: true
@@ -588,21 +427,14 @@ script:
       isArray: true
       name: alarmIds
       required: true
-      secret: false
-    deprecated: false
     description: Deletes triggered alarms.
-    execution: false
     name: esm-delete-alarms
   - arguments:
     - default: true
       description: The event for which to get the details. Run the esm-list-alarm-events command to get the ID.
-      isArray: false
       name: eventId
       required: true
-      secret: false
-    deprecated: false
     description: Gets the details for the triggered alarm.
-    execution: false
     name: esm-get-alarm-event-details
     outputs:
     - contextPath: McAfeeESM.AlarmEvent.ID
@@ -665,13 +497,9 @@ script:
   - arguments:
     - default: true
       description: The alarm for which to get the details. Run the esm-fetch-alarms command to get the ID.
-      isArray: false
       name: alarmId
       required: true
-      secret: false
-    deprecated: false
     description: Gets a list of events related to the alarm.
-    execution: false
     name: esm-list-alarm-events
     outputs:
     - contextPath: McAfeeESM.AlarmEvent.ID
@@ -715,52 +543,38 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to include hidden watchlists. Can be true or false.
-      isArray: false
       name: hidden
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to include dynamic watchlists. Can be true or false.
-      isArray: false
       name: dynamic
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to include write only watchlists. Can be true or false.
-      isArray: false
       name: write_only
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to include indexed only watchlists. Can be true or false.
-      isArray: false
       name: indexed_only
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    deprecated: false
     description: Returns a list of watchlists' names and IDs.
-    execution: false
     name: esm-get-watchlists
     outputs:
     - contextPath: McAfeeESM.Watchlist.name
@@ -775,14 +589,10 @@ script:
   - arguments:
     - default: true
       description: The new watchlist name.
-      isArray: false
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the new watchlist. Can be "IPAddress", "Hash", "SHA1", "DSIDSigID", "Port" "MacAddress", "NormID", "AppID", "CommandID", "DomainID" "HostID", "ObjectID", "Filename", or "File_Hash".
-      isArray: false
       name: type
       predefined:
       - IPAddress
@@ -800,10 +610,7 @@ script:
       - Filename
       - File_Hash
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new watchlist.
-    execution: false
     name: esm-create-watchlist
     outputs:
     - contextPath: McAfeeESM.Watchlist.name
@@ -816,98 +623,50 @@ script:
       description: The type of the watchlist.
       type: string
   - arguments:
-    - default: false
-      description: The watchlist IDs to delete.
+    - description: The watchlist IDs to delete.
       isArray: true
       name: ids
-      required: false
-      secret: false
-    - default: false
-      description: The watchlist names to delete.
+    - description: The watchlist names to delete.
       isArray: true
       name: names
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes a watchlist.
-    execution: false
     name: esm-delete-watchlist
   - arguments:
-    - default: false
-      description: The watchlist name.
-      isArray: false
+    - description: The watchlist name.
       name: watchlist_name
-      required: false
-      secret: false
-    - default: false
-      description: The watchlist ID.
-      isArray: false
+    - description: The watchlist ID.
       name: watchlist_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma separated list of values to add to a watchlist.
+    - description: A comma separated list of values to add to a watchlist.
       isArray: true
       name: values
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new watchlist entry.
-    execution: false
     name: esm-watchlist-add-entry
   - arguments:
-    - default: false
-      description: The watchlist name.
-      isArray: false
+    - description: The watchlist name.
       name: watchlist_name
-      required: false
-      secret: false
-    - default: false
-      description: The watchlist ID.
-      isArray: false
+    - description: The watchlist ID.
       name: watchlist_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma separated list of values to remove from the watchlist.
+    - description: A comma separated list of values to remove from the watchlist.
       isArray: true
       name: values
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a watchlist entry.
-    execution: false
     name: esm-watchlist-delete-entry
   - arguments:
-    - default: false
-      description: The watchlist name.
-      isArray: false
+    - description: The watchlist name.
       name: watchlist_name
-      required: false
-      secret: false
-    - default: false
-      description: The watchlist ID.
-      isArray: false
+    - description: The watchlist ID.
       name: watchlist_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum value count. Default is 50.
-      isArray: false
       name: limit
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page of the results to retrieve. Default is 0.
-      isArray: false
       name: offset
       required: true
-      secret: false
-    deprecated: false
     description: Returns a list of watchlist entries.
-    execution: false
     name: esm-watchlist-list-entries
     outputs:
     - contextPath: McAfeeESM.Watchlist.data
@@ -916,11 +675,8 @@ script:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
       type: string
-  dockerimage: demisto/python3:3.10.8.37753
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
