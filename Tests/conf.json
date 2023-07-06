@@ -21,6 +21,29 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE SIEM ingestion - Get Incident Data",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": " Test Playbook - MDE - Retrieve File",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
         },
@@ -5442,6 +5465,10 @@
             "integrations": "CIRCL CVE Search",
             "playbookID": "CIRCL CVE Search - Test",
             "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Kaspersky Security Center",
+            "playbookID": "Kaspersky Security Center - Test"
         }
     ],
     "skipped_tests": {
@@ -5465,7 +5492,7 @@
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
         "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
-        "Protectwise-Test": "Issue 28168",
+        "Protectwise-Test": "Issue CRTX-86776",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -5748,7 +5775,8 @@
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
-        "SentinelOne V2": "No instance - developed by partner"
+        "SentinelOne V2": "No instance - developed by partner",
+        "CheckPhish": "Issue CRTX-86562"
     },
     "nightly_packs": [
         "CommonScripts",
