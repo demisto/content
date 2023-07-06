@@ -2,11 +2,10 @@ comment: Trend graph for incidents created per month
 commonfields:
   id: HealthCheckIncidentsCreatedMonthly
   version: -1
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.11.58677
 enabled: true
 name: HealthCheckIncidentsCreatedMonthly
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

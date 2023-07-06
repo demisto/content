@@ -2,10 +2,8 @@ comment: Returns a table widget of enabled feed integration instances that error
 commonfields:
   id: FeedIntegrationErrorWidget
   version: -1
-enabled: false
 name: FeedIntegrationErrorWidget
 script: '-'
-system: false
 tags:
 - widget
 timeout: '0'

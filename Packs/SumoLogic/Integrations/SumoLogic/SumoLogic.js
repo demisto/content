@@ -1,14 +1,19 @@
 var server = params.url.replace(/[\/]+$/, '') + '/' + params.apiVersion + '/';
 
 var doReq = function(method, path, parameters, cookies) {
+    var username = params.credentialsAccess.identifier || params.accessID;
+    var password = params.credentialsAccess.password || params.accessKey;
+    if ((!username)||(!password)){
+        return 'Access key and Access ID must be provided.';
+    }
     var result = http(
         server + path + (method === 'GET' && parameters ? encodeToURLQuery(parameters) : ''),
         {
             Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json']},
             Method: method,
             Body: method == 'POST' && parameters ? JSON.stringify(parameters) : '',
-            Username: params.accessID,
-            Password: params.accessKey,
+            Username: username,
+            Password: password,
             Cookies: cookies
         },
         params.insecure,

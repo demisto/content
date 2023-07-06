@@ -151,6 +151,9 @@ def main():
                         else:
                             attachment['FileData'] = None
 
+            if isinstance(email.get("HTML"), bytes):
+                email['HTML'] = email.get("HTML").decode('utf-8')
+
             results.append(CommandResults(
                 outputs_prefix='Email',
                 outputs=email,

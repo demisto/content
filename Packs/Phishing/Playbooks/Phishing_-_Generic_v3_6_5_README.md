@@ -10,20 +10,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Detonate File - Generic
-* Process Microsoft's Anti-Spam Headers
-* Phishing - Indicators Hunting
 * Entity Enrichment - Phishing v2
-* Email Address Enrichment - Generic v2.1
+* TIM - Indicator Relationships Analysis
 * Process Email - Generic v2
 * Calculate Severity - Generic v2
-* Phishing - Machine Learning Analysis
-* TIM - Indicator Relationships Analysis
 * Extract Indicators From File - Generic v2
+* Spear Phishing Investigation
+* Email Address Enrichment - Generic v2.1
 * Search And Delete Emails - Generic v2
-* Detect & Manage Phishing Campaigns
+* Phishing - Machine Learning Analysis
+* Phishing - Indicators Hunting
 * Block Indicators - Generic v3
+* Detect & Manage Phishing Campaigns
 * Detonate URL - Generic
+* Detonate File - Generic
+* Process Microsoft's Anti-Spam Headers
 
 ### Integrations
 
@@ -31,17 +32,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* CheckEmailAuthenticity
+* SetAndHandleEmpty
 * Set
 * AssignAnalystToIncident
-* SetAndHandleEmpty
-* CheckEmailAuthenticity
 
 ### Commands
 
 * setIncident
-* send-mail
 * setIndicator
 * closeInvestigation
+* send-mail
 
 ## Playbook Inputs
 
@@ -72,8 +73,9 @@ This playbook does not use any integrations.
 | ListenerMailbox | The mailbox which is being used to fetch phishing incidents. This mailbox would be excluded in the "Phishing - Indicators Hunting" playbook.<br/>In case the value of this input is empty, the value of the "Email To" incident field will be automatically used as the listener mailbox. |  | Optional |
 | SendMailInstance | The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used \(default\). |  | Optional |
 | OriginalAuthenticationHeader | This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.<br/>The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header. |  | Optional |
-| UserEngagement | Specify whether to engage with the user via email for investigation updates.<br/>Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement. | false | Optional |
-| TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | false | Optional |
+| UserEngagement | Specify whether to engage with the user via email for investigation updates.<br/>Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement. | True | Optional |
+| TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | False | Optional |
+| KeyWordsToSearch | A comma-separated or list of keywords to search in the email body.<br/>For example: name of the organization finance app that the attacker might impersonate.<br/>This input is being used in the "Spear Phishing Investigation" sub-playbook. |  | Optional |
 
 ## Playbook Outputs
 

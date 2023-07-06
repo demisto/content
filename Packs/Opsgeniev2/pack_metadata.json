@@ -1,8 +1,9 @@
 {
-    "name": "Opsgenie v2",
-    "description": "Create and read alerts, schedules and on-call information from OpsGenie.",
+    "name": "Opsgenie v2 (Deprecated)",
+    "description": "Deprecated. Use OpsGenie instead.",
     "support": "community",
-    "currentVersion": "1.0.5",
+    "hidden": true,
+    "currentVersion": "1.0.6",
     "author": "Adam Baumeister",
     "url": "",
     "email": "",

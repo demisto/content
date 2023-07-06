@@ -1,0 +1,21 @@
+{
+    "test_case_1":{
+        "args": {
+            "description": "test_asset",
+            "ip_list": "8.8.8.8",
+            "name": "test_asset"
+          },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"assetDataFields":[],"canManage":"true","canUse":"true","context":"",
+        "createdTime":"1687095503","creator":{"firstname":"Yuval","id":"39","lastname":"test","username":"yuv","uuid":"uuid"},
+        "description":"test_asset","groups":[],"id":"430","ioFirstSyncTime":"-1","ioLastSyncFailure":"-1","ioLastSyncSuccess":"-1",
+        "ioSyncErrorDetails":null,"ioSyncStatus":"Not Synced","ipCount":-1,"modifiedTime":"1687095503","name":"test_asset",
+        "owner":{"firstname":"Yuval","id":"39","lastname":"Hayun","username":"yuv","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},"repositories":[{"ipCount":"-1",
+        "repository":{"description":"","id":"1","name":"Local","type":"Local","uuid":"uuid"}}],
+        "status":"0","tags":"","targetGroup":{"description":"","id":-1,"name":""},"template":{"description":"","id":-1,"name":""},
+        "type":"static","typeFields":{"definedIPs":"8.8.8.8"},"uuid":"uuid"},"timestamp":1687095503,"type":"regular","warnings":[]}
+        ,
+        "expected_hr": "### Asset created successfully\n|ID|Name|OwnerName|\n|---|---|---|\n| 430 | test_asset | yuv |\n",
+        "expected_ec": {"ID": "430", "Name": "test_asset", "OwnerName": "yuv"}
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "scripts": [],
+  "integrations": [],
+  "TestPlaybooks": [],
+  "ParsingRules": [
+    {
+      "MyXSIAMPack": {
+        "name": "MyXSIAMPack",
+        "file_path": "Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml",
+        "source": [
+            "github.com",
+            "demisto",
+            "content"
+        ],
+        "fromversion": "6.10.0",
+        "pack": "MyXSIAMPack",
+        "marketplaces": [
+            "marketplacev2"
+        ]
+      }
+
+    }
+  ],
+  "Packs": {}
+}

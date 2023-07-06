@@ -1,7 +1,6 @@
 commonfields:
   id: c2315777-c63f-44ac-82f6-9b5395dd96d7
   version: 5
-vcShouldKeepItemLegacyProdMachine: false
 name: automationwitherrors
 script: |+
   """This is to test mypy catches the error on line 40 where 'Basescript doesnt have a closing quote,
@@ -76,7 +75,6 @@ enabled: true
 scripttarget: 0
 subtype: python3
 pswd: ""
-runonce: false
 runas: DBotWeakRole
 engineinfo: {}
 mainengineinfo: {}

@@ -10,8 +10,8 @@ var NON_SSL_PORT = '50105';
 var LAST_HOURS = 'lastHours';
 var LAST_MINUTES = 'lastMinutes';
 var QUERY = 'query';
-var USER_NAME = params.username;
-var PASSWORD = params.password;
+var USER_NAME = params.user_creds ? params.user_creds.identifier : params.username;
+var PASSWORD = (params.user_creds || params).password;
 
 function fixUrl(base) {
     var url = base.trim();

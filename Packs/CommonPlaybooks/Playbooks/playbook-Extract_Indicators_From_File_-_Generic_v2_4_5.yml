@@ -800,6 +800,24 @@ tasks:
                     right:
                       value:
                         simple: docm
+                - - operator: isNotEqualString
+                    left:
+                       value:
+                         simple: File.Extension
+                       iscontext: true
+                    right:
+                       value:
+                         simple: oft
+                    ignorecase: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: oft
+                    ignorecase: true
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -988,6 +1006,24 @@ tasks:
               right:
                 value:
                   simple: xlsm
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: oft
+              ignorecase: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: oft
+              ignorecase: true
           accessor: EntryID
           transformers:
           - operator: uniq
