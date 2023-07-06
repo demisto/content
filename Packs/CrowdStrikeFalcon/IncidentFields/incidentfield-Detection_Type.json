@@ -1,10 +1,10 @@
 {
-    "id": "incident_detectiontype",
+    "id": "incident_crowdstrikefalcondetectiontype",
     "version": -1,
     "modified": "2023-06-14T14:10:11.019166021Z",
     "name": "CrowdStrike Falcon Detection Type",
     "ownerOnly": false,
-    "cliName": "detectiontype",
+    "cliName": "crowdstrikefalcondetectiontype",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

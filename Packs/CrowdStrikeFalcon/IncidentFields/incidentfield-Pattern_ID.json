@@ -1,10 +1,10 @@
 {
-    "id": "incident_patternid",
+    "id": "incident_crowdstrikefalconpatternid",
     "version": -1,
     "modified": "2023-06-14T13:56:35.287509044Z",
     "name": "CrowdStrike Falcon Pattern ID",
     "ownerOnly": false,
-    "cliName": "patternid",
+    "cliName": "crowdstrikefalconpatternid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

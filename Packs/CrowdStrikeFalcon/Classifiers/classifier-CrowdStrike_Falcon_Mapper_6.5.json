@@ -4,7 +4,7 @@
     "id": "CrowdStrike Falcon-Mapper",
     "mapping": {
         "CrowdStrike Falcon IDP Detection": {
-			"dontMapEventToLabels": true,
+			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Account ID": {
 					"simple": "source_endpoint_account_object_guid"
