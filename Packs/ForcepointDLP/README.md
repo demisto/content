@@ -34,4 +34,4 @@ You can configure the specific vendor and product for this instance.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, change the format to *CEF*.
 
-*NOTE*: The log format is CEF, the name of the *Vender* and the *Product* will be based on vendor and product fields in the raw data.  
+*NOTE*: The log format is CEF. The name of the *Vender* and the *Product* will be based on the vendor and product fields in the raw data.  
