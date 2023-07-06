@@ -1,5 +1,5 @@
-var apiid = params.apiid;
-var apikey = params.apikey;
+var apiid = params.creds ? params.creds.identifier : params.apiid;
+var apikey = params.creds ? params.creds.password : params.apikey;
 var base = 'https://my.incapsula.com';
 var proxy = params.proxy;
 

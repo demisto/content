@@ -1,0 +1,229 @@
+id: YARA - File Scan
+version: -1
+name: YARA - File Scan
+fromversion: 6.8.0
+description: |-
+  A playbook to run YARA scan against uploaded file.
+  To run the playbook, provide the YARA rule content and the entry ID of the file you intend to scan.
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c4bd7186-7d67-4ee5-8e97-ab3e451af4e7
+    type: start
+    task:
+      id: c4bd7186-7d67-4ee5-8e97-ab3e451af4e7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c3951e76-5254-4892-8711-3efd871b16c5
+    type: condition
+    task:
+      id: c3951e76-5254-4892-8711-3efd871b16c5
+      version: -1
+      name: Check If Entry ID and YARA rule content exists
+      description: Checks whether Entry ID and YARA rule content inputs provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.YARA
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b5263cb2-a2ae-41ce-8c1b-3f6f593c402c
+    type: regular
+    task:
+      id: b5263cb2-a2ae-41ce-8c1b-3f6f593c402c
+      version: -1
+      name: Run YARA scan
+      description: Performs a YARA scan on the specified files.
+      scriptName: YaraScan
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryIDs:
+        complex:
+          root: inputs.EntryID
+      yaraRule:
+        complex:
+          root: inputs.YARA
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ffe12c73-1999-44fe-8f58-a3d1108530b5
+    type: title
+    task:
+      id: ffe12c73-1999-44fe-8f58-a3d1108530b5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.54,
+      "1_3_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    complex:
+      root: File
+      accessor: EntryID
+      transformers:
+      - operator: uniq
+  required: false
+  description: The entry ID of a file to scan
+  playbookInputQuery:
+- key: YARA
+  value: {}
+  required: false
+  description: The YARA rule content
+  playbookInputQuery: null
+outputs:
+- contextPath: Yara
+  type: unknown
+  description: The Yara context path
+- contextPath: Yara.Filename
+  description: The filename of the file that was scanned.
+  type: string
+- contextPath: Yara.HasError
+  description: Whether there was an error when performing the scan.
+  type: boolean
+- contextPath: Yara.HasMatch
+  description: Whether the file matched any of the rules.
+  type: boolean
+- contextPath: Yara.entryID
+  description: The entry ID of the scanned file.
+  type: string
+- contextPath: Yara.fileID
+  description: The file ID of the scanned file.
+  type: string
+- contextPath: Yara.MatchCount
+  description: The number of rules that matched the file.
+  type: number
+- contextPath: Errors
+  description: A list of errors that occurred during the scan.
+- contextPath: Matches
+  description: The matches from the YARA scan.
+  type: unknown
+- contextPath: Matches.Meta
+  description: Metadata about the rule (as defined in the rule itself).
+- contextPath: Matches.Namespace
+  description: The namespace defined in the rule.
+  type: string
+- contextPath: Matches.RuleName
+  description: The rule name that matched.
+  type: string
+- contextPath: Matches.Strings
+  description: A list of strings that the rule matched.
+  type: string
+- contextPath: Matches.Tags
+  description: A list of tags that are defined in the rule.
+quiet: true
+tests:
+- No tests (auto formatted)

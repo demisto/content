@@ -11,14 +11,12 @@ comment: Verifies that a given object includes all the given fields.
 commonfields:
   id: VerifyObjectFieldsList
   version: -1
-enabled: false
 name: VerifyObjectFieldsList
 outputs:
 - contextPath: FieldsExists
   description: If true, all the given fields exist in the object.
   type: boolean
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'

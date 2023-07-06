@@ -30,9 +30,8 @@ configuration:
 - display: "The path to the public certificate required to authenticate."
   name: public_cert
   type: 0
-  required: false
 script:
-  commands:    
+  commands:
   - name: exterro-ftk-trigger-workflow
     arguments:
     - name: automation_id
@@ -40,24 +39,18 @@ script:
       type: number
       description: The Id of the automation workflow.
     - name: case_name
-      required: false
       description: The name of the case.
     - name: case_ids
-      required: false
       isArray: true
       description: Value of caseids.
     - name: evidence_path
-      required: false
       description: The filepath of the evidence.
     - name: target_ips
-      required: false
       isArray: true
       description: Targetips for the collection
     - name: search_tag_path
-      required: false
       description: The filepath of the search and tag .
     - name: export_path
-      required: false
       description: The path to export files.
     outputs:
     - contextPath: ExterroFTK.Workflow.Status
@@ -65,7 +58,6 @@ script:
       type: string
     description: Returns a boolean value.
   dockerimage: demisto/accessdata:1.1.0.33872
-  runonce: false
   script: '-'
   type: python
   subtype: python3

@@ -1,44 +1,26 @@
 args:
 - description: 'The type of deletion - soft allows restoring, hard does not. Not relevant for O365.'
-  isArray: false
   name: delete_type
-  required: false
-  secret: false
   auto: PREDEFINED
   predefined:
   - soft
   - hard
-- default: false
-  description: 'The brand from which to delete this email. The default value is the incident using brand.'
-  isArray: false
+- description: 'The brand from which to delete this email. The default value is the incident using brand.'
   name: delete_from_brand
-  required: false
-  secret: false
-- default: false
-  description: 'Argument used for the generic polling flow within the security and compliance search.'
-  isArray: false
+- description: 'Argument used for the generic polling flow within the security and compliance search.'
   name: search_name
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Whether to use the Cortex XSOAR built-in polling to retrieve the result when it's ready.
-  isArray: false
   name: polling
   predefined:
   - 'true'
   - 'false'
-- default: false
-  description: Interval in seconds between each poll.
-  isArray: false
+- description: Interval in seconds between each poll.
   name: interval_in_seconds
-  required: false
-  secret: false
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to'
 commonfields:
   id: DeleteReportedEmail
   version: -1
-enabled: false
 name: DeleteReportedEmail
 polling: true
 outputs:
@@ -61,7 +43,6 @@ outputs:
   description: 'The message ID of the deleted email.'
   type: String
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'

@@ -1,22 +1,18 @@
 args:
-- default: false
-  description: A pipe ("|") separated list of URL inputs.
+- description: A pipe ("|") separated list of URL inputs.
   isArray: true
   name: input
   required: true
-  secret: false
 comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL. If more than one URL is passed to the formatter, the separator must be a pipe (\"|\")."
 commonfields:
   id: FormatURL
   version: -1
-enabled: false
 name: FormatURL
 outputs:
 - contextPath: URL
   description: URL formatted.
   type: String
 script: '-'
-system: false
 tags:
 - indicator-format
 timeout: '0'

@@ -1,22 +1,13 @@
 args:
-- default: false
-  description: Instance parameters. Can be acquired from the GetInstanceParameter
-    command.
-  isArray: false
+- description: Instance parameters. Can be acquired from the GetInstanceParameter command.
   name: parameters
   required: true
-  secret: false
-- default: false
-  description: Keys to check the negative result of the Test button.
-  isArray: false
+- description: Keys to check the negative result of the Test button.
   name: keys
-  required: false
-  secret: false
 comment: Click the "Test" button and return if the test failed.
 commonfields:
   id: TroubleshootTestInstance
   version: -1
-enabled: false
 name: TroubleshootTestInstance
 outputs:
 - contextPath: TroubleshootTestInstance.instance_name
@@ -32,7 +23,6 @@ outputs:
   description: Whether the test passed.
   type: Boolean
 script: '-'
-system: false
 tags:
 - troubleshoot
 timeout: '0'

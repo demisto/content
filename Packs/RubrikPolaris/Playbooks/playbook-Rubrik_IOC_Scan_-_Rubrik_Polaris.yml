@@ -66,6 +66,9 @@ tasks:
         complex:
           root: RubrikPolaris
           accessor: EndDate
+      max_file_size:
+        complex:
+          root: inputs.MaxFileSize
       object_id:
         complex:
           root: inputs.ObjectId
@@ -1843,6 +1846,12 @@ inputs:
   value: {}
   required: false
   description: Name of the scan. Default value is "PAXSOAR-1.1.0".
+  playbookInputQuery:
+- key: MaxFileSize
+  value:
+    simple: '5000000'
+  required: false
+  description: Maximum size of the file in bytes that will be included in the scan. The maximum allowed size is 15000000 bytes.
   playbookInputQuery:
 outputs:
 - contextPath: RubrikPolaris.RecoverableSnapshot.id

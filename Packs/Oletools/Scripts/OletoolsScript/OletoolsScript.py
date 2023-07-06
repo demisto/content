@@ -1,11 +1,15 @@
-from CommonServerPython import *
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import oletools.oleid
 from oletools.olevba import VBA_Parser
 import subprocess
 from oletools import crypto
 import os
 import hashlib
+# suppress logs from oletools
+import logging
+vba_logger = logging.getLogger("olevba")
+vba_logger.setLevel(logging.CRITICAL)
 
 
 class OleClient:
