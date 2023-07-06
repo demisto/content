@@ -301,7 +301,7 @@ class Client(BaseClient):
     def search(self, term, limit):
         uri = "users"
         query_params = {
-            'q': encode_string_results(term),
+            'status': encode_string_results(term),
             'limit': limit
         }
         return self._http_request(
