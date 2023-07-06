@@ -14,20 +14,16 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - defaultvalue: '300'
   display: 'Max. Polling Time (in seconds):'
   name: maxpolls
-  required: false
   type: 0
 - display: Verbose (show log in case of error)
   name: verbose
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Deprecated. Use Joe Security v2 instead.
 display: Joe Security (Deprecated)
@@ -36,53 +32,33 @@ script:
   commands:
   - deprecated: true
     description: Check if Joe Sandbox is online or in maintenance mode.
-    execution: false
     name: joe-is-online
   - arguments:
     - default: true
       description: sample url
-      isArray: false
       name: url
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Should the command poll for the result of the analysis
-      isArray: false
       name: should_wait
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: 'Comments for the analysis '
-      isArray: false
+    - description: 'Comments for the analysis '
       name: comments
-      required: false
-      secret: false
-    - default: false
-      defaultValue: w7x64
+    - defaultValue: w7x64
       description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
-      isArray: false
       name: systems
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Enable full internet access. Default is True
-      isArray: false
       name: internet-access
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     deprecated: true
     description: Submit a url for analysis.
-    execution: false
     name: joe-analysis-submit-url
     outputs:
     - contextPath: Joe.Analysis.ID
@@ -145,37 +121,22 @@ script:
   - arguments:
     - default: true
       description: sample url
-      isArray: false
       name: url
       required: true
-      secret: false
-    - default: false
-      description: 'Comments for the analysis '
-      isArray: false
+    - description: 'Comments for the analysis '
       name: comments
-      required: false
-      secret: false
-    - default: false
-      defaultValue: w7x64
+    - defaultValue: w7x64
       description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
-      isArray: false
       name: systems
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Enable full internet access. Default is True
-      isArray: false
       name: internet-access
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     deprecated: true
     description: Submit a url for analysis.
-    execution: false
     name: joe-detonate-url
     outputs:
     - contextPath: Joe.Analysis.ID
@@ -241,10 +202,8 @@ script:
       isArray: true
       name: webid
       required: true
-      secret: false
     deprecated: true
     description: Show information about an analysis.
-    execution: false
     name: joe-analysis-info
     outputs:
     - contextPath: Joe.Analysis.ID
@@ -306,7 +265,6 @@ script:
       type: string
   - deprecated: true
     description: List all analyses.
-    execution: false
     name: joe-list-analysis
     outputs:
     - contextPath: Joe.Analysis.ID
@@ -369,53 +327,29 @@ script:
   - arguments:
     - default: true
       description: War Room entry of a file (for example, 3245@4)
-      isArray: false
       name: file_id
-      required: false
-      secret: false
-    - default: false
-      description: Url to a sample file, supports comma-seperated arrays
-      isArray: false
+    - description: Url to a sample file, supports comma-seperated arrays
       name: sample_url
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Should the command poll for the result of the analysis
-      isArray: false
       name: should_wait
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Comments for the analysis
-      isArray: false
+    - description: Comments for the analysis
       name: comments
-      required: false
-      secret: false
-    - default: false
-      description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
-      isArray: false
+    - description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
       name: systems
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Enable full internet access. Default is True
-      isArray: false
       name: internet-access
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     deprecated: true
     description: Submit a sample for analysis.
-    execution: false
     name: joe-analysis-submit-sample
     outputs:
     - contextPath: Joe.Analysis.ID
@@ -478,15 +412,11 @@ script:
   - arguments:
     - default: true
       description: Web ID
-      isArray: false
       name: webid
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: html
       description: The resource type to download. Defaults to html.
-      isArray: false
       name: type
       predefined:
       - html
@@ -495,11 +425,8 @@ script:
       - pdf
       - xml
       - iocjson
-      required: false
-      secret: false
     deprecated: true
     description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
-    execution: false
     name: joe-download-report
     outputs:
     - contextPath: InfoFile.Name
@@ -523,42 +450,22 @@ script:
   - arguments:
     - default: true
       description: War Room entry of a file (for example, 3245@4)
-      isArray: false
       name: file_id
-      required: false
-      secret: false
-    - default: false
-      description: Url to a sample file
-      isArray: false
+    - description: Url to a sample file
       name: sample_url
-      required: false
-      secret: false
-    - default: false
-      description: Comments for the analysis
-      isArray: false
+    - description: Comments for the analysis
       name: comments
-      required: false
-      secret: false
-    - default: false
-      description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
-      isArray: false
+    - description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
       name: systems
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Enable full internet access. Default is True
-      isArray: false
       name: internet-access
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     deprecated: true
     description: Submit a sample for analysis.
-    execution: false
     name: joe-detonate-file
     outputs:
     - contextPath: Joe.Analysis.ID
@@ -621,13 +528,10 @@ script:
   - arguments:
     - default: true
       description: 'Search string which will search in the following fields only: webid, md5, sha1, sha256, filename, URL, comments.'
-      isArray: false
       name: query
       required: true
-      secret: false
     deprecated: true
     description: Search through all analyses.
-    execution: false
     name: joe-search
     outputs:
     - contextPath: Joe.Analysis.ID
@@ -690,13 +594,10 @@ script:
   - arguments:
     - default: true
       description: Web ID
-      isArray: false
       name: webid
       required: true
-      secret: false
     deprecated: true
     description: Download the sample file of an analysis. for security reasons, the extension will be "dontrun"
-    execution: false
     name: joe-download-sample
     outputs:
     - contextPath: File.Size
@@ -729,7 +630,6 @@ script:
     - contextPath: File.Extension
       description: File Extension
       type: string
-  isfetch: false
   runonce: false
   script: '-'
   type: python

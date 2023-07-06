@@ -5,7 +5,6 @@ import random
 from typing import Counter
 
 
-
 def parse_data(resources_name):
     resources_name_data = []
 

@@ -10,11 +10,9 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -34,7 +32,6 @@ configuration:
   defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
 description: CIRCL hash lookup is a public API to lookup hash values against known database of files. NSRL RDS database is included and many others are also included. The API is accessible via HTTP ReST API and the API is also described as an OpenAPI. The service is free and served as a best-effort basis.
 display: CIRCLEHashlookup
@@ -138,7 +135,6 @@ script:
       description: The top 100 of most queried values
       type: string
   dockerimage: demisto/python3:3.10.11.54132
-  runonce: false
   script: ''
   subtype: python3
   type: python

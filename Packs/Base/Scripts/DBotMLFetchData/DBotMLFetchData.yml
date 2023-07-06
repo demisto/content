@@ -1,138 +1,70 @@
 args:
-- default: false
-  description: Additional text by which to query incidents.
-  isArray: false
+- description: Additional text by which to query incidents.
   name: query
-  required: false
-  secret: false
-- default: false
-  defaultValue: Phishing,*phish*
+- defaultValue: Phishing,*phish*
   description: A comma-separatetd list of incident types by which to filter.
-  isArray: false
   name: incidentTypes
-  required: false
-  secret: false
-- default: false
-  description: The start date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
-  isArray: false
+- description: The start date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   name: fromDate
-  required: false
-  secret: false
-- default: false
-  description: The end date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
-  isArray: false
+- description: The end date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   name: toDate
-  required: false
-  secret: false
-- default: false
-  defaultValue: '3000'
+- defaultValue: '3000'
   description: The maximum number of incidents to fetch. The default value is 3000.
-  isArray: false
   name: limit
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: 'Whether to query and fetch incident context. Can be: "true" or "false". The default is "false".'
-  isArray: false
   name: includeContext
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: created
   description: 'The incident field to specify for the date range. Can be: "created" or "modified". The default is "created".'
-  isArray: false
   name: timeField
   predefined:
   - created
   - modified
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of non-empty value incident field names by which to filter incidents.
-  isArray: false
+- description: A comma-separated list of non-empty value incident field names by which to filter incidents.
   name: NonEmptyFields
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of fields to populate in the object.
-  isArray: false
+- description: A comma-separated list of fields to populate in the object.
   name: populateFields
-  required: false
-  secret: false
-- default: false
-  description: The field name with the label
-  isArray: false
+- description: The field name with the label
   name: tagField
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: emailsubject
   description: Subject of the email.
-  isArray: false
   name: emailSubject
   predefined:
   - Subject of the email.
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbody
+- defaultValue: emailbody
   description: Body of the email.
-  isArray: false
   name: emailBody
   predefined:
   - ''
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbodyhtml
+- defaultValue: emailbodyhtml
   description: HTML body of the email.
-  isArray: false
   name: emailBodyHTML
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailheaders
+- defaultValue: emailheaders
   description: Headers of the email.
-  isArray: false
   name: emailHeaders
-  required: false
-  secret: false
-- default: false
-  defaultValue: attachment
+- defaultValue: attachment
   description: Attachments of the email.
-  isArray: false
   name: emailAttachments
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'True'
   description: Whether to compress the fetched data. Default is True
-  isArray: false
   name: compress
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
   description: Wheter to return a file entry. Default is "False".
-  isArray: false
   name: toFile
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
 comment: Deprecated. No available replacement. Collect telemetry data from the environment.
 commonfields:
   id: DBotMLFetchData
@@ -140,7 +72,6 @@ commonfields:
 name: DBotMLFetchData
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 timeout: 1000µs
