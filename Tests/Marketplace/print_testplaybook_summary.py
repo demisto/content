@@ -14,19 +14,28 @@ def options_handler():
     return parser.parse_args()
 
 
-def read_file_contents(file_path: str) -> list:
+def read_file_contents(file_path: str) -> list | None:
+    """
+        Returns the file contents as a list of lines if the file exists, else returns None.
+    """
     if os.path.isfile(file_path):
         with open(file_path) as file:
             return file.read().splitlines()
-    return []
+    else:
+        logging.error(f"{file_path} does not exist.")
+    return None
 
 
-def print_test_summary(failed_tests_path, succeeded_tests_path) -> None:
+def print_test_summary(failed_tests_path: str, succeeded_tests_path: str) -> None:
     """
     Takes the information stored in the files and prints it in a human readable way.
     """
     succeeded_playbooks = read_file_contents(succeeded_tests_path)
     failed_playbooks = read_file_contents(failed_tests_path)
+
+    # if one of the files isn't existing, we want to fail.
+    if succeeded_playbooks is None or failed_playbooks is None:
+        sys.exit(1)
 
     succeeded_count = len(succeeded_playbooks)
     failed_count = len(failed_playbooks)
