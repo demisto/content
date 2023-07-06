@@ -1,12 +1,16 @@
 import json
 from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_output, file_analysis_output, \
-    rha1_analytics_output, uri_statistics_output, url_report_output, imphash_similarity_output
+    rha1_analytics_output, uri_statistics_output, url_report_output, imphash_similarity_output, classification_to_score, \
+    analyze_url_output, detonate_sample_output, yara_matches_feed_output, yara_retro_matches_feed_output
 import demistomock as demisto
 import pytest
 
 INTEGRATION_NAME = 'ReversingLabs TitaniumCloud v2'
 test_hash = "21841b32c6165b27dddbd4d6eb3a672defe54271"
 url = "google.com"
+CLASSIFICATION = "MALICIOUS"
+url2 = "https://www.imdb.com/title/tt7740510/reviews?ref_=tt_urv"
+sha1 = "efabc8b39de9d1f136abc48dc6e47f30a2ce9245"
 
 
 @pytest.fixture(autouse=True)
@@ -80,3 +84,46 @@ def test_imphash_similarity_output():
     result = imphash_similarity_output(imphash="f34d5f2d4577ed6d9ceec516c1f5a744", response=test_report)
 
     assert result.to_context() == test_context
+
+
+def test_classification_to_score():
+    score = classification_to_score(CLASSIFICATION)
+
+    assert score == 3
+
+
+def test_analyze_url_output():
+    test_report = load_json("test_data/analyze_url.json")
+    test_context = load_json("test_data/analyze_url_context.json")
+
+    result = analyze_url_output(response_json=test_report, url=url2)
+
+    assert result.to_context() == test_context
+
+
+def test_detonate_sample_output():
+    test_report = load_json("test_data/detonate_sample.json")
+    test_context = load_json("test_data/detonate_sample_context.json")
+
+    result = detonate_sample_output(response_json=test_report, sha1=sha1)
+
+    assert result.to_context() == test_context
+
+
+def test_yara_matches_feed_output():
+    test_report = load_json("test_data/yara_feed.json")
+    test_context = load_json("test_data/yara_feed_context.json")
+
+    result = yara_matches_feed_output(response_json=test_report, time_value="1688563828")
+
+    assert result.to_context() == test_context
+
+
+def test_yara_retro_matches_feed_output():
+    test_report = load_json("test_data/yara_retro.json")
+    test_context = load_json("test_data/yara_retro_context.json")
+
+    result = yara_retro_matches_feed_output(response_json=test_report, time_value="1688563828")
+
+    assert result.to_context() == test_context
+
