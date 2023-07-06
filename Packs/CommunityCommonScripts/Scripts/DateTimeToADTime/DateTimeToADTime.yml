@@ -3,8 +3,7 @@ args:
   description: Number of days before todays date
   name: days_ago
   required: true
-comment: Converts unix time to AD Integer8 time. This is used in many AD date fields
-  like pwdLastSet
+comment: Converts unix time to AD Integer8 time. This is used in many AD date fields like pwdLastSet
 commonfields:
   id: DateTimeToADTime
   version: -1
@@ -12,7 +11,6 @@ dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: DateTimeToADTime
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

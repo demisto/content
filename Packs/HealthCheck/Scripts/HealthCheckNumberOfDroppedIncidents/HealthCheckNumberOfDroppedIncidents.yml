@@ -19,7 +19,6 @@ outputs:
 - contextPath: NumberOfDroppedIncidents
   description: Number of dropped incidents
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
