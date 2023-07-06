@@ -4,7 +4,6 @@ args:
   isArray: true
   name: indicator
   required: true
-  secret: false
 comment: Add into the incident's context the system internal DBot score for the input indicator.
 commonfields:
   id: GetIndicatorDBotScore
@@ -31,7 +30,6 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-runonce: false
 fromversion: 5.0.0
 tests:
 - GetIndicatorDBotScore Test

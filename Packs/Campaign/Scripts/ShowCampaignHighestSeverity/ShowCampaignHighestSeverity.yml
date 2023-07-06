@@ -10,7 +10,6 @@ comment: Displays the highest severity among the incidents that make up the phis
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 fromversion: 6.0.0
