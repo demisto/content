@@ -1,6 +1,6 @@
-id: Cloud Token Theft - Set Verdict
+id: Cortex XDR - XCloud Token Theft - Set Verdict
 version: -1
-name: Cloud Token Theft - Set Verdict
+name: Cortex XDR - XCloud Token Theft - Set Verdict
 description: |-
   ---
 
@@ -30,10 +30,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8edcb308-c0b8-46f2-8858-38f2fb3a5e58
+    taskid: 5cb65176-16ca-4a17-8223-b263a5faee7c
     type: start
     task:
-      id: 8edcb308-c0b8-46f2-8858-38f2fb3a5e58
+      id: 5cb65176-16ca-4a17-8223-b263a5faee7c
       version: -1
       name: ""
       iscommand: false
@@ -60,13 +60,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9e581115-9afa-473a-81e8-23b0a8268515
+    taskid: 1d10af0b-7d60-4562-8778-0a0ee87d460c
     type: condition
     task:
-      id: 9e581115-9afa-473a-81e8-23b0a8268515
+      id: 1d10af0b-7d60-4562-8778-0a0ee87d460c
       version: -1
       name: Check caller IP reputation
-      description: Checks the verdict logic. Refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
@@ -116,26 +116,59 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 759d168e-6a6f-470b-83da-af9a108070a0
+    taskid: 980777c8-d213-4f10-848b-290d9e700bba
     type: regular
     task:
-      id: 759d168e-6a6f-470b-83da-af9a108070a0
+      id: 980777c8-d213-4f10-848b-290d9e700bba
       version: -1
       name: Get additional alerts
-      description: commands.local.cmd.get.incs
-      script: Builtin|||getAlerts
+      description: |-
+        Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchIncidentsV2
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      fromdate:
-        complex:
-          root: inputs.fromDate
-      query:
-        simple: hostip:${inputs.sourceIP}
+      custom_filter:
+        simple: |-
+          {
+            "OR": [
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "agent_ip_addresses",
+                    "SEARCH_TYPE": "IPLIST_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              },
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "action_local_ip",
+                    "SEARCH_TYPE": "IP_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              },
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "action_remote_ip",
+                    "SEARCH_TYPE": "IP_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              }
+            ]
+          }
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -148,16 +181,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: XDR Alert Search Results
+      output:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Alert
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 81f407f2-b2e4-4a82-8a59-171e1d156546
+    taskid: 23a75037-8637-4ffb-83ca-9801253b1150
     type: regular
     task:
-      id: 81f407f2-b2e4-4a82-8a59-171e1d156546
+      id: 23a75037-8637-4ffb-83ca-9801253b1150
       version: -1
       name: Set verdict - Malicious
       description: Set a value in context under the key you entered.
@@ -191,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d3428dc0-7a40-4d18-8f60-91fc15d5856c
+    taskid: c7fb9a98-b0bf-4de4-8989-376c2a6f7f29
     type: regular
     task:
-      id: d3428dc0-7a40-4d18-8f60-91fc15d5856c
+      id: c7fb9a98-b0bf-4de4-8989-376c2a6f7f29
       version: -1
       name: Set verdict - User verification
       description: Set a value in context under the key you entered.
@@ -228,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 992685e9-199f-4467-8e95-7aa0bec6d1aa
+    taskid: c133ff88-9860-4f38-8d90-3fc6a0111cc4
     type: condition
     task:
-      id: 992685e9-199f-4467-8e95-7aa0bec6d1aa
+      id: c133ff88-9860-4f38-8d90-3fc6a0111cc4
       version: -1
       name: Check source ASN
       description: Detailed explanation available in the playbook description.
@@ -251,7 +290,7 @@ tasks:
           left:
             value:
               complex:
-                root: Core.OriginalAlert.[0].event
+                root: PaloAltoNetworksXDR.OriginalAlert.event
                 accessor: caller_ip_asn_org
             iscontext: true
           right:
@@ -262,7 +301,7 @@ tasks:
           left:
             value:
               complex:
-                root: Core.OriginalAlert.[0].event
+                root: PaloAltoNetworksXDR.OriginalAlert.event
                 accessor: caller_ip_asn_org
             iscontext: true
           right:
@@ -272,7 +311,7 @@ tasks:
           left:
             value:
               complex:
-                root: Core.OriginalAlert.[0].event
+                root: PaloAltoNetworksXDR.OriginalAlert.event
                 accessor: caller_ip_asn_org
             iscontext: true
           right:
@@ -296,13 +335,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b14d1b34-a5d1-40c5-8055-27b3eb16a0e5
+    taskid: f3f098de-ec20-4686-8e98-e2d429276f48
     type: condition
     task:
-      id: b14d1b34-a5d1-40c5-8055-27b3eb16a0e5
+      id: f3f098de-ec20-4686-8e98-e2d429276f48
       version: -1
       name: Check ASN & Agent IP popularity
-      description: Checks the verdict logic. Refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
@@ -352,10 +391,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: eae9a464-1de4-4c8d-8cc5-b7689233d15d
+    taskid: 648c1de2-72be-46cb-8b08-174171300a61
     type: condition
     task:
-      id: eae9a464-1de4-4c8d-8cc5-b7689233d15d
+      id: 648c1de2-72be-46cb-8b08-174171300a61
       version: -1
       name: Check for API call executed outside the instance region
       description: Detailed explanation available in the playbook description.
@@ -374,7 +413,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -397,13 +436,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 5983c9cf-dc47-4e55-889d-3c5fb3a5ef38
+    taskid: bbb0beba-0cd1-4d6f-8e7d-52feb1686556
     type: condition
     task:
-      id: 5983c9cf-dc47-4e55-889d-3c5fb3a5ef38
+      id: bbb0beba-0cd1-4d6f-8e7d-52feb1686556
       version: -1
       name: Check for API call from unusual country
-      description: Detailed explanation available in the playbook description.
+      description: Detailed explanation available in the playbook description.      
       type: condition
       iscommand: false
       brand: ""
@@ -419,7 +458,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -442,10 +481,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 8cccf35c-4e55-4b0f-8a41-1e467d990fad
+    taskid: 69619ff1-8fcc-4fa3-802f-5acd7edef159
     type: condition
     task:
-      id: 8cccf35c-4e55-4b0f-8a41-1e467d990fad
+      id: 69619ff1-8fcc-4fa3-802f-5acd7edef159
       version: -1
       name: Check for IMDS Access alert
       description: Detailed explanation available in the playbook description.
@@ -464,7 +503,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -487,10 +526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 4ee22698-d941-42a5-8add-87640f6d13e5
+    taskid: 4e1d2cbd-8ada-4fd8-83ff-1144e09d4220
     type: condition
     task:
-      id: 4ee22698-d941-42a5-8add-87640f6d13e5
+      id: 4e1d2cbd-8ada-4fd8-83ff-1144e09d4220
       version: -1
       name: Check for Impossible Traveler alert
       description: Detailed explanation available in the playbook description.
@@ -509,7 +548,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: foundIncidents.name
+              simple: PaloAltoNetworksXDR.Alert.alert_name
             iscontext: true
           right:
             value:
@@ -531,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 78982aba-a0ea-4afa-848b-23338d4f91ad
+    taskid: 8ae2cf69-0978-4d75-8104-2442bb959263
     type: title
     task:
-      id: 78982aba-a0ea-4afa-848b-23338d4f91ad
+      id: 8ae2cf69-0978-4d75-8104-2442bb959263
       version: -1
       name: Done
       type: title
@@ -595,17 +634,16 @@ inputs:
   description: |-
     The start date for the search additional alerts task.
 
-    Filter by from date (e.g., "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+    Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   playbookInputQuery:
 outputs:
 - contextPath: alertVerdict
   description: The alert verdict.
   type: unknown
-- contextPath: foundIncidents
+- contextPath: PaloAltoNetworksXDR.Alert
   description: The additional alerts found.
   type: unknown
-quiet: false
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces: ["xsoar"]
 fromversion: 6.8.0
