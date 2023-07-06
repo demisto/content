@@ -16,11 +16,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: >
     /**
@@ -830,7 +828,6 @@ script:
       description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment
       type: list
     description: Update rule to L3 firewall rules of an SSID.
-hidden: false
 tests:
 - Cisco-Meraki-Test
 fromversion: 5.0.0

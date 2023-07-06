@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import functools
 import uuid
 import json
@@ -8,8 +10,6 @@ from secrets import compare_digest
 from dateutil.parser import parse
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
-import demistomock as demisto
-from CommonServerPython import *
 
 ''' GLOBAL VARIABLES '''
 HTTP_200_OK = 200
@@ -913,12 +913,9 @@ def create_extension_definition(object_type, extensions_dict, xsoar_type,
         the updated Stix object, its extension and updated extensions_dict.
     """
     extension_definition = {}
-    if object_type in extensions_dict:
-        extension_id = extensions_dict.get(object_type, {}).get('extension_id')
-        xsoar_indicator_to_return = extensions_dict.get(object_type, {}).get('xsoar_indicator_to_return')
-    else:
-        xsoar_indicator_to_return['extension_type'] = 'property_extension'
-        extension_id = f'extension-definition--{uuid.uuid4()}'
+    xsoar_indicator_to_return['extension_type'] = 'property_extension'
+    extension_id = f'extension-definition--{uuid.uuid4()}'
+    if object_type not in extensions_dict:
         extension_definition = {
             'id': extension_id,
             'type': 'extension-definition',
@@ -934,7 +931,7 @@ def create_extension_definition(object_type, extensions_dict, xsoar_type,
             'version': '1.0',
             'extension_types': ['property-extension']
         }
-        extensions_dict[object_type] = {'extension_id': extension_id, 'xsoar_indicator_to_return': xsoar_indicator_to_return}
+        extensions_dict[object_type] = True
     stix_object['extensions'] = {
         extension_id: xsoar_indicator_to_return
     }

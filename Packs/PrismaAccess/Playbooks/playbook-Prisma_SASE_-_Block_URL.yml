@@ -1,0 +1,739 @@
+id: Prisma SASE - Block URL
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma SASE - Block URL
+description: |-
+  The playbook will handle the operation of blocking a URL within the organization.
+  If a category is provided, the URL will be added to the list.
+  If not, a new URL category will be created, and a new security rule that blocks that category.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f502737-194b-4b60-8b41-49768b2f0897
+    type: start
+    task:
+      id: 3f502737-194b-4b60-8b41-49768b2f0897
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a7b8b8df-e87f-4615-8c21-1473a9eb4c39
+    type: condition
+    task:
+      id: a7b8b8df-e87f-4615-8c21-1473a9eb4c39
+      version: -1
+      name: Check if the URL Custom Category was defined
+      description: Check if the URL Custom Category was defined
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "Yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CategoryName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f62cd92a-b7d6-41eb-8d0b-82b272c25a91
+    type: title
+    task:
+      id: f62cd92a-b7d6-41eb-8d0b-82b272c25a91
+      version: -1
+      name: Updating URL Predfiened Category List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e674a006-d72c-45e9-8443-42f8b727cad9
+    type: regular
+    task:
+      id: e674a006-d72c-45e9-8443-42f8b727cad9
+      version: -1
+      name: Get the URL category List
+      description: Lists all custom URL categories.
+      script: '|||prisma-sase-custom-url-category-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      folder:
+        complex:
+          root: inputs.Folder
+      name:
+        complex:
+          root: inputs.CategoryName
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 407eba27-5f42-4fe6-80ca-1ddaf41b870b
+    type: condition
+    task:
+      id: 407eba27-5f42-4fe6-80ca-1ddaf41b870b
+      version: -1
+      name: Was a URL to Block provided?
+      description: Was a URL to Block provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5abb3e14-5dce-4845-8d83-44ff4bfa5c11
+    type: title
+    task:
+      id: 5abb3e14-5dce-4845-8d83-44ff4bfa5c11
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 07b206b2-cab0-4eb1-8ce1-b1cbb870503d
+    type: title
+    task:
+      id: 07b206b2-cab0-4eb1-8ce1-b1cbb870503d
+      version: -1
+      name: Creating a new Category
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2c56fab1-5200-4cee-8ced-ef3ecda1a04d
+    type: condition
+    task:
+      id: 2c56fab1-5200-4cee-8ced-ef3ecda1a04d
+      version: -1
+      name: Is the URL already exist?
+      description: Is the URL already exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+          right:
+            value:
+              simple: PrismaSase.CustomURLCategory.list
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c2cd4345-16f4-4c35-8a5d-ca15454ca1ee
+    type: regular
+    task:
+      id: c2cd4345-16f4-4c35-8a5d-ca15454ca1ee
+      version: -1
+      name: Create a new Custom URL Category
+      description: Create a new URL category.
+      script: '|||prisma-sase-custom-url-category-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      description:
+        simple: List of Blocked URL - XSOAR
+      folder:
+        complex:
+          root: inputs.Folder
+      name:
+        simple: List of Blocked URL - XSOAR
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      type:
+        simple: URL List
+      value:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a1fe91ef-08cc-45c6-8881-6666ff1843d7
+    type: regular
+    task:
+      id: a1fe91ef-08cc-45c6-8881-6666ff1843d7
+      version: -1
+      name: Update the URL category
+      description: Update an existing url category.
+      script: '|||prisma-sase-custom-url-category-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      id:
+        complex:
+          root: PrismaSase.CustomURLCategory
+          accessor: id
+      overwrite:
+        simple: "false"
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      value:
+        complex:
+          root: inputs.URL
+          filters:
+            - - operator: notIn
+                left:
+                  value:
+                    simple: inputs.URL
+                  iscontext: true
+                right:
+                  value:
+                    simple: PrismaSase.CustomURLCategory.list
+                  iscontext: true
+          transformers:
+            - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 314313c2-c709-44d2-80a4-610c5c85c937
+    type: regular
+    task:
+      id: 314313c2-c709-44d2-80a4-610c5c85c937
+      version: -1
+      name: Push Config
+      description: Push the candidate configuration.
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      folders:
+        complex:
+          root: inputs.Folder
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 55bb3e8b-0479-4c30-8e6a-3a3edebc5bce
+    type: condition
+    task:
+      id: 55bb3e8b-0479-4c30-8e6a-3a3edebc5bce
+      version: -1
+      name: Commit and push configuration to folders?
+      description: Commit and push configuration to folders?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Auto Commit:
+      - "12"
+      Manual:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: Auto Commit
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ae2421c9-7bef-47f5-806b-149e3bef1a61
+    type: playbook
+    task:
+      id: ae2421c9-7bef-47f5-806b-149e3bef1a61
+      version: -1
+      name: Prisma SASE - Create or Edit Security Policy Rule
+      description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
+      playbookName: Prisma SASE - Create or Edit Security Policy Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      Action:
+        simple: drop
+      Application:
+        simple: any
+      AutoCommit:
+        simple: Else
+      Category:
+        complex:
+          root: PrismaSase.CustomURLCategory
+          accessor: name
+      Destination:
+        simple: any
+      Folder:
+        complex:
+          root: inputs.Folder
+      Overwrite:
+        simple: "False"
+      Position:
+        simple: pre
+      RuleName:
+        simple: Block URL Rule
+      Service:
+        simple: any
+      Source:
+        simple: any
+      TSGID:
+        complex:
+          root: inputs.TSGID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: af316618-dc9f-4475-89a4-b7fd5ad0e2f4
+    type: condition
+    task:
+      id: af316618-dc9f-4475-89a4-b7fd5ad0e2f4
+      version: -1
+      name: Choose to commit and push configuration automatically
+      description: Choose to commit and push configuration automatically
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Push:
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Push
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_#default#": 0.11,
+      "7_5_yes": 0.27
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1775,
+        "width": 1080,
+        "x": -230,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: URL
+  value: {}
+  required: false
+  description: List of URLs that are needed to be blocked.
+  playbookInputQuery:
+- key: CategoryName
+  value: {}
+  required: false
+  description: The name of the predefined custom URL category.
+  playbookInputQuery:
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    Specify the scope for a newly created security rule to be applied.
+    Remember, this input will only be used when there is no input to the CategoryName.
+    Default: Shared
+  playbookInputQuery:
+- key: TSGID
+  value: {}
+  required: false
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  playbookInputQuery:
+- key: AutoCommit
+  value: {}
+  required: false
+  description: |-
+    Possible Values:
+    True -> Will Commit and Push Configuration
+    False -> Manual Push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaSase
+  description: The root context key for Prisma SASE integration output.
+  type: unknown
+- contextPath: PrismaSase.SecurityRule
+  description: Created security rule.
+- contextPath: PrismaSase.SecurityRule.action
+  description: Security rule action.
+- contextPath: PrismaSase.SecurityRule.application
+  description: Security rule application.
+- contextPath: PrismaSase.SecurityRule.category
+  description: Security rule category.
+- contextPath: PrismaSase.SecurityRule.description
+  description: Security rule description.
+- contextPath: PrismaSase.SecurityRule.destination
+  description: Security rule destination.
+- contextPath: PrismaSase.SecurityRule.folder
+  description: Security rule folder.
+- contextPath: PrismaSase.SecurityRule.from
+  description: Security rule from field (source zone(s)).
+- contextPath: PrismaSase.SecurityRule.id
+  description: Security rule ID.
+- contextPath: PrismaSase.SecurityRule.name
+  description: Security rule name.
+- contextPath: PrismaSase.SecurityRule.position
+  description: Security rule position.
+- contextPath: PrismaSase.SecurityRule.service
+  description: Security rule service.
+- contextPath: PrismaSase.SecurityRule.source
+  description: Security rule source.
+- contextPath: PrismaSase.SecurityRule.source_user
+  description: Security rule source user.
+- contextPath: PrismaSase.SecurityRule.to
+  description: Security rule to field (destination zone(s)).
+- contextPath: PrismaSase.SecurityRule.profile_setting
+  description: The Security rule group object in the rule.
+  type: unknown
+- contextPath: PrismaSase.SecurityRule.profile_setting.group
+  description: Security rule group.
+- contextPath: PrismaSase.CandidateConfig
+  description: Configuration job object.
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig.job_id
+  description: Configuration job ID.
+- contextPath: PrismaSase.CandidateConfig.result
+  description: The configuration push result, e.g. OK, FAIL.
+- contextPath: PrismaSase.CandidateConfig.details
+  description: The configuration push details.
+- contextPath: PrismaSase.CustomURLCategory
+  description: The custom URL category object.
+  type: unknown
+- contextPath: PrismaSase.CustomURLCategory.id
+  description: The URL category ID.
+- contextPath: PrismaSase.CustomURLCategory.name
+  description: The URL category name.
+- contextPath: PrismaSase.CustomURLCategory.folder
+  description: The URL category folder.
+- contextPath: PrismaSase.CustomURLCategory.type
+  description: The URL category type.
+- contextPath: PrismaSase.CustomURLCategory.list
+  description: The URL category match list.
+- contextPath: PrismaSase.CustomURLCategory.description
+  description: The URL category description.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,12 +1,10 @@
 commonfields:
   id: JiraV3ConvertCommentsToTable
   version: -1
-enabled: false
 comment: This script is used to convert Jira comments to a table.
 name: JiraV3ConvertCommentsToTable
 outputs: []
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'

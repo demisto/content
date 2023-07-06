@@ -138,9 +138,7 @@
          "id":"DockerHardeningCheck",
          "reason":"Issue: CIAC-5248 - Failed unit-test: get_default_gateway (ip command does not exist).",
          "ignored_native_images":[
-            "native:8.3",
-            "native:8.2",
-            "native:candidate"
+            "native:8.2"
          ]
       },
       {
