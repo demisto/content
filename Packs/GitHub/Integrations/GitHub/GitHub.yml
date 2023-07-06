@@ -3561,7 +3561,111 @@ script:
     - contextPath: GitHub.Assignees.assignees.html_url
       description: HTML URL for user
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.45830
+  - arguments:
+    - default: false
+      description: The GitHub owner (organization or username) of the repository.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: The GitHub repository name.
+      isArray: true
+      name: repository
+      required: false
+      secret: false
+    - default: false
+      description: The branch to trigger the workflow on.
+      isArray: false
+      name: branch
+      required: false
+      secret: false
+    - default: false
+      description: The name of your workflow file.
+      isArray: true
+      name: workflow
+      required: true
+      secret: false
+    deprecated: false
+    description: Triggers a GitHub workflow on a given repository and workflow.
+    execution: false
+    name: GitHub-trigger-workflow
+  - arguments:
+    - default: false
+      description: The GitHub owner (organization or username) of the repository.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: The GitHub repository name.
+      isArray: true
+      name: repository
+      required: false
+      secret: false
+    - default: false
+      description: The name of your workflow file.
+      isArray: true
+      name: workflow
+      required: true
+      secret: false
+    - default: false
+      description: The number of workflows to return. Default is 100.
+      isArray: true
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of GitHub workflows on a given repository.
+    execution: false
+    name: GitHub-list-workflows
+    outputs:
+    - contextPath: GitHub.Workflow.id
+      description: The GitHub workflow ID (per run).
+      type: Number
+    - contextPath: GitHub.Workflow.name
+      description: The GitHub workflow name.
+      type: String
+    - contextPath: GitHub.Workflow.head_branch
+      description: The branch on which the workflow ran.
+      type: String
+    - contextPath: GitHub.Workflow.head_sha
+      description: The commit SHA on which the workflow ran.
+      type: String
+    - contextPath: GitHub.Workflow.path
+      description: The GitHub workflow name path.
+      type: String
+    - contextPath: GitHub.Workflow.display_title
+      description: The GitHub workflow title.
+      type: String
+    - contextPath: GitHub.Workflow.run_number
+      description: The GitHub workflow run number.
+      type: Number
+    - contextPath: GitHub.Workflow.event
+      description: The GitHub workflow trigger type (scheduled, dispatch).
+      type: String
+    - contextPath: GitHub.Workflow.status
+      description: The GitHub workflow status (in_progress, completed).
+      type: String
+    - contextPath: GitHub.Workflow.conclusion
+      description: The GitHub workflow conclusion (cancelled, success).
+      type: String
+    - contextPath: GitHub.Workflow.workflow_id
+      description: The GitHub workflow ID (per workflow).
+      type: String
+    - contextPath: GitHub.Workflow.url
+      description: The GitHub workflow API URL.
+      type: String
+    - contextPath: GitHub.Workflow.html_url
+      description: The GitHub workflow HTML URL.
+      type: String
+    - contextPath: GitHub.Workflow.created_at
+      description: Datetime the GitHub workflow was created at.
+      type: Date
+    - contextPath: GitHub.Workflow.updated_at
+      description: Datetime the GitHub workflow was updated at.
+      type: Date
+  dockerimage: demisto/pyjwt3:1.0.0.63826
   isfetch: true
   runonce: false
   script: '-'
