@@ -1107,7 +1107,7 @@ def yara_retro_matches_feed_command():
 
 
 def yara_retro_matches_feed_output(response_json, time_value):
-    feed = response_json.get("rl", {}).getj("feed", {})
+    feed = response_json.get("rl", {}).get("feed", {})
     entries = tableToMarkdown("Entries", feed.get("entries", []))
     last_timestamp = feed.get("last_timestamp")
     range_from = feed.get("time_range", {}).get("from")
