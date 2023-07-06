@@ -73,11 +73,11 @@ For more information about which permissions are required for the token owner in
 
     Endpoint Type options
 
-    | Endpoint Type    | Description                                                                                  |
-    |------------------|----------------------------------------------------------------------------------------------|
-    | Worldwide        | The publicly accessible Microsoft Defender for Endpoint                                      |
-    | US GCC           | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)                 |
-    | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High)       |
+    | Endpoint Type | Description                                                                                      |
+    |---------------|--------------------------------------------------------------------------------------------------|
+    | Worldwide     | The publicly accessible Microsoft Defender for Cloud Applications                                |
+    | US GCC        | Microsoft Defender for Cloud Applications for the USA Government Cloud Community (GCC)           |
+    | US GCC-High   | Microsoft Defender for Cloud Applications for the USA Government Cloud Community High (GCC-High) |
    
 4. Click **Test** to validate the URLs, token, and connection.
 

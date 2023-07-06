@@ -5,7 +5,8 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
 from abc import ABC
-from typing import Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 from enum import Enum
 from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field, parse_obj_as, HttpUrl  # type: ignore[E0611, E0611, E0611]
@@ -21,10 +22,10 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
-TYPES_TO_RETRIEVE = {'alerts': dict(type='alerts', filters={}),
-                     'activities_admin': dict(type='activities', filters={"activity.type": {"eq": True}}),
-                     'activities_login': dict(type='activities', filters={
-                         "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}})}
+TYPES_TO_RETRIEVE = {'alerts': {'type': 'alerts', 'filters': {}},
+                     'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
+                     'activities_login': {'type': 'activities', 'filters': {
+                         "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
@@ -44,7 +45,7 @@ class Method(str, Enum):
 
 
 def load_json(v: Any) -> dict:
-    if not isinstance(v, (dict, str)):
+    if not isinstance(v, dict | str):
         raise ValueError('headers are not dict or a valid json')
     if isinstance(v, str):
         try:
@@ -53,8 +54,7 @@ def load_json(v: Any) -> dict:
                 raise ValueError('headers are not from dict type')
         except json.decoder.JSONDecodeError as exc:
             raise ValueError('headers are not valid Json object') from exc
-    if isinstance(v, dict):
-        return v
+    return v if isinstance(v, dict) else None
 
 
 class IntegrationHTTPRequest(BaseModel):
@@ -62,7 +62,7 @@ class IntegrationHTTPRequest(BaseModel):
     url: AnyUrl
     verify: bool = True
     headers: dict = {}  # type: ignore[type-arg]
-    auth: Optional[HTTPBasicAuth]
+    auth: HTTPBasicAuth | None
     data: Any = None
 
     class Config(BaseConfig):
@@ -74,7 +74,7 @@ class IntegrationHTTPRequest(BaseModel):
 
 
 class Credentials(BaseModel):
-    identifier: Optional[str]
+    identifier: str | None
     password: str
 
 
@@ -96,8 +96,8 @@ def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
 class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
-    proxy: Optional[bool] = False
-    limit: Optional[int] = Field(None, ge=1)
+    proxy: bool | None = False
+    limit: int | None = Field(None, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -200,9 +200,15 @@ class DefenderAuthenticator(BaseModel):
     client_secret: str
     scope: str
     ms_client: Any = None
+    endpoint_type: str
 
     def set_authorization(self, request: IntegrationHTTPRequest):
         try:
+
+            endpoint_type_name = self.endpoint_type or 'Worldwide'
+            endpoint_type = MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE[endpoint_type_name]
+            azure_cloud = AZURE_CLOUDS[endpoint_type]  # The MDA endpoint type is a subset of the azure clouds.
+
             if not self.ms_client:
                 demisto.debug('try init the ms client for the first time')
                 self.ms_client = MicrosoftClient(
@@ -212,7 +218,8 @@ class DefenderAuthenticator(BaseModel):
                     enc_key=self.client_secret,
                     scope=self.scope,
                     verify=self.verify,
-                    self_deployed=True
+                    self_deployed=True,
+                    azure_cloud=azure_cloud,
                 )
 
             token = self.ms_client.get_access_token()
