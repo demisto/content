@@ -4527,7 +4527,8 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Required |
+| cve_id | Deprecated. Use cve instead. | Optional |
+| cve | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Optional |
 
 #### Command example
 
