@@ -1,3 +1,6 @@
+from pytest import raises
+
+
 def create_client():
     import os
     from RecordedFutureLists import Client, __version__
@@ -164,12 +167,7 @@ class TestRFClient:
         mocked_http_request.side_effect = DemistoException(
             "Some exception as a side effect"
         )
-        raised = False
-        try:
-            client._call("mocked")
-        except DemistoException:
-            raised = True
-        assert raised
+        raises(DemistoException, client._call, "mocked")
 
     def test_call_response_processing_404(self, mocker):
         """
@@ -440,12 +438,7 @@ class TestRFClient:
 
         mock_call_response = {'response': {'data': 'mock response'}}
         mocker.patch.object(client, '_call', return_value=mock_call_response)
-        raised = False
-        try:
-            client.entity_operation(operation="add")
-        except ValueError:
-            raised = True
-        assert raised
+        raises(ValueError, client.entity_operation, operation="add")
 
     def test_entity_add_invalid_none(self, mocker):
         import os
