@@ -5,11 +5,25 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "1",
+            "displayName": "option",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "1",
+            "key": "option",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Corresponds with remediation option for the main data collection task."
+        },
+        {
+            "displayName": "statement",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "statement",
             "orgType": "",
             "required": false,
             "script": "",
@@ -17,48 +31,6 @@
             "type": "shortText",
             "width": 150,
             "_comment": "Summary of the remediation action."
-        },
-        {
-            "displayName": "2",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "2",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150,
-            "_comment": "First part of remediation action details."
-        },
-        {
-            "displayName": "3",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "3",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150,
-            "_comment": "Second part of remediation action details."
-        },
-        {
-            "displayName": "4",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "4",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150,
-            "_comment": "Optional additional explainer of the remediation action."
         }
     ],
     "content": true,
@@ -87,5 +59,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+	"fromVersion": "6.5.0"
 }

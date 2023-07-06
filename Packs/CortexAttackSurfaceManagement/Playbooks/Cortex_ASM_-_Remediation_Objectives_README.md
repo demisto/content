@@ -15,6 +15,7 @@ This playbook does not use any integrations.
 ### Scripts
 
 * GridFieldSetup
+* Set
 
 ### Commands
 
@@ -23,10 +24,7 @@ This playbook does not use any commands.
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| RemotePort | The remote port that is publicly exposed to. | alert.remoteport | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
