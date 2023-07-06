@@ -11,7 +11,7 @@ sample_span_result = """{
           "displaySpanName": "POST /get_user",
           "userIdentifier": "xxx@outlook.zz",
           "sessionId": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e",
-          "ipAddress": "192.0.2.255",
+          "ipAddress": "8.8.8.8",
           "userCountry": "United States",
           "userCity": "Houston",
           "userRoles": [
@@ -24,11 +24,11 @@ sample_span_result = """{
           "endTime": 1687388481679,
           "traceId": "a1f93e44b31be69835cfeeac4f181869",
           "spanTags": {
-            "net.peer.port": "56453",
-            "http.url": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
+            "net.peer.port": "5355",
+            "http.url": "http://localhost:1111/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
             "enduser.role": "customer",
-            "net.peer.ip": "192.0.2.255",
-            "net.host.ip": "192.0.2.255",
+            "net.peer.ip": "8.8.8.8",
+            "net.host.ip": "8.8.8.8",
             "traceableai.enriched.api_type": "HTTP",
             "http.status_code": "200",
             "enduser.id": "xxx@outlook.zz",
@@ -49,7 +49,7 @@ sample_span_result = """{
           "spanRequestBody": "email=xxx@outlook.zz&password=${<script alert(1) />}",
           "spanRequestHeaders": {
             "content-type": "application/json",
-            "x-forwarded-for": "192.0.2.255"
+            "x-forwarded-for": "8.8.8.8"
           },
           "spanRequestCookies": {}
         }
@@ -106,13 +106,13 @@ sample_domain_event = """{
             "value": "United States"
           },
           "actorIpAddress": {
-            "value": "192.0.2.255"
+            "value": "8.8.8.8"
           },
           "actorDevice": {
             "value": "null"
           },
           "apiUri": {
-            "value": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com"
+            "value": "http://localhost:1111/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com"
           },
           "traceId": {
             "value": "a1f93e44b31be69835cfeeac4f181869"
