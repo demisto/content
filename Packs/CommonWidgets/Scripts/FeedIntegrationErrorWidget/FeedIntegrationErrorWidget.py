@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from dateparser import parse
 
 
-
 def get_feed_integration_errors() -> TableOrListWidget:
     integration_search_res = demisto.internalHttpRequest(
         'POST',

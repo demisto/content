@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
-
 def get_sender_from_text(text):
     sender = re.search(
         r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", text,

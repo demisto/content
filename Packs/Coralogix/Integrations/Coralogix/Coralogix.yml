@@ -5,11 +5,9 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - additionalinfo: The Coralogix WebAPI endpoint for your account - Do not modify unless instructed to by Coralogix Customer Success
   defaultvalue: https://webapi.coralogix.com
@@ -43,39 +41,32 @@ configuration:
 - additionalinfo: Sets the query for retrieving incidents for Coralogix. If not set, the incidents fetch will retrieve all alerts that were sent to the Demisto/Cortex XSOAR webhook in Coralogix
   display: Basic incidents query
   name: incidents_query
-  required: false
   type: 0
 - additionalinfo: Narrows the incidents search to a specific Application Name. If not set, the incidents fetch will retrieve all alerts that were sent to the Demisto/Cortex XSOAR webhook in Coralogix
   display: Incidents Application Name
   name: incidents_application_name
-  required: false
   type: 0
 - additionalinfo: Narrow the incidents search to a specific severity level. If not set, the incidents fetch will retrieve all alerts that were sent to the Demisto/Cortex XSOAR webhook in Coralogix
   display: Incidents Severity
   name: incidents_severity
-  required: false
   type: 0
 - additionalinfo: Sets the field in Coralogix response that will be used as the incident's name in Demisto/Cortex XSOAR. If not set will use the field 'alert_name'
   display: Incidents Name Field
   name: incident_description_field
-  required: false
   type: 0
 - additionalinfo: Narrows the incidents search to a specific Subsystem Name. If not set, the incidents fetch will retrieve all alerts that were sent to the Demisto/Cortex XSOAR webhook in Coralogix
   display: Incidents Subsystem Name
   name: incidents_subsystem_name
-  required: false
   type: 0
 - additionalinfo: Normally, when the Coralogix fetches incidents it will fetch incidents detected since the last time it fetched them. This value sets the time period (in days) to look for incidents on the first fetch. The default value is 3 days. This value cannot exceed the maximum allowed query range limit for the Coralogix account used.
   defaultvalue: '3'
   display: First fetch timestamp in days
   name: incidents_first_fetch_range
-  required: false
   type: 0
 - additionalinfo: Maximum number of incidents to fetch at a single call to avoid overloading Cortex XSOAR
   defaultvalue: '50'
   display: Maximum number of incidents to fetch at a single call
   name: incidents_max_fetch
-  required: false
   type: 0
 description: Fetch incidents, search for supporting data and tag interesting datapoints in/from your Coralogix account
 display: Coralogix
@@ -83,81 +74,37 @@ name: Coralogix
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the tag.
-      isArray: false
+    - description: The name of the tag.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The point in time to tag in Coralogix.
-      isArray: false
+    - description: The point in time to tag in Coralogix.
       name: timestamp
-      required: false
-      secret: false
-    - default: false
-      description: A link to an icon file (png, jpeg, SVG) that will be used as the tag image in Coralogix. Cannot exceed 50KB
-      isArray: false
+    - description: A link to an icon file (png, jpeg, SVG) that will be used as the tag image in Coralogix. Cannot exceed 50KB
       name: icon_url
-      required: false
-      secret: false
-    deprecated: false
     description: Tag timestamp in Coralogix
-    execution: false
     name: coralogix-tag
   - arguments:
-    - default: false
-      description: A Coralogix Lucene query
-      isArray: false
+    - description: A Coralogix Lucene query
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Narrows the search to the specified Coralogix Application name
-      isArray: false
+    - description: Narrows the search to the specified Coralogix Application name
       name: app_name
-      required: false
-      secret: false
-    - default: false
-      description: Narrows the search to the specified Coralogix Subsystem name
-      isArray: false
+    - description: Narrows the search to the specified Coralogix Subsystem name
       name: subsystem_name
-      required: false
-      secret: false
-    - default: false
-      description: Narrows the search to the specified Coralogix severity value
-      isArray: false
+    - description: Narrows the search to the specified Coralogix severity value
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: Limit the search to the data that arrived after a certain timestamp. If not set will search for all the data matching the query
-      isArray: false
+    - description: Limit the search to the data that arrived after a certain timestamp. If not set will search for all the data matching the query
       name: since_timestamp
-      required: false
-      secret: false
-    - default: false
-      description: Limit the search to data that arrived until a certain timestamp.If not set will search for all the data matching the query
-      isArray: false
+    - description: Limit the search to data that arrived until a certain timestamp.If not set will search for all the data matching the query
       name: to_timestamp
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of events to retrieve per query
-      isArray: false
       name: max_items_to_retrieve
       required: true
-      secret: false
-    deprecated: false
     description: Query Coralogix for information
-    execution: false
     name: coralogix-search
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
