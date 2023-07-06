@@ -4,6 +4,7 @@ Use one of the following methods to access the Generic Export Indicators Service
 </~XSOAR>
 
 If you have several Generic Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
+Note: After a successful configuration of an instance, if the 'test button' is clicked again, it may result in a failure due to an incorrect assumption that the port is already in use. Nevertheless, it is important to highlight that despite this issue, the instance will continue to function correctly.
 <~XSOAR>
 
 ### Access the Generic Export Indicators Service by URL and Port (HTTP)
