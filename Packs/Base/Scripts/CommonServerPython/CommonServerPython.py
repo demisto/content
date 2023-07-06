@@ -193,6 +193,9 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
+    
+    from urllib3 import disable_warnings
+    disable_warnings()
 
     import dateparser  # type: ignore
     from datetime import timezone  # type: ignore
@@ -3620,6 +3623,27 @@ class Common(object):
                 'data': self.dns_record_data
             }
 
+
+    class CPE:
+        """
+        Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
+
+        :type cpe: ``str``
+        :param cpe: a single CPE string
+
+        :return: None
+        :rtype: ``None``
+
+        """
+        def __init__(self, cpe=None):
+            self.cpe = cpe
+
+        def to_context(self):
+            return {
+                'CPE': self.cpe,
+            }
+
+
     class File(Indicator):
         """
         File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
@@ -3972,6 +3996,12 @@ class Common(object):
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
+        :type vulnerable_products: ``CPE``
+        :param vulnerable_products: A list of CPE objects
+
+        :type vulnerable_configurations: ``CPE``
+        :param vulnerable_configurations: A list of CPE objects
+
         :return: None
         :rtype: ``None``
         """
@@ -3979,8 +4009,8 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None):
-            # type (str, str, str, str, str) -> None
+                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None,
+                     vulnerable_products=None, vulnerable_configurations=None):
 
             # Main indicator value
             self.id = id
@@ -4006,6 +4036,10 @@ class Common(object):
                                                                              indicator_type=DBotScoreType.CVE,
                                                                              integration_name=None,
                                                                              score=Common.DBotScore.NONE)
+
+            # Core custom fields for CVE type
+            self.vulnerable_products = vulnerable_products
+            self.vulnerable_configurations = vulnerable_configurations
 
         def to_context(self):
             cve_context = {
@@ -4054,15 +4088,21 @@ class Common(object):
             if self.traffic_light_protocol:
                 cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
 
-            if self.publications:
-                cve_context['Publications'] = self.create_context_table(self.publications)
-
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
             }
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
+
+            if self.publications:
+                cve_context['Publications'] = self.create_context_table(self.publications)
+
+            if self.vulnerable_products:
+                cve_context['VulnerableProducts'] = self.create_context_table(self.vulnerable_products)
+
+            if self.vulnerable_configurations:
+                cve_context['VulnerableConfigurations'] = self.create_context_table(self.vulnerable_configurations)
 
             return ret_value
 
@@ -11107,18 +11147,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
             events = [json.dumps(event) for event in events]
             data_format = 'json'
         # Separating each event with a new line
         data = '\n'.join(events)
-
-    elif isinstance(events, str):
-        amount_of_events = len(events.split('\n'))
-
-    else:
+    elif not isinstance(events, str):
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
                                 'list.').format(type_events=type(events)))
     if not data_format:
@@ -11170,7 +11205,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     client = BaseClient(base_url=xsiam_url)
     data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
-    amount_of_events = 0
     for data_chunk in data_chunks:
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)

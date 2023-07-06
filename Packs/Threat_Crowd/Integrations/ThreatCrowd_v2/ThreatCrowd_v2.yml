@@ -31,11 +31,9 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Deprecated. No available replacement.
 display: Threat Crowd v2 (Deprecated)
@@ -48,16 +46,9 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of results per indicator to fetch.
-      isArray: false
+    - description: Maximum number of results per indicator to fetch.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get a report of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -108,16 +99,9 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of results per indicator to fetch.
-      isArray: false
+    - description: Maximum number of results per indicator to fetch.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get a report of a domain.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -174,16 +158,9 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of results per indicator to fetch.
-      isArray: false
+    - description: Maximum number of results per indicator to fetch.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get a report of an email address.
-    execution: false
     name: email
     outputs:
     - contextPath: ThreatCrowd.Account.value
@@ -214,21 +191,13 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
   - arguments:
-    - default: false
-      description: The antivirus for which to retrieve a report.
+    - description: The antivirus for which to retrieve a report.
       isArray: true
       name: antivirus
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of results per indicator to fetch.
-      isArray: false
+    - description: Maximum number of results per indicator to fetch.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get a report of an antivirus.
-    execution: false
     name: threat-crowd-antivirus
     outputs:
     - contextPath: ThreatCrowd.AntiVirus.hashes
@@ -249,16 +218,9 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of results per indicator to fetch.
-      isArray: false
+    - description: Maximum number of results per indicator to fetch.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get a report of a hash.
-    execution: false
     name: file
     outputs:
     - contextPath: File.MD5
@@ -313,10 +275,6 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
   dockerimage: demisto/python3:3.10.5.31797
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
