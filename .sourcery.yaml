@@ -131,7 +131,7 @@ rule_settings:
     - use-itertools-product
     - use-join
     - use-len
-    - use-named-expression
+    # - use-named-expression
     - use-string-remove-affix
     - while-guard-to-condition
     - while-to-for
