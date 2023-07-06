@@ -11,13 +11,10 @@ configuration:
   name: includeAPT
   defaultvalue: 'false'
   type: 8
-  required: false
-  additionalinfo: This option will also create indicators using APT / actor name references
-    if they are part of a MITRE Intrusion Set
+  additionalinfo: This option will also create indicators using APT / actor name references if they are part of a MITRE Intrusion Set
 - display: Fetch indicators
   name: feed
   type: 8
-  required: false
   defaultvalue: 'true'
 - display: Indicator Reputation
   name: feedReputation
@@ -26,10 +23,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
@@ -51,13 +46,11 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ''
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
-  required: false
   options:
   - never
   - interval
@@ -67,34 +60,26 @@ configuration:
   name: feedExpirationInterval
   defaultvalue: '20160'
   type: 1
-  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: '240'
   type: 19
-  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: 'false'
   type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ''
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: 'false'
   type: 8
-  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 script:
   script: ''
@@ -111,8 +96,7 @@ script:
       predefined:
       - 'False'
       - 'True'
-      description: Output in raw JSON format. Can be "True" or "False". The default
-        is "False".
+      description: Output in raw JSON format. Can be "True" or "False". The default is "False".
       defaultValue: 'False'
     description: Retreives a limited number of the indicators.
   - name: mitre-show-feeds
@@ -128,8 +112,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-      description: Whether the search is case sensitive. Can be "True" or "False". The
-        default is "False".
+      description: Whether the search is case sensitive. Can be "True" or "False". The default is "False".
       defaultValue: 'False'
     outputs:
     - contextPath: indicators.id
@@ -155,7 +138,6 @@ script:
     description: Lookup reputation in the indicators.
   dockerimage: demisto/taxii2:1.0.0.18446
   feed: true
-  runonce: false
   subtype: python3
 tests:
 - No test

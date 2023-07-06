@@ -3,8 +3,6 @@ args:
   description: 'The IPv4 to vriefy.'
   isArray: true
   name: input
-  required: false
-  secret: false
 comment: 'Verify that the address is a valid IPv4 address.'
 commonfields:
   id: VerifyIPv4Indicator
@@ -12,7 +10,6 @@ commonfields:
 enabled: true
 name: VerifyIPv4Indicator
 script: '-'
-system: false
 tags:
 - indicator-format
 timeout: '0'
