@@ -4,9 +4,7 @@ commonfields:
 name: carbonblackliveresponse
 display: VMware Carbon Black EDR (Live Response API)
 category: Endpoint
-description: Collect information and take action on remote endpoints in real time
-  with VMware Carbon Black EDR (Live Response API) (formerly known as Carbon Black
-  Enterprise Live Response).
+description: Collect information and take action on remote endpoints in real time with VMware Carbon Black EDR (Live Response API) (formerly known as Carbon Black Enterprise Live Response).
 configuration:
 - display: Server URL
   name: serverurl
@@ -17,37 +15,30 @@ configuration:
   name: apitoken
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - displaypassword: API Token (CB Response)
-  name:  credentials_api_token
-  required: false
+  name: credentials_api_token
   hiddenusername: true
   type: 9
 - display: API Key (CB Defense)
   name: apikey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - displaypassword: API Key (CB Defense)
-  name:  credentials_api_key
-  required: false
+  name: credentials_api_key
   hiddenusername: true
   type: 9
 - display: Connector ID (CB Defense)
   name: connector
   defaultvalue: ""
   type: 0
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -58,8 +49,7 @@ script:
       required: true
       default: true
       description: Session ID to return the archive of
-    description: Archive the given session (If the session has no content it will
-      fail)
+    description: Archive the given session (If the session has no content it will fail)
   - name: cb-command-cancel
     deprecated: true
     arguments:
@@ -83,8 +73,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: The Command ID
     - contextPath: CbLiveResponse.Commands.OperandObject
-      description: 'Object argument for the CbLive command - e.g. for ''directory
-        list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
+      description: 'Object argument for the CbLive command - e.g. for ''directory list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
     - contextPath: CbLiveResponse.Commands.CreateTime
       description: Command create time
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
@@ -127,7 +116,6 @@ script:
       description: Whether the file was deleted or not
     description: Delete a given file in the session from Cb server.
   - name: cb-file-get
-    deprecated: false
     arguments:
     - name: session
       required: true
@@ -242,8 +230,7 @@ script:
       - timeout
       - inactive
       - close
-      description: 'Status to filter by (One of: active, pending, timeout, inactive,
-        close)'
+      description: 'Status to filter by (One of: active, pending, timeout, inactive, close)'
       isArray: true
     outputs:
     - contextPath: CbLiveResponse.Sessions.CbSensorID
@@ -285,11 +272,9 @@ script:
       default: true
       description: Sensor ID to create session for
     - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time
-        the session will be closed)
+      description: Session timeout (If a command will not be issued after this time the session will be closed)
     - name: keepalive-timeout
-      description: ' the timeout (in seconds) that a device should wait between commands.
-        If no command is issued over this timeout the device will quit.'
+      description: ' the timeout (in seconds) that a device should wait between commands. If no command is issued over this timeout the device will quit.'
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
       description: Session Status
@@ -311,11 +296,9 @@ script:
       default: true
       description: Sensor ID to create session for
     - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time
-        the session will be closed)
+      description: Session timeout (If a command will not be issued after this time the session will be closed)
     - name: keepalive-timeout
-      description: Session keepalive timeout (If a keepalive is not issued after this
-        time, the session will close)
+      description: Session keepalive timeout (If a keepalive is not issued after this time, the session will close)
     - name: wait-timeout
       description: Time in seconds to wait for session to be active
       defaultValue: "20"
@@ -332,8 +315,7 @@ script:
       description: Session Timeout
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
-    description: Create a new CarbonBlack session for a given sensor and wait for
-      it to be active
+    description: Create a new CarbonBlack session for a given sensor and wait for it to be active
   - name: cb-session-info
     arguments:
     - name: session
@@ -357,14 +339,12 @@ script:
   - name: cb-process-kill
     arguments:
     - name: session
-      description: 'Session ID. Provide the session ID to run the command with an
-        existing session. '
+      description: 'Session ID. Provide the session ID to run the command with an existing session. '
     - name: pid
       required: true
       description: Process ID to terminate
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -373,16 +353,14 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -394,11 +372,9 @@ script:
       description: The session ID.
     - name: path
       required: true
-      description: Path for the directory (e.g. "c:\\Users\\"). Note to end with double
-        backslash.
+      description: Path for the directory (e.g. "c:\\Users\\"). Note to end with double backslash.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
@@ -406,16 +382,14 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.DirectoryList.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -438,8 +412,7 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: the path and command line of the executable
@@ -448,15 +421,13 @@ script:
       predefined:
       - "true"
       - "false"
-      description: An optional parameter to specify whether to wait for the process
-        to complete execution before reporting the result.
+      description: An optional parameter to specify whether to wait for the process to complete execution before reporting the result.
     - name: working-directory
       description: An optional parameter to specify the working directory of the executable.
     - name: output-file
       description: An option file that STDERR and STDOUT will be redirected to.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
@@ -469,8 +440,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -486,18 +456,14 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: The full path, including file name, to save the resulting memory
-        dump on the endpoint (example - c:\\temp\\dump_file.dmp).
+      description: The full path, including file name, to save the resulting memory dump on the endpoint (example - c:\\temp\\dump_file.dmp).
     - name: compress
-      description: An optional parameter to specify whether to compress resulting
-        memory dump.
+      description: An optional parameter to specify whether to compress resulting memory dump.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
@@ -510,8 +476,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -553,11 +518,9 @@ script:
     - name: timeout
       description: Command timeout
     - name: object
-      description: the object the command operates on. This is specific to the command
-        but has meaning in a generic way for logging, and display purposes
+      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes
     - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to
-        compress resulting memory dump'
+      description: '"true" or "false" - an optional parameter to specify whether to compress resulting memory dump'
     - name: working-dir
       description: An optional parameter to specify the working directory of the executable
     - name: output-file
@@ -565,11 +528,9 @@ script:
     - name: value-data
       description: the data associated with the registry value
     - name: value-type
-      description: the string representation of the registry value type (ie REG_DWORD,
-        REG_QWORD, ….)
+      description: the string representation of the registry value type (ie REG_DWORD, REG_QWORD, ….)
     - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to
-        overwrite the value if it already exists (default value is “false”)
+      description: “true” or “false”. An optional parameter to specify whether to overwrite the value if it already exists (default value is “false”)
     - name: offset
       description: a byte offset to start getting the file. Supports a partial get.
     - name: get-count
@@ -591,8 +552,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: The Command ID
     - contextPath: CbLiveResponse.Commands.OperandObject
-      description: 'Object argument for the CbLive command - e.g. for ''directory
-        list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
+      description: 'Object argument for the CbLive command - e.g. for ''directory list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
     - contextPath: CbLiveResponse.Commands.CreateTime
       description: Command create time
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
@@ -630,11 +590,9 @@ script:
     - name: timeout
       description: Command timeout
     - name: object
-      description: the object the command operates on. This is specific to the command
-        but has meaning in a generic way for logging, and display purposes
+      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes
     - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to
-        compress resulting memory dump'
+      description: '"true" or "false" - an optional parameter to specify whether to compress resulting memory dump'
     - name: working-dir
       description: An optional parameter to specify the working directory of the executable
     - name: output-file
@@ -642,11 +600,9 @@ script:
     - name: value-data
       description: the data associated with the registry value
     - name: value-type
-      description: the string representation of the registry value type (ie REG_DWORD,
-        REG_QWORD, ….)
+      description: the string representation of the registry value type (ie REG_DWORD, REG_QWORD, ….)
     - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to
-        overwrite the value if it already exists (default value is “false”)
+      description: “true” or “false”. An optional parameter to specify whether to overwrite the value if it already exists (default value is “false”)
     - name: offset
       description: a byte offset to start getting the file. Supports a partial get.
     - name: get-count
@@ -676,14 +632,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The source path of the object to delete.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -697,8 +651,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -709,14 +662,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key to query
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -730,8 +681,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -750,14 +700,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key + the path of the value (e.g. HKEY_LOCAL_MACHINE\blah\key\value).
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -771,8 +719,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -791,14 +738,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The key path to create.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -812,8 +757,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -824,14 +768,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The key path to delete.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -845,8 +787,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -857,14 +798,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key + the path of the value.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -878,8 +817,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -890,30 +828,24 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key + the path of the value.
     - name: data
       required: true
-      description: The data to set for the value. Note if the value type ‘REG_MULTI_SZ’
-        then multiple values should be separated by a comma (e.g. value1, value2,
-        value3).
+      description: The data to set for the value. Note if the value type ‘REG_MULTI_SZ’ then multiple values should be separated by a comma (e.g. value1, value2, value3).
     - name: type
       required: true
-      description: One of common registry value types (REG_DWORD, REG_QWORD, REG_SZ
-        etc).
+      description: One of common registry value types (REG_DWORD, REG_QWORD, REG_SZ etc).
     - name: overwrite
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: An optional parameter to specify whether to overwrite the value
-        if it already exists (default value is ’no’).
+      description: An optional parameter to specify whether to overwrite the value if it already exists (default value is ’no’).
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -927,8 +859,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -939,11 +870,9 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -957,8 +886,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.Processes.ProcessID
@@ -983,18 +911,15 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The source path of the file.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: download
-      description: If "true" will download the file from the CarbonBlack server. Default
-        is "true". Set to false for large files.
+      description: If "true" will download the file from the CarbonBlack server. Default is "true". Set to false for large files.
       defaultValue: 'true'
       auto: PREDEFINED
       predefined:
@@ -1006,8 +931,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -1043,27 +967,23 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: entry-id
       required: true
       description: The file entry ID.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: path
       required: true
-      description: The destination path of the file. Include file name and type (e.g.
-        "c:\\Users\\USER\\Desktop\\log.txt").
+      description: The destination path of the file. Include file name and type (e.g. "c:\\Users\\USER\\Desktop\\log.txt").
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -1074,12 +994,10 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provide the sensor ID to run the command with a
-        new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provide the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: The full path, including file name, to save the resulting memory
-        dump on the endpoint, for example, c:\\temp\\dump_file.dmp).
+      description: The full path, including file name, to save the resulting memory dump on the endpoint, for example, c:\\temp\\dump_file.dmp).
     - name: compress
       auto: PREDEFINED
       predefined:
@@ -1087,15 +1005,13 @@ script:
       - "false"
       description: Whether to compress resulting memory dump. Can be "rue" or "false".
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from "pending" to "in-progress" or "complete").
+      description: Time to wait (in seconds) for Cb command to be executed (change status from "pending" to "in-progress" or "complete").
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Whether to cancel the command if still in "pending" status after
-        timeout. Can be "yes" or "no".
+      description: Whether to cancel the command if still in "pending" status after timeout. Can be "yes" or "no".
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -1121,7 +1037,6 @@ script:
       description: Whether the memory dump is in progress.
       type: boolean
     description: Executes an endpoint memory dump.
-  runonce: false
 tests:
 - Carbon Black Live Response Test
 fromversion: 5.0.0

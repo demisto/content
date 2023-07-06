@@ -1,26 +1,17 @@
 args:
-- default: false
-  description: Hostname or IP of a Carbon Black sensor.
-  isArray: false
+- description: Hostname or IP of a Carbon Black sensor.
   name: endpoint
   required: true
-  secret: false
-- default: false
-  description: Comma-separated list of file paths to download from the endpoint.
+- description: Comma-separated list of file paths to download from the endpoint.
   isArray: true
   name: path
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: '2000'
   description: Session timeout (ms). Default is 2000.
-  isArray: false
   name: timeout
   predefined:
   - Session timeout (If a command is not issued after this time the session will be closed)
-  required: false
-  secret: false
 comment: |-
   This automation translates an endpoints hostname/IP to the Carbon Black sensor ID.
   It then opens a session to the endpoint to download the given file paths and closes the session.
@@ -109,7 +100,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - carbon-black
 - endpoint
