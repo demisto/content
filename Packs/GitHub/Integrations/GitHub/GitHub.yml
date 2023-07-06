@@ -2499,7 +2499,7 @@ script:
       required: true
     - description: Text describing the contents of the tag.
       name: body
-    - description: The target branch/commit from where to create the release.
+    - description: The commit sah from where to create the release.
       name: ref
       required: true
     - auto: PREDEFINED
