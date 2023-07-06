@@ -21,10 +21,10 @@ def get_dbot_score(resCmd: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
             if not cvss:
                 cvss = -1
-                
+
             elif isinstance(cvss, dict):
-                Score = data.get('cvss').get('Score', -1)
-                cvss = float(Score) if Score else -1
+                score = data.get('cvss').get('Score', -1)
+                cvss = float(score) if score else -1
 
             if cvss == -1:
                 res = 0
