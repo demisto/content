@@ -5,50 +5,41 @@ commonfields:
 configuration:
 - display: Server URL (e.g. 'https://api.zoom.us/v2/')
   name: url
-  required: false
   type: 0
   defaultvalue: "https://api.zoom.us/v2/"
 - display: Account ID (OAuth)
   name: account_id
-  required: false
   type: 0
 - display: Client ID (OAuth)
   name: credentials
-  required: false
   type: 9
   displaypassword: Client Secret (OAuth)
 - name: creds_api_key
   displaypassword: API Key (JWT-Deprecated.)
-  required: false
   type: 9
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hiddenusername: true
 - name: creds_api_secret
   displaypassword: API Secret (JWT-Deprecated.)
   type: 9
-  required: false
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hiddenusername: true
 - display: API Key (JWT-Deprecated.)
   name: apiKey
-  required: false
   type: 4
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hidden: true
 - display: API Secret (JWT-Deprecated.)
   name: apiSecret
   type: 4
-  required: false
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hidden: true
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 description: Use the Zoom integration manage your Zoom users and meetings
 display: Zoom
 name: Zoom
@@ -305,7 +296,6 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: active
       description: Which status of users to list
       name: status
@@ -313,14 +303,12 @@ script:
       - active
       - inactive
       - pending
-      required: false
     - description: Number of users to return. Max 300. The default is 30.
       name: page-size
       type: int
     - description: >
         The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
       name: next_page_token
-      required: false
       type: string
     - name: page-number
       description: >
@@ -328,14 +316,11 @@ script:
 
         Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
     - name: limit
-      required: false
       description: The total amunt of results to show.
     - name: user_id
       description: A user ID. this is for a singel user
-      required: false
       type: string
     - name: role_id
-      required: false
       description: >
         Filter the response by a specific role.
 
@@ -545,7 +530,6 @@ script:
     - description: >
         The next page token is used to get the next page. IMPORTANT: You must pass the same page size that you passed in the first call.
       name: next_page_token
-      required: false
       type: string
     - name: page-number
       description: >
@@ -553,11 +537,9 @@ script:
 
         Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
     - name: limit
-      required: false
       description: The total amunt of results to show.
     - name: channel_id
       description: A channel ID. This is for a single channel.
-      required: false
       type: string
     outputs:
     - contextPath: Zoom.Channels.properties.channel_settings.add_member_permissions
@@ -627,7 +609,6 @@ script:
     - description: >
         The next page token is used to get the next page. IMPORTANT: You must pass the same page size that you passed in the first call.
       name: next_page_token
-      required: false
       type: string
     - name: page-number
       description: >
@@ -635,11 +616,9 @@ script:
 
         Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
     - name: limit
-      required: false
       description: The total amunt of results to show.
     - name: channel_id
       description: A channel ID. This is for a single channel.
-      required: false
       type: string
     - name: user_id
       description: Email or user ID.
@@ -677,7 +656,6 @@ script:
         * 2 - Only channel owner and administrators can add new members.
         Note: This setting can only be modified by the channel owner. Default: 1 
       name: add_member_permissions
-      required: false
       auto: PREDEFINED
       predefined:
       - All channel members can add
@@ -688,7 +666,6 @@ script:
         * 2 — Only the channel owner and administrators can post to the channel.
         * 3 — Only the channel owner, administrators and certain members can post to the channel. Default: 1 
       name: posting_permissions
-      required: false
       auto: PREDEFINED
       predefined:
       - All members can post
@@ -701,7 +678,6 @@ script:
       - "true"
       - "false"
       defaultValue: true
-      required: false
     - description: The name of the channel. Maximum of 128 characters.
       name: channel_name
       required: true
@@ -771,7 +747,6 @@ script:
         * 2 - Only channel owner and administrators can add new members.
         Note: This setting can only be modified by the channel owner.
       name: add_member_permissions
-      required: false
       auto: PREDEFINED
       predefined:
       - All channel members can add
@@ -782,7 +757,6 @@ script:
         * 2 — Only the channel owner and administrators can post to the channel.
         * 3 — Only the channel owner, administrators and certain members can post to the channel.
       name: posting_permissions
-      required: false
       auto: PREDEFINED
       predefined:
       - All members can post
@@ -795,10 +769,8 @@ script:
       - "true"
       - "false"
       defaultValue: true
-      required: false
     - description: A new name for the channel.
       name: channel_name
-      required: false
     outputs: []
   - name: zoom-invite-to-channel
     description: >
@@ -847,7 +819,6 @@ script:
       description: >
         The email address or user ID or member ID of the member to remove from the channel.
       required: true
-      isArray: false
       type: string
     outputs: []
   - name: zoom-send-file
@@ -858,14 +829,12 @@ script:
     arguments:
     - name: to_channel
       description: The channel ID of the channel to which to send the chat file.
-      required: false
       type: string
     - description: Email or unique identifier of the user.
       name: user_id
       required: true
     - name: to_contact
       description: The user ID or member ID of the contact to send the chat file.
-      required: false
       type: string
     - name: entry_id
       description: Cortex XSOAR internal file ID.
@@ -888,14 +857,12 @@ script:
       description: >
         This field is required if the value of at_type field is set to 1.
         Email address of the contact.
-      required: false
       type: string
     - name: at_type
       description: >
         The type of mention. You can use one of the following values:
         1: Mention a contact.
         2: Mention "all" to notify everyone in the channel.
-      required: false
       type: string
       auto: PREDEFINED
       predefined:
@@ -921,23 +888,18 @@ script:
 
     - name: end_position
       description: The end position of the mention.
-      required: false
       type: string
     - name: start_position
       description: The start position of the mention ("@") in the message string.
-      required: false
       type: string
     - name: rt_start_position
       description: The start position of the rich text in the message string.
-      required: false
       type: string
     - name: rt_end_position
       description: The end position of the rich text.
-      required: false
       type: string
     - name: format_type
       description: The type of rich text. There is some special logic which is the same as on the Zoom client. 1. AddLink's position can not cross multi lines. 2. A BulletedList will clear the formatting of a NumberedList, Quote, or LeftIndent after it. 3. Likewise, a NumberedList will clear the formatting of a BulletedList, Quote, or LeftIndent after it. 4. Only AddLink, NumberedList and BulletedList can apply to a message which already applied a Quote. 5. A Quote will clear the formatting of all styles after it except AddLink, NumberedList, BulletedList, or Italic. 6. An AddLink will clear the formatting of BackgroundColor, FontColor, or Underline after it. 7. BackgroundColor, FontColor and Underline can not apply to a message which already applied AddLink. 8. BulletedList, NumberedList, LeftIndent, Paragraph, and Quote will automatically expand to apply to the whole line.
-      required: false
       type: string
       auto: PREDEFINED
       predefined:
@@ -955,7 +917,6 @@ script:
         3.LeftIndent value: a positive pixel length.
         4.Paragraph value: h1 for Heading 1, h2 for Heading 2, or h3 for Heading 3.
         5.AddLink value: must be a valid URL, with an http or https prefix. For example: https://example.com
-      required: false
       type: string
     - name: message
       description: |-
@@ -974,21 +935,17 @@ script:
       required: true
       type: string
     - name: entry_ids
-      description: A list of the file IDs to send. This field only accepts a maximum of six file IDs. 
-      required: false
+      description: A list of the file IDs to send. This field only accepts a maximum of six file IDs.
       type: string
       isArray: true
     - name: reply_main_message_id
       description: The reply message's ID. This field only returns if the message is a reply message.
-      required: false
       type: string
     - name: to_channel
       description: The channel ID of the channel to send a message.
-      required: false
       type: string
     - name: to_contact
       description: The email address or user ID or member ID of the person to send a message.
-      required: false
       type: string
     outputs:
     - contextPath: Zoom.ChatMessage.id
@@ -1011,12 +968,10 @@ script:
     - name: to_channel
       description: >
         The channel ID where the message was sent. You must provide this parameter or the to_contact parameter.
-      required: false
       type: string
     - name: to_contact
       description: >
         The member ID or user ID or email address of a chat contact to whom the message was sent.  You must provide this parameter or the to_channel parameter.
-      required: false
       type: string
     outputs: []
   - name: zoom-update-message
@@ -1043,16 +998,13 @@ script:
         The channel ID of the channel where you sent the message.
         You must provide either to_contact or to_channel parameter in the API request.
         Channel ID can be retrieved from List User's Channels API.
-      required: false
       type: string
     - name: to_contact
       description: >
         The email address or user ID or member ID of the contact to whom the message was sent.  You must provide either this parameter or the to_channel parameter in the API request.
-      required: false
       type: string
     - name: entry_ids
       description: A list of Cortex XSOAR file entry IDs to send.
-      required: false
       isArray: true
       type: string
     outputs: []
@@ -1068,31 +1020,25 @@ script:
       description: >
         This field allows you to query by the email address or user ID or member ID of a chat contact with whom the user communicated.
         The API only returns messages sent and/or received between the user and the queried contact.
-      required: false
       type: string
     - name: to_channel
       description: >
         This field queries by the channel ID of a channel in which the user had chat conversations.
         The API only returns messages sent and/or received by the user in the queried channel.
-      required: false
       type: string
     - name: date
       description: >
         The query date from which to retrieve the chat messages. This value defaults to the current date.
         Format %Y-%m-%dT%H:%M:%S.
-      required: false
       type: string
     - name: from
       description: Start date. Format %Y-%m-%dT%H:%M:%S.
-      required: false
       type: string
     - name: to
       description: End date. Format %Y-%m-%dT%H:%M:%S.
-      required: false
       type: string
     - name: include_deleted_and_edited_message
-      description: Whether to include deleted and edited messages. 
-      required: false
+      description: Whether to include deleted and edited messages.
       defaultValue: false
       type: boolean
     - name: search_type
@@ -1100,7 +1046,6 @@ script:
         The type of search:
         message — Search messages.
         file — Search files.
-      required: false
       type: string
       auto: PREDEFINED
       predefined:
@@ -1108,32 +1053,26 @@ script:
       - file
     - name: search_key
       description: Key for search in messages.
-      required: false
       type: string
     - name: exclude_child_message
       description: >
         Default: false
         Whether to exclude returning all child messages in a chat, leaving only the parent messages.
-      required: false
       type: boolean
       defaultValue: false
     - name: next_page_token
       description: >
         The next page token paginates through a large set of results. A next page token is returned whenever the set of available results exceeds the current page size.
         This token's expiration period is 15 minutes.
-      required: false
       type: string
     - name: page_size
       description: Number of records returned from a single API call. Default 50.
-      required: false
       type: number
     - name: page_number
       description: Which page of results to return. Default 1.
-      required: false
       type: number
     - name: limit
       description: Total amount of results to show.
-      required: false
       type: number
     outputs:
     - contextPath: Zoom.ChatMessage.date
@@ -1263,7 +1202,6 @@ script:
       description: The next page token for pagination.
 
   dockerimage: demisto/pyjwt3:1.0.0.63826
-  runonce: false
   script: "-"
   subtype: python3
   type: python

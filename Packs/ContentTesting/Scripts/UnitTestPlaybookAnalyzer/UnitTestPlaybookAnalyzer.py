@@ -6,7 +6,6 @@ from datetime import datetime
 from typing import Dict, TypedDict
 
 
-
 class Task(TypedDict):
     name: str
     duration: float
