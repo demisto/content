@@ -225,17 +225,16 @@ def main():
     install_logging("Validate Premium Packs.log")
     options = options_handler()
     exit_code = 0
-    index_data, index_file_path = get_index_json_data(
+    index_data, _ = get_index_json_data(
         service_account=options.service_account, production_bucket_name=options.production_bucket_name,
         extract_path=options.extract_path, storage_base_path=options.storage_base_path
     )
 
     # Get the first host by the ami env
     hosts, _ = XSOARBuild.get_servers(ami_env=options.ami_env)
-    internal_ip, tunnel_port = list(hosts.items())[0]
+    internal_ip = hosts[0]
     username, password = extract_credentials_from_secret(options.secret)
-    server = XSOARServer(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password,
-                         build_number=options.build_number)
+    server = XSOARServer(internal_ip=internal_ip, user_name=username, password=password, build_number=options.build_number)
 
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)

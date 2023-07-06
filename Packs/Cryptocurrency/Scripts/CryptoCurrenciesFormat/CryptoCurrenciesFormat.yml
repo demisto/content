@@ -1,12 +1,9 @@
 args:
-- default: false
-  description: The crypto address to verify.
+- description: The crypto address to verify.
   isArray: true
   name: input
   required: true
-  secret: false
-comment: Verifies that a crypto address is valid and only returns the address if
-  it is valid.
+comment: Verifies that a crypto address is valid and only returns the address if it is valid.
 commonfields:
   id: CryptoCurrenciesFormat
   version: -1
@@ -14,7 +11,6 @@ enabled: true
 name: CryptoCurrenciesFormat
 script: '-'
 subtype: python3
-system: false
 tags:
 - indicator-format
 timeout: '0'

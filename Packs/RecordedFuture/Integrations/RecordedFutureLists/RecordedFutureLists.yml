@@ -21,11 +21,9 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 script:
   script: '-'
@@ -37,10 +35,8 @@ script:
     description: Search for lists in Recorded Future
     arguments:
     - name: list_names
-      required: false
       description: Freetext name to search for
     - name: contains
-      required: false
       description: Filter lists based on entity types, will only include lists with the entity types specified. Default value "" includes all types
       auto: PREDEFINED
       predefined:
@@ -65,7 +61,6 @@ script:
       - target
       - method
     - name: limit
-      required: false
       description: Limits the amount of returned results
     outputs:
     - contextPath: RecordedFuture.List.id
@@ -97,12 +92,9 @@ script:
       description: Id of the list that should be added, can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal
     - name: entity_ids
       description: 'Specific ids from Recorded Future separated by comma, For urls containing commas: replace comma with %2C'
-      required: false
     - name: freetext_names
       description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will add the best match in the Recorded Future data. For urls containing commas: escape with %2C'
-      required: false
     - name: entity_type
-      required: false
       description: Type of the entities that should be added, only used together with freetext_names to improve entity resolving
       auto: PREDEFINED
       predefined:
