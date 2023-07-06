@@ -1094,7 +1094,7 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
                     "name": "IP Resolution (DNS Resolution)",
                     "numeric": null,
                     "type": "ipResolution",
-                    "value": "164.155.162.126"
+                    "value": "redacted_ip_address"
                 },
                 {
                     "classification": "unclass",
@@ -1108,14 +1108,14 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
                     "name": "IP Resolution (DomainTools)",
                     "numeric": null,
                     "type": "ipResolution",
-                    "value": "67.55.121.97"
+                    "value": "redacted_ip_address"
                 },
                 {
                     "classification": "unclass",
                     "name": "IP Resolution (VirusTotal)",
                     "numeric": null,
                     "type": "ipResolution",
-                    "value": "178.62.20.110"
+                    "value": "redacted_ip_address"
                 }
             ],
             "enrichmentResults": [
@@ -1293,7 +1293,7 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
 >### Results
 >|active|activityDates|actors|attackPatterns|benign|confidenceLevel|description|domainRegistration|enrichmentFields|enrichmentResults|expand|exploitStage|externalhitCount|fileNames|fileSize|firstExternalHit|firstHit|hashes|hitCount|id|indicatorDerivation|integrationSources|ipRegistration|ipResolution|lastExternalHit|lastHit|links|malwares|originatingIps|path|ports|reportCount|reportedDates|requestMethods|sources|status|stixObjects|subjects|targets|tasked|tlp|tlpCaveats|tlpHighestAssociated|tlpJustification|tlpLowestAssociated|tlpResolution|type|value|verified|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| false | {'date': '2012-05-08', 'classification': 'U'},<br/>{'date': '2012-05-16', 'classification': 'U'},<br/>{'date': '2012-08-30', 'classification': 'U'},<br/>{'date': '2012-09-05', 'classification': 'U'},<br/>{'date': '2012-09-26', 'classification': 'U'},<br/>{'date': '2012-12-07', 'classification': 'U'},<br/>{'date': '2013-01-17', 'classification': 'U'},<br/>{'date': '2013-03-01', 'classification': 'U'},<br/>{'date': '2013-03-14', 'classification': 'U'},<br/>{'date': '2013-03-27', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-18', 'classification': 'U'},<br/>{'date': '2014-03-05', 'classification': 'U'},<br/>{'date': '2014-05-07', 'classification': 'U'} | {'name': 'APT41', 'id': 30, 'classification': 'U'},<br/>{'name': 'Conimes', 'id': 121, 'classification': 'U'} |  | value: false<br/>classification: U | value: high<br/>classification: U |  | name: unknown<br/>classification: U | {'type': 'ipResolution', 'name': 'IP Resolution (DNS Resolution)', 'value': '164.155.162.126', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'reverseIp', 'name': 'Reverse IP Lookup (VirusTotal)', 'value': '13 resolutions to this domain', 'numeric': 13.0, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (DomainTools)', 'value': '67.55.121.97', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (VirusTotal)', 'value': '178.62.20.110', 'numeric': None, 'classification': 'unclass'} | { "date": "2020-04-28", "format": "json", "result": "{ \"status\": \"redacted to protect content provider's actual JSON output that in a live call would be provided\" }" "type": "VIRUS_TOTAL" },<br/>{ "date": "2020-12-15", "format": "colonDelimited", "result": "redacted to protected content provider's actual raw text result", "type": "WHOIS_IP_REGISTRATION" } | enrichmentResults,hitStats,sources | name: Stage 7 - Actions on Objectives<br/>id: 6<br/>classification: U | 0 |  |  |  |  |  | 0 | 983 |  |  |  |  |  |  | {'rel': 'self', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983'},<br/>{'rel': 'evidence', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/evidence'},<br/>{'rel': 'stix', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/stix'} |  |  |  | {'value': 443, 'classification': 'U'},<br/>{'value': 80, 'classification': 'U'} | 21 | {'date': '2012-05-10', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-19', 'classification': 'U'},<br/>{'date': '2013-09-16', 'classification': 'U'},<br/>{'date': '2014-05-19', 'classification': 'U'},<br/>{'date': '2014-08-14', 'classification': 'U'},<br/>{'date': '2018-09-19', 'classification': 'U'},<br/>{'date': '2019-10-17', 'classification': 'U'},<br/>{'date': '2021-07-01', 'classification': 'U'} |  | {'type': 'reference', 'enabled': False, 'title': 'Internal', 'url': None, 'category': 'INTERNAL', 'id': 0},<br/>{'type': 'rss', 'enabled': False, 'title': 'Threat Connect', 'url': 'https:<span>//</span>feeds.feedburner.com/threatconnect-blogs', 'category': 'FREE', 'id': 78},<br/>{'type': 'api', 'enabled': True, 'title': 'CrowdStrike Premium Paid', 'url': 'https:<span>//</span>api.crowdstrike.com', 'category': 'PAID', 'id': 134} | rc |  |  | {'name': 'Unknown', 'id': -2, 'classification': 'U'},<br/>{'name': 'Manufacturing Industry', 'id': 100017, 'classification': 'U'},<br/>{'name': 'Energy Industry', 'id': 100021, 'classification': 'U'},<br/>{'name': 'Technology Industry', 'id': 100026, 'classification': 'U'} | true | undetermined |  | amber |  | undetermined | resolved | domain | name: conimes.com<br/>classification: U | true |
+>| false | {'date': '2012-05-08', 'classification': 'U'},<br/>{'date': '2012-05-16', 'classification': 'U'},<br/>{'date': '2012-08-30', 'classification': 'U'},<br/>{'date': '2012-09-05', 'classification': 'U'},<br/>{'date': '2012-09-26', 'classification': 'U'},<br/>{'date': '2012-12-07', 'classification': 'U'},<br/>{'date': '2013-01-17', 'classification': 'U'},<br/>{'date': '2013-03-01', 'classification': 'U'},<br/>{'date': '2013-03-14', 'classification': 'U'},<br/>{'date': '2013-03-27', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-18', 'classification': 'U'},<br/>{'date': '2014-03-05', 'classification': 'U'},<br/>{'date': '2014-05-07', 'classification': 'U'} | {'name': 'APT41', 'id': 30, 'classification': 'U'},<br/>{'name': 'Conimes', 'id': 121, 'classification': 'U'} |  | value: false<br/>classification: U | value: high<br/>classification: U |  | name: unknown<br/>classification: U | {'type': 'ipResolution', 'name': 'IP Resolution (DNS Resolution)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'reverseIp', 'name': 'Reverse IP Lookup (VirusTotal)', 'value': '13 resolutions to this domain', 'numeric': 13.0, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (DomainTools)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (VirusTotal)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'} | { "date": "2020-04-28", "format": "json", "result": "{ \"status\": \"redacted to protect content provider's actual JSON output that in a live call would be provided\" }" "type": "VIRUS_TOTAL" },<br/>{ "date": "2020-12-15", "format": "colonDelimited", "result": "redacted to protected content provider's actual raw text result", "type": "WHOIS_IP_REGISTRATION" } | enrichmentResults,hitStats,sources | name: Stage 7 - Actions on Objectives<br/>id: 6<br/>classification: U | 0 |  |  |  |  |  | 0 | 983 |  |  |  |  |  |  | {'rel': 'self', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983'},<br/>{'rel': 'evidence', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/evidence'},<br/>{'rel': 'stix', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/stix'} |  |  |  | {'value': 443, 'classification': 'U'},<br/>{'value': 80, 'classification': 'U'} | 21 | {'date': '2012-05-10', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-19', 'classification': 'U'},<br/>{'date': '2013-09-16', 'classification': 'U'},<br/>{'date': '2014-05-19', 'classification': 'U'},<br/>{'date': '2014-08-14', 'classification': 'U'},<br/>{'date': '2018-09-19', 'classification': 'U'},<br/>{'date': '2019-10-17', 'classification': 'U'},<br/>{'date': '2021-07-01', 'classification': 'U'} |  | {'type': 'reference', 'enabled': False, 'title': 'Internal', 'url': None, 'category': 'INTERNAL', 'id': 0},<br/>{'type': 'rss', 'enabled': False, 'title': 'Threat Connect', 'url': 'https:<span>//</span>feeds.feedburner.com/threatconnect-blogs', 'category': 'FREE', 'id': 78},<br/>{'type': 'api', 'enabled': True, 'title': 'CrowdStrike Premium Paid', 'url': 'https:<span>//</span>api.crowdstrike.com', 'category': 'PAID', 'id': 134} | rc |  |  | {'name': 'Unknown', 'id': -2, 'classification': 'U'},<br/>{'name': 'Manufacturing Industry', 'id': 100017, 'classification': 'U'},<br/>{'name': 'Energy Industry', 'id': 100021, 'classification': 'U'},<br/>{'name': 'Technology Industry', 'id': 100026, 'classification': 'U'} | true | undetermined |  | amber |  | undetermined | resolved | domain | name: conimes.com<br/>classification: U | true |
 
 
 ### 15. analyst1-get-sensor-config
@@ -1417,25 +1417,25 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
                     "category": "indicator",
                     "id": "2594990-SHA256",
                     "type": "File-SHA256",
-                    "value": "267C9CF2597A23AD957C10553EAF1D8B1196700EAFE67C7999B2CDB4E41995A4"
+                    "value": "267C9CF2597A23AD957C10553EAF1D8B1196700EAFE67C7999B2CDB4E41995AA"
                 },
                 {
                     "category": "indicator",
                     "id": 2916021,
                     "type": "Domain",
-                    "value": "labs.sentinelone.com"
+                    "value": "redacted.com"
                 },
                 {
                     "category": "indicator",
                     "id": 3083418,
                     "type": "IPv4",
-                    "value": "205.205.150.46"
+                    "value": "redacted_ip_address"
                 },
                 {
                     "category": "indicator",
                     "id": 3166219,
                     "type": "IPv4",
-                    "value": "92.154.95.236"
+                    "value": "redacted_ip_address"
                 }
             ],
             "IndicatorsRemoved": [
@@ -1443,19 +1443,19 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
                     "category": "indicator",
                     "id": 1633777,
                     "type": "Domain",
-                    "value": "eu3.org"
+                    "value": "redacted_domain.org"
                 },
                 {
                     "category": "indicator",
                     "id": 1748796,
                     "type": "Domain",
-                    "value": "justinstalledpanel.com"
+                    "value": "redacted_domain.com"
                 },
                 {
                     "category": "indicator",
                     "id": 3935921,
                     "type": "IPv4",
-                    "value": "89.248.165.45"
+                    "value": "redacted_ip_address"
                 }
             ],
             "RulesAdded": null,
