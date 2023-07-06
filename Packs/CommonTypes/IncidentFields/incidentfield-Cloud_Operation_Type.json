@@ -14,19 +14,17 @@
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
     "required": false,
     "sla": 0,
     "system": false,
     "threshold": 72,
     "type": "multiSelect",
-    "unmapped": true,
+    "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.5.0",
-	"x2_fields": "operation_name",
-    "marketplaces": ["marketplacev2"]
+    "marketplaces": [
+        "xsoar"
+    ],
+    "fromVersion": "6.8.0"
 }

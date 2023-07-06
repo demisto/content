@@ -1,32 +1,27 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "cloudoperationtype",
+    "cliName": "identitytype",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_cloudoperationtype",
+    "id": "incident_identitytype",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cloud Operation Type",
+    "name": "Identity Type",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
     "required": false,
     "sla": 0,
     "system": false,
     "threshold": 72,
     "type": "multiSelect",
-    "unmapped": true,
+    "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.5.0",
-	"x2_fields": "operation_name",
-    "marketplaces": ["marketplacev2"]
+    "fromVersion": "6.8.0"
 }
