@@ -149,3 +149,5 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
                 logging.error(err_msg)
             else:
                 logging.success(f"Copied readme images for {pack_name} pack.")
+
+    return task_status
