@@ -90,7 +90,7 @@ script:
   - deprecated: false
     description: Disables data aging on CS
     execution: false
-    name: commvault-security-disable-data-aging
+    name: commvault-security-set-disable-data-aging
     outputs:
     - contextPath: CommvaultSecurityIQ.Response
       description: Status returned after calling disable data aging API
@@ -98,7 +98,7 @@ script:
   - deprecated: false
     description: Generate Token
     execution: false
-    name: commvault-security-generate-token
+    name: commvault-security-get-generate-token
     outputs:
     - contextPath: CommvaultSecurityIQ.Response
       description: Status indicating whether successfully generated access token or not 
@@ -114,7 +114,7 @@ script:
   - deprecated: false
     description: Disable SAML provider
     execution: false
-    name: commvault-security-disable-saml-provider
+    name: commvault-security-set-disable-saml-provider
     outputs:
     - contextPath: CommvaultSecurityIQ.Response
       description: Status indicating whether successfully disabled SAML provider or not
@@ -122,11 +122,11 @@ script:
   - deprecated: false
     description: Copy the list of affected files list to war room
     execution: false
-    name: commvault-security-copy-files-list-to-war-room
+    name: commvault-security-get-copy-files-list-to-war-room
   - deprecated: false
     description: Disables user
     execution: false
-    name: commvault-security-disable-user
+    name: commvault-security-set-disable-user
     arguments:
     - name: user_email
       description: Email id of the user to be disabled.
