@@ -106,7 +106,7 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
     Returns:
         bool: Whether the operation succeeded.
     """
-    logging.debug('Starting readme images copy.')
+    logging.info('Starting readme images copy.')
     readme_images: dict = {}
     if readme_images := images_data.get(BucketUploadFlow.README_IMAGES, {}):
         for pack_name, pack_readme_images_list in readme_images.items():
@@ -144,13 +144,8 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
 
                     except Exception as e:
                         logging.exception(f"{err_msg}. Additional Info: {str(e)}")
-                        return False
 
             if not task_status:
                 logging.error(err_msg)
             else:
                 logging.success(f"Copied readme images for {pack_name} pack.")
-
-            return task_status
-        return None
-    return None
