@@ -1,10 +1,7 @@
 args:
-- default: false
-  description: Integration name for which to check its instance name.
-  isArray: false
+- description: Integration name for which to check its instance name.
   name: integration_name
   required: true
-  secret: false
 - auto: PREDEFINED
   description: Whether to return a full list of instance names related to the given integation name.
   name: return_all_instances
@@ -24,7 +21,6 @@ outputs:
   description: Instance name for given integration.
   type: String
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'

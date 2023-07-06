@@ -24,7 +24,6 @@ enabled: true
 name: UnitTest
 comment: "Provides for automated testing of automations, playbooks, and sub-playbooks"
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
