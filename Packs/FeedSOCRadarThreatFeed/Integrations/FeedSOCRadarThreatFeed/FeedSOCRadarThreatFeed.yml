@@ -10,11 +10,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Feed Name
   name: collections_to_fetch
@@ -37,7 +35,6 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Good
@@ -48,7 +45,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
@@ -70,22 +66,18 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   defaultvalue: GREEN
@@ -96,18 +88,15 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: 'true'
-  required: false
   type: 8
   hidden: true
 description: Retrieve indicators provided by collections via SOCRadar Threat Intelligence Feeds.
@@ -116,17 +105,11 @@ name: FeedSOCRadarThreatFeed
 script:
   commands:
   - arguments:
-    - default: false
-      description: The maximum number of indicators to be retrieved.
-      isArray: false
+    - description: The maximum number of indicators to be retrieved.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ALL
       description: Names of the collections that intended to be retrieved indicators from.
-      isArray: false
       name: collections_to_fetch
       predefined:
       - ALL
@@ -142,11 +125,7 @@ script:
       - SOCRadar-APT-Recommended-Block-Hash
       - SOCRadar-Botnet C&C - Block-Domain
       - SOCRadar-Botnet C&C - Block-IP
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves SOCRadar Recommended Threat Intelligences Collections.
-    execution: false
     name: socradar-get-indicators
     outputs:
     - contextPath: SOCRadarThreatFeed.Indicators[0].Indicator
@@ -206,15 +185,10 @@ script:
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.ZipCode
       description: Zip code field Geographical location information of the IP type indicator.
       type: String
-  - deprecated: false
-    description: Resets the indicator fetch history.
-    execution: false
+  - description: Resets the indicator fetch history.
     name: socradar-reset-fetch-indicators
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

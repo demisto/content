@@ -164,7 +164,9 @@ def sync_marketplace(client: demisto_client):
         client (demisto_client): The client to connect to.
     """
     try:
-        _ = demisto_client.generic_request_func(client, path='/contentpacks/marketplace/sync', method='POST')
+        _ = demisto_client.generic_request_func(client, path='/contentpacks/marketplace/sync?hard=true', method='POST')
+        logging.info('Sent request for sync, going to sleep 120 seconds')
+        sleep(120)
         logging.info('Synced marketplace successfully.')
     except Exception as e:
         logging.warning(f'Failed to sync marketplace. Error: {str(e)}')
