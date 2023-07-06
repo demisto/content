@@ -100,6 +100,7 @@ def test_create_events_for_push():
     assert l_time == '2023-04-23 11:53:11'
     assert event_list == events_result
 
+
 def test_fetch_events_command(mocker):
     """
         Given:

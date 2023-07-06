@@ -2,7 +2,7 @@ from CommonServerPython import *
 import urllib3
 from datetime import datetime
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -104,6 +104,14 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
 
 
 def get_raw_events(client, days):
+    """
+       helper function that is used in get-events and fetch-events to get the actual events and sort them
+       Args:
+           client (Client): DG client
+           days (int): number of days to fetch
+       Returns:
+           list: list of events
+    """
     outcome = []
     event_list = []
     token = client.get_token()
@@ -121,6 +129,15 @@ def get_raw_events(client, days):
 
 
 def get_events(client, args):
+    """
+        Implement the get_events command
+        Args:
+            client (Client): DG client
+            args (dict): Command arguments
+        Returns:
+            list: list of events
+            commandresults: readable output
+    """
     days = args.get("days")
     event_list = get_raw_events(client, days)
     limit = int(args.get("limit")) if args.get("limit") else None
@@ -131,6 +148,18 @@ def get_events(client, args):
 
 
 def create_events_for_push(event_list, last_time, id_list, limit):
+    """
+       Create events for pushing them and prepares the values for next_run save
+       Args:
+           event_list (list): list of events
+           last_time (str): time of last event from previous run
+           id_list (list): list of id's ingested
+           limit (int): max_fetch
+       Returns:
+           list: list of events
+           last_time: updates time of last event
+           id_list: list of id's
+    """
     index = 0
     event_list_for_push = []
     for event in event_list:
@@ -152,17 +181,19 @@ def create_events_for_push(event_list, last_time, id_list, limit):
             break
     return event_list_for_push, last_time, id_list
 
+
 def fetch_events(client: Client, last_run: dict[str, list], first_fetch_time: int, limit: int):
     """
     Args:
-        client (Client): HelloWorld client to use.
+        client (Client): DG client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
         first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching events.
         limit (int):
 
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
+        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch and list of ID's
+              of ingested id's
         list: List of events that will be created in XSIAM.
     """
     id_list = last_run.get('id_list', [])
@@ -200,11 +231,7 @@ def add_time_to_events(events):
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
-def main() -> None: # pragma: no cover
-    """
-    main function, parses params and runs command functions
-    """
-
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
