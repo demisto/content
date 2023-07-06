@@ -1,0 +1,6 @@
+[MODEL: dataset = portnox_portnox_raw]
+filter cefDeviceVendor != null
+//
+| alter xdm.target.vlan = to_integer(cn1),
+    xdm.source.host.os = cs2,
+    xdm.event.outcome = "test"// if(outcome = "success" , xdm_const_success , outcome
