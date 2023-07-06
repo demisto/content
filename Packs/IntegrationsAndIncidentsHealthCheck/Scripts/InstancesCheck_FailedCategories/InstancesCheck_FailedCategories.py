@@ -5,7 +5,6 @@ import random
 from typing import Counter
 
 
-
 def parse_data(instances_category):
     instances_category_data = []
 

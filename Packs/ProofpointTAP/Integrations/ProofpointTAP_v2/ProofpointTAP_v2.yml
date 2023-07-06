@@ -26,19 +26,16 @@ configuration:
   options:
   - v1
   - v2
-  required: false
   type: 15
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -49,7 +46,6 @@ configuration:
   - url
   - attachment
   - messageText
-  required: false
   type: 16
   section: Collect
   advanced: true
@@ -60,7 +56,6 @@ configuration:
   - active
   - cleared
   - falsePositive
-  required: false
   type: 16
   section: Collect
   advanced: true
@@ -74,7 +69,6 @@ configuration:
   - Permitted Clicks
   - Blocked Messages
   - Delivered Messages
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -82,23 +76,19 @@ configuration:
   defaultvalue: 1 hour
   display: First fetch time range
   name: fetch_time
-  required: false
   type: 0
   section: Collect
 - additionalinfo: 'The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support'
   display: 'Advanced: Raw message encoding'
   name: raw_json_encoding
-  required: false
   type: 0
   section: Collect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
@@ -107,51 +97,29 @@ name: Proofpoint TAP v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'A string containing an ISO8601-formatted interval. If this interval overlaps with previous requests for data, records from the previous request might be duplicated. The minimum interval is thirty seconds. The maximum interval is one hour. Examples: * 2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour interval, beginning at noon UTC on 05-01-2016 * PT30M/2016-05-01T12:30:00Z - the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm * UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using -0700 as the time zone'
-      isArray: false
+    - description: 'A string containing an ISO8601-formatted interval. If this interval overlaps with previous requests for data, records from the previous request might be duplicated. The minimum interval is thirty seconds. The maximum interval is one hour. Examples: * 2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour interval, beginning at noon UTC on 05-01-2016 * PT30M/2016-05-01T12:30:00Z - the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm * UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using -0700 as the time zone'
       name: interval
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'A comma-separated list of the threat types to return. If empty, all threat types are returned. The following values are accepted: "url", "attachment", and "messageText".'
-      isArray: false
       name: threatType
       predefined:
       - url
       - attachment
       - messageText
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A string specifying which threat statuses to return. If empty, active and cleared threats are returned. Can be "active", "cleared", "falsePositive".
-      isArray: false
       name: threatStatus
       predefined:
       - active
       - cleared
       - falsePositive
-      required: false
-      secret: false
-    - default: false
-      description: 'A string containing an ISO8601 date. It represents the start of the data retrieval period. The end of the period is determined by the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result. Example: 2016-05-01T12:00:00Z.'
-      isArray: false
+    - description: 'A string containing an ISO8601 date. It represents the start of the data retrieval period. The end of the period is determined by the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result. Example: 2016-05-01T12:00:00Z.'
       name: sinceTime
-      required: false
-      secret: false
-    - default: false
-      description: An integer representing a time window (in seconds) from the current API server time. The start of the window is the current API server time, rounded to the nearest minute, less the number of seconds provided. The end of the window is the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result.
-      isArray: false
+    - description: An integer representing a time window (in seconds) from the current API server time. The start of the window is the current API server time, rounded to the nearest minute, less the number of seconds provided. The end of the window is the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result.
       name: sinceSeconds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: All
       description: 'Event types to return. Possible values: "All", "Issues", "Delivered Messages", "Blocked Messages", "Permitted Clicks", and "Blocked Clicks".'
-      isArray: false
       name: eventTypes
       predefined:
       - All
@@ -160,11 +128,7 @@ script:
       - Blocked Messages
       - Permitted Clicks
       - Blocked Clicks
-      required: false
-      secret: false
-    deprecated: false
     description: Fetches events for all clicks and messages relating to known threats within the specified time period. Details as per clicks/blocked.
-    execution: false
     name: proofpoint-get-events
     outputs:
     - contextPath: Proofpoint.MessagesDelivered.GUID
@@ -429,28 +393,14 @@ script:
       description: The User-Agent header from the clicker's HTTP request.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the threat (use with either threatId or campaignId).
-      isArray: false
+    - description: The ID of the threat (use with either threatId or campaignId).
       name: threatId
-      required: false
-      secret: false
-    - default: false
-      description: ID of the campaign (use with either threatId or campaignId).
-      isArray: false
+    - description: ID of the campaign (use with either threatId or campaignId).
       name: campaignId
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Whether to include forensic evidence for the whole campaign. Can be used with threatId only.
-      isArray: false
       name: includeCampaignForensics
-      required: false
-      secret: false
-    deprecated: false
     description: Returns forensics evidence.
-    execution: false
     name: proofpoint-get-forensics
     outputs:
     - contextPath: Proofpoint.Report.ID
@@ -854,31 +804,17 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "Click's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
-      isArray: false
       name: threat_status
       predefined:
       - active
       - cleared
       - falsePositive
-      required: false
-      secret: false
-    - default: false
-      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
-      isArray: false
+    - description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
       name: interval
-      required: false
-      secret: false
-    - default: false
-      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
-      isArray: false
+    - description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: Gets events for clicks to malicious URLs blocked in the specified time period. Must provide either the interval or time_range arguments.
-    execution: false
     name: proofpoint-get-events-clicks-blocked
     outputs:
     - contextPath: Proofpoint.ClicksBlocked.url
@@ -931,31 +867,17 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "Click's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
-      isArray: false
       name: threat_status
       predefined:
       - active
       - cleared
       - falsePositive
-      required: false
-      secret: false
-    - default: false
-      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
-      isArray: false
+    - description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
       name: interval
-      required: false
-      secret: false
-    - default: false
-      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
-      isArray: false
+    - description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: Get events for clicks to malicious URLs permitted in the specified time period.  Must provide either the interval or time_range arguments.
-    execution: false
     name: proofpoint-get-events-clicks-permitted
     outputs:
     - contextPath: Proofpoint.ClicksPermitted.url
@@ -1008,42 +930,24 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "Message's threat type to be retrieved. If no value is specified, all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
-      isArray: false
       name: threat_type
       predefined:
       - url
       - attachment
       - message
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Message's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
-      isArray: false
       name: threat_status
       predefined:
       - active
       - cleared
       - falsePositive
-      required: false
-      secret: false
-    - default: false
-      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
-      isArray: false
+    - description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
       name: interval
-      required: false
-      secret: false
-    - default: false
-      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
-      isArray: false
+    - description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: Get events for blocked messages in the specified time period. Must provide either the interval or time_range arguments.
-    execution: false
     name: proofpoint-get-events-messages-blocked
     outputs:
     - contextPath: Proofpoint.MessagesBlocked.spamScore
@@ -1132,42 +1036,24 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "Message's threat type to be retrieved. If no value is specified, all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
-      isArray: false
       name: threat_type
       predefined:
       - url
       - attachment
       - message
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Message's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
-      isArray: false
       name: threat_status
       predefined:
       - active
       - cleared
       - falsePositive
-      required: false
-      secret: false
-    - default: false
-      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
-      isArray: false
+    - description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
       name: interval
-      required: false
-      secret: false
-    - default: false
-      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
-      isArray: false
+    - description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: Get events for delivered messages in the specified time period. Must provide either the interval or time_range arguments.
-    execution: false
     name: proofpoint-get-events-messages-delivered
     outputs:
     - contextPath: Proofpoint.MessagesDelivered.spamScore
@@ -1256,42 +1142,24 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "Event's threat type to be retrieved. If no value is specified, all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
-      isArray: false
       name: threat_type
       predefined:
       - url
       - attachment
       - message
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Event's threat status to be retrieved.If no value is specified, active and cleared threats will be retrieved. Possible values: 'url', 'attachment', and 'message'."
-      isArray: false
       name: threat_status
       predefined:
       - active
       - cleared
       - falsePositive
-      required: false
-      secret: false
-    - default: false
-      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
-      isArray: false
+    - description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
       name: interval
-      required: false
-      secret: false
-    - default: false
-      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
-      isArray: false
+    - description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: Get events for clicks to malicious URLs permitted and messages delivered containing a known attachment threat within the specified time period. Must provide either the interval or time_range arguments.
-    execution: false
     name: proofpoint-list-issues
     outputs:
     - contextPath: Proofpoint.ClicksPermitted.url
@@ -1427,35 +1295,17 @@ script:
       description: The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.
       type: String
   - arguments:
-    - default: false
-      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one day. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
-      isArray: false
+    - description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one day. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The maximum number of campaign IDs to produce in the response. Defaults to 100 and the maximum supported value is 200.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page of results to return, in multiples of the specified size.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
-      isArray: false
+    - description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of IDs of campaigns active in a specified time period. Must provide either the interval or time_range arguments.
-    execution: false
     name: proofpoint-list-campaigns
     outputs:
     - contextPath: Proofpoint.Campaigns.id
@@ -1465,15 +1315,10 @@ script:
       description: Last updated timestamp of the campaign.
       type: String
   - arguments:
-    - default: false
-      description: ID of the required campaign.
-      isArray: false
+    - description: ID of the required campaign.
       name: campaign_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets details for a given campaign.
-    execution: false
     name: proofpoint-get-campaign
     outputs:
     - contextPath: Proofpoint.Campaign.info
@@ -1499,34 +1344,21 @@ script:
       type: List
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'An integer indicating how many days the data should be retrieved for. Possible values: "14", "30", "90".'
-      isArray: false
       name: window
       predefined:
       - '14'
       - '30'
       - '90'
       required: true
-      secret: false
-    - default: false
-      defaultValue: '1000'
+    - defaultValue: '1000'
       description: The maximum number of users to produce in the response.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page of results to return.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of the most attacked users in the organization.
-    execution: false
     name: proofpoint-list-most-attacked-users
     outputs:
     - contextPath: Proofpoint.Vap.users
@@ -1546,34 +1378,21 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'An integer indicating how many days the data should be retrieved for. Possible values: "14", "30", "90".'
-      isArray: false
       name: window
       predefined:
       - '14'
       - '30'
       - '90'
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The maximum number of top clickers to produce in the response.The max supported value is 200.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page of results to return.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of the top clickers in the organization for a specified time period.
-    execution: false
     name: proofpoint-get-top-clickers
     outputs:
     - contextPath: Proofpoint.Topclickers.users
@@ -1586,15 +1405,10 @@ script:
       description: An ISO8601-formatted interval showing the time the response was calculated for.
       type: Date
   - arguments:
-    - default: false
-      description: A comma-separated list of encoded URLs.
-      isArray: false
+    - description: A comma-separated list of encoded URLs.
       name: urls
       required: true
-      secret: false
-    deprecated: false
     description: Decodes URLs that have been rewritten by TAP to their original, target URL.
-    execution: false
     name: proofpoint-url-decode
     outputs:
     - contextPath: Proofpoint.URL.encodedUrl
@@ -1607,10 +1421,7 @@ script:
       description: Indicates whether the URL could successfully be decoded.
       type: Boolean
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
