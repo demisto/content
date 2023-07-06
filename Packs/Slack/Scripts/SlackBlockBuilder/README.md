@@ -13,9 +13,9 @@ The Slack Block Kit Builder can be found [here](https://app.slack.com/block-kit-
 
 ## Use Case
 ---
-This automation allows you to send a survey to users (including external to Cortex XSOAR) via Slack, have them respond and 
+This automation allows you to send a survey to users (including external to Cortex XSOAR) via Slack, and have them respond and 
 reflect the answer back to Cortex XSOAR. Within the survey, you can use all the different input types that are available 
-via Slack Block Kit, including buttons, text fields, datepickers, radio buttons, multi select, and more.
+via the Slack Block Kit, including buttons, text fields, datepickers, radio buttons, multi select, and more.
 
 See this [blog post](https://www.paloaltonetworks.com/blog/security-operations/playbook-of-the-week-teaching-xsoar-a-few-new-tricks-with-slack-blocks/) for more detailed use case information and ideas.
 
@@ -98,11 +98,11 @@ Thread ID is: 1660645689.649679
 
 ## Troubleshooting
 ---
-**Issue**: The survey message is not sent to Slack at all.
+**Issue**: The survey message is not sent to Slack.
 
-**Troubleshooting**: Test the `send-notification` command on its own and get it working first. That will provide a more specific error message if there is an issue. Note that the Slack API bot you set up for the Slack v3 integration needs to be added to any channels you want to send SlackBlockBuilder surveys to.
+**Troubleshooting**: Test the `send-notification` command on its own to verify it is working correctly. This will provide a more specific error message if there is an issue. Note that the Slack API bot you set up for the Slack v3 integration needs to be added to any channels you want to send SlackBlockBuilder surveys to.
 
-Also verify your Slack blocks payload is valid. Try simplifying the payload. Test with an extremely simple dummy payload like the following:
+Verify your Slack blocks payload is valid. Try simplifying the payload. Test with a simple dummy payload like the following:
 ```
 {
 	"blocks": [
@@ -120,7 +120,7 @@ Also verify your Slack blocks payload is valid. Try simplifying the payload. Tes
 ---
 **Issue**: The survey is sent to Slack and submitted successfully, but the response does not show up in context data in Cortex XSOAR.
 
-**Troubleshooting**: The most likely cause is there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by default admin. Ensure an API key created by a default admin user is entered into the Slack v3 integration instance settings.
+**Troubleshooting**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by default admin. Ensure an API key created by a default admin user is entered into the Slack v3 integration instance settings.
 
 ---
 **Issue**: The survey is sent to Slack successfully, but clicking the Submit button in Slack does nothing. No response is returned to Cortex XSOAR. There may be a ⚠️ icon next to the Submit button in Slack. 
