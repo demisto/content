@@ -721,7 +721,8 @@ class TestParsingIndicators:
                     "type": "ipv4-addr",
                     "value": "1.1.1.1",
                     "extensions": {
-                        "extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
+                        "extension-definition--1234": {"tags": ["test"],
+                                                       "description": "test"}}
                 },
                 [
                     {
