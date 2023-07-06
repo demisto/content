@@ -28,7 +28,6 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 script:
   script: >-
     var insecure = params.insecure;
@@ -251,6 +250,5 @@ script:
       - "false"
       description: Defines if the search should query recently received messages that are not fully indexed yet (default false). You can search by mailbox and date time across active messages
     description: query mimecast emails
-  runonce: false
 tests:
 - No test

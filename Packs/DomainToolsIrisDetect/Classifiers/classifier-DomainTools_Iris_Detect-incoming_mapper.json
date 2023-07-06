@@ -1,0 +1,59 @@
+{
+    "description": "DomainTools Iris Detect - Incoming Mapper",
+    "feed": false,
+    "id": "DomainTools Iris Detect - Incoming Mapper",
+    "mapping": {
+        "DomainTools Iris Detect Blocked Domains": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "DomainTools Iris Detect": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "State": {
+                    "complex": {
+                        "accessor": "state",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "DomainTools Iris Detect Changed Domains": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "DomainTools Iris Detect": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "DomainTools Iris Detect New Domains": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "DomainTools Iris Detect": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "DomainTools Iris Detect - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
