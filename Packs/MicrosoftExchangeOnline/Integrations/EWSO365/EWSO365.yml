@@ -9,19 +9,16 @@ configuration:
 - additionalinfo: ID can be received from the admin consent procedure - see Detailed Instructions.
   display: ID / Application ID
   name: _client_id
-  required: false
   type: 0
   section: Connect
 - additionalinfo: Token can be received from the admin consent procedure - see Detailed Instructions.
   display: Token / Tenant ID
   name: _tenant_id
-  required: false
   type: 0
   section: Connect
 - additionalinfo: Key can be received from the admin consent procedure - see Detailed Instructions.
   displaypassword: Key / Application Secret
   name: credentials
-  required: false
   type: 9
   hiddenusername: true
   section: Connect
@@ -35,7 +32,6 @@ configuration:
 - additionalinfo: If this parameter is given, the commands will run with the UPN mailbox instead of the default target mailbox.
   display: UPN Address
   name: upn_mailbox
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -49,7 +45,6 @@ configuration:
 - defaultvalue: 'Impersonation'
   display: Access Type
   name: access_type
-  required: false
   type: 15
   options:
   - Impersonation
@@ -58,76 +53,64 @@ configuration:
   advanced: true
 - display: Public Folder
   name: is_public_folder
-  required: false
   type: 8
   section: Connect
   advanced: true
   defaultvalue: 'false'
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - defaultvalue: '10 minutes'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
   section: Collect
 - display: Max incidents per fetch (up to 50)
   name: max_fetch
-  required: false
   type: 0
   defaultvalue: '50'
   section: Collect
 - display: Mark fetched emails as read
   name: mark_as_read
-  required: false
   type: 8
   section: Collect
   advanced: true
 - display: Timeout (in seconds) for HTTP requests to Exchange Server
   name: request_timeout
-  required: false
   type: 0
   defaultvalue: '120'
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   defaultvalue: 'false'
   section: Connect
   advanced: true
 - display: Run as a separate process (protects against memory depletion)
   name: separate_process
-  required: false
   type: 8
   defaultvalue: 'false'
   section: Connect
   advanced: true
 - display: Use a self deployed Azure Application
   name: self_deployed
-  required: false
   type: 8
   section: Connect
   advanced: true
 - additionalinfo: Use the "ID" parameter instead.
   display: ID / Application ID (Deprecated)
   name: client_id
-  required: false
   type: 4
   hidden: true
   section: Connect
@@ -135,7 +118,6 @@ configuration:
 - additionalinfo: Use the "Token" parameter instead.
   display: Token / Tenant ID (Deprecated)
   name: tenant_id
-  required: false
   type: 4
   hidden: true
   section: Connect
@@ -143,7 +125,6 @@ configuration:
 - additionalinfo: Use the "Key" parameter instead.
   display: Key / Application Secret (Deprecated)
   name: client_secret
-  required: false
   type: 4
   hidden: true
   section: Connect
@@ -151,7 +132,6 @@ configuration:
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
   section: Collect
 - additionalinfo: Default is to filter by received-time, which works well if the folder is an "Inbox". But for a folder emails are dragged into for attention, if we filter by received-time, out-of-order processing of emails means some are ignored. Filtering by modified-time works better for such a scenario. This works best if any modifications (such as tagging) happens before moving the email into the folder, such that the move into the folder is the last modification, and triggers Cortex XSOAR to fetch it as an incident.
@@ -160,7 +140,6 @@ configuration:
   options:
   - received-time
   - modified-time
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -941,10 +920,6 @@ script:
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: renderBody
       description: 'Indicates whether to render the email body'
-      isArray: false
-      default: false
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -960,9 +935,7 @@ script:
       isArray: true
     description: Replies to an email using EWS.
   dockerimage: demisto/py3ews:1.0.0.63819
-  feed: false
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import codecs
 import unicodedata
 import logging
 from typing import Any, Dict, List, Optional, Tuple
 
-import demistomock as demisto  # noqa: F401
 import pyshark
-from CommonServerPython import *  # noqa: F401
 
 TCP_FLAG_FIN = 0x01
 TCP_FLAG_SYN = 0x02
