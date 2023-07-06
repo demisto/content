@@ -1,16 +1,9 @@
 args:
-- default: false
-  description: The username of the user to disable.
-  isArray: false
+- description: The username of the user to disable.
   name: username
   required: true
-  secret: false
-- default: false
-  description: Whether to run the command. This is used to prevent unwanted calls to the command.
-  isArray: false
+- description: Whether to run the command. This is used to prevent unwanted calls to the command.
   name: approve_action
-  required: false
-  secret: false
   defaultValue: No
   predefined:
   - Yes
@@ -66,7 +59,6 @@ outputs:
   type: String
 
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'
