@@ -480,20 +480,37 @@ def analyst1_batch_check_command(client: Client, args):
 
 
 def analyst1_batch_check_post(client: Client, args: dict):
+    runpath = 'values'
     values = args.get('values')
-    if values is None:
+    if values is None or not values:
         val_array = args.get('values_array')
+        runpath = 'val_array_base'
         # process all possible inbound value array combinations
         if isinstance(val_array, str):
             # if a string, assume it is a viable string to become an array
-            val_array = '{"values": [' + val_array + ']}'
+            # have to check if it is a "false string" with quotes around it to hand some input flows
+            val_array = val_array.strip()
+            if not val_array.startswith('['):
+                val_array = '[' + val_array
+            if not val_array.endswith(']'):
+                val_array = val_array + ']'
+            val_array = '{"values": ' + val_array + '}'
             val_array = json.loads(val_array)
+            runpath = 'val_array_str'
         elif isinstance(val_array, list):
             # if already an list, accept it
             val_array = {'values': val_array}
+            runpath = 'val_array_list'
         # if none of the above assume it is json matching this format
         # pull values regardless of input form to newline text for acceptable submission
-        values = '\n'.join(val_array["values"])
+        values = '\n'.join(str(val) for val in val_array["values"])
+
+    output_check_data = {
+        'values': str(args.get('values')),
+        'val_array': str(args.get('values_array')),
+        'type': str(type(args.get('values_array'))),
+        'runpath': runpath
+    }
 
     raw_data = client.post_batch_search(values)
     # assume succesful result or client will have errored
@@ -506,7 +523,8 @@ def analyst1_batch_check_post(client: Client, args: dict):
         return_results(command_results)
         output_check: dict = {
             'command_results': command_results,
-            'submitted_values': values
+            'submitted_values': values,
+            'original_data': output_check_data
         }
         return output_check
     return None
