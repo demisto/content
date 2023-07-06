@@ -1,0 +1,120 @@
+{
+    "name": "Getting Started with XSOAR",
+    "description": "This wizard is designed to provide a step-by-step walkthough on getting started with XSOAR",
+    "support": "community",
+    "videos": [
+    "https://www.youtube.com/watch?v=03TmGeAzvOQ"
+    ],
+    "currentVersion": "1.0.0",
+    "author": "Joe Cosgrove",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "joecosgrove@paloaltonetworks.com"
+    ],
+    "githubUser": [],
+    "tags": [
+        "GettingStartedWithXSOAR"
+    ],
+    "useCases": [
+        "Case Management"
+    ],
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "SampleIncidentGenerator": {
+            "mandatory": true,
+            "display_name": "Sample Incident Generator"
+        },
+        "Case Management": {
+            "mandatory": true,
+            "display_name": "CaseManagement-Generic"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "JoeSecurity": {
+            "mandatory": false,
+            "display_name": "Joe Security"
+        },
+        "Palo_Alto_Networks_WildFire": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks WildFire"
+        },
+        "FeedMitreAttackv2": {
+            "mandatory": true,
+            "display_name": "MITRE ATT&CK v2"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "Splunk": {
+            "mandatory": false,
+            "display_name": "Splunk"
+        }
+    },
+    "marketplaces": [
+        "xsoar"
+    ],
+    "itemPrefix": [
+        "GettingStartedWithXSOAR",
+        "CaseManagement-Generic"
+    ],
+    "displayedImages": [
+        "CommonScripts",
+        "CaseManagement-Generic",
+        "CoreAlertFields",
+        "CommonTypes"
+    ]
+}

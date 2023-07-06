@@ -1,0 +1,191 @@
+{
+  "id": "Getting Started With XSOAR Wizard",
+  "version": -1,
+  "modified": "2023-06-26T11:55:54.250933+03:00",
+  "fromVersion": "6.9.0",
+  "name": "Getting Started With XSOAR Wizard",
+  "description": "Welcome to the Getting Started with XSOAR Wizard! This will serve as your step-by-step walk through on Getting your XSOAR server up and running",
+  "dependency_packs": [{
+      "name": "Sample Incident Generator",
+      "min_required": 1,
+      "packs": [{
+        "name": "SampleIncidentGenerator",
+        "display_name": "Sample Incident Generator"
+      }]
+    },
+    {
+      "name": "Sandbox",
+      "min_required": 0,
+      "packs": [{
+          "name": "Palo_Alto_Networks_WildFire",
+          "display_name": "Palo Alto Networks WildFire"
+        },
+        {
+          "name": "CrowdStrikeFalconX",
+          "display_name": "CrowdStrike Falcon X"
+        },
+        {
+          "name": "JoeSecurity",
+          "display_name": "Joe Security"
+        }
+      ]
+    },
+    {
+      "name": "Messaging",
+      "min_required": 0,
+      "packs": [{
+          "name": "MicrosoftExchangeOnPremise",
+          "display_name": "Microsoft Exchange On-Premise"
+        },
+        {
+          "name": "Gmail",
+          "display_name": "Gmail"
+        },
+        {
+          "name": "MicrosoftGraphMail",
+          "display_name": "Microsoft Graph Mail"
+        }
+      ]
+    },
+    {
+      "name": "Case Management",
+      "min_required": 0,
+      "packs": [{
+          "name": "Jira",
+          "display_name": "Atlassian Jira v2"
+        },
+        {
+          "name": "ServiceNow",
+          "display_name": "ServiceNow v2"
+        }
+      ]
+    },
+    {
+      "name": "Data Enrichment & Threat Intelligence",
+      "min_required": 0,
+      "packs": [{
+          "name": "AutoFocus",
+          "display_name": "Palo Alto Networks AutoFocus"
+        },
+        {
+          "name": "VirusTotal",
+          "display_name": "VirusTotal"
+        },
+        {
+          "name": "FeedMitreAttackv2",
+          "display_name": "Mitre Attack v2"
+        }
+      ]
+    }
+  ],
+  "wizard": {
+    "fetching_integrations": [{
+      "priority": 1,
+      "name": "Sample Incident Generator",
+      "action": {
+        "existing": "Update your current instance to work with the new Case incident type: \n1. Enable fetching. \n2. Set the Incident type field to Case. \n3. Set the Mapper field to 'Case Management - Generic Mapper'. \n4. Change the Fetch Interval to Hourly (so you don't flood your XSOAR instance with Alerts. You can disable this later, we just need some sample data to show you the ropes",
+        "new": "Set up a new 'Sample Incident Generator' instance to start fetching sample incidents: \n1. Enable fetching. \n2. Set the Incident type field to Case. \n3. Set the Mapper field to 'Case Management - Generic Mapper'. \n4. Change the Fetch Interval to Hourly (so you don't flood your XSOAR instance with Alerts. You can disable this later, we just need some sample data to show you the ropes"
+      },
+      "description": "Set up the 'Sample Incident Generator' integration to begin fetching sample alerts to quickly learn the basics of XSOAR."
+    }],
+    "set_playbook": [{
+      "name": "Case Management - Generic v2"
+    }],
+    "supporting_integrations": [{
+        "name": "WildFire-v2",
+        "action": {
+          "existing": "Configure 'Wildfire' to enable file detonation to improve investigation.",
+          "new": "Configure 'Wildfire' to enable file detonation to improve investigation."
+        },
+        "description": "Configure Wildfire to enable file detonation to improve investigation."
+      },
+      {
+        "name": "JoeSecurityV2",
+        "action": {
+          "existing": "Configure 'Joe Security V2' to enable file detonation to improve investigation.",
+          "new": "Configure 'Joe Security V2' to enable file detonation to improve investigation."
+        },
+        "description": "Configure 'Joe Security V2' to enable file detonation to improve investigation."
+      },
+      {
+        "name": "EWS Mail Sender",
+        "action": {
+          "existing": "Configure 'EWS Mail Sender' to enable email notifications.",
+          "new": "Configure 'EWS Mail Sender' to enable email notifications."
+        },
+        "description": "Configure 'EWS Mail Sender' to enable email notifications."
+      },
+      {
+        "name": "Gmail",
+        "action": {
+          "existing": "Configure 'Gmail' to enable email notifications.",
+          "new": "Configure 'Gmail' to enable email notifications."
+        },
+        "description": "Configure 'Gmail' to enable email notifications."
+      },
+      {
+        "name": "MicrosoftGraphMail",
+        "action": {
+          "existing": "Configure 'Microsoft Graph Mail' to enable email notifications.",
+          "new": "Configure 'Microsoft Graph Mail' to enable email notifications."
+        },
+        "description": "Configure 'Microsoft Graph Mail' to enable email notifications."
+      },
+      {
+        "name": "ServiceNow v2",
+        "action": {
+          "existing": "Configure 'ServiceNow v2' to open a ticket for a true positive incident.",
+          "new": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
+        },
+        "description": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
+      },
+      {
+        "name": "jira-v2",
+        "action": {
+          "existing": "Configure 'jira-v2' to open a ticket for a true positive incident.",
+          "new": "Configure 'jira-v2' to open a ticket for a true positive incident."
+        },
+        "description": "Configure 'jira-v2' to open a ticket for a true positive incident."
+      },
+      {
+        "name": "AutoFocus V2",
+        "action": {
+          "existing": "Configure 'AutoFocus v2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'AutoFocus v2' to enrich IOCs as part of the investigation."
+        },
+        "description": "Configure 'AutoFocus v2' to enrich IOCs as part of the investigation."
+      },
+      {
+        "name": "VirusTotal (API v3)",
+        "action": {
+          "existing": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+        },
+        "description": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+      },
+      {
+        "name": "MITRE ATT&CK v2",
+        "action": {
+          "existing": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation."
+        },
+        "description": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation."
+      },
+      {
+        "name": "Splunk",
+        "action": {
+          "existing": "Configure 'Splunk' to fetch notables, events, or run queries.",
+          "new": "Enable 'Splunk' to fetch notables, events, or run queries"
+        },
+        "description": "Configure 'Splunk' to fetch notables, events, or run queries."
+      }
+    ],
+    "next": [{
+      "name": "Enable Your Use Case",
+      "action": {
+        "existing": "Enable the fetching integrations to start ingesting sample data and to automatically run the playbook!",
+        "new": "Enable the fetching integrations to start ingesting sample data and to automatically run the playbook!"
+      }
+    }]
+  }
+}
