@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
 from IAMApiModule import *      # noqa: E402
 from ZoomApiModule import *     # noqa: E402
 # Disable insecure warnings
