@@ -14,7 +14,7 @@
     },
     "target": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "authenticationContext": {
       "type": "string",
