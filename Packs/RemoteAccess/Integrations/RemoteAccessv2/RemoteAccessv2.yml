@@ -9,34 +9,29 @@ configuration:
 - additionalinfo: If not provided, "host" or "system" should be provided in the command's arguments.
   display: Default Hostname or IP Address
   name: hostname
-  required: false
   type: 0
   section: Connect
 - additionalinfo: For example, "root".
   display: User
   name: credentials
-  required: false
   type: 9
   section: Connect
 - additionalinfo: Requires an additional password as an argument to run any command of this module.
   displaypassword: Additional Password
   name: additional_password
   hiddenusername: true
-  required: false
   type: 9
   section: Connect
   advanced: true
 - additionalinfo: A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned.
   display: Ciphers
   name: ciphers
-  required: false
   type: 0
   section: Connect
   advanced: true
 - additionalinfo: A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error message specifying the supported key algorithms is returned.
   display: Key Algorithms
   name: key_algorithms
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -46,43 +41,21 @@ name: RemoteAccess v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: Command to run on the remote machine.
-      isArray: false
+    - description: Command to run on the remote machine.
       name: cmd
       required: true
-      secret: false
-    - default: false
-      description: Password required to match the Additional Password parameter if it was supplied to run the command.
-      isArray: false
+    - description: Password required to match the Additional Password parameter if it was supplied to run the command.
       name: additional_password
-      required: false
-      secret: false
-    - default: false
-      description: Timeout for command in seconds.
-      isArray: false
+    - description: Timeout for command in seconds.
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: System to run the command on.
+    - description: System to run the command on.
       isArray: true
       name: system
-      required: false
-      secret: false
-    - default: false
-      description: Host name to run the command on.
+    - description: Host name to run the command on.
       isArray: true
       name: host
-      required: false
-      secret: false
-    - default: false
-      description: Port to run the command on.
-      isArray: false
+    - description: Port to run the command on.
       name: port
-      required: false
-      secret: false
-    deprecated: false
     description: Run the specified command on the remote system with SSH.
     execution: true
     name: ssh
@@ -100,116 +73,48 @@ script:
       description: Command that was run.
       type: String
   - arguments:
-    - default: false
-      description: Entry ID of the file to be copied from Cortex XSOAR to the remote machine.
-      isArray: false
+    - description: Entry ID of the file to be copied from Cortex XSOAR to the remote machine.
       name: entry_id
-      required: false
-      secret: false
-    - default: false
-      description: Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not specified.
-      isArray: false
+    - description: Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not specified.
       name: destination_path
-      required: false
-      secret: false
-    - default: false
-      description: Password required to match the Additional Password parameter if it was supplied to run the command.
-      isArray: false
+    - description: Password required to match the Additional Password parameter if it was supplied to run the command.
       name: additional_password
-      required: false
-      secret: false
-    - default: false
-      description: Timeout for command in seconds.
-      isArray: false
+    - description: Timeout for command in seconds.
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: Destination of the directory to copy the file to in the remote machine.
-      isArray: false
+    - description: Destination of the directory to copy the file to in the remote machine.
       name: dest-dir
-      required: false
-      secret: false
-    - default: false
-      description: Entry ID of the file to be copied from Cortex XSOAR to the remote machine. (Deprecated. Use entry_id instead).
-      isArray: false
+    - description: Entry ID of the file to be copied from Cortex XSOAR to the remote machine. (Deprecated. Use entry_id instead).
       name: entry
-      required: false
-      secret: false
-    - default: false
-      description: System to run the command on.
+    - description: System to run the command on.
       isArray: true
       name: system
-      required: false
-      secret: false
-    - default: false
-      description: Host name to run the command on.
+    - description: Host name to run the command on.
       isArray: true
       name: host
-      required: false
-      secret: false
-    - default: false
-      description: Port to run the command on.
-      isArray: false
+    - description: Port to run the command on.
       name: port
-      required: false
-      secret: false
-    deprecated: false
     description: Copies the given file from Cortex XSOAR to the remote machine.
-    execution: false
     name: copy-to
   - arguments:
-    - default: false
-      description: Path of the file in the remote machine to be copied to Cortex XSOAR.
-      isArray: false
+    - description: Path of the file in the remote machine to be copied to Cortex XSOAR.
       name: file_path
-      required: false
-      secret: false
-    - default: false
-      description: Name of the file to be copied to Cortex XSOAR. Defaults to the file name in `file_path` if not specified. For example, if `file_path` is "a/b/c.txt", the file name will be c.txt.
-      isArray: false
+    - description: Name of the file to be copied to Cortex XSOAR. Defaults to the file name in `file_path` if not specified. For example, if `file_path` is "a/b/c.txt", the file name will be c.txt.
       name: file_name
-      required: false
-      secret: false
-    - default: false
-      description: Password. Required to match the Additional Password parameter if it was supplied in order to run the command.
-      isArray: false
+    - description: Password. Required to match the Additional Password parameter if it was supplied in order to run the command.
       name: additional_password
-      required: false
-      secret: false
-    - default: false
-      description: Timeout for command in seconds.
-      isArray: false
+    - description: Timeout for command in seconds.
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: Path of the file in the remote machine to be copied to Cortex XSOAR. (Deprecated. Use file_path instead).
-      isArray: false
+    - description: Path of the file in the remote machine to be copied to Cortex XSOAR. (Deprecated. Use file_path instead).
       name: file
-      required: false
-      secret: false
-    - default: false
-      description: System to run the command on.
+    - description: System to run the command on.
       isArray: true
       name: system
-      required: false
-      secret: false
-    - default: false
-      description: Host name to run the command on.
+    - description: Host name to run the command on.
       isArray: true
       name: host
-      required: false
-      secret: false
-    - default: false
-      description: Port to run the command on.
-      isArray: false
+    - description: Port to run the command on.
       name: port
-      required: false
-      secret: false
-    deprecated: false
     description: Copies the given file from the remote machine to Cortex XSOAR.
-    execution: false
     name: copy-from
     outputs:
     - contextPath: File.Name
@@ -240,10 +145,6 @@ script:
       description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
   dockerimage: demisto/netmiko:1.0.0.63868
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -5,7 +5,6 @@ commonfields:
 configuration:
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: Query the ja3er API for MD5 hashes of JA3 fingerprints.
 display: Ja3er

@@ -10,13 +10,11 @@ configuration:
   type: 0
 - display: The Client ID
   name: client_id
-  required: false
   type: 0
   hidden: true
 - defaultvalue: '1.0'
   display: The Client Version
   name: client_version
-  required: false
   type: 0
 - additionalinfo: The API Key to use for connection
   display: API Key
@@ -45,11 +43,9 @@ configuration:
   - F - Reliability cannot be judged
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 
 description: Search Safe Browsing, The Safe Browsing APIs (v4) let your client applications check URLs against Google's constantly updated lists of unsafe web resources.
@@ -63,10 +59,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Searches for the specified URL on lists.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -106,10 +99,6 @@ script:
       description: The URL threat entry type.
       type: string
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

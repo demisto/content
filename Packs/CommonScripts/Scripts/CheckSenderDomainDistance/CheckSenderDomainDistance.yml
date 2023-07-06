@@ -20,7 +20,6 @@ args:
   required: true
   description: Sender email address
 - name: distance
-  required: false
   description: Distance that is considered close
   defaultValue: "3"
 outputs:
