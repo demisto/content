@@ -1,6 +1,6 @@
-id: Cloud Token Theft Response
+id: Cortex XDR - XCloud Token Theft Response
 version: -1
-name: Cloud Token Theft Response
+name: Cortex XDR - XCloud Token Theft Response
 description: |-
   ---
 
@@ -9,35 +9,35 @@ description: |-
   The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
 
   **Cloud Enrichment:**
-  - Enriches the involved resources
-  - Enriches the involved identities
-  - Enriches the involved IPs
+  - Enriches the involved resources.
+  - Enriches the involved identities.
+  - Enriches the involved IPs.
 
   **Verdict Decision Tree:**
-  - Determines the appropriate verdict based on the investigation findings
+  - Determines the appropriate verdict based on the investigation findings.
 
   **Early Containment using the Cloud Response - Generic Playbook:**
-  - Implements early containment measures to prevent further impact
+  - Implements early containment measures to prevent further impact.
 
   **Cloud Persistence Threat Hunting:**
-  - Conducts threat hunting activities to identify any cloud persistence techniques
+  - Conducts threat hunting activities to identify any cloud persistence techniques.
 
   **Enriching and Responding to Hunting Findings:**
-  - Performs additional enrichment and responds to the findings from threat hunting
+  - Performs additional enrichment and responds to the findings from threat hunting.
 
   **Verdict Handling:**
-  - Handles false positives identified during the investigation
-  - Handles true positives by initiating appropriate response actions
+  - Handles false positives identified during the investigation.
+  - Handles true positives by initiating appropriate response actions.
 
   ---
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 72cf7e2b-9a6f-4a1b-821e-f4679e486af5
+    taskid: 7c995b30-f3e5-4496-832f-fbc380441190
     type: start
     task:
-      id: 72cf7e2b-9a6f-4a1b-821e-f4679e486af5
+      id: 7c995b30-f3e5-4496-832f-fbc380441190
       version: -1
       name: ""
       iscommand: false
@@ -64,14 +64,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e611d3ea-534f-46c9-8647-e82036bbb2d1
+    taskid: 68f23ebd-334f-47c3-858d-32cf6ee802ca
     type: regular
     task:
-      id: e611d3ea-534f-46c9-8647-e82036bbb2d1
+      id: 68f23ebd-334f-47c3-858d-32cf6ee802ca
       version: -1
       name: Fetch alert extra data
       description: Returns information about each alert ID.
-      script: '|||core-get-cloud-original-alerts'
+      script: '|||xdr-get-cloud-original-alerts'
       type: regular
       iscommand: true
       brand: ""
@@ -81,7 +81,18 @@ tasks:
     scriptarguments:
       alert_ids:
         complex:
-          root: inputs.alert_id
+          root: incident.xdralerts
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: incident.xdralerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
+              ignorecase: true
+          accessor: alertid
       extend-context:
         simple: alertData=
       ignore-outputs:
@@ -101,20 +112,20 @@ tasks:
     fieldMapping:
     - incidentfield: ASN
       output:
-        simple: ${Core.OriginalAlert.event.caller_ip_asn}
+        simple: ${PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn}
     - incidentfield: ASN Name
       output:
-        simple: ${Core.OriginalAlert.event.caller_ip_asn_org}
+        simple: ${PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn_org}
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 17724863-d960-46ad-8a11-8f42cbf47f0e
+    taskid: 3414e15e-a296-4440-857e-b67e8d110e51
     type: regular
     task:
-      id: 17724863-d960-46ad-8a11-8f42cbf47f0e
+      id: 3414e15e-a296-4440-857e-b67e8d110e51
       version: -1
       name: Load alert JSON
       description: Loads a JSON from a string input, and returns a JSON object result.
@@ -146,16 +157,112 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: ASN
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: caller_ip_asn
+          transformers:
+          - operator: uniq
+    - incidentfield: ASN Name
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: caller_ip_asn_org
+          transformers:
+          - operator: uniq
+    - incidentfield: Country
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: action_country
+          transformers:
+          - operator: uniq
+    - incidentfield: Operation Type
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: operation_name
+          transformers:
+          - operator: uniq
+    - incidentfield: Operation Name
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: operation_name_orig
+          transformers:
+          - operator: uniq
+    - incidentfield: Project ID
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
+          accessor: project
+    - incidentfield: Identity Type
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
+          accessor: identity_type
+          transformers:
+          - operator: uniq
+    - incidentfield: Source IP
+      output:
+        complex:
+          root: incident.xdralerts
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: incident.xdralerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
+          accessor: hostip
+          transformers:
+          - operator: uniq
+    - incidentfield: Resource Type
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: resource_type_orig
+          transformers:
+          - operator: uniq
+    - incidentfield: Region
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: region
+          transformers:
+          - operator: uniq
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 98397e62-31c7-4b49-876f-a6c4210260ee
+    taskid: c3da330a-98cc-4a24-8440-7eca8182a113
     type: title
     task:
-      id: 98397e62-31c7-4b49-876f-a6c4210260ee
+      id: c3da330a-98cc-4a24-8440-7eca8182a113
       version: -1
       name: Check VPN
       type: title
@@ -183,14 +290,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a505e901-1a19-4c54-89a5-5679da10c8e7
+    taskid: b989322c-a5b7-419a-834a-b4b7220018fc
     type: playbook
     task:
-      id: a505e901-1a19-4c54-89a5-5679da10c8e7
+      id: b989322c-a5b7-419a-834a-b4b7220018fc
       version: -1
       name: Cloud Enrichment - Generic
-      description: |-
-        ---
+      description: |2-
 
         ## Generic Cloud Enrichment Playbook
 
@@ -204,7 +310,7 @@ tasks:
         2. **Cloud Compute Enrichment - Generic**
            - Enriches information related to cloud compute resources.
 
-        ---
+        The playbook supports a single CSP enrichment at a time.
       playbookName: Cloud Enrichment - Generic
       type: playbook
       iscommand: false
@@ -215,12 +321,16 @@ tasks:
     scriptarguments:
       cloudProvider:
         complex:
-          root: alert
+          root: incident.xdralerts
           accessor: cloudprovider
+          transformers:
+          - operator: uniq
       username:
         complex:
-          root: alert
+          root: incident.xdralerts
           accessor: username
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -244,10 +354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 296536c2-e825-421c-8e77-d23c4858e540
+    taskid: 6ff14f4f-ff2e-4fe0-80b5-fbacf492d5c3
     type: title
     task:
-      id: 296536c2-e825-421c-8e77-d23c4858e540
+      id: 6ff14f4f-ff2e-4fe0-80b5-fbacf492d5c3
       version: -1
       name: Threat Hunting
       type: title
@@ -275,10 +385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 506a830b-e106-49bb-884d-3046683e101d
+    taskid: ebc71199-7f11-4ac4-8b8f-bd9a3977f3f6
     type: title
     task:
-      id: 506a830b-e106-49bb-884d-3046683e101d
+      id: ebc71199-7f11-4ac4-8b8f-bd9a3977f3f6
       version: -1
       name: Analysis
       type: title
@@ -306,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 99b32157-a4b5-4ad2-8949-3664187f3f1a
+    taskid: 258b5261-54ce-4175-898e-49f06934fa4b
     type: condition
     task:
-      id: 99b32157-a4b5-4ad2-8949-3664187f3f1a
+      id: 258b5261-54ce-4175-898e-49f06934fa4b
       version: -1
       name: Check verdict resolution
       description: Checks which verdict was received by the Cloud Token Theft - Set Verdict playbook.
@@ -344,63 +454,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: d9455fee-7caf-46ac-8026-364883bdbc26
-    type: playbook
-    task:
-      id: d9455fee-7caf-46ac-8026-364883bdbc26
-      version: -1
-      name: Handle False Positive Alerts
-      description: |
-        This playbook handles false positive alerts.
-        It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
-      playbookName: Handle False Positive Alerts
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      ShouldCloseAutomatically:
-        simple: "False"
-      ShouldHandleFPautomatically:
-        simple: "False"
-      alertName:
-        complex:
-          root: alert
-          accessor: name
-      sourceIP:
-        complex:
-          root: alert
-          accessor: hostip
-      username:
-        complex:
-          root: alert
-          accessor: username
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -230,
-          "y": 3005
-        }
-      }
-    note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: triagesla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -408,10 +464,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0b5c42f1-1adc-47e1-85be-b74017596364
+    taskid: e8e43851-9d56-4d01-8fb9-0403519aecec
     type: playbook
     task:
-      id: 0b5c42f1-1adc-47e1-85be-b74017596364
+      id: e8e43851-9d56-4d01-8fb9-0403519aecec
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -421,9 +477,9 @@ tasks:
         - GCP
 
         The response actions available are:
-        - Terminate/Shut down/Power off an instance
-        - Delete/Disable a user
-        - Delete/Revoke/Disable credentials
+        - Terminate/Shut down/Power off an instance.
+        - Delete/Disable a user.
+        - Delete/Revoke/Disable credentials.
         - Block indicators
       playbookName: Cloud Response - Generic
       type: playbook
@@ -442,21 +498,29 @@ tasks:
       GCP-userRemediationType:
         simple: Disable
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoUserRemediation
       cloudProvider:
         complex:
-          root: alert.cloudprovider
-          accessor: '[0]'
+          root: incident.xdralerts
+          accessor: cloudprovider
+          transformers:
+          - operator: uniq
       username:
         complex:
-          root: alert.username
-          accessor: '[0]'
+          root: incident.xdralerts
+          accessor: username
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -472,7 +536,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: pause
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -480,10 +546,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6ec57530-4216-4d77-8f85-35d0df561827
+    taskid: b24a7b45-f6e0-4081-8d77-da872f2c1d66
     type: title
     task:
-      id: 6ec57530-4216-4d77-8f85-35d0df561827
+      id: b24a7b45-f6e0-4081-8d77-da872f2c1d66
       version: -1
       name: Early Containment
       type: title
@@ -503,7 +569,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -511,10 +579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 89ca3353-c319-48a6-82ab-3c18ad78136e
+    taskid: 5116b858-f35c-4532-8d79-34fa42f33317
     type: title
     task:
-      id: 89ca3353-c319-48a6-82ab-3c18ad78136e
+      id: 5116b858-f35c-4532-8d79-34fa42f33317
       version: -1
       name: Enrich IoCs
       description: This script will extract indicators from the given AWS CloudTrail, GCP Logging, or Azure Log Analytics event data.
@@ -543,10 +611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 94a1e1eb-6884-4f7a-8262-f4cf8179b2d6
+    taskid: 18869c45-ac1e-4c49-8069-907603000fb2
     type: title
     task:
-      id: 94a1e1eb-6884-4f7a-8262-f4cf8179b2d6
+      id: 18869c45-ac1e-4c49-8069-907603000fb2
       version: -1
       name: Containment
       type: title
@@ -574,10 +642,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 866c90ea-1631-4f35-8c08-dbca5e72b8e8
+    taskid: f9057961-2c94-4cf2-8dc2-e39faa217c59
     type: condition
     task:
-      id: 866c90ea-1631-4f35-8c08-dbca5e72b8e8
+      id: f9057961-2c94-4cf2-8dc2-e39faa217c59
       version: -1
       name: Persistence activity or suspicious IoCs found?
       description: Checks if one of the extracted indicators is suspicious or malicious, or if there are any results from the Cloud Threat Hunting - Persistence playbook.
@@ -647,10 +715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 73551cc9-76bd-48f9-8f38-2fef3a302f11
+    taskid: 0cd67bd7-0167-4cd5-8ab4-7334b89cfc95
     type: title
     task:
-      id: 73551cc9-76bd-48f9-8f38-2fef3a302f11
+      id: 0cd67bd7-0167-4cd5-8ab4-7334b89cfc95
       version: -1
       name: Manual invetigation
       type: title
@@ -678,10 +746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 03e6367e-d3af-4622-8f11-d1352c77c619
+    taskid: 62e1dca7-e5b4-4514-8044-b487db46bd6c
     type: regular
     task:
-      id: 03e6367e-d3af-4622-8f11-d1352c77c619
+      id: 62e1dca7-e5b4-4514-8044-b487db46bd6c
       version: -1
       name: Investigate the data collected
       description: You should investigate the data collected manually and choose how the playbook should continue.
@@ -709,10 +777,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: adea59ae-46c6-4565-8ab0-ac19f1301c91
+    taskid: ae06dcd7-e93a-4126-88e0-afad189dc889
     type: condition
     task:
-      id: adea59ae-46c6-4565-8ab0-ac19f1301c91
+      id: ae06dcd7-e93a-4126-88e0-afad189dc889
       version: -1
       name: Should contain the threats?
       description: Whether to contain the threats found.
@@ -721,7 +789,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "61"
       "Yes":
       - "51"
     separatecontext: false
@@ -742,10 +810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 9a44b2ac-d8e1-42cd-828b-50908be646c9
+    taskid: b4dcc788-ab52-4be8-80d0-08abb1e73d3a
     type: title
     task:
-      id: 9a44b2ac-d8e1-42cd-828b-50908be646c9
+      id: b4dcc788-ab52-4be8-80d0-08abb1e73d3a
       version: -1
       name: Eradication
       type: title
@@ -773,10 +841,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 3a8277ea-891b-4edd-853d-c2e6b2bd0c3c
+    taskid: e3fafcf7-3d5d-47bc-8059-a9f8337ea358
     type: playbook
     task:
-      id: 3a8277ea-891b-4edd-853d-c2e6b2bd0c3c
+      id: e3fafcf7-3d5d-47bc-8059-a9f8337ea358
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -786,10 +854,10 @@ tasks:
         - GCP
 
         The response actions available are:
-        - Terminate/Shut down/Power off an instance
-        - Delete/Disable a user
-        - Delete/Revoke/Disable credentials
-        - Block indicators
+        - Terminate/Shut down/Power off an instance.
+        - Delete/Disable a user.
+        - Delete/Revoke/Disable credentials.
+        - Block indicators.
       playbookName: Cloud Response - Generic
       type: playbook
       iscommand: false
@@ -828,8 +896,10 @@ tasks:
         simple: "False"
       cloudProvider:
         complex:
-          root: alert
+          root: incident.xdralerts
           accessor: cloudprovider
+          transformers:
+          - operator: uniq
       region:
         complex:
           root: Core.OriginalAlert.event
@@ -865,10 +935,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: f7b26e88-099c-4859-8a0e-629596e6b090
+    taskid: a53b6b07-5ceb-4e3c-8cc7-6714f66cf15a
     type: condition
     task:
-      id: f7b26e88-099c-4859-8a0e-629596e6b090
+      id: a53b6b07-5ceb-4e3c-8cc7-6714f66cf15a
       version: -1
       name: Should eradicate the threats?
       description: Whether to eradicate the threats. This playbook should be treated with care as its actions are irreversible.
@@ -898,10 +968,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 698ba6ec-2278-4493-8c8f-c89090d79136
+    taskid: ad8fb161-f9ea-463b-831f-37742872c592
     type: title
     task:
-      id: 698ba6ec-2278-4493-8c8f-c89090d79136
+      id: ad8fb161-f9ea-463b-831f-37742872c592
       version: -1
       name: Resolution
       type: title
@@ -921,7 +991,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -929,10 +1001,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 876d7226-1120-4c0d-8df4-66b95ed0fd55
+    taskid: 8564c719-44a0-49c3-878a-799670c7aa44
     type: condition
     task:
-      id: 876d7226-1120-4c0d-8df4-66b95ed0fd55
+      id: 8564c719-44a0-49c3-878a-799670c7aa44
       version: -1
       name: Is manual investigation required to complete the resolution process?
       description: Whether to continue with the investigation manually or close the alert.
@@ -962,10 +1034,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 1f50da4e-2d0b-4012-83aa-a865b9b04551
+    taskid: fc3876ba-e3b4-4cfe-8ebf-5abbe773bc95
     type: regular
     task:
-      id: 1f50da4e-2d0b-4012-83aa-a865b9b04551
+      id: fc3876ba-e3b4-4cfe-8ebf-5abbe773bc95
       version: -1
       name: Investigate further
       description: Continue to investigate manually.
@@ -993,10 +1065,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 355623a4-717a-4333-86b9-a75900536328
+    taskid: a644f393-2a73-4636-87ff-268d5749c0a9
     type: regular
     task:
-      id: 355623a4-717a-4333-86b9-a75900536328
+      id: a644f393-2a73-4636-87ff-268d5749c0a9
       version: -1
       name: Resolve the alert
       description: commands.local.cmd.close.inv
@@ -1028,10 +1100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: d09e1a12-93e1-4e50-8e5c-26fdbf28e9ec
+    taskid: 96dc1d91-027c-42df-8583-147db90ef748
     type: title
     task:
-      id: d09e1a12-93e1-4e50-8e5c-26fdbf28e9ec
+      id: 96dc1d91-027c-42df-8583-147db90ef748
       version: -1
       name: Done
       type: title
@@ -1056,16 +1128,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 6c84bcd2-0d5c-4cf5-8c7a-8e29a87073b3
+    taskid: 5f62213f-792b-48f0-8634-5ff19c956128
     type: playbook
     task:
-      id: 6c84bcd2-0d5c-4cf5-8c7a-8e29a87073b3
+      id: 5f62213f-792b-48f0-8634-5ff19c956128
       version: -1
-      name: Cloud Token Theft - Set Verdict
+      name: Cortex XDR - XCloud Token Theft - Set Verdict
       description: |-
         ---
 
-        ## Cloud Token Theft - Set Verdict Playbook
+        ## Cloud Token Theft  - Set Verdict Playbook
 
         The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
 
@@ -1087,7 +1159,7 @@ tasks:
            - Impossible Traveler by cloud identity.
 
         ---
-      playbookName: Cloud Token Theft - Set Verdict
+      playbookName: Cortex XDR - XCloud Token Theft - Set Verdict
       type: playbook
       iscommand: false
       brand: ""
@@ -1097,8 +1169,8 @@ tasks:
     scriptarguments:
       fromDate:
         complex:
-          root: alert
-          accessor: created
+          root: incident
+          accessor: occurred
           transformers:
           - operator: ModifyDateTime
             args:
@@ -1107,7 +1179,18 @@ tasks:
                   simple: 2 hours ago
       sourceIP:
         complex:
-          root: alert
+          root: incident.xdralerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.xdralerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
           accessor: hostip
     separatecontext: false
     continueonerrortype: ""
@@ -1132,19 +1215,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 2662f014-da1e-489b-8060-0c245f55789b
+    taskid: c91dd6e8-1997-4356-8956-1da70003f6a6
     type: playbook
     task:
-      id: 2662f014-da1e-489b-8060-0c245f55789b
+      id: c91dd6e8-1997-4356-8956-1da70003f6a6
       version: -1
       name: IP Enrichment - Generic v2
       description: |-
         Enrich IP addresses using one or more integrations.
 
-        - Resolve IP addresses to hostnames (DNS)
-        - Provide threat information
-        - Separate internal and external IP addresses
-        - For internal IP addresses, get host information
+        - Resolve IP addresses to hostnames (DNS).
+        - Provide threat information.
+        - Separate internal and external IP addresses.
+        - For internal IP addresses, get host information.
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -1155,8 +1238,18 @@ tasks:
     scriptarguments:
       IP:
         complex:
-          root: IP
-          accessor: Address
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: host_ip
           transformers:
           - operator: uniq
       InternalRange:
@@ -1168,7 +1261,7 @@ tasks:
         complex:
           root: inputs.ResolveIP
       UseReputationCommand:
-        simple: "False"
+        simple: "True"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1192,10 +1285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: e470723c-a8a3-4166-883b-5f4b38a6e7e6
+    taskid: 7a696e2d-c5ad-468f-8f3d-acc1821178a9
     type: playbook
     task:
-      id: e470723c-a8a3-4166-883b-5f4b38a6e7e6
+      id: 7a696e2d-c5ad-468f-8f3d-acc1821178a9
       version: -1
       name: Cloud Threat Hunting - Persistence
       description: |-
@@ -1228,12 +1321,12 @@ tasks:
     scriptarguments:
       AWSAccessKeyID:
         complex:
-          root: Core.OriginalAlert.[0].event
-          accessor: identity_invoked_by_uuid
+          root: alertJson.raw_abioc.event._aws_specific_fields
+          accessor: access_key_id
       AWSTimespan:
         complex:
-          root: alert
-          accessor: timestamp
+          root: incident
+          accessor: occurred
           transformers:
           - operator: ModifyDateTime
             args:
@@ -1252,8 +1345,8 @@ tasks:
         simple: 2h
       GCPTimespan:
         complex:
-          root: alert
-          accessor: timestamp
+          root: incident
+          accessor: occurred
           transformers:
           - operator: ModifyDateTime
             args:
@@ -1271,20 +1364,26 @@ tasks:
                   simple: "+00:00"
       cloudProvider:
         complex:
-          root: alert
+          root: incident.xdralerts
           accessor: cloudprovider
+          transformers:
+          - operator: uniq
       projectName:
         complex:
-          root: alert
+          root: incident
           accessor: cloudproject
       region:
         complex:
-          root: alert
+          root: PaloAltoNetworksXDR.OriginalAlert.event
           accessor: region
+          transformers:
+          - operator: uniq
       username:
         complex:
-          root: alert
+          root: incident.xdralerts
           accessor: username
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1308,10 +1407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 3ca72ce8-4d38-41bf-84b6-0675027851bd
+    taskid: bf91fff7-ddf2-4d82-834b-ff04fb7855dc
     type: playbook
     task:
-      id: 3ca72ce8-4d38-41bf-84b6-0675027851bd
+      id: bf91fff7-ddf2-4d82-834b-ff04fb7855dc
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -1406,14 +1505,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: eb31ed85-ba4e-4e7f-89af-03e29b765ab1
+    taskid: ee15ff26-c492-40db-81da-fb0628d52216
     type: playbook
     task:
-      id: eb31ed85-ba4e-4e7f-89af-03e29b765ab1
+      id: ee15ff26-c492-40db-81da-fb0628d52216
       version: -1
       name: Cloud Enrichment - Generic
-      description: |-
-        ---
+      description: |2-
 
         ## Generic Cloud Enrichment Playbook
 
@@ -1427,7 +1525,7 @@ tasks:
         2. **Cloud Compute Enrichment - Generic**
            - Enriches information related to cloud compute resources.
 
-        ---
+        The playbook supports a single CSP enrichment at a time.
       playbookName: Cloud Enrichment - Generic
       type: playbook
       iscommand: false
@@ -1438,8 +1536,10 @@ tasks:
     scriptarguments:
       cloudProvider:
         complex:
-          root: alert
+          root: incident.xdralerts
           accessor: cloudprovider
+          transformers:
+          - operator: uniq
       instanceName:
         complex:
           root: CloudIndicators
@@ -1471,10 +1571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 6798a3cc-ca31-44ed-8082-a2029eb938d0
+    taskid: 28affdfa-fc9e-450b-8148-ed1f29bfa1f4
     type: condition
     task:
-      id: 6798a3cc-ca31-44ed-8082-a2029eb938d0
+      id: 28affdfa-fc9e-450b-8148-ed1f29bfa1f4
       version: -1
       name: Investigate and set verdict
       description: You should investigate the data collected manually and choose how the playbook should continue.
@@ -1483,7 +1583,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "61"
       Malicious:
       - "50"
     separatecontext: false
@@ -1504,10 +1604,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 7887cd1f-10d5-4bc0-8b99-11260af33fd8
+    taskid: c0f0c235-a092-4f49-81d6-642230c1e69a
     type: condition
     task:
-      id: 7887cd1f-10d5-4bc0-8b99-11260af33fd8
+      id: c0f0c235-a092-4f49-81d6-642230c1e69a
       version: -1
       name: Should execute early containment?
       description: Whether to execute early containment and block the IP address and respond to the username involved.
@@ -1550,10 +1650,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: a81c56dd-412e-46b0-8a77-1bb72f5c3769
+    taskid: 7e6cfe98-fc45-421f-83a9-54b233392498
     type: playbook
     task:
-      id: a81c56dd-412e-46b0-8a77-1bb72f5c3769
+      id: 7e6cfe98-fc45-421f-83a9-54b233392498
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -1563,10 +1663,10 @@ tasks:
         - GCP
 
         The response actions available are:
-        - Terminate/Shut down/Power off an instance
-        - Delete/Disable a user
-        - Delete/Revoke/Disable credentials
-        - Block indicators
+        - Terminate/Shut down/Power off an instance.
+        - Delete/Disable a user.
+        - Delete/Revoke/Disable credentials.
+        - Block indicators.
       playbookName: Cloud Response - Generic
       type: playbook
       iscommand: false
@@ -1589,26 +1689,28 @@ tasks:
         simple: Stop
       GCP-userRemediationType:
         simple: Disable
-      SourceIP:
-        complex:
-          root: CloudIndicators
-          accessor: source_ip
       accessKeyId:
         complex:
           root: CloudIndicators
           accessor: access_key_id
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "True"
+        complex:
+          root: inputs.autoUserRemediation
       cloudProvider:
         complex:
-          root: alert.cloudprovider
-          accessor: '[0]'
+          root: incident.xdralerts
+          accessor: cloudprovider
+          transformers:
+          - operator: uniq
       username:
         complex:
           root: CloudIndicators
@@ -1624,11 +1726,13 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 3000
+          "y": 3005
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1636,10 +1740,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 24ed2963-3107-45ad-8a3b-b155ad9ff72e
+    taskid: 3355a9b9-c68a-4851-8dd3-9020c4e35043
     type: condition
     task:
-      id: 24ed2963-3107-45ad-8a3b-b155ad9ff72e
+      id: 3355a9b9-c68a-4851-8dd3-9020c4e35043
       version: -1
       name: Check the VPN list type
       description: Checks if the provided data is comma separated or an URL.
@@ -1648,7 +1752,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "60"
+      - "55"
       URL:
       - "53"
     separatecontext: false
@@ -1691,20 +1795,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: bf94c5a6-0100-4e60-89bc-e35364b5415a
+    taskid: 6d1c856f-4737-4871-8144-a2190b328b79
     type: regular
     task:
-      id: bf94c5a6-0100-4e60-89bc-e35364b5415a
+      id: 6d1c856f-4737-4871-8144-a2190b328b79
       version: -1
       name: Process the VPN IP list
-      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      description: This script will extract indicators from a given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "60"
+      - "55"
     scriptarguments:
       ignore-outputs:
         simple: "false"
@@ -1733,10 +1837,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: eaaa946c-8d95-4186-8584-793b17a4fc7b
+    taskid: 4d99ecaf-00c7-456c-8a4a-4bbb508f739f
     type: condition
     task:
-      id: eaaa946c-8d95-4186-8584-793b17a4fc7b
+      id: 4d99ecaf-00c7-456c-8a4a-4bbb508f739f
       version: -1
       name: Was a VPN list provided?
       description: Checks if data was provided for the VPNIPList input.
@@ -1769,6 +1873,110 @@ tasks:
         }
       }
     note: false
+    timertriggers:
+    - fieldname: triagesla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 032a1d38-1285-47a9-812f-60ed54a62e73
+    type: condition
+    task:
+      id: 032a1d38-1285-47a9-812f-60ed54a62e73
+      version: -1
+      name: 'Is the attacker IP matches a VPN IP? '
+      description: Checks if the attacker's IP address is part of the VPN IP list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                accessor: host_ip
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          ignorecase: true
+        - operator: in
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                accessor: host_ip
+            iscontext: true
+          right:
+            value:
+              simple: VPNIPList
+            iscontext: true
+        - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                accessor: host_ip
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -380
+        }
+      }
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -1777,10 +1985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 6fd2afb3-27a8-4018-8316-b3bd6bc4e1ea
+    taskid: 659e9b8b-7fee-4154-8818-0c76ebf9c894
     type: condition
     task:
-      id: 6fd2afb3-27a8-4018-8316-b3bd6bc4e1ea
+      id: 659e9b8b-7fee-4154-8818-0c76ebf9c894
       version: -1
       name: Should continue and investigate a known VPN IP address?
       description: Once the attacker's IP address is part of the VPN IP list, the analyst will be required to decide whether to continue with the investigation.
@@ -1789,7 +1997,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "61"
       "Yes":
       - "59"
     separatecontext: false
@@ -1810,14 +2018,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 1c16c7d0-ffb1-4d5f-8d92-6a0a7e0d8e0c
+    taskid: c9552aee-9a61-416d-8217-50159012012d
     type: regular
     task:
-      id: 1c16c7d0-ffb1-4d5f-8d92-6a0a7e0d8e0c
+      id: c9552aee-9a61-416d-8217-50159012012d
       version: -1
       name: Set Is VPN IP Address to true
       description: commands.local.cmd.set.incident
-      script: Builtin|||setAlert
+      script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
@@ -1845,10 +2053,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: fd775e61-aee3-4cee-8f4f-af31b9676081
+    taskid: d076f779-e719-456f-8162-f3ad783c08cd
     type: playbook
     task:
-      id: fd775e61-aee3-4cee-8f4f-af31b9676081
+      id: d076f779-e719-456f-8162-f3ad783c08cd
       version: -1
       name: TIM - Indicator Relationships Analysis
       description: |-
@@ -1868,8 +2076,18 @@ tasks:
     scriptarguments:
       Indicator:
         complex:
-          root: alert
-          accessor: hostip
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: host_ip
       LimitResults:
         simple: "200"
     separatecontext: true
@@ -1895,10 +2113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 7651a4bf-66c5-4880-894e-b9e89ee7f3b9
+    taskid: f404a3f8-a421-44e3-8818-81b83865e654
     type: title
     task:
-      id: 7651a4bf-66c5-4880-894e-b9e89ee7f3b9
+      id: f404a3f8-a421-44e3-8818-81b83865e654
       version: -1
       name: Enrichment
       type: title
@@ -1926,68 +2144,77 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
-    taskid: 626d149e-03db-47df-8186-ed7b64bde19a
-    type: condition
+  "61":
+    id: "61"
+    taskid: 043be677-29be-4c9f-894a-801024ade783
+    type: regular
     task:
-      id: 626d149e-03db-47df-8186-ed7b64bde19a
+      id: 043be677-29be-4c9f-894a-801024ade783
       version: -1
-      name: 'Is the attacker IP matches a VPN IP? '
-      description: Checks if the attacker's IP address is part of the VPN IP list.
-      type: condition
-      iscommand: false
+      name: Closer XDR incident as False Positive
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      '#default#':
-      - "59"
-      "yes":
-      - "57"
+      '#none#':
+      - "62"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: incident
+          accessor: xdrincidentid
+      resolve_comment:
+        simple: Resolved using Cortex XSOAR in incident id ${incident.investigationId}
+      status:
+        simple: RESOLVED_FALSE_POSITIVE
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: inputs.VPNIPList
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: alert
-                accessor: hostip
-            iscontext: true
-        - operator: containsGeneral
-          left:
-            value:
-              simple: alert.deviceexternalips
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: alert
-                accessor: hostip
-            iscontext: true
-        - operator: IsInCidrRanges
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: hostip
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.VPNIPList
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -630,
-          "y": -380
+          "x": -860,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: eefcea6e-32df-4efe-868a-982db65eaadf
+    type: regular
+    task:
+      id: eefcea6e-32df-4efe-868a-982db65eaadf
+      version: -1
+      name: Close XSOAR incident as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": 3185
         }
       }
     note: false
@@ -2003,18 +2230,16 @@ view: |-
       "19_15_yes": 0.65,
       "19_20_#default#": 0.48,
       "23_51_Yes": 0.61,
-      "23_9_#default#": 0.25,
       "36_35_Yes": 0.41,
       "36_37_#default#": 0.8,
       "38_39_Yes": 0.42,
-      "49_9_#default#": 0.14,
-      "50_11_yes": 0.38,
-      "52_53_URL": 0.43,
+      "49_61_#default#": 0.1,
       "54_59_#default#": 0.11,
-      "56_9_#default#": 0.12,
-      "60_57_yes": 0.4,
-      "60_59_#default#": 0.21,
-      "8_49_#default#": 0.48
+      "55_57_yes": 0.43,
+      "55_59_#default#": 0.21,
+      "56_61_#default#": 0.14,
+      "8_49_#default#": 0.48,
+      "8_50_Malicious": 0.63
     },
     "paper": {
       "dimensions": {
@@ -2037,17 +2262,17 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas.
+  description: A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation.
   playbookInputQuery:
 - key: ResolveIP
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
 - key: earlyContainment
   value:
-    simple: "False"
+    simple: "True"
   required: false
   description: |-
     Whether to execute early containment.
@@ -2056,14 +2281,39 @@ inputs:
 - key: VPNIPList
   value: {}
   required: false
-  description: |
-    This input can process to types of data:
-    1. A comma separated list of IP addresses assigned by the VPN provider. (using a XSIAM list or an hardcoded array)
-    2. A comma separated list of CIDRs.
-    3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.
+  description: |-
+    This input can process two types of data:
+    1. A comma-separated list of internal IPs assigned by the VPN provider using a XSIAM list or an hardcoded array.
+    2. A link to an IP list which will be processed and extract the IP dynamically which each execution.
+
+    For CIDRs, use the InternalRange input.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the resource remediation automatically.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the access key remediation automatically.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation automatically.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the indicators remediation automatically.
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces: ["xsoar"]
 fromversion: 6.8.0
