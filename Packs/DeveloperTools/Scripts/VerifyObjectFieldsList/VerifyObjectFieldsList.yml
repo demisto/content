@@ -17,7 +17,6 @@ outputs:
   description: If true, all the given fields exist in the object.
   type: boolean
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'

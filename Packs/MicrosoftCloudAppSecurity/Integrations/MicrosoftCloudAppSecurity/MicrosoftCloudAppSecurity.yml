@@ -13,7 +13,6 @@ configuration:
   - client credentials
   - legacy
   - device code flow
-  required: false
   type: 15
   section: Connect
   advanced: true
@@ -30,54 +29,45 @@ configuration:
   section: Connect
 - display: User's key to access the API (for legacy method)
   name: token
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
 - display: Application ID
   name: app_id
-  required: false
   type: 0
   section: Connect
   additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
 - display: 'Tenant ID (for Client Credentials mode)'
   name: tenant_id
   type: 0
-  required: false
   section: Connect
 - display: ''
   name: client_id
-  required: false
   type: 9
   displaypassword: Client Secret (for Client Credentials mode)
   hiddenusername: true
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Incident severity
   name: severity
-  required: false
   type: 16
   options:
   - Low
@@ -86,18 +76,15 @@ configuration:
   - All
 - display: Maximum alerts to fetch
   name: max_fetch
-  required: false
   type: 0
   defaultvalue: '50'
 - display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   section: Collect
 - display: Incident resolution status
   name: resolution_status
-  required: false
   type: 16
   options:
   - Open
@@ -109,7 +96,6 @@ configuration:
 - additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: {"severity":{"eq":2}}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: {"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"}" please query on {"entity.policy":{"eq":1234}}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
   display: 'Custom Filter'
   name: custom_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -117,7 +103,6 @@ configuration:
   defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching'
   name: look_back
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -126,99 +111,53 @@ display: Microsoft Defender for Cloud Apps
 name: MicrosoftCloudAppSecurity
 script:
   commands:
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode)
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode)
     name: microsoft-cas-auth-start
-  - deprecated: false
-    description: Run this command to complete the authorization process. Should be used after running the microsoft-365-defender-auth-start command. (for device-code mode)
-    execution: false
+  - description: Run this command to complete the authorization process. Should be used after running the microsoft-365-defender-auth-start command. (for device-code mode)
     name: microsoft-cas-auth-complete
-  - deprecated: false
-    description: Run this command if you need to re-run the authentication process. (for device-code mode)
-    execution: false
+  - description: Run this command if you need to re-run the authentication process. (for device-code mode)
     name: microsoft-cas-auth-reset
-  - deprecated: false
-    description: Tests the connectivity to the Microsoft 365 Defender.
-    execution: false
+  - description: Tests the connectivity to the Microsoft 365 Defender.
     name: microsoft-cas-auth-test
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alerts matching the specified filters.
         The alert_id should appear similar to "55af7415f8a0a7a29eef2e1f".
         Mandatory, unless you use a custom filter.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      description: A comment explaining why the alerts are being dismissed.
-      isArray: false
+    - description: A comment explaining why the alerts are being dismissed.
       name: comment
-      required: false
-      secret: false
     deprecated: true
     description: Deprecated. Use one of the alert-close commands instead. Dismisses multiple alerts (bulk dismiss) that match the specified filters.
-    execution: false
     name: microsoft-cas-alert-dismiss-bulk
   - arguments:
-    - default: false
-      description: Skips the specified number of records.
-      isArray: false
+    - description: Skips the specified number of records.
       name: skip
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of records to return. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The severity of the alert. Possible values are: "Low", "Medium", and "High".'
-      isArray: false
       name: severity
       predefined:
       - Low
       - Medium
       - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The alert resolution status. Possible values are: "Open", "Dismissed", and "Resolved".'
-      isArray: false
       name: resolution_status
       predefined:
       - Open
       - Dismissed
       - Resolved
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      description: The alert ID.
-      isArray: false
+    - description: The alert ID.
       name: alert_id
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of alerts that match the specified filters.
-    execution: false
     name: microsoft-cas-alerts-list
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.Alerts._id
@@ -345,282 +284,157 @@ script:
       description: The date/time that the alert was resolved.
       type: Date
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alerts matching the specified filters.
         Alert_id should appear similar to - "1234567890abcdefg".
         Mandatory, unless you use a custom filter.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      description: Comment describing why the alerts were dismissed.
-      isArray: false
+    - description: Comment describing why the alerts were dismissed.
       name: comment
-      required: false
-      secret: false
     deprecated: true
     description: Deprecated. Use one of the alert-close commands instead. Resolves multiple alerts (bulk resolve) that match the specified filters. Filters include origin IP address, IP subnet category, action taken on the activity, source type, or a custom filter.
-    execution: false
     name: microsoft-cas-alert-resolve-bulk
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alerts matching the specified filters.
         Alert_id should appear similar to - "1234567890abcdefg".
         Mandatory, unless you use a custom filter.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      description: Comment describing why the alerts were dismissed.
-      isArray: false
+    - description: Comment describing why the alerts were dismissed.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The reason for closing the alerts as benign. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
         * Actual severity is lower
         * Other
         * Confirmed with end user
         * Triggered by test
-      isArray: false
       name: reason
       predefined:
       - Actual severity is lower
       - Other
       - Confirmed with end user
       - Triggered by test
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether feedback about this alert is provided. Possible values: "false" and "true".'
-      isArray: false
       name: sendFeedback
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The text of the feedback.
-      isArray: false
+    - description: The text of the feedback.
       name: feedbackText
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether consent to contact the user is provided. Possible values: "false" and "true".'
-      isArray: false
       name: allowContact
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The email address of the user.
-      isArray: false
+    - description: The email address of the user.
       name: contactEmail
-      required: false
-      secret: false
-    deprecated: false
     description: An alert on a suspicious but not malicious activity, such as a penetration test or other authorized suspicious action
-    execution: false
     name: microsoft-cas-alert-close-benign
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alerts matching the specified filters.
         Alert_id should appear similar to - "1234567890abcdefg".
         Mandatory, unless you use a custom filter.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      description: Comment describing why the alerts were dismissed.
-      isArray: false
+    - description: Comment describing why the alerts were dismissed.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether feedback about this alert is provided. Possible values: "false" and "true".'
-      isArray: false
       name: sendFeedback
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The text of the feedback.
-      isArray: false
+    - description: The text of the feedback.
       name: feedbackText
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether consent to contact the user is provided. Possible values: "false" and "true".'
-      isArray: false
       name: allowContact
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The email address of the user.
-      isArray: false
+    - description: The email address of the user.
       name: contactEmail
-      required: false
-      secret: false
-    deprecated: false
     description: Cֹlose multiple alerts matching the specified filters as true positive (an alert on a confirmed malicious activity.
-    execution: false
     name: microsoft-cas-alert-close-true-positive
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alerts matching the specified filters.
         Alert_id should appear similar to - "1234567890abcdefg".
         Mandatory, unless you use a custom filter.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: None
+    - defaultValue: None
       description: Comment describing why the alerts were dismissed.
-      isArray: false
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The reason for closing the alerts as false positive. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
         * Not of interest
         * Too many similar alerts
         * Alert is not accurate
         * Other
-      isArray: false
       name: reason
       predefined:
       - Not of interest
       - Too many similar alerts
       - Alert is not accurate
       - Other
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether feedback about this alert is provided. Possible values: "false" and "true".'
-      isArray: false
       name: sendFeedback
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The text of the feedback.
-      isArray: false
+    - description: The text of the feedback.
       name: feedbackText
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether consent to contact the user is provided. Possible values: "false" and "true".'
-      isArray: false
       name: allowContact
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The email address of the user.
-      isArray: false
+    - description: The email address of the user.
       name: contactEmail
-      required: false
-      secret: false
-    deprecated: false
     description: Close multiple alerts matching the specified filters as false positive (an alert on a non-malicious activity).
-    execution: false
     name: microsoft-cas-alert-close-false-positive
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The number of records to skip.
-      isArray: false
       name: skip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether this command should return more than 100 results. Possible values: "false" and "true".'
-      isArray: false
       name: is_scan
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of records returned to the user.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The origin of the specified IP address.
-      isArray: false
+    - description: The origin of the specified IP address.
       name: ip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The subnet categories. Valid values are: "Corporate", "Administrative", "Risky", "VPN", "Cloud_provider", and "Other".'
-      isArray: false
       name: ip_category
       predefined:
       - Corporate
@@ -629,12 +443,8 @@ script:
       - VPN
       - Cloud_provider
       - Other
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The actions taken on activities. Valid values are: "block", "proxy", "BypassProxy", "encrypt", "decrypt", "verified", "encryptionFailed", "protect", "verify", and "null".'
-      isArray: false
       name: taken_action
       predefined:
       - block
@@ -646,12 +456,8 @@ script:
       - encryptionFailed
       - protect
       - verify
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The source type. Valid values are: "Access_control", "Session_control", "App_connector", "App_connector_analysis", "Discovery", and "MDATP".'
-      isArray: false
       name: source
       predefined:
       - Access_control
@@ -660,29 +466,13 @@ script:
       - App_connector_analysis
       - Discovery
       - MDATP
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned activities. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned activities. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the activity.
-      isArray: false
+    - description: The ID of the activity.
       name: activity_id
-      required: false
-      secret: false
-    - default: false
-      description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
-      isArray: false
+    - description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of activities that match the specified filters. In case of timeout errors, please consider increasing the timeout argument.
-    execution: false
     name: microsoft-cas-activities-list
     outputs:
     - contextPath: IP.Address
@@ -827,23 +617,13 @@ script:
       description: The severity of the activity.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Skips the specified number of records.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of records to return. Default is 50.
-      isArray: false
+    - description: Maximum number of records to return. Default is 50.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The file type. Valid value are: Other, Document, Spreadsheet, Presentation, Text, Image, and Folder.'
-      isArray: false
       name: file_type
       predefined:
       - Other
@@ -853,12 +633,8 @@ script:
       - Text
       - Image
       - Folder
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Filter files with the specified sharing levels. Valid values are: Private, Internal, External, Public, Public_Internet.'
-      isArray: false
       name: sharing
       predefined:
       - Private
@@ -866,39 +642,19 @@ script:
       - External
       - Public
       - Public_Internet
-      required: false
-      secret: false
-    - default: false
-      description: Filter files by the specified file extension.
-      isArray: false
+    - description: Filter files by the specified file extension.
       name: extension
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Filter by whether the file is quarantined. Valid values are: "True" or "False".'
-      isArray: false
       name: quarantined
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       name: custom_filter
-      required: false
-      secret: false
-    - default: false
-      description: Filter by the file ID.
-      isArray: false
+    - description: Filter by the file ID.
       name: file_id
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of files that match the specified filters. Filters include file type, file share value, file extension, file quarantine status, and a custom filter. If you pass the custom_filter argument it will override the other filters in this command. This command is supported only when using the legacy authentication.
-    execution: false
     name: microsoft-cas-files-list
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.Files._id
@@ -983,54 +739,28 @@ script:
       description: The type of actions taken on the file.
       type: String
   - arguments:
-    - default: false
-      description: The number of records to skip.
-      isArray: false
+    - description: The number of records to skip.
       name: skip
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of records to return. Default is 50.
-      isArray: false
       name: limit
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: The type by which to filter the information about the user accounts.
-      isArray: false
+    - description: The type by which to filter the information about the user accounts.
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: The group ID by which to filter the information about the user accounts.
-      isArray: false
+    - description: The group ID by which to filter the information about the user accounts.
       name: group_id
-      required: false
-      secret: false
-    - default: false
-      description: Filter the user accounts that are defined as admins.
-      isArray: false
+    - description: Filter the user accounts that are defined as admins.
       name: is_admin
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The affiliation of the user accounts. Valid values are: "External", "Internal", and "No_value".'
-      isArray: false
       name: is_external
       predefined:
       - External
       - Internal
       - No_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The status by which to filter the information about the user accounts. Valid values are: "N/A", "Staged", "Active", "Suspended", and "Deleted".'
-      isArray: false
       name: status
       predefined:
       - N/A
@@ -1038,17 +768,9 @@ script:
       - Active
       - Suspended
       - Deleted
-      required: false
-      secret: false
-    - default: false
-      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
-      isArray: false
+    - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       name: custom_filter
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of user accounts that match the specified filters. Filters include user account type, group ID, external/internal, user account status, and custom filter. The accounts object schema includes information about how users and accounts use your organization's cloud apps.
-    execution: false
     name: microsoft-cas-users-accounts-list
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.displayName
@@ -1139,10 +861,7 @@ script:
       description: The number of users in the user group.
       type: Number
   dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
