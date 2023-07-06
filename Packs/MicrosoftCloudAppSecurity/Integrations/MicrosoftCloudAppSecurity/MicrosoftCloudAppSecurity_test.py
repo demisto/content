@@ -1,6 +1,6 @@
 from datetime import datetime
 import json
-from typing import Dict, Any
+from typing import Any
 
 import pytest
 
@@ -13,7 +13,7 @@ from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
 def get_fetch_data():
-    with open('test_data/test_data.json', 'r') as f:
+    with open('test_data/test_data.json') as f:
         return json.loads(f.read())
 
 
@@ -416,7 +416,7 @@ class TestCloseFalsePositive:
 
 
 class TestFetchIncidents:
-    LAST_RUN: Dict[str, Any] = {}
+    LAST_RUN: dict[str, Any] = {}
     FREEZE_TIMESTAMP = '2022-05-15T11:00:00.000'
 
     @pytest.mark.parametrize(
@@ -522,7 +522,7 @@ class TestFetchIncidents:
         mocker.patch('MicrosoftCloudAppSecurity.format_fetch_start_time_to_timestamp',
                      side_effect=create_occur_timestamp)
 
-        filters: Dict[str, Any] = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
+        filters: dict[str, Any] = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
         max_results = params.get('limit')
         first_fetch = params.get('first_fetch')
         look_back = params.get('look_back')
@@ -687,7 +687,7 @@ class TestFetchIncidents:
         mocker.patch('MicrosoftCloudAppSecurity.format_fetch_start_time_to_timestamp',
                      side_effect=create_occur_timestamp)
 
-        filters: Dict[str, Any] = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
+        filters: dict[str, Any] = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
         max_results = params.get('limit')
         first_fetch = params.get('first_fetch')
         look_back = params.get('look_back')
@@ -720,7 +720,7 @@ class TestFetchIncidents:
         assert alerts[0].get('name') == 'test5'
 
         # forth fetch preparation
-        incidents: Dict[str, Any] = {'data': []}
+        incidents: dict[str, Any] = {'data': []}
         mocker.patch.object(client_mocker, 'list_incidents', return_value=incidents)
 
         # forth fetch
