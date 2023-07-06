@@ -7849,6 +7849,14 @@ class TestFetchWithLookBack:
                     [NEW_INCIDENTS[0]], 2
             ),
             (
+                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 30*60},
+                    [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    [NEW_INCIDENTS[0]], 2
+            ),
+
+            (
                     {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
                     [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
