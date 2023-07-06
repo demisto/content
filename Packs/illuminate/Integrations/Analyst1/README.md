@@ -54,7 +54,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 6. analyst1-enrich-ipv6
 7. analyst1-enrich-mutex
 8. analyst1-enrich-http-request
-9. analyst1-enrich-url
+9. url
 10. analyst1-evidence-submit
 11. analyst1-evidence-status
 12. analyst1-batch-check
@@ -718,7 +718,7 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 | true | high | 1 | 2885382 | https://analyst1instance.domain/indicators/2885382 | /~ | 2020-01-06 |
 
 
-### 9. analyst1-enrich-url
+### 9. url
 ---
 Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator data.
 ##### Base Command
@@ -757,7 +757,7 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 
 
 ##### Command Example
-```!analyst1-enrich-url url=104.218.120.128/check.aspx```
+```!url url=104.218.120.128/check.aspx```
 
 ##### Context Example
 ```

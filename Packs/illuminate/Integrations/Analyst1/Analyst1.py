@@ -741,7 +741,7 @@ def main():
         'email': email_command,
         'file': file_command,
         'ip': ip_command,
-        'analyst1-enrich-url': url_command,
+        'url': url_command,
         'analyst1-enrich-string': analyst1_enrich_string_command,
         'analyst1-enrich-ipv6': analyst1_enrich_ipv6_command,
         'analyst1-enrich-mutex': analyst1_enrich_mutex_command,

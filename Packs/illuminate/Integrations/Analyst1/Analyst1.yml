@@ -537,7 +537,7 @@ script:
       description: The URL of the matched indicator in Analyst1.
       type: string
     description: Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 indicator data.
-  - name: analyst1-enrich-url
+  - name: url
     arguments:
     - name: url
       required: true

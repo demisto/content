@@ -6,7 +6,7 @@
 !analyst1-enrich-ipv6 ip=16::
 !analyst1-enrich-mutex mutex=??
 !analyst1-enrich-http-request http-request=/~
-!analyst1-enrich-url url=104.218.120.128/check.aspx
+!url url=104.218.120.128/check.aspx
 !analyst1-evidence-submit source_id=0 tlp=clear fileClassification=u fileContent="example string content to load, replace with actual JSON, TEXT, or reference to full attachment like a PDF to load as Evidence"
 !analyst1-evidence-status uuid=8b7eee23-d71b-d3da-f66b-b4d3917fdb80
 !analyst1-batch-check values=1.2.3.4,abc.com,google.com
