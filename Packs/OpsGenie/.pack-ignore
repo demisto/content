@@ -1,9 +1,6 @@
 [file:README.md]
 ignore=RM106
 
-[file:OpsGenie.yml]
-ignore=IN145
-
 [file:OpsGenieV3_image.png]
 ignore=IM111
 
@@ -17,5 +14,6 @@ ignore=BA101
 ignore=IF115
 
 [known_words]
-AlertId
-TinyId
+alertid
+tinyid
+
