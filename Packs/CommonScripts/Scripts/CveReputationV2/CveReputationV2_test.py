@@ -53,6 +53,36 @@ import pytest
                                                 'Score': 3,
                                                 'Vendor': 'DBot'}}}]),
     ([], []),
+    ([{'Contents': {'id': 'CVE-2023-1111',
+                    'cvss': None}}], [{'Type': 1,
+                                       'ContentsFormat': 'json',
+                                       'Contents': 0,
+                                       'EntryContext': {
+                                           'DBotScore': {
+                                               'Indicator': 'CVE-2023-1111',
+                                               'Type': 'CVE',
+                                               'Score': 0,
+                                               'Vendor': 'DBot'}}}]),
+    ([{'Contents': {'id': 'CVE-2023-1111',
+                    'cvss': {'Score': 7}}}], [{'Type': 1,
+                                               'ContentsFormat': 'json',
+                                               'Contents': 3,
+                                               'EntryContext': {
+                                                   'DBotScore': {
+                                                       'Indicator': 'CVE-2023-1111',
+                                                       'Type': 'CVE',
+                                                       'Score': 3,
+                                                       'Vendor': 'DBot'}}}]),
+    ([{'Contents': {'id': 'CVE-2023-1111',
+                    'cvss': {'Score': None}}}], [{'Type': 1,
+                                                  'ContentsFormat': 'json',
+                                                  'Contents': 0,
+                                                  'EntryContext': {
+                                                      'DBotScore': {
+                                                          'Indicator': 'CVE-2023-1111',
+                                                          'Type': 'CVE',
+                                                          'Score': 0,
+                                                          'Vendor': 'DBot'}}}]),
 ])
 def test_get_dbot_score(resCmd, expected):
     from CveReputationV2 import get_dbot_score
