@@ -3469,3 +3469,42 @@ def test_remove_old_versions_from_changelog(changelog, expected_result):
 
     """
     assert remove_old_versions_from_changelog(changelog) == expected_result
+
+
+def test_get_upload_data(mocker):
+    from Tests.Marketplace.marketplace_services import get_upload_data
+    from Tests.Marketplace.marketplace_constants import BucketUploadFlow
+
+    load_json_data = {
+        "prepare_content_for_testing": {
+            "successful_packs": {
+                "VirusTotal": {
+                    "status": "SUCCESS",
+                    "aggregated": "[2.6.6, 2.6.7, 2.6.8] => 2.6.8",
+                    "latest_version": "2.6.8"
+                }
+            },
+            "images": {
+                "readme_images": {
+                    "LogRhythmRest": [],
+                    "HYASInsight": [],
+                    "FeedGCPWhitelist": [],
+                    "Cofense-Intelligence": [],
+                    "FeedDShield": [],
+                    "Cylance_Protect": [],
+                }
+            }
+        }}
+    mocker.patch('Tests.Marketplace.marketplace_services.os.path.exists', return_value=True)
+    mocker.patch('Tests.Marketplace.marketplace_services.load_json', return_value=load_json_data)
+    _, _, _, _, pc_uploaded_images = get_upload_data('fake_path', BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+    assert pc_uploaded_images == {
+        "readme_images": {
+            "LogRhythmRest": [],
+            "HYASInsight": [],
+            "FeedGCPWhitelist": [],
+            "Cofense-Intelligence": [],
+            "FeedDShield": [],
+            "Cylance_Protect": [],
+        }
+    }
