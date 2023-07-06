@@ -2377,7 +2377,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.59070
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3
