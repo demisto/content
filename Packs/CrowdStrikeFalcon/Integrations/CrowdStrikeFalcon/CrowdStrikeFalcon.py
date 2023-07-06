@@ -745,12 +745,13 @@ def batch_refresh_session(batch_id: str) -> None:
     demisto.debug('Finished session refresh')
 
 
-def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
+def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with read access
         :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
+        :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-command/v1'
@@ -760,17 +761,22 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> D
         'batch_id': batch_id,
         'command_string': full_command
     })
-    response = http_request('POST', endpoint_url, data=body)
+    params = {
+        'timeout': timeout
+    }
+    response = http_request('POST', endpoint_url, data=body, params=params, timeout=timeout)
     return response
 
 
-def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None,
+                        timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :param optional_hosts: The hosts ids to run the command on.
+        :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-active-responder-command/v1'
@@ -780,11 +786,14 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
         'batch_id': batch_id,
         'command_string': full_command
     }
+    params = {
+        'timeout': timeout
+    }
     if optional_hosts:
         default_body['optional_hosts'] = optional_hosts  # type:ignore
 
     body = json.dumps(default_body)
-    response = http_request('POST', endpoint_url, data=body)
+    response = http_request('POST', endpoint_url, data=body, timeout=timeout, params=params)
     return response
 
 
@@ -814,7 +823,7 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
         default_body['optional_hosts'] = optional_hosts  # type:ignore
 
     body = json.dumps(default_body)
-    response = http_request('POST', endpoint_url, data=body, params=params)
+    response = http_request('POST', endpoint_url, data=body, params=params, timeout=timeout)
     return response
 
 
@@ -858,12 +867,15 @@ def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration
     return response
 
 
-def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
+def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
+                        timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with read access
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
+        :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/command/v1'
@@ -874,16 +886,22 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queu
         'command_string': full_command,
         'session_id': session_id
     })
-    response = http_request('POST', endpoint_url, data=body)
+    params = {
+        'timeout': timeout
+    }
+    response = http_request('POST', endpoint_url, data=body, timeout=timeout, params=params)
     return response
 
 
-def run_single_write_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
+def run_single_write_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
+                         timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with write access
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
+        :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
@@ -893,16 +911,22 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str, que
         'command_string': full_command,
         'session_id': session_id
     })
-    response = http_request('POST', endpoint_url, data=body)
+    params = {
+        'timeout': timeout
+    }
+    response = http_request('POST', endpoint_url, data=body, timeout=timeout, params=params)
     return response
 
 
-def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
+def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
+                         timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with admin access
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
+        :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/admin-command/v1'
@@ -913,7 +937,10 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, que
         'command_string': full_command,
         'session_id': session_id
     })
-    response = http_request('POST', endpoint_url, data=body)
+    params = {
+        'timeout': timeout
+    }
+    response = http_request('POST', endpoint_url, data=body, timeout=timeout, params=params)
     return response
 
 
@@ -3020,6 +3047,7 @@ def run_command():
     full_command = args.get('full_command')
     scope = args.get('scope', 'read')
     target = args.get('target', 'batch')
+    timeout = int(args.get('timeout', 180))
 
     offline = argToBoolean(args.get('queue_offline', False))
 
@@ -3031,11 +3059,11 @@ def run_command():
         timer.start()
         try:
             if scope == 'read':
-                response = run_batch_read_cmd(batch_id, command_type, full_command)
+                response = run_batch_read_cmd(batch_id, command_type, full_command, timeout=timeout)
             elif scope == 'write':
-                response = run_batch_write_cmd(batch_id, command_type, full_command)
+                response = run_batch_write_cmd(batch_id, command_type, full_command, timeout=timeout)
             else:  # scope = admin
-                response = run_batch_admin_cmd(batch_id, command_type, full_command)
+                response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout=timeout)
         finally:
             timer.cancel()
 
@@ -3068,11 +3096,11 @@ def run_command():
         responses = []
         for host_id in host_ids:
             if scope == 'read':
-                response1 = run_single_read_cmd(host_id, command_type, full_command, offline)
+                response1 = run_single_read_cmd(host_id, command_type, full_command, offline, timeout=timeout)
             elif scope == 'write':
-                response1 = run_single_write_cmd(host_id, command_type, full_command, offline)
+                response1 = run_single_write_cmd(host_id, command_type, full_command, offline, timeout=timeout)
             else:  # scope = admin
-                response1 = run_single_admin_cmd(host_id, command_type, full_command, offline)
+                response1 = run_single_admin_cmd(host_id, command_type, full_command, offline, timeout=timeout)
             responses.append(response1)
 
             for resource in response1.get('resources', []):
