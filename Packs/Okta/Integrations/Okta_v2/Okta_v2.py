@@ -301,7 +301,7 @@ class Client(BaseClient):
     def search(self, term, limit):
         uri = "users"
         query_params = {
-            'status': encode_string_results(term),
+            'search': encode_string_results(term),
             'limit': limit
         }
         return self._http_request(
@@ -1008,7 +1008,7 @@ def list_users_command(client, args):
         'Account(val.ID && val.ID == obj.ID)': context,
         'Okta.User(val.tag)': {'tag': after_tag}
     }
-    return(
+    return (
         readable_output,
         outputs,
         raw_response
