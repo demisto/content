@@ -33,4 +33,4 @@ You can configure the specific vendor and product for this instance.
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
 
-*NOTE*: The log format is CEF, and the name of the *Vender* and the *Product* will be created by the vendor and product fields in the raw data.  
+*NOTE*: The log format is CEF, the name of the *Vender* and the *Product* will be based on vendor and product fields in the raw data.  
