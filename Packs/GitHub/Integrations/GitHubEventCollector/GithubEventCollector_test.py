@@ -11,6 +11,8 @@ def test_last_run(mocker):
     Then:
         - Ensure the last run is the last event in isoformat
         - Ensure the last run is not changed when no events are returned
+
+    Note: This test could fail locally because of timezone differences. Run it on a docker image.
     """
 
     # get some events
