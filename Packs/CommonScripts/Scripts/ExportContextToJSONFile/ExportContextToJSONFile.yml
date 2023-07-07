@@ -13,7 +13,6 @@ dockerimage: demisto/python3:3.10.9.45313
 enabled: true
 name: ExportContextToJSONFile
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -13,7 +13,6 @@ outputs:
   description: The incident details.
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

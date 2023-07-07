@@ -31,11 +31,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: use_proxy
   type: 8
-  required: false
 description: ACTI provides intelligence regarding security threats and vulnerabilities.
 display: ACTI Indicator Query
 name: ACTI Indicator Query
@@ -142,7 +140,6 @@ script:
     arguments:
     - name: uuid
       required: true
-      default: false
       description: Unique User ID.
     outputs:
     - contextPath: IP.Address
@@ -193,7 +190,6 @@ script:
     - name: uuid
       required: true
       default: true
-      isArray: false
       description: Unique ID of the specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor.
     outputs:
     - contextPath: ACTI_MalwareFamily.display_text
@@ -325,7 +321,6 @@ script:
     - name: uuid
       default: true
       description: uuid of Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform.
-      isArray: false
       required: true
     outputs:
     - contextPath: IAIR.abstract
@@ -405,10 +400,6 @@ script:
       type: String
 
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
