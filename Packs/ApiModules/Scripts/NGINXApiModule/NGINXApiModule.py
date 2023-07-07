@@ -325,11 +325,12 @@ def run_long_running(params: Dict = None, is_test: bool = False):
             server.serve_forever()
     except Exception as e:
         error_message = str(e)
-        demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
-        demisto.updateModuleHealth(f'An error occurred: {error_message}')
         if isinstance(e, ValueError) and "Try to write when connection closed" in error_message:
             # This indicates that the XSOAR platform is unreachable, and there is no way to recover from this, so we need to exit.
             sys.exit(1)  # pylint: disable=E9001
+
+        demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
+        demisto.updateModuleHealth(f'An error occurred: {error_message}')
         raise ValueError(error_message)
 
     finally:
