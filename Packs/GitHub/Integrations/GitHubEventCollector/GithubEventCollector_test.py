@@ -18,6 +18,7 @@ def test_last_run(mocker):
     # get some events
     events = [{'@timestamp': 1619510400000}, {'@timestamp': 1619510400000}, {'@timestamp': 1619510400000}]
     last_run = GithubGetEvents.get_last_run(events)
+
     # make sure the last run is the last event in isoformat
     assert last_run == {'after': '2021-04-27T08:00:01'}
 
