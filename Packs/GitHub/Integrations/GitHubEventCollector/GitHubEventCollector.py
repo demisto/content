@@ -83,7 +83,7 @@ class GithubGetEvents(IntegrationGetEvents):
             return demisto.getLastRun()
         last_timestamp = events[-1]['@timestamp']
         last_time = last_timestamp / 1000
-        next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
+        next_fetch_time = datetime.utcfromtimestamp(last_time) + timedelta(
             seconds=1
         )
         return {'after': next_fetch_time.isoformat()}
