@@ -774,7 +774,7 @@ def batch_refresh_session(batch_id: str) -> None:
     demisto.debug('Finished session refresh')
 
 
-def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
+def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> dict:
     """
         Sends RTR command scope with read access
         :param batch_id:  Batch ID to execute the command on.
@@ -798,7 +798,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, time
 
 
 def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None,
-                        timeout: int = 30) -> Dict:
+                        timeout: int = 30) -> dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -897,7 +897,7 @@ def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration
 
 
 def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
-                        timeout: int = 30) -> Dict:
+                        timeout: int = 30) -> dict:
     """
         Sends RTR command scope with read access
         :param host_id: Host agent ID to run RTR command on.
@@ -924,7 +924,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queu
 
 
 def run_single_write_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
-                         timeout: int = 30) -> Dict:
+                         timeout: int = 30) -> dict:
     """
         Sends RTR command scope with write access
         :param host_id: Host agent ID to run RTR command on.
@@ -950,14 +950,14 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str, que
 
 
 def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
-                         timeout: int = 30) -> Dict:
+                         timeout: int = 30) -> dict:
     """
         Sends RTR command scope with admin access
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
-        :param queue_offline: Whether the command will run against an offline-queued session and be queued for
-                              execution when the host comes online.  # noqa: E501
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution
+                              when the host comes online.  # noqa: E501
         :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
@@ -4536,10 +4536,11 @@ def get_cve_command(args: dict) -> list[CommandResults]:
         : args: filter which include params or filter param.
         : return: a list of cve indicators according to the user.
     """
-    if not args.get('cve_id'):
-        raise DemistoException('Please add a filter argument "cve_id".')
+    cve = args.get("cve") or args.get('cve_id')
+    if not cve:
+        raise DemistoException('Please add a filter argument "cve".')
     command_results_list = []
-    http_response = cve_request(args.get('cve_id'))
+    http_response = cve_request(cve)
     raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
     for cve in raw_cve:
         relationships_list = create_relationships(cve)
