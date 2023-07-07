@@ -132,7 +132,7 @@ A playbook that utilizes the Remediation Confirmation Scan service to check for 
 
 A playbook that is used to send email notifications to service owners to notify them of their internet exposures.
 
-!TODO ADD LINK
+![Cortex ASM - Email Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Email_Notification.png)
 
 #### Cortex ASM - Enrichment
 
@@ -150,7 +150,7 @@ A playbook that given the IP address enriches GCP information relevant to ASM al
 
 A playbook that is used to create Jira tickets directed toward service owners to notify them of their internet exposures.
 
-!TODO Add link
+![Cortex ASM - Jira Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Jira_Notification.png)
 
 #### Cortex ASM - Prisma Cloud Enrichment
 
@@ -209,7 +209,7 @@ A playbook that given the IP address enriches ServiceNow CMDB information releva
 
 A playbook that is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
 
-!TODO UPDATE LINK
+![Cortex ASM - ServiceNow Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_Notification.png)
 
 #### Cortex ASM - Splunk Enrichment
 
