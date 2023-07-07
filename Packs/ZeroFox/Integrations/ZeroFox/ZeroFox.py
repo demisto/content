@@ -4,7 +4,7 @@ from CommonServerPython import *
 
 """ IMPORTS  """
 from dateparser import parse as parse_date
-from typing import Dict, List
+from typing import Dict, List, Callable
 from requests import Response
 
 """ GLOBALS / PARAMS  """
@@ -33,7 +33,7 @@ class ZFClient(BaseClient):
         data: Dict | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
-        error_handler: function | None = None,
+        error_handler: Callable[[Any], Any] | None = None,
     ):
         """
         :param method: HTTP request type
@@ -1264,7 +1264,7 @@ def list_entities_command(client: ZFClient, args: Dict):
     else:
         return CommandResults(
             readable_output="No entities found.",
-            output=[],
+            outputs=[],
             outputs_prefix="ZeroFox.Entities",
         )
 
