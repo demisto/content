@@ -30,10 +30,11 @@ from ZeroFox import (
 BASE_URL = "https://api.zerofox.com"
 OK_CODES = (200, 201)
 FETCH_LIMIT = 100
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
 def load_json(file: str):
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 
@@ -45,6 +46,14 @@ def build_zf_client() -> ZFClient:
         password='',
         fetch_limit=FETCH_LIMIT,
     )
+
+
+def get_delayed_formatted_date(str_date: str, delay=timedelta(seconds=1)):
+    formatted_date = parse_date(str_date, date_formats=(DATE_FORMAT,),)
+    if formatted_date is None:
+        raise ValueError("date must be a valid string date")
+    delayed_date = formatted_date + delay
+    return delayed_date.strftime(DATE_FORMAT)
 
 
 def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
@@ -59,16 +68,15 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
         And return last_fetch equal to first_fetch_time
         And 0 incidents
     """
-    alerts_response = load_json("TestData/alerts/list_no_records.json")
+    alerts_response = load_json("test_data/alerts/list_no_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
-    last_run = {}
+    last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00"
-    date_format = "%Y-%m-%dT%H:%M:%S"
     first_fetch_time_parsed = parse_date(
         first_fetch_time,
-        date_formats=(date_format,),
+        date_formats=(DATE_FORMAT,),
     )
     spy = mocker.spy(client, "list_alerts")
 
@@ -98,21 +106,20 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
         And return last_fetch equal to last alert timestamp + 1 second
         And 10 incidents correctly formatted
     """
-    alerts_response = load_json("TestData/alerts/list_10_records.json")
+    alerts_response = load_json("test_data/alerts/list_10_records.json")
     last_alert_timestamp = alerts_response["alerts"][-1]["timestamp"]
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
-    last_run = {}
+    last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00"
-    date_format = "%Y-%m-%dT%H:%M:%S"
     first_fetch_time_parsed = parse_date(
         first_fetch_time,
-        date_formats=(date_format,),
+        date_formats=(DATE_FORMAT,),
     )
-    last_alert_timestamp_formatted = (parse_date(
-        last_alert_timestamp, date_formats=(date_format,)
-    ) + timedelta(seconds=1)).strftime(date_format)
+    last_alert_timestamp_formatted = get_delayed_formatted_date(
+        last_alert_timestamp,
+    )
     spy = mocker.spy(client, "list_alerts")
 
     next_run, incidents = fetch_incidents(
@@ -144,17 +151,16 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
         And return last_fetch equal to last alert timestamp + 1 second
         And 10 incidents correctly formatted
     """
-    alerts_response = load_json("TestData/alerts/list_10_records.json")
+    alerts_response = load_json("test_data/alerts/list_10_records.json")
     last_alert_timestamp = alerts_response["alerts"][-1]["timestamp"]
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
     last_run = {"last_fetched": "2023-07-01T12:34:56"}
     first_fetch_time = "2023-06-01T00:00:00"
-    date_format = "%Y-%m-%dT%H:%M:%S"
-    last_alert_timestamp_formatted = (parse_date(
-        last_alert_timestamp, date_formats=(date_format,)
-    ) + timedelta(seconds=1)).strftime(date_format)
+    last_alert_timestamp_formatted = get_delayed_formatted_date(
+        last_alert_timestamp,
+    )
     spy = mocker.spy(client, "list_alerts")
 
     next_run, incidents = fetch_incidents(
@@ -167,7 +173,7 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     list_alert_params = spy.call_args[0][0]
     min_timestamp_called = list_alert_params.get(
         "min_timestamp"
-    ).strftime(date_format)
+    ).strftime(DATE_FORMAT)
     assert min_timestamp_called == last_run["last_fetched"]
     assert list_alert_params.get("sort_direction") == "asc"
     assert next_run["last_fetched"] == last_alert_timestamp_formatted
@@ -187,7 +193,7 @@ def test_get_modified_remote_data_command_with_no_data(requests_mock, mocker):
         It should list alerts with the last_fetched set in last_run
         And return an empty list
     """
-    alerts_response = load_json("TestData/alerts/list_no_records.json")
+    alerts_response = load_json("test_data/alerts/list_no_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
@@ -213,7 +219,7 @@ def test_get_modified_remote_data_command(requests_mock, mocker):
         It should list alerts with the last_fetched set in last_run
         And return a list with the ids of the modified alerts as strings
     """
-    alerts_response = load_json("TestData/alerts/list_10_records.json")
+    alerts_response = load_json("test_data/alerts/list_10_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
@@ -243,7 +249,7 @@ def test_get_remote_data_command_with_opened_alert(requests_mock, mocker):
         And no entries in entries list
     """
     alert_id = 123
-    alert_response = load_json("TestData/alerts/opened_alert.json")
+    alert_response = load_json("test_data/alerts/opened_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
@@ -270,7 +276,7 @@ def test_get_remote_data_command_with_closed_alert(requests_mock, mocker):
         And one entry in the entries list
     """
     alert_id = "123"
-    alert_response = load_json("TestData/alerts/closed_alert.json")
+    alert_response = load_json("test_data/alerts/closed_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
@@ -297,7 +303,7 @@ def test_get_alert_command(requests_mock, mocker):
         And with the correct output prefix
     """
     alert_id = "123"
-    alert_response = load_json("TestData/alerts/closed_alert.json")
+    alert_response = load_json("test_data/alerts/closed_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
@@ -328,7 +334,7 @@ def test_alert_user_assignment_command(requests_mock, mocker):
     """
     alert_id = "123"
     username = "user123"
-    alert_response = load_json("TestData/alerts/closed_alert.json")
+    alert_response = load_json("test_data/alerts/closed_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post(f"/1.0/alerts/{alert_id}/assign/")
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -363,7 +369,7 @@ def test_close_alert_command(requests_mock, mocker):
         And with the correct output prefix
     """
     alert_id = "123"
-    alert_response = load_json("TestData/alerts/closed_alert.json")
+    alert_response = load_json("test_data/alerts/closed_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post(f"/1.0/alerts/{alert_id}/close/")
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -397,7 +403,7 @@ def test_open_alert_command(requests_mock, mocker):
         And with the correct output prefix
     """
     alert_id = "123"
-    alert_response = load_json("TestData/alerts/opened_alert.json")
+    alert_response = load_json("test_data/alerts/opened_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post(f"/1.0/alerts/{alert_id}/open/")
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -431,7 +437,7 @@ def test_alert_request_takedown_command(requests_mock, mocker):
         And with the correct output prefix
     """
     alert_id = "123"
-    alert_response = load_json("TestData/alerts/opened_alert.json")
+    alert_response = load_json("test_data/alerts/opened_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post(f"/1.0/alerts/{alert_id}/request_takedown/")
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -465,7 +471,7 @@ def test_alert_cancel_takedown_command(requests_mock, mocker):
         And with the correct output prefix
     """
     alert_id = "123"
-    alert_response = load_json("TestData/alerts/opened_alert.json")
+    alert_response = load_json("test_data/alerts/opened_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post(f"/1.0/alerts/{alert_id}/cancel_takedown/")
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -505,8 +511,8 @@ def test_modify_alert_tags_command(requests_mock, mocker):
     action = "add"
     action_in_request = "added"
     tags_in_request = tags.split(",")
-    alert_response = load_json("TestData/alerts/opened_alert.json")
-    change_tags_response = load_json("TestData/alerts/change_tags.json")
+    alert_response = load_json("test_data/alerts/opened_alert.json")
+    change_tags_response = load_json("test_data/alerts/change_tags.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post("/1.0/alerttagchangeset/", json=change_tags_response)
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -556,7 +562,7 @@ def test_create_entity_command_with_true_flag(requests_mock, mocker):
     organization = "org"
     strict_name_matching_request = True
     tags_request = tags.split(",")
-    entity_response = load_json("TestData/entities/create_entity.json")
+    entity_response = load_json("test_data/entities/create_entity.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post("/1.0/entities/", json=entity_response)
     client = build_zf_client()
@@ -615,7 +621,7 @@ def test_create_entity_command_with_false_flag(requests_mock, mocker):
     organization = "org"
     strict_name_matching_request = False
     tags_request = tags.split(",")
-    entity_response = load_json("TestData/entities/create_entity.json")
+    entity_response = load_json("test_data/entities/create_entity.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post("/1.0/entities/", json=entity_response)
     client = build_zf_client()
@@ -658,12 +664,12 @@ def test_list_alerts_command_with_no_records(requests_mock, mocker):
         And return an empty list as output
         And with the correct output prefix
     """
-    alerts_response = load_json("TestData/alerts/list_no_records.json")
+    alerts_response = load_json("test_data/alerts/list_no_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
     spy = mocker.spy(client, "list_alerts")
-    args = {}
+    args: dict = {}
 
     results = list_alerts_command(client, args)
 
@@ -683,12 +689,12 @@ def test_list_alerts_command_with_records(requests_mock, mocker):
         And return a list with alerts as output
         And with the correct output prefix
     """
-    alerts_response = load_json("TestData/alerts/list_10_records.json")
+    alerts_response = load_json("test_data/alerts/list_10_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
     spy = mocker.spy(client, "list_alerts")
-    args = {}
+    args: dict = {}
 
     results = list_alerts_command(client, args)
 
@@ -708,12 +714,12 @@ def test_list_entities_command_with_no_records(requests_mock, mocker):
         And return an empty list as output
         And with the correct output prefix
     """
-    entities_response = load_json("TestData/entities/entities_no_records.json")
+    entities_response = load_json("test_data/entities/entities_no_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/entities/", json=entities_response)
     client = build_zf_client()
     spy = mocker.spy(client, "list_entities")
-    args = {}
+    args: dict = {}
 
     results = list_entities_command(client, args)
 
@@ -733,12 +739,12 @@ def test_list_entities_command_with_records(requests_mock, mocker):
         And return a list with entities as output
         And with the correct output prefix
     """
-    entities_response = load_json("TestData/entities/entities_8_records.json")
+    entities_response = load_json("test_data/entities/entities_8_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/entities/", json=entities_response)
     client = build_zf_client()
     spy = mocker.spy(client, "list_entities")
-    args = {}
+    args: dict = {}
 
     results = list_entities_command(client, args)
 
@@ -759,13 +765,13 @@ def test_get_entity_types_command_with_no_records(requests_mock, mocker):
         And with the correct output prefix
     """
     entity_types_response = load_json(
-        "TestData/entities/entity_types_no_records.json",
+        "test_data/entities/entity_types_no_records.json",
     )
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/entities/types/", json=entity_types_response)
     client = build_zf_client()
     spy = mocker.spy(client, "get_entity_types")
-    args = {}
+    args: dict = {}
 
     results = get_entity_types_command(client, args)
 
@@ -786,13 +792,13 @@ def test_get_entity_types_command_with_records(requests_mock, mocker):
         And with the correct output prefix
     """
     entity_types_response = load_json(
-        "TestData/entities/entity_types_10_records.json",
+        "test_data/entities/entity_types_10_records.json",
     )
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/entities/types/", json=entity_types_response)
     client = build_zf_client()
     spy = mocker.spy(client, "get_entity_types")
-    args = {}
+    args: dict = {}
 
     results = get_entity_types_command(client, args)
 
@@ -813,13 +819,13 @@ def test_get_policy_types_command_with_no_records(requests_mock, mocker):
         And with the correct output prefix
     """
     policy_types_response = load_json(
-        "TestData/policies/policy_types_no_records.json",
+        "test_data/policies/policy_types_no_records.json",
     )
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/policies/", json=policy_types_response)
     client = build_zf_client()
     spy = mocker.spy(client, "get_policy_types")
-    args = {}
+    args: dict = {}
 
     results = get_policy_types_command(client, args)
 
@@ -840,13 +846,13 @@ def test_get_policy_types_command_with_records(requests_mock, mocker):
         And with the correct output prefix
     """
     policy_types_response = load_json(
-        "TestData/policies/policy_types_13_records.json",
+        "test_data/policies/policy_types_13_records.json",
     )
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/policies/", json=policy_types_response)
     client = build_zf_client()
     spy = mocker.spy(client, "get_policy_types")
-    args = {}
+    args: dict = {}
 
     results = get_policy_types_command(client, args)
 
@@ -871,7 +877,7 @@ def test_modify_alert_notes_command(requests_mock, mocker):
     """
     alert_id = "123"
     notes = "some notes"
-    alert_response = load_json("TestData/alerts/opened_alert.json")
+    alert_response = load_json("test_data/alerts/opened_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post(f"/1.0/alerts/{alert_id}/")
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -914,7 +920,7 @@ def test_submit_threat_command(requests_mock, mocker):
     alert_type = "email"
     violation = "phishing"
     entity_id = "123"
-    submit_response = load_json("TestData/alerts/submit_threat.json")
+    submit_response = load_json("test_data/alerts/submit_threat.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post("/2.0/threat_submit/", json=submit_response)
     client = build_zf_client()
@@ -955,8 +961,8 @@ def test_compromised_domain_command(requests_mock, mocker):
         And with the correct output prefix
     """
     domain = "abc.xyz"
-    c2_domains_response = load_json("TestData/cti/c2-domains.json")
-    phishing_response = load_json("TestData/cti/phishing.json")
+    c2_domains_response = load_json("test_data/cti/c2-domains.json")
+    phishing_response = load_json("test_data/cti/phishing.json")
     requests_mock.post("/auth/token/verify/")
     requests_mock.post("/auth/token/", json={"access": "token"})
     requests_mock.get("/cti/c2-domains/", json=c2_domains_response)
@@ -992,12 +998,12 @@ def test_compromised_email_command(requests_mock, mocker):
         And with the correct output prefix
     """
     email = "abc@test.xyz"
-    email_response = load_json("TestData/cti/email-addresses.json")
+    email_response = load_json("test_data/cti/email-addresses.json")
     credentials_response = load_json(
-        "TestData/cti/compromised-credentials.json",
+        "test_data/cti/compromised-credentials.json",
     )
     botnet_credentials_response = load_json(
-        "TestData/cti/botnet-compromised-credentials.json",
+        "test_data/cti/botnet-compromised-credentials.json",
     )
     requests_mock.post("/auth/token/verify/")
     requests_mock.post("/auth/token/", json={"access": "token"})
@@ -1055,8 +1061,8 @@ def test_malicious_ip_command(requests_mock, mocker):
         And with the correct output prefix
     """
     ip = "127.0.0.1"
-    botnet_response = load_json("TestData/cti/botnet.json")
-    phishing_response = load_json("TestData/cti/phishing.json")
+    botnet_response = load_json("test_data/cti/botnet.json")
+    phishing_response = load_json("test_data/cti/phishing.json")
     requests_mock.post("/auth/token/verify/")
     requests_mock.post("/auth/token/", json={"access": "token"})
     requests_mock.get("/cti/botnet/", json=botnet_response)
@@ -1094,7 +1100,7 @@ def test_malicious_hash_command(requests_mock, mocker):
     """
     hash = "e89b43d57a67a3f4d705028cfbd7b6fb"
     hash_types = ["md5", "sha1", "sha256", "sha512"]
-    malware_response = load_json("TestData/cti/malware.json")
+    malware_response = load_json("test_data/cti/malware.json")
     requests_mock.post("/auth/token/verify/")
     requests_mock.post("/auth/token/", json={"access": "token"})
     requests_mock.get("/cti/malware/", json=malware_response)
@@ -1130,7 +1136,7 @@ def test_search_exploits_command(requests_mock, mocker):
         And with the correct output prefix
     """
     since = "2023-06-27T00:00:00Z"
-    exploits_response = load_json("TestData/cti/exploits.json")
+    exploits_response = load_json("test_data/cti/exploits.json")
     requests_mock.post("/auth/token/verify/")
     requests_mock.post("/auth/token/", json={"access": "token"})
     requests_mock.get("/cti/exploits/", json=exploits_response)

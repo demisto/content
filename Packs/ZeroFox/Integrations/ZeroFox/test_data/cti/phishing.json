@@ -11,7 +11,7 @@
                 "issued": "1970-01-19T15:18:43.200000Z"
             },
             "host": {
-                "ip": "104.26.0.107",
+                "ip": "some_ip_address",
                 "asn": 13335,
                 "geo": "US"
             }
@@ -19,14 +19,14 @@
         {
             "scanned": "2021-07-12T12:41:38Z",
             "domain": "hutsjwt.com",
-            "url": "https://hutsjwt.com/css/mbt",
+            "url": "some_url/css/mbt",
             "cert": {
                 "authority": "cPanel, Inc.",
                 "fingerprint": "871B3BD9A98E83573B8368DFDB09629D4E1777BB",
                 "issued": "2021-05-09T00:00:00Z"
             },
             "host": {
-                "ip": "164.138.221.136",
+                "ip": "some_ip_address",
                 "asn": 201200,
                 "geo": "BG"
             }
@@ -41,7 +41,7 @@
                 "issued": "2021-06-23T23:25:26Z"
             },
             "host": {
-                "ip": "176.236.107.10",
+                "ip": "some_ip_address",
                 "asn": 34984,
                 "geo": "TR"
             }

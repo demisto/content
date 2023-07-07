@@ -2,7 +2,7 @@
     "next": null,
     "results": [
         {
-            "ip_address": "99.83.33.209",
+            "ip_address": "ip_address",
             "listed_at": "2023-02-09T23:44:09Z",
             "bot_name": "andromeda",
             "c2_ip_address": "184.105.192.2",
@@ -28,7 +28,7 @@
             ]
         },
         {
-            "ip_address": "99.83.33.209",
+            "ip_address": "ip_address",
             "listed_at": "2023-02-09T23:44:09Z",
             "bot_name": "andromeda",
             "c2_ip_address": "184.105.192.2",
@@ -54,7 +54,7 @@
             ]
         },
         {
-            "ip_address": "99.83.33.209",
+            "ip_address": "ip_address",
             "listed_at": "2023-02-09T23:44:09Z",
             "bot_name": "andromeda",
             "c2_ip_address": "184.105.192.2",
@@ -80,7 +80,7 @@
             ]
         },
         {
-            "ip_address": "99.83.33.209",
+            "ip_address": "ip_address",
             "listed_at": "2023-02-27T11:12:35.375167Z",
             "bot_name": "andromeda",
             "c2_ip_address": "184.105.192.2",

@@ -93,7 +93,7 @@
         {
             "id": 560631,
             "name": "James Rhodes",
-            "email_address": "james@stark.com",
+            "email_address": "some_email_address",
             "image": "https://cdn.zerofox.com/media/entityimages/d6b7aaa4-a11.jpg",
             "organization": "",
             "labels": [
@@ -136,7 +136,7 @@
         {
             "id": 560633,
             "name": "Natasha Romanoff",
-            "email_address": "natasha@stark.com",
+            "email_address": "some_email_address",
             "image": "https://cdn.zerofox.com/media/entityimages/23b9551f-2bb.png",
             "organization": "",
             "labels": [
@@ -179,7 +179,7 @@
         {
             "id": 6969249,
             "name": "Peter Parker",
-            "email_address": "pparker@stark.com",
+            "email_address": "some_email_address",
             "image": "https://cdn.zerofox.com/media/entityimages/kv7b3f5ubcp9s79zigjegevdri4o274mu05h6d7ufijgsvr3pp8aiwalihnuvbi4.jpg",
             "organization": "",
             "labels": [],
@@ -220,7 +220,7 @@
         {
             "id": 560636,
             "name": "Stark Aviation",
-            "email_address": "bookings@starkair.com",
+            "email_address": "some_email_address",
             "image": "https://cdn.zerofox.com/media/entityimages/f5544e89-d2f.jpg",
             "organization": "",
             "labels": [

@@ -598,14 +598,14 @@ Looks for registered hashes in ZeroFox's CTI feeds
 | ZeroFox.MaliciousHashes.SHA512 | string | Hash in SHA512 format |
 | ZeroFox.MaliciousHashes.FoundHash | string | Indicates in which hash format was found the search |
 
-### zerofox-search-exploit
+### zerofox-search-exploits
 
 ***
 Looks for registered exploits in ZeroFox's CTI feeds
 
 #### Base Command
 
-`zerofox-search-exploit`
+`zerofox-search-exploits`
 
 #### Input
 
