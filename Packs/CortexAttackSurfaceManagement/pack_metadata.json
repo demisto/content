@@ -70,6 +70,10 @@
         "SplunkPyPreRelease": {
             "mandatory": false,
             "display_name": "Splunk Prerelease (Deprecated)"
+        },
+        "GCP-IAM": {
+            "mandatory": false,
+            "display_name": "GCP-IAM"
         }
     },
     "marketplaces": [
