@@ -1,3 +1,4 @@
+# pylint: disable=E1101
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -13,7 +14,6 @@ from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 
@@ -858,7 +858,7 @@ def commit_changes_command(args: dict[str, Any]) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main():
     """main function, parses params and runs command functions
     """
     params = demisto.params()
