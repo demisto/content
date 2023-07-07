@@ -586,6 +586,20 @@ def test_analyst1_get_sensors_command(requests_mock, mock_client):
     assert command_results.outputs == MOCK_SENSORS.get('results')
 
 
+def test_analyst1_get_sensors_command_defaultsOfArgsToInt(requests_mock, mock_client):
+    requests_mock.get(
+        f'https://{MOCK_SERVER}/api/1_0/sensors?page=1&pageSize=50',
+        json=MOCK_SENSORS
+    )
+    # empty args to test defaults
+    args: dict = {}
+    command_results = analyst1_get_sensors_command(mock_client, args)
+    assert command_results is not None
+    assert command_results.outputs_prefix == 'Analyst1.SensorList'
+    assert command_results.outputs_key_field == 'id'
+    assert command_results.outputs == MOCK_SENSORS.get('results')
+
+
 def assert_sensor_taskings(command_results_list: list):
     assert len(command_results_list) == 3
     assert command_results_list[0].outputs_prefix == 'Analyst1.SensorTaskings'
@@ -705,3 +719,9 @@ def test_analyst1_get_sensor_config_command(requests_mock, mock_client):
     assert command_results.outputs.get('warRoomEntry') is not None
     # json expectation adds quotes, anomaly of unit testing
     assert command_results.outputs.get('config_text') == 'response text goes here'
+
+
+def test_argsToStr():
+    args: dict = {'sensor_id': '1'}
+    assert '1' == argsToStr(args, 'sensor_id')
+    assert '' == argsToStr(args, 'unknown')

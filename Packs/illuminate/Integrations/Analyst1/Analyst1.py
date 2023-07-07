@@ -174,8 +174,7 @@ class Client(BaseClient):
         elif x is None:
             return {'message': 'Empty response'}
         else:
-            return_error(str(x.status_code) + ':' + x.text)
-            return {'message': 'Error occurred and returned in return_error()'}
+            return {'message': 'Error occurred. Status Code: ' + str(x.status_code) + ' Text: ' + x.text}
 
     def get_evidence_status(self, uuid: str) -> dict:
         x = requests.get(self._base_url + 'evidence/uploadStatus/' + uuid, auth=self._auth)
@@ -187,8 +186,7 @@ class Client(BaseClient):
         elif x.status_code == 200:
             return x.json()
         else:
-            return_error(str(x.status_code) + ':' + x.text)
-            return {'message': 'Error occurred and returned in return_error()'}
+            return {'message': 'Error occurred. Status Code: ' + str(x.status_code) + ' Text: ' + x.text}
 
     def get_batch_search(self, indicator_values_as_csv: str) -> dict:
         params = {'values': indicator_values_as_csv}
@@ -204,8 +202,7 @@ class Client(BaseClient):
         elif x is None:
             return {'message': 'Empty response'}
         else:
-            return_error(str(x.status_code) + ':' + x.text)
-            return {'message': 'Error occurred and returned in return_error()'}
+            return {'message': 'Error occurred. Status Code: ' + str(x.status_code) + ' Text: ' + x.text}
 
     def get_sensors(self, page: int, pageSize: int):
         raw_data: dict = self._http_request(method='GET', url_suffix='sensors?page=' + str(page) + '&pageSize=' + str(pageSize))
@@ -453,8 +450,22 @@ def url_command(client: Client, args: dict) -> List[EnrichmentOutput]:
     return enrichment_data_list
 
 
-def analyst1_get_indicator(client: Client, args) -> CommandResults:
-    raw_data = client.get_indicator(args.get('indicator_id'))
+def argsToStr(args: dict, key: str) -> str:
+    arg: Optional[Any] = args.get(key)
+    if arg is None:
+        return ''
+    return str(arg)
+
+
+def argsToInt(args: dict, key: str, default: int) -> int:
+    arg: Optional[Any] = args.get(key)
+    if arg is None:
+        return default
+    return int(arg)
+
+
+def analyst1_get_indicator(client: Client, args) -> Optional[CommandResults]:
+    raw_data = client.get_indicator(argsToStr(args, 'indicator_id'))
     if len(raw_data) > 0:
         command_results = CommandResults(
             outputs_prefix='Analyst1.Indicator',
@@ -466,7 +477,7 @@ def analyst1_get_indicator(client: Client, args) -> CommandResults:
 
 
 def analyst1_batch_check_command(client: Client, args):
-    raw_data = client.get_batch_search(args.get('values'))
+    raw_data = client.get_batch_search(argsToStr(args, 'values'))
     # assume succesful result or client will have errored
     if len(raw_data['results']) > 0:
         command_results = CommandResults(
@@ -531,9 +542,9 @@ def analyst1_batch_check_post(client: Client, args: dict):
 
 
 def analyst1_evidence_submit(client: Client, args: dict):
-    raw_data = client.post_evidence(args.get('fileName'),
-                                    args.get('fileContent'), args.get('fileEntryId'),
-                                    args.get('fileClassification'), args.get('tlp'), args.get('sourceId'))
+    raw_data = client.post_evidence(argsToStr(args, 'fileName'),
+                                    argsToStr(args, 'fileContent'), argsToStr(args, 'fileEntryId'),
+                                    argsToStr(args, 'fileClassification'), argsToStr(args, 'tlp'), argsToStr(args, 'sourceId'))
     # args.get('warRoomFileId'), may be added back in at a future time
     # for now it is left out on purpose
     command_results = CommandResults(
@@ -546,7 +557,7 @@ def analyst1_evidence_submit(client: Client, args: dict):
 
 
 def analyst1_evidence_status(client: Client, args: dict):
-    raw_data = client.get_evidence_status(args.get('uuid'))
+    raw_data = client.get_evidence_status(argsToStr(args, 'uuid'))
 
     if not raw_data or raw_data is None:
         raw_data = {"message": "UUID unknown"}
@@ -571,10 +582,11 @@ def a1_tasking_array_from_indicators(indicatorsJson: dict) -> list:
     for ioc in indicatorsJson:
         # each IOC or each HASH gets insertd for outward processing
         # convert ID to STR to make output consistent
+        listIoc: dict = {}
         if ioc.get('type') == 'File' and len(ioc.get('fileHashes')) > 0:
             for (key, value) in ioc.get('fileHashes').items():
                 # hash algorithm is the key, so use it to create output
-                listIoc: dict = {
+                listIoc = {
                     'category': 'indicator',
                     'id': str(ioc.get('id')) + '-' + key,
                     'type': 'File-' + key,
@@ -582,7 +594,7 @@ def a1_tasking_array_from_indicators(indicatorsJson: dict) -> list:
                 }
                 taskings_list.append(listIoc)
         else:
-            listIoc: dict = {
+            listIoc = {
                 'category': 'indicator',
                 'id': str(ioc.get('id')),
                 'type': ioc.get('type'),
@@ -606,18 +618,18 @@ def a1_tasking_array_from_rules(rulesJson: dict) -> list:
 
 
 def analyst1_get_sensor_taskings_command(client: Client, args: dict):
-    raw_data = client.get_sensor_taskings(args.get('sensor_id'), args.get('timeout'))
+    raw_data = client.get_sensor_taskings(argsToStr(args, 'sensor_id'), argsToInt(args, 'timeout', 200))
 
     simplified_data: dict = raw_data
     if 'links' in simplified_data:
         del simplified_data['links']
 
-    indicators_taskings: dict = {}
+    indicators_taskings: list = []
     if 'indicators' in simplified_data:
         indicators_taskings = a1_tasking_array_from_indicators(simplified_data['indicators'])
         del simplified_data['indicators']
 
-    rules_taskings: dict = {}
+    rules_taskings: list = []
     if 'rules' in simplified_data:
         rules_taskings = a1_tasking_array_from_rules(simplified_data['rules'])
         del simplified_data['rules']
@@ -652,7 +664,7 @@ def analyst1_get_sensor_taskings_command(client: Client, args: dict):
 
 
 def analyst1_get_sensors_command(client: Client, args: dict):
-    sensor_raw_data = client.get_sensors(args.get('page'), args.get('pageSize'))
+    sensor_raw_data = client.get_sensors(argsToInt(args, 'page', 1), argsToInt(args, 'pageSize', 50))
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorList',
         outputs_key_field='id',
@@ -664,29 +676,29 @@ def analyst1_get_sensors_command(client: Client, args: dict):
 
 
 def analyst1_get_sensor_diff(client: Client, args: dict):
-    raw_data = client.get_sensor_diff(args.get('sensor_id'), args.get('version'), args.get('timeout'))
+    raw_data = client.get_sensor_diff(argsToStr(args, 'sensor_id'), argsToStr(args, 'version'), argsToInt(args, 'timeout', 200))
     # CommandResults creates both "outputs" and "human readable" in one go using updated XSOAR capabilities
 
     simplified_data = raw_data
     if 'links' in simplified_data:
         del simplified_data['links']
 
-    indicators_added: dict = {}
+    indicators_added: list = []
     if 'indicatorsAdded' in simplified_data:
         indicators_added = a1_tasking_array_from_indicators(simplified_data['indicatorsAdded'])
         del simplified_data['indicatorsAdded']
 
-    indicators_removed: dict = {}
+    indicators_removed: list = []
     if 'indicatorsRemoved' in simplified_data:
         indicators_removed = a1_tasking_array_from_indicators(simplified_data['indicatorsRemoved'])
         del simplified_data['indicatorsRemoved']
 
-    rules_added: dict = {}
+    rules_added: list = []
     if 'rulesAdded' in simplified_data:
         rules_added = a1_tasking_array_from_rules(simplified_data['rulesAdded'])
         del simplified_data['rulesAdded']
 
-    rules_removed: dict = {}
+    rules_removed: list = []
     if 'rulesRemoved' in simplified_data:
         rules_removed = a1_tasking_array_from_rules(simplified_data['rulesRemoved'])
         del simplified_data['rulesRemoved']
@@ -737,7 +749,7 @@ def analyst1_get_sensor_diff(client: Client, args: dict):
 
 
 def analyst1_get_sensor_config_command(client: Client, args):
-    sensor_id = args.get('sensor_id')
+    sensor_id = argsToStr(args, 'sensor_id')
     raw_data = client.get_sensor_config(sensor_id)
     warRoomEntry = fileResult('sensor' + str(sensor_id) + 'Config.txt', raw_data)
     outputOptions = {'warRoomEntry': warRoomEntry, 'config_text': raw_data}
