@@ -6,6 +6,7 @@ from smc.elements.network import IPList, DomainName, Host
 from smc.core.engine import Engine
 from smc.base.model import Element
 from smc.policy.layer3 import FirewallTemplatePolicy, FirewallPolicy
+from smc.policy.rule import IPv6Rule, Rule
 from smc.api.exceptions import ElementNotFound
 import urllib3
 from typing import Any
@@ -76,13 +77,13 @@ def handle_rule_entities(ip_lists: list, host_list: list, domain_list: list):
     entities: List[Element] = []
 
     for ip_list in ip_lists:
-        entities.extend(list(IPList.objects.filter(ip_list)))
+        entities.extend(list(IPList.objects.filter(ip_list, exact_match=True)))
 
     for host in host_list:
-        entities.extend(list(Host.objects.filter(host)))
+        entities.extend(list(Host.objects.filter(host, exact_match=True)))
 
     for domain in domain_list:
-        entities.extend(list(DomainName.objects.filter(domain)))
+        entities.extend(list(DomainName.objects.filter(domain, exact_match=True)))
 
     return entities
 
@@ -111,6 +112,14 @@ def get_policy_rules(policy: FirewallPolicy, ip_version: str = '', all_rules: bo
             return ipv4_rules
         else:
             return ipv6_rules
+
+
+def get_rule_ip_version(rule: Rule):
+    """Gets the rule ip version"""
+    if isinstance(rule, IPv6Rule):
+        return 'V6'
+    else:
+        return 'V4'
 
 
 ''' COMMAND FUNCTIONS '''
@@ -179,9 +188,9 @@ def update_iplist_command(args: dict[str, Any]) -> CommandResults:
     """
     name = args.get('name')
     addresses = argToList(args.get('addresses', []))
-    is_override = args.get('is_override', False)
+    is_override = argToBoolean(args.get('is_override', False))
 
-    if not list(IPList.objects.filter(name)):
+    if not list(IPList.objects.filter(name, exact_match=True)):
         raise DemistoException(f'IP List {name} was not found.')
 
     ip_list = IPList.update_or_create(name=name, append_lists=not is_override, iplist=addresses)
@@ -214,7 +223,7 @@ def list_iplist_command(args: dict[str, Any]) -> CommandResults:
 
     ip_lists = []
     if name:
-        ip_lists = list(IPList.objects.filter(name))
+        ip_lists = list(IPList.objects.filter(name, exact_match=True))
     elif all_results:
         ip_lists = list(IPList.objects.all())
     else:
@@ -278,7 +287,7 @@ def list_host_command(args: dict[str, Any]) -> CommandResults:
 
     hosts = []
     if name:
-        hosts = list(Host.objects.filter(name))
+        hosts = list(Host.objects.filter(name, exact_match=True))
     elif all_results:
         hosts = list(Host.objects.all())
     else:
@@ -314,7 +323,7 @@ def create_host_command(args: dict[str, Any]) -> CommandResults:
     name = args.get('name')
     address = args.get('address', '')
     ipv6_address = args.get('ipv6_address', '')
-    secondary = args.get('secondary_address', '')
+    secondary = argToList(args.get('secondary_address', ''))
     comment = args.get('comment', '')
 
     if address and ipv6_address:
@@ -350,11 +359,11 @@ def update_host_command(args: dict[str, Any]) -> CommandResults:
     kwargs = {'name': name,
               'address': args.get('address', ''),
               'ipv6_address': args.get('ipv6_address', ''),
-              'secondary': args.get('secondary_address', ''),
+              'secondary': argToList(args.get('secondary_address', '')),
               'comment': args.get('comment', '')}
     remove_nulls_from_dictionary(kwargs)
 
-    if not list(Host.objects.filter(name)):
+    if not list(Host.objects.filter(name, exact_match=True)):
         raise DemistoException(f'Host {name} was not found.')
 
     host = Host.update_or_create(**kwargs)
@@ -444,7 +453,7 @@ def list_domain_command(args: dict[str, Any]) -> CommandResults:
 
     domains = []
     if name:
-        domains = list(DomainName.objects.filter(name))
+        domains = list(DomainName.objects.filter(name, exact_match=True))
     elif all_results:
         domains = list(DomainName.objects.all())
     else:
@@ -460,7 +469,7 @@ def list_domain_command(args: dict[str, Any]) -> CommandResults:
         outputs=outputs,
         raw_response=outputs,
         outputs_key_field='Name',
-        readable_output=tableToMarkdown(name='Domains:', t=outputs, removeNull=True),
+        readable_output=tableToMarkdown(name='Domains:', t=outputs, removeNull=True, sort_headers=False),
     )
 
 
@@ -520,7 +529,7 @@ def list_policy_template_command(args: dict[str, Any]) -> CommandResults:
         outputs=outputs,
         raw_response=outputs,
         outputs_key_field='Name',
-        readable_output=tableToMarkdown(name='Policy template:', t=outputs, removeNull=True),
+        readable_output=tableToMarkdown(name='Policy template:', t=outputs, removeNull=True, sort_headers=False),
     )
 
 
@@ -552,7 +561,7 @@ def list_firewall_policy_command(args: dict[str, Any]) -> CommandResults:
         outputs=outputs,
         raw_response=outputs,
         outputs_key_field='Name',
-        readable_output=tableToMarkdown(name='Firewall policies:', t=outputs, removeNull=True),
+        readable_output=tableToMarkdown(name='Firewall policies:', t=outputs, removeNull=True, sort_headers=False),
     )
 
 
@@ -621,7 +630,7 @@ def create_rule_command(args: dict[str, Any]) -> CommandResults:
     """
     policy_name = args.get('policy_name')
     rule_name = args.get('rule_name')
-    ip_version = args.get('ip_version')
+    ip_version = args.get('ip_version', 'V4')
     source_ip_list = argToList(args.get('source_ip_list', []))
     source_host = argToList(args.get('source_host', []))
     source_domain = argToList(args.get('source_domain', []))
@@ -731,6 +740,7 @@ def list_rule_command(args: dict[str, Any]) -> CommandResults:
     for rule in policy_rules:
         rules.append({'Name': rule.name,
                       'ID': rule.tag,
+                      'IP_version': get_rule_ip_version(rule),
                       'Sources': [source.name for source in rule.sources.all()],
                       'Destinations': [dest.name for dest in rule.destinations.all()],
                       'Services': [service.name for service in rule.services.all()],
@@ -743,7 +753,7 @@ def list_rule_command(args: dict[str, Any]) -> CommandResults:
         outputs=rules,
         raw_response=rules,
         outputs_key_field='ID',
-        readable_output=tableToMarkdown(name='Rules:', t=rules, removeNull=True),
+        readable_output=tableToMarkdown(name='Rules:', t=rules, removeNull=True, sort_headers=False),
     )
 
 
@@ -760,7 +770,7 @@ def delete_rule_command(args: dict[str, Any]) -> CommandResults:
     rule_name = args.get('rule_name', '')
     ip_version = args.get('ip_version', '')
 
-    if not list(FirewallPolicy.objects.filter(policy_name)):
+    if not list(FirewallPolicy.objects.filter(policy_name, exact_match=True)):
         raise DemistoException(f'Firewall policy {policy_name} was not found.')
 
     policy = FirewallPolicy(policy_name)
@@ -806,7 +816,7 @@ def list_engine_command(args: dict[str, Any]) -> CommandResults:
         outputs=outputs,
         raw_response=outputs,
         outputs_key_field='Name',
-        readable_output=tableToMarkdown(name='Engines:', t=outputs, removeNull=True),
+        readable_output=tableToMarkdown(name='Engines:', t=outputs, removeNull=True, sort_headers=False),
     )
 
 
@@ -819,9 +829,9 @@ def commit_changes_command(args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults
     """
-    engine_name = args.get('engine_name')
+    engine_name = args.get('engine_name', '')
 
-    if not list(Engine.objects.filter(engine_name)):
+    if not list(Engine.objects.filter(engine_name, exact_match=True)):
         raise DemistoException(f'Engine {engine_name} was not found.')
 
     engine = Engine(engine_name)
@@ -840,9 +850,8 @@ def commit_changes_command(args: dict[str, Any]) -> CommandResults:
         outputs_prefix='ForcepointSMC.CommitChanges',
         outputs=changes,
         raw_response=changes,
-        outputs_key_field='Element_name',
         readable_output=tableToMarkdown(name='The following changes have been committed:',
-                                        t=changes, removeNull=True),
+                                        t=changes, removeNull=True, sort_headers=False),
     )
 
 

@@ -69,7 +69,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The addresses to update.
+      description: The addresses to update. A comma-separated list.
       isArray: true
       name: addresses
       required: false
@@ -81,7 +81,6 @@ script:
       predefined:
       - 'False'
       - 'True'
-      defaultvalue: False
       required: false
     description: 'Updates an IP List.'
     execution: false
@@ -197,7 +196,7 @@ script:
       name: ipv6_address
       required: false
     - default: false
-      description: The secondary_address of the host. A comma separated list.
+      description: The secondary addresses of the host. A comma separated list.
       isArray: true
       name: secondary_address
       required: false
@@ -243,7 +242,7 @@ script:
       name: ipv6_address
       required: false
     - default: false
-      description: The secondary_address of the host. A comma separated list.
+      description: The secondary addresses of the host. A comma separated list.
       isArray: true
       name: secondary_address
       required: false
@@ -377,7 +376,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The limit on the returned number firewall policies. Default value is 50.
+      description: The limit on the returned number of the firewall policies. Default value is 50.
       isArray: false
       name: limit
       required: false
@@ -403,7 +402,7 @@ script:
       name: name
       required: true
     - default: false
-      description: The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list to get the list of policy templates.
+      description: The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list command to get the list of policy templates.
       isArray: false
       name: template
       required: true
@@ -454,7 +453,6 @@ script:
       predefined:
       - "V4"
       - "V6"
-      defaultvalue: "V4"
     - default: false
       description: A comma-seperated list of ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
       isArray: true
@@ -545,7 +543,6 @@ script:
       predefined:
       - 'False'
       - 'True'
-      defaultvalue: False
     - default: false
       description: The ip_version of the rule. Default value is V4.
       isArray: false
@@ -555,7 +552,6 @@ script:
       predefined:
       - 'V4'
       - 'V6'
-      defaultvalue: 'V4'
     - default: false
       description: A comma-seperated list of ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
       isArray: true
@@ -626,6 +622,9 @@ script:
     - contextPath: ForcepointSMC.Rule.ID
       description: 'The ID of the rule.'
       type: String
+    - contextPath: ForcepointSMC.Rule.IP_version
+      description: 'The IP version of the rule.'
+      type: String
     - contextPath: ForcepointSMC.Rule.Sources
       description: 'The sources of the rule.'
       type: Unknown
@@ -654,14 +653,13 @@ script:
       required: true
     - default: false
       auto: PREDEFINED
-      description: The ip_version of the rule. Default value is V4.
+      description: The ip_version of the rule.
       isArray: false
       name: ip_version
       required: true
       predefined:
       - 'V4'
       - 'V6'
-      defaultvalue: 'V4'
     description: 'Deletes a rule.'
     execution: false
     name: forcepoint-smc-rule-delete
@@ -682,7 +680,6 @@ script:
       description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
       isArray: false
       name: all_results
-      defaultvalue: False
       required: false
     description: 'Lists the Engines in the system.'
     execution: false
@@ -699,7 +696,7 @@ script:
       description: The name of the engine to commit its changes to.
       isArray: false
       name: engine_name
-      required: false
+      required: true
     description: 'Commits the current changes.'
     execution: false
     name: forcepoint-smc-commit-changes

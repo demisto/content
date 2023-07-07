@@ -1,5 +1,5 @@
 {
-    "name": "Forcepoint",
+    "name": "Forcepoint Web Security",
     "description": "Advanced threat protection with added local management controls.",
     "support": "xsoar",
     "currentVersion": "1.0.8",

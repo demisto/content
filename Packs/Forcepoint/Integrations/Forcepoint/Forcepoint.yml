@@ -1,8 +1,8 @@
 commonfields:
   id: Forcepoint
   version: -1
-name: Forcepoint
-display: Forcepoint
+name: Forcepoint Web Security
+display: Forcepoint Web Security
 category: Network Security
 description: Advanced threat protection with added local management controls.
 configuration:
