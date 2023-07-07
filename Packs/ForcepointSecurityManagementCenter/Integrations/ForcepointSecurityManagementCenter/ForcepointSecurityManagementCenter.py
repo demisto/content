@@ -100,6 +100,7 @@ def get_rule_from_policy(policy: FirewallPolicy, rule_name: str, ip_version: str
 
 def get_policy_rules(policy: FirewallPolicy, ip_version: str = '', all_rules: bool = True):
     """Gets rules from a specific policy"""
+
     ipv4_rules = list(policy.fw_ipv4_access_rules.all())
     ipv6_rules = list(policy.fw_ipv6_access_rules.all())
 
@@ -230,7 +231,7 @@ def list_iplist_command(args: dict[str, Any]) -> CommandResults:
         outputs=outputs,
         raw_response=outputs,
         outputs_key_field='Name',
-        readable_output=tableToMarkdown(name='IP Lists:', t=outputs, removeNull=True),
+        readable_output=tableToMarkdown(name='IP Lists:', t=outputs, removeNull=True, sort_headers=False),
     )
 
 
@@ -297,7 +298,7 @@ def list_host_command(args: dict[str, Any]) -> CommandResults:
         outputs=outputs,
         raw_response=outputs,
         outputs_key_field='Name',
-        readable_output=tableToMarkdown(name='Hosts:', t=outputs, removeNull=True),
+        readable_output=tableToMarkdown(name='Hosts:', t=outputs, removeNull=True, sort_headers=False),
     )
 
 
@@ -673,14 +674,14 @@ def update_rule_command(args: dict[str, Any]) -> CommandResults:
     policy_name = args.get('policy_name', '')
     rule_name = args.get('rule_name', '')
     ip_version = args.get('ip_version', '')
-    is_override = args.get('is_override', False)
+    is_override = argToBoolean(args.get('is_override', False))
     source_ip_list = argToList(args.get('source_ip_list', []))
     source_host = argToList(args.get('source_host', []))
     source_domain = argToList(args.get('source_domain', []))
     dest_ip_list = argToList(args.get('destination_ip_list', []))
     dest_host = argToList(args.get('destination_host', []))
     dest_domain = argToList(args.get('destination_domain', []))
-    action = argToList(args.get('action', []))
+    action = args.get('action', '')
     comment = args.get('comment', '')
 
     policy = FirewallPolicy(policy_name)
@@ -688,14 +689,25 @@ def update_rule_command(args: dict[str, Any]) -> CommandResults:
     sources = handle_rule_entities(source_ip_list, source_host, source_domain)
     destinations = handle_rule_entities(dest_ip_list, dest_host, dest_domain)
 
-    kwargs = {'sources': sources,
-              'destinations': destinations,
-              'action': action,
-              'comment': comment,
-              'append_lists': is_override}
-    remove_nulls_from_dictionary(kwargs)
+    prev_dest = list(rule.destinations.all())
+    prev_source = list(rule.sources.all())
+    if action:
+        rule.action.update(action=[action])
 
-    rule.update(**kwargs)
+    if comment:
+        rule.update(comment=comment)
+
+    if sources:
+        if not is_override:
+            sources = sources + prev_source
+        rule.sources.add_many(sources)
+        rule.save()
+
+    if destinations:
+        if not is_override:
+            destinations = destinations + prev_dest
+        rule.destinations.add_many(destinations)
+        rule.save()
 
     return CommandResults(
         readable_output=f'The rule {rule.name} to the policy {policy_name} was updated successfully.'

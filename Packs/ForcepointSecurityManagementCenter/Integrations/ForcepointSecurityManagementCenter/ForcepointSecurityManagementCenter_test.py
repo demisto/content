@@ -31,6 +31,9 @@ class mock_Rule:
     def update(self, **kwargs):
         return self
 
+    def save(self,):
+        return self
+
 
 class mock_IPList():
     def __init__(self, name: str, iplist: list, comment: str):
@@ -70,6 +73,9 @@ class mock_GenericRuleEntity:
         return [self]
 
     def filter(self):
+        return self
+
+    def add_many(self, elements):
         return self
 
 
@@ -544,9 +550,9 @@ def test_delete_rule_command_no_rule(mocker):
     rule = mock_Rule()
     policy = mock_Policy('name', 'comment')
     mocker.patch.object(CollectionManager, 'filter', return_value=[policy])
-    mocker.patch('ForcepointSecurityManagementCenter.get_all_policy_rules', return_value=[rule])
-    args = {'policy_name': 'name', 'rule_id': 'test'}
-    with pytest.raises(DemistoException, match='Rule with id test was not found in policy name.'):
+    mocker.patch('ForcepointSecurityManagementCenter.get_policy_rules', return_value=[rule])
+    args = {'policy_name': 'name', 'rule_name': 'test', "ip_version": "ip_version"}
+    with pytest.raises(DemistoException, match='Rule with name test was not found in policy name.'):
         delete_rule_command(args)
 
 
@@ -619,7 +625,7 @@ def test_update_rule_command(mocker):
     mocker.patch.object(CollectionManager, 'filter', return_value=[mock_Domain('name', 'comment')])
     args = {
         'policy_name': 'name',
-        'rule_id': 'tag',
+        'rule_name': 'name',
         'ip_version': 'V4',
         'source_ip_list': ['source_ip_list'],
         'source_host': ['source_host'],
@@ -627,7 +633,6 @@ def test_update_rule_command(mocker):
         'destination_ip_list': ['destination_ip_list'],
         'destination_host': ['destination_host'],
         'destination_domain': ['destination_domain'],
-        'action': 'ALLOW',
         'comment': 'test_comment'
     }
     policy = mock_Policy('name', 'comment')

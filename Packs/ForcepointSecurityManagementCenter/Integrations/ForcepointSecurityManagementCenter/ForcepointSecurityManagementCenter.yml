@@ -447,41 +447,42 @@ script:
       required: true
     - default: false
       description: The ip_version of the rule. Default value is V4.
+      auto: PREDEFINED
       isArray: false
       name: ip_version
       required: false
       predefined:
-      - V4
-      - V6
-      defaultvalue: V4
+      - "V4"
+      - "V6"
+      defaultvalue: "V4"
     - default: false
       description: A comma-seperated list of ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
-      isArray: false
+      isArray: true
       name: source_ip_list
       required: false
     - default: false
       description: A comma-seperated list of host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts.
-      isArray: false
+      isArray: true
       name: source_host
       required: false
     - default: false
       description: A comma-seperated list of domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains.
-      isArray: false
+      isArray: true
       name: source_domain
       required: false
     - default: false
       description: A comma-seperated list of ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
-      isArray: false
+      isArray: true
       name: destination_ip_list
       required: false
     - default: false
       description: A comma-seperated list of host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts.
-      isArray: false
+      isArray: true
       name: destination_host
       required: false
     - default: false
       description: A comma-seperated list of domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains.
-      isArray: false
+      isArray: true
       name: destination_domain
       required: false
     - default: false
@@ -557,38 +558,38 @@ script:
       defaultvalue: 'V4'
     - default: false
       description: A comma-seperated list of ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
-      isArray: false
+      isArray: true
       name: source_ip_list
       required: false
     - default: false
       description: A comma-seperated list of host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts.
-      isArray: false
+      isArray: true
       name: source_host
       required: false
     - default: false
       description: A comma-seperated list of domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains.
-      isArray: false
+      isArray: true
       name: source_domain
       required: false
     - default: false
       description: A comma-seperated list of ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
-      isArray: false
+      isArray: true
       name: destination_ip_list
       required: false
     - default: false
       description: A comma-seperated list of host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts.
-      isArray: false
+      isArray: true
       name: destination_host
       required: false
     - default: false
       description: A comma-seperated list of domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains.
-      isArray: false
+      isArray: true
       name: destination_domain
       required: false
     - default: false
       auto: PREDEFINED
       description: The action of the rule.
-      isArray: false
+      isArray: true
       name: action
       required: false
       predefined:
