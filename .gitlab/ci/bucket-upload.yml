@@ -261,6 +261,7 @@ install-packs-in-xsiam-ga:
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     UNREMOVABLE_PACKS: "Base"
 
+
 upload-packs-to-marketplace:
   tags:
     - gke
