@@ -13,7 +13,7 @@ PRODUCT = 'github-audit'
 
 def get_github_timestamp_format(value):
     """Converting int(epoch), str(3 days) or datetime to github's api time"""
-    timestamp: Optional[datetime]
+    timestamp: Optional[datetime] = None
     if isinstance(value, int):
         value = str(value)
     if not isinstance(value, datetime):
@@ -40,7 +40,7 @@ class GithubParams(BaseModel):
 
 
 class GithubEventsRequestConfig(IntegrationHTTPRequest):
-    url = AnyUrl
+    url: AnyUrl
     method = Method.GET
     params: GithubParams  # type: ignore
 
