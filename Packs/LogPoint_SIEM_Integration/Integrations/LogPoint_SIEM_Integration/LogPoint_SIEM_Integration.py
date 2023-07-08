@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
@@ -8,11 +8,11 @@ from CommonServerUserPython import *
 import dateparser
 import json
 import traceback
-import requests
+import urllib3
 from datetime import timedelta, datetime
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' CLIENT CLASS '''

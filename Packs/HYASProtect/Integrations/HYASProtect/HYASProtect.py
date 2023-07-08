@@ -1,7 +1,8 @@
 from CommonServerPython import *
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CORTEX XSOAR COMMAND CONSTANTS
 INTEGRATION_NAME = 'HYAS PROTECT'
