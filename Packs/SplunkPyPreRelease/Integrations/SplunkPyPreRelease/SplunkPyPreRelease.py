@@ -22,15 +22,15 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Define utf8 as default encoding
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
-params = demisto.params()
+PARAMS = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
-FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
+VERIFY_CERTIFICATE = not bool(PARAMS.get('unsecure'))
+FETCH_LIMIT = int(PARAMS.get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
-REPLACE_FLAG = params.get('replaceKeys', False)
-FETCH_TIME = demisto.params().get('fetch_time')
+REPLACE_FLAG = PARAMS.get('replaceKeys', False)
+FETCH_TIME = PARAMS.get('fetch_time')
 PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
@@ -46,7 +46,7 @@ OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency']
 INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label']
 
 # =========== Enrichment Mechanism Globals ===========
-ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
+ENABLED_ENRICHMENTS = PARAMS.get('enabled_enrichments', [])
 
 DRILLDOWN_ENRICHMENT = 'Drilldown'
 ASSET_ENRICHMENT = 'Asset'
@@ -117,7 +117,7 @@ def create_incident_custom_id(incident):
     incident_raw_data = json.loads(incident["rawJSON"])
 
     fields_to_add = ['_cd', 'index', '_time', '_indextime', '_raw']
-    fields_supplied_by_user = demisto.params().get('unique_id_fields', '')
+    fields_supplied_by_user = PARAMS.get('unique_id_fields', '')
     fields_supplied_by_user = '' if not fields_supplied_by_user else fields_supplied_by_user
     fields_to_add.extend(fields_supplied_by_user.split(','))
 
@@ -136,7 +136,7 @@ def create_incident_custom_id(incident):
 
 
 def extensive_log(message):
-    if demisto.params().get('extensive_logs', False):
+    if PARAMS.get('extensive_logs', False):
         demisto.debug(message)
 
 
@@ -251,7 +251,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
 
     search_offset = last_run_data.get('offset', 0)
 
-    dem_params = demisto.params()
+    dem_params = PARAMS
     occurred_look_behind = int(dem_params.get('occurrence_look_behind', 15) or 15)
     extensive_log('[SplunkPyPreRelease] occurrence look behind is: {}'.format(occurred_look_behind))
 
@@ -475,13 +475,13 @@ class Notable:
         notable_data = parse_notable(notable_data)
         notable_data.update({
             'mirror_instance': demisto.integrationInstance(),
-            'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
+            'mirror_direction': MIRROR_DIRECTION.get(PARAMS.get('mirror_direction'))
         })
         incident["rawJSON"] = json.dumps(notable_data)
 
         labels = []
-        if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
-            isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
+        if demisto.get(PARAMS, 'parseNotableEventsRaw'):
+            isParseNotableEventsRaw = PARAMS['parseNotableEventsRaw']
             if isParseNotableEventsRaw:
                 rawDict = rawToDict(notable_data['_raw'])
                 for rawKey in rawDict:
@@ -923,7 +923,7 @@ def handle_submitted_notables(service, incidents, cache_object):
 
     """
     handled_notables = []
-    enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))
+    enrichment_timeout = arg_to_number(str(PARAMS.get('enrichment_timeout', '5')))
     notables = cache_object.submitted_notables
     total = len(notables)
     demisto.debug("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
@@ -994,7 +994,7 @@ def submit_notables(service, incidents, cache_object):
 
     """
     failed_notables, submitted_notables = [], []
-    num_enrichment_events = arg_to_number(str(demisto.params().get('num_enrichment_events', '20')))
+    num_enrichment_events = arg_to_number(str(PARAMS.get('num_enrichment_events', '20')))
     notables = cache_object.not_yet_submitted_notables
     total = len(notables)
     if notables:
@@ -1138,10 +1138,9 @@ def get_last_update_in_splunk_time(last_update):
 
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-    params = demisto.params()
 
     try:
-        splunk_timezone = int(params['timezone'])
+        splunk_timezone = int(PARAMS['timezone'])
     except (KeyError, ValueError):
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
@@ -1312,12 +1311,12 @@ def create_mapping_dict(total_parsed_results, type_field):
 def get_mapping_fields_command(service):
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
-    type_field = demisto.params().get('type_field', 'source')
+    type_field = PARAMS.get('type_field', 'source')
     total_parsed_results = []
     search_offset = demisto.getLastRun().get('offset', 0)
 
     current_time_for_fetch = datetime.utcnow()
-    dem_params = demisto.params()
+    dem_params = PARAMS
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
@@ -2175,8 +2174,8 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 
 def splunk_submit_event_hec_command():
-    hec_token = demisto.params().get('hec_token')
-    baseurl = demisto.params().get('hec_url')
+    hec_token = PARAMS.get('hec_creds', {}).get('password') or PARAMS.get('hec_token')
+    baseurl = PARAMS.get('hec_creds', {}).get('identifier') or PARAMS.get('hec_url')
     if baseurl is None:
         raise Exception('The HEC URL was not provided.')
 
@@ -2197,9 +2196,8 @@ def splunk_submit_event_hec_command():
 
 
 def splunk_edit_notable_event_command(service, auth_token):
-    params = demisto.params()
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = 'https://' + PARAMS['host'] + ':' + PARAMS['port'] + '/'
     sessionKey = get_auth_session_key(service) if not auth_token else None
 
     eventIDs = None
@@ -2263,19 +2261,18 @@ def test_module(service):
     except AuthenticationError:
         return_error('Authentication error, please validate your credentials.')
 
-    params = demisto.params()
-    if params.get('isFetch'):
+    if PARAMS.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs = {'count': 1, 'earliest_time': time}
-        query = params['fetchQuery']
+        query = PARAMS['fetchQuery']
         try:
-            if MIRROR_DIRECTION.get(params.get('mirror_direction')) and not params.get('timezone'):
+            if MIRROR_DIRECTION.get(PARAMS.get('mirror_direction')) and not PARAMS.get('timezone'):
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
             for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
                 if EVENT_ID not in item:
-                    if MIRROR_DIRECTION.get(params.get('mirror_direction')):
+                    if MIRROR_DIRECTION.get(PARAMS.get('mirror_direction')):
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
                     if ENABLED_ENRICHMENTS:
                         return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
@@ -2286,13 +2283,15 @@ def test_module(service):
 
         except HTTPError as error:
             return_error(str(error))
-    if params.get('hec_url'):
+    if hec_url := (PARAMS.get('hec_creds', {}).get('identifier') or PARAMS.get('hec_url')):
         headers = {
             'Content-Type': 'application/json'
         }
         try:
-            requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
-                         verify=VERIFY_CERTIFICATE)
+            requests.get(
+                f'{hec_url}/services/collector/health',
+                headers=headers,
+                verify=VERIFY_CERTIFICATE)
         except Exception as e:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
@@ -2510,19 +2509,19 @@ def main():
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = demisto.params().get('proxy')
-    use_requests_handler = demisto.params().get('use_requests_handler')
+    proxy = PARAMS.get('proxy')
+    use_requests_handler = PARAMS.get('use_requests_handler')
 
     connection_args = {
-        'host': demisto.params()['host'],
-        'port': demisto.params()['port'],
-        'app': demisto.params().get('app', '-'),
+        'host': PARAMS['host'],
+        'port': PARAMS['port'],
+        'app': PARAMS.get('app', '-'),
         'verify': VERIFY_CERTIFICATE
     }
 
     auth_token = None
-    username = demisto.params()['authentication']['identifier']
-    password = demisto.params()['authentication']['password']
+    username = PARAMS['authentication']['identifier']
+    password = PARAMS['authentication']['password']
     if username == '_token':
         connection_args['splunkToken'] = password
         auth_token = password
@@ -2597,16 +2596,16 @@ def main():
         elif command == 'splunk-kv-store-collection-delete-entry':
             kv_store_collection_delete_entry(service)
     elif command == 'get-mapping-fields':
-        if argToBoolean(demisto.params().get('use_cim', False)):
+        if argToBoolean(PARAMS.get('use_cim', False)):
             get_cim_mapping_field_command()
         else:
             get_mapping_fields_command(service)
     elif command == 'get-remote-data':
-        get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident'))
+        get_remote_data_command(service, demisto.args(), PARAMS.get('close_incident'))
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
     elif command == 'update-remote-system':
-        update_remote_system_command(demisto.args(), demisto.params(), service, auth_token)
+        update_remote_system_command(demisto.args(), PARAMS, service, auth_token)
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 
