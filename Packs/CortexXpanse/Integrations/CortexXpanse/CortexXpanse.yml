@@ -515,6 +515,7 @@ script:
       - new
       - under_investigation
       - resolved
+      description: Status to search incidents for
     - name: lte_creation_time
       description: A date in the format 2019-12-31T23:59:00. Only incidents that were
         created on or before the specified date/time will be retrieved.
@@ -555,6 +556,68 @@ script:
     description: 'Fetches ASM incidents that match provided filters. Incidents are
       an aggregation of related alerts. Note: Incident IDs may also be references
       as "Case IDs'' elsewhere in the API.'
+  - name: asm-update-incident
+    arguments:
+    - name: incident_id
+      required: true
+      description: ID of the incident to modify
+    - name: alert_id
+      description: Used for scoping updates such as comments to the alert level
+    - name: assigned_user_mail
+      description: Email address of the user to assign incident to. This user must
+        exist within your Expander instance
+    - name: manual_severity
+      description: Administrator-defined severity for the incident
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - under_investigation
+      - resolved_-_no_longer_observed
+      - resolved_-_no_risk
+      - resolved_-_risk_accepted
+      - resolved_-_contested_asset
+      - resolved_-_remediated_automatically
+      - resolved
+      description: Incident status
+    - name: resolve_comment
+      description: Optional resolution comment when resolving the incident
+    - name: comment
+      description: A comment to add to the incident. If an alert_id is supplied it
+        will be prefixed to the comment.
+    outputs:
+    - contextPath: ASM.IncidentUpdate
+      description: Whether the incident update was successful
+    description: Updates a given incident. Can be used to modify the status, severity,
+      assignee, or add comments.
+  - name: asm-update-alerts
+    arguments:
+    - name: alert_id_list
+      description: Comma separated list of integers of the alert ID
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - under_investigation
+      - resolved_-_no_longer_observed
+      - resolved_-_no_risk
+      - resolved_-_risk_accepted
+      - resolved_-_contested_asset
+      - resolved_-_remediated_automatically
+      - resolved
+      description: Updated alert status
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+      description: The severity of the alert
+    outputs:
+    - contextPath: ASM.UpdatedAlerts
+      description: IDs of the updated alerts
+    description: Updates the state of one or more alerts
   dockerimage: demisto/python3:3.10.11.54132
   isFetchSamples: true
   isfetch: true

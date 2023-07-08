@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, cast, Tuple
+from typing import Any, cast
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -21,6 +21,16 @@ SEVERITY_DICT = {
 }
 ASSIGN = "assign"
 REMOVE = 'remove'
+INCIDENT_STATUSES = [
+    "new",
+    "under_investigation",
+    "resolved_ - _no_longer_observed",
+    "resolved_ - _no_risk",
+    "resolved_ - _risk_accepted",
+    "resolved_ - _contested_asset",
+    "resolved_ - _remediated_automatically",
+    "resolved"
+]
 
 
 class Client(BaseClient):
@@ -34,7 +44,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def list_alerts_request(self, request_data: Dict) -> Dict[str, Any]:
+    def list_alerts_request(self, request_data: dict) -> dict[str, Any]:
         """Get a list of all asm alerts '/alerts/get_alerts_multi_events/' endpoint.
 
         Args:
@@ -48,7 +58,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_external_service_request(self, search_params: List[Dict]) -> Dict[str, Any]:
+    def list_external_service_request(self, search_params: list[dict]) -> dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
         Args:
@@ -63,7 +73,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_external_service_request(self, service_id_list: List[str]) -> Dict[str, Any]:
+    def get_external_service_request(self, service_id_list: list[str]) -> dict[str, Any]:
         """Get service details using the '/assets/get_external_service/' endpoint.
 
         Args:
@@ -78,7 +88,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_external_ip_address_range_request(self) -> Dict[str, Any]:
+    def list_external_ip_address_range_request(self) -> dict[str, Any]:
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
 
         Returns:
@@ -90,7 +100,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_external_ip_address_range_request(self, range_id_list: List[str]) -> Dict[str, Any]:
+    def get_external_ip_address_range_request(self, range_id_list: list[str]) -> dict[str, Any]:
         """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
 
         Args:
@@ -105,7 +115,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_asset_internet_exposure_request(self, search_params: List[dict]) -> Dict[str, Any]:
+    def list_asset_internet_exposure_request(self, search_params: list[dict]) -> dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -120,7 +130,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_asset_internet_exposure_request(self, asm_id_list: List[str]) -> Dict[str, Any]:
+    def get_asset_internet_exposure_request(self, asm_id_list: list[str]) -> dict[str, Any]:
         """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
 
         Args:
@@ -135,7 +145,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_attack_surface_rules_request(self, search_params: List[dict], limit: int = DEFAULT_SEARCH_LIMIT) -> Dict[str, Any]:
+    def list_attack_surface_rules_request(self, search_params: list[dict], limit: int = DEFAULT_SEARCH_LIMIT) -> dict[str, Any]:
         """List attack surface rules using the '/get_attack_surface_rules/' endpoint.
 
         Args:
@@ -150,7 +160,7 @@ class Client(BaseClient):
 
         return response
 
-    def apply_tags_to_assets_request(self, search_params: List[dict], tags: str, operation: str) -> Dict[str, Any]:
+    def apply_tags_to_assets_request(self, search_params: list[dict], tags: str, operation: str) -> dict[str, Any]:
         """Assigns tags to assets with the 'tags/assets_internet_exposure/assign' endpoint.
 
         Args:
@@ -166,7 +176,7 @@ class Client(BaseClient):
 
         return response
 
-    def apply_tags_to_ranges_request(self, search_params: List[dict], tags: str, operation: str) -> Dict[str, Any]:
+    def apply_tags_to_ranges_request(self, search_params: list[dict], tags: str, operation: str) -> dict[str, Any]:
         """Assigns tags to assets with the 'tags/external_ip_address_ranges/assign' endpoint.
 
         Args:
@@ -182,7 +192,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_incidents_request(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+    def list_incidents_request(self, request_data: dict[str, Any]) -> dict[str, Any]:
         """Fetches matching incidents from the 'incidents/get_incidents' endpoint.
 
         Args:
@@ -195,11 +205,41 @@ class Client(BaseClient):
 
         return response
 
+    def update_incident_request(self, request_data: dict[str, Any]) -> dict[str, Any]:
+        """Updates an incident via the 'incidents/update_incident' endpoint.
+
+        Args:
+            request_data (dict): Parameters to add to the API call body.
+
+        Returns:
+            dict: dict containing whether the update request was successful.
+        """
+        data = {"request_data": request_data}
+
+        response = self._http_request('POST', f'{V1_URL_SUFFIX}/incidents/update_incident/', json_data=data)
+
+        return response
+
+    def update_alert_request(self, request_data: dict[str, Any]) -> dict[str, Any]:
+        """Updates alerts via the 'alerts/update_alerts' endpoint.
+
+        Args:
+            request_data (dict): Parameters to add to the API call body.
+
+        Returns:
+            dict: dict containing whether the update request was successful.
+        """
+        data = {"request_data": request_data}
+
+        response = self._http_request('POST', f'{V1_URL_SUFFIX}/alerts/update_alerts/', json_data=data)
+
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
 
-def format_asm_id(formatted_response: List[dict]) -> List[dict]:
+def format_asm_id(formatted_response: list[dict]) -> list[dict]:
     """
     Takes the response from the asm-list-asset-internet-exposure command and converts `asm_id` key from list to str
 
@@ -221,7 +261,7 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 ''' COMMAND FUNCTIONS '''
 
 
-def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-list-alerts command: Returns list of asm alerts.
 
@@ -307,7 +347,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def list_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_service_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-list-external-service command: Returns list of external services.
 
@@ -352,7 +392,7 @@ def list_external_service_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def get_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_service_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-get-external-service command: Returns details of single external service.
     Returns error if more than one service_id was provided in comma separated format.
@@ -386,7 +426,7 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def list_external_ip_address_range_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_ip_address_range_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-list-external-ip-address-range command: Returns list of external ip ranges.
 
@@ -413,7 +453,7 @@ def list_external_ip_address_range_command(client: Client, args: Dict[str, Any])
     return command_results
 
 
-def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_ip_address_range_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-get-external-ip-address-range command: Returns details of single external ip range.
     Returns error if more than one range_id was provided in comma separated format.
@@ -448,7 +488,7 @@ def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) 
     return command_results
 
 
-def list_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-list-asset-internet-exposure command: Returns list of external internet exposures.
 
@@ -495,7 +535,7 @@ def list_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -
     return command_results
 
 
-def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-get-asset-internet-exposure command: Returns details of single external internet exposure.
     Returns error if more than one asm_id was provided in comma separated format.
@@ -530,7 +570,7 @@ def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def list_attack_surface_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_attack_surface_rules_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-list-attack_surface_rules command: Returns list of attack surface rules.
 
@@ -579,7 +619,7 @@ def list_attack_surface_rules_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def assign_tag_to_assets_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def assign_tag_to_assets_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-tag-asset-assign command: Assigns a tag to a list of assets.
 
@@ -618,7 +658,7 @@ def assign_tag_to_assets_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def remove_tag_to_assets_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_tag_to_assets_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-tag-asset-remove command: Assigns a tag to a list of assets.
 
@@ -657,7 +697,7 @@ def remove_tag_to_assets_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def assign_tag_to_ranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def assign_tag_to_ranges_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-tag-range-assign command: Assigns a tag to a list of IP ranges.
 
@@ -696,7 +736,7 @@ def assign_tag_to_ranges_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def remove_tag_to_ranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_tag_to_ranges_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-tag-range-remove command: Assigns a tag to a list of IP Ranges.
 
@@ -735,7 +775,7 @@ def remove_tag_to_ranges_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-list-alerts command: Returns list of asm incidents.
 
@@ -778,8 +818,7 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     # starts with param to only look for ASM incidents.  Can add others if defined.
     search_params = [{"field": "alert_sources", "operator": "in", "value": ["ASM"]}]
     if incident_id_list:
-        incident_id_ints = [int(i) for i in incident_id_list]
-        search_params.append({"field": "incident_id_list", "operator": "in", "value": incident_id_ints})  # type: ignore
+        search_params.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})  # type: ignore
     if description:
         search_params.append({"field": "description", "operator": "contains", "value": description})
     if status:
@@ -822,10 +861,118 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     return command_results
 
 
-def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
+def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    asm-update-incident command: Updates the state of an incident.
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['incident_id']`` ID of the incident to modify
+            ``args['alert_id']`` Used for scoping updates such as comments
+            ``args['assigned_user_mail']`` Email address of the user to assign incident to
+            ``args['manual_severity']`` Administrator-defined severity for the incident
+            ``args['status']`` Updated incident status
+            ``args['resolve_comment']`` Optional resolution comment when resolving the incident
+            ``args['comment']`` A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
+    """
+    incident_id = args.get('incident_id')
+    alert_id = args.get('alert_id')
+    assigned_user_mail = args.get('assigned_user_mail')
+    manual_severity = args.get('manual_severity')
+    status = args.get('status')
+    resolve_comment = args.get('resolve_comment')
+    comment = args.get('comment')
+
+    update_params = {"update_data": {}}  # type: ignore
+    if incident_id:
+        update_params["incident_id"] = str(incident_id)  # type: ignore
+    else:
+        raise ValueError('incident_id must be defined.')
+
+    if assigned_user_mail:
+        update_params["update_data"]["assigned_user_mail"] = assigned_user_mail
+    if manual_severity:
+        update_params["update_data"]["manual_severity"] = manual_severity
+    if status:
+        if status in INCIDENT_STATUSES:
+            update_params["update_data"]["status"] = status
+        else:
+            raise ValueError(f'status must be one of {INCIDENT_STATUSES}')
+    if resolve_comment and status and "resolved" in status:
+        update_params["update_data"]["resolve_comment"] = resolve_comment
+    if comment:
+        if alert_id:
+            update_params["update_data"]["comment"] = {"comment_action": "add", "value": f"[Alert: {alert_id}] {comment}"}
+        else:
+            update_params["update_data"]["comment"] = {"comment_action": "add", "value": comment}
+
+    response = client.update_incident_request(request_data=update_params)
+
+    formatted_response = response.get('reply')
+    command_results = CommandResults(
+        outputs=f"Update operation successful: {formatted_response}",
+        raw_response=response,
+        readable_output=f"Update operation successful: {formatted_response}",
+        outputs_prefix='ASM.IncidentUpdate'
+    )
+
+    return command_results
+
+
+def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    asm-update-alerts command: Updates the state of an alert.
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['alert_id_list']`` IDs of the alerts to modify
+            ``args['severity']`` The severity of the alert
+            ``args['status']`` Updated alert status
+            ``args['comment']`` A comment to add to the alert.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
+    """
+    alert_id_list = argToList(args.get('alert_id_list'))
+    severity = args.get('severity')
+    status = args.get('status')
+
+    update_params = {"update_data": {}}  # type: ignore
+    if alert_id_list:
+        update_params["alert_id_list"] = alert_id_list
+    else:
+        raise ValueError('alert_id_list must be defined.')
+
+    if severity:
+        update_params["update_data"]["severity"] = severity
+    if status:
+        if status in INCIDENT_STATUSES:
+            update_params["update_data"]["status"] = status
+        else:
+            raise ValueError(f'status must be one of {INCIDENT_STATUSES}')
+
+    response = client.update_alert_request(request_data=update_params)
+
+    formatted_response = response.get('reply', {}).get("alerts_ids")
+    command_results = CommandResults(
+        outputs=f"Update alerts: {formatted_response}",
+        raw_response=response,
+        readable_output=f"Update alerts: {formatted_response}",
+        outputs_prefix='ASM.UpdatedAlerts'
+    )
+
+    return command_results
+
+
+def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
                     first_fetch_time: Optional[int], severity: Optional[list],
                     status: Optional[list], tags: Optional[str]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+                    ) -> tuple[dict[str, int], list[dict]]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -844,10 +991,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
     last_fetch = last_run.get('last_fetch', None)
 
     # Handle first time fetch
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = int(last_fetch)
+    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
 
     latest_created_time = cast(int, last_fetch)
     incidents = []
@@ -888,7 +1032,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: Optional[int]) -> None:
+def test_module(client: Client, params: dict[str, Any], first_fetch_time: Optional[int]) -> None:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -932,8 +1076,8 @@ def main() -> None:
     """
     main function
     """
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -985,8 +1129,8 @@ def main() -> None:
             'asm-tag-range-assign': assign_tag_to_ranges_command,
             'asm-tag-range-remove': remove_tag_to_ranges_command,
             'asm-get-incidents': list_incidents_command,
-            # 'asm-update-incident': None,
-            # 'asm-update-alert': None
+            'asm-update-incident': update_incident_command,
+            'asm-update-alerts': update_alert_command
         }
 
         if command == 'test-module':
