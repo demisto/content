@@ -77,6 +77,12 @@
                 "severity": {
                     "complex": null,
                     "simple": "priority"
+                },
+                "RSA Alerts": {
+                    "simple": "alerts"
+                },
+                "RSA Alerts ID": {
+                    "simple": "alerts_ids"
                 }
             }
         },

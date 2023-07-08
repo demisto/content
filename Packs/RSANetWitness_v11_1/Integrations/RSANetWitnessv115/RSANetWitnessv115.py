@@ -11,6 +11,7 @@ ERROR_TITLES = {
 
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
+DEFAULT_MAX_INCIDENT_ALERTS = 50
 
 
 class Client(BaseClient):
@@ -808,15 +809,14 @@ def endpoint_isolation_remove_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def fetch_alerts_related_incident(client: Client, incident_id: str) -> list[dict[str, Any]]:
+def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: int) -> list[dict[str, Any]]:
     """
     Returns the alerts that are associated with an incident.
     """
-    alerts = []
+    alerts: list[dict] = []
     has_next = True
     page_number = 0
-
-    while has_next:
+    while has_next and len(alerts) <= max_alerts:
         try:
             response_body = client.incident_list_alerts_request(
                 page_number=str(page_number),
@@ -827,9 +827,10 @@ def fetch_alerts_related_incident(client: Client, incident_id: str) -> list[dict
             demisto.error("Error occurred while fetching alerts.")
             raise
 
-        alerts.extend(response_body.get('items', []))
-        has_next = response_body.get('hasNext', False)
+        items = response_body.get('items', [])
+        alerts.extend(items[:max_alerts - len(alerts)])
         page_number += 1
+        has_next = response_body.get('hasNext', False)
 
     return alerts
 
@@ -845,7 +846,8 @@ def fetch_incidents(client: Client, params: dict) -> list:
 
         # add to incident object an array of all related alerts
         if params.get('import_alerts'):
-            fetch_alerts = fetch_alerts_related_incident(client, inc_id)
+            max_alerts = int(params.get('max_alerts', DEFAULT_MAX_INCIDENT_ALERTS))
+            fetch_alerts = fetch_alerts_related_incident(client, inc_id, max_alerts)
             item['alerts'] = fetch_alerts
             item['alerts_ids'] = [alert['id'] for alert in fetch_alerts if fetch_alerts]
 

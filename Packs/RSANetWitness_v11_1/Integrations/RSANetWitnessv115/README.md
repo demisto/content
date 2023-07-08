@@ -5,13 +5,16 @@ This integration was integrated and tested with version 12.2 of RSANetWitness.
 The integration supports version 11.5 and higher.
 
 ## Changes compared to V11.1
+
 ### Changes in commands
+
 - ***rsa-nw-remove-incident*** replaces the ***netwitness-delete-incident*** command.
 - ***rsa-nw-incident-list-alerts*** replaces the ***netwitness-get-alerts*** command with an added limit option and new pagination options.
 - ***rsa-nw-list-incidents*** replaces the ***netwitness-get-incident*** and ***netwitness-get-incidents*** commands.
 - ***rsa-nw-update-incident*** replaces the ***netwitness-update-incident*** command.
 
 ### New commands
+
 - ***endpoint*** 
 - ***rsa-nw-endpoint-isolate-from-network*** 
 - ***rsa-nw-endpoint-isolation-remove*** 
@@ -33,21 +36,22 @@ The integration supports version 11.5 and higher.
 - ***rsa-nw-system-dump-download-request*** 
 
 # API Limitations
+
 Commands that require actions within a hostonly  return the status of the request received by our RSA server and not our host.
 Whether the desired action was preformed successfully within the host is not reported back.
 
 For example, for our ***rsa-nw-scan-request*** command a success message returned only confirms the request has been received by RSA NetWitness,
 but does not indicate the scan has been preformed successfully in the requested host.
 Commands affected by this limitation are: 
-* ***rsa-nw-endpoint-isolate-from-network***
-* ***rsa-nw-endpoint-isolation-remove*** 
-* ***rsa-nw-endpoint-update-exclusions*** 
-* ***rsa-nw-file-download*** 
-* ***rsa-nw-mft-download-request***
-* ***rsa-nw-process-dump-download-request***
-* ***rsa-nw-scan-request***
-* ***rsa-nw-scan-stop-request***
-* ***rsa-nw-system-dump-download-request***
+- ***rsa-nw-endpoint-isolate-from-network***
+- ***rsa-nw-endpoint-isolation-remove*** 
+- ***rsa-nw-endpoint-update-exclusions*** 
+- ***rsa-nw-file-download*** 
+- ***rsa-nw-mft-download-request***
+- ***rsa-nw-process-dump-download-request***
+- ***rsa-nw-scan-request***
+- ***rsa-nw-scan-stop-request***
+- ***rsa-nw-system-dump-download-request***
 
 ## Configure RSA NetWitness on Cortex XSOAR
 
@@ -57,7 +61,7 @@ Commands affected by this limitation are:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., https://192.168.0.1) |  | True |
+    | Server URL (e.g., <https://192.168.0.1>) |  | True |
     | User name |  | True |
     | Password |  | True |
     | Service Id | The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'. | False |
@@ -71,10 +75,14 @@ Commands affected by this limitation are:
 
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### rsa-nw-list-incidents
+
 ***
 Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
 
@@ -82,6 +90,7 @@ Retrieves a single incident by ID or multiple incidents by the date and time the
 #### Base Command
 
 `rsa-nw-list-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,8 +147,11 @@ Retrieves a single incident by ID or multiple incidents by the date and time the
 | RSANetWitness115.paging.Incidents.totalItems | Number | The total number of items available. | 
 
 #### Command example
+
 ```!rsa-nw-list-incidents limit=1```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -204,6 +216,7 @@ Retrieves a single incident by ID or multiple incidents by the date and time the
 #### Human Readable Output
 
 >### Total Retrieved Incidents : 1
+
 > Page number 0 out of 28 
 >|Id|Title|Summary|Priority|RiskScore|Status|AlertCount|Created|LastUpdated|Assignee|Sources|Categories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -211,6 +224,7 @@ Retrieves a single incident by ID or multiple incidents by the date and time the
 
 
 ### rsa-nw-update-incident
+
 ***
 Updates incident status and assignee.
 
@@ -218,6 +232,7 @@ Updates incident status and assignee.
 #### Base Command
 
 `rsa-nw-update-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -265,8 +280,11 @@ Updates incident status and assignee.
 | RSANetWitness115.Incidents.alertMeta.DestinationIp | String | The unique destination IP addresses. |
 
 #### Command example
+
 ```!rsa-nw-update-incident id=INC-49 status=Assigned```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -321,11 +339,13 @@ Updates incident status and assignee.
 #### Human Readable Output
 
 >### Updated Incident INC-49
+
 >|Id|Title|Summary|Priority|RiskScore|Status|AlertCount|Created|LastUpdated|Assignee|Sources|Categories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| INC-49 | Fetch_testing |  | Low | 70 | Assigned | 1 | 2021-11-15T07:30:49.670Z | 2022-01-10T14:12:35.992Z |  | Reporting Engine |  |
 
 ### rsa-nw-remove-incident
+
 ***
 Remove a single incident using the incident’s unique identifier.
 
@@ -333,6 +353,7 @@ Remove a single incident using the incident’s unique identifier.
 #### Base Command
 
 `rsa-nw-remove-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -343,7 +364,9 @@ Remove a single incident using the incident’s unique identifier.
 #### Context Output
 
 There is no context output for this command.
+
 ### rsa-nw-incident-add-journal-entry
+
 ***
 Add a journal entry to an existing incident.
 
@@ -351,6 +374,7 @@ Add a journal entry to an existing incident.
 #### Base Command
 
 `rsa-nw-incident-add-journal-entry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -364,13 +388,17 @@ Add a journal entry to an existing incident.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!rsa-nw-incident-add-journal-entry id=INC-24 notes="adding entry"```
+
 #### Human Readable Output
 
 >Journal entry added successfully for incident INC-24 
 
 ### rsa-nw-incident-list-alerts
+
 ***
 Retrieves all the alerts that are associated with an incident based on the incident ID. you can limit the results using the limit argument or the page size argument.
 
@@ -378,6 +406,7 @@ Retrieves all the alerts that are associated with an incident based on the incid
 #### Base Command
 
 `rsa-nw-incident-list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -428,8 +457,11 @@ Retrieves all the alerts that are associated with an incident based on the incid
 | RSANetWitness115.paging.IncidentAlerts.hasPrevious | Boolean | Indicates if there is a page containing results before this page. | 
 
 #### Command example
+
 ```!rsa-nw-incident-list-alerts id=INC-49```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -497,6 +529,7 @@ Retrieves all the alerts that are associated with an incident based on the incid
 #### Human Readable Output
 
 >### Total Retrieved Alerts : 1 for incident INC-49
+
 > Page number 0 out of 1
 >|Id|Title|Created|Source|Type|Events|
 >|---|---|---|---|---|---|
@@ -504,6 +537,7 @@ Retrieves all the alerts that are associated with an incident based on the incid
 
 
 ### rsa-nw-services-list
+
 ***
 Retrieves a list of all services, or filter by name.
 
@@ -511,6 +545,7 @@ Retrieves a list of all services, or filter by name.
 #### Base Command
 
 `rsa-nw-services-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -530,8 +565,11 @@ Retrieves a list of all services, or filter by name.
 
 
 #### Command example
+
 ```!rsa-nw-services-list```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -551,11 +589,13 @@ Retrieves a list of all services, or filter by name.
 #### Human Readable Output
 
 >### Results
+
 >|displayName|host|id|name|version|
 >|---|---|---|---|---|
 >| ELD | 1.1.1.1 | 1 | server | 1 |
 
 ### rsa-nw-hosts-list
+
 ***
 Lists all host information from a specific endpoint server. Filter the results using the supplied arguments (can be a list) or use the 'filter' argument. You can limit the results using the limit argument or the page size argument.
 
@@ -563,6 +603,7 @@ Lists all host information from a specific endpoint server. Filter the results u
 #### Base Command
 
 `rsa-nw-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -602,8 +643,11 @@ Lists all host information from a specific endpoint server. Filter the results u
 | RSANetWitness115.paging.HostsList.hasPrevious | Boolean | Indicates if there is a page containing results before this page. | 
 
 #### Command example
+
 ```!rsa-nw-hosts-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -652,6 +696,7 @@ Lists all host information from a specific endpoint server. Filter the results u
 #### Human Readable Output
 
 >### Total Retrieved Hosts : 1 
+
 > Page number 0 out of 1
 >|agentId|hostName|riskScore|networkInterfaces|lastSeenTime|
 >|---|---|---|---|---|
@@ -659,6 +704,7 @@ Lists all host information from a specific endpoint server. Filter the results u
 
 
 ### endpoint
+
 ***
 Retrieves host information for a specific endpoint. To use this command, service ID must be set in the integration configuration.
 
@@ -666,6 +712,7 @@ Retrieves host information for a specific endpoint. To use this command, service
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -703,8 +750,11 @@ Retrieves host information for a specific endpoint. To use this command, service
 
 
 #### Command example
+
 ```!endpoint```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -726,12 +776,14 @@ Retrieves host information for a specific endpoint. To use this command, service
 #### Human Readable Output
 
 >### RSA NetWitness -  Endpoint: 1
+
 >|Hostname|ID|IPAddress|MACAddress|Vendor|
 >|---|---|---|---|---|
 >| hostName | 1 | ['1.1.1.1'] | 111::111:11:111:11 | RSA NetWitness Response |
 
 
 ### rsa-nw-snapshots-list-for-host
+
 ***
 Retrieve a list os snapshot IDs for a given host.
 
@@ -739,6 +791,7 @@ Retrieve a list os snapshot IDs for a given host.
 #### Base Command
 
 `rsa-nw-snapshots-list-for-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -755,8 +808,11 @@ Retrieve a list os snapshot IDs for a given host.
 
 
 #### Command example
+
 ```!rsa-nw-snapshots-list-for-host agent_id=1```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -775,6 +831,7 @@ Retrieve a list os snapshot IDs for a given host.
 #### Human Readable Output
 
 >### Snapshot list for agent id 1-
+
 >|Snapshot Id|
 >|---|
 >| 2022-01-09T16:42:45.661Z |
@@ -786,6 +843,7 @@ Retrieve a list os snapshot IDs for a given host.
 
 
 ### rsa-nw-snapshot-details-get
+
 ***
 Provides snapshot details of the given host for the specified snapshot time. It is recommended to use categories to filter the results since this command returns a large amount of data.
 
@@ -793,6 +851,7 @@ Provides snapshot details of the given host for the specified snapshot time. It 
 #### Base Command
 
 `rsa-nw-snapshot-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1036,8 +1095,11 @@ Provides snapshot details of the given host for the specified snapshot time. It 
 | RSANetWitness115.SnapshotDetailsGet.localRiskScore | Number | The file score based on alerts triggered in the given agent. | 
 
 #### Command example
+
 ```!rsa-nw-snapshot-details-get agent_id=1 snapshot_timestamp=2022-01-09T16:42:45.661Z categories=AUTORUNS```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -1208,6 +1270,7 @@ Provides snapshot details of the given host for the specified snapshot time. It 
 #### Human Readable Output
 
 >### Snapshot details for agent id 1- 
+
 >showing 2 results out of 2
 >|hostName|agentId|scanStartTime|directory|fileName|
 >|---|---|---|---|---|
@@ -1215,6 +1278,7 @@ Provides snapshot details of the given host for the specified snapshot time. It 
 
 
 ### rsa-nw-files-list
+
 ***
 Lists all related file information from a specific endpoint server. You can limit the results using the limit argument or the page size argument.
 
@@ -1222,6 +1286,7 @@ Lists all related file information from a specific endpoint server. You can limi
 #### Base Command
 
 `rsa-nw-files-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1388,8 +1453,11 @@ Lists all related file information from a specific endpoint server. You can limi
 
 
 #### Command example
+
 ```!rsa-nw-files-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -1483,6 +1551,7 @@ Lists all related file information from a specific endpoint server. You can limi
 #### Human Readable Output
 
 >### Total Retrieved Files : 1 
+
 > Page number 0 out of 1449
 >|File Name|Risk Score|First Seen Time|Size|Signature|PE Resources|File Status|Remediation|
 >|---|---|---|---|---|---|---|---|
@@ -1490,6 +1559,7 @@ Lists all related file information from a specific endpoint server. You can limi
 
 
 ### rsa-nw-scan-request
+
 ***
 Starts a scan for the host with the specified agent ID. Each scan produces a snapshot, the full details can be seen using the 'rsa-nw-snapshot-details-get' command.
 
@@ -1497,6 +1567,7 @@ Starts a scan for the host with the specified agent ID. Each scan produces a sna
 #### Base Command
 
 `rsa-nw-scan-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1509,13 +1580,17 @@ Starts a scan for the host with the specified agent ID. Each scan produces a sna
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!rsa-nw-scan-request agent_id=1```
+
 #### Human Readable Output
 
 >Scan request for host 1 Sent Successfully
 
 ### rsa-nw-scan-stop-request
+
 ***
 Stop a scan for the host with the specified agent ID.
 
@@ -1523,6 +1598,7 @@ Stop a scan for the host with the specified agent ID.
 #### Base Command
 
 `rsa-nw-scan-stop-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1534,13 +1610,17 @@ Stop a scan for the host with the specified agent ID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!rsa-nw-scan-stop-request agent_id=1```
+
 #### Human Readable Output
 
 >Scan cancellation request for host 1, sent successfully
 
 ### rsa-nw-host-alerts-list
+
 ***
 Gets all alerts triggered for a given host.
 
@@ -1548,6 +1628,7 @@ Gets all alerts triggered for a given host.
 #### Base Command
 
 `rsa-nw-host-alerts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1569,8 +1650,11 @@ Gets all alerts triggered for a given host.
 | RSANetWitness115.HostAlerts.categorizedAlerts | String | The alert and event count for a file/host, categorized by severity. | 
 
 #### Command example
+
 ```!rsa-nw-host-alerts-list agent_id=1```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -1591,12 +1675,14 @@ Gets all alerts triggered for a given host.
 #### Human Readable Output
 
 >### Results
+
 >|categorizedAlerts|distinctAlertCount|id|
 >|---|---|---|
 >|  | critical: 0<br/>high: 0<br/>medium: 0<br/>low: 0 | 1 |
 
 
 ### rsa-nw-file-alerts-list
+
 ***
 Gets all alerts triggered for a given file.
 
@@ -1604,6 +1690,7 @@ Gets all alerts triggered for a given file.
 #### Base Command
 
 `rsa-nw-file-alerts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1625,8 +1712,11 @@ Gets all alerts triggered for a given file.
 | RSANetWitness115.FileAlerts.categorizedAlerts | String | The alert and event count for a file/host, categorized by severity. | 
 
 #### Command example
+
 ```!rsa-nw-file-alerts-list check_sum=5dad5b58ad14d95b29ef7fc2e685fa3270e9c3a347d4183c84b1cbbf29ab2510```
+
 #### Context Example
+
 ```json
 {
     "RSANetWitness115": {
@@ -1647,12 +1737,14 @@ Gets all alerts triggered for a given file.
 #### Human Readable Output
 
 >### Results
+
 >|categorizedAlerts|distinctAlertCount|id|
 >|---|---|---|
 >|  | critical: 0<br/>high: 0<br/>medium: 0<br/>low: 0 | 1 |
 
 
 ### rsa-nw-file-download
+
 ***
 Initiate file download for a single file or multiple files to the endpoint server.
 
@@ -1660,6 +1752,7 @@ Initiate file download for a single file or multiple files to the endpoint serve
 #### Base Command
 
 `rsa-nw-file-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1674,13 +1767,17 @@ Initiate file download for a single file or multiple files to the endpoint serve
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!rsa-nw-file-download agent_id=1 path=path/to/file```
+
 #### Human Readable Output
 
 >Request for download path/to/file sent successfully
 
 ### rsa-nw-mft-download-request
+
 ***
 Initiates the MFT download to the endpoint server.
 
@@ -1688,6 +1785,7 @@ Initiates the MFT download to the endpoint server.
 #### Base Command
 
 `rsa-nw-mft-download-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1700,7 +1798,9 @@ Initiates the MFT download to the endpoint server.
 #### Context Output
 
 There is no context output for this command.
+
 ### rsa-nw-system-dump-download-request
+
 ***
 Initiates the download of the system dump to the endpoint server.
 
@@ -1708,6 +1808,7 @@ Initiates the download of the system dump to the endpoint server.
 #### Base Command
 
 `rsa-nw-system-dump-download-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1719,7 +1820,9 @@ Initiates the download of the system dump to the endpoint server.
 #### Context Output
 
 There is no context output for this command.
+
 ### rsa-nw-process-dump-download-request
+
 ***
 Initiates the download of the process dump to the endpoint server. You can find the process details by using the 'rsa-nw-snapshot-details-get' and filter by category=PROCESSES, or use the RSA NW UI.
 
@@ -1727,6 +1830,7 @@ Initiates the download of the process dump to the endpoint server. You can find 
 #### Base Command
 
 `rsa-nw-process-dump-download-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1744,7 +1848,9 @@ Initiates the download of the process dump to the endpoint server. You can find 
 #### Context Output
 
 There is no context output for this command.
+
 ### rsa-nw-endpoint-isolate-from-network
+
 ***
 Isolates the host with the specified agent ID from the network.
 
@@ -1752,6 +1858,7 @@ Isolates the host with the specified agent ID from the network.
 #### Base Command
 
 `rsa-nw-endpoint-isolate-from-network`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1766,7 +1873,9 @@ Isolates the host with the specified agent ID from the network.
 #### Context Output
 
 There is no context output for this command.
+
 ### rsa-nw-endpoint-update-exclusions
+
 ***
 Updates the network isolation exclusion list for the host with the specified agent ID.
 
@@ -1774,6 +1883,7 @@ Updates the network isolation exclusion list for the host with the specified age
 #### Base Command
 
 `rsa-nw-endpoint-update-exclusions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1788,7 +1898,9 @@ Updates the network isolation exclusion list for the host with the specified age
 #### Context Output
 
 There is no context output for this command.
+
 ### rsa-nw-endpoint-isolation-remove
+
 ***
 Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
 
@@ -1796,6 +1908,7 @@ Restores the network connection and removes IP addresses added to the exclusion 
 #### Base Command
 
 `rsa-nw-endpoint-isolation-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1811,6 +1924,7 @@ Restores the network connection and removes IP addresses added to the exclusion 
 There is no context output for this command.
 
 # Create a filter for hosts-list command
+
 You can create a custom filter for the ras-nw-hosts-list command, here is a short explanation.
 The basic filter that can be used is of this format - 
 

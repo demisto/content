@@ -35,6 +35,11 @@ configuration:
   display: On 'Fetch incidents' import all alerts related to the incident
   name: import_alerts
   type: 8
+- display: Alerts Limit
+  name: max_alerts
+  type: 0
+  additionalinfo: The maximum number of alerts per fetch.
+  defaultvalue: '50'
 - display: Incident type
   name: incidentType
   type: 13
@@ -60,10 +65,10 @@ script:
       name: limit
       required: false
       secret: false
-    - default: false
-      description: Enter an incident ID to receive its full details. For example, 'INC-40'.
-      isArray: false
+    - description: Enter an incident ID to receive its full details. For example, 'INC-40'.
       name: id
+      default: false
+      isArray: false
     description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
     name: rsa-nw-list-incidents
     outputs:
@@ -313,9 +318,7 @@ script:
       name: notes
       required: true
     - auto: PREDEFINED
-      default: false
       description: The incident milestone classifier. Can be Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure.
-      isArray: false
       name: milestone
       predefined:
       - Reconnaissance
@@ -327,6 +330,8 @@ script:
       - Containment
       - Eradication
       - Closure
+      default: false
+      isArray: false
     description: Add a journal entry to an existing incident.
     name: rsa-nw-incident-add-journal-entry
   - arguments:
@@ -1896,11 +1901,11 @@ script:
       name: service_id
       required: false
       secret: false
-    - default: false
-      description: The path where the files may be present. Either specify a single file path or use a wild card. For example - "C:\Users\sample\*" . To see scanned file paths, use the command 'rsa-nw-snapshot-details-get'.
-      isArray: false
+    - description: The path where the files may be present. Either specify a single file path or use a wild card. For example - "C:\Users\sample\*" . To see scanned file paths, use the command 'rsa-nw-snapshot-details-get'.
       name: path
       required: true
+      default: false
+      isArray: false
     - defaultValue: '10'
       description: The maximum number of files returned by the host matching the wild card path.
       name: count_files
@@ -1921,9 +1926,9 @@ script:
       description: Drive or NTFS mount path for which MFT is requested.
       name: path
       required: false
-    deprecated: false
     description: Initiates the MFT download to the endpoint server.
     name: rsa-nw-mft-download-request
+    deprecated: false
   - arguments:
     - description: The host agent ID.
       name: agent_id
@@ -1971,10 +1976,10 @@ script:
       - 'False'
       required: false
       secret: false
-    - default: false
-      description: A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.
-      isArray: false
+    - description: A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.
       name: exclusion_list
+      default: false
+      isArray: false
     - description: Additional information.
       name: comment
       required: true
@@ -1990,11 +1995,11 @@ script:
       name: allow_dns_only_by_system
       required: false
       secret: false
-    - default: false
-      description: 'A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.'
-      isArray: false
+    - description: 'A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.'
       name: exclusion_list
       required: true
+      default: false
+      isArray: false
     - description: Additional information.
       name: comment
       required: true
@@ -2014,12 +2019,12 @@ script:
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-isolation-remove
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  feed: false
 tests:
 - RSANetWitnessv115-Test
 defaultmapperin: RSA NetWitness v11.5 - incoming mapper
