@@ -5,7 +5,7 @@ ignore=RM100,RM113
 ignore=BA124
 
 [file:AnsibleOpenSSL.yml]
-ignore=BA124,IN145
+ignore=BA124
 
 [file:AnsibleACME.yml]
 ignore=BA124,IN145
