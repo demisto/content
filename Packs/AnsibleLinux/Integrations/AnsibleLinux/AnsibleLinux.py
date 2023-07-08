@@ -25,15 +25,11 @@ def main() -> None:
     args = demisto.args()
     int_params = demisto.params()
 
-    become_creds = int_params.get('become_creds', {})
-    int_params |= {
-        'become_user':
-            become_creds.get('username')
-            or int_params.get('become_user'),
-        'become_password':
-            become_creds.get('password')
-            or int_params.get('become_password')
-    }
+    if become_creds := int_params.get('become_creds'):
+        int_params |= {
+            'become_user': become_creds['identifier'],
+            'become_password': become_creds['password'],
+        }
 
     try:
 

@@ -3,53 +3,62 @@ commonfields:
   id: AnsibleACME
   version: -1
 configuration:
-- additionalinfo: The credentials to associate with the instance. SSH keys can be configured using the credential manager.
+- additionalinfo: The credentials to associate with the instance. SSH keys can be
+    configured using the credential manager.
   display: Username
   name: creds
   required: true
   type: 9
-- additionalinfo: The default port to use if one is not specified in the commands `host` argument.
+- additionalinfo: The default port to use if one is not specified in the commands
+    `host` argument.
   defaultvalue: 22
   display: Default SSH Port
   name: port
   required: true
   type: 0
-- additionalinfo: If multiple hosts are specified in a command, how many hosts should be interacted with concurrently.
+- additionalinfo: If multiple hosts are specified in a command, how many hosts should
+    be interacted with concurrently.
   defaultvalue: '4'
   display: Concurrency Factor
   name: concurrency
   required: true
   type: 0
-- display: Escalate Privileges
-  additionalinfo: |
-    Ansible allows you to ‘become’ another user, different from the user that
-    logged into the machine (remote user).
-  name: become
-  required: true
-  type: 15
-  options:
-  - "Yes"
-  - "No"
+- additionalinfo: |
+    Ansible allows you to `become` another user, different
+    from the user that logged into the machine (remote user).
   defaultvalue: 'Yes'
-- display: Privilege Escalation Method
-  additionalinfo: Which privilege escalation method should be used.
-  name: become_method
+  display: Escalate Privileges
+  name: become
+  options:
+  - 'Yes'
+  - 'No'
   required: true
   type: 15
+- additionalinfo: Which privilege escalation method should be used.
+  defaultvalue: sudo
+  display: Privilege Escalation Method
+  name: become_method
   options:
-  - "sudo"
-  - "su"
-  - "doas"
-  defaultvalue: 'sudo'
-- display: Privilege Escalation User
-  additionalinfo: Set the user you become through privilege escalation
+  - sudo
+  - su
+  - doas
+  required: true
+  type: 15
+- additionalinfo: Set the user you become through privilege escalation
+  defaultvalue: root
+  display: Privilege Escalation User
+  hidden: true
   name: become_user
   type: 0
-  defaultvalue: 'root'
-- display: Privilege Escalation Password
-  additionalinfo: Set the privilege escalation password.
+- additionalinfo: Set the privilege escalation password.
+  display: Privilege Escalation Password
+  hidden: true
   name: become_password
   type: 4
+- display: Privilege Escalation User
+  displaypassword: Privilege Escalation Password
+  name: become_creds
+  type: 9
 description: Control Automatic Certificate Management Environment on Linux hosts
 display: Ansible ACME
 fromversion: 6.0.0

@@ -25,6 +25,12 @@ def main() -> None:
     args = demisto.args()
     int_params = demisto.params()
 
+    if become_creds := int_params.get('become_creds'):
+        int_params |= {
+            'become_user': become_creds['identifier'],
+            'become_password': become_creds['password'],
+        }
+
     try:
 
         if command == 'test-module':
