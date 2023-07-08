@@ -24,6 +24,9 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
+    int_params['enable_password'] =\
+        int_params.get('enable_password_creds', {}).get('password')\
+        or int_params.get('enable_password')
 
     try:
 

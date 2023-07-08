@@ -10,8 +10,12 @@ configuration:
   type: 9
 - display: Enable Password
   name: enable_password
-  required: true
   type: 4
+  hidden: true
+- name: enable_password_creds
+  type: 9
+  displaypassword: Enable Password
+  hiddenusername: true
 - additionalinfo: The default port to use if one is not specified in the commands `host` argument.
   defaultvalue: 22
   display: Default SSH Port
@@ -24,6 +28,7 @@ configuration:
   name: concurrency
   required: true
   type: 0
+
 description: Cisco IOS Platform management over SSH
 display: Ansible Cisco IOS
 fromversion: 6.0.0
@@ -922,7 +927,7 @@ script:
     - contextPath: CiscoIOS.IosVrf.delta
       description: The time elapsed to perform all operations
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.24037
+  dockerimage: demisto/ansible-runner:1.0.0.64612
   script: ''
   subtype: python3
   type: python
