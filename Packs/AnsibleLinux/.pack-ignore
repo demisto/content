@@ -8,7 +8,7 @@ ignore=BA124
 ignore=BA124
 
 [file:AnsibleACME.yml]
-ignore=BA124,IN145
+ignore=BA124
 
 [known_words]
 ansii
