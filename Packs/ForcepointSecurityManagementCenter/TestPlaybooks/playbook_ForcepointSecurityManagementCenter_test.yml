@@ -187,7 +187,7 @@ tasks:
       - "9"
     scriptarguments:
       address:
-        simple: 1.2.4.5
+        simple: 1.1.1.1
       name:
         simple: playbook_test
     separatecontext: false
@@ -467,7 +467,7 @@ tasks:
       - "15"
     scriptarguments:
       addresses:
-        simple: 1.2.4.5
+        simple: 1.1.1.1
       comment:
         simple: test
       is_overwrite:
@@ -550,7 +550,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1.2.4.5
+              simple: 1.1.1.1
       - - operator: notContainsGeneral
           left:
             value:
