@@ -24,6 +24,9 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
+    int_params['api_key'] =\
+        int_params.get('api_key_creds', {}).get('password')\
+        or int_params.get('api_key')
     creds_mapping = {
         "identifier": "username",
         "password": "password"

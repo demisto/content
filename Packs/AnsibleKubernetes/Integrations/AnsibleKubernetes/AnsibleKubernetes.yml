@@ -17,15 +17,20 @@ configuration:
   display: API Key
   name: api_key
   type: 4
+  hidden: true
+- name: api_key_creds
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - additionalinfo: Allows connection when SSL certificates are not valid. Set to `false` when certificates are not trusted.
   defaultvalue: 'False'
   display: Validate Certs
   name: validate_certs
+  options:
+  - 'False'
+  - 'True'
   required: true
   type: 15
-  options:
-  - "False"
-  - "True"
 description: Manage Kubernetes
 display: Ansible Kubernetes
 fromversion: 6.0.0
@@ -200,7 +205,7 @@ script:
     - contextPath: Kubernetes.K8sService.result
       description: The created, patched, or otherwise present Service object. Will be empty in the case of a deletion.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.24037
+  dockerimage: demisto/ansible-runner:1.0.0.64612
   script: ''
   subtype: python3
   type: python
