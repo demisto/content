@@ -2,7 +2,7 @@
     "name": "Microsoft Windows Event Logs",
     "description": "The Windows event log is a detailed record of system, security and application notifications stored by the Windows operating system.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,16 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "MicrosoftCore": {
-            "mandatory": true,
-            "display_name": "Microsoft Logs Base"
-        },
-        "MicrosoftADFS": {
-            "mandatory": false,
-            "display_name": "Microsoft AD FS Collection"
-        }
-    },
     "marketplaces": [
         "marketplacev2"
     ]
