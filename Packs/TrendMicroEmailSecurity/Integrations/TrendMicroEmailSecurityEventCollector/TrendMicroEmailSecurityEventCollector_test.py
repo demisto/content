@@ -53,42 +53,59 @@ def test_handle_error_no_content_without_raises():
 
 
 @pytest.mark.parametrize(
-    "last_run, len_events, limit, time_from, event_type, next_token, mock_exception, mock_api",
+    "args, mock_exception, mock_api",
     [
         # In case the len of the event list is smaller than the limit
         (
-            {},
-            1,
-            2,
-            "2023-07-05T15:04:05Z",
-            "accepted_traffic",
-            "test_test",
+            {
+                "last_run": {},
+                "len_events": 1,
+                "limit": 2,
+                "time_from": "2023-07-05T15:04:05Z",
+                "event_type": "accepted_traffic",
+                "next_token": "test_test",
+            },
             None,
             {},
         ),
         # In case there is no nextToken
-        ({}, 2, 2, "2023-07-05T15:04:05Z", "accepted_traffic", None, None, {},),
+        (
+            {
+                "last_run": {},
+                "len_events": 2,
+                "limit": 2,
+                "time_from": "2023-07-05T15:04:05Z",
+                "event_type": "accepted_traffic",
+                "next_token": None,
+            },
+            None,
+            {},
+        ),
         # In case the len of the event list is equal the limit
         # and when calling the api for the next event, No Content returns.
         (
-            {"next_token_accepted_traffic": "test_1"},
-            2,
-            2,
-            "2023-07-05T15:04:05Z",
-            "accepted_traffic",
-            "test",
+            {
+                "last_run": {"next_token_accepted_traffic": "test_1"},
+                "len_events": 2,
+                "limit": 2,
+                "time_from": "2023-07-05T15:04:05Z",
+                "event_type": "accepted_traffic",
+                "next_token": "test_token",
+            },
             NoContentException("No content"),
             {},
         ),
         # In case the len of the event list is equal the limit
         # and when calling the api for the next event, event returns.
         (
-            {},
-            2,
-            2,
-            "2023-07-05T15:04:05Z",
-            "accepted_traffic",
-            "test_token",
+            {
+                "last_run": {},
+                "len_events": 2,
+                "limit": 2,
+                "time_from": "2023-07-05T15:04:05Z",
+                "event_type": "accepted_traffic",
+                "next_token": "test_token",
+            },
             None,
             {"nextToken": "test", "logs": [{"genTime": "2023-07-05T16:04:05Z"}]},
         ),
@@ -96,12 +113,7 @@ def test_handle_error_no_content_without_raises():
 )
 def test_managing_set_last_run(
     mocker,
-    last_run: dict,
-    len_events: int,
-    limit: int,
-    time_from: str,
-    event_type: str,
-    next_token: str | None,
+    args,
     mock_exception: NoContentException,
     mock_api: dict,
 ):
@@ -114,16 +126,16 @@ def test_managing_set_last_run(
     )
     results = managing_set_last_run(
         client=client,
-        len_events=len_events,
-        limit=limit,
-        last_run=last_run,
-        time_from=time_from,
+        len_events=args["len_events"],
+        limit=args["limit"],
+        last_run=args["last_run"],
+        time_from=args["time_from"],
         time_to=time_to,
-        event_type=event_type,
-        next_token=next_token,
+        event_type=args["event_type"],
+        next_token=args["next_token"],
     )
 
     expected_time_from_for_event_type = mock_api.get("logs", [{}])[0].get(
         "genTime"
     ) or (time_to + timedelta(seconds=1)).strftime(DATE_FORMAT_EVENT)
-    assert results.get(f"time_{event_type}_from") == expected_time_from_for_event_type
+    assert results.get(f"time_{args['event_type']}_from") == expected_time_from_for_event_type
