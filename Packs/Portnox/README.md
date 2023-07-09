@@ -5,7 +5,8 @@ This pack includes Cortex XSIAM content.
 ## Portnox Alert configuration
 
 1. Go to *settings* -> *Alerts*
-2. Add The IP of the syslog server to *Syslog Server* text box
+2. Add The IP of the syslog server to *Syslog Server* text box.
+![link]()
 3. click save.
 4. Go to *Security* -> *events*
 5. click on the top right corner on the Plus button "+".
