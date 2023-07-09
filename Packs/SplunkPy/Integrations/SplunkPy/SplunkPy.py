@@ -2225,15 +2225,15 @@ def splunk_submit_event_command(service: client.Service):
 
 
 def splunk_submit_event_hec(
-    hec_token: str,
+    hec_token: str | None,
     baseurl: str,
-    event: str,
-    fields: str,
-    host: str,
-    index: str,
-    source_type: str,
-    source: str,
-    time_: str
+    event: str | None,
+    fields: str | None,
+    host: str | None,
+    index: str | None,
+    source_type: str | None,
+    source: str | None,
+    time_: str | None,
 ):
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
@@ -2265,19 +2265,19 @@ def splunk_submit_event_hec(
     return response
 
 
-def splunk_submit_event_hec_command():
-    hec_token = demisto.params().get('cred_hec_token', {}).get('password') or demisto.params().get('hec_token')
-    baseurl = demisto.params().get('hec_url')
+def splunk_submit_event_hec_command(params: dict, args: dict):
+    hec_token = params.get('cred_hec_token', {}).get('password') or params.get('hec_token')
+    baseurl = params.get('hec_url')
     if baseurl is None:
         raise Exception('The HEC URL was not provided.')
 
-    event = demisto.args().get('event')
-    host = demisto.args().get('host')
-    fields = demisto.args().get('fields')
-    index = demisto.args().get('index')
-    source_type = demisto.args().get('source_type')
-    source = demisto.args().get('source')
-    time_ = demisto.args().get('time')
+    event = args.get('event')
+    host = args.get('host')
+    fields = args.get('fields')
+    index = args.get('index')
+    source_type = args.get('source_type')
+    source = args.get('source')
+    time_ = args.get('time')
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
 
@@ -2454,8 +2454,7 @@ def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_d
                                '(e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]')
 
 
-def kv_store_collection_add_entries(service: client.Service) -> None:
-    args = demisto.args()
+def kv_store_collection_add_entries(service: client.Service, args: dict) -> None:
     kv_store_data = args.get('kv_store_data', '')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
@@ -2464,7 +2463,7 @@ def kv_store_collection_add_entries(service: client.Service) -> None:
     if indicator_path:
         kv_store_data = json.loads(kv_store_data)
         indicator = extract_indicator(indicator_path,
-                                      [kv_store_data] if not isinstance(kv_store_data, list) else kv_store_data)
+                                      kv_store_data if isinstance(kv_store_data, list) else [kv_store_data])
         timeline = {
             'Value': indicator,
             'Message': f'Indicator added to {kv_store_collection_name} store in Splunk',
@@ -2488,11 +2487,11 @@ def kv_store_collection_data_delete(service: client.Service, args: dict) -> None
     return_outputs(f'The values of the {args["kv_store_collection_name"]} were deleted successfully')
 
 
-def kv_store_collection_delete(service: client.Service):
-    kv_store_names = demisto.args()['kv_store_name']
+def kv_store_collection_delete(service: client.Service, args: dict) -> CommandResults:
+    kv_store_names = args['kv_store_name']
     for store in kv_store_names.split(','):
         service.kvstore[store].delete()
-    return_outputs(f'The following KV store {kv_store_names} were deleted successfully', {}, {})
+    return CommandResults(readable_output=f'The following KV store {kv_store_names} were deleted successfully.')
 
 
 def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict):
@@ -2695,7 +2694,7 @@ def main():  # pragma: no cover
         token = get_auth_session_key(service)
         splunk_edit_notable_event_command(base_url, token, auth_token, args)
     elif command == 'splunk-submit-event-hec':
-        splunk_submit_event_hec_command()
+        splunk_submit_event_hec_command(params, args)
     elif command == 'splunk-job-status':
         return_results(splunk_job_status(service, args))
     elif command.startswith('splunk-kv-') and service is not None:
@@ -2708,11 +2707,11 @@ def main():  # pragma: no cover
         elif command == 'splunk-kv-store-collection-config':
             return_results(kv_store_collection_config(service, args))
         elif command == 'splunk-kv-store-collection-delete':
-            kv_store_collection_delete(service)
+            return_results(kv_store_collection_delete(service, args))
         elif command == 'splunk-kv-store-collections-list':
             kv_store_collections_list(service)
         elif command == 'splunk-kv-store-collection-add-entries':
-            kv_store_collection_add_entries(service)
+            kv_store_collection_add_entries(service, args)
         elif command in ['splunk-kv-store-collection-data-list',
                          'splunk-kv-store-collection-search-entry']:
             kv_store_collection_data(service)
