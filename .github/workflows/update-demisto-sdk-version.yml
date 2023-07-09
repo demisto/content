@@ -25,7 +25,8 @@ jobs:
       run: poetry add --group dev demisto-sdk@latest
 
     - name: Create branch
-      permissions: write-all
+      permissions:
+        pull-requests: write
       with:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
