@@ -1,0 +1,17 @@
+name: Renovate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Renovate Bot GitHub Action
+        uses: renovatebot/github-action@v36.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
