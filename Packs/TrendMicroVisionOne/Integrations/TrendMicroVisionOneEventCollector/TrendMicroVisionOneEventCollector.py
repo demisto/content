@@ -946,7 +946,7 @@ def get_audit_logs(
         dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
     ).strftime(DATE_FORMAT)  # type: ignore
 
-    fetched_audit_logs = [_log.get('id') for _log in audit_logs if _log.get('id')]
+    fetched_audit_logs_ids = [_log.get('id') for _log in audit_logs if _log.get('id')]
 
     for log in audit_logs:
         # pop all the hashes used to find duplicates
@@ -957,7 +957,7 @@ def get_audit_logs(
         audit_cache_time_field_name: latest_audit_log_ids
     }
 
-    demisto.info(f'{fetched_audit_logs=}')
+    demisto.info(f'{fetched_audit_logs_ids=}')
     demisto.info(f'{audit_updated_last_run=}')
     return audit_logs, audit_updated_last_run
 
