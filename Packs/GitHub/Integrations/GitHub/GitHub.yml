@@ -2501,7 +2501,6 @@ script:
       name: body
     - description: The target branch/commit SHA from where to create the release.
       name: ref
-      required: true
     - auto: PREDEFINED
       defaultValue: 'True'
       description: Whether to create a draft (unpublished) release.
