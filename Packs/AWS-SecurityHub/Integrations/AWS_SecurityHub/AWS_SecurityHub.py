@@ -961,7 +961,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
     return remote_incident_id
 
 
-def mtest_function(client):
+def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok', {}, {}
@@ -1013,7 +1013,7 @@ def main():  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
-            human_readable, outputs, response = mtest_function(client)
+            human_readable, outputs, response = test_function(client)
         elif command == 'aws-securityhub-get-findings':
             human_readable, outputs, response = get_findings_command(client, args)
         elif command == 'aws-securityhub-get-master-account':
