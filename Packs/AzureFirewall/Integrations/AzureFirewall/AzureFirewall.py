@@ -4,20 +4,22 @@ from CommonServerPython import *  # noqa: F401
 import copy
 from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
+import urllib3
 
 
 class AzureFirewallClient:
-    def __init__(self, subscription_id: str,
+    def __init__(self,
+                 subscription_id: str,
                  resource_group: str,
                  client_id: str,
                  api_version: str,
                  verify: bool,
                  proxy: bool,
-                 client_secret: str = None,
-                 tenant_id: str = None,
-                 certificate_thumbprint: str = None,
-                 private_key: str = None,
-                 managed_identities_client_id: str = None):
+                 client_secret: str | None = None,
+                 tenant_id: str = '',
+                 certificate_thumbprint: str | None = None,
+                 private_key: str | None = None,
+                 managed_identities_client_id: str | None = None):
         self.resource_group = resource_group
         self.subscription_id = subscription_id
         self.api_version = api_version
@@ -33,7 +35,7 @@ class AzureFirewallClient:
 
         if not is_credentials:
             client_secret = None
-            tenant_id = None
+            tenant_id = ''
             certificate_thumbprint = None
             private_key = None
 
@@ -332,7 +334,7 @@ class AzureFirewallClient:
 
         return response
 
-    def azure_firewall_policy_network_rule_collection_create_request(self, policy_name: str, collection_priority: int,
+    def azure_firewall_policy_network_rule_collection_create_request(self, policy_name: str, collection_priority: int | None,
                                                                      collection_name: str, action: str,
                                                                      rule_information: dict) -> dict:
         """
@@ -578,11 +580,11 @@ def get_pagination_readable_message(header: str, limit: int, page: int) -> str:
     return readable_message
 
 
-def generate_firewall_command_output(response: dict, readable_header: str, output_key: str = None) -> CommandResults:
+def generate_firewall_command_output(response: dict | list, readable_header: str, output_key: str = None) -> CommandResults:
     """
     Generate command output for firewall commands.
     Args:
-        response (dict): API response from Azure.
+        response (dict | list): API response from Azure.
         output_key (str): Used to access to required data in the response.
         readable_header (str): Readable message header for XSOAR war room.
 
@@ -590,7 +592,8 @@ def generate_firewall_command_output(response: dict, readable_header: str, outpu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    outputs = copy.deepcopy(response.get(output_key, [])) if output_key else copy.deepcopy(response)
+    outputs = copy.deepcopy(response.get(output_key, [])) if output_key and isinstance(response, dict) \
+        else copy.deepcopy(response)
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -643,8 +646,8 @@ def azure_firewall_list_command(client: AzureFirewallClient, args: Dict[str, Any
 
     """
     resource = args.get('resource', 'resource_group')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header='Firewall List:',
@@ -653,17 +656,17 @@ def azure_firewall_list_command(client: AzureFirewallClient, args: Dict[str, Any
     start_offset = (page - 1) * limit
     end_offset = start_offset + limit
     complete_requests = False
-    total_response = {'value': []}
+    total_response: dict[str, list] = {'value': []}
     response = client.azure_firewall_list_request(resource=resource)
 
     while not complete_requests:
-        total_response['value'].extend(response.get('value'))
+        total_response['value'].extend(response.get('value', []))
         if len(total_response['value']) >= end_offset or not response.get('nextLink'):
             complete_requests = True
         else:
             response = client.azure_firewall_list_request(resource=resource, next_link=response.get('nextLink'))
 
-    return generate_firewall_command_output(response.get('value')[start_offset: end_offset],
+    return generate_firewall_command_output(response.get('value', [])[start_offset: end_offset],
                                             readable_header=readable_message)
 
 
@@ -682,8 +685,8 @@ def azure_firewall_get_command(client: AzureFirewallClient, args: Dict[str, Any]
     firewall_names = argToList(args.get('firewall_names'))
 
     scheduled = argToBoolean(args.get('polling', False))
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     command_results_list: List[CommandResults] = []
 
@@ -735,7 +738,7 @@ def get_firewall_rule_collection_name(rule_type: str) -> str:
         "nat_rule": "natRuleCollections"
     }
 
-    return rule_types.get(rule_type)
+    return rule_types.get(rule_type, '')
 
 
 def get_policy_rule_collection_name(rule_type: str) -> str:
@@ -932,9 +935,9 @@ def azure_firewall_rules_collection_list_command(client: AzureFirewallClient, ar
     """
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    rule_type = args.get('rule_type')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    rule_type = args.get('rule_type', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
     start_offset = (page - 1) * limit
     end_offset = start_offset + limit
@@ -955,19 +958,19 @@ def azure_firewall_rules_collection_list_command(client: AzureFirewallClient, ar
             raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         complete_requests = False
-        total_response = {'value': []}
+        total_response: dict[str, list] = {'value': []}
 
         response = client.azure_firewall_policy_rule_collection_list_request(policy_name=policy)
 
         while not complete_requests:
-            total_response['value'].extend(response.get('value'))
+            total_response['value'].extend(response.get('value', []))
             if not response.get('nextLink'):
                 complete_requests = True
             else:
                 response = client.azure_firewall_policy_rule_collection_list_request(policy_name=policy,
                                                                                      next_link=response.get('nextLink'))
 
-        filtered_rules = filter_policy_rules_collection(total_response.get('value'),
+        filtered_rules = filter_policy_rules_collection(total_response.get('value', []),
                                                         rule_type)[start_offset: end_offset]
 
     return generate_rule_collection_output(rule_collection_response=response,
@@ -1013,10 +1016,10 @@ def azure_firewall_rules_list_command(client: AzureFirewallClient, args: Dict[st
     """
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    rule_type = args.get('rule_type')
-    collection_name = args.get('collection_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    rule_type = args.get('rule_type', '')
+    collection_name = args.get('collection_name', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     start_offset = (page - 1) * limit
@@ -1069,9 +1072,9 @@ def azure_firewall_rule_get_command(client: AzureFirewallClient, args: Dict[str,
     """
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    rule_type = args.get('rule_type')
-    collection_name = args.get('collection_name')
-    rule_name = args.get('rule_name')
+    rule_type = args.get('rule_type', '')
+    collection_name = args.get('collection_name', '')
+    rule_name = args.get('rule_name', '')
     rule_data = None
 
     if firewall_name:
@@ -1125,17 +1128,17 @@ def azure_firewall_policy_create_command(client: AzureFirewallClient, args: Dict
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
-    policy_name = args.get('policy_name')
+    policy_name = args.get('policy_name', '')
     threat_intelligence_mode = args.get('threat_intelligence_mode', 'Turned-off')
     threat_intelligence_mode = 'Off' if threat_intelligence_mode == 'Turned-off' else threat_intelligence_mode
     ip_address = argToList(args.get('ips'))
     domain_address = argToList(args.get('domains'))
-    location = args.get('location')
+    location = args.get('location', '')
     tier = args.get('tier', 'Standard')
-    base_policy_id = args.get('base_policy_id')
+    base_policy_id = args.get('base_policy_id', '')
     enable_proxy = argToBoolean(args.get('enable_proxy', 'False'))
     dns_servers = argToList(args.get('dns_servers'))
 
@@ -1185,10 +1188,10 @@ def azure_firewall_policy_update_command(client: AzureFirewallClient, args: Dict
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
-    policy_name = args.get('policy_name')
+    policy_name = args.get('policy_name', '')
 
     threat_intelligence_mode = args.get('threat_intelligence_mode', '')
     threat_intelligence_mode = 'Off' if threat_intelligence_mode == 'Turned-off' else threat_intelligence_mode
@@ -1200,7 +1203,7 @@ def azure_firewall_policy_update_command(client: AzureFirewallClient, args: Dict
 
     policy_data = client.azure_firewall_policy_get_request(policy_name=policy_name)
 
-    properties = policy_data.get("properties")
+    properties = policy_data.get("properties", {})
 
     update_fields = assign_params(threat_intelligence_mode=threat_intelligence_mode, ips=ip_address,
                                   domains=domain_address, base_policy_id=base_policy_id,
@@ -1236,11 +1239,11 @@ def azure_firewall_policy_update_command(client: AzureFirewallClient, args: Dict
     return generate_policy_command_output(response, readable_header=f'Successfully Updated Policy "{policy_name}"')
 
 
-def generate_policy_command_output(response: dict, readable_header: str, output_key: str = None) -> CommandResults:
+def generate_policy_command_output(response: dict | list, readable_header: str, output_key: str = None) -> CommandResults:
     """
     Generate command output for policy commands.
     Args:
-        response (dict): API response from Azure.
+        response (dict | list): API response from Azure.
         output_key (str): Used to access to required data in the response.
         readable_header (str): Readable message header for XSOAR war room.
 
@@ -1248,7 +1251,8 @@ def generate_policy_command_output(response: dict, readable_header: str, output_
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    outputs = copy.deepcopy(response.get(output_key, [])) if output_key else copy.deepcopy(response)
+    outputs = copy.deepcopy(response.get(output_key, [])) if output_key and isinstance(response, dict) \
+        else copy.deepcopy(response)
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -1306,8 +1310,8 @@ def azure_firewall_policy_get_command(client: AzureFirewallClient, args: Dict[st
     policy_names = argToList(args.get('policy_names'))
 
     scheduled = argToBoolean(args.get('polling', False))
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     command_results_list: List[CommandResults] = []
 
@@ -1389,8 +1393,8 @@ def azure_firewall_policy_list_command(client: AzureFirewallClient, args: Dict[s
 
     """
     resource = args.get('resource', 'resource_group')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header='Policy List:',
@@ -1399,18 +1403,18 @@ def azure_firewall_policy_list_command(client: AzureFirewallClient, args: Dict[s
     start_offset = (page - 1) * limit
     end_offset = start_offset + limit
     complete_requests = False
-    total_response = {'value': []}
+    total_response: dict[str, list] = {'value': []}
     response = client.azure_firewall_policy_list_request(resource=resource)
 
     while not complete_requests:
-        total_response['value'].extend(response.get('value'))
+        total_response['value'].extend(response.get('value', []))
         if len(total_response['value']) >= end_offset or not response.get('nextLink'):
             complete_requests = True
         else:
             response = client.azure_firewall_policy_list_request(resource=resource,
                                                                  next_link=response.get('nextLink'))
 
-    return generate_policy_command_output(total_response.get('value')[start_offset: end_offset],
+    return generate_policy_command_output(total_response.get('value', [])[start_offset: end_offset],
                                           readable_header=readable_message)
 
 
@@ -1430,8 +1434,8 @@ def azure_firewall_policy_attach_command(client: AzureFirewallClient, args: Dict
     policy_id = args.get('policy_id')
 
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     command_results_list: List[CommandResults] = []
 
@@ -1485,8 +1489,8 @@ def azure_firewall_policy_remove_command(client: AzureFirewallClient, args: Dict
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     firewall_names = argToList(args.get('firewall_names'))
 
@@ -1562,7 +1566,7 @@ def delete_rule_collection(client: AzureFirewallClient, collection_name: str, ru
 
         del filtered_rules[collection_index]
 
-        response = client.azure_firewall_update_request(firewall_name=firewall_name, firewall_data=firewall_data)
+        response: dict = client.azure_firewall_update_request(firewall_name=firewall_name, firewall_data=firewall_data)
 
         state = dict_safe_get(response, ["properties", "provisioningState"], '')
 
@@ -1583,10 +1587,10 @@ def delete_rule_collection(client: AzureFirewallClient, collection_name: str, ru
         if not policy:
             raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
-        response = client.azure_firewall_policy_rule_collection_delete_request(policy_name=policy,
-                                                                               collection_name=collection_name)
+        response_delete = client.azure_firewall_policy_rule_collection_delete_request(policy_name=policy,
+                                                                                      collection_name=collection_name)
 
-        is_resource_deleted = response.status_code == 200
+        is_resource_deleted = response_delete.status_code == 200
 
         if should_poll and not is_resource_deleted:
             # schedule next poll
@@ -1890,25 +1894,25 @@ def azure_firewall_network_rule_collection_create_command(client: AzureFirewallC
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    collection_name = args.get('collection_name')
+    collection_name = args.get('collection_name', '')
     collection_priority = arg_to_number(args.get('collection_priority'))
-    action = args.get('action')
-    rule_name = args.get('rule_name')
-    description = args.get('description')
+    action = args.get('action', '')
+    rule_name = args.get('rule_name', '')
+    description = args.get('description', '')
     protocol = argToList(args.get('protocols'))
-    source_type = args.get('source_type')  # ip_address or ip_group
+    source_type = args.get('source_type', '')  # ip_address or ip_group
     ip_source_address = argToList(
-        args.get('source_ips'))  # Must be provided when 'source_type' argument is assigned to 'ip_address'.
+        args.get('source_ips', []))  # Must be provided when 'source_type' argument is assigned to 'ip_address'.
 
     source_ip_group_ids = argToList(
-        args.get('source_ip_group_ids'))  # Must be provided when 'source_type' argument is assigned to 'ip_group'.
+        args.get('source_ip_group_ids', []))  # Must be provided when 'source_type' argument is assigned to 'ip_group'.
 
-    destination_type = args.get('destination_type')  # ip_address or ip_group or service_tag or fqdn.
+    destination_type = args.get('destination_type', '')  # ip_address or ip_group or service_tag or fqdn.
     destinations = argToList(args.get('destinations'))
     destination_port = argToList(args.get('destination_ports'))
 
@@ -2043,12 +2047,12 @@ def azure_firewall_network_rule_collection_update_command(client: AzureFirewallC
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    collection_name = args.get('collection_name')
+    collection_name = args.get('collection_name', '')
     priority = args.get('priority')
     if priority:
         priority = arg_to_number(priority)
@@ -2128,12 +2132,12 @@ def azure_firewall_network_rule_collection_delete_command(client: AzureFirewallC
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    collection_name = args.get('collection_name')
+    collection_name = args.get('collection_name', '')
 
     return delete_rule_collection(client=client, collection_name=collection_name, rule_type="network_rule",
                                   firewall_name=firewall_name, policy=policy, should_poll=should_poll,
@@ -2184,23 +2188,23 @@ def azure_firewall_network_rule_create_command(client: AzureFirewallClient, args
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    collection_name = args.get('collection_name')
-    rule_name = args.get('rule_name')
-    description = args.get('description')
+    collection_name = args.get('collection_name', '')
+    rule_name = args.get('rule_name', '')
+    description = args.get('description', '')
     protocol = argToList(args.get('protocols'))
-    source_type = args.get('source_type')  # ip_address or ip_group
+    source_type = args.get('source_type', '')  # ip_address or ip_group
     ip_source_address = argToList(
-        args.get('source_ips'))  # Must be provided when 'source_type' argument is assigned to 'ip_address'.
+        args.get('source_ips', []))  # Must be provided when 'source_type' argument is assigned to 'ip_address'.
 
     source_ip_group_ids = argToList(
-        args.get('source_ip_group_ids'))  # Must be provided when 'source_type' argument is assigned to 'ip_group'.
+        args.get('source_ip_group_ids', []))  # Must be provided when 'source_type' argument is assigned to 'ip_group'.
 
-    destination_type = args.get('destination_type')  # ip_address or ip_group or service_tag or fqdn.
+    destination_type = args.get('destination_type', '')  # ip_address or ip_group or service_tag or fqdn.
     destinations = argToList(args.get('destinations'))
     destination_port = argToList(args.get('destination_ports'))
 
@@ -2358,20 +2362,20 @@ def azure_firewall_network_rule_update_command(client: AzureFirewallClient, args
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    collection_name = args.get('collection_name')
-    rule_name = args.get('rule_name')
-    description = args.get('description')
+    collection_name = args.get('collection_name', '')
+    rule_name = args.get('rule_name', '')
+    description = args.get('description', '')
     protocol = argToList(args.get('protocols'))
     ip_source_address = argToList(args.get('source_ips'))
     source_ip_group_ids = argToList(args.get('source_ip_group_ids'))
     destination_port = argToList(args.get('destination_ports'))
-    destination_type = args.get('destination_type')
-    source_type = args.get('source_type')
+    destination_type = args.get('destination_type', '')
+    source_type = args.get('source_type', '')
     destinations = argToList(args.get('destinations'))
 
     update_fields = assign_params(description=description, destination_port=destination_port,
@@ -2460,12 +2464,12 @@ def azure_firewall_network_rule_remove_command(client: AzureFirewallClient, args
     """
     ScheduledCommand.raise_error_if_not_supported()
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     firewall_name = args.get('firewall_name')
     policy = args.get('policy')
-    collection_name = args.get('collection_name')
+    collection_name = args.get('collection_name', '')
     rule_names = argToList(args.get('rule_names'))
 
     return remove_rule_from_collection(client=client, collection_name=collection_name, rule_type="network_rule",
@@ -2485,9 +2489,9 @@ def azure_firewall_service_tag_list_command(client: AzureFirewallClient, args: D
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    location = args.get('location')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    location = args.get('location', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header='Service Tag List:',
@@ -2496,12 +2500,12 @@ def azure_firewall_service_tag_list_command(client: AzureFirewallClient, args: D
     start_offset = (page - 1) * limit
     end_offset = start_offset + limit
     complete_requests = False
-    total_response = {'value': []}
+    total_response: dict[str, list] = {'value': []}
 
     response = client.azure_firewall_service_tag_list_request(location=location)
 
     while not complete_requests:
-        total_response['value'].extend(response.get('value'))
+        total_response['value'].extend(response.get('value', []))
         if len(total_response['value']) >= end_offset or not response.get('nextLink'):
             complete_requests = True
         else:
@@ -2510,7 +2514,7 @@ def azure_firewall_service_tag_list_command(client: AzureFirewallClient, args: D
 
     readable_output = tableToMarkdown(
         readable_message,
-        total_response.get('value')[start_offset: end_offset],
+        total_response.get('value', [])[start_offset: end_offset],
         headers=['name', 'id'],
         headerTransform=string_to_table_header
     )
@@ -2519,18 +2523,18 @@ def azure_firewall_service_tag_list_command(client: AzureFirewallClient, args: D
         readable_output=readable_output,
         outputs_prefix='AzureFirewall.ServiceTag',
         outputs_key_field='id',
-        outputs=total_response.get('value')[start_offset: end_offset],
+        outputs=total_response.get('value', [])[start_offset: end_offset],
         raw_response=total_response
     )
 
     return command_results
 
 
-def generate_ip_group_command_output(response: dict, readable_header: str, output_key: str = None) -> CommandResults:
+def generate_ip_group_command_output(response: dict | list, readable_header: str, output_key: str = None) -> CommandResults:
     """
     Generate command output for IP groups commands.
     Args:
-        response (dict): API response from Azure.
+        response (dict | list): API response from Azure.
         output_key (str): Used to access to required data in the response.
         readable_header (str): Readable message header for XSOAR war room.
 
@@ -2538,7 +2542,8 @@ def generate_ip_group_command_output(response: dict, readable_header: str, outpu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    outputs = copy.deepcopy(response.get(output_key, [])) if output_key else copy.deepcopy(response)
+    outputs = copy.deepcopy(response.get(output_key, [])) if output_key and isinstance(response, dict) \
+        else copy.deepcopy(response)
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -2586,12 +2591,12 @@ def azure_firewall_ip_group_create_command(client: AzureFirewallClient, args: Di
 
     """
     ScheduledCommand.raise_error_if_not_supported()
-    ip_group_name = args.get('ip_group_name')
-    location = args.get('location')
+    ip_group_name = args.get('ip_group_name', '')
+    location = args.get('location', '')
     ip_address = argToList(args.get('ips'))
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     response = client.azure_firewall_ip_group_create_request(ip_group_name=ip_group_name, location=location,
                                                              ip_address=ip_address)
@@ -2623,13 +2628,13 @@ def azure_firewall_ip_group_update_command(client: AzureFirewallClient, args: Di
 
     """
     ScheduledCommand.raise_error_if_not_supported()
-    ip_group_name = args.get('ip_group_name')
+    ip_group_name = args.get('ip_group_name', '')
     ip_address_to_add = argToList(args.get('ips_to_add'))
     ip_address_to_remove = argToList(args.get('ips_to_remove'))
 
     should_poll = True
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     if not ip_address_to_add and not ip_address_to_remove:
         raise Exception("One of the arguments: `ip_address_to_add` or `ip_address_to_remove` must be provided.")
@@ -2673,9 +2678,9 @@ def azure_firewall_ip_group_list_command(client: AzureFirewallClient, args: Dict
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    resource = args.get('resource')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    resource = args.get('resource', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header='IP Group List:',
@@ -2684,18 +2689,18 @@ def azure_firewall_ip_group_list_command(client: AzureFirewallClient, args: Dict
     start_offset = (page - 1) * limit
     end_offset = start_offset + limit
     complete_requests = False
-    total_response = {'value': []}
+    total_response: dict[str, list] = {'value': []}
     response = client.azure_firewall_ip_group_list_request(resource=resource)
 
     while not complete_requests:
-        total_response['value'].extend(response.get('value'))
+        total_response['value'].extend(response.get('value', []))
         if len(total_response['value']) >= end_offset or not response.get('nextLink'):
             complete_requests = True
         else:
             response = client.azure_firewall_ip_group_list_request(resource=resource,
                                                                    next_link=response.get('nextLink'))
 
-    return generate_ip_group_command_output(total_response.get('value')[start_offset: end_offset],
+    return generate_ip_group_command_output(total_response.get('value', [])[start_offset: end_offset],
                                             readable_header=readable_message)
 
 
@@ -2714,8 +2719,8 @@ def azure_firewall_ip_group_get_command(client: AzureFirewallClient, args: Dict[
     ip_group_names = argToList(args.get('ip_group_names'))
 
     scheduled = argToBoolean(args.get('polling', False))
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval')) or 30
+    timeout = arg_to_number(args.get('timeout')) or 60
 
     command_results_list: List[CommandResults] = []
 
@@ -2839,11 +2844,11 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    api_version = params.get('api_version')
+    api_version = params.get('api_version', '')
 
     subscription_id = params['subscription_id']['password']
     resource_group = params['resource_group']
-    client_id = params.get('client_id')
+    client_id = params.get('client_id', '')
 
     client_secret = dict_safe_get(params, ['client_secret', 'password'])
     tenant_id = dict_safe_get(params, ['tenant_id', 'password'])
@@ -2861,7 +2866,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: AzureFirewallClient = AzureFirewallClient(
             subscription_id=subscription_id,
             resource_group=resource_group,

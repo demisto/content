@@ -3,11 +3,11 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 from CommonServerUserPython import *
 
-import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
+import urllib3
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
@@ -97,7 +97,7 @@ class Client:
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
     def risky_users_list_request(self, risk_state: str | None, risk_level: str | None,
-                                 limit: int, skip_token: str = None) -> dict:
+                                 limit: int, skip_token: str | None = None) -> dict:
         """
         List risky users.
 
@@ -133,7 +133,7 @@ class Client:
 
     def risk_detections_list_request(self, risk_state: str | None, risk_level: str | None,
                                      detected_date_time_before: str | None, detected_date_time_after: str | None,
-                                     limit: int, order_by: str, skip_token: str = None) -> dict:
+                                     limit: int, order_by: str, skip_token: str = '') -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
 
@@ -173,7 +173,7 @@ class Client:
                                            url_suffix=f'/identityProtection/riskDetections/{id}')
 
 
-def update_query(query: str, filter_name: str, filter_value: str, filter_operator: str):
+def update_query(query: str, filter_name: str, filter_value: str | None, filter_operator: str):
     if not filter_value:
         return query
 
@@ -233,8 +233,8 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page', 1))
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
     skip_token = None
@@ -324,13 +324,13 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page', 1))
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
-    detected_date_time_before = args.get('detected_date_time_before')
-    detected_date_time_after = args.get('detected_date_time_after')
-    order_by = args.get('order_by')
+    detected_date_time_before = args.get('detected_date_time_before', '')
+    detected_date_time_after = args.get('detected_date_time_after', '')
+    order_by = args.get('order_by', 'detectedDateTime desc')
     skip_token = None
 
     if page > 1:
@@ -471,7 +471,7 @@ def main():
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client = Client(
             client_id=client_id,
             verify=verify_certificate,
