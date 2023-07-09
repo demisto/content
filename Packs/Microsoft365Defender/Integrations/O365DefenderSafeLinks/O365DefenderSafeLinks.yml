@@ -1072,7 +1072,7 @@ script:
       - "true"
       - "false"
   isfetch: false
-  runonce: true
+  runonce: false
   script: "-"
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
