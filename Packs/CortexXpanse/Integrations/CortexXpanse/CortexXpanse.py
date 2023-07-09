@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Dict, List, cast, Tuple
+from typing import Any, cast
 
 import urllib3
 
@@ -960,9 +960,9 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
 
     formatted_response = response.get('reply', {}).get("alerts_ids")
     command_results = CommandResults(
-        outputs=f"Update alerts: {formatted_response}",
+        outputs=f"Updated alerts: {formatted_response}",
         raw_response=response,
-        readable_output=f"Update alerts: {formatted_response}",
+        readable_output=f"Updated alerts: {formatted_response}",
         outputs_prefix='ASM.UpdatedAlerts'
     )
 
