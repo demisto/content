@@ -15,16 +15,13 @@ configuration:
 - defaultvalue: 'false'
   display: Provide extended information when available
   name: extended
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: 'true'
   display: Verify host certificates
   name: verify
-  required: false
   type: 8
 description: Deprecated. Use the ReversingLabs A1000 v2 integration instead.
 display: ReversingLabs A1000 (Deprecated)
@@ -35,13 +32,10 @@ script:
   - arguments:
     - default: true
       description: file hash
-      isArray: false
       name: file
       required: true
-      secret: false
     deprecated: true
     description: Retrieve file reputation data from an A1000 appliance
-    execution: false
     name: file
     outputs:
     - contextPath: File.MD5
@@ -77,33 +71,19 @@ script:
   - arguments:
     - default: true
       description: The file entry to upload
-      isArray: false
       name: entryId
       required: true
-      secret: false
-    - default: false
-      description: A comment to add to the file
-      isArray: false
+    - description: A comment to add to the file
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: List of tags for the file
-      isArray: false
+    - description: List of tags for the file
       name: tags
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Should we send to TICloud for analysis
-      isArray: false
       name: cloud_analyze
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     deprecated: true
     description: Upload a sample to A1000 for analysis
     execution: true
@@ -111,10 +91,8 @@ script:
   - arguments:
     - default: true
       description: The hash to delete
-      isArray: false
       name: hash
       required: true
-      secret: false
     deprecated: true
     description: Delete an uploaded sample
     execution: true
@@ -122,13 +100,10 @@ script:
   - arguments:
     - default: true
       description: The sample hash
-      isArray: false
       name: hash
       required: true
-      secret: false
     deprecated: true
     description: List extracted files from a sample
-    execution: false
     name: reversinglabs-extracted-files
     outputs:
     - contextPath: File.MD5
@@ -164,21 +139,16 @@ script:
   - arguments:
     - default: true
       description: Sample hash to download
-      isArray: false
       name: hash
       required: true
-      secret: false
     deprecated: true
     description: Download a sample to the investigation
-    execution: false
     name: reversinglabs-download
   - arguments:
     - default: true
       description: The hash of an already uploaded sample
-      isArray: false
       name: hash
       required: true
-      secret: false
     deprecated: true
     description: Re-analyze sample
     execution: true
@@ -186,18 +156,11 @@ script:
   - arguments:
     - default: true
       description: The sample hash we want unpacked samples for
-      isArray: false
       name: hash
       required: true
-      secret: false
     deprecated: true
     description: Download samples obtained through the unpacking process
-    execution: false
     name: reversinglabs-download-unpacked
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: ''
   subtype: python2

@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 
 
-
 def get_asset_id_for_ip(ip):
     resp = demisto.executeCommand("qualys-host-list", {"ips": ip})
     if isError(resp[0]):
