@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from abc import ABCMeta
 from collections.abc import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
@@ -3021,8 +3022,9 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         # If last_fetch_id is equal to zero, and the user wants to fetch using the issue ID, then we automatically
         # acquire the smallest issue ID with respect to the query
         _, smallest_id_offset = get_smallest_id_offset_for_query(client=client, query=fetch_query)
-        # TODO raise Exception here if smallest_id_offset is None
-        last_fetch_id = smallest_id_offset or last_fetch_id
+        if not smallest_id_offset:
+            raise DemistoException('The fetch query configured returned no results, therefore, could not start fetching.')
+        last_fetch_id = smallest_id_offset
         demisto.debug(f'The smallest ID offset with respect to the fetch query is {last_fetch_id}' if last_fetch_id else
                       'No smallest ID found since the fetch query returns 0 results')
     new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
@@ -3071,7 +3073,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 ' "Issue index to start fetching incidents from" parameter.'
                 if smallest_issue_id
                 else 'The id that was configured does not exist in the Jira instance, '
-                'and the fetch query returned 0 results.'
+                'and the fetch query returned no results, therefore, could not start fetching.'
             ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.

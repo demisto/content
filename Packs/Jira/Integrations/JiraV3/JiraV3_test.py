@@ -1,5 +1,4 @@
 import json
-from more_itertools import side_effect
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -2127,3 +2126,38 @@ class TestJiraFetchIncidents:
                 attachment_tag_from_jira='attachment_tag_from_jira'
             )
         assert f'The smallest issue ID with respect to the fetch query is {smallest_issue_id}' in str(e)
+
+    def test_fetch_incidents_by_id_and_offset_is_zero_error(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - We are fetching by the issue ID, the ID offset is set to 0, we try to acquire the smallest issue ID 
+            with respect to the fetch query, but there are no issues returned from the fetch query
+        Then
+            - Validate that an error is returned, stating that there are no issues with respect to the configured fetch query
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        mocker.patch.object(
+            client, 'run_query',
+            return_value={'issues': []})
+        fetch_query = 'status!=done'
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents(
+                client=client,
+                issue_field_to_fetch_from='id',
+                fetch_query=fetch_query,
+                id_offset=0,
+                fetch_attachments=True,
+                fetch_comments=True,
+                max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+                first_fetch_interval='3 days',
+                mirror_direction='Incoming And Outgoing',
+                comment_tag_to_jira='comment_tag_to_jira',
+                comment_tag_from_jira='comment_tag_from_jira',
+                attachment_tag_to_jira='attachment_tag_to_jira',
+                attachment_tag_from_jira='attachment_tag_from_jira'
+            )
+        assert 'The fetch query configured returned no results, therefore, could not start fetching' in str(e)
