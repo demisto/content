@@ -47,7 +47,7 @@ test-native-candidate:run-lint-with-native-candidate:
 
 test-native-candidate:fan-in:
   tags:
-    - gke
+    - europe-west4-gke
   stage: fan-in
   extends:
     - .test-native-candidate-rule-always

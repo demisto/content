@@ -33,7 +33,7 @@ demisto-sdk-nightly:run-validations:
 
 demisto_sdk_nightly:check_idset_dependent_commands:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -82,7 +82,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
 
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -103,7 +103,7 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
 
 demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -125,7 +125,7 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
 
 demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -147,7 +147,7 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
 
 demisto-sdk-nightly:test-upload-flow:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -160,7 +160,7 @@ demisto-sdk-nightly:test-upload-flow:
 
 demisto-sdk-nightly:run-commands-against-instance:
   tags:
-    - gce # can't run docker in docker on gke
+    - gce-europe-west4 # can't run docker in docker on gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -243,7 +243,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
 
 demisto-sdk-nightly:fan-in:
   tags:
-    - gke
+    - europe-west4-gke
   stage: fan-in
   extends:
     - .sdk-nightly-schedule-rule-always

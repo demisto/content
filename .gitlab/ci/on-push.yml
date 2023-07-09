@@ -11,7 +11,7 @@
 
 trigger-private-build:
   tags:
-    - gke
+    - europe-west4-gke
   needs: []
   stage: unittests-and-validations
   extends:
@@ -46,7 +46,7 @@ trigger-private-build:
 
 stop-running-pipelines:
   tags:
-    - gke
+    - europe-west4-gke
   stage: unittests-and-validations
   needs: []
   extends:
@@ -87,7 +87,7 @@ run-validations:
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
   tags:
-    - gke
+    - europe-west4-gke
   stage: unittests-and-validations
   needs: []
   extends:
@@ -117,7 +117,7 @@ validate-content-conf:
 
 .generic-prepare-testing-bucket:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
   rules:
@@ -229,7 +229,7 @@ xpanse-prepare-testing-bucket:
 
 .test_content_on_xsoar_server_instances_base:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
     - .push-rule
@@ -337,7 +337,7 @@ xsoar_server_master:
 
 fan-in-nightly:
   tags:
-    - gke
+    - europe-west4-gke
   stage: fan-in
   rules:
     - if: '$NIGHTLY'
@@ -350,7 +350,7 @@ jobs-done-check-nightly:
     - .jobs-done-check
   needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
   tags:
-    - gke
+    - europe-west4-gke
   rules:
     - if: '$NIGHTLY'
       when: always
@@ -385,7 +385,7 @@ jobs-done-check-on-push:
     - job: xsoar_server_master
       optional: true
   tags:
-    - gke
+    - europe-west4-gke
 
 
 slack-notify-nightly-build:
@@ -406,7 +406,7 @@ slack-notify-nightly-build:
 
 .test_content_on_cloud_server_instances_base:
   tags:
-    - gke
+    - europe-west4-gke
     - us-west1
   extends:
     - .default-job-settings
@@ -560,7 +560,7 @@ xsoar_ng_server_ga:
 
 test-upload-flow:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
   rules:

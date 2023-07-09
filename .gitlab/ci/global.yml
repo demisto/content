@@ -200,7 +200,7 @@
 
 .unittests-and-lint-settings:
   tags:
-    - gce
+    - gce-europe-west4
   needs: [ ]
   stage: unittests-and-validations
   artifacts:
