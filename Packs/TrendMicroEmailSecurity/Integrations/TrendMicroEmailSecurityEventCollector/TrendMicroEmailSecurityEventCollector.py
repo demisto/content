@@ -69,7 +69,7 @@ class Client(BaseClient):
 
 
 def managing_set_last_run(
-    func,
+    client: Client,
     len_events: int,
     limit: int,
     last_run: dict,
@@ -80,7 +80,7 @@ def managing_set_last_run(
 ) -> dict:
     if len_events < limit or not next_token:
         last_run[f"time_{event_type}_from"] = (time_to + timedelta(seconds=1)).strftime(
-            DATE_FORMAT
+            DATE_FORMAT_EVENT
         )
         last_run.pop(f"next_token_{event_type}", None)
         return last_run
@@ -94,11 +94,11 @@ def managing_set_last_run(
         )
 
         try:
-            event = func(event_type, params)
+            event = client.get_logs_request(event_type, params)
         except NoContentException:
             last_run[f"time_{event_type}_from"] = (
                 time_to + timedelta(seconds=1)
-            ).strftime(DATE_FORMAT)
+            ).strftime(DATE_FORMAT_EVENT)
             last_run.pop(f"next_token_{event_type}", None)
             return last_run
         last_run[f"time_{event_type}_from"] = event.get("logs")[0]["genTime"]
@@ -175,7 +175,7 @@ def fetch_events_command(
 
         events.extend(events_by_type)
         last_run = managing_set_last_run(
-            func=client.get_logs_request,
+            client=client,
             len_events=len(events_by_type),
             limit=limit,
             last_run=last_run,
