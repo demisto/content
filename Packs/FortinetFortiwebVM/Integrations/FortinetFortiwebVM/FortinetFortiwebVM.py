@@ -9944,11 +9944,13 @@ def url_access_rule_condition_create_command(
         group_name,
     )
     outputs = {"id": group_name, "Condition": {"id": member_id}}
+    readable_text = \
+        f"URL access rule condition {member_id} was successfully added to URL access rule group {group_name}."
     command_results = generate_simple_context_data_command_results(
         "id",
         None,
         response,
-        OutputTitle.URL_ACCESS_RULE_CONDITION.value,
+        readable_text,
         "FortiwebVM.URLAccessRuleGroup",
         readable_outputs=outputs["Condition"],
         outputs=outputs
@@ -11469,15 +11471,18 @@ def virtual_server_item_create_command(
         status=args.get("status"),
         virtual_ip=args.get("virtual_ip"),
     )
-    member_id = {"id": group_name, "Item": {"id": dict_safe_get(response, ["results", "id"])}}
+    member_id = dict_safe_get(response, ["results", "id"])
+    outputs = {"id": group_name, "Item": {"id": member_id}}
+    readable_text = \
+        f"Virtual server item {member_id} was successfully added to virtual server group {group_name}."
     command_results = generate_simple_context_data_command_results(
         "id",
         None,
         response,
-        OutputTitle.VIRTUAL_SERVER_ITEM.value,
+        readable_text,
         "FortiwebVM.VirtualServerGroup",
-        readable_outputs=member_id["Item"],
-        outputs=member_id,
+        readable_outputs=outputs["Item"],
+        outputs=outputs,
     )
     return command_results
 
@@ -11733,11 +11738,13 @@ def server_pool_rule_create_command(
         group_name,
     )
     outputs = {"id": group_name, "Rule": {"id": member_id}}
+    readable_text = \
+        f"{OutputTitle.SERVER_POOL_RULE.value} {member_id} was successfully added to server pool group {group_name}."
     return generate_simple_context_data_command_results(
         "id",
         None,
         response,
-        OutputTitle.SERVER_POOL_RULE.value,
+        readable_text,
         "FortiwebVM.ServerPoolGroup",
         readable_outputs=outputs["Rule"],
         outputs=outputs,

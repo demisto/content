@@ -3236,7 +3236,7 @@ Create a URL access rule condition (URL access rule condition is a member of URL
 
 #### Human Readable Output
 
->### URL access rule condition
+>### URL access rule condition 1 was successfully added to URL access rule group test.
 >|Id|
 >|---|
 >| 1 |
@@ -3585,7 +3585,7 @@ Create a virtual server item (virtual server Item is a member of virtual server 
 
 #### Human Readable Output
 
->### Virtual server item
+>### Virtual server item 1 was successfully added to virtual server group test.
 >|Id|
 >|---|
 >| 1 |
@@ -3966,7 +3966,7 @@ Create a rule for a reverse proxy server pool group (server pool rule is a membe
 
 #### Human Readable Output
 
->### Server pool rule
+>### Server pool rule 1 was successfully added to server pool group rp.
 >|Id|
 >|---|
 >| 1 |
@@ -4062,7 +4062,7 @@ Create a rule for an offline protection server pool group (server pool rule is a
 
 #### Human Readable Output
 
->### Server pool rule
+>### Server pool rule 1 was successfully added to server pool group op.
 >|Id|
 >|---|
 >| 1 |
@@ -4153,7 +4153,7 @@ Create a rule for a true transparent server pool group (server pool rule is a me
 
 #### Human Readable Output
 
->### Server pool rule
+>### Server pool rule 1 was successfully added to server pool group ttp.
 >|Id|
 >|---|
 >| 1 |
@@ -4244,7 +4244,7 @@ Create a rule for a transparent inspection server pool group (server pool rule i
 
 #### Human Readable Output
 
->### Server pool rule
+>### Server pool rule 1 was successfully added to server pool group ti.
 >|Id|
 >|---|
 >| 1 |
@@ -4330,7 +4330,7 @@ Create a rule for an WCCP server pool group (server pool rule is a member of ser
 
 #### Human Readable Output
 
->### Server pool rule
+>### Server pool rule 1 was successfully added to server pool group wccp.
 >|Id|
 >|---|
 >| 1 |
@@ -4424,7 +4424,7 @@ Create a rule for an FTP server pool group (server pool rule is a member of serv
 
 #### Human Readable Output
 
->### Server pool rule
+>### Server pool rule 1 was successfully added to server pool group ftp.
 >|Id|
 >|---|
 >| 1 |
@@ -4525,7 +4525,7 @@ Create a rule for an ADFS server pool group (server pool rule is a member of ser
 
 #### Human Readable Output
 
->### Server pool rule
+>### Server pool rule 1 was successfully added to server pool group adfs.
 >|Id|
 >|---|
 >| 1 |
