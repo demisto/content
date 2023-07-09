@@ -644,7 +644,9 @@ def get_workbench_logs(
         workbench_cache_time_field_name: latest_occurred_workbench_log_ids
     }
 
-    demisto.info(f'{workbench_logs=}')
+    fetched_workbench_log_ids = [_log.get('id') for _log in workbench_logs if _log.get('id')]
+
+    demisto.info(f'{fetched_workbench_log_ids=}')
     demisto.info(f'{workbench_updated_last_run=}')
     return workbench_logs, workbench_updated_last_run
 
@@ -699,12 +701,13 @@ def get_observed_attack_techniques_logs(
         observed_attack_techniques_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
-            log_cache_last_run_name_field_name=observed_attack_technique_dedup,
+            log_cache_last_run_name_field_name=observed_attack_technique_pagination,
             log_type=observed_attack_technique_log_type,
             date_format=date_format,
             latest_log_time=last_run_start_time
         )
         # save in cache logs for subsequent pagination(s) in case they have the latest log time
+        # handle cases where the amount of logs that happened at the same time is larger than the page size
         if subsequent_pagination_log_ids:
             pagination_log_ids.extend(subsequent_pagination_log_ids)
 
@@ -734,8 +737,12 @@ def get_observed_attack_techniques_logs(
             dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
         ).strftime(DATE_FORMAT)  # type: ignore
 
+    fetched_observed_attack_technique_logs_ids = [
+        _log.get('uuid') for _log in observed_attack_techniques_logs if _log.get('uuid')
+    ]
+
     if new_next_link:
-        # save in cache the latest log ids from first pagination
+        # save in cache the latest log ids from the first page
         if not last_run_next_link:
             pagination_log_ids = dedup_log_ids
         # always update the next link
@@ -744,6 +751,10 @@ def get_observed_attack_techniques_logs(
         if last_run_next_link:
             # pagination is over
             dedup_log_ids = pagination_log_ids
+            demisto.info(
+                f'pagination is over, received in the last page '
+                f'the following log ids: {fetched_observed_attack_technique_logs_ids}'
+            )
         last_run_next_link = ''
 
     parse_observed_attack_techniques_logs(observed_attack_techniques_logs)
@@ -755,7 +766,7 @@ def get_observed_attack_techniques_logs(
         observed_attack_technique_next_link: last_run_next_link
     }
 
-    demisto.info(f'{observed_attack_techniques_logs=}')
+    demisto.info(f'{fetched_observed_attack_technique_logs_ids=}')
     demisto.info(f'{observed_attack_techniques_updated_last_run=}')
     return observed_attack_techniques_logs, observed_attack_techniques_updated_last_run
 
@@ -843,6 +854,10 @@ def get_search_detection_logs(
             dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
         ).strftime(DATE_FORMAT)  # type: ignore
 
+    fetched_search_detection_logs_ids = [
+        _log.get('uuid') for _log in search_detection_logs if _log.get('uuid')
+    ]
+
     if new_next_link:
         # save in cache the latest log ids from first pagination
         if not last_run_next_link:
@@ -853,6 +868,10 @@ def get_search_detection_logs(
         if last_run_next_link:
             # pagination is over
             dedup_log_ids = pagination_log_ids
+            demisto.info(
+                f'pagination is over, received in the last page '
+                f'the following log ids: {fetched_search_detection_logs_ids}'
+            )
         last_run_next_link = ''
 
     parse_search_detection_logs(search_detection_logs)
@@ -864,7 +883,7 @@ def get_search_detection_logs(
         search_detection_next_link: last_run_next_link
     }
 
-    demisto.info(f'{search_detection_logs=}')
+    demisto.info(f'{fetched_search_detection_logs_ids=}')
     demisto.info(f'{search_detections_updated_last_run=}')
     return search_detection_logs, search_detections_updated_last_run
 
@@ -927,6 +946,8 @@ def get_audit_logs(
         dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
     ).strftime(DATE_FORMAT)  # type: ignore
 
+    fetched_audit_logs = [_log.get('id') for _log in audit_logs if _log.get('id')]
+
     for log in audit_logs:
         # pop all the hashes used to find duplicates
         log.pop('id', None)
@@ -936,7 +957,7 @@ def get_audit_logs(
         audit_cache_time_field_name: latest_audit_log_ids
     }
 
-    demisto.info(f'{audit_logs=}')
+    demisto.info(f'{fetched_audit_logs=}')
     demisto.info(f'{audit_updated_last_run=}')
     return audit_logs, audit_updated_last_run
 
