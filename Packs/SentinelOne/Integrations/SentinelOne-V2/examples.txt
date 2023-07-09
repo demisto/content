@@ -20,3 +20,4 @@ sentinelone-add-hash-to-blocklist os_type=windows description="EICAR Test File" 
 sentinelone-remove-hash-from-blocklist os_type=windows sha1=3395856ce81f2b7382dee72602f798b642f14140
 sentinelone-fetch-file agent_id=AGENT_ID file_path="C:\Test\Path\To\File.txt" password=PossiblyInfected0987&*()
 sentinelone-download-fetched-file activity_id=ACTIVITY_ID agent_id=AGENT_ID password=PossiblyInfected0987&*()
+sentinelone-run-remote-script account_ids="1591657396603946696" output_destination="None" task_description="a test" script_id="1442557135692589769" output_directory="file" agent_ids="1609164191942354900"

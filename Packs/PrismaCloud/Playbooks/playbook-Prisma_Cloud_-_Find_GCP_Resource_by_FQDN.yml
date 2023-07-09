@@ -1,4 +1,5 @@
 description: |
+  Deprecated. Use Prisma Cloud - Find GCP Resource by FQDN v2 instead.
   Find GCP resources by FQDN using Prisma Cloud inventory.
   Supported services: Cloud DNS.
 id: Prisma Cloud - Find GCP Resource by FQDN
@@ -768,4 +769,5 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

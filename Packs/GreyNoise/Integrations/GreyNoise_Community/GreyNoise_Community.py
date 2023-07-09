@@ -284,7 +284,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
@@ -298,10 +298,14 @@ def main() -> None:
     else:
         packs = []
 
-    pack_version = "1.2.0"
-    for pack in packs:
-        if pack["name"] == "GreyNoise":
-            pack_version = pack["currentVersion"]
+    pack_version = "1.3.0"
+    if isinstance(packs, list):
+        for pack in packs:
+            if pack["name"] == "GreyNoise":
+                pack_version = pack["currentVersion"]
+    else:  # packs is a dict
+        if packs.get("name") == "GreyNoise":
+            pack_version = packs.get("currentVersion")
 
     api_key = demisto.params().get("api_key")
     proxy = demisto.params().get("proxy", False)

@@ -48,10 +48,21 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 26,
+                                "id": "incident-playbookId-field",
+                                "index": 3,
+                                "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "sourcehostname",
                                 "height": 26,
                                 "id": "bfb2d810-2762-11ec-9959-2922ebe0f011",
-                                "index": 3,
+                                "index": 4,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -61,7 +72,7 @@
                                 "fieldId": "sourceip",
                                 "height": 26,
                                 "id": "c28fb940-2762-11ec-9959-2922ebe0f011",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -71,18 +82,7 @@
                                 "fieldId": "severity",
                                 "height": 26,
                                 "id": "incident-severity-field",
-                                "index": 4,
-                                "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "playbookid",
-                                "height": 26,
-                                "id": "incident-playbookId-field",
-                                "index": 4,
+                                "index": 5,
                                 "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -92,7 +92,7 @@
                                 "fieldId": "sourcebrand",
                                 "height": 26,
                                 "id": "incident-sourceBrand-field",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -101,7 +101,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 26,
                                 "id": "incident-sourceInstance-field",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -1014,7 +1014,7 @@
                                 "id": "81881100-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 8,
                                 "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
-                                "name": "Scan Host",
+                                "name": "Choose host to scan",
                                 "scriptId": "Cortex Core - IR|||core-endpoint-scan",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1083,7 +1083,7 @@
                                 "id": "82800590-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 9,
                                 "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
-                                "name": "Abort Host Scan",
+                                "name": "Abort host scan",
                                 "scriptId": "Cortex Core - IR|||core-endpoint-scan-abort",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1097,7 +1097,7 @@
                                 "hexColor": null,
                                 "id": "75e16e50-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 10,
-                                "name": "Isolate Host",
+                                "name": "Choose host to isolate",
                                 "scriptId": "Cortex Core - IR|||core-isolate-endpoint",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1111,7 +1111,7 @@
                                 "hexColor": null,
                                 "id": "77403b00-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 11,
-                                "name": "Unisolate Host",
+                                "name": "Choose host to unisolate",
                                 "scriptId": "Cortex Core - IR|||core-unisolate-endpoint",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1148,7 +1148,7 @@
                                 "id": "1c425e90-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 0,
                                 "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
-                                "name": "Retrieve File",
+                                "name": "Choose file to retrieve",
                                 "scriptId": "Cortex Core - IR|||core-retrieve-files",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1164,7 +1164,7 @@
                                 "id": "1dcd4450-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 1,
                                 "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
-                                "name": "Check File Existence",
+                                "name": "Check file existence",
                                 "scriptId": "Cortex Core - IR|||core-run-script-file-exists",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1178,7 +1178,7 @@
                                 "hexColor": null,
                                 "id": "16dc8890-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 2,
-                                "name": "Delete File",
+                                "name": "Choose file to delete",
                                 "scriptId": "Cortex Core - IR|||core-run-script-delete-file",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1192,7 +1192,7 @@
                                 "hexColor": null,
                                 "id": "1887c790-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 3,
-                                "name": "Quarantine File",
+                                "name": "Choose file to quarantine",
                                 "scriptId": "Cortex Core - IR|||core-quarantine-files",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1208,7 +1208,7 @@
                                 "id": "84fa8930-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 4,
                                 "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
-                                "name": "Kill Process",
+                                "name": "Choose process to kill",
                                 "scriptId": "Cortex Core - IR|||core-run-script-kill-process",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1222,7 +1222,7 @@
                                 "hexColor": null,
                                 "id": "1a75b4e0-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 5,
-                                "name": "Restore File",
+                                "name": "Choose file to restore",
                                 "scriptId": "Cortex Core - IR|||core-restore-file",
                                 "sectionItemType": "button",
                                 "startCol": 0

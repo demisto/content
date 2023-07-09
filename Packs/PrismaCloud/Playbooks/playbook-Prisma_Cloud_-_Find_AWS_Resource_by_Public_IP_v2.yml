@@ -1,40 +1,29 @@
+id: Prisma Cloud - Find AWS Resource by Public IP v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud - Find AWS Resource by Public IP v2
 description: |
   Find AWS resources by Public IP using Prisma Cloud inventory.
   Supported services: EC2, Network Load Balancer, ECS, Route53.
-id: Prisma Cloud - Find AWS Resource by Public IP v2
-inputs:
-- description: Public IP address to look up.
-  key: PublicIPAddress
-  playbookInputQuery:
-  required: true
-  value: {}
-name: Prisma Cloud - Find AWS Resource by Public IP v2
-outputs:
-- contextPath: PrismaCloud.Attribution
-  description: Prisma Cloud attributed asset information.
-  type: unknown
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: e920dbbc-fa5f-4b9c-8090-2106cb2f2210
+    type: start
+    task:
+      id: e920dbbc-fa5f-4b9c-8090-2106cb2f2210
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 7980c825-de96-4690-802a-2138a4a802c0
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 7980c825-de96-4690-802a-2138a4a802c0
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -42,52 +31,55 @@ tasks:
           "y": -510
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: de96f7c5-4fb1-4d90-8034-81ab5b7674f3
+    type: regular
+    task:
+      id: de96f7c5-4fb1-4d90-8034-81ab5b7674f3
+      version: -1
+      name: Search in EC2 Instances
+      description: Search EC2 instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
       query:
         complex:
           root: inputs.PublicIPAddress
           transformers:
-          - args:
+          - operator: concat
+            args:
               prefix:
                 value:
                   simple: 'publicIpAddress equals '
               suffix: {}
-            operator: concat
-          - args:
+          - operator: join
+            args:
               separator:
                 value:
                   simple: ' OR '
-            operator: join
-          - args:
+          - operator: concat
+            args:
               prefix:
                 value:
                   simple: 'config from cloud.resource where cloud.type = ''aws'' AND cloud.service = ''Amazon EC2'' AND api.name = ''aws-ec2-describe-instances'' AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
-            operator: concat
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: PrismaCloud v2
-      description: Search EC2 instances in Prisma Cloud.
-      id: 5d21d3ef-d78f-4b93-8b0a-07a355a64601
-      iscommand: true
-      name: Search in EC2 Instances
-      script: PrismaCloud v2|||prisma-cloud-config-search
-      type: regular
-      version: -1
-    taskid: 5d21d3ef-d78f-4b93-8b0a-07a355a64601
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -95,27 +87,30 @@ tasks:
           "y": 120
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 622e2b20-4603-4ca2-8e0b-e81dafacc956
+    type: title
+    task:
+      id: 622e2b20-4603-4ca2-8e0b-e81dafacc956
+      version: -1
+      name: Check Results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 6ef5a374-933b-40eb-88b2-566fa107a9b0
-      iscommand: false
-      name: Check Results
-      type: title
-      version: -1
-      description: ''
-    taskid: 6ef5a374-933b-40eb-88b2-566fa107a9b0
-    timertriggers: []
-    type: title
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -123,52 +118,55 @@ tasks:
           "y": 290
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: ee7204ef-7e0a-4c66-8c62-0b782d188861
+    type: regular
+    task:
+      id: ee7204ef-7e0a-4c66-8c62-0b782d188861
+      version: -1
+      name: Search in EC2 NLB
+      description: Search EC2 Elastic Load Balancers in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
       query:
         complex:
           root: inputs.PublicIPAddress
           transformers:
-          - args:
+          - operator: concat
+            args:
               prefix:
                 value:
                   simple: 'availabilityZones[*].loadBalancerAddresses[*].ipAddress equals '
               suffix: {}
-            operator: concat
-          - args:
+          - operator: join
+            args:
               separator:
                 value:
                   simple: ' OR '
-            operator: join
-          - args:
+          - operator: concat
+            args:
               prefix:
                 value:
                   simple: 'config from cloud.resource where cloud.type = ''aws'' AND cloud.service = ''Amazon Elastic Load Balancing'' AND api.name = ''aws-elbv2-describe-load-balancers'' AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
-            operator: concat
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: PrismaCloud v2
-      description: Search EC2 Elastic Load Balancers in Prisma Cloud.
-      id: 53e36036-6367-4c36-869e-2e0eea7eb955
-      iscommand: true
-      name: Search in EC2 NLB
-      script: PrismaCloud v2|||prisma-cloud-config-search
-      type: regular
-      version: -1
-    taskid: 53e36036-6367-4c36-869e-2e0eea7eb955
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -176,39 +174,42 @@ tasks:
           "y": 120
         }
       }
-  "11":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: Config
-                root: PrismaCloud
-          operator: isNotEmpty
-      label: "yes"
-    id: "11"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5d1e8ec3-2a63-48e1-8612-618b8b18f1aa
+    type: condition
+    task:
+      id: 5d1e8ec3-2a63-48e1-8612-618b8b18f1aa
+      version: -1
+      name: Are Results Found?
+      description: Check whether results are found.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "13"
       "yes":
       - "12"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check whether results are found.
-      id: 2c5b69d3-5140-43b9-81bc-2709df5f30b3
-      iscommand: false
-      name: Are Results Found?
-      type: condition
-      version: -1
-    taskid: 2c5b69d3-5140-43b9-81bc-2709df5f30b3
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud
+                accessor: Config
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -216,34 +217,36 @@ tasks:
           "y": 430
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    ignoreworker: false
+    taskid: 27ec017b-ae1f-44b9-85c2-0e4f530fff48
+    type: regular
+    task:
+      id: 27ec017b-ae1f-44b9-85c2-0e4f530fff48
+      version: -1
+      name: Transform Results
+      description: Prisma Cloud Attribution
+      scriptName: PrismaCloudAttribution
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
-    note: false
-    quietmode: 0
     scriptarguments:
       assets:
         complex:
-          accessor: Config
           root: PrismaCloud
-      fields: {}
+          accessor: Config
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prisma Cloud Attribution
-      id: ff2d2409-0395-4fdb-8cda-97a5cc9d8e47
-      iscommand: false
-      name: Transform Results
-      script: PrismaCloudAttribution
-      type: regular
-      version: -1
-    taskid: ff2d2409-0395-4fdb-8cda-97a5cc9d8e47
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -251,24 +254,27 @@ tasks:
           "y": 600
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 8cd43035-2b66-4a07-80e7-ef5e174f94e3
+    type: title
     task:
-      brand: ""
-      id: 3d4b5cbf-1738-419c-85b1-3c614af31a12
-      iscommand: false
+      id: 8cd43035-2b66-4a07-80e7-ef5e174f94e3
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 3d4b5cbf-1738-419c-85b1-3c614af31a12
-    timertriggers: []
-    type: title
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -276,29 +282,32 @@ tasks:
           "y": 770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    ignoreworker: false
+    taskid: f4ac9ede-8ee3-4998-8f1d-c75143fe801d
+    type: title
+    task:
+      id: f4ac9ede-8ee3-4998-8f1d-c75143fe801d
+      version: -1
+      name: Search in Prisma Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
       - "9"
       - "17"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 4241d2b2-652d-4c89-8144-d65dd93acd92
-      iscommand: false
-      name: Search in Prisma Cloud
-      type: title
-      version: -1
-      description: ''
-    taskid: 4241d2b2-652d-4c89-8144-d65dd93acd92
-    timertriggers: []
-    type: title
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -306,55 +315,58 @@ tasks:
           "y": -20
         }
       }
-  "15":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.brand
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: PrismaCloud v2
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.state
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: active
-                root: modules
-          operator: isExists
-      label: "yes"
-    id: "15"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d168a138-6f37-4b36-8efd-5ca469637e29
+    type: condition
+    task:
+      id: d168a138-6f37-4b36-8efd-5ca469637e29
+      version: -1
+      name: Is Prisma Cloud enabled?
+      description: Check whether Prisma Cloud integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "13"
       "yes":
       - "14"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check whether Prisma Cloud integration is enabled.
-      id: 1bdd9012-d66d-4a7f-8d4a-353b5eaafe58
-      iscommand: false
-      name: Is Prisma Cloud enabled?
-      type: condition
-      version: -1
-    taskid: 1bdd9012-d66d-4a7f-8d4a-353b5eaafe58
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -362,38 +374,41 @@ tasks:
           "y": -190
         }
       }
-  "16":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.PublicIPAddress
-          operator: isNotEmpty
-      label: "yes"
-    id: "16"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 141f9c6c-6fed-473a-8818-4d3e026f0327
+    type: condition
+    task:
+      id: 141f9c6c-6fed-473a-8818-4d3e026f0327
+      version: -1
+      name: Are there IPs in input?
+      description: Check if there are any IPs in the input.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "13"
       "yes":
       - "15"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check if there are any IPs in the input.
-      id: e273f930-7647-485d-8692-6365d61a0d19
-      iscommand: false
-      name: Are there IPs in input?
-      type: condition
-      version: -1
-    taskid: e273f930-7647-485d-8692-6365d61a0d19
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.PublicIPAddress
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -401,53 +416,55 @@ tasks:
           "y": -360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    ignoreworker: false
+    taskid: 2c81386b-6119-4a6e-891b-331896018e4c
+    type: regular
+    task:
+      id: 2c81386b-6119-4a6e-891b-331896018e4c
+      version: -1
+      name: Search in Route53 Hosted Zones
+      description: Search EC2 instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
       query:
         complex:
           root: inputs.PublicIPAddress
           transformers:
-          - args:
+          - operator: concat
+            args:
               prefix:
                 value:
                   simple: 'resourceRecordSet[*].resourceRecords[*].value equals '
               suffix: {}
-            operator: concat
-          - args:
+          - operator: join
+            args:
               separator:
                 value:
                   simple: ' OR '
-            operator: join
-          - args:
+          - operator: concat
+            args:
               prefix:
                 value:
                   simple: 'config from cloud.resource where cloud.type = ''aws'' AND cloud.service = ''Amazon Route53'' AND api.name = ''aws-route53-list-hosted-zones'' AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
-            operator: concat
-      time-range-value: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: PrismaCloud v2
-      description: Search EC2 instances in Prisma Cloud.
-      id: ace1585b-f50b-4466-8ec0-ba15ea621d90
-      iscommand: true
-      name: Search in Route53 Hosted Zones
-      script: PrismaCloud v2|||prisma-cloud-config-search
-      type: regular
-      version: -1
-    taskid: ace1585b-f50b-4466-8ec0-ba15ea621d90
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -455,7 +472,13 @@ tasks:
           "y": 120
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -472,6 +495,19 @@ view: |-
       }
     }
   }
-fromversion: 6.5.0
+inputs:
+- key: PublicIPAddress
+  value: {}
+  required: true
+  description: Public IP address to look up.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+- contextPath: PrismaCloud.Config.data.tags
+  description: Prisma Cloud Tags information.
+  type: unknown
 tests:
-- No tests
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,0 +1,665 @@
+{
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_aliases",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_goals",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_primarymotivation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_secondarymotivations",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_resourcelevel",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "indicator",
+    "id": "Intrusion Set",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "main",
+                "name": "Summary",
+                "sections": [
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "id",
+                                "width": 110
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "severity",
+                                "width": 80
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "status",
+                                "width": 80
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
+                        "isVisible": true,
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "comment",
+                                "height": 22,
+                                "id": "0b9dd200-a09e-11e9-8956-390f602b039a",
+                                "index": 0,
+                                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "55a26a10-81af-11ec-a247-cfbd25dcdbb6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
+                                "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
+                                "index": 2,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "60dd8e70-a81e-11eb-8bae-034332f83c9b",
+                                "index": 3,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "goals",
+                                "height": 22,
+                                "id": "662e2ec0-a81e-11eb-8bae-034332f83c9b",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcelevel",
+                                "height": 22,
+                                "id": "6b496730-a81e-11eb-8bae-034332f83c9b",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "primarymotivation",
+                                "height": 22,
+                                "id": "7532c980-a81e-11eb-8bae-034332f83c9b",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "secondarymotivations",
+                                "height": 22,
+                                "id": "70310c80-a81e-11eb-8bae-034332f83c9b",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
+                                "index": 8,
+                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
+                                "index": 9,
+                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
+                                "index": 10,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
+                                "index": 10,
+                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Intrusion Set Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
+                                "index": 0,
+                                "listId": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Intrusion Set Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "main-979b5ae0-979e-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "qvpdtmert1",
+                "name": "Publications and notes",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 9,
+                        "hideName": false,
+                        "i": "qvpdtmert1-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "f6abcbb0-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "f8eb5b70-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Publications and notes",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-relatedIncidents",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-comments",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "9312b650-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "98d2e150-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
+                                "index": 2,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "8c529640-a81e-11eb-8bae-034332f83c9b",
+                                "index": 3,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infrastructuretypes",
+                                "height": 22,
+                                "id": "a51c53b0-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "goals",
+                                "height": 22,
+                                "id": "e5d34080-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcelevel",
+                                "height": 22,
+                                "id": "f18e2e80-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "primarymotivation",
+                                "height": 22,
+                                "id": "f95aa440-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "secondarymotivations",
+                                "height": 22,
+                                "id": "fce04890-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "070db8c0-84f0-11ec-a589-e73aadc98c9a",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "0bc4d830-84f0-11ec-a589-e73aadc98c9a",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Intrusion Set Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 22,
+                                "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Intrusion Set Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "se889tdxik",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Intrusion Set",
+    "system": false,
+    "version": -1,
+    "description": "Intrusion Set Layout",
+	"fromVersion": "6.10.0"
+}

@@ -166,7 +166,8 @@ class Client:
             # old OOB authentication
             verifier = integration_context.get('verifier')
             if not verifier:
-                raise ValueError("Missing verifier. Make sure to follow the auth flow. Start by running !gmail-auth-link.")
+                raise ValueError("Missing verifier. Make sure to follow the auth flow."
+                                 " Start by running !gmail-auth-link.")
             body['code_verifier'] = verifier
             body['redirect_uri'] = 'urn:ietf:wg:oauth:2.0:oob'
         else:
@@ -235,7 +236,7 @@ class Client:
         html = u''
         attachments = []  # type: list
         for part in parts:
-            if 'multipart' in part['mimeType']:
+            if 'multipart' in part['mimeType'] and part.get('parts'):
                 part_body, part_html, part_attachments = self.parse_mail_parts(
                     part['parts'])
                 body += part_body
@@ -909,7 +910,7 @@ class Client:
         if inReplyTo:
             message['In-Reply-To'] = self.header(' '.join(inReplyTo.split()))
         if references:
-            message['References'] = self.header(' '.join(references.split()))
+            message['References'] = self.header(' '.join(references))
 
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
@@ -1004,59 +1005,59 @@ def test_module(client):
     demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')
 
 
-def send_mail_command(client):
-    args = demisto.args()
-    emailto = args.get('to')
+def mail_command(client, args, email_from, send_as, subject_prefix='', in_reply_to=None, references=None):
+    email_to = args.get('to')
     body = args.get('body')
-    subject = args.get('subject')
+    subject = f"{subject_prefix}{args.get('subject')}"
     entry_ids = argToList(args.get('attachIDs'))
     cc = args.get('cc')
     bcc = args.get('bcc')
-    htmlBody = args.get('htmlBody')
-    replyTo = args.get('replyTo')
-    file_names = argToList(args.get('attachNames'))
-    attchCID = argToList(args.get('attachCIDs'))
-    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
-    transientFile = argToList(args.get('transientFile'))
-    transientFileContent = argToList(args.get('transientFileContent'))
-    transientFileCID = argToList(args.get('transientFileCID'))
+    html_body = args.get('htmlBody')
+    reply_to = args.get('replyTo')
+    attach_names = argToList(args.get('attachNames'))
+    attach_cids = argToList(args.get('attachCIDs'))
+    transient_file = argToList(args.get('transientFile'))
+    transient_file_content = argToList(args.get('transientFileContent'))
+    transient_file_cid = argToList(args.get('transientFileCID'))
+    manual_attach_obj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
+    render_body = argToBoolean(args.get('renderBody', False))
+    body_type = args.get('bodyType', 'Text').lower()
 
-    result = client.send_mail(emailto, EMAIL, SEND_AS, cc, bcc, subject, body, htmlBody, entry_ids,
-                              replyTo, file_names, attchCID, manualAttachObj, transientFile, transientFileContent,
-                              transientFileCID, additional_headers, template_param)
-    return client.sent_mail_to_entry('Email sent:', [result], emailto, SEND_AS or EMAIL, cc, bcc, htmlBody, body,
-                                     subject)
+    rendering_body = html_body if body_type == "html" else body
+
+    result = client.send_mail(email_to, email_from, send_as, cc, bcc, subject, body, html_body, entry_ids, reply_to,
+                              attach_names, attach_cids, manual_attach_obj, transient_file, transient_file_content,
+                              transient_file_cid, additional_headers, template_param, in_reply_to, references)
+    send_mail_result = client.sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, html_body,
+                                                 rendering_body, subject)
+
+    if render_body:
+        html_result = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['html'],
+            'Contents': html_body
+        }
+
+        return [send_mail_result, html_result]
+    return send_mail_result
+
+
+def send_mail_command(client):
+
+    args = demisto.args()
+    return mail_command(client, args, EMAIL, SEND_AS or EMAIL)
 
 
 def reply_mail_command(client):
     args = demisto.args()
-    emailto = args.get('to')
-    emailfrom = args.get('from')
+    email_from = args.get('from')
     send_as = args.get('send_as')
-    inReplyTo = args.get('inReplyTo')
+    in_reply_to = args.get('in_reply_to')
     references = argToList(args.get('references'))
-    body = args.get('body')
-    subject = 'Re: ' + args.get('subject')
-    entry_ids = args.get('attachIDs')
-    cc = args.get('cc')
-    bcc = args.get('bcc')
-    htmlBody = args.get('htmlBody')
-    replyTo = args.get('replyTo')
-    file_names = argToList(args.get('attachNames'))
-    attchCID = argToList(args.get('attachCIDs'))
-    transientFile = argToList(args.get('transientFile'))
-    transientFileContent = argToList(args.get('transientFileContent'))
-    transientFileCID = argToList(args.get('transientFileCID'))
-    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
-    additional_headers = argToList(args.get('additionalHeader'))
-    template_param = args.get('templateParams')
 
-    result = client.send_mail(emailto, emailfrom, send_as, cc, bcc, subject, body, htmlBody, entry_ids, replyTo,
-                              file_names, attchCID, manualAttachObj, transientFile, transientFileContent,
-                              transientFileCID, additional_headers, template_param, inReplyTo, references)
-    return client.sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
+    return mail_command(client, args, email_from, send_as, 'Re: ', in_reply_to, references)
 
 
 def get_attachments_command(client):

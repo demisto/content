@@ -23,10 +23,6 @@
             "value": "22019-11-12T15:00:30Z"
         },
         {
-            "type": "Email/MessageID",
-            "value": "<dummy_message_id_1>"
-        },
-        {
             "type": "Email/Subject",
             "value": "First email to fetch"
         },
@@ -47,6 +43,14 @@
             "value": "False"
         },
         {
+            "type": "Email/MessageID",
+            "value": "<dummy_message_id_1>"
+        },
+        {
+            "type": "Email/Categories",
+            "value": "['Green category']"
+        },
+        {
             "type": "Email/Header/MIME-Version",
             "value": "1.0"
         },
@@ -63,18 +67,6 @@
             "value": "multipart/alternative"
         },
         {
-            "type": "Email/Body",
-            "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n"
-        },
-        {
-            "type": "Email/Text",
-            "value": "Body 1"
-        },
-        {
-            "type": "Email/BodyType",
-            "value": "html"
-        },
-        {
             "type": "Email/Sender",
             "value": "dummysender@works.com"
         },
@@ -85,6 +77,18 @@
         {
             "type": "Email/To",
             "value": "recipient@dev.onmicrosoft.com"
+        },
+        {
+            "type": "Email/Body",
+            "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n"
+        },
+        {
+            "type": "Email/Text",
+            "value": "Body 1"
+        },
+        {
+            "type": "Email/BodyType",
+            "value": "html"
         },
         {
             "type": "Email/Mailbox",
@@ -133,6 +137,7 @@
         ],
         "Cc": [],
         "Bcc": [],
+        "Categories": ["Green category"],
         "Text": "Body 1"
     }
 }

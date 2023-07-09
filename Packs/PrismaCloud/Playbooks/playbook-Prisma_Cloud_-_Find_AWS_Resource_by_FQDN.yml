@@ -1,4 +1,5 @@
 description: |
+  Deprecated. Use Prisma Cloud - Find AWS Resource by FQDN v2 instead.
   Find AWS resources by FQDN using Prisma Cloud inventory.
   Supported services: EC2, Application Load Balancer, ECS, Route53, CloudFront, S3, API Gateway.
 id: Prisma Cloud - Find AWS Resource by FQDN
@@ -1535,4 +1536,5 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

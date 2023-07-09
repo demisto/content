@@ -45,12 +45,10 @@ configuration:
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -84,6 +82,5 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     description: Check URL Reputation
-hidden: false
 system: true
 fromversion: 5.0.0

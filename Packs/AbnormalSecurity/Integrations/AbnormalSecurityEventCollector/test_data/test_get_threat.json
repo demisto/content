@@ -10,12 +10,14 @@
             {
                 "threatId": "123456789-1",
                 "abxMessageId": 2,
-                "receivedTime": "2022-08-01T18:44:38Z"
+                "receivedTime": "2022-08-01T18:44:38Z",
+                "toAddresses": ["test1", "test2"]
             },
             {
                 "threatId": "123456789-1",
                 "abxMessageId": 3,
-                "receivedTime": "2022-06-01T18:44:38Z"
+                "receivedTime": "2022-06-01T18:44:38Z",
+                "toAddresses": ""
             },
             {
                 "threatId": "123456789-1",
@@ -41,7 +43,8 @@
             {
                 "threatId": "123456789-2",
                 "abxMessageId": 2,
-                "receivedTime": "2022-08-02T18:44:38Z"
+                "receivedTime": "2022-08-02T18:44:38Z",
+                "toAddresses": "test1,test2"
             },
             {
                 "threatId": "123456789-2",

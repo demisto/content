@@ -16,9 +16,9 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - cb-watchlist-get
+  - cb-edr-watchlists-list
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,714 @@
+{
+    "expand": "customfield_10022.requestTypePractice,operations,versionedRepresentations,editmeta,changelog,transitions,renderedFields",
+    "id": "10161",
+    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/10161",
+    "key": "DEM-158",
+    "renderedFields": {
+        "statuscategorychangedate": "11/Dec/18 8:02 PM",
+        "customfield_10070": [],
+        "customfield_10071": null,
+        "customfield_10072": null,
+        "customfield_10073": null,
+        "customfield_10074": null,
+        "customfield_10075": null,
+        "customfield_10076": null,
+        "fixVersions": null,
+        "customfield_10078": "",
+        "customfield_10079": "",
+        "resolution": null,
+        "lastViewed": "27/Mar/23 3:25 PM",
+        "customfield_10060": null,
+        "customfield_10061": null,
+        "customfield_10062": "",
+        "customfield_10063": "",
+        "customfield_10064": "",
+        "customfield_10065": null,
+        "customfield_10066": null,
+        "priority": null,
+        "customfield_10067": null,
+        "customfield_10068": "",
+        "customfield_10069": "",
+        "labels": null,
+        "timeestimate": null,
+        "aggregatetimeoriginalestimate": null,
+        "versions": null,
+        "issuelinks": null,
+        "assignee": null,
+        "status": null,
+        "components": null,
+        "customfield_10050": null,
+        "customfield_10051": null,
+        "customfield_10052": null,
+        "customfield_10053": null,
+        "customfield_10054": null,
+        "customfield_10055": null,
+        "customfield_10056": null,
+        "customfield_10057": null,
+        "customfield_10058": "",
+        "customfield_10059": null,
+        "customfield_10049": null,
+        "aggregatetimeestimate": null,
+        "creator": null,
+        "subtasks": null,
+        "customfield_10040": null,
+        "customfield_10041": null,
+        "customfield_10042": null,
+        "reporter": null,
+        "customfield_10043": null,
+        "aggregateprogress": null,
+        "customfield_10045": "",
+        "customfield_10047": null,
+        "customfield_10048": null,
+        "customfield_10038": null,
+        "customfield_10039": "",
+        "progress": null,
+        "votes": null,
+        "worklog": {
+            "startAt": 0,
+            "maxResults": 20,
+            "total": 0,
+            "worklogs": []
+        },
+        "issuetype": null,
+        "timespent": null,
+        "customfield_10031": null,
+        "project": null,
+        "customfield_10032": null,
+        "customfield_10033": "",
+        "aggregatetimespent": null,
+        "customfield_10034": "",
+        "customfield_10035": null,
+        "customfield_10036": null,
+        "customfield_10037": "",
+        "customfield_10027": null,
+        "customfield_10029": null,
+        "resolutiondate": null,
+        "workratio": null,
+        "watches": null,
+        "issuerestriction": null,
+        "created": "11/Dec/18 8:02 PM",
+        "customfield_10022": null,
+        "customfield_10023": null,
+        "customfield_10024": null,
+        "customfield_10025": "",
+        "customfield_10016": null,
+        "customfield_10017": null,
+        "customfield_10018": null,
+        "customfield_10019": null,
+        "updated": "11/Dec/18 8:02 PM",
+        "customfield_10090": null,
+        "customfield_10091": "",
+        "customfield_10092": null,
+        "customfield_10093": "",
+        "customfield_10094": null,
+        "timeoriginalestimate": null,
+        "customfield_10095": null,
+        "customfield_10096": "",
+        "description": "",
+        "customfield_10097": null,
+        "customfield_10013": null,
+        "customfield_10014": null,
+        "timetracking": {},
+        "customfield_10015": null,
+        "customfield_10005": null,
+        "customfield_10006": null,
+        "customfield_10007": null,
+        "security": null,
+        "customfield_10008": null,
+        "customfield_10009": null,
+        "attachment": [],
+        "summary": null,
+        "customfield_10080": "",
+        "customfield_10081": "",
+        "customfield_10082": "",
+        "customfield_10083": "",
+        "customfield_10084": "",
+        "customfield_10085": "",
+        "customfield_10086": null,
+        "customfield_10087": null,
+        "customfield_10088": null,
+        "customfield_10001": null,
+        "customfield_10089": null,
+        "customfield_10002": null,
+        "customfield_10003": null,
+        "customfield_10004": null,
+        "environment": "",
+        "duedate": null,
+        "comment": {
+            "comments": [],
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/10161/comment",
+            "maxResults": 0,
+            "total": 0,
+            "startAt": 0
+        }
+    },
+    "transitions": [
+        {
+            "id": "11",
+            "name": "Start Progress",
+            "to": {
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/status/3",
+                "description": "This issue is being actively worked on at the moment by the assignee.",
+                "iconUrl": "https://demistodev.atlassian.net/images/icons/statuses/inprogress.png",
+                "name": "In Progress",
+                "id": "3",
+                "statusCategory": {
+                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/statuscategory/4",
+                    "id": 4,
+                    "key": "indeterminate",
+                    "colorName": "yellow",
+                    "name": "In Progress"
+                }
+            },
+            "hasScreen": false,
+            "isGlobal": false,
+            "isInitial": false,
+            "isAvailable": true,
+            "isConditional": false,
+            "isLooped": false
+        },
+        {
+            "id": "21",
+            "name": "Done",
+            "to": {
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/status/10001",
+                "description": "",
+                "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+                "name": "Done",
+                "id": "10001",
+                "statusCategory": {
+                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/statuscategory/3",
+                    "id": 3,
+                    "key": "done",
+                    "colorName": "green",
+                    "name": "Done"
+                }
+            },
+            "hasScreen": false,
+            "isGlobal": false,
+            "isInitial": false,
+            "isAvailable": true,
+            "isConditional": true,
+            "isLooped": false
+        }
+    ],
+    "fields": {
+        "statuscategorychangedate": "2018-12-11T20:02:44.679+0200",
+        "customfield_10070": {
+            "issueFieldDisplayName": "Responders",
+            "rawData": {}
+        },
+        "customfield_10071": {
+            "issueFieldDisplayName": "Time to resolution",
+            "rawData": {}
+        },
+        "customfield_10072": {
+            "issueFieldDisplayName": "Time to first response",
+            "rawData": {}
+        },
+        "customfield_10073": {
+            "issueFieldDisplayName": "Time to close after resolution",
+            "rawData": {}
+        },
+        "customfield_10074": {
+            "issueFieldDisplayName": "Time to review normal change",
+            "rawData": {}
+        },
+        "customfield_10075": {
+            "issueFieldDisplayName": "Source IP",
+            "rawData": {}
+        },
+        "customfield_10076": {
+            "issueFieldDisplayName": "Destination IP",
+            "rawData": {}
+        },
+        "fixVersions": [],
+        "customfield_10078": {
+            "issueFieldDisplayName": "SRC IP",
+            "rawData": {}
+        },
+        "customfield_10079": {
+            "issueFieldDisplayName": "DST IP",
+            "rawData": {}
+        },
+        "resolution": null,
+        "lastViewed": "2023-03-27T15:25:37.735+0300",
+        "customfield_10060": {
+            "issueFieldDisplayName": "Severity",
+            "rawData": {}
+        },
+        "customfield_10061": {
+            "issueFieldDisplayName": "Source",
+            "rawData": {}
+        },
+        "customfield_10062": {
+            "issueFieldDisplayName": "Implementation plan",
+            "rawData": {}
+        },
+        "customfield_10063": {
+            "issueFieldDisplayName": "Backout plan",
+            "rawData": {}
+        },
+        "customfield_10064": {
+            "issueFieldDisplayName": "Test plan",
+            "rawData": {}
+        },
+        "customfield_10065": {
+            "issueFieldDisplayName": "Planned start",
+            "rawData": {}
+        },
+        "customfield_10066": {
+            "issueFieldDisplayName": "Planned end",
+            "rawData": {}
+        },
+        "priority": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/priority/3",
+            "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/medium.svg",
+            "name": "Medium",
+            "id": "3"
+        },
+        "customfield_10067": {
+            "issueFieldDisplayName": "Investigation reason",
+            "rawData": {}
+        },
+        "customfield_10068": {
+            "issueFieldDisplayName": "Root cause",
+            "rawData": {}
+        },
+        "customfield_10069": {
+            "issueFieldDisplayName": "Workaround",
+            "rawData": {}
+        },
+        "labels": [],
+        "timeestimate": null,
+        "aggregatetimeoriginalestimate": null,
+        "versions": [],
+        "issuelinks": [],
+        "assignee": null,
+        "status": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/status/10000",
+            "description": "",
+            "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+            "name": "To Do",
+            "id": "10000",
+            "statusCategory": {
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "To Do"
+            }
+        },
+        "components": [],
+        "customfield_10050": {
+            "issueFieldDisplayName": "Satisfaction date",
+            "rawData": {}
+        },
+        "customfield_10051": {
+            "issueFieldDisplayName": "Approvals",
+            "rawData": {}
+        },
+        "customfield_10052": {
+            "issueFieldDisplayName": "Request language",
+            "rawData": {}
+        },
+        "customfield_10053": {
+            "issueFieldDisplayName": "Urgency",
+            "rawData": {}
+        },
+        "customfield_10054": {
+            "issueFieldDisplayName": "Pending reason",
+            "rawData": {}
+        },
+        "customfield_10055": {
+            "issueFieldDisplayName": "Product categorization",
+            "rawData": {}
+        },
+        "customfield_10056": {
+            "issueFieldDisplayName": "Operational categorization",
+            "rawData": {}
+        },
+        "customfield_10057": {
+            "issueFieldDisplayName": "Approver groups",
+            "rawData": {}
+        },
+        "customfield_10058": {
+            "issueFieldDisplayName": "Affected hardware",
+            "rawData": {}
+        },
+        "customfield_10059": {
+            "issueFieldDisplayName": "Affected services",
+            "rawData": {}
+        },
+        "customfield_10049": {
+            "issueFieldDisplayName": "Work category",
+            "rawData": {}
+        },
+        "aggregatetimeestimate": null,
+        "creator": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
+            "accountId": "dummy_account_id",
+            "emailAddress": "admin@demistodev.com",
+            "avatarUrls": {
+                "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+            },
+            "displayName": "Example User",
+            "active": true,
+            "timeZone": "Asia/Jerusalem",
+            "accountType": "atlassian"
+        },
+        "subtasks": [],
+        "customfield_10040": {
+            "issueFieldDisplayName": "Ticket Number",
+            "rawData": {}
+        },
+        "customfield_10041": {
+            "issueFieldDisplayName": "Requested Sources",
+            "rawData": {}
+        },
+        "customfield_10042": {
+            "issueFieldDisplayName": "Target start",
+            "rawData": {}
+        },
+        "reporter": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
+            "accountId": "dummy_account_id",
+            "emailAddress": "admin@demistodev.com",
+            "avatarUrls": {
+                "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+            },
+            "displayName": "Example User",
+            "active": true,
+            "timeZone": "Asia/Jerusalem",
+            "accountType": "atlassian"
+        },
+        "customfield_10043": {
+            "issueFieldDisplayName": "Target end",
+            "rawData": {}
+        },
+        "aggregateprogress": {
+            "progress": 0,
+            "total": 0
+        },
+        "customfield_10045": {
+            "issueFieldDisplayName": "CustomTest",
+            "rawData": {}
+        },
+        "customfield_10047": {
+            "issueFieldDisplayName": "label test",
+            "rawData": {}
+        },
+        "customfield_10048": {
+            "issueFieldDisplayName": "test user picker",
+            "rawData": {}
+        },
+        "customfield_10038": {
+            "issueFieldDisplayName": "Software Version",
+            "rawData": {}
+        },
+        "customfield_10039": {
+            "issueFieldDisplayName": "Software Vendor",
+            "rawData": {}
+        },
+        "progress": {
+            "progress": 0,
+            "total": 0
+        },
+        "votes": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/DEM-158/votes",
+            "votes": 0,
+            "hasVoted": false
+        },
+        "worklog": {
+            "startAt": 0,
+            "maxResults": 20,
+            "total": 0,
+            "worklogs": []
+        },
+        "issuetype": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issuetype/10001",
+            "id": "10001",
+            "description": "A task that needs to be done.",
+            "iconUrl": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+            "name": "Task",
+            "subtask": false,
+            "avatarId": 10318,
+            "hierarchyLevel": 0
+        },
+        "timespent": null,
+        "customfield_10031": {
+            "issueFieldDisplayName": "Satisfaction",
+            "rawData": {}
+        },
+        "project": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/project/10000",
+            "id": "10000",
+            "key": "DEM",
+            "name": "demistodev",
+            "projectTypeKey": "software",
+            "simplified": false,
+            "avatarUrls": {
+                "48x48": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/universal_avatar/view/type/project/avatar/10324",
+                "24x24": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/universal_avatar/view/type/project/avatar/10324?size=small",
+                "16x16": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/universal_avatar/view/type/project/avatar/10324?size=xsmall",
+                "32x32": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/universal_avatar/view/type/project/avatar/10324?size=medium"
+            }
+        },
+        "customfield_10032": {
+            "issueFieldDisplayName": "Issueidlist",
+            "rawData": {}
+        },
+        "customfield_10033": {
+            "issueFieldDisplayName": "FanaticsTest",
+            "rawData": {}
+        },
+        "aggregatetimespent": null,
+        "customfield_10034": {
+            "issueFieldDisplayName": "Content type",
+            "rawData": {}
+        },
+        "customfield_10035": {
+            "issueFieldDisplayName": "Publication date",
+            "rawData": {}
+        },
+        "customfield_10036": {
+            "issueFieldDisplayName": "Early Warning",
+            "rawData": {}
+        },
+        "customfield_10037": {
+            "issueFieldDisplayName": "Software Name",
+            "rawData": {}
+        },
+        "customfield_10027": {
+            "issueFieldDisplayName": "Flagged",
+            "rawData": {}
+        },
+        "customfield_10029": {
+            "issueFieldDisplayName": "Type of Incident",
+            "rawData": {}
+        },
+        "resolutiondate": null,
+        "workratio": -1,
+        "watches": {
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/DEM-158/watchers",
+            "watchCount": 1,
+            "isWatching": true
+        },
+        "issuerestriction": {
+            "issuerestrictions": {},
+            "shouldDisplay": false
+        },
+        "created": "2018-12-11T20:02:44.679+0200",
+        "customfield_10022": {
+            "issueFieldDisplayName": "Request Type",
+            "rawData": {}
+        },
+        "customfield_10023": {
+            "issueFieldDisplayName": "Request participants",
+            "rawData": {}
+        },
+        "customfield_10024": {
+            "issueFieldDisplayName": "Story point estimate",
+            "rawData": {}
+        },
+        "customfield_10025": {
+            "issueFieldDisplayName": "Issue color",
+            "rawData": {}
+        },
+        "customfield_10016": {
+            "issueFieldDisplayName": "[CHART] Date of First Response",
+            "rawData": {}
+        },
+        "customfield_10017": {
+            "issueFieldDisplayName": "[CHART] Time in Status",
+            "rawData": {}
+        },
+        "customfield_10018": {
+            "issueFieldDisplayName": "Sprint",
+            "rawData": {}
+        },
+        "customfield_10019": {
+            "issueFieldDisplayName": "Rank",
+            "rawData": "0|i0001j:"
+        },
+        "updated": "2018-12-11T20:02:44.679+0200",
+        "customfield_10090": {
+            "issueFieldDisplayName": "Total forms",
+            "rawData": {}
+        },
+        "customfield_10091": {
+            "issueFieldDisplayName": "XSOAR Status",
+            "rawData": {}
+        },
+        "customfield_10092": {
+            "issueFieldDisplayName": "Compass",
+            "rawData": {}
+        },
+        "customfield_10093": {
+            "issueFieldDisplayName": "XSOAR ID",
+            "rawData": {}
+        },
+        "customfield_10094": {
+            "issueFieldDisplayName": "Category",
+            "rawData": {}
+        },
+        "timeoriginalestimate": null,
+        "customfield_10095": {
+            "issueFieldDisplayName": "AHA! Link",
+            "rawData": {}
+        },
+        "customfield_10096": {
+            "issueFieldDisplayName": "custom_plaintext_field",
+            "rawData": {}
+        },
+        "description": null,
+        "customfield_10097": {
+            "issueFieldDisplayName": "PR Link",
+            "rawData": {}
+        },
+        "customfield_10013": {
+            "issueFieldDisplayName": "Epic Link",
+            "rawData": {}
+        },
+        "customfield_10014": {
+            "issueFieldDisplayName": "Start date",
+            "rawData": {}
+        },
+        "timetracking": {},
+        "customfield_10015": {
+            "issueFieldDisplayName": "Parent Link",
+            "rawData": {
+                "hasEpicLinkFieldDependency": false,
+                "showField": false,
+                "nonEditableReason": {
+                    "reason": "PLUGIN_LICENSE_ERROR",
+                    "message": "The Parent Link is only available to Jira Premium users."
+                }
+            }
+        },
+        "customfield_10005": {
+            "issueFieldDisplayName": "Change type",
+            "rawData": {}
+        },
+        "customfield_10006": {
+            "issueFieldDisplayName": "Change risk",
+            "rawData": {}
+        },
+        "customfield_10007": {
+            "issueFieldDisplayName": "Change reason",
+            "rawData": {}
+        },
+        "security": null,
+        "customfield_10008": {
+            "issueFieldDisplayName": "Change start date",
+            "rawData": {}
+        },
+        "customfield_10009": {
+            "issueFieldDisplayName": "Change completion date",
+            "rawData": {}
+        },
+        "attachment": [],
+        "summary": "Oktatest1",
+        "customfield_10080": {
+            "issueFieldDisplayName": "Destination Port",
+            "rawData": {}
+        },
+        "customfield_10081": {
+            "issueFieldDisplayName": "FW policy action",
+            "rawData": {}
+        },
+        "customfield_10082": {
+            "issueFieldDisplayName": "FW Source Zone",
+            "rawData": {}
+        },
+        "customfield_10083": {
+            "issueFieldDisplayName": "FW Destination Zone",
+            "rawData": {}
+        },
+        "customfield_10084": {
+            "issueFieldDisplayName": "Protocol",
+            "rawData": {}
+        },
+        "customfield_10085": {
+            "issueFieldDisplayName": "FW Service",
+            "rawData": {}
+        },
+        "customfield_10086": {
+            "issueFieldDisplayName": "Major incident",
+            "rawData": {}
+        },
+        "customfield_10087": {
+            "issueFieldDisplayName": "Open forms",
+            "rawData": {}
+        },
+        "customfield_10088": {
+            "issueFieldDisplayName": "Submitted forms",
+            "rawData": {}
+        },
+        "customfield_10001": {
+            "issueFieldDisplayName": "Team",
+            "rawData": {}
+        },
+        "customfield_10089": {
+            "issueFieldDisplayName": "Locked forms",
+            "rawData": {}
+        },
+        "customfield_10002": {
+            "issueFieldDisplayName": "Organizations",
+            "rawData": {}
+        },
+        "customfield_10003": {
+            "issueFieldDisplayName": "Approvers",
+            "rawData": {}
+        },
+        "customfield_10004": {
+            "issueFieldDisplayName": "Impact",
+            "rawData": {}
+        },
+        "environment": null,
+        "duedate": null,
+        "comment": {
+            "comments": [],
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/10161/comment",
+            "maxResults": 0,
+            "total": 0,
+            "startAt": 0
+        }
+    },
+    "parsedDescription": "",
+    "extractedSubtasks": [],
+    "extractedCreator": "Example User(admin@demistodev.com)",
+    "extractedComponents": [],
+    "extractedComments": [
+        {
+            "Id": "18322",
+            "Comment": "Hello there",
+            "User": "Example User",
+            "Created": "2023-03-23T07:45:29.056+0200",
+            "Updated": "2023-03-23T07:45:29.056+0200",
+            "UpdateUser": "Example User"
+        }
+    ],
+    "mirror_direction": "Both",
+    "mirror_tags": [
+        "comment_tag_from_jira",
+        "comment_tag_to_jira",
+        "attachment_tag_from_jira",
+        "attachment_tag_to_jira"
+    ],
+    "mirror_instance": "",
+    "extractedAttachments": [
+        {
+            "FileID": "1"
+        },
+        {
+            "FileID": "2"
+        }
+    ]
+}

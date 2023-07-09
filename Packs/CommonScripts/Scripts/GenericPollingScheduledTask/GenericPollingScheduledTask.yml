@@ -5,8 +5,7 @@ name: GenericPollingScheduledTask
 script: ''
 type: javascript
 tags: []
-comment: Runs the polling command repeatedly, completes a blocking manual task when
-  polling is done.
+comment: Runs the polling command repeatedly, completes a blocking manual task when polling is done.
 enabled: true
 args:
 - name: ids
@@ -27,11 +26,9 @@ args:
   description: Polling frequency - how often the polling command should run (minutes)
 - name: timeout
   required: true
-  description: How much time to poll before declaring a timeout and resuming the playbook
-    (minutes)
+  description: How much time to poll before declaring a timeout and resuming the playbook (minutes)
 - name: playbookId
-  description: The ID of the playbook that contains the manual task which will be
-    completed once the polling is done.
+  description: The ID of the playbook that contains the manual task which will be completed once the polling is done.
 - name: tag
   required: true
   description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
@@ -42,8 +39,11 @@ args:
 - name: additionalPollingCommandArgValues
   description: Commas separated arguments values of the polling command
   isArray: true
+- name: scheduledEntryGuid
+  description: The GUID of the scheduled entry that runs the polling command.
+- name: endTime
+  description: The time to end the polling.
 scripttarget: 0
-runonce: false
 tests:
-- No test
+- Generic Polling Test
 fromversion: 5.0.0

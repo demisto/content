@@ -17,7 +17,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 * Enrich Cloud Assets
 * Expanse Load-Create List
-* Prisma Cloud Correlate Alerts
+* Prisma Cloud Correlate Alerts v2
 * Extract and Enrich Expanse Indicators
 * Attribution
 

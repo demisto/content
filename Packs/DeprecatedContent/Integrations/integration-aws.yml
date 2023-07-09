@@ -431,6 +431,5 @@ script:
     - name: headers
       description: Headers to display in Human readable format
     description: Get EC2 EBS Volume Information
-hidden: false
 tests:
 - No test

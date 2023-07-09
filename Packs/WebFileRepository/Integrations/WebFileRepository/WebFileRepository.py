@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import fnmatch
 import gzip
@@ -21,9 +23,7 @@ from typing import (IO, Any, Callable, Dict, Generator, List, Optional, Set,
                     Tuple, Union)
 
 import bottle
-import demistomock as demisto  # noqa: F401
 from bottle import BaseRequest, HTTPResponse
-from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 
@@ -4107,6 +4107,34 @@ def command_reset(args: Dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
+def command_upload_file(args: Dict[str, str], settings: Settings) -> str:
+    """ Upload a file
+
+    :param args: The parameters which were given to the command.
+    :param settings: The instance settings.
+    """
+    client = new_client(detect_service_ip_port(settings), settings)
+
+    res = demisto.getFilePath(args.get('entry_id'))
+    path = res['path']
+    name = args.get('file_name')
+    if not name:
+        name = res['name']
+
+    with open(path, 'rb') as f:
+        files = [('file', [name, f.read()])]
+
+    data = assign_params(
+        q='upload',
+        dir=args.get('upload_directory', '/'),
+        extract=args.get('extract_archive', 'false'),
+    )
+    resp = client._http_request('POST', data=data, files=files, raise_on_status=True)
+    if not resp.get('success'):
+        raise ValueError(f'Failed to upload a file: {resp.get("message")}')
+    return 'Done.'
+
+
 def command_upload_files(args: Dict[str, str], settings: Settings) -> str:
     """ Upload files
 
@@ -4123,11 +4151,11 @@ def command_upload_files(args: Dict[str, str], settings: Settings) -> str:
         with open(path, 'rb') as f:
             files.append(('file', [name, f.read()]))
 
-    data = {
-        'q': 'upload',
-        'dir': args.get('upload_directory', '/'),
-        'extract': 'true' if argToBoolean(args.get('extract_archive', 'false')) else 'false',
-    }
+    data = assign_params(
+        q='upload',
+        dir=args.get('upload_directory', '/'),
+        extract=args.get('extract_archive', 'false'),
+    )
     resp = client._http_request('POST', data=data, files=files, raise_on_status=True)
     if not resp.get('success'):
         raise ValueError(f'Failed to upload files: {resp.get("message")}')
@@ -4147,11 +4175,11 @@ def command_list_files(args: Dict[str, str], settings: Settings) -> CommandResul
             self.readable_value = readable_value
             self.context_value = context_value
 
-    query_params = {
-        'q': 'ls',
-        'dir': args.get('directory', '/'),
-        'recursive': 'true' if argToBoolean(args.get('recursive', 'false')) else 'false'
-    }
+    query_params = assign_params(
+        q='ls',
+        dir=args.get('directory', '/'),
+        recursive=args.get('recursive', 'false')
+    )
     client = new_client(detect_service_ip_port(settings), settings)
     resp = client._http_request('GET', params=query_params, raise_on_status=True)
     ents = resp.get('data')
@@ -4259,6 +4287,7 @@ def main() -> None:
         'wfr-status': command_status,
         'wfr-cleanup': command_cleanup,
         'wfr-reset': command_reset,
+        'wfr-upload-file': command_upload_file,
         'wfr-upload-files': command_upload_files,
         'wfr-list-files': command_list_files,
         'wfr-remove-files': command_remove_files,

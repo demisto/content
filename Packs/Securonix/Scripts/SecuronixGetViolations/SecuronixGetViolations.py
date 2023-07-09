@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-
     try:
         # Get the Violations data from the Incident Context.
         violations = demisto.get(demisto.context(), 'Securonix.ViolationData')
@@ -17,17 +16,29 @@ def main():
                 )
             )
         else:
-            heading = "\n# Violations Events Information:"
+            # If only 1 violation, convert it into list.
+            if isinstance(violations, dict):
+                violations = [violations]
+
+            # Get the latest 200 violations from the API.
+            violation_output = violations[-200:]
+
+            heading = f"\n# Latest {len(violation_output)} Violation Events:"
 
             headers = [
-                "Eventid", "Violator", "Policyname", "TenantName", "ResourceName", "Riskthreatname", "Ipaddress"
-                "Accountname", "Baseeventid", "Category", "Categoryseverity", "Destinationntdomain", "Deviceexternalid",
-                "Generationtime", "ID", "Invalid", "Jobstarttime", "Message", "Policyname",
-                "TenantID", "Timeline", "Transactionstring1", "ResourceGroupName", "Resourcegroupid",
-                "ResourceType", "Emailsenderdomain", "Requesturl", "Emailrecipient", "Emailsender"
+                "Eventid", "Violator", "Policyname", "Riskthreatname", "Tenantname", "Category", "Jobstarttime"
             ]
 
-            human_readable = tableToMarkdown(heading, t=violations, headers=headers, removeNull=True)
+            human_readable = tableToMarkdown(
+                heading,
+                t=remove_empty_elements(violation_output),
+                headers=headers,
+                removeNull=True
+            )
+
+            if len(violations) > 200:
+                human_readable += "\n### For all violations navigate to the War Room and search with the filter " \
+                                  "\"Playbook task results\". "
             return_results(CommandResults(readable_output=human_readable))
 
     except Exception as e:
@@ -35,7 +46,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

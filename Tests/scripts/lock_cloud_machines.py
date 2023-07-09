@@ -1,3 +1,4 @@
+from typing import Any
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from time import sleep
@@ -99,7 +100,7 @@ def check_job_status(token: str, job_id: str):
     return response.json().get('status')
 
 
-def remove_file(storage_bucket: any, file_path: str):
+def remove_file(storage_bucket: Any, file_path: str):
     """
     deletes a file from the bucket
     Args:
@@ -114,7 +115,7 @@ def remove_file(storage_bucket: any, file_path: str):
         pass
 
 
-def lock_machine(storage_bucket: any, lock_repository_name: str, machine_name: str, job_id: str):
+def lock_machine(storage_bucket: Any, lock_repository_name: str, machine_name: str, job_id: str):
     """
     create a lock machine file
     Args:
@@ -127,7 +128,7 @@ def lock_machine(storage_bucket: any, lock_repository_name: str, machine_name: s
     blob.upload_from_string('')
 
 
-def adding_build_to_the_queue(storage_bucket: any, lock_repository_name: str, job_id: str):
+def adding_build_to_the_queue(storage_bucket: Any, lock_repository_name: str, job_id: str):
     """
     create a lock machine file
     Args:
@@ -165,7 +166,7 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
     return my_place_in_the_queue, previous_build_in_queue
 
 
-def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list, gitlab_status_token: str,
+def try_to_lock_machine(storage_bucket: Any, machine: str, machines_locks: list, gitlab_status_token: str,
                         gcs_locks_path: str, job_id: str) -> str:
     """
     try to lock machine for the job
@@ -268,7 +269,7 @@ def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_
     Returns: the machines list.
     """
     if lock_machine_name:  # For debugging: We got a name of a specific machine to use.
-        logging.info('trying to lock the given machine: {options.lock_machine_name}')
+        logging.info(f'trying to lock the given machine: {lock_machine_name}')
         list_machines = [lock_machine_name]
     else:
         logging.info('getting all machine names')  # We are looking for a free machine in all the available machines.

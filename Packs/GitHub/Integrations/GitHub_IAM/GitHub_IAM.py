@@ -99,8 +99,18 @@ def test_module(client):
     :param client: the client object
     :return: ok if got a valid accesses token
     """
-    client.get_user("id", "1234")
-    return 'ok'
+    message: str = ''
+    try:
+        result = client.get_user("id", "1234")
+        if result:
+            message = 'ok'
+    except DemistoException as e:
+        # The url is for the users, it can throw not found for bad url as well, and we do want to catch it.
+        if 'Not Found' in str(e) and 'list-scim-provisioned-identities' in str(e):
+            message = 'ok'
+        else:
+            raise e
+    return message
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
@@ -313,7 +323,7 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 

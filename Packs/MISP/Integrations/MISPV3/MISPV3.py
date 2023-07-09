@@ -2,7 +2,6 @@
 from typing import Union, List, Dict
 from urllib.parse import urlparse
 import urllib3
-
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
 from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
@@ -549,13 +548,14 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         new_event (MISPEvent): When this function was called from create event command, the attrubite will be added to
         that existing event.
     """
+    value = demisto_args.get('value')
     attributes_args = {
         'id': demisto_args.get('event_id'),  # misp event id
         'type': demisto_args.get('type', 'other'),
         'category': demisto_args.get('category', 'External analysis'),
         'to_ids': argToBoolean(demisto_args.get('to_ids', True)),
         'comment': demisto_args.get('comment'),
-        'value': demisto_args.get('value')
+        'value': argToList(value)
     }
     event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None
@@ -1121,20 +1121,28 @@ def add_tag(demisto_args: dict, is_attribute=False):
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
     is_local_tag = argToBoolean(demisto_args.get('is_local', False))
+    disable_output = argToBoolean(demisto_args.get('disable_output', False))
     try:
         PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
     if is_attribute:
-        response = PYMISP.search(uuid=uuid, controller='attributes')
-        human_readable = f'Tag {tag} has been successfully added to attribute {uuid}'
-        return CommandResults(
-            readable_output=human_readable,
-            outputs_prefix='MISP.Attribute',
-            outputs_key_field='ID',
-            outputs=build_attributes_search_response(response),
-            raw_response=response
-        )
+        response = None
+        success_msg = f'Tag {tag} has been successfully added to attribute {uuid}'
+        if not disable_output:
+            response = PYMISP.search(uuid=uuid, controller='attributes')
+            return CommandResults(
+                readable_output=success_msg,
+                outputs_prefix='MISP.Attribute',
+                outputs_key_field='ID',
+                outputs=build_attributes_search_response(response),
+                raw_response=response
+            )
+        else:
+            return CommandResults(
+                readable_output=success_msg,
+                raw_response=success_msg
+            )
 
     # event's uuid
     response = PYMISP.search(uuid=uuid)

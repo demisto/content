@@ -1,0 +1,18 @@
+{
+    "group": {
+        "id": 1,
+        "name": "General - Applications Management Team",
+        "description": "Applications Management Team",
+        "escalate_to": null,
+        "unassigned_for": null,
+        "business_hours_id": null,
+        "created_at": "groups[0]_created_at",
+        "updated_at": "groups[0]_updated_at",
+        "auto_ticket_assign": false,
+        "ocs_schedule_id": null,
+        "workspace_id": 3,
+        "agent_ids": [],
+        "members": [],
+        "observers": []
+    }
+}

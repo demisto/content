@@ -12,7 +12,7 @@ default_tools = """
 | Link | Description |
 | --- | --- |
 | [Palo Alto Networks URL Filtering](https://urlfiltering.paloaltonetworks.com/) | Check a URL Category via Palo Altos Test a Site utility |
-| [Cortex XSOAR Admin Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html) | Cortex XSOAR Admin Guide |
+| [Cortex XSOAR Admin Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) | Cortex XSOAR Admin Guide |
 | [Cortex XSOAR Developer Guide](https://xsoar.pan.dev/) | The XSOAR Developer Guide |
 | [Cortex XSOAR Integration Reference](https://xsoar.pan.dev/docs/reference/index) | Reference documentation for Cortex XSOAR Integrations |
 | [Palo Alto Networks Live Community](https://live.paloaltonetworks.com/) | Palo Alto Networks Live Community, which includes training and how-to blog posts! |

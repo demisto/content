@@ -10,9 +10,10 @@ comment: This automation takes several Incident fields from the Threat Vault inc
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+skipprepare:
+- script-name-incident-to-alert

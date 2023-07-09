@@ -1,0 +1,23 @@
+{
+    "asset": {
+        "id": 1,
+        "display_id": 3,
+        "name": "Logitech Mouse",
+        "description": null,
+        "asset_type_id": 21002421487,
+        "impact": "low",
+        "author_type": "User",
+        "usage_type": "permanent",
+        "asset_tag": "ASSET-3",
+        "user_id": null,
+        "department_id": null,
+        "location_id": null,
+        "agent_id": null,
+        "group_id": null,
+        "assigned_on": null,
+        "created_at": "assets[0]_created_at",
+        "updated_at": "assets[0]_updated_at",
+        "end_of_life": "2026-12-25",
+        "workspace_id": 2
+    }
+}

@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 from abc import ABCMeta
 from typing import NamedTuple, Type
 
 from requests import Response
 
-import demistomock as demisto
-from CommonServerPython import *
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -322,13 +322,15 @@ class BuiltInShortener(URLUnshortingService):
         )
 
 
-def unshorten_url(service_name: str, url: str, redirect_limit: int, session_verify: bool = True) -> CommandResults:
+def unshorten_url(service_name: str, url: str, redirect_limit: int, use_system_proxy: bool = False,
+                  session_verify: bool = True) -> CommandResults:
     """
     Unshorten a shortened URL.
 
     Args:
         service_name (str): The service to use for unshortening.
         url (str): The URL to un-shorten.
+        use_system_proxy (bool): Whether to use the system proxy.
         session_verify (bool): Whether to verify the SSL certificate of the request.
         redirect_limit (int): A maximum number of recursions to run. Use 0 for unlimited.
     """
@@ -336,7 +338,9 @@ def unshorten_url(service_name: str, url: str, redirect_limit: int, session_veri
                     "It is possible that the unshortening process was not fully completed.\n\n"
 
     service_class = URLUnshortingService.find_matching_service(service_name=service_name)
-    service_instance = service_class(redirect_limit=redirect_limit, verify=session_verify)
+    service_instance = service_class(redirect_limit=redirect_limit,
+                                     proxy=use_system_proxy,
+                                     verify=session_verify)
     returned_data = service_instance.resolve_url(url=url)
 
     readable_output = ""
@@ -371,6 +375,7 @@ def main():  # pragma: no cover
     try:
         url: str = args["url"]
         service: str = args.get("service", DEFAULT_SERVICE)
+        use_system_proxy = argToBoolean(args.get("use_system_proxy", "False"))
         redirect_limit = arg_to_number(args.get("redirect_limit", DEFAULT_REDIRECT_LIMIT))
 
         # `arg_to_number` returns `None` if int conversion was unsuccessful.
@@ -381,6 +386,7 @@ def main():  # pragma: no cover
 
         result = unshorten_url(service_name=service,
                                url=url,
+                               use_system_proxy=use_system_proxy,
                                redirect_limit=redirect_limit,
                                session_verify=session_verify)
         return_results(result)

@@ -61,8 +61,23 @@ tasks:
     scriptarguments:
       MD5:
         complex:
-          root: inputs.MD5
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
           - operator: uniq
     separatecontext: true
     loop:
@@ -127,8 +142,23 @@ tasks:
     scriptarguments:
       MD5:
         complex:
-          root: inputs.MD5
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
           - operator: uniq
     separatecontext: true
     loop:
@@ -168,8 +198,23 @@ tasks:
     scriptarguments:
       SHA256:
         complex:
-          root: inputs.SHA256
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
           - operator: uniq
     separatecontext: true
     loop:
@@ -321,8 +366,23 @@ tasks:
     scriptarguments:
       HashList:
         complex:
-          root: inputs.SHA256
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
           - operator: uniq
     separatecontext: true
     loop:
@@ -360,12 +420,6 @@ inputs:
   value:
     complex:
       root: File
-      filters:
-      - - operator: isExists
-          left:
-            value:
-              simple: File.Malicious
-            iscontext: true
       accessor: MD5
   required: false
   description: The MD5 hash of the file you want to block.
@@ -374,15 +428,15 @@ inputs:
   value:
     complex:
       root: File
-      filters:
-      - - operator: isExists
-          left:
-            value:
-              simple: File.Malicious
-            iscontext: true
       accessor: SHA256
   required: false
   description: The SHA256 hash of the file you want to block.
+  playbookInputQuery:
+- key: Hash
+  value: {}
+  required: false
+  description: In this input you can insert either MD5 or SHA256 that you wish to block.
+  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
   description: Last block time

@@ -33,3 +33,13 @@ def test_main(mocker):
     results = demisto.results.call_args[0][0]
     assert isinstance(results, list)
     assert results[2] == 3
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'value': None
+    })
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0][0]
+    assert isinstance(results, list)
+    assert results == []

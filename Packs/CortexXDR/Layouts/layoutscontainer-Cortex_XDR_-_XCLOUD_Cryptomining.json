@@ -623,7 +623,7 @@
     },
     "group": "incident",
     "id": "Cortex XDR - XCLOUD Cryptomining",
-    "name": "Cortex XDR - XCLOUD Cryptomining",
+    "name": "Cortex XDR - XCLOUD Cryptojacking",
     "quickView": {
         "sections": [
             {

@@ -1,4 +1,4 @@
-// Development container for Content. Poetry hash d0f1eeb8380e9a8d99a91ba51c6310129fa3577c918219946ffc47450b97ca85
+// Development container for Content. Demisto-SDK 1.14.5
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -53,8 +53,6 @@
 			"extensions": [
 				"cortexxsoarext.xsoar",
 				"ms-python.python",
-				"ms-vscode.PowerShell",
-				"ms-toolsai.jupyter",
 				"timonwong.shellcheck",
 				"GitHub.vscode-pull-request-github",
 				"eamodio.gitlens",
@@ -72,7 +70,9 @@
 				"KevinRose.vsc-python-indent",
 				"rangav.vscode-thunder-client",
 				"ms-python.black-formatter",
-				"LittleFoxTeam.vscode-python-test-adapter"
+				"LittleFoxTeam.vscode-python-test-adapter",
+				"charliermarsh.ruff",
+				"ryanluker.vscode-coverage-gutters"
 			]
 		},
 		"codespaces": {
@@ -83,26 +83,32 @@
 			}
 		}
 	},
-// this is commented out until VSCode will fix self signed certificate issues
-// "features": {
-// 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
-// 		"version": "latest"
-// 	},
-// 	"ghcr.io/devcontainers/features/git:1": {
-// 		"version": "os-provided"
-// 	},
-// 	"ghcr.io/devcontainers/features/powershell:1": {
-// 		"version": "latest"
-// 	},
-// 	"ghcr.io/devcontainers/features/common-utils:1": {
-// 		"version": "latest"
-// 	},
-// 	"ghcr.io/devcontainers/features/node:1": {
-// 		"version": "latest"
-// 	}
-// },
-// "overrideFeatureInstallOrder": [
-// 	"ghcr.io/devcontainers/features/common-utils:1"
-// ],
-"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh"
+	// this is commented out until VSCode will fix self signed certificate issues
+	// "features": {
+	// 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/git:1": {
+	// 		"version": "os-provided"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/powershell:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/common-utils:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/node:1": {
+	// 		"version": "latest"
+	// 	}
+	// },
+	// "overrideFeatureInstallOrder": [
+	// 	"ghcr.io/devcontainers/features/common-utils:1"
+	// ],
+	"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
+	"postStartCommand": "poetry install",
+	"hostRequirements": {
+		"cpus": 4,
+		"memory": "8gb",
+		"storage": "32gb"
+	}
 }

@@ -10,30 +10,36 @@ Supported integrations:
 Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Active Directory - Get User Manager Details
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * Set
 * IsIntegrationAvailable
 
 ### Commands
-* identitynow-get-accounts
+
 * ad-get-user
-* aws-iam-get-user
-* iam-get-user
-* identityiq-search-identities
-* msgraph-user-get-manager
-* pingone-get-user
-* okta-get-user
 * msgraph-user-get
+* pingone-get-user
+* identityiq-search-identities
+* okta-get-user
+* msgraph-user-get-manager
+* iam-get-user
+* aws-iam-get-user
+* identitynow-get-accounts
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -42,6 +48,7 @@ This playbook does not use any integrations.
 | Domain | Optional - This input is needed for the IAM-get-user command \(used in the Account Enrichment - IAM playbook\). Please provide the domain name that the user is related to.<br/>Example: @xsoar.com |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -161,5 +168,7 @@ This playbook does not use any integrations.
 | MSGraphUserManager.Manager.UserPrincipalName | User's principal name. | unknown |
 
 ## Playbook Image
+
 ---
-![Account Enrichment - Generic v2.1](../doc_files/Account_Enrichment_-_Generic_v2.1.png)
+
+![Account Enrichment - Generic v2.1](../doc_files/Account_Enrichment_-_Generic_v2.2.png)

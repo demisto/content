@@ -45,6 +45,7 @@ def alert_response():
             "xsoar_mirror_instance": "dummy_instance",
             "xsoar_mirror_id": "1",
             "xsoar_mirror_tags": ["comment_tag", "escalate_tag"],
+            "xsoar_input_tag": "input_tag",
         },
         {
             "datetime_created": "2021-05-11T20:09:50Z",
@@ -62,6 +63,7 @@ def alert_response():
             "xsoar_mirror_instance": "dummy_instance",
             "xsoar_mirror_id": "2",
             "xsoar_mirror_tags": ["comment_tag", "escalate_tag"],
+            "xsoar_input_tag": "input_tag",
         },
     ]
 
@@ -122,7 +124,7 @@ def comment_entries():
             "HumanReadable": "Test comment\n\nSent by Active User (test@test) via ZTAP",
             "ReadableContentsFormat": "text",
             "Note": True,
-            "Tags": [],
+            "Tags": ["input_tag"],
         },
         {
             "Type": 1,
@@ -131,6 +133,6 @@ def comment_entries():
             "HumanReadable": "Closing alert due to duplicate.\n\nSent by Active User (test@test) via ZTAP",
             "ReadableContentsFormat": "text",
             "Note": True,
-            "Tags": [],
+            "Tags": ["input_tag"],
         },
     ]

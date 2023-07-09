@@ -4,7 +4,7 @@ commonfields:
 name: OpsGenie
 display: OpsGenie (Deprecated)
 deprecated: true
-category: Messaging
+category: Messaging and Conferencing
 description: Deprecated. Use the OpsGenie v3 integration instead
 configuration:
 - display: Base URL
@@ -21,7 +21,6 @@ configuration:
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 script:
   script: ''
   type: javascript

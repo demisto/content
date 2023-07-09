@@ -28,5 +28,6 @@
 !securonix-lookup-table-create name=test_lookup_table field_names="samplefield,samplefield2" key="samplefield" tenant_name=test_tenant scope=Global
 !securonix-whitelist-entry-add whitelist_name=whitelistdemo_Activityip whitelist_type=Global tenant_name=test_tenant entity_type=Activityip entity_id=0.0.0.1 expiry_date=04/02/2023
 !securonix-lookup-tables-list max=2 offset=0
-!securonix-lookup-table-entries-list name=TEST_M max=2
-!securonix-lookup-table-entry-add name=test_lookup file_entry_id=128@1f9c2de5-8006-4686-8a6a-cc0a17013434
+!securonix-lookup-table-entries-list name="TEST_M" max=2 sort="ip" order=desc
+!securonix-lookup-table-entries-delete name=TEST_M keys=2^~TEST_M|158267F0BC6E7484E3C0F5964ABE9D2B,2^~TEST_M|175A9FFD55480ED376C992AC86ABE3D7
+!securonix-lookup-table-entry-add name="TEST_DEMO_28_FEB" json_data="[{\"id\": \"1\",\"ip\": \"127.0.0.1\",\"reputation\": \"bad\"},{\"id\": \"2\",\"ip\": \"127.0.0.2\",\"reputation\": \"good\"}]"

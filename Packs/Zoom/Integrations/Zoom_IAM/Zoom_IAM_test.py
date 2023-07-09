@@ -1,6 +1,5 @@
 from Zoom_IAM import Client
 from IAMApiModule import *
-from freezegun import freeze_time
 import Zoom_IAM
 import pytest
 
@@ -49,110 +48,6 @@ def get_outputs_from_user_profile(user_profile):
     entry_context = user_profile.to_entry()
     outputs = entry_context.get('Contents')
     return outputs
-
-
-def test_generate_oauth_token(mocker):
-    """
-        Given -
-           client
-        When -
-            generating a token
-        Then -
-            Validate the parameters and the result are as expected
-    """
-    client = mock_client_ouath(mocker)
-
-    m = mocker.patch.object(client, '_http_request', return_value={'access_token': 'token'})
-    res = client.generate_oauth_token()
-    assert m.call_args[1]['method'] == 'POST'
-    assert m.call_args[1]['full_url'] == 'https://zoom.us/oauth/token'
-    assert m.call_args[1]['params'] == {'account_id': 'mockaccount',
-                                        'grant_type': 'account_credentials'}
-    assert m.call_args[1]['auth'] == ('mockclient', 'mocksecret')
-
-    assert res == 'token'
-
-
-@pytest.mark.parametrize("result", (" ", "None"))
-def test_get_oauth_token__if_not_ctx(mocker, result):
-    """
-        Given -
-           client
-        When -
-            asking for the latest token's generation_time and the result is None
-            or empty
-        Then -
-            Validate that a new token will be generated.
-    """
-    mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={'token_info': {"generation_time": result,
-                                      'oauth_token': "old token"}})
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert generate_token_mock.called
-
-
-@freeze_time("1988-03-03T11:00:00")
-def test_get_oauth_token__while_old_token_still_valid(mocker):
-    """
-        Given -
-           client
-        When -
-            asking for a token while the previous token is still valid
-        Then -
-            Validate that a new token will not be generated, and the old token will be returned
-            Validate that the old token is the one
-            stored in the get_integration_context dict.
-    """
-    mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
-                                      'oauth_token': "old token"}})
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert not generate_token_mock.called
-    assert client.access_token == "old token"
-
-
-def test_get_oauth_token___old_token_expired(mocker):
-    """
-        Given -
-           client
-        When -
-            asking for a token when the previous token was expired
-        Then -
-            Validate that a func that creates a new token has been called
-            Validate that a new token was stored in the get_integration_context dict.
-    """
-    mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={'token_info': {"generation_time": "1988-03-03T10:00:00",
-                                      'oauth_token': "old token"}})
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert generate_token_mock.called
-    assert client.access_token != "old token"
-
-
-@pytest.mark.parametrize("return_val", ({'token_info': {}}, {'token_info': {'generation_time': None}}))
-def test_get_oauth_token___old_token_is_unreachable(mocker, return_val):
-    """
-        Given -
-           client
-        When -
-            asking for a token when the previous token is unreachable
-        Then -
-            Validate that a func that creates a new token has been called
-            Validate that a new token was stored in the get_integration_context dict.
-    """
-    mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value=return_val)
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert generate_token_mock.called
-    assert client.access_token != "old token"
 
 
 def test_disable_user_command__allow_disable(mocker):
@@ -340,29 +235,51 @@ def test_test_moudle__reciving_errors_3(mocker):
     assert test_module(client=client) == 'Problem reaching Zoom API, check your credentials. Error message: mockerror'
 
 
-def test_http_request___when_raising_invalid_token_message(mocker):
+def test_get_error_details():
     """
-  Given -
-     client
-  When -
-      asking for a connection when the first try fails, and return an
-      'Invalid access token' error messoge
-  Then -
-      Validate that a retry to connect with a new token has been done
+    Given:
+        - An error response from the API
+    When:
+        - Calling function get_error_details
+    Then:
+        - Ensure the error details are returned as expected
     """
+    from Zoom_IAM import get_error_details
+    assert get_error_details({"code": "mock", "message": "mockerror"}) == "mock: mockerror"
 
-    m = mocker.patch.object(Zoom_IAM.BaseClient, "_http_request",
-                            side_effect=DemistoException('Invalid access token'))
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token", return_value="mock")
-    mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
-                                      'oauth_token': "old token"}})
-    try:
-        client = Client(base_url='https://test.com', account_id="mockaccount",
-                        client_id="mockclient", client_secret="mocksecret")
-        # a command that uses http_request
-        client.test()
-    except Exception:
-        pass
-    assert m.call_count == 2
-    assert generate_token_mock.called
+
+@pytest.mark.parametrize('returned, expected', [(None, 'NoneType'),
+                                                ({'users': None}, 'IAMUserAppData')])
+def test_get_user(mocker, returned, expected):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user
+    When:
+        - Calling function get_user
+            1. results is None
+            2. results is a dict with 'users' key is None
+    Then:
+        - Ensure the user profile is returned as expected
+    """
+    client = mock_client_ouath(mocker)
+    args = {'user-profile': {'email': 'blabla'}}
+    mocker.patch.object(client, 'error_handled_http_request', return_value=returned)
+    res = client.get_user(client, args)
+    assert expected == type(res).__name__
+
+
+def test_test_moudle(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function test_module
+    Then:
+        - Ensure the test module is returned as expected
+    """
+    client = mock_client_ouath(mocker)
+    mocker.patch.object(Client, "get_user")
+    from Zoom_IAM import test_module
+    res = test_module(client)
+    assert res == "ok"

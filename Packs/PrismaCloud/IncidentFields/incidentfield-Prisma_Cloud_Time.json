@@ -10,7 +10,8 @@
 		"Azure AKS Misconfiguration",
 		"Azure SQL Misconfiguration",
 		"Azure Network Misconfiguration",
-		"Azure Storage Misconfiguration"
+		"Azure Storage Misconfiguration",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

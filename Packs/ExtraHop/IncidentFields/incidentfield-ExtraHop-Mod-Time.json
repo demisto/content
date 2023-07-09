@@ -1,0 +1,32 @@
+{
+    "id": "incident_extrahoprevealxmodtime",
+    "version": -1,
+    "modified": "2023-02-21T16:26:05.635259168+05:30",
+    "name": "ExtraHop Reveal(x) Mod Time",
+    "ownerOnly": false,
+    "description": "The timestamp when detection was last modified.",
+    "cliName": "extrahoprevealxmodtime",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "ExtraHop Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

@@ -7,7 +7,7 @@
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "CustomFields": {
-                        "sha1": "some_sha1_2"
+                        "sha1": "2222222222222222222222222222222222222222"
                     },
                     "calculatedTime": "2021-12-28T14:58:19.704369+02:00",
                     "comments": [
@@ -55,7 +55,7 @@
                     ],
                     "source": "DBot",
                     "timestamp": "2021-12-28T14:58:19.711496+02:00",
-                    "value": "some_sha1_2",
+                    "value": "2222222222222222222222222222222222222222",
                     "version": 1
                 }
             },
@@ -63,7 +63,7 @@
             "modified": "2021-12-28T14:58:19.711497Z",
             "spec_version": "2.1",
             "type": "file",
-            "value": "some_sha1_2123456789123456789123",
+            "value": "2222222222222222222222222222222222222222",
             "score": 0
         },
         {
@@ -86,7 +86,7 @@
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "CustomFields": {
-                        "sha1": "some_sha1_3"
+                        "sha1": "3333333333333333333333333333333333333333"
                     },
                     "calculatedTime": "2021-12-28T14:58:19.703576+02:00",
                     "comments": [
@@ -134,7 +134,7 @@
                     ],
                     "source": "DBot",
                     "timestamp": "2021-12-28T14:58:19.711459+02:00",
-                    "value": "some_sha1_3",
+                    "value": "3333333333333333333333333333333333333333",
                     "version": 1
                 }
             },
@@ -142,7 +142,7 @@
             "modified": "2021-12-28T14:58:19.711461Z",
             "spec_version": "2.1",
             "type": "file",
-            "value": "some_sha1_3",
+            "value": "3333333333333333333333333333333333333333",
             "score": 0
         },
         {

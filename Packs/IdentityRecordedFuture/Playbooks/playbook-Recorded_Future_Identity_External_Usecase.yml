@@ -1,8 +1,7 @@
 id: Recorded Future External Usecase
 version: -1
 name: Recorded Future External Usecase
-description: Implements an external usecase for Recorded Future Identity
-  Data
+description: Implements an external usecase for Recorded Future Identity Data
 starttaskid: "0"
 tasks:
   "0":

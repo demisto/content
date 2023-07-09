@@ -11,11 +11,10 @@ import json
 import jwt
 from datetime import datetime, timedelta
 import requests
+from urllib.parse import unquote
 from typing import List
 from signal import signal, SIGPIPE, SIG_DFL  # type: ignore[no-redef]
 signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 ###############################################################################
 # packages to handle IOerror
@@ -23,19 +22,23 @@ requests.packages.urllib3.disable_warnings()
 
 if not demisto.params().get('proxy', False) \
         or demisto.params()['proxy'] == 'false':
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+    if 'HTTP_PROXY' in os.environ:
+        del os.environ['HTTP_PROXY']
+    if 'HTTPS_PROXY' in os.environ:
+        del os.environ['HTTPS_PROXY']
+    if 'http_proxy' in os.environ:
+        del os.environ['http_proxy']
+    if 'https_proxy' in os.environ:
+        del os.environ['https_proxy']
 
 
 """GLOBAL VARS"""
 
 VERIFY_CERT = True if not demisto.params().get('insecure') else False
-KEY = demisto.params().get('key')
-SECRET = demisto.params().get('secret')
-DOMAIN = demisto.params().get('domain')
-CUSTOMER_ID = demisto.params().get('customer_id')
+KEY = str(demisto.params().get('key'))
+SECRET = str(demisto.params().get('secret'))
+DOMAIN = str(demisto.params().get('domain'))
+CUSTOMER_ID = str(demisto.params().get('customer_id'))
 FETCH_TIME = demisto.params().get('fetch_time')
 
 """HELPER FUNCTIONS"""
@@ -45,7 +48,9 @@ def generate_headers(key, secret):
     header = {}
     utcnow = datetime.utcnow()
     date = utcnow.strftime("%a, %d %b %Y %H:%M:%S GMT")
-    auth_var = jwt.encode({'iss': key}, secret, algorithm='HS256')
+    exp_time = utcnow + timedelta(seconds=3600)
+    exp = exp_time.timestamp()
+    auth_var = jwt.encode({'iss': key, 'exp': exp}, secret, algorithm='HS256')
     authorization = "Bearer " + str(auth_var)
     header['date'] = date
     header['Authorization'] = authorization
@@ -1539,6 +1544,51 @@ def uptycs_set_alert_status_command():
     return entry
 
 
+def uptycs_get_asset():
+    """set a tag on an asset"""
+    http_method = 'get'
+    api_call = ('/assets/%s' % demisto.args().get('asset_id'))
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_asset_id_command():
+    query_results = uptycs_get_asset()
+    context_entries_to_keep = ['hostName', 'location', 'gateway',
+                               'cpuBrand', 'hardwareModel',
+                               'hardwareVendor', 'cores',
+                               'logicalCores', 'memoryMb',
+                               'os', 'osVersion', 'osFlavor',
+                               'osKey', 'osqueryVersion', 'status',
+                               'arch', 'agentVersion',
+                               'quarantinedStatus', 'osDisplay',
+                               'tags', 'disabled', 'objectGroupId',
+                               'lastEnrolledAt', 'live']
+
+    human_readable = tableToMarkdown('Uptycs Asset Tags for asset id: %s' %
+                                     demisto.args().get('asset_id'),
+                                     query_results, context_entries_to_keep)
+    context = query_results
+    if context is not None:
+        for key in list(context):
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+    context['tags'] = ''
+    if query_results.get('tags') is not None:
+        context['tags'] = ','.join(query_results.get('tags'))
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.Asset': context
+        }
+    }
+
+    return entry
+
+
 def uptycs_get_asset_tags():
     """set a tag on an asset"""
     http_method = 'get'
@@ -2199,6 +2249,120 @@ def uptycs_post_saved_query_command():
     return entry
 
 
+def uptycs_get_carves_link_source():
+    """return link for a particular carve"""
+    http_method = 'get'
+    api_call = '/carves'
+
+    carve_id = demisto.args().get('carve_id')
+    if carve_id is not None:
+        api_call = '%s/%s/link' % (api_call, carve_id)
+
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_carves_link_command():
+    query_results = uptycs_get_carves_link_source()
+    human_readable = tableToMarkdown('Uptycs Carves link', query_results)
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.CravesLink': query_results
+        }
+    }
+
+    return entry
+
+
+def get_carve_headers(url):
+
+    headers = {}
+    headers['Origin'] = ("https://%s" % DOMAIN)
+    headers['x-amz-server-side-encryption-customer-algorithm'] = 'AES256'
+    headers['x-requested-with'] = 'uptycs'
+    headers['Access-Control-Request-Method'] = 'GET'
+    access_control_headers = ['x-amz-server-side-encryption-customer-algorithm',
+                              'x-amz-server-side-encryption-customer-key',
+                              'x-amz-server-side-encryption-customer-key-md5',
+                              'x-requested-with']
+    headers['Access-Control-Request-Headers'] = ','.join(access_control_headers)
+    _, query_string = url.split('?')
+    params = dict(param.split('=') for param in query_string.split('&'))
+
+    keys = ['x-amz-server-side-encryption-customer-key',
+            'x-amz-server-side-encryption-customer-key-MD5']
+
+    for key in keys:
+        value = params.get(key)
+        if value is not None:
+            headers[key] = unquote(value)
+
+    return headers
+
+
+def uptycs_get_carves_file_command():
+    query_results = uptycs_get_carves_link_source()
+    url = query_results.get('url')
+    if url is None:
+        return_error("Error in retrieving file url")
+
+    carve_id = demisto.args().get('carve_id')
+    fileheaders = get_carve_headers(url)
+    response = requests.get(url, headers=fileheaders)
+    filename = carve_id + '.tar'
+    if response.status_code == 200:
+        return demisto.results(fileResult(filename, response.content))
+    elif response.status_code == 403:
+        return_error('Error, file fetching failed, user forbidden from downloading, 403 response')
+    return_error('Error, file fetching failed, got response ' + str(response.status_code))
+
+
+def uptycs_get_carves():
+    """
+    return list of carves in Uptycs
+    """
+    http_method = 'get'
+    api_call = '/carves'
+
+    path = demisto.args().get('path')
+    if path is not None:
+        api_call = '%s?filters={"path":{"iLike":"' % api_call
+        api_call += "%" + path + "%" + '"}}'
+
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_carves_source_command():
+
+    query_results = uptycs_get_carves()
+    context = query_results.get('items')
+    context_entries_to_keep = ['id', 'assetId', 'path', 'createdAt',
+                               'updatedAt', 'status', 'deletedUserName',
+                               'deletedAt', 'assetHostName', 'offset',
+                               'length']
+
+    if context is not None:
+        remove_context_entries(context, context_entries_to_keep)
+
+    human_readable = tableToMarkdown('Uptycs Carves',
+                                     context, context_entries_to_keep)
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.Carves(val.id == obj.id)': context
+        }
+    }
+    return entry
+
+
 def uptycs_test_module():
     """check whether Uptycs API responds correctly"""
     http_method = 'get'
@@ -2206,10 +2370,12 @@ def uptycs_test_module():
 
     query_results = restcall(http_method, api_call)
 
-    if query_results == 0:
-        return False
-    else:
+    if query_results.get('items') is not None:
+        if len(query_results.get('items')) == 0:
+            raise Exception("Test api returned zero results")
         return True
+    else:
+        raise Exception("Test api did not return any results")
 
 
 def uptycs_fetch_incidents():
@@ -2227,9 +2393,9 @@ def uptycs_fetch_incidents():
     query_results = restcall(http_method, api_call)
 
     incidents = []  # type: List[dict]
-    if len(query_results.get('items')) == 0:
-        return incidents
     if query_results.get('items') is not None:
+        if len(query_results.get('items')) == 0:
+            return incidents
         for index in range(len(query_results.get('items'))):
             context = query_results.get('items')[index]
             context['alertId'] = context.get('id')
@@ -2272,6 +2438,403 @@ def uptycs_fetch_incidents():
     return incidents
 
 
+def uptycs_get_tags():
+    """
+    return list of tags in Uptycs
+    """
+    http_method = 'get'
+    api_call = '/tags'
+    key = demisto.args().get('key')
+    value = demisto.args().get('value')
+    if key is not None:
+        api_call = '%s?key=%s' % (api_call, key)
+    if value is not None and key is not None:
+        api_call = '%s&value=%s' % (api_call, key)
+    elif value is not None:
+        api_call = '%s?value=%s' % (api_call, value)
+
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_tags_source_command():
+
+    query_results = uptycs_get_tags()
+    context = query_results.get('items')
+    context_entries_to_keep = ['id', 'tag', 'resourceType', 'seedId',
+                               'key', 'value', 'flagProfileId',
+                               'customProfileId', 'complianceProfileId',
+                               'processBlockRuleId', 'dnsBlockRuleId',
+                               'windowsDefenderPreferenceId', 'createdBy',
+                               'updatedBy', 'createdAt', 'updatedAt',
+                               'status', 'source', 'system', 'custom',
+                               'tagRuleId']
+
+    if context is not None:
+        remove_context_entries(context, context_entries_to_keep)
+
+    human_readable = tableToMarkdown('Uptycs tags',
+                                     context,
+                                     context_entries_to_keep)
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.tags(val.id == obj.id)': context
+        }
+    }
+    return entry
+
+
+def uptycs_get_tag_with_id():
+    """
+    return tag in Uptycs
+    """
+    http_method = 'get'
+    api_call = '/tags'
+    tag_id = demisto.args().get('tag_id')
+    if tag_id is not None:
+        api_call = '%s/%s' % (api_call, tag_id)
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_tag_with_id_source_command():
+
+    query_results = uptycs_get_tag_with_id()
+    context = query_results
+    context_entries_to_keep = ['tag', 'resourceType', 'seedId',
+                               'key', 'value', 'flagProfileId',
+                               'customProfileId', 'complianceProfileId',
+                               'processBlockRuleId', 'dnsBlockRuleId',
+                               'windowsDefenderPreferenceId', 'createdBy',
+                               'updatedBy', 'createdAt', 'updatedAt',
+                               'status', 'source', 'system', 'custom',
+                               'tagRuleId']
+
+    if context is not None:
+        for key in list(context):
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+
+    human_readable = tableToMarkdown('Uptycs tags',
+                                     context,
+                                     context_entries_to_keep)
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.tag': context
+        }
+    }
+    return entry
+
+
+def uptycs_get_lookuptables():
+    """
+    return list of look up tables in Uptycs
+    """
+    http_method = 'get'
+    api_call = '/lookupTables'
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_lookuptables_command():
+
+    query_results = uptycs_get_lookuptables()
+    context = query_results.get('items')
+    context_entries_to_keep = ['id', 'seedId', 'name', 'description', 'active',
+                               'idField', 'rowCount', 'forRuleEngine', 'createdBy',
+                               'updatedBy', 'createdAt', 'updatedAt', 'dataLookupTable',
+                               'fetchRowsquery']
+
+    if context is not None:
+        remove_context_entries(context, context_entries_to_keep)
+
+    human_readable = tableToMarkdown('Uptycs look up tables',
+                                     context,
+                                     context_entries_to_keep)
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.lookuptables(val.id == obj.id)': context
+        }
+    }
+    return entry
+
+
+def uptycs_get_lookuptable():
+    """
+    return list of look up tables in Uptycs
+    """
+    http_method = 'get'
+    api_call = '/lookupTables'
+    table_id = demisto.args().get('table_id')
+    if table_id is not None:
+        api_call = '%s/%s' % (api_call, table_id)
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_lookuptable_command():
+
+    query_results = uptycs_get_lookuptable()
+    context = query_results
+    context_entries_to_keep = ['seedId', 'name', 'description',
+                               'active', 'idField', 'rowCount',
+                               'forRuleEngine', 'createdBy',
+                               'updatedBy', 'createdAt',
+                               'updatedAt', 'dataLookupTable',
+                               'fetchRowsquery']
+
+    if context is not None:
+        for key in list(context):
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+
+    human_readable = tableToMarkdown('Uptycs look up tables',
+                                     context,
+                                     context_entries_to_keep)
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.lookuptable': context
+        }
+    }
+    return entry
+
+
+def uptycs_post_new_lookuptable():
+    """post a new look up table"""
+
+    http_method = 'post'
+    api_call = '/lookupTables'
+
+    name = demisto.args().get('name')
+    id_field = demisto.args().get('id_field')
+
+    post_data = {"name": name, "idField": id_field}
+
+    if demisto.args().get('description') is not None:
+        post_data["description"] = demisto.args().get('description')
+
+    return restcall(http_method, api_call, json=post_data)
+
+
+def uptycs_enable_lookuptable(table_id):
+    """enable look up table"""
+
+    http_method = 'put'
+    api_call = '/lookupTables'
+
+    post_data = {}
+    post_data["active"] = True
+
+    if table_id is not None:
+        api_call = '%s/%s' % (api_call, table_id)
+
+    return restcall(http_method, api_call, json=post_data)
+
+
+def uptycs_post_new_lookuptable_command():
+    response = uptycs_post_new_lookuptable()
+
+    table_id = response.get('id')
+    if table_id is not None:
+        """ upload csv file """
+        uptycs_post_lookuptable_data_source(table_id)
+        """ enable table"""
+        uptycs_enable_lookuptable(table_id)
+    else:
+        return_error("Error, lookup table creation failed")
+
+    human_readable = 'Uptycs Posted lookuptable' + str(response)
+    context = {"id": table_id}
+    context["name"] = response.get('name')
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.lookuptable': context
+        }
+    }
+
+    return entry
+
+
+def uptycs_edit_lookuptable():
+    """edit a new look up table"""
+
+    http_method = 'put'
+    api_call = '/lookupTables'
+
+    post_data = {}
+    for item in ['name', 'description']:
+        if demisto.args().get(item) is not None:
+            post_data[item] = demisto.args().get(item)
+
+    active = demisto.args().get('active')
+    if active is not None and active == 'true':
+        post_data["active"] = True
+    elif active is not None and active == 'false':
+        post_data["active"] = False
+
+    table_id = demisto.args().get('table_id')
+    if table_id is not None:
+        api_call = '%s/%s' % (api_call, table_id)
+
+    return restcall(http_method, api_call, json=post_data)
+
+
+def uptycs_edit_lookuptable_command():
+    response = uptycs_edit_lookuptable()
+    human_readable = 'Uptycs Edited lookuptable'
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.lookuptable': response
+        }
+    }
+
+    return entry
+
+
+def uptycs_delete_lookuptable():
+    """delete a lookup table"""
+
+    http_method = 'delete'
+    api_call = '/lookupTables'
+
+    table_id = demisto.args().get('table_id')
+    if table_id is not None:
+        api_call = '%s/%s' % (api_call, table_id)
+
+    return restcall(http_method, api_call)
+
+
+def uptycs_delete_lookuptable_command():
+    response = uptycs_delete_lookuptable()
+    if response.get("status") in [500, 404]:
+        return_error("Error, check if table has already been deleted")
+    human_readable = 'Uptycs Deleted lookuptable'
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'HumanReadable': human_readable
+    }
+
+    return entry
+
+
+def uptycs_delete_tag():
+    """delete a tag"""
+
+    http_method = 'delete'
+    api_call = '/tags'
+
+    tag_id = demisto.args().get('tag_id')
+    if tag_id is not None:
+        api_call = '%s/%s' % (api_call, tag_id)
+
+    return restcall(http_method, api_call)
+
+
+def uptycs_delete_tag_command():
+    response = uptycs_delete_tag()
+    if response.get("status") in [500, 404]:
+        return_error("Error, check whether if tag has already been deleted")
+    human_readable = 'Uptycs Deleted tag'
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'HumanReadable': human_readable
+    }
+
+    return entry
+
+
+def uptycs_delete_assets_tags():
+    """delete assets tags relation"""
+
+    http_method = 'delete'
+    api_call = '/assets/tags'
+
+    asset_id = demisto.args().get('asset_id')
+    post_data = {'tagId': demisto.args().get('tag_id'),
+                 'filters': {'id': {'in': [asset_id]}}}
+
+    return restcall(http_method, api_call, json=post_data)
+
+
+def uptycs_delete_assets_tag_command():
+    response = uptycs_delete_assets_tags()
+    if response.get("status") in [500, 404]:
+        return_error("Error, check if tag and asset exists")
+    human_readable = 'Uptycs disassociated assets tags'
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+    }
+
+    return entry
+
+
+def uptycs_post_lookuptable_data_source(table_id=None):
+    """post data to look up table"""
+    if table_id is None:
+        table_id = demisto.args().get('table_id')
+
+    url = ("https://%s/public/api/customers/%s/lookupTables/%s/csvdata" %
+           (DOMAIN, CUSTOMER_ID, table_id))
+    header = generate_headers(KEY, SECRET)
+
+    filepath = demisto.getFilePath(demisto.args().get('filename'))
+    files = {'file': open(filepath.get('path'), 'rb')}
+
+    response = requests.post(url, headers=header,
+                             files=files, verify=VERIFY_CERT)
+    return response
+
+
+def uptycs_post_lookuptable_data_source_command():
+    response = uptycs_post_lookuptable_data_source()
+    human_readable = 'Uptycs Posted lookup table data'
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response.json(),
+        'HumanReadable': human_readable,
+    }
+
+    return entry
+
+
 def main():
     ###########################################################################
     # main function
@@ -2283,6 +2846,9 @@ def main():
 
         if demisto.command() == 'uptycs-get-assets':
             demisto.results(uptycs_get_assets_command())
+
+        if demisto.command() == 'uptycs-get-asset-with-id':
+            demisto.results(uptycs_get_asset_id_command())
 
         if demisto.command() == 'uptycs-get-alerts':
             demisto.results(uptycs_get_alerts_command())
@@ -2338,6 +2904,12 @@ def main():
         if demisto.command() == 'uptycs-set-asset-tag':
             demisto.results(uptycs_set_asset_tag_command())
 
+        if demisto.command() == 'uptycs-get-tags':
+            demisto.results(uptycs_get_tags_source_command())
+
+        if demisto.command() == 'uptycs-get-tag':
+            demisto.results(uptycs_get_tag_with_id_source_command())
+
         if demisto.command() == 'uptycs-get-users':
             demisto.results(uptycs_get_users_command())
 
@@ -2377,15 +2949,51 @@ def main():
         if demisto.command() == 'uptycs-post-threat-source':
             demisto.results(uptycs_post_threat_source_command())
 
+        if demisto.command() == 'uptycs-get-carves':
+            demisto.results(uptycs_get_carves_source_command())
+
+        if demisto.command() == 'uptycs-get-carves-link':
+            demisto.results(uptycs_get_carves_link_command())
+
+        if demisto.command() == 'uptycs-get-carves-download-file':
+            demisto.results(uptycs_get_carves_file_command())
+
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            if uptycs_test_module():
-                demisto.results('ok')
-            else:
-                demisto.results('test failed')
+            try:
+                if uptycs_test_module():
+                    demisto.results('ok')
+                else:
+                    demisto.results('Test failed')
+            except Exception as ex:
+                demisto.results('Test failed - %s' % str(ex))
 
         if demisto.command() == 'fetch-incidents':
             demisto.incidents(uptycs_fetch_incidents())
+
+        if demisto.command() == 'uptycs-get-lookuptables':
+            demisto.results(uptycs_get_lookuptables_command())
+
+        if demisto.command() == 'uptycs-get-lookuptable':
+            demisto.results(uptycs_get_lookuptable_command())
+
+        if demisto.command() == 'uptycs-create-lookuptable':
+            demisto.results(uptycs_post_new_lookuptable_command())
+
+        if demisto.command() == 'uptycs-post-lookuptable-data':
+            demisto.results(uptycs_post_lookuptable_data_source_command())
+
+        if demisto.command() == 'uptycs-edit-lookuptable':
+            demisto.results(uptycs_edit_lookuptable_command())
+
+        if demisto.command() == 'uptycs-delete-lookuptable':
+            demisto.results(uptycs_delete_lookuptable_command())
+
+        if demisto.command() == 'uptycs-delete-tag':
+            demisto.results(uptycs_delete_tag_command())
+
+        if demisto.command() == 'uptycs-delete-assets-tag':
+            demisto.results(uptycs_delete_assets_tag_command())
 
     except Exception as ex:
         if demisto.command() == 'fetch-incidents':

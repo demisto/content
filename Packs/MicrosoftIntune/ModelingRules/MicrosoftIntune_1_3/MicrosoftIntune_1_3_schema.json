@@ -1,0 +1,36 @@
+{
+    "msft_azure_raw": {
+      "properties": {
+          "type": "string",
+          "is_array": false
+      },
+      "category": {
+          "type": "string",
+          "is_array": false
+      },
+      "tenantId": {
+          "type": "string",
+          "is_array": false
+      },
+      "callerIpAddress": {
+          "type": "string",
+          "is_array": false
+      },
+      "_collector_name": {
+          "type": "string",
+          "is_array": false
+      },
+      "operationName": {
+          "type": "string",
+          "is_array": false
+      },
+      "resultType": {
+          "type": "string",
+          "is_array": false
+      },
+      "identity": {
+        "type": "string",
+        "is_array": false
+    }
+    }
+  }  

@@ -1,0 +1,376 @@
+id: Test Playbook - Cortex XDR - Get File Path from alerts by hash
+version: -1
+name: Test Playbook - Cortex XDR - Get File Path from alerts by hash
+description: "This playbook tests the 'Cortex XDR - Get File Path from alerts by hash' playbook which is part of the 'Malware Investigation and Response' pack.\nThe testing flow is based on Cortex XDR incident number 54. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ce53f9de-f436-41e7-8503-462a2f1d335b
+    type: start
+    task:
+      id: ce53f9de-f436-41e7-8503-462a2f1d335b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b3a4921e-c044-487c-8e8b-7d54fbbf8c2c
+    type: regular
+    task:
+      id: b3a4921e-c044-487c-8e8b-7d54fbbf8c2c
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "206"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: f95f38c0-4bde-4209-86ae-169074c46d40
+    type: title
+    task:
+      id: f95f38c0-4bde-4209-86ae-169074c46d40
+      version: -1
+      name: Start Testing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "243"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 8fcb70fe-56c8-472a-8624-63495efdd2f5
+    type: title
+    task:
+      id: 8fcb70fe-56c8-472a-8624-63495efdd2f5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "206":
+    id: "206"
+    taskid: b1361fbb-3607-4500-8e9d-e9473ef36b29
+    type: regular
+    task:
+      id: b1361fbb-3607-4500-8e9d-e9473ef36b29
+      version: -1
+      name: Set Incident Fields To Context
+      description: Add incident fields required for testing to the mock incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "244"
+    scriptarguments:
+      deviceid:
+        simple: f8a2f58846b542579c12090652e79f3d
+      filesha256:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855, cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0, 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "227":
+    id: "227"
+    taskid: b7e0f6c4-0de5-423b-8254-34891e1d3035
+    type: regular
+    task:
+      id: b7e0f6c4-0de5-423b-8254-34891e1d3035
+      version: -1
+      name: Verify Context Data Error - 'fileRetrieval.path'
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'fileRetrieval.path' output of the 'Cortex XDR - Get File Path from alerts by hash' playbook was not properly extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Get File Path from alerts by hash' playbook:\n1- The 'fileRetrieval' context path was removed from the playbook outputs.\n2- The context path of the 'fileRetrieval' playbook output was changed. \n3- The 'value' argument input configuration was changed for one or more of the playbook tasks which use the 'SetAndHandleEmpty' automation. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "243":
+    id: "243"
+    taskid: c08a56dd-4c34-4a2f-8c46-448ff5dc896d
+    type: condition
+    task:
+      id: c08a56dd-4c34-4a2f-8c46-448ff5dc896d
+      version: -1
+      name: Verify 'fileRetrieval.path'
+      description: |
+        Verify that the 'fileRetrieval.path' output of the 'Cortex XDR - Get File Path from alerts by hash' playbook was properly extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "227"
+      Verified:
+      - "202"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: fileRetrieval
+                accessor: path
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: actor_process_image_path
+            iscontext: true
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: fileRetrieval
+                accessor: path
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: action_file_path
+            iscontext: true
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: fileRetrieval
+                accessor: path
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: causality_actor_process_image_path
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "244":
+    id: "244"
+    taskid: 40b3fdd8-5ad9-4607-856a-1696ce55af1f
+    type: regular
+    task:
+      id: 40b3fdd8-5ad9-4607-856a-1696ce55af1f
+      version: -1
+      name: Set Keys To Context
+      description: Add multiple keys and values to the mock incident context that are required for testing.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "245"
+    scriptarguments:
+      keys:
+        simple: actor_process_image_path,actor_process_image_sha256,endpoint_id,action_file_path,action_file_sha256,causality_actor_process_image_path,causality_actor_process_image_sha256
+      parent:
+        simple: PaloAltoNetworksXDR.Incident.alerts
+      values:
+        simple: C:\Program Files (x86)\Google\Update\Install\{0F536705-DD98-4DF9-AD6D-CF35DB7FBEFB}\CR_5748B.tmp\setup.exe,37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4,f8a2f58846b542579c12090652e79f3d,C:\Users\Public\Desktop\Google Chrome.lnk,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,C:\Program Files (x86)\Google\Update\GoogleUpdate.exe,cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "245":
+    id: "245"
+    taskid: b134ffb9-66fe-4193-86e8-84e230783ec6
+    type: playbook
+    task:
+      id: b134ffb9-66fe-4193-86e8-84e230783ec6
+      version: -1
+      name: Cortex XDR - Get File Path from alerts by hash
+      description: |-
+        This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook assists in retrieving file paths from the Cortex XDR incident by hash.
+      playbookName: Cortex XDR - Get File Path from alerts by hash
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      NonFoundHashes:
+        complex:
+          root: incident
+          accessor: filesha256
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1280,
+        "width": 710,
+        "x": -140,
+        "y": -1685
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0

@@ -19527,3 +19527,246 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Service Records 2,32 Deleted Successfully.
+
+### sysaid-service-record-attach-file
+
+***
+Add an attachment to a service record.
+
+#### Base Command
+
+`sysaid-service-record-attach-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| file_id | File file ID to upload. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!sysaid-service-record-attach-file file_id=110@51d40811-801a-4b26-8861-68474c40b347 id=25```
+#### Human Readable Output
+
+>File uploaded to Service Record 25 successfully.
+
+### sysaid-service-record-delete-file
+
+***
+Delete an attachment from a service record.
+
+#### Base Command
+
+`sysaid-service-record-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| file_id | The attachment file ID to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!sysaid-service-record-delete-file id=25 file_id=534492489_354835714```
+#### Human Readable Output
+
+>File deleted from Service Record 25 successfully.
+
+### sysaid-service-record-get
+
+***
+Returns the information for the specified service record.
+
+#### Base Command
+
+`sysaid-service-record-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| fields | List of fields to return, comma separated. If sent together with view parameter, returns both view’s fields and the requested fields. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SysAid.ServiceRecord.id | String | The ID of the service record. | 
+| SysAid.ServiceRecord.title | String | The title of the service record. | 
+| SysAid.ServiceRecord.status | String | The status of the service record. | 
+| SysAid.ServiceRecord.update_time | Date | The modify time of the service record. | 
+| SysAid.ServiceRecord.sr_type | String | The type of the service record. | 
+| SysAid.ServiceRecord.notes | String | The notes of the service record. | 
+
+#### Command example
+```!sysaid-service-record-get id=25 fields=all```
+#### Context Example
+```json
+{
+    "SysAid": {
+        "ServiceRecord": {
+            "CustomColumn3sr": "Demo Test",
+            "account_id": "paloaltonetworks_trial",
+            "actions": null,
+            "activities": null,
+            "agreement": "DEFAULT SLA",
+            "alertID": "green",
+            "all_active_assigned_to": "",
+            "archive": "No",
+            "assign_counter": "1",
+            "assigned_group": "",
+            "attachments": null,
+            "canArchive": true,
+            "canDelete": true,
+            "canUpdate": true,
+            "cc": "",
+            "change_category": "",
+            "childs": null,
+            "ci": "",
+            "close_time": "",
+            "closure_information": "",
+            "company": "",
+            "computer_id": "",
+            "computer_name": "",
+            "current_support_level": "0",
+            "cust_date1": "",
+            "cust_date2": "",
+            "cust_int1": "0",
+            "cust_int2": "0",
+            "cust_list1": "",
+            "cust_list2": "",
+            "cust_notes": "This is a note for the API",
+            "cust_text1": "",
+            "cust_text2": "",
+            "department": "",
+            "description": "This is a test incident",
+            "due_date": "",
+            "email_account": " ",
+            "escalation": "0",
+            "followup_actual_date": "",
+            "followup_planned_date": "",
+            "followup_text": "",
+            "followup_user": "",
+            "hasChildren": false,
+            "history": null,
+            "id": "25",
+            "impact": "Low",
+            "info": [
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "third_level_category",
+                    "keyCaption": "Third Level Category",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": "Cannot access email",
+                    "valueCaption": "Cannot access email",
+                    "valueClass": ""
+                }
+              ]
+            "insert_time": "03/07/2022 08:56:35 AM",
+            "is_escalated": "No",
+            "known_error": "",
+            "linkedSRs": null,
+            "links": null,
+            "location": "",
+            "lock_field": "25",
+            "max_support_level": "0",
+            "merged_service_records": "",
+            "merged_to": "",
+            "messages": null,
+            "notes": null,
+            "parent_link": "",
+            "priority": "Low",
+            "problem_sub_type": "Tablet",
+            "problem_type": "Mobile Devices",
+            "project_id": null,
+            "quick_name": "",
+            "relation_graph": null,
+            "reopen_counter": "0",
+            "request_user": "sysaid-dmst",
+            "request_user_name": "sysaid-dmst",
+            "resolution": "",
+            "responsibility": "sysaid-dmst",
+            "responsible_manager": "",
+            "screen": null,
+            "solution": "",
+            "solutionModel": null,
+            "source": "Self-Service Portal",
+            "sr_type": "Incident",
+            "sr_weight": "0",
+            "status": "New",
+            "sub_type": "DEFAULT",
+            "submit_user": "sysaid-dmst",
+            "success_rating": "0",
+            "survey_status": "The survey has not been sent.",
+            "task_id": "",
+            "third_level_category": "Cannot access email",
+            "timer1": "35240361631",
+            "timer2": "35240361631",
+            "title": "Cannot access email - Test ",
+            "totalTime": "25",
+            "update_time": "04/19/2023 05:48:02 AM",
+            "update_user": "sysaid-dmst",
+            "urgency": "Normal",
+            "user_manager_name": "",
+            "version": "8",
+            "video": null,
+            "workaround": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Service Record Results:
+>|Id|Title|Status|Modify Time|Service Record Type| Notes                                                                                                                                                                                            |
+>|---|---|---|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+>| 25 | Cannot access email - Test  | New | 04/19/2023 05:48:02 AM | Incident | sysaid-dmst (04/19/2023 05:48 AM):<br/>   Note<br/>,<br/><br/>sysaid-dmst (04/19/2023 05:34 AM):<br/>   this is a new note<br/>,<br/><br/>sysaid-dmst (03/10/2022 12:59:20):<br/>   THis is a note |
+
+
+## Service Record Results:
+
+| | |
+| --- | --- |
+| Id |	37 |
+| Title |	Basic Request Process2 |
+| Status |	New |
+| Modify Time |	03/30/2022 01:56:47 AM |
+| Service Record Type |	Request |
+| Notes |	If relevant, add this Request details to the Knowledge base. Close the Request. |
+
+
+### sysaid-service-record-add-note
+
+***
+Add a note to a Service Record
+
+#### Base Command
+
+`sysaid-service-record-add-note`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| note | The note to be added to the Service Record. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!sysaid-service-record-add-note id=25 note=`this is a new note````
+#### Human Readable Output
+
+>Updated record with new note

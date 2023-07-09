@@ -2,12 +2,28 @@
 Use the SplunkPy integration to fetch incidents from Splunk ES, and query results by SID.
 ***
 
-To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
+ - To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
 To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens).
+ - In case of inconsistent authentication issues when using username & password, try to use **\<USERNAME\>@_basic** as the username.
+this will set the integration to use basic authentication when connecting to the Splunk server.
+For example:
+TestUser@_basic
 
 There are two main use cases for the SplunkPy integration. Refer to the following sections based on your needs.
 - [Splunk Enterprise Security Users](#splunk-enterprise-security-users)
+  - [Fetching notable events](#fetching-notable-events)
+    - [How to configure](#how-to-configure)
+    - [Enriching Notable Events](#enriching-notable-events)
+      - [Enrichment types](#enrichment-types)
+      - [How to configure](#how-to-configure-1)
+      - [Troubleshooting enrichment status](#troubleshooting-enrichment-status)
+      - [Resetting the enriching fetch mechanism](#resetting-the-enriching-fetch-mechanism)
+      - [Limitations](#limitations)
+    - [Incident Mirroring](#incident-mirroring)
+    - [Existing users](#existing-users)
 - [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users)
+    - [Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users](#configure-splunk-to-produce-alerts-for-splunkpy-for-non-es-splunk-users)
+    - [Constraints](#constraints)
 
 ***
 # Splunk Enterprise Security Users

@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import requests
 from datetime import date, timedelta
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import dateparser
 
 import urllib3
@@ -152,7 +152,7 @@ def search_indicators(list_id, indicator_filter):
     found_items = []
     for item in list_indicators:
         item_indicator = demisto.get(item, 'host.host')
-        if indicator_filter in item_indicator:
+        if item_indicator and indicator_filter in item_indicator:
             found_items.append(item)
 
     return found_items

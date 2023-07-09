@@ -4,7 +4,7 @@
           "type": "string",
           "is_array": false
         },
-        "risk.level": {
+        "risk": {
           "type": "int",
           "is_array": false
         },
@@ -12,7 +12,7 @@
             "type": "datetime",
             "is_array": false
           },
-        "user.id": {
+        "user": {
             "type": "string",
             "is_array": false
           },
@@ -20,15 +20,7 @@
           "type": "string",
           "is_array": false
         },
-        "event_type.id": {
-          "type": "string",
-          "is_array": false
-        },
-        "event_type.name": {
-          "type": "string",
-          "is_array": false
-        },
-        "event_type.description": {
+        "event_type": {
           "type": "string",
           "is_array": false
         },

@@ -617,7 +617,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 3
+                        "y": 5
                     },
                     {
                         "h": 1,
@@ -634,20 +634,6 @@
                         "w": 3,
                         "x": 0,
                         "y": 0
-                    },
-                    {
-                        "h": 4,
-                        "i": "caseinfoid-yyrfzsc55n-57d64a70-f774-11ea-ba58-0ba474d6bf41",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "ServiceNow Comments",
-                        "static": false,
-                        "type": "notes",
-                        "w": 2,
-                        "x": 0,
-                        "y": 3
                     },
                     {
                         "displayType": "CARD",
@@ -674,7 +660,7 @@
                         "type": "",
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
@@ -707,7 +693,7 @@
                                 "fieldId": "servicenowcategory",
                                 "height": 22,
                                 "id": "a35ffad0-c9a3-11ea-9075-c575f8e27f6d",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -717,7 +703,7 @@
                                 "fieldId": "subcategory",
                                 "height": 22,
                                 "id": "ae9230d0-c9a3-11ea-9075-c575f8e27f6d",
-                                "index": 4,
+                                "index": 3,
                                 "listId": "caseinfoid-yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -728,7 +714,7 @@
                                 "fieldId": "assignmentgroup",
                                 "height": 22,
                                 "id": "dd343720-dbe2-11ea-85ad-19eb038846fa",
-                                "index": 5,
+                                "index": 4,
                                 "listId": "caseinfoid-yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -738,7 +724,7 @@
                                 "fieldId": "ticketopeneddate",
                                 "height": 22,
                                 "id": "f7060480-dbe2-11ea-85ad-19eb038846fa",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -751,6 +737,81 @@
                         "w": 1,
                         "x": 0,
                         "y": 1
+                    },
+                    {
+                        "h": 6,
+                        "i": "caseinfoid-e60e7890-912c-11ed-bc45-87c24de9d5e1",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "ServiceNow Comments and Work Notes",
+                        "query": {
+                            "categories": [],
+                            "notTags": [],
+                            "tags": [
+                                "comments",
+                                "work_notes",
+                                "CommentFromServiceNow",
+                                "WorkNoteFromServiceNow"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-fa5e8380-912c-11ed-bc45-87c24de9d5e1",
+                        "items": [
+                            {
+                                "args": {
+                                    "tag": {
+                                        "simple": "comment"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "02e68110-912d-11ed-bc45-87c24de9d5e1",
+                                "index": 0,
+                                "name": "Add Comment to ServiceNow Ticket",
+                                "scriptId": "ServiceNowAddComment",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "tag": {
+                                        "simple": "work_notes"
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "041b3080-912d-11ed-bc45-87c24de9d5e1",
+                                "index": 1,
+                                "name": "Add Work Note to ServiceNow Ticket",
+                                "scriptId": "ServiceNowAddComment",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
                     }
                 ],
                 "type": "custom"
@@ -948,14 +1009,6 @@
                     },
                     {
                         "fieldId": "incident_countrycodenumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
                         "isVisible": true
                     },
                     {
@@ -1592,14 +1645,6 @@
                     },
                     {
                         "fieldId": "incident_countrycodenumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
                         "isVisible": true
                     },
                     {

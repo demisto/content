@@ -1,8 +1,9 @@
-
 import json
+import McAfeeNSMv2
 import io
 import pytest
 from McAfeeNSMv2 import Client
+from CommonServerPython import *  # noqa: F401
 
 
 @pytest.fixture
@@ -759,6 +760,7 @@ def test_list_domain_rule_objects_command(mocker, mcafeensmv2_client):
     response = util_load_json('test_data/commands_test_data.json').get('list_domain_rule_objects')
     expected_result = response.get('RuleObjDef')
     mocker.patch.object(mcafeensmv2_client, 'list_domain_rule_objects_request', return_value=response)
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     result = list_domain_rule_objects_command(mcafeensmv2_client, args)
     expected_readable_output = '### List of Rule Objects\n' \
                                '|RuleId|Name|Description|VisibleToChild|RuleType|\n' \
@@ -784,6 +786,7 @@ def test_get_rule_object_command(mocker, mcafeensmv2_client):
     response = util_load_json('test_data/commands_test_data.json').get('get_rule_object_test')
     expected_result = response.get('RuleObjDef')
     mocker.patch.object(mcafeensmv2_client, 'get_rule_object_request', return_value=response)
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     result = get_rule_object_command(mcafeensmv2_client, args)
     expected_readable_output = '### Rule Objects 113\n' \
                                '|RuleId|Name|VisibleToChild|RuleType|Addresses|\n' \
@@ -824,6 +827,7 @@ def test_create_rule_object_command(mocker, mcafeensmv2_client):
             }
         }
     }
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     create_rule_object_command(mcafeensmv2_client, args)
     http_request.assert_called_with(method='POST',
                                     url_suffix='/ruleobject',
@@ -892,6 +896,7 @@ def test_update_rule_object_command(mocker, mcafeensmv2_client):
             }
         }
     }
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     mocker.patch.object(mcafeensmv2_client, 'get_rule_object_request', return_value=get_response)
     update_rule_object_command(mcafeensmv2_client, args1)
     http_request.assert_called_with(method='PUT',
@@ -1083,3 +1088,398 @@ def test_update_alerts_command(args, expected_error, mcafeensmv2_client):
     with pytest.raises(Exception) as e:
         update_alerts_command(mcafeensmv2_client, args)
         assert expected_error == str(e.value)
+
+
+@pytest.mark.parametrize('input, output', [(777, {'method': 'GET', 'url_suffix': '/domain/9/policyassignments/device/777'}),
+                                           (None, {'method': 'GET', 'url_suffix':
+                                                   '/domain/9/policyassignments/device'})])
+def test_list_device_policy_request__with_and_without_device_id(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - 1. A device id is given.
+        - 2. The device id isn't given.
+    When:
+        - nsm-list-device-policy command is executed.
+    Then:
+        - The http request is called with the right arguments:
+            1. The url suffix is /domain/{domain_id}/policyassignments/device/{device_id}
+            2. The url suffix is /domain/{domain_id}/policyassignments/device}
+
+    """
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    Client.list_device_policy_request(mcafeensmv2_client, domain_id=9, device_id=input)
+    assert http_request.call_args[1] == output
+
+
+@pytest.mark.parametrize('input, output', [({"mock": 777}, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock',
+                                                            'ipsPolicy': 'mock', 'mock': 777}),
+                                           (None, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock', 'ipsPolicy': 'mock'})])
+def test_assign_interface_policy_request__with_and_without_custom_json(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - 1. A custom_policy_json is given.
+        - 2. A custom_policy_json is not given.
+    When:
+        - assign_interface_policy_request command is executed.
+    Then:
+        - The http request is called with the right arguments.
+    """
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    Client.assign_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=9, custom_policy_json=input,
+                                           firewall_policy="mock", firewall_port_policy="mock",
+                                           ips_policy="mock")
+    assert http_request.call_args[1].get('json_data') == output
+
+
+@pytest.mark.parametrize('input, output', [(777, '/domain/9/policyassignments/interface/777'),
+                                           (None, '/domain/9/policyassignments/interface')])
+def test_list_interface_policy_request__with_and_without_intereface_id(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - 1. A interface id is given.
+        - 2. A interface id is not given.
+    When:
+        - nsm-list_interface_policy_request command is executed.
+    Then:
+        - The http request is called with the right arguments.
+    """
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    Client.list_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=input)
+    assert http_request.call_args[1].get('url_suffix') == output
+
+
+@pytest.mark.parametrize('input, output', [(({"from_to_list": [{"FromAddress": "1.1.1.1", "ToAddress": "2.2.2.2"}],
+                                             "rule_type": 'IPV_4_ADDRESS_RANGE', "address": [],
+                                              "number":4, "state":"Enabled"},
+                                            ('IPv4AddressRange',
+                                            {'IPV4RangeList': [{'FromAddress': '1.1.1.1',
+                                                                'ToAddress': '2.2.2.2', 'state': 1}]}))),
+                                           (({"from_to_list": [{'FromAddress': None, 'ToAddress': None}],
+                                             "rule_type": 'HOST_IPV_4', "address": ["1.1.1.1"], "number":4, "state":"Disabled"}),
+                                           ('HostIPv4', {'hostIPv4AddressList': [{'value': '1.1.1.1', 'state': 0}]})),
+                                           (({"from_to_list": [{'FromAddress': None, 'ToAddress': None, 'state': 1}],
+                                             "rule_type": 'NETWORK_IPV_6', "address": ['Network IP V.6'],
+                                              "number":6, "state":"Disabled"}),
+                                           ('Network_IPV_6', {'networkIPV6List': [{'value': 'Network IP V.6', 'state': 0}]}))])
+def test_create_body_create_rule_for_v10__with_different_arguments(input, output):
+    """
+    Given:
+        - A rule type and other relevant arguments.
+    When:
+        - create_body_create_rule_for_v10 command is executed.
+    Then:
+        - The body is created correctly according to the rule type and other given arguments.
+    """
+    from McAfeeNSMv2 import create_body_create_rule_for_v10
+    res = create_body_create_rule_for_v10(from_to_list=input.get("from_to_list"),
+                                          rule_type=input.get("rule_type"),
+                                          address=input.get("address"), number=input.get("number"),
+                                          state=input.get("state"))
+    assert res == output
+
+
+@pytest.mark.parametrize('input, output', [({"rule": "HOST", "from_to_list": []},
+                                            ('HostIPv9', {'hostIPv9AddressList': [
+                                                {'value': '1234', 'state': 1, 'changedState': 3},
+                                                {'value': '789', 'state': 1, 'changedState': 1}]})),
+                                           ({"rule": "ADDRESS_RANGE", "from_to_list": [{"mock"}]},
+                                            ('IPv9AddressRange', {'IPV9RangeList': [{'mock', 'state', 'changedState'}]})),
+                                           ({"rule": "NETWORK", "from_to_list": []},
+                                            ('Network_IPV_9', {'networkIPV9List': [
+                                                {'value': '1234', 'state': 1, 'changedState': 3},
+                                                {'value': '789', 'state': 1, 'changedState': 1}]}))])
+def test_create_body_update_rule_for_v10(input, output):
+    """
+    Given:
+        - A rule type and other relevant arguments.
+        1. A rule type is HOST. from_to_list is empty.
+        2. A rule type is ADDRESS_RANGE. from_to_list is not empty.
+        3. A rule type is NETWORK. from_to_list is empty.
+    When:
+        - create_body_update_rule_for_v10 command is executed.
+    Then:
+        - The body is created correctly according to the rule type and other given arguments.
+    """
+    from McAfeeNSMv2 import create_body_update_rule_for_v10
+    res = create_body_update_rule_for_v10(rule_type=input.get("rule"),
+                                          address=[{"test": "test", "value": "1234"}, "789"], number=9,
+                                          from_to_list=input.get("from_to_list"))
+
+    assert res == output
+
+
+def test_modify_v10_results_to_v9_format():
+    """
+    Given:
+        - Results from a v10 api call, that contains a list of dictionaries under the HostIPv4 key.
+    When:
+        - modify_v10_results_to_v9_format command is executed.
+    Then:
+        - The list is modified correctly, and the list of dictionaries is replaced with a list of strings of the address only.
+    """
+    from McAfeeNSMv2 import modify_v10_results_to_v9_format
+    test_input = [{'ruleobjId': '130', 'HostIPv4': {'hostIPv4AddressList': [{'ruleObjectID': 130,
+                                                                            'value': '1.1.1.1', 'state': 0,
+                                                                             'comment': '', 'userID': 0,
+                                                                             'changedState': 0}]}, 'HostIPv6': None}]
+    excepted_output = [{'ruleobjId': '130', 'HostIPv4': {'hostIPv4AddressList': ['1.1.1.1']}, 'HostIPv6': None}]
+    assert modify_v10_results_to_v9_format(test_input) == excepted_output
+
+
+@pytest.mark.parametrize('input, output', [({"input_lst": [{'mOCK': '130', 'Hos': "7"}, {'mocER': '130', 'MOCKER': "7"}],
+                                             "check_lst": ['mOCK']}, [{'MOCK': '130'}]),
+                                           ({"input_lst": [{'mOCK': '130', 'Host': "7"}, {'mocER': '130', 'MOCKER': "7"}]},
+                                            [{'MOCK': '130', 'Host': '7'}, {'MocER': '130', 'MOCKER': '7'}])])
+def test_capitalize_key_first_letter(input, output):
+    """
+    Given:
+        - A dictionary containing dictionaries.
+            - 1. A list of keys to check.
+            - 2. A list of keys to check is not given.
+    When:
+        - capitalize_key_first_letter command is executed.
+    Then:
+        - The keys of the dictionary are capitalized if they are in the list, if a check list was given.
+    """
+    from McAfeeNSMv2 import capitalize_key_first_letter
+    assert capitalize_key_first_letter(input_lst=input.get("input_lst"), check_lst=input.get("check_lst")) == output
+
+
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0, "device_id": 0},
+                                            [{'interfaceId': 'mock'}, {'interfaceId': 'mock'}]),
+                                            ({"domain_id": 777, "device_id": 777, "limit": 1}, [{'interfaceId': 'mock'}]),
+                                            ({"domain_id": 777, "device_id": 777, "limit": 1, "all_results": True},
+                                            [{'interfaceId': 'mock'}, {'interfaceId': 'mock'}])])
+def test_list_device_interface_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
+    """
+    Given:
+        - A domain id, device id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
+    When:
+        - nsm-list_device_interface_command command is executed.
+    Then:
+        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
+    """
+    from McAfeeNSMv2 import list_device_interface_command
+    mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"interfaceId": "mock"},
+                                                                                  {"interfaceId": "mock"}])
+    res = list_device_interface_command(client=mcafeensmv2_client, args=input)
+    assert res.outputs == output
+
+
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'policyId': 'mock'}, {'policyId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1}, [{'policyId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1, "all_results": True},
+                                            [{'policyId': 'mock'}, {'policyId': 'mock'}])])
+def test_list_device_policy_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
+    """
+    Given:
+        - A domain_id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
+    When:
+        - nsm-list_device_policy_command command is executed.
+    Then:
+        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
+    """
+    from McAfeeNSMv2 import list_device_policy_command
+    mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"policyId": "mock"}, {"policyId": "mock"}]),
+    res = list_device_policy_command(client=mcafeensmv2_client, args=input)
+    assert res.outputs == output
+
+
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'deviceId': 'mock'}, {'deviceId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1}, [{'deviceId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1, "all_results": True},
+                                             [{'deviceId': 'mock'}, {'deviceId': 'mock'}])])
+def test_list_domain_device_command_with_different_arguments(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - A domain id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
+    When:
+        - nsm-list_domain_device_command command is executed.
+    Then:
+        - Confirm the output is as expected (number of results, and ID = 0 dose not raise an error).
+    """
+    from McAfeeNSMv2 import list_domain_device_command
+    mocker.patch.object(mcafeensmv2_client, 'list_domain_device_request',
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"deviceId": "mock"}, {"deviceId": "mock"}])
+    res = list_domain_device_command(client=mcafeensmv2_client, args=input)
+    assert res.outputs == output
+
+
+@ pytest.mark.parametrize('input, output', [({"interface_id": None,
+                                             "return_value": [{"policyId": "mock"}, {"policyId": "mock"}]},
+                                            [{'policyId': 'mock'}, {'policyId': 'mock'}]),
+                                            ({"interface_id": 777,
+                                             "return_value": [{"policyId": "mock"}, {"policyId": "mock"}]},
+                                            [{'policyId': 'mock'}, {'policyId': 'mock'}])])
+def test_list_interface_policy_command__with_multiple_different_arguments(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - A domain id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
+    When:
+        - nsm-list_interface_policy_command command is executed.
+    Then:
+        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error ).
+    """
+    from McAfeeNSMv2 import list_interface_policy_command
+    mocker.patch.object(mcafeensmv2_client, 'list_interface_policy_request',
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=input.get("return_value"))
+    res = list_interface_policy_command(client=mcafeensmv2_client,
+                                        args={"domain_id": 0, "interface_id": input.get("interface_id"),
+                                              "limit": 1, "all_results": True})
+    assert res.outputs == output
+
+
+def test_get_device_configuration_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - A device id.
+    When:
+        - nsm-get_device_configuration_command command is executed.
+    Then:
+        - Confirm the output is as expected, and ID = 0 dose not raise an error.
+    """
+    from McAfeeNSMv2 import get_device_configuration_command
+    mocker.patch.object(mcafeensmv2_client, 'get_device_configuration_request',
+                        return_value={"deviceConfiguration": {"deviceConfigurationId": "mock"}})
+    res = get_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 0})
+    assert res.outputs == {'DeviceConfiguration': {'deviceConfigurationId': 'mock'}}
+
+
+def test_deploy_device_configuration_command__missing_arguments(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - A device id withot arguments to deploy.
+    When:
+        - deploy_device_configuration_command command is executed.
+    Then:
+        - Confirm the output is as expected(error message).
+    """
+    from McAfeeNSMv2 import deploy_device_configuration_command
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    with pytest.raises(DemistoException) as e:
+        deploy_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 777})
+    assert e.value.message == "Please provide at least one argument to deploy."
+
+
+@ pytest.mark.parametrize('input, output', [(([0], "tets"), "tets\n\nChecking again in 30 seconds..."),
+                                            (([1], "TEST"), 'The device configuration has been deployed successfully.')])
+def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, output):
+    """
+
+    Given:
+        - A fail_or_seccess_list, 1 or 0, and a message.
+            - 1. A pending status list = 0
+            - 2. A success status list = 1
+    When:
+        - deploy_device_configuration_command command is executed.
+    Then:
+        - Confirm the readable output is as expected.
+    """
+    from McAfeeNSMv2 import deploy_device_configuration_command
+    mocker.patch.object(McAfeeNSMv2, 'check_required_arg', return_value=5)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    mocker.patch.object(mcafeensmv2_client, 'deploy_device_configuration_request',
+                        return_value={"RequestId": "123"})
+    mocker.patch.object(mcafeensmv2_client, 'check_deploy_device_configuration_request_status',
+                        return_value=input)
+    mocker.patch.object(McAfeeNSMv2, 'deploy_polling_message', return_value=input)
+    res = deploy_device_configuration_command(args={"device_id": 0,
+                                                    "interval_in_seconds": 50,
+                                                    "push_botnet": False,
+                                                    "push_configuration_signature_set": "true",
+                                                    "push_gam_updates": False,
+                                                    "push_ssl_key": False
+                                                    }, client=mcafeensmv2_client)
+    assert res.readable_output == output
+
+
+@ pytest.mark.parametrize('input, output', [("m", 1),
+                                            ("x", 0)])
+def test_flatten_and_capitalize(mocker, input, output):
+    """
+    Given:
+        - A dictionary with inner dictionaries.
+        1. A key of the inner dictionary to capitalize exists in the main dict.
+        2. A key of the inner dictionary to capitalize not exists in the main dict.
+    When:
+        - flatten_and_capitalize function is executed.
+    Then:
+        - Confirm the capitalize_key_first_letter function is called as expected.
+    """
+    from McAfeeNSMv2 import flatten_and_capitalize
+    # from McAfeeNSMv2 import capitalize_key_first_letter
+    my_mocker = mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"bla": "bla"}])
+    flatten_and_capitalize(main_dict={"a": "l", "m": {"b": "cD", "eF": "gH", }}, inner_dict_key=input)
+    assert my_mocker.call_count == output
+
+
+def test_check_required_arg__with_None():
+    """
+    Given:
+        - A required argument with a None value.
+    When:
+        - check_required_arg function is executed.
+    Then:
+        - Confirm the output is as expected. (error message)
+    """
+    from McAfeeNSMv2 import check_required_arg
+    with pytest.raises(DemistoException) as e:
+        check_required_arg(arg_name="test", arg_value=None)
+    assert e.value.message == 'Please provide a test argument.'
+
+
+def test_check_required_arg__with_value_0():
+    """
+    Given:
+        - A required argument with an 0 as a value.
+    When:
+        - check_required_arg function is executed.
+    Then:
+        - Confirm the output is as expected.
+    """
+    from McAfeeNSMv2 import check_required_arg
+    assert check_required_arg(arg_name="test", arg_value=0) == 0
+
+
+@ pytest.mark.parametrize('input, output', [({"sigsetConfigPercentageComplete": "0", "sigsetConfigStatusMessage": "mock"},
+                                            ([0], "\nThe current percentage of deployment for 'push_configuration_signature_set' is: 0%\n                \nAnd the current message is: mock\n")),  # noqa: E501
+                                            ({"sigsetConfigPercentageComplete": 100,
+                                              "sigsetConfigStatusMessage": "DOWNLOAD COMPLETE"}, ([1], ''))])
+def test_deploy_polling_message(input, output):
+    """
+    Given:
+        - A percentage complete and a status message.
+        1. A pending status message.
+        2. A success status message.
+    When:
+        - deploy_polling_message function is executed.
+    Then:
+        - Confirm the output is as expected.
+    """
+    from McAfeeNSMv2 import deploy_polling_message
+    res = deploy_polling_message(status=input, args={"device_id": 0,
+                                                     "interval_in_seconds": 50,
+                                                     "push_botnet": False,
+                                                     "push_configuration_signature_set": "true",
+                                                     "push_gam_updates": False,
+                                                     "push_ssl_key": False
+                                                     })
+    assert res[1] == output[1] and res[0] == output[0]

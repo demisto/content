@@ -1,0 +1,30 @@
+args:
+- description: The project ID instead of the project number.  No need to supply `projects/` before the ID (i.e., use `project-name` instead of `projects/project-name` or `projects/111111111111`).
+  name: project_id
+  required: true
+comment: Determine GCP project hierarchy by looking up parent objects until the organization level is reached.
+commonfields:
+  id: GCPProjectHierarchy
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: GCPProjectHierarchy
+outputs:
+- contextPath: GCPHierarchy.id
+  description: ID of the project/folder/organization object such as `folders/folder-name`.
+  type: string
+- contextPath: GCPHierarchy.level
+  description: Level in relation to the original project such as project, 1, 2, etc.
+  type: string
+- contextPath: GCPHierarchy.number
+  description: Number of the project/folder/organization object such as `folders/111111111111`.
+  type: string
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,21 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Recorded Future Playbook Alert Classifier",
+    "defaultIncidentType": "Recorded Future Playbook Alert",
+    "keyTypeMap": {
+        "code_repo_leakage": "Recorded Future Code Repo Leakage",
+        "cyber_vulnerability": "Recorded Future Vulnerability",
+        "domain_abuse": "Recorded Future Domain Abuse"
+    },
+    "name": "Recorded Future Playbook Alert Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "category"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -505,7 +505,7 @@ def build_key_val_pair(tagDict):
     demisto.info('this is key: ')
     demisto.info(tagDict['@TagValue'])
 
-    key = list(filter(str.isalnum, str(tagDict['@TagName'])))
+    key = filter(str.isalnum, str(tagDict['@TagName']))
     value = tagDict['@TagValue'].encode('utf-8')
     keyValPair = {key: value}
     return keyValPair

@@ -9,8 +9,9 @@ This integration was integrated and tested with version 1.0 of TeamCymru
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | Proxy URL | Supports socks4/socks5/http connect proxies \(e.g., socks5h://host:1080\). | False | 
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -140,3 +141,7 @@ Note: Results for queries exceeding 10,000 IPs may take more than a minute given
 
 #### Command example
 ```!cymru-bulk-whois entry_id=${File.EntryID}```
+
+
+## Troubleshooting
+- In case of a problem with the proxy configuration, validate that the given proxy is working with the Whois content pack. 

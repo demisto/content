@@ -1,6 +1,6 @@
-import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 # IMPORTS
@@ -163,6 +163,14 @@ class Client(BaseClient):
             method="POST",
             url_suffix=uri,
             json_data=body
+        )
+
+    def set_temp_password(self, user_id):
+        uri = f'users/{user_id}/lifecycle/expire_password'
+
+        return self._http_request(
+            method="POST",
+            url_suffix=uri,
         )
 
     def add_user_to_group(self, user_id, group_id):
@@ -785,6 +793,10 @@ def set_password_command(client, args):
 
     raw_response = client.set_password(user_id, password)
     readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
+
+    if argToBoolean(args.get('temporary_password', False)):
+        client.set_temp_password(user_id)
+
     return (
         readable_output,
         {},

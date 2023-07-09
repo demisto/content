@@ -1,6 +1,3 @@
-Check Upgrade and Display Changes
-
-
 ## Script Data
 ---
 

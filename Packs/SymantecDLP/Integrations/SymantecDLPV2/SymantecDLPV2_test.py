@@ -532,3 +532,390 @@ def test_get_incident_details_fetch(mocker):
                         'incidentStatusId': 1, 'detectionDate': '2022-03-06T15:23:39.197', 'policyVersion': 4,
                         'messageSource': 'NETWORK', 'messageType': 'HTTP', 'matchCount': 3,
                         'errorMessage': 'Notice: Incident contains partial data only'}
+
+
+def test_get_incident_original_message_command(requests_mock):
+    """
+    Given:
+        file content of an incident
+
+    When:
+        running get_incident_original_message_command
+
+    Then:
+        Make sure the file gets created as excpected
+    """
+    from SymantecDLPV2 import Client, get_incident_original_message_command
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/originalMessage',
+        content='123'.encode()
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    assert get_incident_original_message_command(client, {'incident_id': '1234'})
+
+
+def test_get_report_filters_command(requests_mock):
+    """
+    Given:
+        report id
+
+    When:
+        running get_report_filters_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, get_report_filters_command
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/savedReport/1234',
+        json={"test": "test"}
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = get_report_filters_command(client, {'report_id': '1234'})
+    assert result.outputs == {'test': 'test', 'filterString': '{"test": "test"}'}
+
+
+@pytest.mark.parametrize('exception_error', ['error, 401 unauthorized', 'error occurred'])
+def test_get_report_filters_command_error(mocker, exception_error):
+    """
+    Given:
+        api error
+
+    When:
+        running get_report_filters_command
+
+    Then:
+        Make sure an exception is raised
+    """
+    from SymantecDLPV2 import Client, get_report_filters_command
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    mocker.patch.object(client, '_http_request', side_effect=DemistoException(exception_error))
+
+    with pytest.raises(DemistoException):
+        get_report_filters_command(client, {'incident_id': '1234'})
+
+
+def test_list_users_command(requests_mock):
+    """
+    Given:
+        a user
+
+    When:
+        running list_users_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, list_users_command
+
+    mocked_response = [
+        {
+            "userId": 241, "userName": "User1", "emailAddress": "test@gmail.com",
+            "accountDisabled": "no", "roles": ["API Web"]
+        }
+    ]
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/users',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = list_users_command(client)
+    assert result.outputs == mocked_response
+
+
+def test_get_sender_recipient_pattern_command(requests_mock):
+    """
+    Given:
+        pattern id
+
+    When:
+        running get_sender_recipient_pattern_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, get_sender_recipient_pattern_command
+
+    mocked_response = {
+        "id": 503,
+        "name": "XSOAR Sender Block Example",
+        "description": "demo",
+        "ruleType": 4,
+        "modifiedDate": "05/16/23 12:20 PM",
+        "modifiedBy": {
+            "id": 343,
+            "name": "AdminUsername "
+        },
+        "userPatterns": [
+            "domain-jsmith",
+            "domain-jdoe"
+        ],
+        "ipAddresses": [
+            "1.1.1.1",
+            "2.2.2.2"
+        ]
+    }
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/1234',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = get_sender_recipient_pattern_command(client, {'pattern_id': '1234'})
+    assert result.outputs == mocked_response
+    assert result.outputs_prefix == 'SymantecDLP.SenderRecipientPattern'
+
+
+def test_list_sender_recipient_patterns_command(requests_mock):
+    """
+    Given:
+        list of patterns
+
+    When:
+        running list_sender_recipient_patterns_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, list_sender_recipient_patterns_command
+
+    mocked_response = [
+        {
+            "id": 503,
+            "name": "XSOAR Sender Block Example",
+            "description": "demo",
+            "ruleType": 4,
+            "modifiedDate": "05/16/23 12:20 PM",
+            "modifiedBy": {
+                "id": 343,
+                "name": "AdminUsername "
+            },
+            "userPatterns": [
+                "domain-jsmith",
+                "domain-jdoe"
+            ],
+            "ipAddresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ]
+        }
+    ]
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/list',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = list_sender_recipient_patterns_command(client)
+    assert result.outputs == mocked_response
+
+
+def test_update_sender_pattern_command(requests_mock):
+    """
+    Given:
+        pattern id
+
+    When:
+        running update_sender_pattern_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, update_sender_pattern_command
+
+    mocked_response = {
+        "id": 503,
+        "name": "XSOAR Sender Block Example",
+        "description": "demo",
+        "ruleType": 4,
+        "modifiedDate": "05/16/23 12:20 PM",
+        "modifiedBy": {
+            "id": 343,
+            "name": "AdminUsername "
+        },
+        "userPatterns": [
+            "domain-jsmith",
+            "domain-jdoe"
+        ],
+        "ipAddresses": [
+            "1.1.1.1",
+            "2.2.2.2"
+        ]
+    }
+
+    requests_mock.put(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/1234',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = update_sender_pattern_command(client, {'pattern_id': '1234'})
+    assert result.outputs == mocked_response
+    assert result.outputs_prefix == 'SymantecDLP.SenderUpdate'
+
+
+def test_update_recipient_pattern_command(requests_mock):
+    """
+    Given:
+        pattern id
+
+    When:
+        running update_recipient_pattern_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, update_recipient_pattern_command
+
+    mocked_response = {
+        "id": 503,
+        "name": "XSOAR Sender Block Example",
+        "description": "demo",
+        "ruleType": 4,
+        "modifiedDate": "05/16/23 12:20 PM",
+        "modifiedBy": {
+            "id": 343,
+            "name": "AdminUsername "
+        },
+        "userPatterns": [
+            "domain-jsmith",
+            "domain-jdoe"
+        ],
+        "ipAddresses": [
+            "1.1.1.1",
+            "2.2.2.2"
+        ]
+    }
+
+    requests_mock.put(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/1234',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = update_recipient_pattern_command(client, {'pattern_id': '1234'})
+    assert result.outputs == mocked_response
+    assert result.outputs_prefix == 'SymantecDLP.RecipientUpdate'
+
+
+def test_get_message_body_command(requests_mock):
+    """
+    Given:
+        pattern id
+
+    When:
+        running get_message_body_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, get_message_body_command
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/messageBody',
+        json={'test': 'test'}
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = get_message_body_command(client, {'incident_id': '1234'})
+    assert result.outputs == {'IncidentID': '1234', 'MessageBody': {'test': 'test'}}
+
+
+@pytest.mark.parametrize('exception_error', ['error, 401 unauthorized', 'error occurred'])
+def test_get_message_body_error(mocker, exception_error):
+    """
+    Given:
+        api error
+
+    When:
+        running get_message_body_command
+
+    Then:
+        Make sure an exception is raised
+    """
+    from SymantecDLPV2 import Client, get_message_body_command
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    mocker.patch.object(client, '_http_request', side_effect=DemistoException(exception_error))
+
+    with pytest.raises(DemistoException):
+        get_message_body_command(client, {'incident_id': '1234'})
