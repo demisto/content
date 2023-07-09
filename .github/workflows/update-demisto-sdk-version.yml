@@ -1,20 +1,22 @@
 name: update-demisto-sdk-version
+
 on: workflow_dispatch
+
+permissions:
+  contents: write
 
 jobs:
   update-dep:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+
 
     steps:
     - name: Install poetry
       uses: Gr1N/setup-poetry@v8
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
     - name: Setup python
@@ -24,11 +26,12 @@ jobs:
         cache: 'poetry'
     
     - name: Update dependencies
-      run: |
-        poetry add --group dev demisto-sdk@latest
-        poetry lock --no-update
+      run: poetry add --group dev demisto-sdk@latest && poetry lock --no-update
 
     - name: Create branch
       run: |
+        git config user.name "Automated"
+        git config user.email "actions@users.noreply.github.com"
         git checkout -b demisto-sdk-release
+        git commit -m "poetry files" -a
         git push origin demisto-sdk-release
