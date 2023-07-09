@@ -1,4 +1,4 @@
-This automation takes several alerts fields from the RSA NetWitness alerts context and displays them as markdown in the layout.
+This automation takes several incident fields from the RSA NetWitness incident context and displays them as markdown in the layout.
 
 ## Script Data
 
