@@ -2843,7 +2843,7 @@ def test_connection(client: AzureFirewallClient) -> str:
 
 def reset_auth() -> str:
     """
-    Reset Azure auth properties.
+    Reset Azure auth properties .
 
     Returns:
         str: Informative message.

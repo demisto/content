@@ -14,7 +14,7 @@ DEVICE_FLOW = 'Device Code'
 
 class Client:
     """
-    API Client to communicate with AzureRiskyUsers.
+    API Client to communicate with AzureRiskyUsers .
     """
 
     def __init__(self, client_id: str, verify: bool, proxy: bool, authentication_type: str,
