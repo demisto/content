@@ -15,7 +15,7 @@ from splunklib.data import Record
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 
-OUTPUT_MODE = 'json'  # type of response from splunk-sdk query (json/csv/xml)
+OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -303,7 +303,7 @@ def build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offse
         occurred_end_time_fieldname: latest_time,
         "count": FETCH_LIMIT,
         'offset': search_offset,
-        "output_mode": OUTPUT_MODE,
+        "output_mode": OUTPUT_MODE_JSON,
     }
 
 
@@ -1035,7 +1035,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
                         demisto.debug(f'Handling open {enrichment.type} enrichment for notable {notable.id}')
-                        for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE)):
+                        for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON)):
                             if handle_message(item):
                                 continue
                             enrichment.data.append(item)
@@ -1258,7 +1258,7 @@ def get_remote_data_command(service: client.Service, args: dict,
              '| map search=" search `notable_by_id($rule_id$)`"'.format(notable_id, last_update_splunk_timestamp)
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
-    for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode=OUTPUT_MODE)):
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode=OUTPUT_MODE_JSON)):
         if handle_message(item):
             continue
         updated_notable = parse_notable(item, to_dict=True)
@@ -1313,7 +1313,7 @@ def get_modified_remote_data_command(service: client.Service, args):
              '| dedup rule_id'
     demisto.debug(f'Performing get-modified-remote-data command with query: {search}')
 
-    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE)):
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON)):
         if handle_message(item):
             continue
         modified_notable_ids.append(item['rule_id'])
@@ -1436,7 +1436,7 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
         'latest_time': now,
         'count': FETCH_LIMIT,
         'offset': search_offset,
-        'output_mode': OUTPUT_MODE,
+        'output_mode': OUTPUT_MODE_JSON,
     }
 
     searchquery_oneshot = params['fetchQuery']
@@ -1654,7 +1654,7 @@ class ResponseReaderWrapper(io.RawIOBase):
 def get_current_splunk_time(splunk_service: client.Service):
     t = datetime.utcnow() - timedelta(days=3)
     time = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE, }
+    kwargs_oneshot = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE_JSON, }
     searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S")' \
                           ' | sort 1 -_time | table clock'
 
@@ -1858,7 +1858,7 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
 
     auth_header = {"Authorization": f"Bearer {auth_token}"} if auth_token else {"Authorization": sessionKey}
 
-    args['output_mode'] = OUTPUT_MODE
+    args['output_mode'] = OUTPUT_MODE_JSON
 
     mod_notables = requests.post(
         f'{baseurl}services/notable_update',
@@ -2045,7 +2045,7 @@ def get_current_results_batch(search_job: client.Job, batch_size: int, results_o
     current_batch_kwargs = {
         "count": batch_size,
         "offset": results_offset,
-        'output_mode': OUTPUT_MODE,
+        'output_mode': OUTPUT_MODE_JSON,
     }
 
     return search_job.results(**current_batch_kwargs)
@@ -2170,7 +2170,7 @@ def splunk_results_command(service: client.Service, args: dict):
         else:
             return_error(msg, error)
     else:
-        for result in results.JSONResultsReader(job.results(count=limit, output_mode=OUTPUT_MODE)):
+        for result in results.JSONResultsReader(job.results(count=limit, output_mode=OUTPUT_MODE_JSON)):
             if isinstance(result, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
@@ -2369,7 +2369,7 @@ def test_module(service: client.Service, params: dict) -> None:
     if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
-        kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE}
+        kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE_JSON}
         query = params['fetchQuery']
         try:
             if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
