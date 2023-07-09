@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -180
+          "y": -130
         }
       }
     note: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e93cd351-12f2-4f18-85d5-5e534de22c16
+    taskid: 749e139e-0bd0-43e6-8b70-ec6887d6f44c
     type: condition
     task:
-      id: e93cd351-12f2-4f18-85d5-5e534de22c16
+      id: 749e139e-0bd0-43e6-8b70-ec6887d6f44c
       version: -1
       name: Is there an IP address?
       description: Determines if the IP address has been supplied to proceed with cloud enrichment.
@@ -62,6 +62,17 @@ tasks:
             value:
               complex:
                 root: inputs.RemoteIP
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                    unpack_matches: {}
             iscontext: true
           right:
             value: {}
@@ -144,7 +155,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 345
+          "y": 455
         }
       }
     note: false
@@ -156,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: bb77938e-2420-4151-8c9f-c44127d282ac
+    taskid: aef54f14-3612-487f-873d-b9a3170beec0
     type: condition
     task:
-      id: bb77938e-2420-4151-8c9f-c44127d282ac
+      id: aef54f14-3612-487f-873d-b9a3170beec0
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -194,6 +205,17 @@ tasks:
             value:
               complex:
                 root: inputs.RemoteIP
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                    unpack_matches: {}
             iscontext: true
     - label: GCP
       condition:
@@ -212,6 +234,17 @@ tasks:
             value:
               complex:
                 root: inputs.RemoteIP
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                    unpack_matches: {}
             iscontext: true
     - label: Azure
       condition:
@@ -230,6 +263,17 @@ tasks:
             value:
               complex:
                 root: inputs.RemoteIP
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                    unpack_matches: {}
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -297,7 +341,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -40
+          "y": 70
         }
       }
     note: false
@@ -514,7 +558,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 170
+          "y": 280
         }
       }
     note: false
@@ -1361,10 +1405,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5455,
+        "height": 5405,
         "width": 1390,
         "x": 110,
-        "y": -180
+        "y": -130
       }
     }
   }
