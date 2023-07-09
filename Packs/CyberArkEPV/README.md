@@ -6,7 +6,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 Syslog messages can be sent to multiple syslog servers in two different ways.
 - One message can be sent to multiple servers by configuring an XSLT file.
-- Multiple messages can be sent to different servers and formatted differently for each server by configuring multiple XSLT files, formats, and code-message lists. The code-message lists must be matched. They must contain the same number of items in the same order.
+- Multiple messages can be sent to different servers and formatted differently for each server by configuring multiple XSLT files, formats, and code-message lists. The code-message lists must contain the same number of items in the same order.
 ```http
   Note: The .ini file contains these configuration values.
 ```
@@ -16,7 +16,7 @@ Syslog messages can be sent to multiple syslog servers in two different ways.
 - **SyslogServerPort** — The port used to connect to the Syslog server. The default value is 514.
 - **SyslogMessageCodeFilter** — Defines which message codes are sent from the Vault to the BrokerVM through the Syslog protocol. You can specify message numbers or ranges of numbers, separated by commas. Specify multiple values with pipelines. By default, all message codes are sent for user and safe activities.
 - **SyslogTranslatorFile** — Specifies the XSL file used to parse CyberArk audit records data into Syslog protocol. Specify multiple values with commas.
-- **DebugLevel** — Determines the level of debug messages. Specify SYSLOG(2) to include Syslog xml messages in the trace file.
+- **DebugLevel** — Determines the level of debug messages. Specify SYSLOG(2) to include Syslog XML messages in the trace file.
 - **UseLegacySyslogFormat** — Controls the format of the syslog message, and defines whether it is sent in a newer syslog format (RFC 5424) or in a legacy format. The default value is No, which enables working with the newer syslog format. Specify multiple values with commas.
 
 2. In DBParm.ini, paste the SYSLOG section at the bottom of the file, then rename the file to XSIAM.xsl.
