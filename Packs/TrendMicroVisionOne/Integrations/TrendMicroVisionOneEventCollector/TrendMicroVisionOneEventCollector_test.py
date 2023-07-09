@@ -464,7 +464,7 @@ class TestFetchEvents:
             last_run={
                 'oat_detection_start_time': '2023-01-01T14:00:00Z',
                 'dedup_found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-                'pagination_found_oat_logs': [],
+                'pagination_found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
                 'oat_detection_next_link': f'{BASE_URL}/v3.0{UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value}'
                                            f'?top=1000&fetchedAmountOfEvents=100'
             },
@@ -474,8 +474,8 @@ class TestFetchEvents:
         assert len(observed_attack_techniques_logs) == 185
         assert updated_last_run == {
             'oat_detection_start_time': '2023-01-01T14:00:00Z',
-            'dedup_found_oat_logs': [],
-            'pagination_found_oat_logs': [],
+            'dedup_found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+            'pagination_found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
             'oat_detection_next_link': ''
         }
 
@@ -557,7 +557,7 @@ class TestFetchEvents:
             last_run={
                 'search_detection_start_time': '2023-01-01T14:00:00Z',
                 'dedup_found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7],
-                'pagination_found_search_detection_logs': [],
+                'pagination_found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7],
                 'search_detection_next_link': 'https://api.xdr.trendmicro.com/v3.0/search/detections?top=200'
                                               '&fetchedAmountOfEvents=500'
             },
@@ -567,8 +567,8 @@ class TestFetchEvents:
         assert len(search_detection_logs) == 193
         assert updated_last_run == {
             'search_detection_start_time': '2023-01-01T14:00:00Z',
-            'dedup_found_search_detection_logs': [],
-            'pagination_found_search_detection_logs': [],
+            'dedup_found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7],
+            'pagination_found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7],
             'search_detection_next_link': ''
         }
 

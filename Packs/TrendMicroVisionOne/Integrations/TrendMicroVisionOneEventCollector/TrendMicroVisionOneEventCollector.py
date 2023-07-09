@@ -823,7 +823,7 @@ def get_search_detection_logs(
         search_detection_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
-            log_cache_last_run_name_field_name=search_detection_dedup,
+            log_cache_last_run_name_field_name=search_detection_pagination,
             log_type=search_detections_log_type,
             date_format=date_format,
             latest_log_time=last_run_start_time
