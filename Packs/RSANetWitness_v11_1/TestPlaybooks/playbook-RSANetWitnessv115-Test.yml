@@ -75,7 +75,7 @@ tasks:
       id: fa3ecfa7-88a5-41c5-873d-dc373111fc36
       version: -1
       name: rsa-nw-list-incidents
-      script: '|||rsa-nw-list-incidents'
+      script: RSANetWitnessv115|||rsa-nw-list-incidents
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -152,7 +152,7 @@ tasks:
       id: 70c63ccb-3671-42b5-879c-9138c4a77339
       version: -1
       name: rsa-nw-update-incident
-      script: '|||rsa-nw-update-incident'
+      script: RSANetWitnessv115|||rsa-nw-update-incident
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -245,7 +245,7 @@ tasks:
       id: c84d18e3-2f3d-4771-8cf9-751059e77508
       version: -1
       name: rsa-nw-incident-add-journal-entry
-      script: '|||rsa-nw-incident-add-journal-entry'
+      script: RSANetWitnessv115|||rsa-nw-incident-add-journal-entry
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -282,7 +282,7 @@ tasks:
       id: 704d7de4-d640-41b6-807e-f202e0173dde
       version: -1
       name: rsa-nw-incident-list-alerts
-      script: '|||rsa-nw-incident-list-alerts'
+      script: RSANetWitnessv115|||rsa-nw-incident-list-alerts
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -355,7 +355,7 @@ tasks:
       id: 79b2fcc2-4ade-4668-8cde-c4daa5133288
       version: -1
       name: rsa-nw-services-list
-      script: '|||rsa-nw-services-list'
+      script: RSANetWitnessv115|||rsa-nw-services-list
       type: regular
       iscommand: true
       brand: ""
@@ -425,7 +425,7 @@ tasks:
       id: 26dd1eca-66e4-4469-8adf-fd538a07ac76
       version: -1
       name: rsa-nw-hosts-list
-      script: '|||rsa-nw-hosts-list'
+      script: RSANetWitnessv115|||rsa-nw-hosts-list
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -568,7 +568,7 @@ tasks:
       id: 0cf7aecc-1812-4b76-8f23-74ecd1f51a45
       version: -1
       name: rsa-nw-snapshots-list-for-host
-      script: '|||rsa-nw-snapshots-list-for-host'
+      script: RSANetWitnessv115|||rsa-nw-snapshots-list-for-host
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -643,7 +643,7 @@ tasks:
       id: 4da9f83b-7640-48d0-843b-884aa6e0e4f5
       version: -1
       name: rsa-nw-snapshot-details-get
-      script: '|||rsa-nw-snapshot-details-get'
+      script: RSANetWitnessv115|||rsa-nw-snapshot-details-get
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -722,7 +722,7 @@ tasks:
       id: 624be1b1-441f-4143-8860-f642461622d4
       version: -1
       name: rsa-nw-files-list
-      script: '|||rsa-nw-files-list'
+      script: RSANetWitnessv115|||rsa-nw-files-list
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -795,7 +795,7 @@ tasks:
       id: 2f9f6930-a039-4bea-8db6-33840e652301
       version: -1
       name: rsa-nw-host-alerts-list
-      script: '|||rsa-nw-host-alerts-list'
+      script: RSANetWitnessv115|||rsa-nw-host-alerts-list
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -868,7 +868,7 @@ tasks:
       id: e00f67d3-ceab-4e6c-806a-4e77140475a9
       version: -1
       name: rsa-nw-file-alerts-list
-      script: '|||rsa-nw-file-alerts-list'
+      script: RSANetWitnessv115|||rsa-nw-file-alerts-list
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -1021,7 +1021,7 @@ tasks:
       version: -1
       name: get all incidents
       description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
-      script: '|||rsa-nw-list-incidents'
+      script: RSANetWitnessv115|||rsa-nw-list-incidents
       type: regular
       iscommand: true
       brand: ""
