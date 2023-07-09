@@ -5,7 +5,6 @@ commonfields:
 name: FeedRelatedIndicatorsWidget
 script: '-'
 subtype: python3
-system: false
 tags:
 - dynamic-indicator-section
 timeout: '0'

@@ -1,7 +1,6 @@
-import ipaddress
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import ipaddress
 
 
 def is_valid_ipv4_address(address: str):

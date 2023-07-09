@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 A wrapper script to the 'AppendindicatorField' script, that enables adding tags to certain indicators.
 Note: You can use this script as a layout button that allows adding tags to indicators.
 """
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import List
