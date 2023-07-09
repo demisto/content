@@ -6,7 +6,6 @@ configuration:
 - defaultvalue: Worldwide
   display: Azure Cloud
   name: azure_cloud
-  required: false
   type: 15
   options:
   - Worldwide
@@ -21,10 +20,8 @@ configuration:
   advanced: true
 - display: Application ID
   name: app_id
-  required: false
   defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
   type: 0
-  hidden: false
 - display: Authentication Type
   name: auth_type
   required: true
@@ -37,27 +34,22 @@ configuration:
   - Azure Managed Identities
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
-  required: false
   type: 0
 - display: Client Secret (for authorization code mode)
   name: credentials
-  required: false
   type: 9
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
-  required: false
   type: 0
 - additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section
   displaypassword: Authorization code
   name: auth_code
-  required: false
   hiddenusername: true
   type: 9
   display: Authorization code
 - name: managed_identities_client_id
-  required: false
   type: 9
   additionalinfo: The Managed Identities client ID for authentication. Relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
@@ -72,16 +64,13 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
-  required: false
   type: 0
   advanced: true
   additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
@@ -91,25 +80,15 @@ display: Azure Kubernetes Services
 name: Azure Kubernetes Services
 script:
   commands:
-  - deprecated: false
-    description: Tests the connectivity to Azure.
-    execution: false
+  - description: Tests the connectivity to Azure.
     name: azure-ks-auth-test
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the instructions in the command results.
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: azure-ks-auth-start
-  - deprecated: false
-    description: Run this command to complete the authorization process. Should be used after running the azure-ks-auth-start command.
-    execution: false
+  - description: Run this command to complete the authorization process. Should be used after running the azure-ks-auth-start command.
     name: azure-ks-auth-complete
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-ks-auth-reset
-  - deprecated: false
-    description: Gets a list of managed clusters in the specified subscription.
-    execution: false
+  - description: Gets a list of managed clusters in the specified subscription.
     name: azure-ks-clusters-list
     outputs:
     - contextPath: AzureKS.ManagedCluster.id
@@ -209,16 +188,11 @@ script:
       description: The subscription DNS zone name.
       type: String
   - arguments:
-    - default: false
-      description: The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.
-      isArray: false
+    - description: The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.
       name: resource_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Resource location, Can be retrieved using the azure-ks-clusters-list command.
-      isArray: false
       name: location
       predefined:
       - australiacentral
@@ -267,46 +241,26 @@ script:
       - westus
       - westus2
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false".'
-      isArray: false
       name: http_application_routing_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false".'
-      isArray: false
       name: monitoring_agent_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal.
-      isArray: false
+    - description: The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal.
       name: monitoring_resource_name
-      required: false
-      secret: false
-    deprecated: false
     description: Updates a managed cluster with the specified configuration.
-    execution: false
     name: azure-ks-cluster-addon-update
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: azure-ks-generate-login-url
     arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

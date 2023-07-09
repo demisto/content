@@ -10,7 +10,6 @@ configuration:
   defaultvalue: 'true'
   name: longRunning
   type: 8
-  required: false
   hidden: true
   section: Connect
   advanced: true
@@ -22,32 +21,27 @@ configuration:
   section: Connect
 - display: Username
   name: credentials
-  required: false
   type: 9
   section: Connect
 - display: Certificate (Required for HTTPS)
   additionalinfo: Required for HTTPS, if not using server rerouting
   name: certificate
-  required: false
   type: 12
   section: Connect
   advanced: true
 - display: Private Key (Required for HTTPS)
   additionalinfo: Required for HTTPS, if not using server rerouting
   name: key
-  required: false
   type: 14
   section: Connect
   advanced: true
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
   section: Connect
 - additionalinfo: Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
   display: Store sample events for mapping
   name: store_samples
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -57,11 +51,8 @@ name: Generic Webhook
 script:
   commands: []
   dockerimage: demisto/fastapi:1.0.0.63688
-  feed: false
-  isfetch: false
   longRunning: true
   longRunningPort: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python
