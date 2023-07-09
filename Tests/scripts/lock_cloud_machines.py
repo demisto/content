@@ -86,7 +86,7 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
     return files
 
 
-def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval: int = 30):
+def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval: float = 30.0):
     """
     get the status of a job in gitlab.
 
@@ -94,7 +94,7 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
         token(str): the gitlab token.
         job_id(str): the job id to check.
         num_of_retries (int): num of retries to establish a connection to gitlab in case of a connection error.
-        interval (int): the interval to wait before trying to establish a connection to gitlab each attempt.
+        interval (float): the interval to wait before trying to establish a connection to gitlab each attempt.
 
     Returns: the status of the job.
 
