@@ -25,29 +25,23 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Initial fetching history (in minutes)
   name: fetch_interval
   defaultvalue: "10"
   type: 0
-  required: false
 - display: Fetch incident query
   name: fetchQuery
   defaultvalue: -status:solved -status:closed
   type: 0
-  required: false
 script:
   script: ''
   type: javascript
@@ -68,8 +62,7 @@ script:
       predefined:
       - "yes"
       - "no"
-      description: Whether the comment body is private. Can be "yes" or "no". Default
-        is "no".
+      description: Whether the comment body is private. Can be "yes" or "no". Default is "no".
       defaultValue: "no"
     - name: type
       auto: PREDEFINED
@@ -95,17 +88,13 @@ script:
     - name: forum_topic_id
       description: The numeric ID of the topic from which the ticket originated.
     - name: problem_id
-      description: For tickets of type "incident", the numeric ID of the problem to
-        which the incident is linked.
+      description: For tickets of type "incident", the numeric ID of the problem to which the incident is linked.
     - name: due_at
-      description: 'For tickets of type "task", the due date of the task. Date format
-        is ISO 8601, for example: (yyyy-mm-dd).'
+      description: 'For tickets of type "task", the due date of the task. Date format is ISO 8601, for example: (yyyy-mm-dd).'
     - name: via_followup_source_id
       description: The ID of a closed ticket for a follow-up ticket.
     - name: collaborators
-      description: An array of numeric IDs, emails, or objects containing name and
-        email properties. See Setting Collaborators. An email notification is sent
-        to collaborators when the ticket is created.
+      description: An array of numeric IDs, emails, or objects containing name and email properties. See Setting Collaborators. An email notification is sent to collaborators when the ticket is created.
       isArray: true
     - name: custom_fields
       description: 'An array of the custom fields of the ticket. For example: fieldid=text,fieldid=text'
@@ -122,8 +111,7 @@ script:
   - name: zendesk-list-tickets
     arguments:
     - name: query
-      description: 'Query to search for tickets. For more information about the search
-        syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
+      description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
     outputs:
     - contextPath: Ticket.id
       description: Ticked ID.
@@ -138,8 +126,7 @@ script:
     arguments:
     - name: id
       default: true
-      description: Ticket ID. If not provided, the command will use the current incident
-        details (for tickets that were created by the Zendesk integration).
+      description: Ticket ID. If not provided, the command will use the current incident details (for tickets that were created by the Zendesk integration).
     outputs:
     - contextPath: Ticket.subject
       description: Subject of the Zendesk ticket.
@@ -167,8 +154,7 @@ script:
       - incident
       - question
       - task
-      description: Ticket type. Can be "problem", "incident", "question", or "task".Allowed
-        values are problem, incident, question, or task
+      description: Ticket type. Can be "problem", "incident", "question", or "task".Allowed values are problem, incident, question, or task
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -183,20 +169,15 @@ script:
     - name: external_id
       description: An ID to link Zendesk support tickets to local records.
     - name: problem_id
-      description: For tickets of type "incident", the numeric ID of the problem to
-        which the incident is linked.
+      description: For tickets of type "incident", the numeric ID of the problem to which the incident is linked.
     - name: due_at
-      description: 'For tickets of type "task", the due date of the task. Date format
-        is ISO 8601, for example: (yyyy-mm-dd).'
+      description: 'For tickets of type "task", the due date of the task. Date format is ISO 8601, for example: (yyyy-mm-dd).'
     - name: collaborators
-      description: An array of numeric IDs, emails, or objects containing name and
-        email properties. See Setting Collaborators. An email notification is sent
-        to collaborators when the ticket is created.
+      description: An array of numeric IDs, emails, or objects containing name and email properties. See Setting Collaborators. An email notification is sent to collaborators when the ticket is created.
       isArray: true
     - name: id
       default: true
-      description: Ticket ID. If not provided, the command will use the current incident
-        details (for tickets that were created by the Zendesk integration).
+      description: Ticket ID. If not provided, the command will use the current incident details (for tickets that were created by the Zendesk integration).
     - name: status
       auto: PREDEFINED
       predefined:
@@ -220,12 +201,10 @@ script:
       predefined:
       - "yes"
       - "no"
-      description: Whether the comment body is private. Can be "yes" or "no". Default
-        is "no".
+      description: Whether the comment body is private. Can be "yes" or "no". Default is "no".
       defaultValue: "no"
     - name: id
-      description: Ticket ID. If not provided, the command will use the current incident
-        details (for tickets that were created by the Zendesk integration).
+      description: Ticket ID. If not provided, the command will use the current incident details (for tickets that were created by the Zendesk integration).
     - name: addFooter
       auto: PREDEFINED
       predefined:
@@ -271,8 +250,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Whether to check if the specified user already exists in Zendesk.
-        Can be "True" or "False". Default is "False".
+      description: Whether to check if the specified user already exists in Zendesk. Can be "True" or "False". Default is "False".
       defaultValue: "False"
     description: Adds a user (not agent or admin) to Zendesk.
   - name: zendesk-get-article
