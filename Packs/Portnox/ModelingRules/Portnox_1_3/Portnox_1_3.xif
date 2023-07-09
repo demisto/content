@@ -1,6 +1,17 @@
-[MODEL: dataset = portnox_portnox_raw]
-filter cefDeviceVendor != null
-//
-| alter xdm.target.vlan = to_integer(cn1),
+[MODEL:dataset="portnox_portnox_raw"]
+alter xdm.event.outcome_reason = act,
+    xdm.target.vlan = cn1,
     xdm.source.host.os = cs2,
-    xdm.event.outcome = "test"// if(outcome = "success" , xdm_const_success , outcome
+    xdm.event.outcome =  if(outcome in("success","sucess") , XDM_CONST.OUTCOME_SUCCESS  , outcome in ("failure"),XDM_CONST.OUTCOME_FAILED ,to_string(outcome)),
+    xdm.auth.auth_method = cs3,
+    xdm.target.port = dpt,
+    xdm.target.ipv4 = dst,
+    xdm.event.description = msg,
+    xdm.target.host.mac_addresses = arraycreate(dmac),
+    xdm.target.host.hostname = dhost,
+    xdm.source.host.hostname = shost,
+    xdm.target.file.path = filePath,
+    xdm.source.ipv4 = SourceAddress,
+    xdm.target.domain = destinationDnsDomain,
+    xdm.source.port = sourceTranslatedPort,
+    xdm.target.process.name = destinationServiceName;
