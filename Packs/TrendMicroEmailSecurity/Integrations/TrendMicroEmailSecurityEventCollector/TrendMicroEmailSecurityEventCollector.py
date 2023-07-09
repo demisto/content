@@ -78,13 +78,36 @@ def managing_set_last_run(
     event_type: str,
     next_token: str | None,
 ) -> dict:
+    """
+    The function handles the following four possible cases:
+
+    1. When `next_token` did not return (there are no more logs in the current time range)
+    2. When the number of logs retrieved is less than the limit (there are no more logs in the current time range)
+    3. When the number of retrieved logs is equal to the limit and the `next_token` is returned, in this case there are two cases:
+        1. In the next api call, no logs are returned (there are no more logs in the current time range)
+        2. In the next api call, log returns.
+
+    - When there are no more logs in the current time range,
+      the `time_from` for the specific `event_type` is set to `time_to` + 1 second
+      and the `next_token` for the event_type is removed.
+
+    - In the case where there are another logs in the current time range,
+      the `genTime` of the log from the next api call is set to be the `time_from`
+      for the specific `event_type` for the next call and the `next_token` for the specific `event_type`
+      is set to be the `next_token` from the function's arguments.
+
+    """
+
+    # the flag using detect if there are more logs in current time range
+    no_more_events_in_current_range_time = False
+
+    # In both cases there are no more logs in current range time
     if len_events < limit or not next_token:
-        last_run[f"time_{event_type}_from"] = (time_to + timedelta(seconds=1)).strftime(
-            DATE_FORMAT_EVENT
-        )
-        last_run.pop(f"next_token_{event_type}", None)
-        return last_run
+        no_more_events_in_current_range_time = True
+
     else:
+        # order the parameters for the api call with limit 1 and the `next_token`,
+        # the API call is consumed due ensure there is more logs in current range time
         params = assign_params(
             start=time_from,
             end=time_to.strftime(DATE_FORMAT_EVENT),
@@ -96,14 +119,25 @@ def managing_set_last_run(
         try:
             event = client.get_logs_request(event_type, params)
         except NoContentException:
-            last_run[f"time_{event_type}_from"] = (
-                time_to + timedelta(seconds=1)
-            ).strftime(DATE_FORMAT_EVENT)
-            last_run.pop(f"next_token_{event_type}", None)
-            return last_run
-        last_run[f"time_{event_type}_from"] = event.get("logs")[0]["genTime"]
-        last_run[f"next_token_{event_type}"] = next_token
+            # there are no more logs in current range time
+            no_more_events_in_current_range_time = True
+
+    if no_more_events_in_current_range_time:
+        # save the time_from for a specific `event_type` for the next fetch
+        # the `start` time of the next fetch is time_to + 1 second
+        last_run[f"time_{event_type}_from"] = (
+            time_to + timedelta(seconds=1)
+        ).strftime(DATE_FORMAT_EVENT)
+
+        # removing the `next_token` for a specific `event_type` from the `last_run`
+        last_run.pop(f"next_token_{event_type}", None)
         return last_run
+
+    # In case returned log from the API call
+    last_run[f"time_{event_type}_from"] = event.get("logs")[0]["genTime"]
+    last_run[f"next_token_{event_type}"] = next_token
+
+    return last_run
 
 
 def order_first_fetch(first_fetch: str) -> str:
