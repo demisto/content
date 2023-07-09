@@ -8,7 +8,7 @@ args:
   predefined:
   - 'True'
   - 'False'
-comment: Analyze large investigation from previous month until current month.
+comment: Deprecated. No available replacement.
 commonfields:
   id: HealthCheckAnalyzeLargeInvestigations
   version: -1
@@ -20,9 +20,10 @@ type: python
 dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
 fromversion: 6.0.0
 scripttarget: 0
 tags: []
 marketplaces:
 - xsoar
+deprecated: true
