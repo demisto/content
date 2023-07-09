@@ -23,11 +23,13 @@ jobs:
         cache: 'poetry'
     
     - name: Update dependencies
-      run: poetry add --group dev demisto-sdk@latest && poetry lock --no-update
+      run: |
+        poetry add --group dev demisto-sdk@latest
+        poetry lock --no-update
 
     - name: Create branch
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git checkout -b demisto-sdk-release
-        git push origin demisto-sdk-release
+        run: |
+          git checkout -b demisto-sdk-release
+          git push origin demisto-sdk-release
