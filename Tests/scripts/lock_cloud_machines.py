@@ -113,6 +113,7 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
                 raise error
             else:
                 time.sleep(interval)
+    return None
 
 
 def remove_file(storage_bucket: Any, file_path: str):
