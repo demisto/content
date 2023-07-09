@@ -12,7 +12,6 @@ jobs:
   update-dep:
     runs-on: ubuntu-latest
 
-
     steps:
     - name: Install poetry
       uses: Gr1N/setup-poetry@v8
@@ -38,4 +37,4 @@ jobs:
         git checkout -b demisto-sdk-release
         git commit -m "poetry files" -a
         git push origin demisto-sdk-release
-        gh pr create --title "SDK release"
+        gh pr create --title "SDK release" --body "SDK release"
