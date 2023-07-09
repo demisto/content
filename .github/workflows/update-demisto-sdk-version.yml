@@ -14,6 +14,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
     - name: Setup python
@@ -28,8 +29,6 @@ jobs:
         poetry lock --no-update
 
     - name: Create branch
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git checkout -b demisto-sdk-release
-          git push origin demisto-sdk-release
+      run: |
+        git checkout -b demisto-sdk-release
+        git push origin demisto-sdk-release
