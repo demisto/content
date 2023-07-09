@@ -568,7 +568,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "alerts",
-                        "query": "SetRSANetWitnessIncidentMD",
+                        "query": "SetRSANetWitnessAlertsMD",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
