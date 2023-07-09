@@ -21,3 +21,5 @@ IDP
 [file:classifier-CrowdStrike_Falcon_Incident_Classifier.json]
 ignore=BA101
 
+[file:Packs/CrowdStrikeFalcon/ReleaseNotes/1_10_33.md]
+ignore=RN115
