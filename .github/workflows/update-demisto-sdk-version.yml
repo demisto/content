@@ -4,8 +4,7 @@ on: workflow_dispatch
 jobs:
   update-dep:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+    permissions: read-all|write-all
 
     steps:
     - name: Install poetry
