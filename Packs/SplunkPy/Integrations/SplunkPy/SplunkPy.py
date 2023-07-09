@@ -779,19 +779,19 @@ def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backs
     """
     if not raw_dict:
         raw_dict = rawToDict(notable_data.get('_raw', ''))
-    raw_list = []  # type: list
+    raw_list: list = []
     for field in fields:
         raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
     if add_backslash:
         raw_list = [item.replace('\\', '\\\\') for item in raw_list]
-    raw_list = ['{}="{}"'.format(prefix, item.strip('"')) for item in raw_list]
+    raw_list = [f"""{prefix}="{item.strip('"')}\"""" for item in raw_list]
 
     if not raw_list:
         return ""
     elif len(raw_list) == 1:
         return raw_list[0]
     else:
-        return "({})".format(" OR ".join(raw_list))
+        return f'({" OR ".join(raw_list)})'
 
 
 def get_notable_field_and_value(raw_field, notable_data, raw=None):
@@ -1095,8 +1095,11 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
         demisto.debug(f'Submitted {len(submitted_notables)}/{total} notables successfully.')
 
     if failed_notables:
-        demisto.debug('The following {} notables failed the enrichment process: {}, creating incidents without '
-                      'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
+        demisto.debug(
+            f'The following {len(failed_notables)} notables failed the enrichment process: \
+            {[notable.id for notable in failed_notables]}, \
+            creating incidents without enrichment.'
+        )
 
 
 def submit_notable(service: client.Service, notable: Notable, num_enrichment_events) -> bool:
@@ -1336,8 +1339,9 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     notable_id = parsed_args.remote_incident_id
 
     if parsed_args.incident_changed and delta:
-        demisto.debug('Got the following delta keys {} to update incident corresponding to notable '
-                      '{}'.format(str(list(delta.keys())), notable_id))
+        demisto.debug(
+            f'Got the following delta keys {list(delta.keys())} to update incident corresponding to notable {notable_id}'
+        )
         changed_data = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
             if field == 'owner':
@@ -1758,7 +1762,7 @@ def quote_group(text):
 
 
 def rawToDict(raw):
-    result = {}  # type: Dict[str, str]
+    result: dict[str, str] = {}
     try:
         result = json.loads(raw)
     except ValueError:
@@ -1894,8 +1898,8 @@ def parse_notable(notable, to_dict=False):
         # in the event, then splunk returns the field with the key as value (e.g. ("DNS Destination", "DNS Destination")
         # so we go over the fields, and check if the key equals the value and set the value to be empty string
         if key == val:
-            demisto.debug('Found notable event raw field [{}] with key that equals the value - replacing the value '
-                          'with empty string'.format(key))
+            demisto.debug(f'Found notable event raw field [{key}] with key that equals the value - replacing the value '
+                          'with empty string')
             notable[key] = ''
     return dict(notable) if to_dict else notable
 
@@ -1929,9 +1933,9 @@ def build_search_kwargs(args, polling=False):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
 
-    kwargs_normalsearch = {
+    kwargs_normalsearch: dict[str, Any] = {
         "earliest_time": time_str,
-    }  # type: Dict[str,Any]
+    }
     if demisto.get(args, 'earliest_time'):
         kwargs_normalsearch['earliest_time'] = args['earliest_time']
     if demisto.get(args, 'latest_time'):
@@ -1952,7 +1956,7 @@ def build_search_kwargs(args, polling=False):
 def build_search_query(args):
     query = args['query']
     if not query.startswith('search') and not query.startswith('Search') and not query.startswith('|'):
-        query = 'search ' + query
+        query = f'search {query}'
     return query
 
 
@@ -1975,7 +1979,7 @@ def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_
     return ec
 
 
-def schedule_polling_command(command: str, args: dict, interval_in_secs: int):
+def schedule_polling_command(command: str, args: dict, interval_in_secs: int) -> ScheduledCommand:
     """
     Returns a ScheduledCommand object which contain the needed arguments for schedule the polling command.
     """
@@ -2018,14 +2022,12 @@ def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
     hr_headline = 'Splunk Search results for query:\n'
     if sid:
         hr_headline += f'sid: {str(sid)}'
-    human_readable = tableToMarkdown(hr_headline,
-                                     parsed_search_results, headers)
-    return human_readable
+    return tableToMarkdown(hr_headline, parsed_search_results, headers)
 
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = set().union(*(list(d.keys()) for d in search_result))  # type: Set
+    search_result_keys: set = set().union(*(list(d.keys()) for d in search_result))
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
@@ -2074,8 +2076,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
-def splunk_search_command(service: client.Service) -> CommandResults:
-    args = demisto.args()
+def splunk_search_command(service: client.Service, args: dict) -> CommandResults:
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
     search_kwargs = build_search_kwargs(args, polling)
@@ -2132,32 +2133,34 @@ def splunk_search_command(service: client.Service) -> CommandResults:
     )
 
 
-def splunk_job_create_command(service: client.Service):
-    query = demisto.args()['query']
-    app = demisto.args().get('app', '')
+def splunk_job_create_command(service: client.Service, args: dict):
+    query = args['query']
+    app = args.get('app', '')
     if not query.startswith('search'):
-        query = 'search ' + query
+        query = f'search {query}'
     search_kwargs = {
         "exec_mode": "normal",
         "app": app
     }
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+    search_job = service.jobs.create(query, **search_kwargs)
 
     entry_context = {
         'Splunk.Job': search_job.sid
     }
-    demisto.results({
-        "Type": 1,
-        "ContentsFormat": formats['text'],
-        "Contents": "Splunk Job created with SID: " + search_job.sid,
-        "EntryContext": entry_context
-    })
+    demisto.results(
+        {
+            "Type": 1,
+            "ContentsFormat": formats['text'],
+            "Contents": f"Splunk Job created with SID: {search_job.sid}",
+            "EntryContext": entry_context,
+        }
+    )
 
 
-def splunk_results_command(service: client.Service):
+def splunk_results_command(service: client.Service, args: dict):
     res = []
-    sid = demisto.args().get('sid', '')
-    limit = int(demisto.args().get('limit', '100'))
+    sid = args.get('sid', '')
+    limit = int(args.get('limit', '100'))
     try:
         job = service.job(sid)
     except HTTPError as error:
@@ -2201,7 +2204,7 @@ def parse_time_to_minutes():
 
 
 def splunk_get_indexes_command(service: client.Service):
-    indexes = service.indexes  # type: ignore
+    indexes = service.indexes
     indexesNames = []
     for index in indexes:
         index_json = {'name': index.name, 'count': index["totalEventCount"]}
@@ -2210,18 +2213,18 @@ def splunk_get_indexes_command(service: client.Service):
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
 
 
-def splunk_submit_event_command(service: client.Service):
+def splunk_submit_event_command(service: client.Service, args: dict):
     try:
-        index = service.indexes[demisto.args()['index']]  # type: ignore
+        index = service.indexes[args['index']]
     except KeyError:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
-                         'Contents': "Found no Splunk index: " + demisto.args()['index']})
+                         'Contents': "Found no Splunk index: " + args['index']})
 
     else:
         data = demisto.args()['data']
         data_formatted = data.encode('utf8')
-        r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
-        demisto.results('Event was created in Splunk index: ' + r.name)
+        r = index.submit(data_formatted, sourcetype=args['sourcetype'], host=args['host'])
+        demisto.results(f'Event was created in Splunk index: {r.name}')
 
 
 def splunk_submit_event_hec(
@@ -2260,9 +2263,12 @@ def splunk_submit_event_hec(
         'Content-Type': 'application/json'
     }
 
-    response = requests.post(baseurl + '/services/collector/event', data=json.dumps(args), headers=headers,
-                             verify=VERIFY_CERTIFICATE)
-    return response
+    return requests.post(
+        f'{baseurl}/services/collector/event',
+        data=json.dumps(args),
+        headers=headers,
+        verify=VERIFY_CERTIFICATE,
+    )
 
 
 def splunk_submit_event_hec_command(params: dict, args: dict):
@@ -2345,8 +2351,8 @@ def splunk_job_status(service: client.Service, args: dict) -> CommandResults | N
         )
 
 
-def splunk_parse_raw_command():
-    raw = demisto.args().get('raw', '')
+def splunk_parse_raw_command(args: dict):
+    raw = args.get('raw', '')
     rawDict = rawToDict(raw)
     ec = {'Splunk.Raw.Parsed': rawDict}
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
@@ -2505,8 +2511,7 @@ def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict):
         return args.get('query', '{}')
 
 
-def kv_store_collection_data(service: client.Service) -> None:
-    args = demisto.args()
+def kv_store_collection_data(service: client.Service, args: dict) -> None:
     stores = args['kv_store_collection_name'].split(',')
 
     for i, store_res in enumerate(get_store_data(service)):
@@ -2521,8 +2526,7 @@ def kv_store_collection_data(service: client.Service) -> None:
             return_outputs(get_kv_store_config(store), {}, {})
 
 
-def kv_store_collection_delete_entry(service: client.Service) -> None:
-    args = demisto.args()
+def kv_store_collection_delete_entry(service: client.Service, args: dict) -> None:
     store_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
     store: client.KVStoreCollection = service.kvstore[store_name]
@@ -2638,7 +2642,7 @@ def main():  # pragma: no cover
     args = demisto.args()
 
     if command == 'splunk-parse-raw':
-        splunk_parse_raw_command()
+        splunk_parse_raw_command(args)
         sys.exit(0)
     service = None
     proxy = argToBoolean(params.get('proxy', False))
@@ -2678,18 +2682,18 @@ def main():  # pragma: no cover
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
     elif command == 'splunk-search':
-        return_results(splunk_search_command(service))
+        return_results(splunk_search_command(service, args))
     elif command == 'splunk-job-create':
-        splunk_job_create_command(service)
+        splunk_job_create_command(service, args)
     elif command == 'splunk-results':
-        splunk_results_command(service)
+        splunk_results_command(service, args)
     elif command == 'splunk-get-indexes':
         splunk_get_indexes_command(service)
     elif command == 'fetch-incidents':
         demisto.info('########### FETCH #############')
         fetch_incidents(service, mapper)
     elif command == 'splunk-submit-event':
-        splunk_submit_event_command(service)
+        splunk_submit_event_command(service, args)
     elif command == 'splunk-notable-event-edit':
         token = get_auth_session_key(service)
         splunk_edit_notable_event_command(base_url, token, auth_token, args)
@@ -2714,11 +2718,11 @@ def main():  # pragma: no cover
             kv_store_collection_add_entries(service, args)
         elif command in ['splunk-kv-store-collection-data-list',
                          'splunk-kv-store-collection-search-entry']:
-            kv_store_collection_data(service)
+            kv_store_collection_data(service, args)
         elif command == 'splunk-kv-store-collection-data-delete':
             kv_store_collection_data_delete(service, args)
         elif command == 'splunk-kv-store-collection-delete-entry':
-            kv_store_collection_delete_entry(service)
+            kv_store_collection_delete_entry(service, args)
 
     elif command == 'get-mapping-fields':
         if argToBoolean(params.get('use_cim', False)):
