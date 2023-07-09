@@ -12,16 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "MicrosoftADFS": {
-            "mandatory": false,
-            "display_name": "Microsoft AD FS Collection"
-        },
-        "MicrosoftWindowsEvents": {
-            "mandatory": false,
-            "display_name": "Microsoft Windows Event Logs"
-        }
-    },
     "marketplaces": [
         "marketplacev2"
     ]
