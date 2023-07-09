@@ -29,11 +29,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: "KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments"
 display: "KnowBe4KMSAT"
@@ -981,18 +979,12 @@ script:
     - name: id
       description: Event ID
       required: true
-      default: false
-      isArray: false
-      secret: false
     description: Deletes User Event by Event ID
   - name: kmsat-user-event-status-list
     arguments:
     - name: id
       description: Request Event ID from kmsat-user-event-create
       required: true
-      default: false
-      isArray: false
-      secret: false
     outputs:
     - contextPath: KMSAT.UserEventStatus.id
       description: "ID of the Event Type"
@@ -1023,7 +1015,6 @@ script:
     - name: per_page
       description: Per Page Amount
     description: returns the status of the User Event request
-  isfetch: false
   runonce: false
   script: "-"
   type: python

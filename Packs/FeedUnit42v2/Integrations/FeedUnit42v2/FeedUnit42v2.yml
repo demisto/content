@@ -4,18 +4,15 @@ commonfields:
   version: -1
 configuration:
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
 - display: API Key
   name: api_key
-  required: false
   type: 4
   hidden: true
 - display: Fetch indicators
   name: feed
-  required: false
   type: 8
   defaultvalue: 'true'
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
@@ -26,7 +23,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
@@ -48,12 +44,10 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 - display: ''
   name: feedExpirationPolicy
-  required: false
   type: 17
   options:
   - never
@@ -62,36 +56,29 @@ configuration:
   - suddenDeath
 - display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
   defaultvalue: '240'
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - display: Tags
   name: feedTags
-  required: false
   type: 0
   additionalinfo: Supports CSV values.
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
 description: Unit 42 feed of published IOCs, which contains known malicious indicators.
 display: Unit 42 ATOMs Feed
@@ -99,33 +86,20 @@ name: Unit42v2 Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of indicators to return. The default is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: indicator
       description: The type of the indicators to return.
-      isArray: false
       name: indicators_type
       predefined:
       - indicator
       - attack-pattern
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a limited number of the indicators.
-    execution: false
     name: unit42-get-indicators
   dockerimage: demisto/taxii2:1.0.0.63768
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
