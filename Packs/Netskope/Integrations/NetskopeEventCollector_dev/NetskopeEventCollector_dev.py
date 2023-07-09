@@ -13,14 +13,14 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 ALL_SUPPORTED_EVENT_TYPES = ['audit', 'page', 'network', 'application', 'alert']
-ALL_SUPPORTED_EVENT_TYPES_v2 = ['application', 'audit', 'page', 'network']
-ALL_SUPPORTED_ALERT_TYPES_v2 = ['policy', 'compromisedcredential', 'ctep', 'dlp', 'malsite', 'malware', 'quarantine',
-                                'remediation', 'securityassessment', 'uba', 'watchlist']
+ALL_SUPPORTED_EVENT_TYPES_v2 = ['application', 'audit', 'page', 'network', 'alert']
+# ALL_SUPPORTED_ALERT_TYPES_v2 = ['policy', 'compromisedcredential', 'ctep', 'dlp', 'malsite', 'malware', 'quarantine',
+# ALL_SUPPORTED_ALERT_TYPES_v2 = ['alert']
 # ALL_SUPPORTED_EVENT_TYPES_v2 = ['application']
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
 # 3:30 minutes
-EXECUTION_TIMEOUT_SECONDS = 210
+EXECUTION_TIMEOUT_SECONDS = 190
 EVENT_LOGGER = {}
 
 # Wait time between queries
@@ -263,7 +263,7 @@ def get_all_events_v2(client: Client, last_run: dict, limit: int, api_version: s
     all_types_events_result = []
 
     start_time = datetime.utcnow()
-    for event_type in ALL_SUPPORTED_EVENT_TYPES_v2 + ALL_SUPPORTED_ALERT_TYPES_v2:
+    for event_type in ALL_SUPPORTED_EVENT_TYPES_v2:
         wait_time = 0
         events = []
         index_name = f'xsoar_collector_{instance_name}_{event_type}'
@@ -284,10 +284,12 @@ def get_all_events_v2(client: Client, last_run: dict, limit: int, api_version: s
                 demisto.debug(f'Going to sleep between queries, wait_time is {wait_time} seconds')
                 time.sleep(wait_time)
 
-            if event_type in ALL_SUPPORTED_ALERT_TYPES_v2:
-                response = client.perform_data_export('alerts', event_type, index_name, operation)
-            else:
-                response = client.perform_data_export('events', event_type, index_name, operation)
+            response = client.perform_data_export('events', event_type, index_name, operation)
+
+            # if event_type in ALL_SUPPORTED_ALERT_TYPES_v2:
+            #     response = client.perform_data_export('alerts', event_type, index_name, operation)
+            # else:
+            #     response = client.perform_data_export('events', event_type, index_name, operation)
 
             results = response.get('result', [])
             demisto.debug(f'The number of received events - {len(results)}')
@@ -365,7 +367,7 @@ def fetch_events_command(client, api_version, last_run, max_fetch, is_command): 
 
 ''' MAIN FUNCTION '''
 original_func = split_data_to_chunks
-
+# TODO
 def split_data_to_chunks(data, target_chunk_size = None):
     return original_func(data, target_chunk_size=2 ** 20 * 5)
 
@@ -381,7 +383,7 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
     max_fetch = arg_to_number(params.get('max_fetch', 1000))
-    vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev')
+    vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev_2')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -405,7 +407,7 @@ def main() -> None:  # pragma: no cover
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, api_version, last_run, max_fetch)  # type: ignore[arg-type]
+            result = test_module(client, api_version, last_run, max_fetch=MAX_EVENTS_PAGE_SIZE)  # type: ignore[arg-type]
             return_results(result)
 
         elif demisto.command() == 'netskope-get-events':
