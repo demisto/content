@@ -10,32 +10,25 @@ configuration:
   type: 0
 - display: Custom Api Key (using for API version 6)
   name: custom_credentials
-  required: false
   type: 9
 - display: Api Key (Api/Live Response key using for API version 3)
   name: live_response_credentials
-  required: false
   type: 9
 - additionalinfo: The organization unique key. This is required for all use cases (and for fetching incidents) except the policy use cases.
   display: Organization Key
   name: organization_key
-  required: false
   type: 0
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Type of alert to be fetched.
   defaultvalue: all
@@ -45,7 +38,6 @@ configuration:
   - all
   - cbanalytics
   - devicecontrol
-  required: false
   type: 15
 - additionalinfo: Category of alert to be fetched (THREAT, MONITORED). If nothing is selected he is fetching from all categories.
   display: The category of the alert.
@@ -53,22 +45,18 @@ configuration:
   options:
   - THREAT
   - MONITORED
-  required: false
   type: 16
 - additionalinfo: The alerts related to a specific device, represented by its ID.
   display: Device id
   name: device_id
-  required: false
   type: 0
 - additionalinfo: The alerts related to a specific policy, represented by its ID.
   display: Policy id
   name: policy_id
-  required: false
   type: 0
 - additionalinfo: The alerts related to a specific device, represented by its username.
   display: Device username
   name: device_username
-  required: false
   type: 0
 - additionalinfo: The minimum severity of the alerts to be fetched.
   display: Minimum severity
@@ -84,22 +72,18 @@ configuration:
   - '8'
   - '9'
   - '10'
-  required: false
   type: 15
 - additionalinfo: Query in Lucene syntax and/or value searches. If defined, the other fetch incidents parameters should be left blank.
   display: Query
   name: query
-  required: false
   type: 0
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   name: first_fetch
-  required: false
   type: 0
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
 description: Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
 display: Carbon Black Endpoint Standard v2
@@ -107,15 +91,10 @@ name: Carbon Black Endpoint Standard
 script:
   commands:
   - arguments:
-    - default: false
-      description: The ID of the alert.
-      isArray: false
+    - description: The ID of the alert.
       name: alertId
       required: true
-      secret: false
-    deprecated: false
     description: Get details about the events that led to an alert by its ID. This includes retrieving metadata around the alert as well as a list of all the events associated with the alert. Only API keys of type “API” can call the alerts API.
-    execution: false
     name: cbd-get-alert-details
     outputs:
     - contextPath: CarbonBlackDefense.Alert.id
@@ -308,28 +287,18 @@ script:
       description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
   - arguments:
-    - default: false
-      description: The identifier for the device.
-      isArray: false
+    - description: The identifier for the device.
       name: device_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The operating system. Possible values: "WINDOWS", "MAC", "LINUX", and "OTHER".'
-      isArray: false
       name: os
       predefined:
       - WINDOWS
       - MAC
       - LINUX
       - OTHER
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The status of the device. Possible values: "PENDING", "REGISTERED", "DEREGISTERED", "BYPASS", "ACTIVE", "INACTIVE", "ERROR", "ALL", "BYPASS_ON", "LIVE", "SENSOR_PENDING_UPDATE".'
-      isArray: false
       name: status
       predefined:
       - PENDING
@@ -343,48 +312,24 @@ script:
       - BYPASS_ON
       - LIVE
       - SENSOR_PENDING_UPDATE
-      required: false
-      secret: false
-    - default: false
-      description: 'The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26.243Z".'
-      isArray: false
+    - description: 'The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26.243Z".'
       name: start_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The “Target value” configured in the policy assigned to the sensor. Possible values: "LOW", "MEDIUM", "HIGH", "MISSION_CRITICAL".'
-      isArray: false
       name: target_priority
       predefined:
       - LOW
       - MEDIUM
       - HIGH
       - MISSION_CRITICAL
-      required: false
-      secret: false
-    - default: false
-      description: The query in Lucene syntax and/or value searches.
-      isArray: false
+    - description: The query in Lucene syntax and/or value searches.
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: 'The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26.243Z".'
-      isArray: false
+    - description: 'The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26.243Z".'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of rows to return. Default is 20.
-      isArray: false
       name: rows
-      required: false
-      secret: false
-    deprecated: false
     description: Searches devices in your organization.
-    execution: false
     name: cbd-device-search
     outputs:
     - contextPath: CarbonBlackDefense.Device.activation_code
@@ -623,60 +568,30 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED".'
-      isArray: false
       name: alert_category
       predefined:
       - THREAT
       - OBSERVED
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format.
-      isArray: false
+    - description: The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format.
       name: device_external_ip
-      required: false
-      secret: false
-    - default: false
-      description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments.
-      isArray: false
+    - description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments.
       name: device_id
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
-      isArray: false
+    - description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
       name: device_internal_ip
-      required: false
-      secret: false
-    - default: false
-      description: The hostname of the endpoint recorded by the sensor when last initialized.
-      isArray: false
+    - description: The hostname of the endpoint recorded by the sensor when last initialized.
       name: device_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX".'
-      isArray: false
       name: device_os
       predefined:
       - WINDOWS
       - MAC
       - LINUX
-      required: false
-      secret: false
-    - default: false
-      description: 'The sensor-reported timestamp of the batch of events in which this record was submitted to Carbon Black Cloud. specified as ISO 8601 timestamp in UTC for example: 2020-01-19T04:28:40.190Z.'
-      isArray: false
+    - description: 'The sensor-reported timestamp of the batch of events in which this record was submitted to Carbon Black Cloud. specified as ISO 8601 timestamp in UTC for example: 2020-01-19T04:28:40.190Z.'
       name: device_timestamp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload".'
-      isArray: false
       name: event_type
       predefined:
       - filemod
@@ -687,18 +602,10 @@ script:
       - childproc
       - scriptload
       - fileless_scriptload
-      required: false
-      secret: false
-    - default: false
-      description: The file system path of the parent process binary.
-      isArray: false
+    - description: The file system path of the parent process binary.
       name: parent_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
-      isArray: false
       name: parent_reputation
       predefined:
       - ADAPTIVE_WHITE_LIST
@@ -715,42 +622,18 @@ script:
       - RESOLVING
       - SUSPECT_MALWARE
       - TRUSTED_WHITE_LIST
-      required: false
-      secret: false
-    - default: false
-      description: The command line executed by the actor process.
-      isArray: false
+    - description: The command line executed by the actor process.
       name: process_cmdline
-      required: false
-      secret: false
-    - default: false
-      description: The unique process identifier for the actor process.
-      isArray: false
+    - description: The unique process identifier for the actor process.
       name: process_guid
-      required: false
-      secret: false
-    - default: false
-      description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
-      isArray: false
+    - description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: The file system path of the actor process binary.
-      isArray: false
+    - description: The file system path of the actor process binary.
       name: process_name
-      required: false
-      secret: false
-    - default: false
-      description: The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
-      isArray: false
+    - description: The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
       name: process_pid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
-      isArray: false
       name: process_reputation
       predefined:
       - ADAPTIVE_WHITE_LIST
@@ -767,71 +650,35 @@ script:
       - RESOLVING
       - SUSPECT_MALWARE
       - TRUSTED_WHITE_LIST
-      required: false
-      secret: false
-    - default: false
-      description: 'The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts.'
-      isArray: false
+    - description: 'The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts.'
       name: process_start_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the process has terminated. Possible values: "true" and "false". Always "false" for enriched events (process termination not recorded).'
-      isArray: false
       name: process_terminated
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The user context in which the actor process was executed.
         MacOS - all users for the PID for fork() and exec() transitions.
         Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
-      isArray: false
       name: process_username
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The action performed by the sensor on the process. Possible values: "TERMINATE", "DENY", and "SUSPEND".'
-      isArray: false
       name: sensor_action
       predefined:
       - TERMINATE
       - DENY
       - SUSPEND
-      required: false
-      secret: false
-    - default: false
-      description: The query in Lucene syntax and/or value searches.
-      isArray: false
+    - description: The query in Lucene syntax and/or value searches.
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: The number of rows to request. Can be paginated.
-      isArray: false
+    - description: The number of rows to request. Can be paginated.
       name: rows
-      required: false
-      secret: false
-    - default: false
-      description: The first row to use for pagination.
-      isArray: false
+    - description: The first row to use for pagination.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: 'The time window in which to restrict the search to match using device_timestamp as the reference. The window value will take priority over the start and end times if provided. For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp.'
-      isArray: false
+    - description: 'The time window in which to restrict the search to match using device_timestamp as the reference. The window value will take priority over the start and end times if provided. For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp.'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: 'Creates a process search job. The results for the search job may be requested using the returned job ID. At least one of the arguments (not including: rows, start, and time_range) is required.'
-    execution: false
     name: cbd-find-processes
     outputs:
     - contextPath: CarbonBlackDefense.Process.Search.job_id
@@ -839,54 +686,28 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED".'
-      isArray: false
       name: alert_category
       predefined:
       - THREAT
       - OBSERVED
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format.
-      isArray: false
+    - description: The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format.
       name: device_external_ip
-      required: false
-      secret: false
-    - default: false
-      description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments.
-      isArray: false
+    - description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments.
       name: device_id
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
-      isArray: false
+    - description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
       name: device_internal_ip
-      required: false
-      secret: false
-    - default: false
-      description: The hostname of the endpoint recorded by the sensor when last initialized.
-      isArray: false
+    - description: The hostname of the endpoint recorded by the sensor when last initialized.
       name: device_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX".'
-      isArray: false
       name: device_os
       predefined:
       - WINDOWS
       - MAC
       - LINUX
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload".'
-      isArray: false
       name: event_type
       predefined:
       - filemod
@@ -897,18 +718,10 @@ script:
       - childproc
       - scriptload
       - fileless_scriptload
-      required: false
-      secret: false
-    - default: false
-      description: The file system path of the parent process binary.
-      isArray: false
+    - description: The file system path of the parent process binary.
       name: parent_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
-      isArray: false
       name: parent_reputation
       predefined:
       - ADAPTIVE_WHITE_LIST
@@ -925,42 +738,18 @@ script:
       - RESOLVING
       - SUSPECT_MALWARE
       - TRUSTED_WHITE_LIST
-      required: false
-      secret: false
-    - default: false
-      description: The command line executed by the actor process.
-      isArray: false
+    - description: The command line executed by the actor process.
       name: process_cmdline
-      required: false
-      secret: false
-    - default: false
-      description: The unique process identifier for the actor process.
-      isArray: false
+    - description: The unique process identifier for the actor process.
       name: process_guid
-      required: false
-      secret: false
-    - default: false
-      description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
-      isArray: false
+    - description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: The file system path of the actor process binary.
-      isArray: false
+    - description: The file system path of the actor process binary.
       name: process_name
-      required: false
-      secret: false
-    - default: false
-      description: The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
-      isArray: false
+    - description: The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
       name: process_pid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
-      isArray: false
       name: process_reputation
       predefined:
       - ADAPTIVE_WHITE_LIST
@@ -977,93 +766,48 @@ script:
       - RESOLVING
       - SUSPECT_MALWARE
       - TRUSTED_WHITE_LIST
-      required: false
-      secret: false
-    - default: false
-      description: 'The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts.'
-      isArray: false
+    - description: 'The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts.'
       name: process_start_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the process has terminated. Possible values: "true" and "false". Always "false" for enriched events (process termination not recorded).'
-      isArray: false
       name: process_terminated
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The user context in which the actor process was executed.
         MacOS - all users for the PID for fork() and exec() transitions.
         Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
-      isArray: false
       name: process_username
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The action performed by the sensor on the process. Possible values: "TERMINATE", "DENY", and "SUSPEND".'
-      isArray: false
       name: sensor_action
       predefined:
       - TERMINATE
       - DENY
       - SUSPEND
-      required: false
-      secret: false
-    - default: false
-      description: The query in Lucene syntax and/or value searches.
-      isArray: false
+    - description: The query in Lucene syntax and/or value searches.
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: The number of rows to request. Can be paginated.
-      isArray: false
+    - description: The number of rows to request. Can be paginated.
       name: rows
-      required: false
-      secret: false
-    - default: false
-      description: The first row to use for pagination.
-      isArray: false
+    - description: The first row to use for pagination.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: 'The time window in which to restrict the search to match using device_timestamp as the reference. The window value will take priority over the start and end times if provided. For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp'
-      isArray: false
+    - description: 'The time window in which to restrict the search to match using device_timestamp as the reference. The window value will take priority over the start and end times if provided. For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp'
       name: time_range
-      required: false
-      secret: false
-    deprecated: false
     description: 'Creates an enriched events search job. The results for the search job may be requested using the returned job ID. At least one of the arguments (not including: rows, start, time_range) is required).'
-    execution: false
     name: cbd-find-events
     outputs:
     - contextPath: CarbonBlackDefense.Events.Search.job_id
       description: The job ID of the event search.
       type: String
   - arguments:
-    - default: false
-      description: The job ID.
-      isArray: false
+    - description: The job ID.
       name: job_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The number of rows to request. Can be paginated. Default is 10.
-      isArray: false
       name: rows
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the results of a process search identified by the job ID.
-    execution: false
     name: cbd-find-processes-results
     outputs:
     - contextPath: CarbonBlackDefense.Process.Results.job_id
@@ -1090,9 +834,7 @@ script:
     - contextPath: CarbonBlackDefense.Process.Results.results
       description: The lists that contains the data of the results for this search.
       type: Unknown
-  - deprecated: false
-    description: Gets the list of policies available in your organization.
-    execution: false
+  - description: Gets the list of policies available in your organization.
     name: cbd-get-policies
     outputs:
     - contextPath: CarbonBlackDefense.Policy.id
@@ -1120,15 +862,10 @@ script:
       description: The version of the policy.
       type: Number
   - arguments:
-    - default: false
-      description: The policy ID.
-      isArray: false
+    - description: The policy ID.
       name: policyId
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a policy object by ID.
-    execution: false
     name: cbd-get-policy
     outputs:
     - contextPath: CarbonBlackDefense.Policy.id
@@ -1156,21 +893,13 @@ script:
       description: The version of the policy.
       type: Number
   - arguments:
-    - default: false
-      description: The policy ID to be set.
-      isArray: false
+    - description: The policy ID to be set.
       name: policy
       required: true
-      secret: false
-    - default: false
-      description: A JSON object that holds key/value pairs. The key is the field path in the policy object you want to update with a value.
-      isArray: false
+    - description: A JSON object that holds key/value pairs. The key is the field path in the policy object you want to update with a value.
       name: keyValue
       required: true
-      secret: false
-    deprecated: false
     description: Resets policy fields.
-    execution: false
     name: cbd-set-policy
     outputs:
     - contextPath: CarbonBlackDefense.Policy.id
@@ -1198,22 +927,14 @@ script:
       description: The version of the policy.
       type: Number
   - arguments:
-    - default: false
-      description: A description of the policy. Can be multiple lines.
-      isArray: false
+    - description: A description of the policy. Can be multiple lines.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: A unique one-line name for the policy.
-      isArray: false
+    - description: A unique one-line name for the policy.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW".'
-      isArray: false
       name: priorityLevel
       predefined:
       - MISSION_CRITICAL
@@ -1221,16 +942,10 @@ script:
       - MEDIUM
       - LOW
       required: true
-      secret: false
-    - default: false
-      description: The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object.
-      isArray: false
+    - description: The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object.
       name: policy
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new policy on the CB Defense backend.
-    execution: false
     name: cbd-create-policy
     outputs:
     - contextPath: CarbonBlackDefense.Policy.id
@@ -1258,33 +973,20 @@ script:
       description: The version of the policy.
       type: Number
   - arguments:
-    - default: false
-      description: The policy ID.
-      isArray: false
+    - description: The policy ID.
       name: policyId
       required: true
-      secret: false
-    deprecated: false
     description: 'Deletes a policy from the CB Defense backend. This may return an error if devices are actively assigned to the policy ID requested for deletion. Note: System policies cannot be deleted.'
-    execution: false
     name: cbd-delete-policy
   - arguments:
-    - default: false
-      description: A description of the policy.
-      isArray: false
+    - description: A description of the policy.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: A one-line name for the policy.
-      isArray: false
+    - description: A one-line name for the policy.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW".'
-      isArray: false
       name: priorityLevel
       predefined:
       - MISSION_CRITICAL
@@ -1292,22 +994,13 @@ script:
       - MEDIUM
       - LOW
       required: true
-      secret: false
-    - default: false
-      description: The ID of the policy to replace.
-      isArray: false
+    - description: The ID of the policy to replace.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: 'The JSON object containing the policy details. Make sure a valid policy object is passed. For example {''sensorSettings'': [{''name'': ''SHOW_UI'', ''value'': ''false''}]}. You can use the get-policy command to retrieve the policy object you want to update. Then you can reset some of the policy''s fields with the set-policy command, and pass the edited object.'
-      isArray: false
+    - description: 'The JSON object containing the policy details. Make sure a valid policy object is passed. For example {''sensorSettings'': [{''name'': ''SHOW_UI'', ''value'': ''false''}]}. You can use the get-policy command to retrieve the policy object you want to update. Then you can reset some of the policy''s fields with the set-policy command, and pass the edited object.'
       name: policy
       required: true
-      secret: false
-    deprecated: false
     description: 'Updates an existing policy with a new policy. Note: System policies cannot be modified.'
-    execution: false
     name: cbd-update-policy
     outputs:
     - contextPath: CarbonBlackDefense.Policy.id
@@ -1336,9 +1029,7 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY", and "TERMINATE_PROCESS".'
-      isArray: false
       name: action
       predefined:
       - TERMINATE
@@ -1348,11 +1039,8 @@ script:
       - DENY
       - TERMINATE_PROCESS
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule operation.
-      isArray: false
       name: operation
       predefined:
       - MODIFY_SYSTEM_EXE
@@ -1389,49 +1077,32 @@ script:
       - BYPASS_SELF_PROTECT
       - TAMPER_API
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the rule is required. Possible values: "true" and "false".'
-      isArray: false
       name: required
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH".'
-      isArray: false
       name: type
       predefined:
       - REPUTATION
       - SIGNED_BY
       - NAME_PATH
       required: true
-      secret: false
-    - default: false
-      description: Application value.
-      isArray: false
+    - description: Application value.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The policy ID.
-      isArray: false
+    - description: The policy ID.
       name: policyId
       required: true
-      secret: false
-    deprecated: false
     description: 'Adds a new rule to an existing policy. Note: System policies cannot be modified.'
-    execution: false
     name: cbd-add-rule-to-policy
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY", and "TERMINATE_PROCESS".'
-      isArray: false
       name: action
       predefined:
       - TERMINATE
@@ -1441,11 +1112,8 @@ script:
       - DENY
       - TERMINATE_PROCESS
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule operation.
-      isArray: false
       name: operation
       predefined:
       - MODIFY_SYSTEM_EXE
@@ -1482,83 +1150,49 @@ script:
       - BYPASS_SELF_PROTECT
       - TAMPER_API
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the rule is required. Possible values: "true" and "false".'
-      isArray: false
       name: required
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    - default: false
-      description: Rule ID.
-      isArray: false
+    - description: Rule ID.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH".'
-      isArray: false
       name: type
       predefined:
       - REPUTATION
       - SIGNED_BY
       - NAME_PATH
       required: true
-      secret: false
-    - default: false
-      description: Application value.
-      isArray: false
+    - description: Application value.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The policy ID.
-      isArray: false
+    - description: The policy ID.
       name: policyId
       required: true
-      secret: false
-    deprecated: false
     description: 'Updates an existing rule with a new rule. Note: System policies cannot be modified.'
-    execution: false
     name: cbd-update-rule-in-policy
   - arguments:
-    - default: false
-      description: The policy ID.
-      isArray: false
+    - description: The policy ID.
       name: policyId
       required: true
-      secret: false
-    - default: false
-      description: The rule ID.
-      isArray: false
+    - description: The rule ID.
       name: ruleId
       required: true
-      secret: false
-    deprecated: false
     description: 'Removes a rule from an existing policy. Note: System policies cannot be modified.'
-    execution: false
     name: cbd-delete-rule-from-policy
   - arguments:
-    - default: false
-      description: The job ID.
+    - description: The job ID.
       isArray: true
       name: job_id
       required: true
-      secret: false
-    - default: false
-      description: The number of rows to request. Can be paginated. Default is 10.
-      isArray: false
+    - description: The number of rows to request. Can be paginated. Default is 10.
       name: rows
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the result for an enriched events search request for a given job ID. By default returns 10 rows.
-    execution: false
     name: cbd-find-events-results
     outputs:
     - contextPath: CarbonBlackDefense.Events.Results.job_id
@@ -1586,30 +1220,19 @@ script:
       description: The lists that contains the data of the results for this search.
       type: Unknown
   - arguments:
-    - default: false
-      description: A comma-separated list of event IDs to fetch.
-      isArray: false
+    - description: A comma-separated list of event IDs to fetch.
       name: event_ids
       required: true
-      secret: false
-    deprecated: false
     description: Initiates a request to retrieve detail fields for enriched events.  the job_id that returns from this command can be used to get the results using the "cbd-find-events-details-results" command.
-    execution: false
     name: cbd-find-events-details
     outputs:
     - contextPath: CarbonBlackDefense.EventDetails.Search.job_id
       description: The job ID.
       type: String
   - arguments:
-    - default: false
-      description: The job ID.
-      isArray: false
+    - description: The job ID.
       name: job_id
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the status for an enriched events detail request for a given job ID.
-    execution: false
     name: cbd-find-events-details-results
     outputs:
     - contextPath: CarbonBlackDefense.EventDetails.Results.job_id
@@ -1637,99 +1260,56 @@ script:
       description: The lists that contains the data of the results for this search.
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Quarantines the device. Not supported for devices in a Linux operating system.
-    execution: false
     name: cbd-device-quarantine
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Unquarantines the device. Not supported for devices in a Linux operating system.
-    execution: false
     name: cbd-device-unquarantine
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Starts a background scan on the device. Not supported for devices in a Linux operating system.
-    execution: false
     name: cbd-device-background-scan
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Stops a background scan on the device. Not supported for devices in a Linux operating system.
-    execution: false
     name: cbd-device-background-scan-stop
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Bypasses a device.
-    execution: false
     name: cbd-device-bypass
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Unbypasses a device.
-    execution: false
     name: cbd-device-unbypass
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the policy.
-      isArray: false
+    - description: The ID of the policy.
       name: policy_id
       required: true
-      secret: false
-    deprecated: false
     description: Updates the devices to the specified policy ID.
-    execution: false
     name: cbd-device-policy-update
   - arguments:
-    - default: false
-      description: The ID of the device.
-      isArray: false
+    - description: The ID of the device.
       name: device_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The new version of the sensor. For example: { "MAC": "1.2.3.4" }. Supported types: XP, WINDOWS, MAC, AV_SIG, OTHER, RHEL, UBUNTU, SUSE, AMAZON_LINUX, MAC_OSX.'
-      isArray: false
       name: sensor_version
       predefined:
       - '{"XP":}'
@@ -1743,96 +1323,43 @@ script:
       - '{"AMAZON_LINUX":}'
       - '{"MAC_OSX":}'
       required: true
-      secret: false
-    deprecated: false
     description: Updates the version of a sensor.
-    execution: false
     name: cbd-device-update-sensor-version
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'The type of the alerts. Possible values: "cbAnalytics", "devicecontrol", "all".'
-      isArray: false
       name: type
       predefined:
       - cbanalytics
       - devicecontrol
       - all
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The category of the alert. Possible values: "THREAT", "MONITORED".'
-      isArray: false
       name: category
       predefined:
       - THREAT
       - MONITORED
-      required: false
-      secret: false
-    - default: false
-      description: The device ID.
-      isArray: false
+    - description: The device ID.
       name: device_id
-      required: false
-      secret: false
-    - default: false
-      description: 'The time of the first event associated with the alert. The syntax is  {"start": "<dateTime>", "range": "<string>", "end": "<dateTime>" }. For example: { "start": "2010-09-25T00:10:50.277Z", "end": "2015-01-20T10:40:00.00Z"}'
-      isArray: false
+    - description: 'The time of the first event associated with the alert. The syntax is  {"start": "<dateTime>", "range": "<string>", "end": "<dateTime>" }. For example: { "start": "2010-09-25T00:10:50.277Z", "end": "2015-01-20T10:40:00.00Z"}'
       name: first_event_time
-      required: false
-      secret: false
-    - default: false
-      description: The policy ID.
-      isArray: false
+    - description: The policy ID.
       name: policy_id
-      required: false
-      secret: false
-    - default: false
-      description: The SHA-256 hash of the primary involved process.
-      isArray: false
+    - description: The SHA-256 hash of the primary involved process.
       name: process_sha256
-      required: false
-      secret: false
-    - default: false
-      description: 'The reputation of the primary involved process. Possible values: "KNOWN_MALWARE", "NOT_LISTED", etc.'
-      isArray: false
+    - description: 'The reputation of the primary involved process. Possible values: "KNOWN_MALWARE", "NOT_LISTED", etc.'
       name: reputation
-      required: false
-      secret: false
-    - default: false
-      description: The tags associated with the alert.
-      isArray: false
+    - description: The tags associated with the alert.
       name: tag
-      required: false
-      secret: false
-    - default: false
-      description: The username of the user logged on during the alert. If the user is not available then this may be populated with the device owner.
-      isArray: false
+    - description: The username of the user logged on during the alert. If the user is not available then this may be populated with the device owner.
       name: device_username
-      required: false
-      secret: false
-    - default: false
-      description: The query in Lucene syntax and/or value searches.
-      isArray: false
+    - description: The query in Lucene syntax and/or value searches.
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to be returned.
-      isArray: false
+    - description: The number of results to be returned.
       name: rows
-      required: false
-      secret: false
-    - default: false
-      description: The number of the alert from where to start retrieving results.
-      isArray: false
+    - description: The number of the alert from where to start retrieving results.
       name: start
-      required: false
-      secret: false
-    deprecated: false
     description: Gets details on the events that led to an alert. This includes retrieving metadata around the alert as well as the event associated with the alert.
-    execution: false
     name: cbd-alerts-search
     outputs:
     - contextPath: CarbonBlackDefense.Alert.id
@@ -2025,10 +1552,7 @@ script:
       description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
