@@ -6016,7 +6016,7 @@
             "demisto/pytan": {
                 "pid_threshold": 11
             },
-            "demistogoogle-k8s-engine1.0.0.64696": {
+            "demisto/google-k8s-engine1.0.0.64696": {
                 "pid_threshold": 11,
                 "memory_threshold": 110
             },
