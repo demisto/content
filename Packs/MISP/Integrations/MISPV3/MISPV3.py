@@ -552,7 +552,11 @@ def add_user_to_misp(demisto_args: dict = {}):
         raise DemistoException(f'Failed to add user.\nError message: {response}')
     else:
         human_readable = f"## MISP add user\nNew user was added to MISP.\nEmail:{new_user.email}"
-        return CommandResults(readable_output=human_readable, raw_response=response, outputs=response, outputs_prefix='MISP')
+        response = response.get('User', {})
+        return CommandResults(readable_output=human_readable,
+                              raw_response=response,
+                              outputs=response,
+                              outputs_prefix='MISP.User')
 
 
 def get_organizations_info():

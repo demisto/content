@@ -2572,20 +2572,20 @@ script:
     description: Display organization ids and names.
     name: misp-get-organization-info
     outputs:
-    - contextPath: MISP.Organization.org_id
+    - contextPath: MISP.Organization.id
       description: MISP Ogranization ID.
       type: string
-    - contextPath: MISP.Organization.org_name
+    - contextPath: MISP.Organization.name
       description: MISP Organization Name.
       type: string
   - arguments: []
     description: Display role names and role ids.
     name: misp-get-role-info
     outputs:
-    - contextPath: MISP.Role.role_id
+    - contextPath: MISP.Role.id
       description: MISP Role ID.
       type: string
-    - contextPath: MISP.Role.role_name
+    - contextPath: MISP.Role.name
       description: MISP Role Name.
       type: string
   dockerimage: demisto/pymisp2:1.0.0.63745
