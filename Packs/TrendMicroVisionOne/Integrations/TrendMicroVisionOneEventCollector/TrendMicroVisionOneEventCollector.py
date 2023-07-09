@@ -644,7 +644,7 @@ def get_workbench_logs(
         workbench_cache_time_field_name: latest_occurred_workbench_log_ids
     }
 
-    fetched_workbench_log_ids = [_log.get('id') for _log in workbench_logs if _log.get('id')]
+    fetched_workbench_log_ids = [(_log.get('id'), _log.get('_time')) for _log in workbench_logs if _log.get('id')]
 
     demisto.info(f'{fetched_workbench_log_ids=}')
     demisto.info(f'{workbench_updated_last_run=}')
@@ -738,7 +738,7 @@ def get_observed_attack_techniques_logs(
         ).strftime(DATE_FORMAT)  # type: ignore
 
     fetched_observed_attack_technique_logs_ids = [
-        _log.get('uuid') for _log in observed_attack_techniques_logs if _log.get('uuid')
+        (_log.get('uuid'), _log.get('_time')) for _log in observed_attack_techniques_logs if _log.get('uuid')
     ]
 
     if new_next_link:
@@ -855,7 +855,7 @@ def get_search_detection_logs(
         ).strftime(DATE_FORMAT)  # type: ignore
 
     fetched_search_detection_logs_ids = [
-        _log.get('uuid') for _log in search_detection_logs if _log.get('uuid')
+        (_log.get('uuid'), _log.get('_time')) for _log in search_detection_logs if _log.get('uuid')
     ]
 
     if new_next_link:
@@ -946,7 +946,7 @@ def get_audit_logs(
         dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
     ).strftime(DATE_FORMAT)  # type: ignore
 
-    fetched_audit_logs_ids = [_log.get('id') for _log in audit_logs if _log.get('id')]
+    fetched_audit_logs_ids = [(_log.get('id'), _log.get('_time')) for _log in audit_logs if _log.get('id')]
 
     for log in audit_logs:
         # pop all the hashes used to find duplicates
