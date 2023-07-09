@@ -42,6 +42,7 @@ def logger(func):
 
         pack_id = args[0]
         logging.info(f"Starting validation - {func.__name__} for pack '{pack_id}'")
+
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
@@ -52,11 +53,11 @@ def logger(func):
             logging.info(f"[{pack_id}] Successfully {MSG_DICT[func.__name__]}")
 
         except FileNotFoundError as e:
-            logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
+            logging.error(f"Failed to verify {func.__name__} for pack {pack_id}, check if the upload workflow failed. -\n{e}")
             self.is_valid = False
 
         except Exception as e:
-            logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
+            logging.error(f"Failed to verify {func.__name__} for pack {pack_id}, check if the upload workflow failed. -\n{e}")
     return wrapper
 
 
