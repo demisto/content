@@ -1657,15 +1657,31 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Incident.incident_id | number | ID of the incident | 
-| ASM.Incident.xpanse_risk_score | unknown | Risk score of the incident | 
-| ASM.Incident.alert_count | unknown | Number of alerts included in the incident | 
-| ASM.Incident.status | unknown | Status of the incident | 
-| ASM.Incident.description | unknown | Description of the incident | 
-| ASM.Incident.severity | unknown | Severity of the incident | 
-| ASM.Incident.creation_time | unknown | Creation timestamp | 
-| ASM.Incident.modification_time | unknown | Modification timestamp | 
-| ASM.Incident.resolve_comment | unknown | Resolution comment | 
+| ASM.Incident.alert_count | Number | Number of alerts included in the incident | 
+| ASM.Incident.alerts_grouping_status | String | Whether alert grouping is enabled | 
+| ASM.Incident.assigned_user_mail | Unknown | Email of the assigned user | 
+| ASM.Incident.assigned_user_pretty_name | Unknown | Friendly name of the assigned user | 
+| ASM.Incident.creation_time | Date | Creation timestamp | 
+| ASM.Incident.critical_severity_alert_count | Number | Number of critical alerts | 
+| ASM.Incident.description | String | Description of the incident | 
+| ASM.Incident.high_severity_alert_count | Number | Number of high alerts | 
+| ASM.Incident.incident_id | String | ID of the incident | 
+| ASM.Incident.incident_name | Unknown | Incident Name | 
+| ASM.Incident.incident_sources | String | Incident Source | 
+| ASM.Incident.low_severity_alert_count | Number | Number of low alerts | 
+| ASM.Incident.manual_severity | Unknown | Severity override | 
+| ASM.Incident.med_severity_alert_count | Number | Number of medium alerts | 
+| ASM.Incident.modification_time | Date | Modification timestamp | 
+| ASM.Incident.notes | Unknown | Incident notes | 
+| ASM.Incident.original_tags | Unknown | Tags on the incident at creation time | 
+| ASM.Incident.resolve_comment | Unknown | Resolution comment. This is optional | 
+| ASM.Incident.resolved_timestamp | Unknown | Resolution timestamp | 
+| ASM.Incident.severity | String | Severity of the incident | 
+| ASM.Incident.starred | Boolean | Whether the incident has been starred | 
+| ASM.Incident.status | String | Status of the incident | 
+| ASM.Incident.tags | String | Tags on the incident | 
+| ASM.Incident.xdr_url | String | Link to navigate to the incident | 
+| ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident |
 
 #### Command example
 ```!asm-get-incidents limit=1 status=new```

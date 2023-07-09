@@ -526,25 +526,81 @@ script:
       description: Maximum number of incidents to return per page. The default and
         maximum is 100.
     outputs:
-    - contextPath: ASM.Incident.incident_id
-      description: ID of the incident
-      type: number
-    - contextPath: ASM.Incident.xpanse_risk_score
-      description: Risk score of the incident
     - contextPath: ASM.Incident.alert_count
-      description: Number of alerts included in the incident
-    - contextPath: ASM.Incident.status
-      description: Status of the incident
-    - contextPath: ASM.Incident.description
-      description: Description of the incident
-    - contextPath: ASM.Incident.severity
-      description: Severity of the incident
+      description: 'Number of alerts included in the incident'
+      type: Number
+    - contextPath: ASM.Incident.alerts_grouping_status
+      description: 'Whether alert grouping is enabled'
+      type: String
+    - contextPath: ASM.Incident.assigned_user_mail
+      description: 'Email of the assigned user'
+      type: Unknown
+    - contextPath: ASM.Incident.assigned_user_pretty_name
+      description: 'Friendly name of the assigned user'
+      type: Unknown
     - contextPath: ASM.Incident.creation_time
-      description: Creation timestamp
+      description: 'Creation timestamp'
+      type: Date
+    - contextPath: ASM.Incident.critical_severity_alert_count
+      description: 'Number of critical alerts'
+      type: Number
+    - contextPath: ASM.Incident.description
+      description: 'Description of the incident'
+      type: String
+    - contextPath: ASM.Incident.high_severity_alert_count
+      description: 'Number of high alerts'
+      type: Number
+    - contextPath: ASM.Incident.incident_id
+      description: 'ID of the incident'
+      type: String
+    - contextPath: ASM.Incident.incident_name
+      description: 'Incident Name'
+      type: Unknown
+    - contextPath: ASM.Incident.incident_sources
+      description: 'Incident Source'
+      type: String
+    - contextPath: ASM.Incident.low_severity_alert_count
+      description: 'Number of low alerts'
+      type: Number
+    - contextPath: ASM.Incident.manual_severity
+      description: 'Severity override'
+      type: Unknown
+    - contextPath: ASM.Incident.med_severity_alert_count
+      description: 'Number of medium alerts'
+      type: Number
     - contextPath: ASM.Incident.modification_time
-      description: Modification timestamp
+      description: 'Modification timestamp'
+      type: Date
+    - contextPath: ASM.Incident.notes
+      description: 'Incident notes'
+      type: Unknown
+    - contextPath: ASM.Incident.original_tags
+      description: 'Tags on the incident at creation time'
+      type: Unknown
     - contextPath: ASM.Incident.resolve_comment
-      description: Resolution comment
+      description: 'Resolution comment. This is optional'
+      type: Unknown
+    - contextPath: ASM.Incident.resolved_timestamp
+      description: 'Resolution timestamp'
+      type: Unknown
+    - contextPath: ASM.Incident.severity
+      description: 'Severity of the incident'
+      type: String
+    - contextPath: ASM.Incident.starred
+      description: 'Whether the incident has been starred'
+      type: Boolean
+    - contextPath: ASM.Incident.status
+      description: 'Status of the incident'
+      type: String
+    - contextPath: ASM.Incident.tags
+      description: 'Tags on the incident'
+      type: String
+    - contextPath: ASM.Incident.xdr_url
+      description: 'Link to navigate to the incident'
+      type: String
+    - contextPath: ASM.Incident.xpanse_risk_score
+      description: 'Risk score of the incident'
+      type: Unknown
     description: 'Fetches ASM incidents that match provided filters. Incidents are
       an aggregation of related alerts. Note: Incident IDs may also be references
       as "Case IDs'' elsewhere in the API.'
