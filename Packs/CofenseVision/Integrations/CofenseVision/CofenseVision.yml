@@ -18,7 +18,6 @@ configuration:
   displaypassword: Client Secret
 - name: threat_levels_good
   display: Threat levels to be marked as Good
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: |-
@@ -27,7 +26,6 @@ configuration:
     Comma separated values are supported.
 - name: threat_levels_suspicious
   display: Threat levels to be marked as Suspicious
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: |-
@@ -36,7 +34,6 @@ configuration:
     Comma separated values are supported.
 - name: threat_levels_bad
   display: Threat levels to be marked as Bad
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: |-
@@ -45,13 +42,11 @@ configuration:
     Comma separated values are supported.
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   defaultvalue: 'false'
   type: 8
   additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
 - name: proxy
   display: Use system proxy settings
-  required: false
   defaultvalue: 'false'
   type: 8
   additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
@@ -61,18 +56,13 @@ name: Cofense Vision
 script:
   commands:
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A one-time token to access the content of an email in a zip file.
 
         Note: Users can get the token by executing the "cofense-message-token-get" command.
-      isArray: false
       name: token
       required: true
-      secret: false
-    deprecated: false
     description: Fetches full content of an email and returns it as a zip file using a token.
-    execution: false
     name: cofense-message-get
     outputs:
     - contextPath: File.Size
@@ -106,31 +96,23 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Unique identifier of the email, enclosed in angle brackets.
 
         Example: <AC6CAE11-779E-4044-BB25-110171AB0301@example.com>
 
         Note: Users can get the internet message ID by executing the "cofense-message-search-results-get" command.
-      isArray: false
       name: internet_message_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Email address of the recipient of an email. The email address can be a 
         carbon copy (Cc) or blind carbon copy (Bcc) recipient but cannot be a 
         shared mailbox or a distribution list.
 
         Note: Users can get the recipient address by executing the "cofense-message-search-results-get" command.
-      isArray: false
       name: recipient_address
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the full content of a message that matches the specified Internet message ID and recipient email address of an email.
-    execution: false
     name: cofense-message-metadata-get
     outputs:
     - contextPath: Cofense.Message.id
@@ -227,36 +209,24 @@ script:
       description: One or more matching IOC sources.
       type: Unknown
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The hex-encoded string that represents an attachment's MD5 hash.
 
         Note: The md5 hash can be retrieved by using the command "cofense-message-search-results-get".
-      isArray: false
       name: md5
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The hex-encoded string that represents an attachment's SHA256 hash.
 
         Note: The sha256 hash can be retrieved by using the command "cofense-message-search-results-get".
-      isArray: false
       name: sha256
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Provide a name to the file with the extension that needs to be downloaded.
 
         Note: The file name can be retrieved by using the command "cofense-message-search-results-get".
-      isArray: false
       name: file_name
       required: true
-      secret: false
-    deprecated: false
     description: Fetches the full content of an email and returns a zip file.
-    execution: false
     name: cofense-message-attachment-get
     outputs:
     - contextPath: File.Size
@@ -290,19 +260,15 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Unique identifier of the email, enclosed in angle brackets.
 
         Example: <AC6CAE11-779E-4044-BB25-110171AB0301@example.com>
 
         Note: Users can get the ID by executing the "cofense-message-search-results-get" command.
-      isArray: false
       name: internet_message_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Email address of the recipient of the email.
 
         Note: The email address can be a carbon copy (Cc) or blind
@@ -310,19 +276,11 @@ script:
         distribution list.
 
         Note: Users can get the recipient address by executing the "cofense-message-search-results-get" command.
-      isArray: false
       name: recipient_address
       required: true
-      secret: false
-    - default: false
-      description: Password to protect the zip file containing the email.
-      isArray: false
+    - description: Password to protect the zip file containing the email.
       name: password
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a one-time token that can be used to get an email's content.
-    execution: false
     name: cofense-message-token-get
     outputs:
     - contextPath: Cofense.Message.token
@@ -336,32 +294,19 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Whether to remove (true) or not remove (false) quarantined emails from the response.
-      isArray: false
       name: exclude_quarantine_emails
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Start page of the results. The value must be a positive integer or 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The number of results to retrieve per page. The value must be a positive integer up to 2000.
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: id:asc
+    - defaultValue: id:asc
       description: |-
         The name-value pair defining the order of the response. Comma separated values are supported.
 
@@ -372,20 +317,13 @@ script:
         Supported values for sortOrder are: asc, desc.
       isArray: true
       name: sort
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to include auto quarantine jobs (true) or not include auto quarantine jobs (false).
-      isArray: false
       name: auto_quarantine
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filters quarantine jobs by including emails with the specified status. Supports comma-separated values.
 
         Supported values are: NEW, PENDING_APPROVAL, QUEUED, RUNNING, COMPLETED, FAILED.
@@ -399,10 +337,7 @@ script:
         FAILED: Job run finished but some emails to be quarantined or restored are in an error state. Cofense Vision retries failed jobs until the retry limit is reached.
       isArray: true
       name: include_status
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filters quarantine jobs by excluding emails with the specified status. Supports comma-separated values.
 
         Supported values are: NEW, PENDING_APPROVAL, QUEUED, RUNNING, COMPLETED, FAILED.
@@ -416,40 +351,26 @@ script:
         FAILED: Job run finished but some emails to be quarantined or restored are in an error state. Cofense Vision retries failed jobs until the retry limit is reached.
       isArray: true
       name: exclude_status
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Unique MD5 hash identifier of one or more IOCs. Comma separated values are supported.
 
         Example: 
         07fa1e91f99050521a87edc784e83fd5,07123459050525189160784e83fd5
       isArray: true
       name: iocs
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Emails modified after this date and time. The date and time must be in UTC.
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
         For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-      isArray: false
       name: modified_date_after
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         One or more configured IOC sources. Comma separated values are supported.
 
         Example: Intelligence, Triage-1
       isArray: true
       name: sources
-      required: false
-      secret: false
-    deprecated: false
     description: Filters and returns a paginated list of matching quarantine jobs.
-    execution: false
     name: cofense-quarantine-jobs-list
     outputs:
     - contextPath: Cofense.QuarantineJob.id
@@ -573,8 +494,7 @@ script:
       description: ID that Cofense Vision assigned to the search, if any.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of quarantine emails, specifying the internet 
         message ID and the recipient address of the email.
 
@@ -595,10 +515,7 @@ script:
       isArray: true
       name: quarantine_emails
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new quarantine job.
-    execution: false
     name: cofense-quarantine-job-create
     outputs:
     - contextPath: Cofense.QuarantineJob.id
@@ -722,24 +639,15 @@ script:
       description: ID that Cofense Vision assigned to the search, if any.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         The start page of the results. The value must be a positive integer or 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         The number of results to retrieve per page. The value must be a positive integer up to 2000.
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'id:asc'
+    - defaultValue: 'id:asc'
       description: |-
         The name-value pair defining the order of the response. Comma separated values are supported.
 
@@ -751,11 +659,7 @@ script:
         Supported values for sortOrder are: asc, desc.
       isArray: true
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of searches.
-    execution: false
     name: cofense-message-searches-list
     outputs:
     - contextPath: Cofense.Search.id
@@ -831,18 +735,13 @@ script:
       description: Indicates whether to search partially ingested emails or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The unique ID that cofense vision has assigned to a search.
 
         Note: The ID can be retrieved by using the command "cofense-message-searches-list".
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the result of the search identified by an ID.
-    execution: false
     name: cofense-message-search-get
     outputs:
     - contextPath: Cofense.Search.id
@@ -918,18 +817,13 @@ script:
       description: Indicates whether to search partially ingested emails or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the quarantine job in cofense vision to be restored.
 
         Note: Users can get the list of ID by executing the "cofense-quarantine-jobs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Restores emails quarantined by the job identified by its unique ID.
-    execution: false
     name: cofense-quarantine-job-restore
     outputs:
     - contextPath: Cofense.QuarantineJob.id
@@ -939,18 +833,13 @@ script:
       description: Whether the quarantine job is successfully restored(true) or not(false).
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the quarantine job in cofense vision to be retrieved.
 
         Note: Users can get the list of IDs by executing the "cofense-quarantine-jobs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves quarantine job identified by its unique ID.
-    execution: false
     name: cofense-quarantine-job-get
     outputs:
     - contextPath: Cofense.QuarantineJob.id
@@ -1074,24 +963,15 @@ script:
       description: ID that Cofense Vision assigned to the search, if any.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the quarantine job in cofense vision to be approved.
 
         Note: Users can get the list of IDs by executing the "cofense-quarantine-jobs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Number of emails containing IOC matches to be quarantined. When message_count is present, cofense vision quarantines a subset of the total number of emails containing IOC matches. The value must be a non-zero and positive integer. If message_count is not present, all messages will be approved.
-      isArray: false
+    - description: Number of emails containing IOC matches to be quarantined. When message_count is present, cofense vision quarantines a subset of the total number of emails containing IOC matches. The value must be a non-zero and positive integer. If message_count is not present, all messages will be approved.
       name: message_count
-      required: false
-      secret: false
-    deprecated: false
     description: Approves the quarantine job identified by its unique ID. When the "Auto Quarantine" feature is configured which requires manual approvals, this command can approve all the pending quarantine jobs.
-    execution: false
     name: cofense-quarantine-job-approve
     outputs:
     - contextPath: Cofense.QuarantineJob.id
@@ -1101,16 +981,12 @@ script:
       description: Whether the quarantine job is successfully approved(true) or not(false).
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the quarantine job in cofense vision to be deleted.
 
         Note: Users can get the list of IDs by executing the "cofense-quarantine-jobs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the quarantine job identified by its unique ID.
     execution: true
     name: cofense-quarantine-job-delete
@@ -1122,33 +998,21 @@ script:
       description: Whether the quarantine job is successfully deleted(true) or not(false).
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The unique ID that cofense vision has assigned to a search.
 
         Note: The ID can be retrieved by using the command "cofense-message-searches-list".
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         The start page of the results. The value must be a positive integer or 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         The number of results to retrieve per page. The value must be a positive integer up to 2000.
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'id:asc'
+    - defaultValue: 'id:asc'
       description: |-
         The name-value pair defining the order of the response. Comma-separated values are supported.
 
@@ -1160,11 +1024,7 @@ script:
         Supported values for sortOrder are: asc, desc.
       isArray: true
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the results for the search identified by the search ID.
-    execution: false
     name: cofense-message-search-results-get
     outputs:
     - contextPath: Cofense.Search.Message.id
@@ -1336,25 +1196,18 @@ script:
       description: Indicates whether to search partially ingested emails or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A single IOC source value, to fetch the IOCs added or modified by that particular source. The value for source can contain uppercase letters, lowercase letters, numbers, and certain special characters ("." , "-" , "_" , "~").
 
         Example: "Traige-1" or "IOC_Source-2"
-      isArray: false
       name: source
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the IOC to be deleted.
 
         Note: Users can get the list of IDs by executing the "cofense-iocs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a single active or expired IOC from the local IOC Repository.
     execution: true
     name: cofense-ioc-delete
@@ -1465,18 +1318,13 @@ script:
       description: The vendor who reported the file as malicious.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the quarantine job in cofense vision to be stopped.
 
         Note: Users can get the list of IDs by executing the "cofense-quarantine-jobs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Issues a request to stop the quarantine job identified by its unique ID.
-    execution: false
     name: cofense-quarantine-job-stop
     outputs:
     - contextPath: Cofense.QuarantineJob.id
@@ -1600,8 +1448,7 @@ script:
       description: ID that Cofense Vision assigned to the search, if any.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of subjects to create a search for an email's
         subject. It supports the use of one or more wildcard characters (*)
         in any position of a subject.
@@ -1609,10 +1456,7 @@ script:
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: subjects
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of senders to create a search for an email's
         sender. It supports the use of one or more wildcard characters (*)
         in any position of a sender's email address.
@@ -1620,10 +1464,7 @@ script:
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: senders
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of attachment names to create a search for an
         email's attachments. It supports the use of one or more wildcard
         characters (*) in any position of an attachment name.
@@ -1631,10 +1472,7 @@ script:
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: attachment_names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'ANY'
       description: |-
         The type of matching performed on the hashes specified in the attachment_hashes argument.
@@ -1642,15 +1480,11 @@ script:
         Possible values are:
         ALL: Emails must include all listed attachment hashes.
         ANY: Emails must contain at least one of the listed attachment hash.
-      isArray: false
       name: attachment_hash_match_criteria
       predefined:
       - 'ANY'
       - 'ALL'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of attachment hashes to create a search for an email's attachment hashes.
 
         Supported format: hashtype1:hashvalue1, hashtype2:hashvalue2
@@ -1662,28 +1496,19 @@ script:
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: attachment_hashes
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of MIME types to create a search for an email's attachment MIME type.
 
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: attachment_mime_types
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of MIME types to create a search for excluding an email's attachment MIME type.
 
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: attachment_exclude_mime_types
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'ANY'
       description: |-
         The type of matching to perform on the domains specified in the domains argument.
@@ -1691,15 +1516,11 @@ script:
         Possible values are:
         ALL: Emails must include all listed domains.
         ANY: Emails must contain at least one of the listed domains.
-      isArray: false
       name: domain_match_criteria
       predefined:
       - 'ANY'
       - 'ALL'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of domains to create a search for domains in
         an email's body or its attachment. You can change the type of matching
         that happens on the specified domains using the domain_match_criteria argument.
@@ -1707,19 +1528,13 @@ script:
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: domains
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of URLs to be whitelisted.
 
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: whitelist_urls
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated string of key-value pairs, defining the additional 
         criteria to search for in the email header.
 
@@ -1733,72 +1548,44 @@ script:
         Note: The search can only have a maximum of 3 values.
       isArray: true
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique identifier of the email, enclosed in angle brackets. This argument is case-sensitive.
 
         Example:  <513C8CD8-E593-4DC4-82BF6202E8AC95CB@example.com>
-      isArray: false
       name: internet_message_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: |-
         Whether to create a search with partially ingested emails (true) or not with partially ingested emails (false).
-      isArray: false
       name: partial_ingest
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Date and time to create a search for emails to specify the received
         on or after the specified UTC date and time.
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-      isArray: false
       name: received_after_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Date and time to create a search for emails to specify the received
         before or on the specified UTC date and time.
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-      isArray: false
       name: received_before_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Create a search with the specified recipient. Supports one or more 
         wildcard characters (*) in any position of a recipient's email address.
-      isArray: false
       name: recipient
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Create a search with the specified url. Supports one or more 
         wildcard characters (*) in any position of the URL.
-      isArray: false
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new search.
-    execution: false
     name: cofense-message-search-create
     outputs:
     - contextPath: Cofense.Search.id
@@ -1874,21 +1661,16 @@ script:
       description: Indicates whether to search partially ingested emails or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A single IOC source value, to fetch the IOCs added or modified 
         by that particular source. The value for source can contain 
         uppercase letters, lowercase letters, numbers, and certain 
         special characters ("." , "-" , "_" , "~").
 
         Example: "Traige-1" or "IOC_Source-2".
-      isArray: false
       name: source
       required: true
-      secret: false
-    deprecated: false
     description: Synchronizes the update of data between the IOC source and the IOC repository. Retrieves the last updated IOC from the local IOC Repository. It may return an active or an expired IOC.
-    execution: false
     name: cofense-last-ioc-get
     outputs:
     - contextPath: Cofense.IOC.id
@@ -1997,20 +1779,16 @@ script:
       description: The vendor who reported the file as malicious.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A single IOC source value, to fetch the IOCs added or modified 
         by that particular source. The value for source can contain 
         uppercase letters, lowercase letters, numbers, and certain 
         special characters ("." , "-" , "_" , "~").
 
         Example: "Traige-1" or "IOC_Source-2".
-      isArray: false
       name: source
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         List of JSON data containing ioc details to be updated in the IOC local repository.
 
         Supported format:
@@ -2035,17 +1813,12 @@ script:
 
         Note: threat_type, threat_value, threat_level, created_at and source_id are required parameters.
 
-      isArray: false
       name: iocs_json
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Type of the IOC. 
 
         Supported values: Domain, MD5, Sender, SHA256, Subject, or URL.
-      isArray: false
       name: threat_type
       predefined:
       - Domain
@@ -2054,45 +1827,26 @@ script:
       - 'SHA256'
       - 'Subject'
       - 'URL'
-      required: false
-      secret: false
-    - default: false
-      description: The actual value of the IOC match in the email.
-      isArray: false
+    - description: The actual value of the IOC match in the email.
       name: threat_value
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The severity of the IOC.  
 
         Example: "Malicious"
-      isArray: false
       name: threat_level
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique identifier assigned by the IOC source. 
 
         Example: source1_id_00001
-      isArray: false
       name: source_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The UTC date and time, the IOC source included the IOC for the first time.
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-      isArray: false
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         The UTC date and time, the IOC source last updated the IOC.
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
@@ -2100,12 +1854,8 @@ script:
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
 
         Default value will be the current UTC time.
-      isArray: false
       name: updated_at
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The expected UTC expiration date and time. The IOC repository
         calculates an expiration date and time for the new IOC by default 14 days
         after the IOC is delivered to the IOC repository.
@@ -2113,11 +1863,7 @@ script:
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-      isArray: false
       name: requested_expiration
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Updates one or more IOCs stored in the local IOC repository. 
       To update multiple IOCs use iocs_json argument.
@@ -2125,7 +1871,6 @@ script:
       Note: iocs_json parameter will take precedence over other parameters. 
       threat_type, threat_value, threat_level, created_at and source_id 
       are required parameters to update a single IOC.
-    execution: false
     name: cofense-iocs-update
     outputs:
     - contextPath: Cofense.IOC.id
@@ -2234,29 +1979,21 @@ script:
       description: The vendor who reported the file as malicious.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The ID of the IOC to be updated.
 
         Note: Users can get the list of IDs by executing the "cofense-iocs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Expiration date and time of the IOC. The timestamp is in UTC.
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-      isArray: false
       name: expires_at
       required: true
-      secret: false
-    deprecated: false
     description: Updates the IOC identified by its unique MD5 ID.
-    execution: false
     name: cofense-ioc-update
     outputs:
     - contextPath: Cofense.IOC.id
@@ -2365,34 +2102,22 @@ script:
       description: The vendor who reported the file as malicious.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A single IOC source value, to fetch the IOCs added or modified by that particular source. The value for source can contain uppercase letters, lowercase letters, numbers, and certain special characters ("." , "-" , "_" , "~").
 
         Example: "Triage-1" or "IOC_Source-2".
-      isArray: false
       name: source
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The start page of the results. The value must be a positive integer or 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         The number of results to retrieve.
 
         Maximum value is '2000'
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The name-value pair defining the order of the response.
 
         Supported format: propertyName:sortOrder
@@ -2400,35 +2125,22 @@ script:
         Supported value for propertyName is: updatedAt.
 
         Supported values for sortOrder are: asc, desc.
-      isArray: false
       name: sort
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      default: false
       description: Whether to include expired IOCs or not.
-      isArray: false
       name: include_expired
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Include only IOCs that were added to the repository after the given UTC date and time.
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-      isArray: false
       name: since
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the IOCs stored in the local IOC Repository.
-    execution: false
     name: cofense-iocs-list
     outputs:
     - contextPath: Cofense.IOC.id
@@ -2534,30 +2246,21 @@ script:
       description: The vendor who reported the file as malicious.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A single IOC source value, to fetch the IOCs added or modified 
         by that particular source. The value for source can contain 
         uppercase letters, lowercase letters, numbers, and certain 
         special characters ("." , "-" , "_" , "~").
 
         Example: "Traige-1" or "IOC_Source-2".
-      isArray: false
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the IOC.
 
         Note: Users can get the list of IDs by executing the "cofense-iocs-list" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the IOC identified by its unique MD5 ID.
-    execution: false
     name: cofense-ioc-get
     outputs:
     - contextPath: Cofense.IOC.id
@@ -2665,9 +2368,7 @@ script:
     - contextPath: File.Malicious.Vendor
       description: The vendor who reported the file as malicious.
       type: String
-  - deprecated: false
-    description: Retrieves a list of configured header keys that can be used to create a message search.
-    execution: false
+  - description: Retrieves a list of configured header keys that can be used to create a message search.
     name: cofense-searchable-headers-list
     outputs:
     - contextPath: Cofense.Config.name
@@ -2676,11 +2377,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.59070
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

@@ -9,24 +9,19 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: API token for Logz.io Security account
   name: security_api_token
   type: 4
-  required: false
 - display: API token for Logz.io Operations account
   name: operational_api_token
   type: 4
-  required: false
 - display: Region code of your Logz.io account
   name: region
   defaultvalue: us
   type: 15
-  required: false
   options:
   - us
   - eu
@@ -37,11 +32,9 @@ configuration:
 - display: Filter by rule name
   name: search
   type: 0
-  required: false
 - display: Filter by rule severity
   name: severities
   type: 16
-  required: false
   options:
   - SEVERE
   - HIGH
@@ -52,20 +45,16 @@ configuration:
   name: fetch_time
   defaultvalue: 1 hour
   type: 0
-  required: false
 - display: Max. number of incidents fetched per run
   name: fetch_count
   defaultvalue: '50'
   type: 0
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -75,17 +64,14 @@ script:
     - name: query
       required: true
       default: true
-      description: A string specifying the search query, written in Apache Lucene
-        syntax e.g. 'fname:John AND sname:Smith' (limited to 2 days range).
+      description: A string specifying the search query, written in Apache Lucene syntax e.g. 'fname:John AND sname:Smith' (limited to 2 days range).
       defaultValue: '*'
     - name: size
       description: An integer specifying the maximum number of results to return.
     - name: from_time
-      description: Specifies the earliest timestamp to be returned
-        by the query.
+      description: Specifies the earliest timestamp to be returned by the query.
     - name: to_time
-      description: Specifies the latest timestamp to be returned by
-        the query.
+      description: Specifies the latest timestamp to be returned by the query.
     - name: timeout
       description: Timeout in seconds
       defaultValue: '2'
@@ -122,11 +108,9 @@ script:
     - contextPath: Logzio.Result.timestamp
       description: The log's timestamp
       type: date
-    description: Fetches the logs that triggered a security event in Logz.io Cloud
-      SIEM
+    description: Fetches the logs that triggered a security event in Logz.io Cloud SIEM
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

@@ -14,16 +14,14 @@ configuration:
 - display: Vectra Detect FQDN or IP
   name: server_fqdn
   type: 0    # Short Text
-  additionalinfo: Enter the FQDN or IP to reach the Vectra Detect API.
-    (e.g. "my-vectra-box.local" or "192.168.1.1")
+  additionalinfo: Enter the FQDN or IP to reach the Vectra Detect API. (e.g. "my-vectra-box.local" or "192.168.1.1")
   required: true
   defaultvalue: ''
 
 - display: API Token
   name: credentials
   type: 9    # Authentication text - allows switching to credentials
-  additionalinfo: Enter the API token that can be retrieved from the Vectra UI > My Profile > General (tab) > API Token.
-    You can also use the XSOAR credentials wallet to store it. In that case, the token should be the password.
+  additionalinfo: Enter the API token that can be retrieved from the Vectra UI > My Profile > General (tab) > API Token. You can also use the XSOAR credentials wallet to store it. In that case, the token should be the password.
   required: true
   hiddenusername: true
   displaypassword: API Token
@@ -31,41 +29,27 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure    # Do not change
   type: 8    # Boolean checkbox
-  additionalinfo: When checked, no SSL certificates check will be done when interracting with the Vectra Detect API.
-    It's insecure.
-    (Default - unchecked)
-  required: false
-
+  additionalinfo: When checked, no SSL certificates check will be done when interracting with the Vectra Detect API. It's insecure. (Default - unchecked)
 - display: Use system proxy settings
   name: use_proxy    # Do not change
   type: 8    # Boolean checkbox
   additionalinfo: Use the system proxy settings to reach with the Vectra Detect API.
-  required: false
-
 - display: Fetch incidents
   name: isFetch    # Do not change
   type: 8    # Boolean checkbox
-  required: false
-
 - display: Incident type
   name: incidentType    # Do not change
   type: 13    # special use - automatically added - Incident type single select dropdown
-  required: false
-
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch    # Do not change
   type: 0    # Short Text
-  additionalinfo: How far back in time you want to fetch alerts.
-    (default - 7 days)
-  required: false
+  additionalinfo: How far back in time you want to fetch alerts. (default - 7 days)
   defaultvalue: 7 days
 
 - display: Entity types to fetch
   name: fetch_entity_types
   type: 16    # Mutiple select dropdown
-  required: false
-  additionalinfo: Choose what to fetch - Accounts and/or Hosts and/or Detections.
-    (Default - Accounts,Hosts)
+  additionalinfo: Choose what to fetch - Accounts and/or Hosts and/or Detections. (Default - Accounts,Hosts)
   options:
   - Accounts
   - Hosts
@@ -75,37 +59,25 @@ configuration:
 - display: Hosts fetch query
   name: hosts_fetch_query
   type: 0    # Short text
-  additionalinfo: Only "active" Hosts matching this fetch query will be fetched.
-    Will be used only if "Hosts" is selected in the "Entity types to fetch".
-    (default - host.threat:>=50)
-  required: false
+  additionalinfo: Only "active" Hosts matching this fetch query will be fetched. Will be used only if "Hosts" is selected in the "Entity types to fetch". (default - host.threat:>=50)
   defaultvalue: host.threat:>=50
 
 - display: Accounts fetch query
   name: accounts_fetch_query
   type: 0    # Short text
-  additionalinfo: Only "active" Accounts matching this fetch query will be fetched.
-    Will be used only if "Accounts" is selected in the "Entity types to fetch".
-    (default - account.threat:>=50)
-  required: false
+  additionalinfo: Only "active" Accounts matching this fetch query will be fetched. Will be used only if "Accounts" is selected in the "Entity types to fetch". (default - account.threat:>=50)
   defaultvalue: account.threat:>=50
 
 - display: Detections fetch query
   name: detections_fetch_query
   type: 0    # Short text
-  additionalinfo: Only "active" Detections matching this fetch query will be fetched.
-    Will be used only if "Detections" is selected in the "Entity types to fetch".
-    (default - detection.threat:>=50 AND detection.certainty:>=50)
-  required: false
+  additionalinfo: Only "active" Detections matching this fetch query will be fetched. Will be used only if "Detections" is selected in the "Entity types to fetch". (default - detection.threat:>=50 AND detection.certainty:>=50)
   defaultvalue: detection.threat:>=50 AND detection.certainty:>=50
 
 - display: Max created incidents per fetch
   name: max_fetch
   type: 0    # Short Text
-  additionalinfo: How many new incidents do you want to create at max per fetch.
-    This value would be split between selected "Entity types to fetch".
-    (Default - 50)
-  required: false
+  additionalinfo: How many new incidents do you want to create at max per fetch. This value would be split between selected "Entity types to fetch". (Default - 50)
   defaultvalue: 50
 
 
@@ -115,7 +87,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   commands:
     # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments
     # Describe single account / host / detection / outcome / assignment by ID
@@ -125,9 +96,7 @@ script:
     # Create an assignment outcome
 
   - name: vectra-search-accounts
-    description: Returns a list of Account objects.
-      All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
-    execution: false   # This command is not harmful
+    description: Returns a list of Account objects. All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
     arguments:
     - name: min_id
       description: Returns Accounts with an ID greater than or equal to the specified ID.
@@ -160,7 +129,7 @@ script:
     - name: tags
       description: Filters by a tag or a comma-separated list tags.
 
-    outputs:  &accountOutput
+    outputs: &accountOutput
     - contextPath: Vectra.Account.Assignee
       type: String
       description: Vectra user account this Account is assigned to
@@ -181,8 +150,7 @@ script:
       description: Account privilege level (from 1 to 10)
     - contextPath: Vectra.Account.PrivilegeCategory
       type: String
-      description: Account privilege category (Either 'Low', 'Medium' or 'High' -
-        Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
+      description: Account privilege category (Either 'Low', 'Medium' or 'High' - Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
     - contextPath: Vectra.Account.Severity
       type: String
       description: Account severity according to scores ('Low', 'Medium', 'High', 'Critical')
@@ -206,9 +174,7 @@ script:
       description: The username of the account
 
   - name: vectra-search-hosts
-    description: Returns a list of Host objects.
-      All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
-    execution: false   # This command is not harmful
+    description: Returns a list of Host objects. All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
     arguments:
     - name: min_id
       description: Returns Hosts with an ID greater than or equal to the specified ID.
@@ -232,7 +198,7 @@ script:
       description: Search query in Lucene query syntax.
     - name: search_query_only
       description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
-    outputs:  &hostOutput
+    outputs: &hostOutput
     - contextPath: Vectra.Host.Assignee
       type: String
       description: Vectra user account this Host is assigned to
@@ -265,8 +231,7 @@ script:
       description: Host privilege level (from 1 to 10)
     - contextPath: Vectra.Host.PrivilegeCategory
       type: String
-      description: Host privilege category. (Either 'Low', 'Medium' or 'High' -
-        Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
+      description: Host privilege category. (Either 'Low', 'Medium' or 'High' - Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
     - contextPath: Vectra.Host.ProbableOwner
       type: String
       description: Host probable owner
@@ -296,9 +261,7 @@ script:
       description: Host URL to pivot to Vectra UI
 
   - name: vectra-search-detections
-    description: Returns a list of Detection objects.
-      All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
-    execution: false   # This command is not harmful
+    description: Returns a list of Detection objects. All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
     arguments:
     - name: min_id
       description: Returns Detections with an ID greater than or equal to the specified ID.
@@ -322,7 +285,7 @@ script:
       description: Search query in Lucene query syntax.
     - name: search_query_only
       description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
-    outputs:  &detectionOutput
+    outputs: &detectionOutput
     - contextPath: Vectra.Detection.Assignee
       type: String
       description: Vectra user account this detection is assigned to
@@ -397,9 +360,7 @@ script:
       description: Detection URL to pivot to Vectra UI
 
   - name: vectra-search-assignments
-    description: Return a list of assignments.
-      By default already resolved assignment are not returned.
-    execution: false   # This command is not harmful
+    description: Return a list of assignments. By default already resolved assignment are not returned.
     arguments:
     - name: account_ids
       description: Filters by accounts IDs
@@ -415,7 +376,7 @@ script:
       isArray: true
     - name: resolved
       description: Filters by resolution state
-    outputs:  &assignmentOutput
+    outputs: &assignmentOutput
     - contextPath: Vectra.Assignment.AccountID
       type: Number
       description: Account ID this assignment is linked to
@@ -457,9 +418,7 @@ script:
       description: When this assignment was resolved
 
   - name: vectra-search-users
-    description: Returns a list of Vectra Users.
-      All search attributes will be cummulative.
-    execution: false   # This command is not harmful
+    description: Returns a list of Vectra Users. All search attributes will be cummulative.
     arguments:
     - name: username
       description: Filters by user name
@@ -474,7 +433,7 @@ script:
       - SAML
     - name: last_login_datetime
       description: Filters for Users that logged in since the given datetime
-    outputs:  &userOutput
+    outputs: &userOutput
     - contextPath: Vectra.User.Email
       type: String
       description: User's email address
@@ -496,7 +455,7 @@ script:
 
   - name: vectra-search-outcomes
     description: Returns a list of assignment outcomes.
-    outputs:  &outcomeOutput
+    outputs: &outcomeOutput
     - contextPath: Vectra.Outcome.IsBuiltIn
       type: String
       description: Is this Outcome a builtin Outcome
@@ -515,7 +474,6 @@ script:
   #
   - name: vectra-account-describe
     description: Returns a single Account details
-    execution: false    # This command is not harmful
     arguments:
     - name: id
       default: true
@@ -551,7 +509,6 @@ script:
   #
   - name: vectra-host-describe
     description: Returns a single Host details
-    execution: false    # This command is not harmful
     arguments:
     - name: id
       default: true
@@ -591,7 +548,6 @@ script:
   #
   - name: vectra-detection-describe
     description: Returns a single detection details
-    execution: false    # This command is not harmful
     arguments:
     - name: id
       default: true
@@ -600,7 +556,6 @@ script:
 
   - name: vectra-detection-get-pcap
     description: Returns a Detection's PCAP file (if available)
-    execution: false    # This command is not harmful
     arguments:
     - name: id
       default: true
@@ -618,8 +573,8 @@ script:
       description: The wanted detection status ("true", "false"). No default value
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     outputs: []
 
   - name: vectra-detection-add-tags
@@ -651,7 +606,6 @@ script:
   #
   - name: vectra-outcome-describe
     description: Returns a single outcome details
-    execution: false    # This command is not harmful
     arguments:
     - name: id
       default: true
@@ -678,7 +632,6 @@ script:
   #
   - name: vectra-assignment-describe
     description: Returns a single assignment details
-    execution: false    # This command is not harmful
     arguments:
     - name: id
       default: true
@@ -686,8 +639,7 @@ script:
     outputs: *assignmentOutput
 
   - name: vectra-assignment-assign
-    description: Assigns an Account/Host entity to a Vectra User for investigation.
-      If an assignment already exists on this entity, it will be reassigned
+    description: Assigns an Account/Host entity to a Vectra User for investigation. If an assignment already exists on this entity, it will be reassigned
     execution: true     # This command is harmful
     arguments:
     - name: assignee_id
@@ -701,8 +653,7 @@ script:
     outputs: *assignmentOutput
 
   - name: vectra-assignment-resolve
-    description: Resolves an assignment by selecting resolution scheme.
-      Could be 'resolving only' or 'resolving by filtering detections'
+    description: Resolves an assignment by selecting resolution scheme. Could be 'resolving only' or 'resolving by filtering detections'
     execution: true     # This command is harmful
     arguments:
     - name: assignment_id
@@ -729,7 +680,6 @@ script:
   #
   - name: vectra-user-describe
     description: Returns a single Vectra User details
-    execution: false    # This command is not harmful
     arguments:
     - name: id
       default: true

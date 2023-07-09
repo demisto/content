@@ -8,12 +8,10 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - display: Service account private key file contents (JSON).
@@ -29,13 +27,11 @@ configuration:
   hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -48,20 +44,17 @@ configuration:
 - additionalinfo: Subscription ID from which to fetch incidents.
   display: Fetch incidents using the subscription ID.
   name: default_subscription
-  required: false
   type: 0
   section: Collect
 - additionalinfo: Maximum number of incidents created per fetch.
   display: Maximum number of incidents per fetch.
   name: default_max_msgs
-  required: false
   type: 0
   section: Collect
   defaultvalue: '50'
 - additionalinfo: Acknowledge fetched incidents. (When toggled off, will not acknowledge fetched messages).
   display: Acknowledge incidents.
   name: ack_incidents
-  required: false
   type: 8
   section: Collect
   advanced: true
@@ -69,7 +62,6 @@ configuration:
   defaultvalue: 3 days
   display: First fetch time.
   name: first_fetch_time
-  required: false
   section: Collect
   type: 0
 description: Google Cloud Pub/Sub is a fully-managed real-time messaging service that enables you to send and receive messages between independent applications.
@@ -78,27 +70,13 @@ name: GooglePubSub
 script:
   commands:
   - arguments:
-    - default: false
-      description: ID of the project to look in.
-      isArray: false
+    - description: ID of the project to look in.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: Maximum amount of entries to fetch.
-      isArray: false
+    - description: Maximum amount of entries to fetch.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Next page token as returned from the "gcp-pubsub-topics-list" command.
-      isArray: false
+    - description: Next page token as returned from the "gcp-pubsub-topics-list" command.
       name: page_token
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of the topics of the project.
-    execution: false
     name: gcp-pubsub-topics-list
     outputs:
     - contextPath: GoogleCloudPubSubTopics.name
@@ -108,33 +86,16 @@ script:
       description: If not empty, indicates that there may be more topics that match the request.
       type: String
   - arguments:
-    - default: false
-      description: ID of the topic. E.g., "projects/{project_id}/topics/topic_id".
-      isArray: false
+    - description: ID of the topic. E.g., "projects/{project_id}/topics/topic_id".
       name: topic_id
       required: true
-      secret: false
-    - default: false
-      description: The message data field. If this field is empty, the message must contain at least one attribute.
-      isArray: false
+    - description: The message data field. If this field is empty, the message must contain at least one attribute.
       name: data
-      required: false
-      secret: false
-    - default: false
-      description: 'Attributes for this message. If this field is empty, the message must contain non-empty data. The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'Attributes for this message. If this field is empty, the message must contain non-empty data. The input format is "key=val" pairs separated by commas.'
       name: attributes
-      required: false
-      secret: false
-    - default: false
-      description: Project ID.
-      isArray: false
+    - description: Project ID.
       name: project_id
-      required: false
-      secret: false
-    deprecated: false
     description: Publish a message in a topic.
-    execution: false
     name: gcp-pubsub-topic-publish-message
     outputs:
     - contextPath: GoogleCloudPubSubPublishedMessages.messageId
@@ -150,21 +111,12 @@ script:
       description: The message attributes.
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the subscription, without a project/topic prefix.
-      isArray: false
+    - description: ID of the subscription, without a project/topic prefix.
       name: subscription_id
       required: true
-      secret: false
-    deprecated: false
     description: Get subscription details by the subscription ID.
-    execution: false
     name: gcp-pubsub-topic-subscription-get-by-name
     outputs:
     - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
@@ -186,33 +138,15 @@ script:
       description: Delivery type of the message - pull or push.
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the topic from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the topic from which the subscription is receiving messages.
       name: topic_id
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results.
-      isArray: false
+    - description: Maximum number of results.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Next page token as returned from the API.
-      isArray: false
+    - description: Next page token as returned from the API.
       name: page_token
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of subscriptions by project ID or topic ID.
-    execution: false
     name: gcp-pubsub-topic-subscriptions-list
     outputs:
     - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
@@ -237,39 +171,22 @@ script:
       description: Delivery type of the message - pull or push.
       type: String
   - arguments:
-    - default: false
-      description: Project ID to pull messages from.
-      isArray: false
+    - description: Project ID to pull messages from.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: Subscription ID to pull messages from.
-      isArray: false
+    - description: Subscription ID to pull messages from.
       name: subscription_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The maximum number of messages to return for this request. Must be a positive integer.
-      isArray: false
       name: max_messages
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Acknowledge the messages pulled.
-      isArray: false
       name: ack
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    deprecated: false
     description: Pull messages that were published.
-    execution: false
     name: gcp-pubsub-topic-messages-pull
     outputs:
     - contextPath: GoogleCloudPubSubPulledMessages.data
@@ -288,74 +205,34 @@ script:
       description: Acknowledge ID of the message. Used to acknowledge a message.
       type: String
   - arguments:
-    - default: false
-      description: ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the created subscription.
-      isArray: false
+    - description: ID of the created subscription.
       name: subscription_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the topic from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the topic from which the subscription is receiving messages.
       name: topic_id
       required: true
-      secret: false
-    - default: false
-      description: A URL indicating the endpoint to which messages should be pushed.
-      isArray: false
+    - description: A URL indicating the endpoint to which messages should be pushed.
       name: push_endpoint
-      required: false
-      secret: false
-    - default: false
-      description: 'Endpoint configuration attributes that can be used to control the message delivery, such as "x-goog-version", that you can use to change the format of the pushed message. The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'Endpoint configuration attributes that can be used to control the message delivery, such as "x-goog-version", that you can use to change the format of the pushed message. The input format is "key=val" pairs separated by commas.'
       name: push_attributes
-      required: false
-      secret: false
-    - default: false
-      description: The amount of time Pub/Sub waits for the subscriber to acknowledge receipt before resending the message.
-      isArray: false
+    - description: The amount of time Pub/Sub waits for the subscriber to acknowledge receipt before resending the message.
       name: ack_deadline_seconds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Indicates whether to retain acknowledged messages.
-      isArray: false
       name: retain_acked_messages
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The amount of time to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
-      isArray: false
+    - description: The amount of time to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
       name: message_retention_duration
-      required: false
-      secret: false
-    - default: false
-      description: 'The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: The "time-to-live" duration for the subscription.
-      isArray: false
+    - description: The "time-to-live" duration for the subscription.
       name: expiration_ttl
-      required: false
-      secret: false
-    deprecated: false
     description: Create a pull or push subscription.
-    execution: false
     name: gcp-pubsub-topic-subscription-create
     outputs:
     - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
@@ -383,43 +260,23 @@ script:
       description: 'An object containing a list of "key=value" pairs.'
       type: String
   - arguments:
-    - default: false
-      description: ID of the project the topic will belong to.
-      isArray: false
+    - description: ID of the project the topic will belong to.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the newly created topic.
-      isArray: false
+    - description: ID of the newly created topic.
       name: topic_id
       required: true
-      secret: false
-    - default: false
-      description: 'The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. E.g., "us-east4,asia-1".
         https://cloud.google.com/compute/docs/regions-zones#locations.
       isArray: true
       name: allowed_persistence_regions
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
         The full name format is: projects/*/locations/*/keyRings/*/cryptoKeys/*.
-      isArray: false
       name: kms_key_name
-      required: false
-      secret: false
-    deprecated: false
     description: Create a topic.
-    execution: false
     name: gcp-pubsub-topic-create
     outputs:
     - contextPath: GoogleCloudPubSubTopics.name
@@ -435,68 +292,36 @@ script:
       description: The resource name of the Cloud KMS CryptoKey to be used to restrict access.
       type: String
   - arguments:
-    - default: false
-      description: ID of the project the topic will belong to.
-      isArray: false
+    - description: ID of the project the topic will belong to.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the newly created topic.
-      isArray: false
+    - description: ID of the newly created topic.
       name: topic_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a topic.
-    execution: false
     name: gcp-pubsub-topic-delete
   - arguments:
-    - default: false
-      description: ID of the project the topic belongs to.
-      isArray: false
+    - description: ID of the project the topic belongs to.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the topic.
-      isArray: false
+    - description: ID of the topic.
       name: topic_id
       required: true
-      secret: false
-    - default: false
-      description: 'The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. E.g., "us-east4,asia-1".
         https://cloud.google.com/compute/docs/regions-zones#locations.
       isArray: true
       name: allowed_persistence_regions
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
         The full name format is: projects/*/locations/*/keyRings/*/cryptoKeys/*.
-      isArray: false
       name: kms_key_name
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of fields that indicates which fields in the provided topic to update.
         E.g., "labels,messageStoragePolicy".
-      isArray: false
       name: update_mask
       required: true
-      secret: false
-    deprecated: false
     description: Updates a topic.
-    execution: false
     name: gcp-pubsub-topic-update
     outputs:
     - contextPath: GoogleCloudPubSubTopics.name
@@ -512,82 +337,39 @@ script:
       description: The resource name of the Cloud KMS CryptoKey to be used to restrict access.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of fully qualified names of fields that indicates which fields in the provided subscription to update.
         E.g., "pushConfig.pushEndpoint,ackDeadlineSeconds".
-      isArray: false
       name: update_mask
       required: true
-      secret: false
-    - default: false
-      description: ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the updated subscription.
-      isArray: false
+    - description: ID of the updated subscription.
       name: subscription_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the topic from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the topic from which the subscription is receiving messages.
       name: topic_id
       required: true
-      secret: false
-    - default: false
-      description: A URL indicating the endpoint to which messages should be pushed.
-      isArray: false
+    - description: A URL indicating the endpoint to which messages should be pushed.
       name: push_endpoint
-      required: false
-      secret: false
-    - default: false
-      description: 'Endpoint configuration attributes that can be used to control the message delivery. The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'Endpoint configuration attributes that can be used to control the message delivery. The input format is "key=val" pairs separated by commas.'
       name: push_attributes
-      required: false
-      secret: false
-    - default: false
-      description: The amount of time Pub/Sub waits for the subscriber to acknowledge receipt before resending the message.
-      isArray: false
+    - description: The amount of time Pub/Sub waits for the subscriber to acknowledge receipt before resending the message.
       name: ack_deadline_seconds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Indicates whether to retain acknowledged messages.
-      isArray: false
       name: retain_acked_messages
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: How long to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
-      isArray: false
+    - description: How long to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
       name: message_retention_duration
-      required: false
-      secret: false
-    - default: false
-      description: 'The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: The "time-to-live" duration for the subscription.
-      isArray: false
+    - description: The "time-to-live" duration for the subscription.
       name: expiration_ttl
-      required: false
-      secret: false
-    deprecated: false
     description: Update a subscription.
-    execution: false
     name: gcp-pubsub-topic-subscription-update
     outputs:
     - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
@@ -615,62 +397,27 @@ script:
       description: 'An object containing a list of "key": value pairs.'
       type: String
   - arguments:
-    - default: false
-      description: ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the subscription, without a project/topic prefix.
-      isArray: false
+    - description: ID of the subscription, without a project/topic prefix.
       name: subscription_id
       required: true
-      secret: false
-    - default: false
-      description: 'A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".'
-      isArray: false
+    - description: 'A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".'
       name: time_string
-      required: false
-      secret: false
-    - default: false
-      description: The snapshot to seek to.
-      isArray: false
+    - description: The snapshot to seek to.
       name: snapshot
-      required: false
-      secret: false
-    deprecated: false
     description: Seeks a subscription to a given point in time or to a given snapshot.
-    execution: false
     name: gcp-pubsub-topic-messages-seek
   - arguments:
-    - default: false
-      description: The ID of the project from which this snapshot is retaining messages.
-      isArray: false
+    - description: The ID of the project from which this snapshot is retaining messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the topic from which this snapshot is retaining messages.
-      isArray: false
+    - description: The ID of the topic from which this snapshot is retaining messages.
       name: topic_id
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results.
-      isArray: false
+    - description: Maximum number of results.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Next page token as returned from the API.
-      isArray: false
+    - description: Next page token as returned from the API.
       name: page_token
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of snapshots by project ID and topic ID.
-    execution: false
     name: gcp-pubsub-topic-snapshots-list
     outputs:
     - contextPath: GoogleCloudPubSubSnapshots.name
@@ -689,33 +436,17 @@ script:
       description: If not empty, indicates that there may be more snapshots that match the request.
       type: String
   - arguments:
-    - default: false
-      description: ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: The subscription whose backlog the snapshot retains.
-      isArray: false
+    - description: The subscription whose backlog the snapshot retains.
       name: subscription_id
       required: true
-      secret: false
-    - default: false
-      description: 'The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the snapshot.
-      isArray: false
+    - description: The ID of the snapshot.
       name: snapshot_id
       required: true
-      secret: false
-    deprecated: false
     description: Creates a snapshot from the requested subscription. Snapshots are used in the gcp-pubsub-topic-messages-seek command.
-    execution: false
     name: gcp-pubsub-topic-snapshot-create
     outputs:
     - contextPath: GoogleCloudPubSubSnapshots.name
@@ -731,49 +462,26 @@ script:
       description: 'An object containing a list of "key": value pairs.'
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: The ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The snapshot is guaranteed to exist up until this time. A newly-created snapshot expires no later than 7 days from the time of its creation.
         The timestamp is in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2020-04-01T08:01:23.045678910Z"
-      isArray: false
       name: expire_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The input format is "key=val" pairs separated by commas.'
-      isArray: false
+    - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the snapshot.
-      isArray: false
+    - description: The ID of the snapshot.
       name: snapshot_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of fields that indicates which fields in the provided snapshot to update.
         Example: "labels,topic,expireTime".
-      isArray: false
       name: update_mask
       required: true
-      secret: false
-    - default: false
-      description: The ID of the topic from which this snapshot is retaining messages.
-      isArray: false
+    - description: The ID of the topic from which this snapshot is retaining messages.
       name: topic_id
       required: true
-      secret: false
-    deprecated: false
     description: Updates an existing snapshot. Snapshots are used in gcp-pubsub-topic-messages-seek command.
-    execution: false
     name: gcp-pubsub-topic-snapshot-update
     outputs:
     - contextPath: GoogleCloudPubSubSnapshots.name
@@ -789,50 +497,27 @@ script:
       description: 'An object containing a list of "key": value pairs.'
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the project from which the subscription is receiving messages.
-      isArray: false
+    - description: The ID of the project from which the subscription is receiving messages.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the snapshot.
-      isArray: false
+    - description: The ID of the snapshot.
       name: snapshot_id
       required: true
-      secret: false
-    deprecated: false
     description: Removes an existing snapshot.
-    execution: false
     name: gcp-pubsub-topic-snapshot-delete
   - arguments:
-    - default: false
-      description: The project ID that the messages were pulled from.
-      isArray: false
+    - description: The project ID that the messages were pulled from.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: The subscription that will have the messages acknowledged.
-      isArray: false
+    - description: The subscription that will have the messages acknowledged.
       name: subscription_id
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of IDs to acknowledge, as received from "gcp-pubsub-topic-messages-pull" or from "fetch-incidents".
+    - description: A comma-separated list of IDs to acknowledge, as received from "gcp-pubsub-topic-messages-pull" or from "fetch-incidents".
       isArray: true
       name: ack_ids
       required: true
-      secret: false
-    deprecated: false
     description: Acknowledge previously pulled message or messages.
-    execution: false
     name: gcp-pubsub-topic-ack-messages
   dockerimage: demisto/googleapi-python3:1.0.0.64222
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
