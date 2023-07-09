@@ -923,7 +923,7 @@ def prepare_hosts_readable_items(items: list[dict[str, Any]]) -> list[dict]:
     ]
 
 
-def prepare_files_readable_items(items: list[dict[str, Any]]) -> list:
+def prepare_files_readable_items(items: list[dict[str, Any]]) -> list[dict]:
     return [
         {
             'File Name': item.get('firstFileName'),
