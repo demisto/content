@@ -2,12 +2,6 @@ name: update-demisto-sdk-version
 
 on: workflow_dispatch
 
-permissions:
-  contents: write
-
-env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   update-dep:
     runs-on: ubuntu-latest
@@ -28,9 +22,10 @@ jobs:
         cache: 'poetry'
     
     - name: Update dependencies
-      run: poetry add --group dev demisto-sdk@latest && poetry lock --no-update
+      run: poetry add --group dev demisto-sdk@latest
 
     - name: Create branch
+      permissions: write-all
       run: |
         git config user.name "Automated"
         git config user.email "actions@users.noreply.github.com"
