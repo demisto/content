@@ -300,7 +300,7 @@ script:
       description: Array of insight IDs to rerun.
       isArray: true
       name: insightIds
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Reruns a specific SafeBreach Insight related simulations in your environment.

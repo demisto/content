@@ -151,7 +151,7 @@ def unescape_string(string):
     try:
         return string.encode('utf-8').decode('unicode_escape')
     except Exception as e:
-        demisto.debug('Failed to unescape_string', e)
+        demisto.debug(f"Failed to unescape_string: ' {e}")
         return string
 
 
@@ -462,7 +462,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
             try:
                 item["value"] = item["value"].encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
             except Exception as e:
-                demisto.debug('Failed to decode/encode', e)
+                demisto.debug(f"Failed to decode/encode: ' {e}")
                 item["value"] = item["value"]
         if demisto_data_type:
             is_behaveioral = item['type'] not in ['Domain', 'FQDN/IP', 'SHA256', 'URI', 'Hash']
@@ -537,6 +537,8 @@ def insight_rerun_command(client: Client, args: dict):
 
     raw_insights: Any = client.get_insights().json()
     insight_ids: Any = args.get('insightIds')
+    if not insight_ids:
+        raise Exception('insightIds was not provided to the command')
     human_readable_list = []
     safebreach_insight_context_list = []
     safebreach_test_context_list = []
