@@ -34,7 +34,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: Okta Auth0 logs event collector integration for XSIAM.
 display: Okta Auth0 Event Collector
 name: OktaAuth0EventCollector
 script:

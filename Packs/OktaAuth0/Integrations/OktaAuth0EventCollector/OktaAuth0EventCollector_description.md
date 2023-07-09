@@ -1,8 +1,29 @@
-## BaseIntegration Help
+To start fetch events from Okta Auth0 API you need to have a machine to machine (M2M) application in your Auth0 UI and there you can find your client ID and secret to configure the instance.
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Create an Okta Auth0 API M2M application
+1. Access OneLogin as an account owner or administrator.
+2. In the side bar go to **Applications** > **Applications**.
+3. Click on **Create Application**, choose **Machine to Machine Applications** and click **Create**.
+4. Select the authorized API URL you want to use in the instance.
+5. To fetch the logs you need to choose the permission `read:logs`.
+6. Click **Authorize**.
+7. In the created application under the **Quick Start** tab you can find the client credentials to configure an integration instance with.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+**Note**: To fetch the Auth0 logs you need to set the permission `read:logs` in the M2M application.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+For more information about how to register M2M apps, see the [Auth0 documentation](https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps).
+
+
+### Log Data Retention
+Important: Your Auth0 log retention period depends your subscription level.
+
+| Plan | Log Retention |
+| --- | --- |
+| Starter | 1 day|
+| B2C Essentials | 2 days |
+| B2C Professional | 10 days |
+| B2B Essentials | 10 days |
+| B2B Professional | 10 days |
+| Enterprise | 30 days |
+
+For more information see [this](https://auth0.com/docs/deploy-monitor/logs/log-data-retention)

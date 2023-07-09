@@ -25,15 +25,24 @@ def arg_to_strtime(value: Any) -> Optional[str]:
 
 def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
     """
-    Parses the given inputs into Okta Auth0 Events API expected format.
+    Parses the given inputs into Okta Auth0 Events API expected params format.
     """
-    since = arg_to_strtime(params.get('since'))
-    query_params = {
-        "q": last_run.get('query') or f"date:[{since} TO *]",
-        "sort": "date:1",
-        "page": last_run.get('page', 0),
-        "per_page": arg_to_number(params.get('limit', DEFAULT_LIMIT))
-    }
+    query_params = {}
+
+    if not last_run:  # requesting by time query
+        since = arg_to_strtime(params.get('since'))
+        query_params = {
+            "q": last_run.get('query') or f"date:[{since} TO *]",
+            "sort": "date:1",
+            "per_page": 100
+        }
+
+    else:  # requesting by log_id
+        query_params = {
+            "from": last_run.pop('last_id'),
+            "sort": "date:1",
+            "take": 100
+        }
 
     return query_params
 
@@ -49,14 +58,6 @@ def should_refresh_access_token() -> bool:
             int(time.time()) - int_context.get('expired_token_time', 1) > EXPIRED_TOKEN_RANGE:
         return True
     return False
-
-
-def get_last_event_ids(events: List[dict]) -> list:
-    """
-    Gets the last 5 event ids from the last fetch to prevent duplications in the next fetch run.
-    Currently the API returns in the response 2-3 events that their date is earlier than the date in the query.
-    """
-    return [event.get('_id') for event in reversed(events[-5:])]
 
 
 ''' CLIENT CLASS '''
@@ -95,7 +96,6 @@ class Client(BaseClient):
         Returns:
             str: The access token.
         """
-
         if should_refresh_access_token():
             raw_response = self.get_access_token_request()
             set_integration_context({
@@ -109,7 +109,6 @@ class Client(BaseClient):
         """
         Send request to get events from Okta Auth0.
         """
-        query_params["per_page"] = 100 if query_params["per_page"] > 100 else query_params["per_page"]
         access_token = self.get_access_token()
         self._headers.update({'Authorization': f'Bearer {access_token}'})
         raw_response = self._http_request(method='GET', url_suffix='/api/v2/logs', params=query_params)
@@ -117,94 +116,41 @@ class Client(BaseClient):
         demisto.info(f'Succesfully got {len(raw_response)} events.')
         return raw_response
 
-    def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> list:
+    def fetch_events(self, query_params: dict, last_run: dict, fetch_events_limit: Optional[int] = 1000) -> List[dict]:
         """
-        Makes the first events API call in the current fetch run to get the events from where the previous fetch has stopped.
+        Aggregates logs from Okta Auth0.
 
-        If `first_id` or `last_event_ids` exists in the lastRun obj, finds it in the response and
-        returns only the subsequent events from these ids (that weren't collected yet).
-        """
-        events = self.get_events_request(query_params)
+        Args:
+            query_params (dict): The query params to fetch the events.
+            last_run (dict): The lastRun object to update for the next fetch.
+            fetch_events_limit (int): The fetch limit parameter configured in the instance.
 
-        if first_id := last_run.get('first_id'):
-
-            for idx, event in enumerate(events):
-                if event.get('_id') == first_id:
-                    events = events[idx:]
-                    break
-
-            last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
-
-        # In case that there is no first_id and because the API returns events
-        # from earlier date than in the query
-        elif event_ids := last_run.get('last_event_ids'):
-
-            events_from_index = 0
-            for idx, event in enumerate(events):
-                if event.get('_id') in event_ids:
-                    events_from_index = idx + 1
-
-            events = events[events_from_index:]
-
-        return events
-
-    def fetch_events(self, query_params: dict, last_run: dict) -> List[dict]:
-        """
-        Aggregates events using pagination, until one of the following occurs:
-        1. Reaches the user-defined limit (parameter).
-           In this case, stores the last used `page` and `query` and the id of the next event to collect (`first_id`)
-           and returns the events that have been accumulated so far.
-
-        2. Reaches the end of the pagination.
-           In this case, the lastRun obj will be updated with the `page` that will be 0
-           and with a new date value in the `query` taken from the last event that were fetched.
-
-        3. Reaches a rate limit.
-           In this case, stores the last page used in the lastRun obj
-           and returns the events that have been accumulated so far.
+        Return:
+            (list[dict]): The list of the aggregated events.    
         """
         aggregated_events: List[dict] = []
 
-        user_defined_limit = query_params.pop('per_page')
-        query_params['per_page'] = 100  # Maximum value for per_page param
-        try:
-            page = 0
-            events = self.handle_pagination_first_batch(query_params, last_run)
-            while events:
-                for event in events:
+        events = self.get_events_request(query_params)
+        while events:
+            for event in events:
 
-                    if len(aggregated_events) == user_defined_limit:
-                        demisto.info(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
-                        last_run['first_id'] = event.get('_id')
-                        page = query_params['page']
-                        break
+                if len(aggregated_events) == fetch_events_limit:
+                    demisto.info(f'Reached the user-defined limit ({fetch_events_limit}) - stopping.')
+                    last_run['last_id'] = aggregated_events[-1].get('_id')
+                    break
 
-                    aggregated_events.append(event)
+                aggregated_events.append(event)
 
-                else:
-                    # Finished iterating through all events in this batch
-                    query_params['page'] += 1
-                    demisto.info(f'Increasing the page value to {query_params["page"]} fetch more logs from the next page.')
-                    events = self.get_events_request(query_params)
-                    continue
+            else:
+                # Finished iterating through all events in this batch
+                query_params['from'] = aggregated_events[-1].get('_id')
+                events = self.get_events_request(query_params)
+                continue
 
-                demisto.info('Finished iterating through all events in this fetch run.')
-                break
+            demisto.info('Finished iterating through all events in this fetch run.')
+            break
 
-        except DemistoException as e:
-            if not e.res or e.res.status_code != 429:
-                raise e
-            page = query_params['page']
-            demisto.info('Reached API rate limit, storing last used cursor.')
-
-        query = query_params['q'] if page or not aggregated_events else f"date:[{aggregated_events[-1].get('date')} TO *]"
-        event_ids = last_run['last_event_ids'] if not aggregated_events else get_last_event_ids(aggregated_events)
-        last_run.update({
-            'page': page,
-            'query': query,
-            'last_event_ids': event_ids
-        })
-
+        last_run['last_id'] = aggregated_events[-1].get('_id')
         return aggregated_events
 
 
@@ -230,18 +176,17 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     """
     Gets log events from Okta Auth0.
     Args:
-        cilent (Client): the client implementing the API to Okta Auth0.
+        client (Client): the client implementing the API to Okta Auth0.
         args (dict): the command arguments.
 
     Returns:
         (list) the events retrieved from the API call.
         (CommandResults) the CommandResults object holding the collected events information.
     """
-    # access_token = client.get_access_token_request()
     query_params = prepare_query_params(args)
-    raw_response, events, cursor = client.get_events_request(query_params)
+    events = client.fetch_events(query_params, {}, args.get('limit', 100))
     results = CommandResults(
-        raw_response=raw_response,
+        raw_response=events,
         readable_output=tableToMarkdown(
             'Okta Auth0 Events',
             events,
@@ -265,7 +210,8 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple:
         (dict) the updated lastRun object.
     """
     query_params = prepare_query_params(params, last_run)
-    events = client.fetch_events(query_params, last_run)
+    fetch_events_limit = arg_to_number(params.get('limit', DEFAULT_LIMIT))
+    events = client.fetch_events(query_params, last_run, fetch_events_limit)
     return events, last_run
 
 
@@ -277,8 +223,6 @@ def add_time_to_events(events):
     Adds the _time key to the events.
     Args:
         events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
     """
     if events:
         for event in events:
@@ -324,10 +268,6 @@ def main() -> None:
             last_run = demisto.getLastRun()
             events, last_run = fetch_events_command(client, params, last_run)
             add_time_to_events(events)
-            # print(f"first: {', '.join([e['date'] for e in events[:2]])}")
-            # print(f"last: {', '.join([e['date'] for e in events[-2:]])}")
-            # print(len(events))
-            # print(f"{last_run}")
             send_events_to_xsiam(
                 events,
                 vendor=VENDOR,

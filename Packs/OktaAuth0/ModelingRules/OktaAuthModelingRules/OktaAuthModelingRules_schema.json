@@ -24,6 +24,10 @@
             "type": "string",
             "is_array": false
         },
+        "ip": {
+            "type": "string",
+            "is_array": false
+        },
         "hostname": {
             "type": "string",
             "is_array": false
@@ -36,15 +40,11 @@
             "type": "string",
             "is_array": false
         },
-        "request": {
-            "type": "string",
-            "is_array": false
-        },
         "audience": {
             "type": "string",
             "is_array": false
         },
-        "response": {
+        "details": {
             "type": "string",
             "is_array": false
         },
@@ -65,7 +65,7 @@
             "is_array": false
         },
         "isMobile": {
-            "type": "bool",
+            "type": "boolean",
             "is_array": false
         },
         "user_agent": {
