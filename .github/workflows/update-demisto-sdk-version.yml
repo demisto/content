@@ -30,6 +30,8 @@ jobs:
 
     - name: Create branch
       run: |
+        git config user.name "Automated"
+        git config user.email "actions@users.noreply.github.com"
         git checkout -b demisto-sdk-release
         git commit -m "poetry files" -a
         git push origin demisto-sdk-release
