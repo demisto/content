@@ -13,12 +13,12 @@ try:
     html = f"<div style='font-size:17px; text-align:center; padding: 15px;'> " \
            f"Number of Incidents <div style='font-size:32px;'> <div> {len(campaign_incidents)} </div></div>"
 
-except Exception as ex:
-    html = f"<div style='text-align:center; font-size:32px;'> <div> No Campaign </div> <div style='font-size:17px;'> </div>"
+except Exception:
+    html = "<div style='text-align:center; font-size:32px;'> <div> No Campaign </div> <div style='font-size:17px;'> </div>"
 
 # Return the data to the layout:
 demisto.results({
-'ContentsFormat': EntryFormat.HTML,
-'Type': EntryType.NOTE,
-'Contents': html
+    'ContentsFormat': EntryFormat.HTML,
+    'Type': EntryType.NOTE,
+    'Contents': html
 })

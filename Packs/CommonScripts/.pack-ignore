@@ -259,3 +259,6 @@ ignore=RM109
 
 [file:IsInternalDomainName.yml]
 ignore=RM109
+
+[file:CloseInvestigationAsDuplicate.yml]
+ignore=BA124
