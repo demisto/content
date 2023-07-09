@@ -52,16 +52,16 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
 def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable_packs: list):
     """ Lists all installed packs and uninstalling them.
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
         hostname (str): cloud hostname
+        unremovable_packs: list of packs that can't be uninstalled.
 
-    Returns (list, bool):
+    Returns (bool):
         A flag that indicates if the operation succeeded or not.
     """
     packs_to_uninstall = get_all_installed_packs(client, unremovable_packs)
     logging.info(f'Starting to search and uninstall packs in server: {hostname}, packs count to '
-                 f'uninstall:{len(packs_to_uninstall)}')
+                 f'uninstall: {len(packs_to_uninstall)}')
     uninstalled_count = 0
     failed_to_uninstall = []
     if packs_to_uninstall:
@@ -71,9 +71,9 @@ def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable
                 uninstalled_count += 1
             else:
                 failed_to_uninstall.append(pack_to_uninstall)
-    logging.info(f"Finished uninstalling - Succeeded:{uninstalled_count} out of {len(packs_to_uninstall)}")
+    logging.info(f"Finished uninstalling - Succeeded: {uninstalled_count} out of {len(packs_to_uninstall)}")
     if failed_to_uninstall:
-        logging.error(f"Failed to uninstall:{','.join(failed_to_uninstall)}")
+        logging.error(f"Failed to uninstall: {','.join(failed_to_uninstall)}")
     return uninstalled_count == len(packs_to_uninstall)
 
 
@@ -85,7 +85,7 @@ def uninstall_pack(client: demisto_client, pack_id: str):
         pack_id: packs id to uninstall
 
     Returns:
-        Server response data
+        Boolean - If the operation succeeded.
 
     """
     try:
