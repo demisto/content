@@ -1404,11 +1404,16 @@ def test_splunk_search_command(mocker, polling, status):
     Then:
         Ensure the result as expected in polling and in regular search.
     """
-    mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
-                                                       'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'fast_mode': 'false', 'polling': polling})
+    mock_args = {
+        "query": "query",
+        "earliest_time": "2021-11-23T10:10:10",
+        "latest_time": "2020-10-20T10:10:20",
+        "app": "test_app",
+        "fast_mode": "false",
+        "polling": polling,
+    }
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    search_result = splunk.splunk_search_command(Service(status))
+    search_result = splunk.splunk_search_command(Service(status), mock_args)
 
     if search_result.scheduled_command:
         assert search_result.outputs['Status'] == status
