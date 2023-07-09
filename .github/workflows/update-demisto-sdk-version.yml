@@ -1,10 +1,14 @@
 name: update-demisto-sdk-version
+
 on: workflow_dispatch
+
+permissions:
+  contents: write
 
 jobs:
   update-dep:
     runs-on: ubuntu-latest
-    permissions: read-all|write-all
+
 
     steps:
     - name: Install poetry
