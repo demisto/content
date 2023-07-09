@@ -10799,7 +10799,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
                                                                         increase_last_run_time)
         new_last_run = {
             'time': latest_incident_fetched_time,
-            'limit': new_limit
+            'limit': new_limit if look_back > 0 else fetch_limit
         }
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
