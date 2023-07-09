@@ -11,7 +11,7 @@ jobs:
       uses: Gr1N/setup-poetry@v8
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
@@ -27,4 +27,5 @@ jobs:
     - name: Create branch
       run: |
         git checkout -b demisto-sdk-release
+        git commit -m "poetry files" -a
         git push origin demisto-sdk-release
