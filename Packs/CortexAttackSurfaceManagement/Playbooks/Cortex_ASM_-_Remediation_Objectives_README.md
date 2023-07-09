@@ -1,4 +1,4 @@
-Playbook that populates remediation objectives field that is used to display the remediation actions to the end user
+Playbook that populates remediation objectives field that is used to display the remediation actions to the end user.
 
 ## Dependencies
 

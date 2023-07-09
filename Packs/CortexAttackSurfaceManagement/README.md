@@ -170,7 +170,7 @@ A playbook that pulls remediation guidance off of a list based on ASM RuleID to 
 
 #### Cortex ASM - Remediation Objectives
 
-A playbook that populates remediation objectives field uses to display the remediation actions to the end user.
+A playbook that populates remediation objectives field that is used to display the remediation actions to the end user.
 
 ![Cortex ASM - Remediation Objectives](https://raw.githubusercontent.com/demisto/content/5f71853b59431ca60b1b783867b89f819accfefd/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Objectives.png)
 
