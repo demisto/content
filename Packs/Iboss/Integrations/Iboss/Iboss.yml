@@ -17,12 +17,10 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   defaultvalue: 'false'
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   defaultvalue: 'false'
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
@@ -39,37 +37,26 @@ configuration:
   type: 15
 script:
   commands:
-  - deprecated: false
-    description: Adds domains, IPs, and/or URLs to an allow list.
+  - description: Adds domains, IPs, and/or URLs to an allow list.
     name: iboss-add-entity-to-allow-list
     arguments:
     - name: entity
       isArray: true
       description: Domains, IPs, and/or URLs to add to an allow list.
       required: true
-      secret: false
       default: true
     - name: current_policy_being_edited
-      isArray: false
       description: The group/policy number to update.
-      required: false
-      secret: false
       defaultValue: '1'
     - name: allow_keyword
-      isArray: false
       description: Whether to enforce blocked keywords.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
       - '1'
       auto: PREDEFINED
     - name: direction
-      isArray: false
       description: Which direction(s) to match.
-      required: false
-      secret: false
       defaultValue: '2'
       predefined:
       - '0'
@@ -77,89 +64,57 @@ script:
       - '2'
       auto: PREDEFINED
     - name: start_port
-      isArray: false
       description: Which start port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: end_port
-      isArray: false
       description: Which end port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: global
-      isArray: false
       description: Whether to apply to all groups.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
       - '1'
       auto: PREDEFINED
     - name: is_regex
-      isArray: false
       description: Whether entity consists of a regex pattern.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
       - '1'
       auto: PREDEFINED
     - name: priority
-      isArray: false
       description: Priority of entry (higher number takes precedence) when conflicting entry in allow list.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: time_url_expires_in_minutes
-      isArray: false
       description: The expiration time in minutes for the entry (0 indicates an entry that does not expire).
-      required: false
-      secret: false
       defaultValue: '0'
     - name: note
-      isArray: false
       description: Note added to the entry.
-      required: false
-      secret: false
     outputs:
     - contextPath: iboss.AddEntityToAllowList.message
       description: Operation result.
       type: String
-  - deprecated: false
-    description: Adds domains, IPs, and/or URLs to a block list.
+  - description: Adds domains, IPs, and/or URLs to a block list.
     name: iboss-add-entity-to-block-list
     arguments:
     - name: entity
       isArray: true
       description: Domains, IPs, and/or URLs to add to the block list.
       required: true
-      secret: false
       default: true
     - name: current_policy_being_edited
-      isArray: false
       description: The group/policy number to update.
-      required: false
-      secret: false
       defaultValue: '1'
     - name: allow_keyword
-      isArray: false
       description: Whether to enforce blocked keywords.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
       - '1'
       auto: PREDEFINED
     - name: direction
-      isArray: false
       description: Which direction(s) to match.
-      required: false
-      secret: false
       defaultValue: '2'
       predefined:
       - '0'
@@ -167,67 +122,44 @@ script:
       - '2'
       auto: PREDEFINED
     - name: start_port
-      isArray: false
       description: Which start port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: end_port
-      isArray: false
       description: Which end port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: global
-      isArray: false
       description: Whether to apply to all groups.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
       - '1'
       auto: PREDEFINED
     - name: is_regex
-      isArray: false
       description: Whether entity consists of a regex pattern.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
       - '1'
       auto: PREDEFINED
     - name: priority
-      isArray: false
       description: Priority of entry (higher number takes precedence) when conflicting entry in the block list.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: time_url_expires_in_minutes
-      isArray: false
       description: The expiration time in minutes for the entry (0 indicates an entry that does not expire).
-      required: false
-      secret: false
       defaultValue: '0'
     - name: note
-      isArray: false
       description: Note added to the entry.
-      required: false
-      secret: false
     outputs:
     - contextPath: iboss.AddEntityToBlockList.message
       description: Operation result.
       type: String
-  - deprecated: false
-    description: Lookup reputation for domain names.
+  - description: Lookup reputation for domain names.
     name: domain
     arguments:
     - name: domain
       isArray: true
       description: Domain(s) to lookup.
       required: true
-      secret: false
       default: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -368,15 +300,13 @@ script:
     - contextPath: iboss.Domain.webRequestHeuristicSupport
       description: Whether web request heuristic support enabled.
       type: Number
-  - deprecated: false
-    description: Lookup reputation data for IP addresses.
+  - description: Lookup reputation data for IP addresses.
     name: ip
     arguments:
     - name: ip
       isArray: true
       description: IP(s) to lookup.
       required: true
-      secret: false
       default: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -517,39 +447,25 @@ script:
     - contextPath: iboss.IP.webRequestHeuristicSupport
       description: Whether web request heuristic support enabled.
       type: Number
-  - deprecated: false
-    description: Removes domains, IPs, and/or URLs from an allow list
+  - description: Removes domains, IPs, and/or URLs from an allow list
     name: iboss-remove-entity-from-allow-list
     arguments:
     - name: entity
       isArray: true
       description: Domains, IPs, and/or URLs to remove from an allow list.
       required: true
-      secret: false
       default: true
     - name: current_policy_being_edited
-      isArray: false
       description: The group/policy number to update.
-      required: false
-      secret: false
       defaultValue: '1'
     - name: start_port
-      isArray: false
       description: Which start port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: end_port
-      isArray: false
       description: Which end port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: direction
-      isArray: false
       description: Which direction(s) to match.
-      required: false
-      secret: false
       defaultValue: '2'
       predefined:
       - '0'
@@ -559,39 +475,25 @@ script:
     - contextPath: iboss.RemoveEntityFromAllowList.message
       description: Operation result.
       type: String
-  - deprecated: false
-    description: Removes domains, IPs, and/or URLs to a block list.
+  - description: Removes domains, IPs, and/or URLs to a block list.
     name: iboss-remove-entity-from-block-list
     arguments:
     - name: entity
       isArray: true
       description: Domains, IPs, and/or URLs to remove from a block list.
       required: true
-      secret: false
       default: true
     - name: current_policy_being_edited
-      isArray: false
       description: The group/policy number to update.
-      required: false
-      secret: false
       defaultValue: '1'
     - name: start_port
-      isArray: false
       description: Which start port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: end_port
-      isArray: false
       description: Which end port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: direction
-      isArray: false
       description: Which direction(s) to match.
-      required: false
-      secret: false
       defaultValue: '2'
       predefined:
       - '0'
@@ -601,15 +503,13 @@ script:
     - contextPath: iboss.RemoveEntityFromBlockList.message
       description: Operation result.
       type: String
-  - deprecated: false
-    description: Lookup reputation data for URLs.
+  - description: Lookup reputation data for URLs.
     name: url
     arguments:
     - name: url
       isArray: true
       description: URL(s) to lookup.
       required: true
-      secret: false
       default: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -750,93 +650,58 @@ script:
     - contextPath: iboss.URL.webRequestHeuristicSupport
       description: Whether web request heuristic support enabled.
       type: Number
-  - deprecated: false
-    description: Add entity to policy layer list.
+  - description: Add entity to policy layer list.
     name: iboss-add-entity-to-policy-layer-list
     arguments:
     - name: policy_layer_name
-      isArray: false
       description: Policy layer name to lookup.
       required: true
-      secret: false
-      default: false
     - name: entity
       isArray: true
       description: Entity to add to policy layer list.
       required: true
-      secret: false
       default: true
     - name: start_port
-      isArray: false
       description: Which start port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: end_port
-      isArray: false
       description: Which end port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: direction
-      isArray: false
       description: Which direction(s) to match.
-      required: false
-      secret: false
       defaultValue: '2'
       predefined:
       - '0'
       - '1'
       - '2'
     - name: do_dlp_scan
-      isArray: false
       description: Whether to perform DLP scanning.
-      required: false
-      secret: false
       defaultValue: '1'
       predefined:
       - '0'
       - '1'
     - name: do_malware_scan
-      isArray: false
       description: Whether to perform malware scanning.
-      required: false
-      secret: false
       defaultValue: '1'
       predefined:
       - '0'
       - '1'
     - name: priority
-      isArray: false
       description: Priority of entry (higher number takes precedence) when conflicting entry in the block list.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: time_url_expires_in_seconds
-      isArray: false
       description: The expiration time in seconds for the entry (0 indicates an entry that does not expire).
-      required: false
-      secret: false
       defaultValue: '0'
     - name: note
-      isArray: false
       description: Note added to the entry.
-      required: false
-      secret: false
     - name: is_regex
-      isArray: false
       description: Whether entity consists of a regex pattern.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
       - '1'
     - name: upsert
-      isArray: false
       description: Update entity if it already exists.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
@@ -846,84 +711,52 @@ script:
       description: Operation result.
       type: String
 
-  - deprecated: false
-    description: Remove entity from policy layer list.
+  - description: Remove entity from policy layer list.
     name: iboss-remove-entity-from-policy-layer-list
     arguments:
     - name: policy_layer_name
-      isArray: false
       description: Policy layer name to lookup.
       required: true
-      secret: false
-      default: false
     - name: entity
       isArray: true
       description: Entity to add to policy layer list.
       required: true
-      secret: false
       default: true
     - name: start_port
-      isArray: false
       description: Which start port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: end_port
-      isArray: false
       description: Which end port(s) to match; 0 indicates all ports.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: direction
-      isArray: false
       description: Which direction(s) to match.
-      required: false
-      secret: false
       defaultValue: '2'
       predefined:
       - '0'
       - '1'
       - '2'
     - name: do_dlp_scan
-      isArray: false
       description: Whether to perform DLP scanning.
-      required: false
-      secret: false
       defaultValue: '1'
       predefined:
       - '0'
       - '1'
     - name: do_malware_scan
-      isArray: false
       description: Whether to perform malware scanning.
-      required: false
-      secret: false
       defaultValue: '1'
       predefined:
       - '0'
       - '1'
     - name: priority
-      isArray: false
       description: Priority of entry (higher number takes precedence) when conflicting entry in the block list.
-      required: false
-      secret: false
       defaultValue: '0'
     - name: time_url_expires_in_seconds
-      isArray: false
       description: The expiration time in seconds for the entry (0 indicates an entry that does not expire).
-      required: false
-      secret: false
       defaultValue: '0'
     - name: note
-      isArray: false
       description: Note added to the entry.
-      required: false
-      secret: false
     - name: is_regex
-      isArray: false
       description: Whether entity consists of a regex pattern.
-      required: false
-      secret: false
       defaultValue: '0'
       predefined:
       - '0'
@@ -935,12 +768,8 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
-  feed: false
-  isfetch: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
-  longRunning: false
-  longRunningPort: false
 fromversion: 6.2.0
 tests:
 - No tests

@@ -400,10 +400,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "isvpnipaddress",
+                                "height": 26,
+                                "id": "b65ebae0-141e-11ee-82aa-79d0d6f9a441",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "useragent",
                                 "height": 26,
                                 "id": "3e2d8e60-3fef-11ed-8b45-b1684b1bfc04",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -412,7 +421,7 @@
                                 "fieldId": "asnname",
                                 "height": 26,
                                 "id": "7bbf2660-ffbd-11ed-91cb-b704c053731a",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -421,7 +430,7 @@
                                 "fieldId": "asn",
                                 "height": 26,
                                 "id": "74d9fc50-3fef-11ed-bd56-1f5a2b2d17b4",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -430,7 +439,7 @@
                                 "fieldId": "country",
                                 "height": 26,
                                 "id": "4c8d5610-0f52-11ee-81b3-5b1a51073e91",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -469,7 +478,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Malicious or Suspicious Indicators",
-                        "query": "reputation:Benign OR reputation:Suspicious OR reputation:Malicious",
+                        "query": "reputation:Suspicious OR reputation:Malicious",
                         "queryType": "input",
                         "static": false,
                         "type": "indicators",
@@ -562,7 +571,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Cloud Indicators",
-                        "query": "99900222-7570-4e56-8fa6-1206e76be060",
+                        "query": "displayCloudIndicators",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -1395,5 +1404,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
+    "marketplaces": ["marketplacev2"],
     "description": ""
 }

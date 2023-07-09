@@ -208,7 +208,7 @@ NIGHTLY_TESTS: tuple = (
      {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_5, Machine.MASTER), None),
+     (Machine.V6_8, Machine.MASTER), None),
 
     (MockerCases.E, XSOARNightlyTestCollector,
      {'myTestPlaybook', 'myOtherTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
@@ -308,7 +308,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
          ('myXSOAROnlyPack',)),
 
         # (8) Case D: playbook changes, expect it and its pack to be collected
-        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_5, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
+        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_8, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',)),
 
         # (9) Case D: playbook changes, expect it and its pack to be collected
