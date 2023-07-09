@@ -329,7 +329,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "rsanetwitnessruleid",
+                                "fieldId": "rsaruleid",
                                 "height": 22,
                                 "id": "e9221020-6660-11ec-9cec-f124674eca80",
                                 "index": 0,
@@ -338,7 +338,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "rsanetwitnessalertcount",
+                                "fieldId": "rsaalertcount",
                                 "height": 22,
                                 "id": "ea50a510-6660-11ec-9cec-f124674eca80",
                                 "index": 0,
@@ -347,7 +347,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "rsanetwitnesseventcount",
+                                "fieldId": "rsaeventcount",
                                 "height": 22,
                                 "id": "eb4209f0-6660-11ec-9cec-f124674eca80",
                                 "index": 0,
