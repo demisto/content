@@ -637,6 +637,7 @@ def enable_security_hub_command(client, args):
 def get_master_account_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.get_master_account(**kwargs)
+    response['Master'] = convert_members_date_type([response.get('Master')])
     outputs = {'AWS-SecurityHub': response}
     del response['ResponseMetadata']
     table_header = 'AWS SecurityHub GetMasterAccount'
@@ -960,7 +961,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
     return remote_incident_id
 
 
-def test_function(client):
+def mtest_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok', {}, {}
@@ -1012,7 +1013,7 @@ def main():  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
-            human_readable, outputs, response = test_function(client)
+            human_readable, outputs, response = mtest_function(client)
         elif command == 'aws-securityhub-get-findings':
             human_readable, outputs, response = get_findings_command(client, args)
         elif command == 'aws-securityhub-get-master-account':
