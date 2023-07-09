@@ -43,6 +43,7 @@ Whether the desired action was preformed successfully within the host is not rep
 For example, for our ***rsa-nw-scan-request*** command a success message returned only confirms the request has been received by RSA NetWitness,
 but does not indicate the scan has been preformed successfully in the requested host.
 Commands affected by this limitation are: 
+
 - ***rsa-nw-endpoint-isolate-from-network***
 - ***rsa-nw-endpoint-isolation-remove*** 
 - ***rsa-nw-endpoint-update-exclusions*** 
