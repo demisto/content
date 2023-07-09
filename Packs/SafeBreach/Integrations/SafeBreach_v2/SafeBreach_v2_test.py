@@ -75,7 +75,7 @@ def test_get_remediation_data(requests_mock, mocker):
     assert demisto.results.call_count == 1
     outputs = demisto.results.call_args[0][0]
     context = outputs['EntryContext']
-    sha256_to_check = '0000000000000000000000000000000000000000000000000000000000000000'
+    sha256_to_check = '109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb'
     assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Id'] == INSIGHT_ID
     assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['RawRemediationData'][0]['type'] == 'SHA256'
     assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['RawRemediationData'][0]['value'] == sha256_to_check
@@ -140,7 +140,7 @@ def test_get_indicators(requests_mock, mocker):
         json=NODES)
     insight_category = ['Endpoint', 'Web']
     insight_data_type = ['Hash', 'Domain']
-    hash_to_search = '109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb'
+    hash_to_search = '0000000000000000000000000000000000000000000000000000000000000000'
     res = get_indicators_command(client, insight_category, insight_data_type, 'AMBER', demisto.args())
     assert demisto.results.call_count == 0
     assert res[0]['value'] == hash_to_search
