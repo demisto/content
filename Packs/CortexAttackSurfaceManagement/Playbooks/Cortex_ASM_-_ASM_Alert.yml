@@ -2844,7 +2844,7 @@ tasks:
       version: -1
       name: Set remediation grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2996,7 +2996,7 @@ tasks:
       id: b4bfa598-714a-4b47-8b0e-1a3e86a75a46
       version: -1
       name: Cortex ASM - Remediation
-      description: This playbook contains all the cloud provider sub playbooks for remediation
+      description: This playbook contains all the cloud provider sub-playbooks for remediation.
       playbookName: Cortex ASM - Remediation
       type: playbook
       iscommand: false
@@ -3072,7 +3072,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (notification)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
