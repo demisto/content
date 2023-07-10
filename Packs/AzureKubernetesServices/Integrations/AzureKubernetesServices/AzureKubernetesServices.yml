@@ -67,13 +67,13 @@ configuration:
   name: subscription_id
   required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
   section: Connect
 - display: Default Resource Group Name
   name: resource_group_name
   required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -336,13 +336,13 @@ script:
     name: azure-ks-resource-group-list
     arguments:
     - default: false
-      description: "The Subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - name: limit
-      description: Limit on the number of resource groups to return. Default value is 50.
+      description: Limit on the number of resource groups to return.
       required: false
       defaultValue: 50
     - default: false

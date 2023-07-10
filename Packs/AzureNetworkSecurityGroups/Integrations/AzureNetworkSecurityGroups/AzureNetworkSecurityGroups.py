@@ -18,6 +18,8 @@ API_VERSION = '2022-09-01'
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
                        'Authorization Code': "https://management.azure.com/.default"}
+DEFAULT_LIMIT = 50
+PREFIX_URL = 'https://management.azure.com/subscriptions/'
 ''' CLIENT CLASS '''
 
 
@@ -32,7 +34,7 @@ class AzureNSGClient:
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
-        base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
+        base_url = f'{PREFIX_URL}{subscription_id}/' \
             f'resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups'
         client_args = assign_params(
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
@@ -76,27 +78,27 @@ class AzureNSGClient:
     @logger
     def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
         return self.http_request('GET',
-                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers\
+                                 full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers\
 /Microsoft.Network/networkSecurityGroups?')
 
     @logger
     def list_rules(self, subscription_id: str, resource_group_name: str, security_group: str):
         return self.http_request('GET',
-                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/\
+                                 full_url=f'{PREFIX_URL}{subscription_id}/\
 resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules?'
                                  )
 
     @logger
     def delete_rule(self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
         return self.http_request('DELETE',
-                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}\
+                                 full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}\
 /providers/Microsoft.Network/networkSecurityGroups/{security_group_name}/securityRules/{security_rule_name}?',
                                  resp_type='response')
 
     @logger
     def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
         return self.http_request('PUT',
-                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}\
+                                 full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}\
 /providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?',
                                  data={"properties": properties})
 
@@ -104,7 +106,7 @@ resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurity
     def get_rule(self, security_group: str, rule_name: str, subscription_id: str, resource_group_name: str):
         try:
             return self.http_request('GET',
-                                     full_url=f'https://management.azure.com/subscriptions/{subscription_id}/\
+                                     full_url=f'{PREFIX_URL}{subscription_id}/\
 resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 networkSecurityGroups/{security_group}/securityRules/{rule_name}?'
                                      )
@@ -115,7 +117,7 @@ and resource group "{resource_group_name}" was not found.')
             raise
 
     @logger
-    def subscriptions_list_request(self):
+    def list_subscriptions_request(self):
         return self.ms_client.http_request(
             method='GET',
             full_url='https://management.azure.com/subscriptions?api-version=2020-01-01')
@@ -123,7 +125,7 @@ and resource group "{resource_group_name}" was not found.')
     @logger
     def list_resource_groups_request(self, subscription_id: str | None,
                                      filter_by_tag: str | None, limit: str | int | None) -> Dict:
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+        full_url = f'{PREFIX_URL}{subscription_id}/resourcegroups?'
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
                                                    'api-version': '2021-04-01'})
@@ -173,6 +175,8 @@ def list_groups_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
     Returns:
         A detailed list of all network security groups
     """
+    # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     network_groups = client.list_network_security_groups(subscription_id=subscription_id,
@@ -202,11 +206,13 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
     Returns:
         a list of  rules for the security group
     """
+    # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     security_group_name = args.get('security_group_name')
     security_groups = argToList(security_group_name)
-    rules_limit = int(args.get('limit', '50'))
+    rules_limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     rules_offset = int(args.get('offset', '1')) - 1  # As offset will start at 1
     rules: List = []
 
@@ -230,6 +236,8 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
     """
     security_group_name = args.get('security_group_name')
     security_rule_name = args.get('security_rule_name')
+    # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     message = ''
@@ -239,10 +247,10 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
                                       resource_group_name=resource_group_name)
     if rule_deleted.status_code == 204:
         message = (f"Rule '{security_rule_name}' with resource_group_name \
-'{resource_group_name}' was not found.\n\n")
+'{resource_group_name} and subscription id '{subscription_id}' was not found.\n\n")
     elif rule_deleted.status_code == 202:
         message = (f"Rule '{security_rule_name}' with resource_group_name \
-'{resource_group_name}' was successfully deleted.\n\n")
+'{resource_group_name}' and subscription id '{subscription_id}' was successfully deleted.\n\n")
 
     return message
 
@@ -267,6 +275,8 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
     destination_ports = args.get('destination_ports', '*')
     priority = args.get('priority', '4096')
     description = args.get('description', '')
+    # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
@@ -338,6 +348,8 @@ def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
     destination_ports = args.get('destination_ports', '')
     priority = args.get('priority', '')
     description = args.get('description', '')
+    # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
@@ -398,16 +410,18 @@ def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
 @logger
 def get_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
+    This command will get a rule from a security group.
     Args:
-        client (AzureNSGClient): _description_
-        params (Dict): _description_
-        args (Dict): _description_
-
+        client: The MS Client
+        params: configuration parameters
+        args: args dictionary.
     Returns:
         CommandResults: The rule that was requested
     """
     security_group_name = args.get('security_group_name', '')
     security_rule_name = args.get('security_rule_name', '')
+    # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     rule_list = argToList(security_rule_name)
@@ -426,8 +440,8 @@ def nsg_subscriptions_list_command(client: AzureNSGClient) -> CommandResults:
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    res = client.subscriptions_list_request()
-    subscriptions = res.get('value', '[res]')
+    res = client.list_subscriptions_request()
+    subscriptions = res.get('value', [res])
 
     return CommandResults(
         outputs_prefix='AzureNSG.Subscription',
@@ -454,7 +468,7 @@ def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: 
         Command results with raw response, outputs and readable outputs.
     """
     tag = args.get('tag')
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')

@@ -51,8 +51,8 @@ At end of the process you'll see a message that you've logged in successfully.
     |------------------------------------|----------------------------------------------------------------------------------------------------------------|--------------|
     | Azure Cloud                        | Azure Cloud the K8S cluster resides in. See table below.                                                       | False        |
     | app_id                             | Application ID                                                                                                 | False        |
-    | Default subscription_id                    | Subscription ID. There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.                                                                                               | True         |
-    | Default resource_group_name                | Resource Group Name. There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.                                                                                  | True         |
+    | Default subscription_id                    | Subscription ID. There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.                                                                                               | True         |
+    | Default resource_group_name                | Resource Group Name. There are two options to insert the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.                                                                                  | True         |
     | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud. See note below.                                     | False        |
     | insecure                           | Trust any certificate \(not secure\)                                                                           | False        |
     | proxy                              | Use system proxy settings                                                                                      | False        |
@@ -176,7 +176,7 @@ Gets a list of managed clusters in the specified subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 
 #### Context Output
 
@@ -381,8 +381,8 @@ Updates a managed cluster with the specified configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
 | resource_name | The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command. | Required | 
 | location | Resource location, Can be retrieved using the azure-ks-clusters-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required | 
 | http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
@@ -416,20 +416,7 @@ There are no input arguments for this command.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureKS.Subscription.id | String | The unique identifier of the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.authorizationSource | String | The source of authorization for the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.subscriptionId | String | The ID of the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.tenantId | String | The ID of the tenant associated with the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.displayName | String | The display name of the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.state | String | The current state of the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Kubernetes subscription. | 
-| AzureKS.Subscription.count.type | String | The type of the Azure Kubernetes subscription count. | 
-| AzureKS.Subscription.count.value | Number | The value of the Azure Kubernetes subscription count. | 
+There is no context output for this command.
 
 #### Command Example
 
@@ -459,8 +446,8 @@ Gets all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID, optional. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
-| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| subscription_id | The subscription ID, optional. Note: This argument will override the instance parameter ‘Defalut Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
 #### Context Output

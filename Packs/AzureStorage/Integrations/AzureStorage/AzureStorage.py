@@ -11,6 +11,7 @@ API_VERSION = '2022-09-01'
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
                        'Authorization Code': "https://management.azure.com/.default"}
+PREFIX_URL = 'https://management.azure.com/subscriptions/'
 
 
 class ASClient:
@@ -29,7 +30,7 @@ class ASClient:
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             grant_type=GRANT_BY_CONNECTION.get(connection_type),
-            base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
+            base_url=f'{PREFIX_URL}{subscription_id}',
             verify=verify,
             proxy=proxy,
             resource='https://management.core.windows.net' if 'Device' in connection_type else None,
@@ -61,7 +62,7 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='GET',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+            full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
 storageAccounts/{account_name}?api-version={API_VERSION}'
         )
 
@@ -81,7 +82,7 @@ storageAccounts/{account_name}?api-version={API_VERSION}'
         """
         return self.ms_client.http_request(
             method='GET',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/\
+            full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/\
 providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}'
         )
 
@@ -185,7 +186,7 @@ providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?
         return self.ms_client.http_request(
             method='PUT',
 
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+            full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
 storageAccounts/{account_name}?api-version={API_VERSION}',
             json_data=json_data_args,
             resp_type='response'
@@ -265,7 +266,7 @@ storageAccounts/{account_name}?api-version={API_VERSION}',
 
         return self.ms_client.http_request(
             method='PUT',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+            full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
 storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}',
             json_data={'properties': properties}
         )
@@ -298,7 +299,7 @@ storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}',
 
         return self.ms_client.http_request(
             method=method,
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+            full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
 storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',
             json_data={'properties': properties}
         )
@@ -319,7 +320,7 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
         container_name = args.get('container_name', '')
         # url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
         #       f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/\
+        full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/\
 providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}'
 
         params = {
@@ -344,7 +345,7 @@ providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/
 
         return self.ms_client.http_request(
             method='DELETE',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+            full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
 storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',
             resp_type='response'
         )
@@ -356,7 +357,7 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
 
     def list_resource_groups_request(self, subscription_id: str | None,
                                      filter_by_tag: str | None, limit: str | int | None) -> Dict:
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+        full_url = f'{PREFIX_URL}{subscription_id}/resourcegroups?'
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
                                                    'api-version': API_VERSION})

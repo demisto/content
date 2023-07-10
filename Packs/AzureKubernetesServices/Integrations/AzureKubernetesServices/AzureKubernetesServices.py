@@ -9,6 +9,7 @@ import urllib3
 urllib3.disable_warnings()
 
 API_VERSION = '2023-02-01'
+PREFIX_URL = 'https://management.azure.com/subscriptions/'
 
 
 class AKSClient:
@@ -64,7 +65,7 @@ class AKSClient:
     def clusters_list_request(self, subscription_id: str) -> Dict:
         return self.ms_client.http_request(
             method='GET',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/providers/\
+            full_url=f'{PREFIX_URL}{subscription_id}/providers/\
 Microsoft.ContainerService/managedClusters?',
             params={
                 'api-version': API_VERSION,
@@ -110,7 +111,7 @@ Microsoft.ContainerService/managedClusters?',
             }
         return self.ms_client.http_request(
             'PUT',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/\
+            full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/\
 Microsoft.ContainerService/managedClusters/{resource_name}?',
             params={
                 'api-version': API_VERSION,
@@ -125,15 +126,15 @@ Microsoft.ContainerService/managedClusters/{resource_name}?',
         )
 
     @logger
-    def ks_subscriptions_list_request(self):
+    def list_subscriptions_request(self):
         return self.ms_client.http_request(
             method='GET',
             full_url='https://management.azure.com/subscriptions?api-version=2020-01-01')
 
     @logger
     def list_resource_groups_request(self, subscription_id: str | None,
-                                     filter_by_tag: str | None, limit: str | int | None) -> Dict:
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+                                     filter_by_tag: str | None, limit: int) -> Dict:
+        full_url = f'{PREFIX_URL}{subscription_id}/resourcegroups?'
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
                                                    'api-version': '2021-04-01'})
@@ -177,6 +178,13 @@ def clusters_list(client: AKSClient, params: Dict, args: Dict) -> CommandResults
 
 
 def clusters_addon_update(client: AKSClient, params: Dict, args: Dict) -> str:
+    """
+    This command is used to update the a managed cluster.
+    Args:
+        client: AKS client.
+        params: The configuration parameters.
+        args: the arguments from the user.
+    """
     update_args = {
         'resource_name': args.get('resource_name'),
         'resource_group_name': get_from_args_or_params(params=params, args=args, key='resource_group_name'),
@@ -200,7 +208,7 @@ def ks_subscriptions_list(client: AKSClient) -> CommandResults:
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    res = client.ks_subscriptions_list_request()
+    res = client.list_subscriptions_request()
     subscriptions = res.get('value', '[res]')
 
     return CommandResults(
