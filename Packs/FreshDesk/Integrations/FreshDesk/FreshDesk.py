@@ -181,7 +181,7 @@ def reformat_ticket_context(context):
             context[new_key] = val
             del context[key]
         elif 'Cc' in key:
-            new_key = (key[:-1] if key.endswith('s') else key)).replace('Cc', 'CC')
+            new_key = key.removesuffix('s').replace('Cc', 'CC')
             context[new_key] = val
             del context[key]
 
