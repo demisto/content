@@ -2499,6 +2499,8 @@ script:
       required: true
     - description: Text describing the contents of the tag.
       name: body
+    - description: The target branch/commit SHA from where to create the release.
+      name: ref
     - auto: PREDEFINED
       defaultValue: 'True'
       description: Whether to create a draft (unpublished) release.
