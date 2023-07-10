@@ -1360,8 +1360,8 @@ def main() -> None:
     client = Client(base_url=cv_webservice_url+"api", verify=False, proxy=False)
     is_valid_cv_token = None
     # Azure Key Vault Parameters
-    client.keyvault_url = params.get("AzureKeyVaultUrl").get('password')
-    client.keyvault_tenant_id = params.get("AzureKeyVaultTenantId").get('password')
+    client.keyvault_url = params.get("AzureKeyVaultUrl", {}).get('password')
+    client.keyvault_tenant_id = params.get("AzureKeyVaultTenantId", {}).get('password')
     client.keyvault_client_id = params.get("AzureKeyVaultClientId")
     client.keyvault_client_secret = params.get('AzureKeyVaultClientSecret', {}).get('password')
     is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
