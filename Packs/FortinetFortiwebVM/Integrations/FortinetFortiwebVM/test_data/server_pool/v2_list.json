@@ -1,0 +1,41 @@
+{
+    "results": [
+        {
+            "id": 9,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test",
+            "type": "reverse-proxy",
+            "type_val": "1",
+            "protocol": "FTP",
+            "protocol_val": "1",
+            "server-balance": "enable",
+            "server-balance_val": "1",
+            "health": "",
+            "health_val": "0",
+            "hlck-sip": "test",
+            "hlck-sip6": "::/0",
+            "lb-algo": "round-robin",
+            "lb-algo_val": "1",
+            "persistence": "",
+            "persistence_val": "0",
+            "comment": "test",
+            "flag": 0,
+            "server-pool-id": "17738698224310988039",
+            "sub_table_id": 0,
+            "sub_table_action": "Add",
+            "sub_table_action_val": "0",
+            "used": 0,
+            "http-reuse": "never",
+            "http-reuse_val": "0",
+            "reuse-conn-total-time": 100,
+            "reuse-conn-idle-time": 10,
+            "reuse-conn-max-request": 100,
+            "reuse-conn-max-count": 100,
+            "adfs-server-name": "",
+            "sz_pserver-list": 0
+        }
+    ]
+}
