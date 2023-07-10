@@ -818,7 +818,7 @@ def test_add_user_to_misp(mocker):
             'force_logout': False,
             'date_created': '1111111111',
             'date_modified': '1111111111'
-        } 
+        }
     }
     mocker.patch('MISPV3.PYMISP.add_user', return_value=mock_response)
     demisto_args = {
