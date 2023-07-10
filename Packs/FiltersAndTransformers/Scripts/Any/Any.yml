@@ -9,9 +9,8 @@ tags:
 - filter
 - general
 comment: |-
-  returns a list of all strings from the left side that are contain any of the given strings in the left side,
-  including as a substring.
-  e.g -Any left=["a","b"] right=["a","c","all"] will return ["a","all"].
+  returns a list of all strings from the left side that are contain any of the given strings in the right side, including as a substring. Note: This filter is not case sensitive.
+  e.g -Any left=["A","b"] right=["a","c","all"] will return ["a","all"].
 enabled: true
 args:
 - name: left
