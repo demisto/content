@@ -4,7 +4,7 @@ commonfields:
 name: DBotAverageScore
 script: ''
 type: python
-comment: Calculates average DBot score for each indicator in the context
+comment: The script calculates the average DBot score for each indicator in the context.
 tags:
 - Utility
 outputs:
