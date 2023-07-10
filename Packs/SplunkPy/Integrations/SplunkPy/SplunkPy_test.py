@@ -1368,11 +1368,11 @@ def test_splunk_search_command(mocker, polling, status):
     Then:
         Ensure the result as expected in polling and in regular search.
     """
-    mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
-                                                       'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'fast_mode': 'false', 'polling': polling})
+    mock_args = {'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
+                 'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
+                                                       'fast_mode': 'false', 'polling': polling}
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    search_result = splunk.splunk_search_command(Service(status))
+    search_result = splunk.splunk_search_command(Service(status), mock_args)
 
     if search_result.scheduled_command:
         assert search_result.outputs['Status'] == status
@@ -1404,7 +1404,7 @@ def test_module_test(mocker, credentials):
     service = client.Service(**credentials)
     # run
 
-    splunk.test_module(service)
+    splunk.test_module(service, {})
 
     # validate
     assert service.info.call_count == 1
@@ -1437,7 +1437,7 @@ def test_module__exception_raised(mocker, credentials):
     service = client.Service(**credentials)
 
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {})
 
     # validate
     assert return_error_mock.call_args[0][0] == 'Authentication error, please validate your credentials.'
@@ -1455,7 +1455,6 @@ def test_module_hec_url(mocker):
         - Validate that the request.get was called with the expected args
     """
     # prepare
-    mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
     mocker.patch.object(requests, 'get')
@@ -1463,7 +1462,7 @@ def test_module_hec_url(mocker):
     service = client.Service(username='test', password='test')
 
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {'hec_url': 'test_hec_url'})
 
     # validate
     assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
@@ -1482,12 +1481,11 @@ def test_module_message_object(mocker):
     """
     from splunklib import results
     # prepare
-    mocker.patch.object(demisto, 'params', return_value={'isFetch': True, 'fetchQuery': 'something'})
     message = results.Message("DEBUG", "There's something in that variable...")
     mocker.patch('splunklib.results.ResultsReader', return_value=[message])
     service = mocker.patch('splunklib.client.connect', return_value=None)
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {'isFetch': True, 'fetchQuery': 'something'})
 
     # validate
     assert service.info.call_count == 1
@@ -1562,10 +1560,9 @@ def test_empty_string_as_app_param_value(mocker):
     """
     # prepare
     mock_params = {'app': '', 'host': '111', 'port': '111'}
-    mocker.patch('demistomock.params', return_value=mock_params)
 
     # run
-    connection_args = splunk.get_connection_args()
+    connection_args = splunk.get_connection_args(mock_params)
 
     # validate
     assert connection_args.get('app') == '-'

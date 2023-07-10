@@ -271,10 +271,10 @@ def enforce_look_behind_time(last_run_time, now, look_behind_time):
 
 
 def get_fetch_start_times(dem_params, service, last_run_earliest_time, occurence_time_look_behind):
-    current_time_for_fetch = datetime.utcnow()
+    current_time_for_fetch = datetime.now(timezone.utc)
     if demisto.get(dem_params, 'timezone'):
-        timezone = dem_params['timezone']
-        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+        timezone_ = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
     if demisto.get(dem_params, 'useSplunkTime'):
@@ -542,14 +542,17 @@ class Notable:
             rule_title = notable_data['rule_title']
         if demisto.get(notable_data, 'rule_name'):
             rule_name = notable_data['rule_name']
-        incident = {"name": f"{rule_title} : {rule_name}"}
+        incident: dict[str, Any] = {"name": f"{rule_title} : {rule_name}"}
         if demisto.get(notable_data, 'urgency'):
             incident["severity"] = severity_to_level(notable_data['urgency'])
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
-        if demisto.get(notable_data, "owner") and mapper.should_map:
-            if owner := mapper.get_xsoar_user_by_splunk(notable_data["owner"]):
-                incident["owner"] = owner
+        if (
+            demisto.get(notable_data, "owner")
+            and mapper.should_map
+            and (owner := mapper.get_xsoar_user_by_splunk(notable_data["owner"]))
+        ):
+            incident["owner"] = owner
 
         incident["occurred"] = occurred
         notable_data = parse_notable(notable_data)
@@ -559,7 +562,7 @@ class Notable:
         })
         incident["rawJSON"] = json.dumps(notable_data)
 
-        labels: list = []
+        labels = []
         if demisto.get(params, 'parseNotableEventsRaw') and params['parseNotableEventsRaw']:
             rawDict = rawToDict(notable_data['_raw'])
             for rawKey in rawDict:
@@ -582,7 +585,7 @@ class Notable:
 
         return self.create_incident(self.data, self.occurred, mapper=mapper)
 
-    def submitted(self):
+    def submitted(self) -> bool:
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
             self.enrichments) == len(ENABLED_ENRICHMENTS)
@@ -647,7 +650,7 @@ class Notable:
 
         Returns (bool): True if the enrichment process exceeded the given timeout, False otherwise
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         exceeding_timeout = False
 
         for enrichment in self.enrichments:
@@ -823,7 +826,7 @@ def build_drilldown_search(notable_data, search, raw_dict):
 
     Returns (str): A searchable drilldown search query
     """
-    searchable_search = []
+    searchable_search: list = []
     start = 0
 
     for match in re.finditer(DRILLDOWN_REGEX, search):
@@ -967,7 +970,11 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
         fields=["src", "dest", "src_ip", "dst_ip"],
     ):
         kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
-        query = f'| inputlookup append=T asset_lookup_by_str where {assets} | inputlookup append=t asset_lookup_by_cidr where {assets} | rename _key as asset_id | stats values(*) as * by asset_id'
+        query = f'| inputlookup append=T asset_lookup_by_str where {assets} \
+                | inputlookup append=t asset_lookup_by_cidr where {assets} \
+                | rename _key as asset_id \
+                | stats values(*) as * by asset_id'
+
         demisto.debug(f"Asset query for notable {notable_data[EVENT_ID]}: {query}")
         try:
             job = service.jobs.create(query, **kwargs)
@@ -995,7 +1002,7 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object: 
     demisto.debug(f"Trying to handle {len(notables[:MAX_HANDLE_NOTABLES])}/{total} open enrichments")
 
     for notable in notables[:MAX_HANDLE_NOTABLES]:
-        if task_status := handle_submitted_notable(
+        if handle_submitted_notable(
             service, notable, enrichment_timeout
         ):
             incidents.append(notable.to_incident(mapper))
@@ -1007,7 +1014,7 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object: 
         demisto.debug(f"Handled {len(handled_notables)}/{total} notables.")
 
 
-def handle_submitted_notable(service: client.Service, notable: Notable, enrichment_timeout: int):
+def handle_submitted_notable(service: client.Service, notable: Notable, enrichment_timeout: int) -> bool:
     """ Handles submitted notable. If enrichment process timeout has reached, creates an incident.
 
     Args:
@@ -1033,7 +1040,8 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                         enrichment.status = Enrichment.SUCCESSFUL
                 except Exception as e:
                     demisto.error(
-                        f"Caught an exception while retrieving {enrichment.type} enrichment results for notable {notable.id}: {str(e)}"
+                        f"Caught an exception while retrieving {enrichment.type}\
+                        enrichment results for notable {notable.id}: {str(e)}"
                     )
                     enrichment.status = Enrichment.FAILED
 
@@ -1046,7 +1054,8 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
     else:
         task_status = True
         demisto.debug(
-            f"Open enrichment {notable.id} has exceeded the enrichment timeout of {enrichment_timeout}. Submitting the notable without the enrichment."
+            f"Open enrichment {notable.id} has exceeded the enrichment timeout of {enrichment_timeout}.\
+            Submitting the notable without the enrichment."
         )
 
     return task_status
@@ -1068,7 +1077,7 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
         demisto.debug(f'Enriching {len(notables[:MAX_SUBMIT_NOTABLES])}/{total} fetched notables')
 
     for notable in notables[:MAX_SUBMIT_NOTABLES]:
-        if task_status := submit_notable(
+        if submit_notable(
             service, notable, num_enrichment_events
         ):
             cache_object.submitted_notables.append(notable)
@@ -1086,7 +1095,9 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
 
     if failed_notables:
         demisto.debug(
-            f'The following {len(failed_notables)} notables failed the enrichment process: {[notable.id for notable in failed_notables]}, creating incidents without enrichment.'
+            f'The following {len(failed_notables)} notables failed the enrichment process: \
+            {[notable.id for notable in failed_notables]}, \
+            creating incidents without enrichment.'
         )
 
 
@@ -1210,9 +1221,11 @@ def get_last_update_in_splunk_time(last_update):
 
     try:
         splunk_timezone = int(params['timezone'])
-    except (KeyError, ValueError, TypeError):
-        raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
-                        'timezone of the Splunk server being used in the integration configuration.')
+    except (KeyError, ValueError, TypeError) as e:
+        raise Exception(
+            'Cannot mirror incidents when timezone is not configured. Please enter the '
+            'timezone of the Splunk server being used in the integration configuration.'
+        ) from e
 
     dt = last_update_utc_datetime + timedelta(minutes=splunk_timezone)
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
@@ -1238,7 +1251,12 @@ def get_remote_data_command(service: client.Service, args: dict,
     remote_args = GetRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
     notable_id = remote_args.remote_incident_id
-    search = f'|`incident_review` | eval last_modified_timestamp=_time | where rule_id="{notable_id}" | where last_modified_timestamp>{last_update_splunk_timestamp} | fields - time | map search=" search `notable_by_id($rule_id$)`"'
+    search = f'|`incident_review` | eval last_modified_timestamp=_time \
+                | where rule_id="{notable_id}" \
+                | where last_modified_timestamp>{last_update_splunk_timestamp} \
+                | fields - time \
+                | map search=" search `notable_by_id($rule_id$)`"'
+
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
@@ -1286,7 +1304,12 @@ def get_modified_remote_data_command(service: client.Service, args):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
 
-    search = f'|`incident_review` | eval last_modified_timestamp=_time | where last_modified_timestamp>{last_update_splunk_timestamp} | fields rule_id | dedup rule_id'
+    search = f'|`incident_review` \
+                | eval last_modified_timestamp=_time \
+                | where last_modified_timestamp>{last_update_splunk_timestamp} \
+                | fields rule_id \
+                | dedup rule_id'
+
     demisto.debug(f'Performing get-modified-remote-data command with query: {search}')
     modified_notable_ids = [
         item['rule_id']
@@ -1319,7 +1342,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
         demisto.debug(
             f'Got the following delta keys {list(delta.keys())} to update incident corresponding to notable {notable_id}'
         )
-        changed_data = {field: None for field in OUTGOING_MIRRORED_FIELDS}
+        changed_data: dict[str, Any] = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
             if field == 'owner':
                 new_owner = mapper.get_splunk_user_by_xsoar(delta["owner"]) if mapper.should_map else None
@@ -1331,7 +1354,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
         # Close notable if relevant
         if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
             demisto.debug(f'Closing notable {notable_id}')
-            changed_data['status'] = '5'  # type: ignore
+            changed_data['status'] = '5'
 
         if any(changed_data.values()):
             demisto.debug(f'Sending update request to Splunk for notable {notable_id}, data: {changed_data}')
@@ -1384,18 +1407,17 @@ def create_mapping_dict(total_parsed_results, type_field):
     return types_map
 
 
-def get_mapping_fields_command(service: client.Service, mapper):
+def get_mapping_fields_command(service: client.Service, mapper, dem_params: dict):
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
-    dem_params = demisto.params()
     type_field = dem_params.get('type_field', 'source')
     total_parsed_results = []
     search_offset = demisto.getLastRun().get('offset', 0)
 
-    current_time_for_fetch = datetime.utcnow()
+    current_time_for_fetch = datetime.now(timezone.utc)
     if demisto.get(dem_params, 'timezone'):
-        timezone = dem_params['timezone']
-        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+        timezone_ = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
     if demisto.get(dem_params, 'useSplunkTime'):
@@ -1624,7 +1646,7 @@ class ResponseReaderWrapper(io.RawIOBase):
 
 
 def get_current_splunk_time(splunk_service: client.Service):
-    t = datetime.utcnow() - timedelta(days=3)
+    t = datetime.now(timezone.utc) - timedelta(days=3)
     time = t.strftime(SPLUNK_TIME_FORMAT)
     kwargs_oneshot = {'count': 1, 'earliest_time': time}
     searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S")' \
@@ -1837,17 +1859,18 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
     return mod_notables.json()
 
 
-def severity_to_level(severity):
-    if severity == 'informational':
-        return 0.5
-    elif severity == 'critical':
-        return 4
-    elif severity == 'high':
-        return 3
-    elif severity == 'medium':
-        return 2
-    else:
-        return 1
+def severity_to_level(severity: str | None) -> int | float:
+    match severity:
+        case'informational':
+            return 0.5
+        case 'critical':
+            return 4
+        case 'high':
+            return 3
+        case 'medium':
+            return 2
+        case _:
+            return 1
 
 
 def parse_notable(notable, to_dict=False):
@@ -1961,15 +1984,18 @@ def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
             headers = "results"
         else:
             query = args.get('query', '')
-            table_args = re.findall(r' {} (?P<{}>[^|]*)'.format('table', 'table'), query)
-            rename_args = re.findall(r' {} (?P<{}>[^|]*)'.format('rename', 'rename'), query)
+            table_args = re.findall(' table (?P<table>[^|]*)', query)
+            rename_args = re.findall(' rename (?P<rename>[^|]*)', query)
 
-            chosen_fields = []
+            chosen_fields: list = []
             for arg_string in table_args:
-                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', arg_string):
-                    if field:
-                        chosen_fields.append(field.strip('"'))
-
+                chosen_fields.extend(
+                    field.strip('"')
+                    for field in re.findall(
+                        r'((?:".*?")|(?:[^\s,]+))', arg_string
+                    )
+                    if field
+                )
             rename_dict = {}
             for arg_string in rename_args:
                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', arg_string):
@@ -2069,8 +2095,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     batch_size = int(args.get("batch_limit", 25000))
 
     results_offset = 0
-    total_parsed_results = []  # type: List[Dict[str,Any]]
-    dbot_scores = []  # type: List[Dict[str,Any]]
+    total_parsed_results: list[dict[str, Any]] = []
+    dbot_scores: list[dict[str, Any]] = []
 
     while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
@@ -2187,7 +2213,7 @@ def splunk_submit_event_command(service: client.Service, args: dict):
 
 
 def splunk_submit_event_hec(
-    hec_token: str,
+    hec_token: str | None,
     baseurl: str,
     event: str | None,
     fields: str | None,
@@ -2328,7 +2354,7 @@ def test_module(service: client.Service, params: dict) -> None:
         kwargs = {'count': 1, 'earliest_time': time}
         query = params['fetchQuery']
         try:
-            if MIRROR_DIRECTION.get(params.get('mirror_direction')) and not params.get('timezone'):
+            if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
             for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
@@ -2337,7 +2363,7 @@ def test_module(service: client.Service, params: dict) -> None:
                     continue
 
                 if EVENT_ID not in item:
-                    if MIRROR_DIRECTION.get(params.get('mirror_direction')):
+                    if MIRROR_DIRECTION.get(params.get('mirror_direction', '')):
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
                     if ENABLED_ENRICHMENTS:
                         return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
@@ -2353,7 +2379,7 @@ def test_module(service: client.Service, params: dict) -> None:
             'Content-Type': 'application/json'
         }
         try:
-            requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
+            requests.get(params.get('hec_url', '') + '/services/collector/health', headers=headers,
                          verify=VERIFY_CERTIFICATE)
         except Exception as e:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
@@ -2674,7 +2700,7 @@ def main():  # pragma: no cover
         if argToBoolean(params.get('use_cim', False)):
             get_cim_mapping_field_command()
         else:
-            get_mapping_fields_command(service, mapper)
+            get_mapping_fields_command(service, mapper, params)
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
         get_remote_data_command(service=service, args=args,
