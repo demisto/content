@@ -3,7 +3,9 @@
 This pack includes XSIAM content.
 
 ​
-Note: The logs will be stored in the dataset named *microsoft_adfs_raw*.
+Notes: 
+1. The logs will be stored in the dataset named *microsoft_adfs_raw*.
+2. The default content provided in this pack (including Winlogbeat templates) should be used as is.  We cannot support any changes made to this content.
 
 ## Configuration on Server Side
 ​
