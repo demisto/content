@@ -1,7 +1,5 @@
 name: update-demisto-sdk-version
-
 on: workflow_dispatch
-
 permissions:
   pull-requests: write
 
@@ -27,15 +25,20 @@ jobs:
     - name: Update dependencies
       run: poetry add --group dev demisto-sdk@latest
 
-    - name: Create branch
+#    - name: Create branch
+#      run: |
+#        git config user.name "Automated"
+#        git config user.email "actions@users.noreply.github.com"
+#        git checkout -b demisto-sdk-release
+#        git commit -m "poetry files" -a
+#        git push origin demisto-sdk-release
+#        gh pr create --title "SDK release" --body "SDK release"
 
-      with:
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: create pull request
       run: |
-        git config user.name "Automated"
-        git config user.email "actions@users.noreply.github.com"
         git checkout -b demisto-sdk-release
         git commit -m "poetry files" -a
         git push origin demisto-sdk-release
-        gh pr create --title "SDK release" --body "SDK release"
+        gh pr create -B demisto-sdk-release -H master --title 'demisto-sdk-release' --body 'demisto-sdk-release'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
