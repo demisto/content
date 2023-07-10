@@ -2160,4 +2160,4 @@ class TestJiraFetchIncidents:
                 attachment_tag_to_jira='attachment_tag_to_jira',
                 attachment_tag_from_jira='attachment_tag_from_jira'
             )
-        assert 'The fetch query configured returned no results, therefore, could not start fetching' in str(e)
+        assert 'The fetch query configured returned no Jira issues, please update it' in str(e)
