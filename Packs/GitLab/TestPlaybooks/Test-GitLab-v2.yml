@@ -1884,9 +1884,9 @@ tasks:
       body:
         simple: changeed
       issue_iid:
-        simple: ${GitLab.Issue.iid}
+        simple: ${GitLab.Issue.[0].iid}
       note_id:
-        simple: ${GitLab.IssueNote.id}
+        simple: ${GitLab.IssueNote.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
