@@ -3,12 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import urllib3
+import requests
 import traceback
 from typing import Dict, Optional, List, Any, Callable, Collection
 
 # Disable insecure warnings
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 # Integration information

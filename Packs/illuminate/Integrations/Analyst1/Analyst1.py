@@ -163,10 +163,10 @@ class Client(BaseClient):
                 # rb for read binary is default
                 evidence_to_submit = {'evidenceFile': (fileName, evidenceOpened.read())}
             except ValueError as vale:
-                return_error('Possibly invalid File.EntryID provided to submission: ' + fileEntryId, error=vale)
+                raise DemistoException('Possibly invalid File.EntryID provided to submission: ' + fileEntryId, vale)
 
         if evidence_to_submit is None:
-            return_error("either fileContent, fileEntryId, or warRoomFileId must be specified")
+            raise DemistoException("either fileContent, fileEntryId, or warRoomFileId must be specified to submit Evidence")
 
         x = requests.post(self._base_url + 'evidence', files=evidence_to_submit, data=data_to_submit, auth=self._auth)
         if x is not None and x.status_code == 200:
