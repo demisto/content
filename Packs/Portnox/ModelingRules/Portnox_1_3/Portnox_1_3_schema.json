@@ -1,6 +1,9 @@
 {
   "salesforce_audit_raw": {
-      "act": {
+      "_raw_log": {
+          "type": "string",
+          "is_array": false
+      },"act": {
           "type": "string",
           "is_array": false
       },"cn1": {
