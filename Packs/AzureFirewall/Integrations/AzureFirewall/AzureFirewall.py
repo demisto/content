@@ -1834,7 +1834,7 @@ def validate_network_rule_properties(source_type: str, destination_type: str, pr
 
 def create_firewall_network_rule_object(rule_name: str, description: str, protocol: list, source_type: str,
                                         destination_type: str, destinations: list, destination_port: list,
-                                        ip_source_address: list = None, source_ip_group_ids: list = None,
+                                        ip_source_address: list | None = None, source_ip_group_ids: list | None = None,
                                         is_firewall_rule: bool = False) -> dict:
     """
     Generate network rule object for firewall resource.
@@ -1845,7 +1845,7 @@ def create_firewall_network_rule_object(rule_name: str, description: str, protoc
         source_type (str): Rule source type.
         destination_type (str): Rule destination type.
         destinations (list): Destinations of the rule.
-        destination_port (list): Destination ports םכ איק רוךקץ
+        destination_port (list): Destination ports
         ip_source_address (list): Source IP addresses of the rule.
         source_ip_group_ids (list): Source IP group IDs of the rule.
         is_firewall_rule (bool): Indicates if the rule belongs to firewall or policy.
@@ -1862,9 +1862,9 @@ def create_firewall_network_rule_object(rule_name: str, description: str, protoc
     }
 
     if source_type == 'ip_address':
-        rule_object["sourceAddresses"] = ip_source_address
+        rule_object["sourceAddresses"] = ip_source_address  # type: ignore[assignment]
     else:  # source_type == 'ip_group'
-        rule_object["sourceIpGroups"] = source_ip_group_ids
+        rule_object["sourceIpGroups"] = source_ip_group_ids  # type: ignore[assignment]
 
     destination_path = {"ip_address": "destinationAddresses", "ip_group": "destinationIpGroups",
                         "service_tag": "destinationAddresses", "fqdn": "destinationFqdns"}

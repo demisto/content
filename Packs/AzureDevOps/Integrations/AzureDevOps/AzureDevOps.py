@@ -931,9 +931,9 @@ def repository_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     outputs = []
 
-    if response.get('count') and isinstance(response.get('count'), int) and response.get('count') >= start:
-        min_index = min(response.get('count'), end)
-        for repo in response.get('value')[start:min_index]:
+    if (response_count := response.get('count') and isinstance(response.get('count'), int)) and response_count >= start:
+        min_index = min(response_count, end)
+        for repo in response.get('value', [])[start:min_index]:
             outputs.append(repo)
 
     readable_data = copy.deepcopy(outputs)
@@ -1093,9 +1093,9 @@ def pipeline_run_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.pipeline_run_list_request(project, pipeline_id)
 
     outputs = []
-    if response.get('count') and isinstance(response.get('count'), int) and response.get('count') >= start:
-        min_index = min(response.get('count'), end)
-        for run in response.get('value')[start:min_index]:
+    if (response_count := response.get('count') and isinstance(response.get('count'), int)) and response_count >= start:
+        min_index = min(response_count, end)
+        for run in response.get('value', [])[start:min_index]:
             data = generate_pipeline_run_output(run, project)
             outputs.append(data)
 
@@ -1367,7 +1367,7 @@ def parse_incident(pull_request: dict, integration_instance: str) -> dict:
     return incident
 
 
-def count_active_pull_requests(project: str, repository: str, client: Client, first_fetch: datetime | None = None) -> int:
+def count_active_pull_requests(project: str, repository: str, client: Client, first_fetch: str | datetime | None = None) -> int:
     """
     Count the number of active pull-requests in the repository.
     Args:
@@ -1387,22 +1387,25 @@ def count_active_pull_requests(project: str, repository: str, client: Client, fi
     while max_iterations > 0:
         max_iterations -= 1
         response = client.pull_requests_list_request(project, repository, skip=count, limit=limit)
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
         if first_fetch:
-            last_pr_date = arg_to_datetime(
-                response.get("value")[response.get("count") - 1].get('creationDate').replace('Z', ''))
-            if last_pr_date < first_fetch:  # If the oldest pr in the result is older than 'first_fetch' argument.
-                for pr in response.get("value"):
-                    if arg_to_datetime(pr.get('creationDate', '').replace('Z', '')) > first_fetch:
+            last_pr_date_str = response.get("value", [])[response.get("count", 0) - 1].get('creationDate').replace('Z', '')
+            last_pr_date = arg_to_datetime(last_pr_date_str) if last_pr_date_str else None
+            if last_pr_date is not None and isinstance(first_fetch, datetime) and last_pr_date < first_fetch:
+                # If the oldest pr in the result is older than 'first_fetch' argument.
+                for pr in response.get("value", []):
+                    creation_date_str = pr.get('creationDate', '').replace('Z', '')
+                    creation_date = arg_to_datetime(creation_date_str) if creation_date_str else None
+                    if creation_date is not None and isinstance(first_fetch, datetime) and creation_date > first_fetch:
                         count += 1
                     else:  # Stop counting
                         max_iterations = -1
                         break
             else:
-                count += response.get("count")
+                count += response.get("count", 0)
         else:
-            count += response.get("count")
+            count += response.get("count", 0)
 
     return count
 
@@ -1427,16 +1430,16 @@ def get_last_fetch_incident_index(project: str, repository: str, client: Client,
 
     while max_iterations > 0:
         response = client.pull_requests_list_request(project, repository, skip=count, limit=limit)
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
 
-        pr_ids = [pr.get('pullRequestId') for pr in response.get('value')]
+        pr_ids = [pr.get('pullRequestId') for pr in response.get('value', [])]
         if last_id in pr_ids:
             return pr_ids.index(last_id) + count
         else:
             if max(pr_ids) < last_id:
                 break
-            count += response.get("count")
+            count += response.get("count", 0)
             max_iterations -= 1
 
     return -1
@@ -1464,10 +1467,10 @@ def get_closest_index(project: str, repository: str, client: Client, last_id: in
     while max_iterations > 0:
         response = client.pull_requests_list_request(project, repository, skip=count, limit=limit)
 
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
 
-        pr_ids = [pr.get('pullRequestId') for pr in response.get('value')]
+        pr_ids = [pr.get('pullRequestId') for pr in response.get('value', [])]
         min_id = min(pr_ids)
         max_id = max(pr_ids)
 
@@ -1483,10 +1486,10 @@ def get_closest_index(project: str, repository: str, client: Client, last_id: in
         elif max_id < last_id:  # The closest index is in the previous page.
             return count - 1
         else:
-            count += response.get("count")
+            count += response.get("count", 0)
             max_iterations -= 1
 
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
 
     return -1
@@ -1507,7 +1510,7 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
     """
     response = client.pull_requests_list_request(project, repository, skip=0, limit=1)
     num_prs = response.get("count", 0)
-    last_pr_id = response.get('value')[0].get('pullRequestId', 0) if len(response.get('value')) > 0 else None
+    last_pr_id = response.get('value', [])[0].get('pullRequestId', 0) if len(response.get('value', [])) > 0 else None
     if num_prs == 0 or last_pr_id <= last_id:
         demisto.debug(f'Number of PRs is: {num_prs}. Last fetched PR id: {last_pr_id}')
         return False
@@ -1516,7 +1519,7 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
 
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
-                    first_fetch: str | None = None) -> None:
+                    first_fetch: str | None | datetime = None) -> None:
     """
     Fetch new active pull-requests from repository.
     Args:

@@ -133,7 +133,7 @@ class Client:
 
     def risk_detections_list_request(self, risk_state: str | None, risk_level: str | None,
                                      detected_date_time_before: str | None, detected_date_time_after: str | None,
-                                     limit: int, order_by: str, skip_token: str = '') -> dict:
+                                     limit: int, order_by: str, skip_token: str | None = None) -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
 
@@ -237,7 +237,7 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
-    skip_token = None
+    skip_token: CommandResults | str = ''
 
     if page > 1:
         offset = limit * (page - 1)
@@ -251,13 +251,13 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
                                     outputs_key_field='id',
                                     readable_output=f'Risky Users List\nCurrent page size: {limit}\n'
                                                     f'Showing page {page} out others that may exist')
-        if type(skip_token) != str:
+        if isinstance(skip_token, CommandResults):
             return skip_token
 
     raw_response = client.risky_users_list_request(risk_state,
                                                    risk_level,
                                                    limit,
-                                                   skip_token)
+                                                   skip_token)  # type: ignore[arg-type]
 
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
@@ -331,7 +331,7 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
     detected_date_time_before = args.get('detected_date_time_before', '')
     detected_date_time_after = args.get('detected_date_time_after', '')
     order_by = args.get('order_by', 'detectedDateTime desc')
-    skip_token = None
+    skip_token: CommandResults | str = ''
 
     if page > 1:
         offset = limit * (page - 1)
@@ -348,7 +348,7 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
                                     outputs_key_field='id',
                                     readable_output=f'Risk Detections List\nCurrent page size: '
                                     f'{limit}\nShowing page {page} out others that may exist')
-        if type(skip_token) != str:
+        if isinstance(skip_token, CommandResults):
             return skip_token
 
     raw_response = client.risk_detections_list_request(risk_state,
@@ -357,7 +357,7 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
                                                        detected_date_time_after,
                                                        limit,
                                                        order_by,
-                                                       skip_token)
+                                                       skip_token)  # type: ignore[arg-type]
 
     table_headers = ['id', 'userId', 'userDisplayName', 'userPrincipalName', 'riskDetail',
                      'riskEventType', 'riskLevel', 'riskState', 'riskDetail', 'lastUpdatedDateTime',
