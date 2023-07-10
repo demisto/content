@@ -108,7 +108,7 @@ def get_partial_response(response: str, start: str, end: str):
     """ Cut response string from start to end tokens.
     """
     if start not in response or end not in response:
-        return response
+        return None
     start_index = response.index(start) + len(start)
     end_index = response.index(end)
     result = response[start_index:end_index].strip()
@@ -187,7 +187,7 @@ def parse_raw_response(response: Union[bytes, requests.Response]) -> dict:
 def get_simple_response_from_raw(raw_response: Any) -> Union[Any, dict]:
     """
     Gets the simple response from a given JSON dict structure returned by Qualys service
-    If object is not a dict, returns the response as is.
+    If object is not a dict, returns None.
     Args:
         raw_response (Any): Raw response from Qualys service.
 
@@ -310,7 +310,7 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     demisto.debug(f'Starting to fetch activity logs events: since_datetime={since_datetime}, next_page={next_page}')
     activity_logs = client.get_user_activity_logs(since_datetime=since_datetime, max_fetch=max_fetch, next_page=next_page)
     activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV,
-                                                         END_RESPONSE_LOGS_CSV)) or []
+                                                         END_RESPONSE_LOGS_CSV) or activity_logs) or []
     footer_json = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_FOOTER_CSV,
                                                 END_RESPONSE_FOOTER_CSV)) or {}
     new_next_page = get_next_page_activity_logs(footer_json)
@@ -398,20 +398,16 @@ def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_even
 
     events, new_next_run = fetch_function(client, time_to_fetch, max_fetch, next_page)
 
-    updated_next_run = {previous_run_time_field: new_next_run.get(previous_run_time_field)}
+    updated_next_run = {previous_run_time_field: time_to_fetch}
     new_next_page = new_next_run.get(next_page_field)
 
     # if the fetch is not during the pagination (fetched without next_page)
     if not next_page:
         # update the newest event
         updated_next_run[newest_event_field] = new_next_run.get(newest_event_field)
-        # update if there is next page and this fetch is not over
-        updated_next_run[next_page_field] = new_next_page
 
-    # if the fetch is during the pagination (fetched with next_page)
-    else:
-        # update if there is next page and this fetch is not over
-        updated_next_run[next_page_field] = new_next_page
+    # update if there is next page and this fetch is not over
+    updated_next_run[next_page_field] = new_next_page
 
     if last_fetch_time := new_next_run.get(HOST_LAST_FETCH):
         updated_next_run[HOST_LAST_FETCH] = last_fetch_time
