@@ -9,19 +9,15 @@ configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
   type: 0
-  required: false
 - display: Username (Only if your cuckoo service requires HTTP auth)
   name: authentication
   type: 9
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -41,17 +37,13 @@ script:
     - name: timeout
       description: (optional)  analysis timeout (in seconds)
     - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout
-        value
+      description: (optional) enable to enforce the execution for the full timeout value
     - name: platform
-      description: (optional) - name of the platform to select the analysis machine
-        from (e.g. “windows”)
+      description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
     - name: tags
-      description: (optional) - define machine to start by tags. Platform must be
-        set to use that. Tags are comma separated
+      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
     - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis
-        machine
+      description: (optional) - enable the creation of a full memory dump of the analysis machine
     - name: options
       description: ' (optional) - options to pass to the analysis package'
     outputs:
@@ -72,17 +64,13 @@ script:
     - name: timeout
       description: (optional)  analysis timeout (in seconds)
     - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout
-        value
+      description: (optional) enable to enforce the execution for the full timeout value
     - name: platform
-      description: (optional) - name of the platform to select the analysis machine
-        from (e.g. “windows”)
+      description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
     - name: tags
-      description: (optional) - define machine to start by tags. Platform must be
-        set to use that. Tags are comma separated
+      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
     - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis
-        machine
+      description: (optional) - enable the creation of a full memory dump of the analysis machine
     - name: options
       description: ' (optional) - options to pass to the analysis package'
     outputs:
@@ -443,10 +431,8 @@ script:
       default: true
       description: ID of the task that generated the screenshot
     - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g.
-        0001, 0002)
-    description: Retrieve screenshots taken during analysis. If the screenshot number
-      argument is omitted, retrieves a zip file with all screenshots.
+      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002)
+    description: Retrieve screenshots taken during analysis. If the screenshot number argument is omitted, retrieves a zip file with all screenshots.
   - name: cuckoo-task-screenshot
     arguments:
     - name: id
@@ -454,8 +440,7 @@ script:
       default: true
       description: ID of the task that generated the screenshot
     - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g.
-        0001, 0002)
+      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002)
     outputs:
     - contextPath: File.Size
       description: Size of file
@@ -477,8 +462,7 @@ script:
       description: File's MD5
     - contextPath: File.Extension
       description: File's Extension
-    description: Retrieve screenshots taken during analysis. If the screenshot number
-      argument is omitted, retrieves a zip file with all screenshots.
+    description: Retrieve screenshots taken during analysis. If the screenshot number argument is omitted, retrieves a zip file with all screenshots.
   - name: ck-machines-list
     deprecated: true
     arguments: []
@@ -511,8 +495,7 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns a list with details on the analysis machines available to
-      Cuckoo.
+    description: Returns a list with details on the analysis machines available to Cuckoo.
   - name: cuckoo-machines-list
     arguments: []
     outputs:
@@ -544,8 +527,7 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns a list with details on the analysis machines available to
-      Cuckoo.
+    description: Returns a list with details on the analysis machines available to Cuckoo.
   - name: ck-machine-view
     deprecated: true
     arguments:
@@ -581,8 +563,7 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns details on the analysis machine associated with the given
-      name.
+    description: Returns details on the analysis machine associated with the given name.
   - name: cuckoo-machine-view
     arguments:
     - name: name
@@ -617,8 +598,7 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns details on the analysis machine associated with the given
-      name.
+    description: Returns details on the analysis machine associated with the given name.
   runonce: false
 fromversion: 5.0.0
 tests:

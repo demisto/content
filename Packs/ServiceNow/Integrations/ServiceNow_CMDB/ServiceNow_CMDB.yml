@@ -14,15 +14,12 @@ configuration:
 - additionalinfo: Check this box to use OAuth 2.0 authentication. See (?) for more information.
   display: Use OAuth Login
   name: use_oauth
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: ServiceNow CMDB is a service‑centric foundation that proactively analyzes service‑impacting changes, identifies issues, and eliminates outages.
 display: ServiceNow CMDB
@@ -30,35 +27,18 @@ name: ServiceNow CMDB
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the class to query.
-      isArray: false
+    - description: The name of the class to query.
       name: class
       required: true
-      secret: false
-    - default: false
-      description: An encoded query string used to filter the results. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/paris-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html.
-      isArray: false
+    - description: An encoded query string used to filter the results. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/paris-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html.
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of results returned per page (default: 50).'
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The number of records to exclude from the query (default: 0).'
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Query records for a CMDB class.
-    execution: false
     name: servicenow-cmdb-records-list
     outputs:
     - contextPath: ServiceNowCMDB.Class
@@ -68,41 +48,21 @@ script:
       description: A list of all the records that were found in the CMDB table.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the class to query.
-      isArray: false
+    - description: The name of the class to query.
       name: class
       required: true
-      secret: false
-    - default: false
-      description: The ID of the record that should be queried.
-      isArray: false
+    - description: The ID of the record that should be queried.
       name: sys_id
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of the fields to return for the queried record.
-      isArray: false
+    - description: A comma-separated list of the fields to return for the queried record.
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
-      isArray: false
       name: relation_limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The number of records to exclude from the relations query (default: 0).'
-      isArray: false
       name: relation_offset
-      required: false
-      secret: false
-    deprecated: false
     description: Query attributes and relationship information for a specific record.
-    execution: false
     name: servicenow-cmdb-record-get-by-id
     outputs:
     - contextPath: ServiceNowCMDB.Record.SysID
@@ -121,60 +81,30 @@ script:
       description: A list of all the inbound relations of the queried record.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the class to add the record to.
-      isArray: false
+    - description: The name of the class to add the record to.
       name: class
       required: true
-      secret: false
-    - default: false
-      defaultValue: ServiceNow
+    - defaultValue: ServiceNow
       description: 'The discovery source value. You can see all available values from the sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
-      isArray: false
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of attributes that should be added to the created record. Input format: attribute=value pairs, e.g., "name=test, ram=1024".'
-      isArray: false
+    - description: 'A comma-separated list of attributes that should be added to the created record. Input format: attribute=value pairs, e.g., "name=test, ram=1024".'
       name: attributes
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
+    - description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
       isArray: true
       name: inbound_relations
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an outbound relation that should be added to the created record.
+    - description: A comma-separated list of dictionaries. Each dictionary represents an outbound relation that should be added to the created record.
       isArray: true
       name: outbound_relations
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of fields to return for the created record.
-      isArray: false
+    - description: A comma-separated list of fields to return for the created record.
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
-      isArray: false
       name: relation_limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The number of records to exclude from the relations query (default: 0).'
-      isArray: false
       name: relation_offset
-      required: false
-      secret: false
-    deprecated: false
     description: Create a record with associated relations and attributes.
-    execution: false
     name: servicenow-cmdb-record-create
     outputs:
     - contextPath: ServiceNowCMDB.Record.SysID
@@ -193,54 +123,27 @@ script:
       description: A list of all the inbound relations of the created record.
       type: Unknown
   - arguments:
-    - default: false
-      description: The class name of the record that should be updated.
-      isArray: false
+    - description: The class name of the record that should be updated.
       name: class
       required: true
-      secret: false
-    - default: false
-      description: The ID of the record that should be updated.
-      isArray: false
+    - description: The ID of the record that should be updated.
       name: sys_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: ServiceNow
+    - defaultValue: ServiceNow
       description: 'The discovery source value. You can see all available values from sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
-      isArray: false
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of the attributes that should be updated in the record. Input format: attribute=value pairs, e.g., "name=test,ram=1024".'
-      isArray: false
+    - description: 'A comma-separated list of the attributes that should be updated in the record. Input format: attribute=value pairs, e.g., "name=test,ram=1024".'
       name: attributes
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of the fields to return for the updated record.
-      isArray: false
+    - description: A comma-separated list of the fields to return for the updated record.
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
-      isArray: false
       name: relation_limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The number of records to exclude from the relations query (default: 0).'
-      isArray: false
       name: relation_offset
-      required: false
-      secret: false
-    deprecated: false
     description: Update a record with the given attributes.
-    execution: false
     name: servicenow-cmdb-record-update
     outputs:
     - contextPath: ServiceNowCMDB.Record.SysID
@@ -259,60 +162,30 @@ script:
       description: A list of all the inbound relations of the updated record.
       type: Unknown
   - arguments:
-    - default: false
-      description: The class name of the record.
-      isArray: false
+    - description: The class name of the record.
       name: class
       required: true
-      secret: false
-    - default: false
-      description: The ID of the record to which the relations should be added.
-      isArray: false
+    - description: The ID of the record to which the relations should be added.
       name: sys_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: ServiceNow
+    - defaultValue: ServiceNow
       description: 'The discovery source value. You can see all available values from sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
-      isArray: false
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
+    - description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
       isArray: true
       name: inbound_relations
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an outbound relation that should be added to the created record.
+    - description: A comma-separated list of dictionaries. Each dictionary represents an outbound relation that should be added to the created record.
       isArray: true
       name: outbound_relations
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the fields to return for the record.
-      isArray: false
+    - description: A comma-separated list of the fields to return for the record.
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
-      isArray: false
       name: relation_limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The number of records to exclude from the relations query (default: 0).'
-      isArray: false
       name: relation_offset
-      required: false
-      secret: false
-    deprecated: false
     description: Add a new relation to an existing record.
-    execution: false
     name: servicenow-cmdb-record-add-relations
     outputs:
     - contextPath: ServiceNowCMDB.Record.SysID
@@ -331,47 +204,24 @@ script:
       description: A list of all the inbound relations of the record.
       type: Unknown
   - arguments:
-    - default: false
-      description: The class name of the record.
-      isArray: false
+    - description: The class name of the record.
       name: class
       required: true
-      secret: false
-    - default: false
-      description: The ID of the record from which a relation should be deleted.
-      isArray: false
+    - description: The ID of the record from which a relation should be deleted.
       name: sys_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the relation that should be deleted.
-      isArray: false
+    - description: The ID of the relation that should be deleted.
       name: relation_sys_id
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of the fields to return for the record.
-      isArray: false
+    - description: A comma-separated list of the fields to return for the record.
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
-      isArray: false
       name: relation_limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The number of records to exclude from the relations query (default: 0).'
-      isArray: false
       name: relation_offset
-      required: false
-      secret: false
-    deprecated: false
     description: Delete a relation of an existing record.
-    execution: false
     name: servicenow-cmdb-record-delete-relations
     outputs:
     - contextPath: ServiceNowCMDB.Record.SysID
@@ -390,31 +240,19 @@ script:
       description: A list of all the inbound relations of the record.
       type: Unknown
   - arguments:
-    - default: false
-      description: The username that should be used for login.
-      isArray: false
+    - description: The username that should be used for login.
       name: username
       required: true
       secret: true
-    - default: false
-      description: The password that should be used for login.
-      isArray: false
+    - description: The password that should be used for login.
       name: password
       required: true
       secret: true
-    deprecated: false
     description: This function should be used once before running any command when using OAuth authorization.
-    execution: false
     name: servicenow-cmdb-oauth-login
-  - deprecated: false
-    description: Test the instance configuration when using OAuth authorization.
-    execution: false
+  - description: Test the instance configuration when using OAuth authorization.
     name: servicenow-cmdb-oauth-test
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

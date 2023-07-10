@@ -1,10 +1,7 @@
 args:
-- default: false
-  description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-  isArray: false
+- description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
   name: dummy
   required: true
-  secret: false
 comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
 commonfields:
   id: BaseScript
@@ -15,7 +12,6 @@ outputs:
   description: '[Enter a description of the data returned in this output.]'
   type: String
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'
