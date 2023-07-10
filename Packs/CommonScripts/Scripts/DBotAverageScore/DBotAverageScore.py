@@ -56,7 +56,12 @@ def calculate_average_score(indicator: str, scores_list: list[int]) -> dict:
 
 
 def main():   # pragma: no cover
-    dbot_score_context_data = demisto.context().get('DBotScore', [])
+    dbot_score_context_data: list | dict = demisto.context().get('DBotScore', [])
+
+    # If there is only a single DBotScore entry, the server returns it as a single dict, and not inside a list.
+    if isinstance(dbot_score_context_data, dict):
+        dbot_score_context_data = [dbot_score_context_data]
+
     return_results(calculate_all_average_scores(dbot_score_context_data))
 
 
