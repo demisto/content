@@ -1,4 +1,4 @@
-[MODEL: dataset = fireeye_hx3_raw]
+[MODEL: dataset = fireeye_hx_raw]
 // API logs
 filter cefVersion = null
 | alter
@@ -149,8 +149,7 @@ filter cefVersion != null
         xdm.source.process.name = Process_Name,
         xdm.source.process.executable.md5 = MD5_hash,
         xdm.source.host.os_family = if(Target_OS contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, Target_OS contains "mac", XDM_CONST.OS_FAMILY_MACOS, Target_OS contains "linux", XDM_CONST.OS_FAMILY_LINUX, Target_OS contains "android", XDM_CONST.OS_FAMILY_ANDROID, Target_OS contains "ios", XDM_CONST.OS_FAMILY_IOS, Target_OS contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, Target_OS contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, Target_OS contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, Target_OS contains "centos", XDM_CONST.OS_FAMILY_CENTOS, Target_OS contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, Target_OS contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, Target_OS contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(Target_OS));
-
-[MODEL: dataset = fireeye_hx_audit3_raw]
+[MODEL: dataset = fireeye_hx_audit_raw]
 // Modeling for Action audit logs
 filter _raw_log contains "Action ID"
 // Extract fields
