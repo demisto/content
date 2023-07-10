@@ -517,7 +517,9 @@ def test_fetch_incidents(requests_mock, mocker):
         max_fetch=2,
         last_run=last_run,
         first_fetch_time=1658452708759,
-        severity=None)
+        severity=None,
+        status=[],
+        tags=[])
 
     assert len(incidents) == 2
     assert incidents[0]['name'] == "Networking Infrastructure"
