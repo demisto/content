@@ -317,7 +317,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira instance, or the first issue with respect to the given query argument if given. You can use its result as the initial id when fetching incidents by the issue id field.
+    description: Returns the ID offset, which is the ID of the first issue that was created in the current Jira instance, or the ID of the first issue with respect to the given query argument if given. You can use its result as the initial ID when fetching incidents by the issue id field.
     execution: false
     name: jira-get-id-offset
     outputs:
