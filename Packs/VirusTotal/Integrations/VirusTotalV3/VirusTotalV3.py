@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 An integration module for the Virus Total v3 API.
 API Documentation:
@@ -8,8 +10,6 @@ from typing import Callable, cast
 
 from dateparser import parse
 
-import demistomock as demisto
-from CommonServerPython import *
 
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"

@@ -19,11 +19,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -53,7 +51,7 @@ script:
       description: Server name
       type: string
     description: Retrieves server details
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
