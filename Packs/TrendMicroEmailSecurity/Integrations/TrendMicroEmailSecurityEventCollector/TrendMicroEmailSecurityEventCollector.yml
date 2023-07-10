@@ -6,7 +6,7 @@ commonfields:
   id: Trend Micro Email Security Event Collector
   version: -1
 configuration:
-- display: Server URL
+- display: Service URL
   defaultvalue: https://<serviceURL>
   name: url
   required: true
