@@ -168,7 +168,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'fetch-incidents':
             first_fetch = params.get('first_fetch')
             args = demisto.args()
-            max_fetch = int(args.get('max_fetch'))
+            max_fetch = int(args.get('max_fetch', 10))
             fetch_incidents(client, first_fetch, max_fetch)
         elif command == 'checkpointhec-get-entity':
             args = demisto.args()
