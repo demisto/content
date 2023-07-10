@@ -256,7 +256,7 @@ inputs:
 - key: OwnerNotificationBody
   value: {}
   required: true
-  description: Body of the notification (email or ticket) sent to potential service owner.
+  description: Body of the notification (email or ticket) sent to the potential service owner.
   playbookInputQuery:
 outputs: []
 tests:

@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - Remediation Guidance
+Cortex ASM - Remediation Guidance
 
 ### Integrations
 
@@ -14,11 +14,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GridFieldSetup
+GridFieldSetup
 
 ### Commands
 
-* send-mail
+send-mail
 
 ## Playbook Inputs
 

@@ -275,13 +275,13 @@ inputs:
 - key: OwnerNotificationBody
   value: {}
   required: true
-  description: Body of the notification (email or ticket) sent to potential service owner.
+  description: Body of the notification (email or ticket) sent to the potential service owner.
   playbookInputQuery:
 - key: JiraProjectKey
   value:
     simple: XPANSE
   required: true
-  description: The Jira project key to associate the issue.
+  description: The Jira project key to associate with the issue.
   playbookInputQuery:
 outputs: []
 tests:

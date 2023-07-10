@@ -14,11 +14,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GridFieldSetup
+GridFieldSetup
 
 ### Commands
 
-* jira-create-issue
+jira-create-issue
 
 ## Playbook Inputs
 
@@ -26,8 +26,8 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| OwnerNotificationBody | Body of the notification \(email or ticket\) sent to potential service owner. |  | Required |
-| JiraProjectKey | The Jira project key to associate the issue. | XPANSE | Required |
+| OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
+| JiraProjectKey | The Jira project key to associate with the issue. | XPANSE | Required |
 
 ## Playbook Outputs
 

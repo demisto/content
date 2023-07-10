@@ -1,4 +1,4 @@
-This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task.
+This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to the data collection task.
 
 ## Dependencies
 
@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - Remediation Objectives
+Cortex ASM - Remediation Objectives
 
 ### Integrations
 

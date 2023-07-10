@@ -6,19 +6,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - Remediation Guidance
+Cortex ASM - Remediation Guidance
 
 ### Integrations
 
-* ServiceNow v2
+ServiceNow v2
 
 ### Scripts
 
-* GridFieldSetup
+GridFieldSetup
 
 ### Commands
 
-* servicenow-create-ticket
+servicenow-create-ticket
 
 ## Playbook Inputs
 
@@ -26,7 +26,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| OwnerNotificationBody | Body of the notification \(email or ticket\) sent to potential service owner. |  | Required |
+| OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
 
 ## Playbook Outputs
 
