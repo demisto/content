@@ -112,6 +112,7 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
             if attempt_num == num_of_retries:
                 raise error
             else:
+                logging.debug(f'sleeping for {interval} seconds to try to re-establish gitlab connection')
                 time.sleep(interval)
     return None
 
