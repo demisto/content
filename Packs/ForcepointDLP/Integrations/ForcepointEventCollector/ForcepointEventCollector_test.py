@@ -1,10 +1,13 @@
+from datetime import datetime
+
+import dateparser
+
 import demistomock as demisto
 import pytest
 from ForcepointEventCollector import (
     arg_to_datetime,
     fetch_events_command,
     get_events_command,
-    incident_to_events,
     main,
     Client,
     DATEPARSER_SETTINGS,
@@ -24,7 +27,7 @@ def client(mocker):
             ]
         }
     mocked_client = mocker.Mock()
-    mocked_client.get_open_incident_ids.return_value = [0, 1, 3, 4]
+    mocked_client.get_incidents.return_value = [0, 1, 3, 4]
     mocked_client.get_incident.side_effect = mock_get_incident
     return mocked_client
 
@@ -168,3 +171,158 @@ def test_test_module(mocker, params, is_valid, result_msg):
     main()
     result = (demisto_result if is_valid else return_error).call_args[0][0]
     assert result_msg in result
+
+
+def generate_mocked_event(event_id):
+    return {
+            "action": "AUTHORIZED",
+            "analyzed_by": "Policy Engine test.corp.service.com",
+            "channel": "EMAIL",
+            "destination": "John.Doe@test.com",
+            "details": "SOS",
+            "detected_by": "Forcepoint Email Security on test.corp.service.com",
+            "event_id": "14070409734372476071",
+            "event_time": "21/04/2023 09:55:52",
+            "file_name": "MIME Data.txt - 337.8 KB; MIME Data.txt - 59.47 KB",
+            "id": event_id,
+            "ignored_incidents": False,
+            "incident_time": "21/04/2023 09:56:35",
+            "maximum_matches": 1,
+            "partition_index": 20210213,
+            "policies": "TTL",
+            "released_incident": False,
+            "severity": "LOW",
+            "source": {
+                "business_unit": "Excluded Resources",
+                "department": "Quality Excellence",
+                "email_address": "John.Doe@test.com",
+                "login_name": "FooBar",
+                "manager": "John Doe"
+            },
+            "status": "New",
+            "transaction_size": 423151,
+            "violation_triggers": 1
+        }
+
+
+@pytest.mark.parametrize(
+    "first_fetch, utc_now, max_fetch, last_fetch_time, api_limit, last_id, incidents_per_time, ids, scenario, "
+    "expected, expected_next_last_fetch_time",
+    [
+        (
+            dateparser.parse("01/01/2020 00:00:00"),  # first fetch
+            dateparser.parse("01/01/2020 00:01:01"),  # utc now
+            10,  # max_fetch.
+            None,  # last_fetch_time
+            10,  # max API returned limit.
+            None,  # last_id
+            {  # incidents_per_time
+                ("01/01/2020 00:00:00", "01/01/2020 00:01:00"): list(range(1, 25)),
+                ("01/01/2020 00:00:00", "01/01/2020 00:00:01"): [1, 2],
+                ("01/01/2020 00:00:01", "01/01/2020 00:00:02"): [3, 4],
+                ("01/01/2020 00:00:02", "01/01/2020 00:00:03"): [],
+                ("01/01/2020 00:00:03", "01/01/2020 00:00:04"): [5, 6],
+                ("01/01/2020 00:00:04", "01/01/2020 00:00:05"): [],
+                ("01/01/2020 00:00:05", "01/01/2020 00:00:06"): [],
+                ("01/01/2020 00:00:06", "01/01/2020 00:00:07"): [],
+                ("01/01/2020 00:00:07", "01/01/2020 00:00:08"): [],
+                ("01/01/2020 00:00:08", "01/01/2020 00:00:09"): [],
+                ("01/01/2020 00:00:09", "01/01/2020 00:00:10"): [],
+
+                ("01/01/2020 00:00:10", "01/01/2020 00:00:11"): [7],
+                ("01/01/2020 00:00:11", "01/01/2020 00:00:12"): [8],
+                ("01/01/2020 00:00:12", "01/01/2020 00:00:13"): [9],
+                ("01/01/2020 00:00:13", "01/01/2020 00:00:14"): [10],
+                ("01/01/2020 00:00:14", "01/01/2020 00:00:15"): [],
+                ("01/01/2020 00:00:15", "01/01/2020 00:00:16"): [],
+                ("01/01/2020 00:00:16", "01/01/2020 00:00:17"): [],
+                ("01/01/2020 00:00:17", "01/01/2020 00:00:18"): [],
+                ("01/01/2020 00:00:18", "01/01/2020 00:00:19"): [],
+                ("01/01/2020 00:00:19", "01/01/2020 00:00:20"): [],
+
+                ("01/01/2020 00:00:20", "01/01/2020 00:00:21"): [11, 12, 13, 14],
+                ("01/01/2020 00:00:21", "01/01/2020 00:00:22"): [],
+                ("01/01/2020 00:00:22", "01/01/2020 00:00:23"): [],
+                ("01/01/2020 00:00:23", "01/01/2020 00:00:24"): [],
+                ("01/01/2020 00:00:24", "01/01/2020 00:00:25"): [],
+                ("01/01/2020 00:00:25", "01/01/2020 00:00:26"): [15, 16, 17],
+                ("01/01/2020 00:00:26", "01/01/2020 00:00:27"): [],
+                ("01/01/2020 00:00:27", "01/01/2020 00:00:28"): [18],
+                ("01/01/2020 00:00:28", "01/01/2020 00:00:29"): [],
+                ("01/01/2020 00:00:29", "01/01/2020 00:00:30"): [],
+
+                ("01/01/2020 00:00:30", "01/01/2020 00:00:31"): [],
+                ("01/01/2020 00:00:31", "01/01/2020 00:00:32"): [],
+                ("01/01/2020 00:00:32", "01/01/2020 00:00:33"): [],
+                ("01/01/2020 00:00:33", "01/01/2020 00:00:34"): [],
+                ("01/01/2020 00:00:34", "01/01/2020 00:00:35"): [],
+                ("01/01/2020 00:00:35", "01/01/2020 00:00:36"): [],
+                ("01/01/2020 00:00:36", "01/01/2020 00:00:37"): [],
+                ("01/01/2020 00:00:37", "01/01/2020 00:00:38"): [],
+                ("01/01/2020 00:00:38", "01/01/2020 00:00:39"): [],
+                ("01/01/2020 00:00:39", "01/01/2020 00:00:40"): [],
+
+                ("01/01/2020 00:00:40", "01/01/2020 00:00:41"): [],
+                ("01/01/2020 00:00:41", "01/01/2020 00:00:42"): [],
+                ("01/01/2020 00:00:42", "01/01/2020 00:00:43"): [],
+                ("01/01/2020 00:00:43", "01/01/2020 00:00:44"): [],
+                ("01/01/2020 00:00:44", "01/01/2020 00:00:45"): [],
+                ("01/01/2020 00:00:45", "01/01/2020 00:00:46"): [],
+                ("01/01/2020 00:00:46", "01/01/2020 00:00:47"): [],
+                ("01/01/2020 00:00:47", "01/01/2020 00:00:48"): [],
+                ("01/01/2020 00:00:48", "01/01/2020 00:00:49"): [],
+                ("01/01/2020 00:00:49", "01/01/2020 00:00:50"): [],
+
+                ("01/01/2020 00:00:50", "01/01/2020 00:00:51"): [],
+                ("01/01/2020 00:00:51", "01/01/2020 00:00:52"): [],
+                ("01/01/2020 00:00:52", "01/01/2020 00:00:53"): [],
+                ("01/01/2020 00:00:53", "01/01/2020 00:00:54"): [],
+                ("01/01/2020 00:00:54", "01/01/2020 00:00:55"): [],
+                ("01/01/2020 00:00:55", "01/01/2020 00:00:56"): [],
+                ("01/01/2020 00:00:56", "01/01/2020 00:00:57"): [19],
+                ("01/01/2020 00:00:57", "01/01/2020 00:00:58"): [20],
+                ("01/01/2020 00:00:58", "01/01/2020 00:00:59"): [21, 22, 23, 24, 25],
+                ("01/01/2020 00:00:59", "01/01/2020 00:01:00"): [],
+            },
+            [  # ids
+            ],
+            "scenario",
+            list(range(1, 11)),  # expected
+            "01/01/2020 00:00:14",  # expected_next_last_fetch_time
+        ),
+    ]
+)
+def test_fetch_events(mocker, first_fetch, utc_now, max_fetch, last_fetch_time, api_limit, last_id, incidents_per_time, ids,
+                      scenario, expected, expected_next_last_fetch_time):
+
+    mocked_client = mocker.Mock()
+
+    def mock_get_incidents(from_date, to_date):
+        from_date_str = from_date.strftime("%m/%d/%Y %H:%M:%S")
+        to_date_str = to_date.strftime("%m/%d/%Y %H:%M:%S")
+        incidents = [generate_mocked_event(event_id) for event_id in incidents_per_time.get((from_date_str, to_date_str))]
+        return {
+            "incidents": incidents[:api_limit],
+            "total_count": len(incidents),
+            "total_returned": min(len(incidents), api_limit)
+        }
+    def mock_get_incident_ids(event_ids):
+        return {
+            "incidents": [generate_mocked_event(event_id) for event_id in ids]
+        }
+
+    mocked_client.get_incidents.side_effect = mock_get_incidents
+    mocked_client.get_incident_ids.side_effect = mock_get_incident_ids
+    mocked_client.api_limit = api_limit
+    mocked_client.utc_now = utc_now
+
+    events, last_id, next_last_fetch_time = fetch_events_command(
+        client=mocked_client,
+        first_fetch=first_fetch,
+        max_fetch=max_fetch,
+        last_fetch_time=last_fetch_time,
+        last_id=last_id,
+    )
+    assert list(map(lambda event: event["id"], events)) == expected, f"{scenario} event ids don't match"
+    assert last_id == expected[-1], f"{scenario} last event id don't match {last_id}"
+    assert next_last_fetch_time.strftime("%m/%d/%Y %H:%M:%S") == expected_next_last_fetch_time
