@@ -1,0 +1,50 @@
+{
+    "name": "SentryWire",
+    "description": "The SentryWire Network Security Monitoring and Full Packet Capture integration for Palo Alto Cortex is a powerful integration that combines the comprehensive packet capture and network security monitoring capabilities of SentryWire with the advanced threat detection and response capabilities of Palo Alto Cortex. This integration empowers organizations to enhance their cybersecurity posture, detect and respond to threats faster, and strengthen their overall network security defenses.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Chris Roffe, Jeremy Peters",
+    "url": "https://www.sentrywire.com/",
+    "email": "chris.roffe@sentrywire.com",
+    "created": "2023-05-01T01:01:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+      "Incident Handling",
+      "Incident Response",
+      "Network Forensics",
+      "NSM",
+      "network",
+      "security",
+      "monitoring",
+      "packet",
+      "capture",
+      "alerts"
+    ],
+    "useCases": [
+      "Incident Handling",
+      "Incident Response",
+      "Network Forensics",
+      "Threat Hunting",
+      "Packet Capture"
+    ],
+    "keywords": [
+      "Incident Handling",
+      "Incident Response",
+      "Network Forensics",
+      "NSM",
+      "network",
+      "security",
+      "monitoring",
+      "packet",
+      "capture",
+      "alerts"
+    ],
+    "dependencies": {
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

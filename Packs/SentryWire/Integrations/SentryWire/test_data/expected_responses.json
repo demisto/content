@@ -1,0 +1,79 @@
+{
+  "create_search":
+    [
+      {
+          "checkstatus": "https://1.2.3.4:41395/v3/fnsearchstatus?rest_token=12345678-90ab-cdef-ghij-klmnopqrstuv&searchname=example_account_1682540498_3_example_search&nodename=exsw1",
+          "getpcaps": "https://1.2.3.4:41395/v3/fnpcaps?rest_token=12345678-90ab-cdef-ghij-klmnopqrstuv&searchname=example_account_1682540498_3_example_search&nodename=exsw1",
+          "metadata": "https://1.2.3.4:41395/v3/fnmetadata?rest_token=12345678-90ab-cdef-ghij-klmnopqrstuv&searchname=example_account_1682540498_3_example_search&nodename=exsw1"
+      },
+      {
+          "checkstatus": "https://1.2.3.4:41395/v3/fnsearchstatus?rest_token=12345678-90ab-cdef-ghij-klmnopqrstuv&searchname=example_account_1682540498_3_example_search&nodename=exsw2",
+          "getpcaps": "https://1.2.3.4:41395/v3/fnpcaps?rest_token=12345678-90ab-cdef-ghij-klmnopqrstuv&searchname=example_account_1682540498_3_example_search&nodename=exsw2",
+          "metadata": "https://1.2.3.4:41395/v3/fnmetadata?rest_token=12345678-90ab-cdef-ghij-klmnopqrstuv&searchname=example_account_1682540498_3_example_search&nodename=exsw2"
+      }
+    ],
+  "server_status":
+  {
+    "ServerInfo": "\n{\"NodeName\":\"exvm1\",\"NodeIP\":\"127.0.0.1\",\"Upordown\":\"1\",\"Port\":\"[0:1 Gbps  1:Down  ]\",\"Status\":\"Running\",\"Duration\":\"01:07:23:00\",\"BeginTime\":\"2023-04-26 08:44:00\",\"EndTime\":\"2023-04-27 16:07:00\",\"License\":\"Evaluation\",\"TimeZone\":\"UTC\",\"PreCaptureFilter\":\"Off\",\"VirtualStorage\":\"571.59GB\",\"RealStorage\":\"455.00GB\",\"Capturedrops\":\"0\",\"BeginTimeSeconds\":\"1682498640\",\"CaptureServerTime\":\"140354336892800\",\"Throughput\":\"0.02\",\"CompressionRatio\":\"1.26\",\"ClusterCount\":\"0\",\"tcppps\":\"3977\",\"udppps\":\"167\",\"otherpps\":\"1061\",\"totalpps\":\"5205\",\"LogDataCompressionRatio\":\"1.00\",\"PercentIOWait\":\"89.00\",\"LoadAverage\":\"0.03 5.66 6.26\"}",
+    "FMNodes": "[{\"authenticationmode\":\"\",\"throughput\":\"0.02\",\"nodename\":\"exvm1\",\"node_ip\":\"1.2.3.4\",\"UserName\":\"example_account\",\"Password\":\"\",\"Token\":\"\",\"groupname\":\"EX\",\"port\":\"[0:1 Gbps  1:Down  ]\",\"status\":\"Running\",\"compressionratio\":\"1.00\",\"virtualstorage\":\"0.00\",\"realstorage\":\"0.00\",\"begintime\":\"2023-04-21 12:01:00\",\"endtime\":\"2023-04-25 16:53:00\",\"license\":\"Evaluation\",\"capturemode\":\"\",\"precapturefilter\":\"Off\",\"duration\":\"04:04:52:00\",\"timezone\":\"UTC\",\"serverinfo\":\"XXXX:XXXX:XX:XXXX:X:X.XX:XX.XX:X.XX XX.XX X.XX\",\"clusternodecount\":\"\",\"other\":\"\",\"serverip\":\"1.2.3.4\",\"percentiowait\":\"\",\"loadaverage\":\"\",\"selected\":false},{\"authenticationmode\":\"\",\"throughput\":\"\",\"nodename\":\"exvm1\",\"node_ip\":\"1.2.3.4\",\"UserName\":\"example_user\",\"Password\":\"\",\"Token\":\"\",\"groupname\":\"test\",\"port\":\"\",\"status\":\"Unknown\",\"compressionratio\":\"\",\"virtualstorage\":\"\",\"realstorage\":\"\",\"begintime\":\"\",\"endtime\":\"\",\"license\":\"Evaluation\",\"capturemode\":\"\",\"precapturefilter\":\"Off\",\"duration\":\"\",\"timezone\":\"UTC\",\"serverinfo\":\"\",\"clusternodecount\":\"\",\"other\":\"\",\"serverip\":\"1.2.3.4\",\"percentiowait\":\"\",\"loadaverage\":\"\",\"selected\":false}]",
+    "UserName": "",
+    "Role": "",
+    "Users": "",
+    "Groups": "[{\"groupname\":\"EX\",\"groupcount\":1,\"aggregate_throughput\":0,\"userslist\":\"\"},{\"groupname\":\"test\",\"groupcount\":1,\"aggregate_throughput\":0,\"userslist\":\"\"}]",
+    "AuthMode": "",
+    "Version": "X.X.X.XXX-XXX.XXXX.XXX\n",
+    "UserRoles": "",
+    "ApiVersion": "1.X"
+  },
+  "search_pending":
+  {
+    "ID":"abcdefghijklmnopqrstuvwx",
+    "SearchKey":"example_account_1682540498_3_example_searchexsw1",
+    "SearchName":"example_account_1682540498_3_example_search",
+    "SubmittedTime":"1682906845",
+    "Begintime":"2023-01-01 21:07:25",
+    "Endtime":"2023-01-02 20:07:25",
+    "SearchFilter":"http.status:200",
+    "NodeName":"exsw1",
+    "SearchStatus":"Pending",
+    "SearchType":"kqlsearch"
+  },
+  "search_completed":
+  {
+    "ID":"abcdefghijklmnopqrstuvwx",
+    "SearchKey":"example_account_1682540498_3_example_searchexsw1",
+    "MasterToken":"",
+    "SearchPorts":"",
+    "CaseName":"example_account_1682540498_3_example_search",
+    "SearchName":"sexample_account_1682540498_3_example_search",
+    "SubmittedTime":"1682358009221",
+    "Begintime":"2023-01-01 21:07:25",
+    "Endtime":"2023-01-01 20:07:25",
+    "SearchFilter":"http.status:200",
+    "MaxPacketCount":"100",
+    "SearchResult":"Pkts=100 Seconds=3 TotalSize=391KB",
+    "MaxChunk":"1",
+    "NodeName":"exsw1",
+    "SearchType":""
+  },
+  "search_cancelled":
+  {
+    "SearchKey": "example_account_1682540498_3_example_searchexsw1",
+    "MasterToken": "",
+    "SearchPorts": "",
+    "CaseName": "example_account_1682540498_3_example_search",
+    "SearchName": "example_account_1682540498_3_example_search",
+    "SubmittedTime": "1682954749",
+    "Begintime": "2023-01-01 21:07:25",
+    "Endtime": "2023-01-01 20:07:25",
+    "SearchFilter": "http.status:200",
+    "MaxPacketCount": "100",
+    "SearchResult": "Cancelled",
+    "MaxChunk": "1",
+    "NodeName": "exsw1",
+    "SearchType": ""
+  },
+  "delete_search":{
+    "message": "deleted search example_account_1675209608_43_example_search"
+  }
+}

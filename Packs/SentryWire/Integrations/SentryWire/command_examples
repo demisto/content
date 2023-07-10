@@ -1,0 +1,6 @@
+!sentrywire-get-server-status
+!sentrywire-create-search begin_time="2023-05-12 01:00:00" end_time="2023-05-12 10:00:00" search_name="example" search_filter="src_ip:8.8.8.8" max_packets=100
+!sentrywire-get-search-status NodeName=exsw1 SearchID=example_account_1683918319_2_example
+!sentrywire-get-metadata NodeName=exsw1 SearchID=example_account_1683918319_2_example
+!sentrywire-get-pcap NodeName=exsw1 SearchID=example_account_1683918319_2_example
+!sentrywire-delete-search SearchID=example_account_1683918319_2_example
