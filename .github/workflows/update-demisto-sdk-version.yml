@@ -1,5 +1,6 @@
 name: update-demisto-sdk-version
 on: workflow_dispatch
+
 permissions:
   contents: write
 
@@ -24,7 +25,9 @@ jobs:
         cache: 'poetry'
     
     - name: Update dependencies
-      run: poetry add --group dev demisto-sdk@latest
+      run: |
+        echo "The value of myArg is ${{ inputs.release_version }}"
+        poetry add --group dev demisto-sdk@latest
 
 #    - name: Create branch
 #      run: |
