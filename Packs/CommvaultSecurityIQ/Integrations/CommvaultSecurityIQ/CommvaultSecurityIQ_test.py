@@ -55,7 +55,6 @@ def test_disable_data_aging():
         base_url="https://webservice_url:81", verify=False, proxy=False
     )
     response = disable_data_aging(client)
-    print("Hi hello")
     expected_resp = {"Response":"Successfully disabled data aging on the client"}
     assert response.raw_response["Response"] == expected_resp["Response"]
 
