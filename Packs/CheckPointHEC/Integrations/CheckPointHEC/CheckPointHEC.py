@@ -54,7 +54,7 @@ class Client(BaseClient):
         )
         return self.token or ''
 
-    def _call_api(self, method: str, url_suffix: str, json_data: dict = None) -> dict[str, str]:
+    def _call_api(self, method: str, url_suffix: str, json_data: dict = None) -> dict[str, Any]:
         path = '/'.join([self.api_version, url_suffix])
         request_string = f'/{path}'
         return self._http_request(
@@ -64,7 +64,7 @@ class Client(BaseClient):
             json_data=json_data
         )
 
-    def get_scopes(self) -> dict[str, str]:
+    def get_scopes(self) -> dict[str, Any]:
         return self._call_api(
             'GET',
             url_suffix='scopes'
@@ -97,9 +97,17 @@ def test_module(client: Client):
     demisto.results('ok')
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(client: Client, first_fetch: str):
+    def get_timedelta() -> timedelta:
+        delta, _ = first_fetch.split(' ')
+        if 'day' in first_fetch:
+            return timedelta(days=int(delta))
+        elif 'month' in first_fetch:
+            return timedelta(days=int(delta) * 30)
+        raise Exception(f'Invalid first fetch time: {first_fetch}')
+
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get('last_fetch', (datetime.utcnow() - timedelta(hours=1)).isoformat())
+    last_fetch = last_run.get('last_fetch', (datetime.utcnow() - get_timedelta()).isoformat())
     result = client.query_events(start_date=last_fetch)
 
     incidents: list[dict[str, Any]] = []
@@ -162,7 +170,8 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             test_module(client)
         elif command == 'fetch-incidents':
-            fetch_incidents(client)
+            first_fetch = params.get('first_fetch')
+            fetch_incidents(client, first_fetch)
         elif command == 'checkpointhec-get-entity':
             args = demisto.args()
             return_results(checkpointhec_get_entity(client, args.get('entity')))

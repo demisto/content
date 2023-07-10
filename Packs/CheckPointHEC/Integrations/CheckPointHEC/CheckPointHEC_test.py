@@ -71,7 +71,7 @@ def test_fetch_incidents(mocker):
     )
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
-    fetch_incidents(client)
+    fetch_incidents(client, '1 day')
     query_events.assert_called_once()
     demisto_incidents.assert_called_once()
 
