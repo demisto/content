@@ -1,1 +1,1 @@
-{"breakingChanges":true,"breakingChangesNotes":"The results of GetListRow automation will now be under the context path GetListRow.Results."}
+{"breakingChanges":true,"breakingChangesNotes":"The results context path of GetListRow automation was changed from getListRow.Result.Results to GetListRow.Results."}
