@@ -39,7 +39,7 @@ jobs:
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
 
-    - name: create pull request
+    - name: Create pull request
       run: |
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
