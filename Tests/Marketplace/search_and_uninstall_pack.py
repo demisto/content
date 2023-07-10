@@ -20,7 +20,7 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
         client (demisto_client): The client to connect to.
 
     Returns:
-        list of installed python
+        list of id's of the installed packs
     """
     try:
         logging.info("Attempting to fetch all installed packs.")
