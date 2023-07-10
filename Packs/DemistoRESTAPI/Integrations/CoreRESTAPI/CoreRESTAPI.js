@@ -424,7 +424,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
         response = uploadFile(incident_id, file_content, file_name);
         fileId = saveFile(file_content);
     } else {
-        if (file_name === undefined) {
+        if (!file_name) {
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
         }
         if (Array.isArray(file_name)) {
@@ -465,7 +465,7 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`Files not found.`);
     }
     files = (invContext['File'] instanceof Array)? invContext['File']:[invContext['File']];
-    if (files[0]=='undefined'){
+    if (!files[0]){
         throw new Error(`Files not found.`);
         
     }
@@ -484,6 +484,7 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`File already deleted or not found.`);
     }
     deleteContextRequest(investigation.id, 'File');
+    delete
     let context = {
         'File(val.MD5==obj.MD5)': createContext(edit_content_data_files)
     };
