@@ -13,7 +13,7 @@ This pack includes Cortex XSIAM content.
 ![link](https://raw.githubusercontent.com/demisto/content/4432c58042ef5f97fb762b33ab74863530627b0c/Packs/Portnox/doc_imgs/event_conf.png)
 6. Mark all events.
 ![link](https://raw.githubusercontent.com/demisto/content/4432c58042ef5f97fb762b33ab74863530627b0c/Packs/Portnox/doc_imgs/all_events.png)
-7. Make sure “All Network” is checked and “Send Alerts by” is configured to Syslog, using the IP address you wish to send to & “Trigger Type” = “Immediate”.
+7. Make sure “All Network” is checked and “Send Alerts by” is configured to Syslog, using the IP address you want to send to and “Trigger Type” = “Immediate”.
 ![link](https://raw.githubusercontent.com/demisto/content/4432c58042ef5f97fb762b33ab74863530627b0c/Packs/Portnox/doc_imgs/all_networks.png)
 ![link](https://raw.githubusercontent.com/demisto/content/4432c58042ef5f97fb762b33ab74863530627b0c/Packs/Portnox/doc_imgs/send_alerts_by.png)
 8. Click **Save & Close** at the top right corner.
