@@ -1,6 +1,6 @@
-id: XCloud Cryptomining
+id: XCloud Cryptomining Response
 version: -1
-name: XCloud Cryptojacking
+name: XCloud Cryptojacking Response
 description: "Investigates a Cortex XDR incident containing Cloud Cryptojacking related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n\n    -Collects info about the involved resources\n\n    -Collects info about the involved identities\n\n    -Collects info about the involved IPs\n\n\n- Verdict decision tree\n\n\n- Verdict handling:\n\n -Handle False Positives\n\n -Handle True Positives\n\n -Cloud Response - Generic sub-playbook.\n\n- Notifies the SOC if a malicious verdict was found"
 starttaskid: "0"
 tasks:
@@ -372,7 +372,7 @@ tasks:
     task:
       id: 4f25d397-81b2-4268-892c-3e58222e26bc
       version: -1
-      name: XCloud Alert Enrichment
+      name: XCloud Alerts Enrichment
       description: |-
         This playbook is responsible for data collection and enrichment.
 
@@ -388,7 +388,7 @@ tasks:
            -Geolocation
 
            -ASN
-      playbookName: XCloud Alert Enrichment
+      playbookName: XCloud Alerts Enrichment
       type: playbook
       iscommand: false
       brand: ""
@@ -649,9 +649,9 @@ tasks:
     task:
       id: dfa1bd6f-e9c9-4422-8d6d-e31cfd7e3558
       version: -1
-      name: XCloud Cryptojacking - Set Verdict
+      name: XCloud Cryptojacking response - Set Verdict
       description: "This playbook sets the alert's verdict as malicious if one of the following conditions is true:\n1. If the source IP address is malicious\n2. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Cloud identity reached a throttling API rate\" (medium/high severity)\n3. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Suspicious heavy allocation of compute resources - possible mining activity\" \n4. If the incident includes \"Unusual allocation of multiple cloud compute resources\" with medium/high severity, the source ASN isn't known, and the source IP isn't known as well.\n5. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"A cloud compute instance was created in a dormant region\"\n\nIf none of the conditions is true, the playbook will wait for an analyst's decision."
-      playbookName: XCloud Cryptojacking - Set Verdict
+      playbookName: XCloud Cryptojacking response - Set Verdict
       type: playbook
       iscommand: false
       brand: ""

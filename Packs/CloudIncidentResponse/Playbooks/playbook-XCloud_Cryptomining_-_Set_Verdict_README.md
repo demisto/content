@@ -21,8 +21,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * SearchIncidentsV2
+* Set
 
 ### Commands
 
@@ -48,4 +48,4 @@ This playbook does not use any commands.
 
 ---
 
-![XCloud Cryptojacking - Set Verdict](../doc_files/XCloud_Cryptojacking_-_Set_Verdict.png)
+![XCloud Cryptojacking Response - Set Verdict](../doc_files/XCloud_Cryptojacking_Response_-_Set_Verdict.png)

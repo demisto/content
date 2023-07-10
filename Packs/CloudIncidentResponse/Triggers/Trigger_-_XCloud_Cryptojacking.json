@@ -1,9 +1,9 @@
 {
-  "trigger_id": "b88deee0ef3c1325b7b3f583d2550bc0",
-  "playbook_id": "XCloud Cryptomining",
+  "trigger_id": "f5726222a0eeee9427207641bfb455f8",
+  "playbook_id": "XCloud Cryptomining Response",
   "suggestion_reason": "Recommended for Cryptojacking alerts",
   "description": "This trigger is responsible for handling Cryptojacking alerts",
-  "trigger_name": "XCloud Cryptojacking",
+  "trigger_name": "XCloud Cryptojacking Response",
   "alerts_filter": {
     "filter": {
       "AND": [

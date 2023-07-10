@@ -29,11 +29,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* XCloud Cryptojacking response - Set Verdict
 * Ticket Management - Generic
+* XCloud Alerts Enrichment
 * Handle False Positive Alerts
 * Cloud Response - Generic
-* XCloud Alert Enrichment
-* XCloud Cryptojacking - Set Verdict
 
 ### Integrations
 
@@ -41,14 +41,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IncreaseIncidentSeverity
 * LoadJSON
+* IncreaseIncidentSeverity
 
 ### Commands
 
 * closeInvestigation
-* send-mail
 * setParentIncidentField
+* send-mail
 * core-get-cloud-original-alerts
 
 ## Playbook Inputs
@@ -106,4 +106,4 @@ There are no outputs for this playbook.
 
 ---
 
-![XCloud Cryptojacking](../doc_files/XCloud_Cryptojacking.png)
+![XCloud Cryptojacking Response](../doc_files/XCloud_Cryptojacking_Response.png)

@@ -1,6 +1,6 @@
-id: XCloud Alert Enrichment
+id: XCloud Alerts Enrichment
 version: -1
-name: XCloud Alert Enrichment
+name: XCloud Alerts Enrichment
 description: |-
   This playbook is responsible for data collection and enrichment.
 

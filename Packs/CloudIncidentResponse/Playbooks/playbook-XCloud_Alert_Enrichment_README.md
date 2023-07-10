@@ -19,8 +19,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Account Enrichment - Generic v2.1
 * IP Enrichment - Generic v2
+* Account Enrichment - Generic v2.1
 
 ### Integrations
 
@@ -28,8 +28,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsInCidrRanges
 * Set
+* IsInCidrRanges
 
 ### Commands
 
@@ -67,4 +67,4 @@ This playbook does not use any integrations.
 
 ---
 
-![XCloud Alert Enrichment](../doc_files/XCloud_Alert_Enrichment.png)
+![XCloud Alerts Enrichment](../doc_files/XCloud_Alerts_Enrichment.png)
