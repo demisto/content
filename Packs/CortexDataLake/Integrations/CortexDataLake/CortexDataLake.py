@@ -1104,7 +1104,7 @@ def build_query(args, table_name):
     timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
                            f'TIMESTAMP("{query_end_time}") '
     limit = args.get('limit')
-    # Added this to prevent an empty limit e.g. limit = ''
+    # Added this to prevent an empty limit, if limit = '' the get will return '' and the query will fail
     if not limit:
         limit = '5'
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
