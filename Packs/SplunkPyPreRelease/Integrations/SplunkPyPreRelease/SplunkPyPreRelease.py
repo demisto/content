@@ -2174,7 +2174,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 def splunk_submit_event_hec_command():
     hec_token = PARAMS.get('hec_creds', {}).get('password') or PARAMS.get('hec_token')
-    baseurl = PARAMS.get('hec_creds', {}).get('identifier') or PARAMS.get('hec_url')
+    baseurl = PARAMS.get('hec_url')
     if baseurl is None:
         raise Exception('The HEC URL was not provided.')
 
@@ -2282,7 +2282,7 @@ def test_module(service):
 
         except HTTPError as error:
             return_error(str(error))
-    if hec_url := (PARAMS.get('hec_creds', {}).get('identifier') or PARAMS.get('hec_url')):
+    if (hec_url := PARAMS.get('hec_url')):
         headers = {
             'Content-Type': 'application/json'
         }

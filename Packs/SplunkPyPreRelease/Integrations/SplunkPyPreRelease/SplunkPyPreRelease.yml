@@ -111,14 +111,13 @@ configuration:
   name: hec_token
   type: 4
   hidden: true
-- display: 'HEC URL (e.g: https://localhost:8088).'
+- hiddenusername: true
   name: hec_creds
   type: 9
   displaypassword: HEC Token (HTTP Event Collector)
 - display: 'HEC URL (e.g: https://localhost:8088).'
   name: hec_url
   type: 0
-  hidden: true
 - display: Use Python requests handler
   name: use_requests_handler
   type: 8
