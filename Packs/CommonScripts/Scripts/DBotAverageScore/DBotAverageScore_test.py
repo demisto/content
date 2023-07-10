@@ -24,7 +24,7 @@ SAMPLE_DATA = load_test_data('sample_data.json')
     ('192.0.2.2', [1, 1, 0, 0], 1),  # Assure '0' values are ignored
     ('192.0.2.3', [1, 2, 3, 4], 2.5),  # Assure float value is returned
 ])
-def test_create_average_score_context(indicator: str, scores_list: list[int], expected_average: float):
+def test_calculate_average_score(indicator: str, scores_list: list[int], expected_average: float):
     """
     Given:
         An indicator and a list of scores.
@@ -33,7 +33,7 @@ def test_create_average_score_context(indicator: str, scores_list: list[int], ex
     Then:
         Ensure the average and context entry are valid and correct.
     """
-    assert create_average_score_context(indicator, scores_list) == {'Indicator': indicator, 'Score': expected_average}
+    assert calculate_average_score(indicator, scores_list) == {'Indicator': indicator, 'Score': expected_average}
 
 
 @pytest.mark.parametrize('context_data, expected_context_output, expected_readable_output', [

@@ -30,7 +30,7 @@ def calculate_all_average_scores(context_data: list[dict[str, Any]]) -> CommandR
     context_output = []
 
     for indicator, scores_list in scores.items():
-        context_output.append(create_average_score_context(indicator=indicator, scores_list=scores_list))
+        context_output.append(calculate_average_score(indicator=indicator, scores_list=scores_list))
 
     return CommandResults(
         outputs_prefix='DBotAvgScore',
@@ -40,7 +40,7 @@ def calculate_all_average_scores(context_data: list[dict[str, Any]]) -> CommandR
     )
 
 
-def create_average_score_context(indicator: str, scores_list: list[int]) -> dict:
+def calculate_average_score(indicator: str, scores_list: list[int]) -> dict:
     """
     Calculates the average score of a list of scores, and return a context entry with the average.
     '0' values are ignored (since they indicate "unknown" score).
@@ -51,11 +51,11 @@ def create_average_score_context(indicator: str, scores_list: list[int]) -> dict
         scores_list (list[int]): A list of scores.
 
     Returns:
-        float: The average score.
+        dict: A context entry for a single indicator, containing the average score.
     """
-    scores_list = [score for score in scores_list if score != 0]
+    scores_list = [score for score in scores_list if score]  # Remove '0' values
 
-    if not scores_list:  # All values were '0'
+    if not scores_list:  # If all values were '0', we have an empty list
         return {'Indicator': indicator, 'Score': 0}
 
     else:
