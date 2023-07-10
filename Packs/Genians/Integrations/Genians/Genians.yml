@@ -21,7 +21,6 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Tag Name (e.g. THREAT, GUEST)
   name: tag_name
   defaultvalue: ""
@@ -30,7 +29,6 @@ configuration:
 - display: Fetch indicators
   name: feed
   type: 8
-  required: false
 script:
   commands:
   - name: genians-assign-ip-tag
@@ -59,11 +57,7 @@ script:
       description: Tag name
       type: string
     description: Removes the tag(s) from the Node specified.
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

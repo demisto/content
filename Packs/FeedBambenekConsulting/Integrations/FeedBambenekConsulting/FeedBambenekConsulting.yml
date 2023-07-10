@@ -5,11 +5,9 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  required: false
   defaultvalue: 'true'
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -18,7 +16,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -41,47 +38,37 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
-  required: false
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - display: ""
   name: feedExpirationInterval
-  required: false
   defaultvalue: "20160"
   type: 1
 - defaultvalue: '360'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Services
   name: url
@@ -99,7 +86,6 @@ configuration:
   type: 16
 - display: Username
   name: credentials
-  required: false
   type: 9
 - additionalinfo: Time in seconds before http requests timeout.
   defaultvalue: '20'
@@ -111,37 +97,22 @@ configuration:
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
-description: Use the Bambenek Consulting feed integration to fetch indicators from
-  the feed.
+description: Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 display: Bambenek Consulting Feed
 name: Bambenek Consulting Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return. The default value is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The indicator type.
-      isArray: false
+    - description: The indicator type.
       name: indicator_type
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the feed indicators.
-    execution: false
     name: bambenek-get-indicators
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

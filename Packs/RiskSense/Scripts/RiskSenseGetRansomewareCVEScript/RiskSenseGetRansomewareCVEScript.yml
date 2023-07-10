@@ -1,11 +1,8 @@
 args:
-- default: false
-  defaultValue: 'False'
+- defaultValue: 'False'
   description: Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums, Twitter feeds as well as analysis of 3rd party threat intelligence sources.
-  isArray: false
   name: trending
   required: true
-  secret: false
 comment: This script is a helper script of Ransomware Exposure - RiskSense playbook and retrieve information of cves and trending cves from host finding details.
 commonfields:
   id: RiskSenseGetRansomewareCVEScript
@@ -128,7 +125,6 @@ outputs:
   type: Number
 script: '-'
 subtype: python3
-system: false
 tags:
 - RiskSense
 timeout: '0'

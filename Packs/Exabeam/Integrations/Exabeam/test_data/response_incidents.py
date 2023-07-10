@@ -370,7 +370,7 @@ EXPECTED_INCIDENTS = {
 EXPECTED_LAST_RUN = {
     'first_fetch': {
         'limit': 6,
-        'time': '2022-12-22T13:53:05.195302',
+        'time': '2022-12-07T14:18:09.456000',
         'found_incident_ids': {
             'SOC-402': '',
             'SOC-403': '',
@@ -379,7 +379,7 @@ EXPECTED_LAST_RUN = {
     },
     'second_fetch': {
         'limit': 9,
-        'time': '2022-12-22T13:53:05.195302',
+        'time': '2022-12-08T08:28:29.449000',
         'found_incident_ids': {
             'SOC-405': '',
             'SOC-406': '',
@@ -388,7 +388,7 @@ EXPECTED_LAST_RUN = {
     },
     'third_fetch': {
         'limit': 12,
-        'time': '2022-12-22T13:53:05.195302',
+        'time': '2022-12-08T08:38:29.460000',
         'found_incident_ids': {
             'SOC-408': '',
             'SOC-409': '',
