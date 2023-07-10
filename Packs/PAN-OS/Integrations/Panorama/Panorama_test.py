@@ -7071,3 +7071,38 @@ def test_pan_os_delete_tag_command(mocker, is_shared):
     assert request_mocker.call_count == expected_request_count
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == 'The tag with name "testtag" was deleted successfully.'
+
+
+@pytest.mark.parametrize(
+    "device_group, vsys, args, expected_response", [
+        (
+            "device_group",
+            "",
+            {"disable_override": True, "comment": ""},
+            "<disable-override>yes</disable-override>"
+        ),
+        (
+            "",
+            "vsys1",
+            {"disable_override": True, "comment": ""},
+            ""
+        ),
+    ]
+)
+def test_build_tag_element(mocker, device_group, vsys, args, expected_response):
+    """
+    Given:
+     - given the disable_override argument that isn't supported with Firewall instances
+
+    When:
+     - Running the build_tag_element function
+
+    Then:
+     - Ensure that the expected response matches the actual response.
+     (ignoring the disable_override argument when using Firewall instances)
+    """
+    from Panorama import build_tag_element
+    mocker.patch('Panorama.DEVICE_GROUP', device_group)
+    mocker.patch('Panorama.VSYS', vsys)
+    response = build_tag_element(**args)
+    assert response == expected_response
