@@ -319,7 +319,7 @@ script:
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
-  dockerimage: demisto/duoadmin3:1.0.0.63681
+  dockerimage: demisto/duoadmin3:1.0.0.64379
   script: ''
   type: python
   subtype: python3
