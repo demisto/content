@@ -9,6 +9,8 @@ from typing import Any
 
 urllib3.disable_warnings()
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
 
 class Client(BaseClient):
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
@@ -98,16 +100,9 @@ def test_module(client: Client):
 
 
 def fetch_incidents(client: Client, first_fetch: str):
-    def get_timedelta() -> timedelta:
-        delta, _ = first_fetch.split(' ')
-        if 'day' in first_fetch:
-            return timedelta(days=int(delta))
-        elif 'month' in first_fetch:
-            return timedelta(days=int(delta) * 30)
-        raise Exception(f'Invalid first fetch time: {first_fetch}')
-
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get('last_fetch', (datetime.utcnow() - get_timedelta()).isoformat())
+    if not (last_fetch := last_run.get('last_fetch')):
+        last_fetch, _ = parse_date_range(first_fetch, DATE_FORMAT)
     result = client.query_events(start_date=last_fetch)
 
     incidents: list[dict[str, Any]] = []
