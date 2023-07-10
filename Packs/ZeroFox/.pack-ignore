@@ -1,6 +1,9 @@
 [file:ZeroFox.yml]
 ignore=IN126
 
+[file:TestData/alert.json]
+ignore=BA115
+
 [known_words]
 zerofox
 CTI

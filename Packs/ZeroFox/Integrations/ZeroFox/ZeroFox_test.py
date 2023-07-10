@@ -997,7 +997,7 @@ def test_compromised_email_command(requests_mock, mocker):
         And return a list with threats as output
         And with the correct output prefix
     """
-    email = "abc@test.xyz"
+    email = "abc@test.com"
     email_response = load_json("test_data/cti/email-addresses.json")
     credentials_response = load_json(
         "test_data/cti/compromised-credentials.json",
