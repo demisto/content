@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Vulnerability Management
 sectionOrder:
 - Connect
 - Collect
@@ -31,11 +31,11 @@ configuration:
   section: Collect
   display: First fetch time
   name: first_fetch
-  additionalinfo: if "First Fetch Time" set for long time ago, it may cause performance issues.
+  additionalinfo: If "First Fetch Time" is set for a long time ago, it may cause performance issues.
   required: true
   type: 0
 - display: Vulnerability Fetch Interval
-  additionalinfo: Time between fetches of vulnerabilities (for example 12 hours, 60 minutes, etc).
+  additionalinfo: Time between fetches of vulnerabilities (for example 12 hours, 60 minutes, etc.).
   name: host_detections_fetch_interval
   required: true
   section: Collect
@@ -53,14 +53,14 @@ configuration:
   section: Collect
   display: Activity Logs Fetch Limit
   name: max_fetch_activity_logs
-  additionalinfo: Limit on number of activity logs to fetch per fetch iteration.
+  additionalinfo: Maximum number of activity logs to fetch per fetch iteration.
   required: true
   type: 0
 - defaultvalue: 1000
   section: Collect
   display: Host Detections Fetch Limit
   name: max_fetch_hosts_detections
-  additionalinfo: Limit on number of hosts to return the detections for it in a single fetch iteration.
+  additionalinfo: Maximum number of hosts to return in a single fetch iteration.
   required: true
   type: 0
 description: Qualys Event Collector fetches Activity Logs (Audit Logs) and Host Vulnerabilities.
@@ -79,7 +79,7 @@ script:
         - 'false'
       required: true
     - default: false
-      description: Maximum results to return.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -109,7 +109,7 @@ script:
         - 'false'
       required: true
     - default: false
-      description: Maximum results to return.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -136,6 +136,6 @@ script:
   type: python
 marketplaces:
 - marketplacev2
-fromversion: 6.8.0
+fromversion: 8.2.0
 tests:
 - No tests (auto formatted)

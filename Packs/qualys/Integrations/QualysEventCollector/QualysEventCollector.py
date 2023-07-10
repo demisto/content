@@ -112,8 +112,7 @@ def get_partial_response(response: str, start: str, end: str):
     start_index = response.index(start) + len(start)
     end_index = response.index(end)
     result = response[start_index:end_index].strip()
-    if result.startswith(WARNING):
-        result = result.replace(WARNING, '').strip()
+    result.removeprefix(WARNING).strip()
     return result
 
 
