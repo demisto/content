@@ -534,4 +534,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+deprecated: true
 fromversion: 6.6.0

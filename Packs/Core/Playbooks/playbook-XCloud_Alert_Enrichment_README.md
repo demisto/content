@@ -14,24 +14,29 @@ The playbook collects or enriches the following data:
    -ASN
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Account Enrichment - Generic v2.1
 * IP Enrichment - Generic v2
 
 ### Integrations
-* CoreIOCs
-* CortexCoreIR
+
+This playbook does not use any integrations.
 
 ### Scripts
-* IsInCidrRanges
+
 * Set
+* IsInCidrRanges
 
 ### Commands
+
 * ip
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -40,6 +45,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -58,5 +64,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ActiveDirectory.Users | The ActiveDirectory Users object. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![XCloud Alert Enrichment](../doc_files/XCloud_Alert_Enrichment.png)

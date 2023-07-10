@@ -29,15 +29,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Handle False Positive Alerts
-* Cloud Response - Generic
 * Ticket Management - Generic
+* Cloud Response - Generic
 * XCloud Cryptojacking - Set Verdict
 * XCloud Alert Enrichment
+* Handle False Positive Alerts
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -46,10 +46,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* closeInvestigation
-* core-get-cloud-original-alerts
 * send-mail
+* closeInvestigation
 * setParentIncidentField
+* core-get-cloud-original-alerts
 
 ## Playbook Inputs
 
@@ -106,4 +106,4 @@ There are no outputs for this playbook.
 
 ---
 
-![XCloud Cryptojacking](../doc_files/XCloud_Cryptomining.png)
+![XCloud Cryptojacking](../doc_files/XCloud_Cryptojacking.png)
