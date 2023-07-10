@@ -11,7 +11,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-ALL_SUPPORTED_EVENT_TYPES = ['audit', 'page', 'network', 'application', 'alert']
+ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network']
+# ALL_SUPPORTED_ALERT_TYPES_v2 = ['policy', 'compromisedcredential', 'ctep', 'dlp', 'malsite', 'malware', 'quarantine',
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
 
@@ -95,53 +96,64 @@ def populate_parsing_rule_fields(event: dict, event_type: str):
         pass
 
 
-def dedup_by_id(last_run: dict, results: list, event_type: str, limit: int):
-    """
-    Dedup mechanism for the fetch to check both event id and timestamp (since timestamp can be duplicate)
-    Args:
-        last_run: Last run.
-        results: List of the events from the api.
-        event_type: the event type.
-        limit: the number of events to return.
-
-    Returns:
-        - list of events to send to XSIAM.
-        - The new last_run (dictionary with the relevant timestamps and the events ids)
-
-    """
-    last_run_ids = set(last_run.get(f'{event_type}-ids', []))
-    new_events = []
-    new_events_ids = []
-    new_last_run = {}
-
-    # Sorting the list to Ascending order according to the timestamp (old one first)
-    sorted_list = list(reversed(results))
-    for event in sorted_list[:limit]:
-        event_timestamp = event.get('timestamp')
+def prepare_events(events: list, event_type: str) -> list:
+    for event in events:
+        populate_parsing_rule_fields(event, event_type)
         event_id = event.get('_id')
         event['event_id'] = event_id
 
-        # The event we are looking at has the same timestamp as previously fetched events
-        if event_timestamp == last_run[event_type]:
-            if event_id not in last_run_ids:
-                new_events.append(event)
-                last_run_ids.add(event_id)
 
-        # The event has a timestamp we have not yet fetched meaning it is a new event
-        else:
-            new_events.append(event)
-            new_events_ids.append(event_id)
-            # Since the event has a timestamp newer than the saved one, we will update the last run to the
-            # current event time
-            new_last_run[event_type] = event_timestamp
+def print_event_statistics_logs(events: list, event_type: str):
+    demisto.debug(f'__[{event_type}]__ - Total events fetched this round: {len(events)}')
+    if events:
+        event_times = f'__[{event_type}]__ - First event: {events[0].get("timestamp")} __[{event_type}]__ - Last event: {events[-1].get("timestamp")}'
+        demisto.debug(event_times)
 
-        # If we have received events with a newer time (new_event_ids list) we save them,
-        # otherwise we save the list that include the old ids together with the new event ids.
-        new_last_run[f'{event_type}-ids'] = new_events_ids or last_run_ids
 
-    demisto.debug(f'Setting new last run - {new_last_run}')
-    return new_events, new_last_run
+def is_execution_time_exceeded(start_time: datetime) -> bool:
+    end_time = datetime.utcnow()
+    secs_from_beginning = (end_time - start_time).seconds
+    demisto.debug(f'Execution length so far is {secs_from_beginning} secs')
 
+    return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
+
+
+def handle_data_export_single_event_type(client: Client, event_type: str, last_run: dict, limit: int, start_time: datetime):
+    instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+    wait_time = 0
+    events = []
+    index_name = f'xsoar_collector_{instance_name}_{event_type}'
+
+    operation = last_run.get('v2').get('operation')
+    while len(events) < limit:
+
+        # If the execution exceeded the timeout we will break
+        if is_execution_time_exceeded(start_time=start_time):
+            return events, True
+
+        # Wait time between queries
+        if wait_time:
+            demisto.debug(f'Going to sleep between queries, wait_time is {wait_time} seconds')
+            time.sleep(wait_time)
+
+        response = client.perform_data_export('events', event_type, index_name, operation)
+
+        results = response.get('result', [])
+        demisto.debug(f'The number of received events - {len(results)}')
+        operation = 'next'
+
+        # The API responds with the time we should wait between requests
+        # It will be used to sleep in the beginning of the next iteration
+        wait_time = arg_to_number(response.get(WAIT_TIME, 5))
+        demisto.debug(f'Wait time is {wait_time} seconds')
+
+        events.extend(results)
+        print_event_statistics_logs(events=events, event_type=event_type)
+
+        if not results or len(results) < MAX_EVENTS_PAGE_SIZE:
+            break
+
+    return events, False
 
 ''' COMMAND FUNCTIONS '''
 
@@ -197,13 +209,8 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api
 
 
 def fetch_events_command(client, api_version, last_run, max_fetch, is_command):  # pragma: no cover
-    if api_version == 'v1':
-        events, new_last_run = get_all_events_v1(client, last_run=last_run, limit=max_fetch, api_version=api_version,
-                                                 is_command=is_command)
-    else:
-        events, new_last_run = get_all_events_v2(client, last_run=last_run, limit=max_fetch, api_version=api_version,
-                                                 is_command=is_command)
-
+    events, new_last_run = get_all_events_v2(client, last_run=last_run, limit=max_fetch, api_version=api_version,
+                                             is_command=is_command)
     return events, new_last_run
 
 
