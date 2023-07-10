@@ -10804,8 +10804,6 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
-        if look_back == 0:
-            new_last_run['limit'] = fetch_limit
             
 
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
