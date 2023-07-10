@@ -348,17 +348,6 @@ def exchangelib_cleanup():     # pragma: no cover
         exchangelib.close_connections()
     except Exception as ex:
         demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
-    for key, protocol in key_protocols:
-        try:
-            if "thread_pool" in protocol.__dict__:
-                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
-                protocol.thread_pool.terminate()
-                del protocol.__dict__["thread_pool"]
-            else:
-                demisto.info(
-                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
-        except Exception as ex:
-            demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
 
 # Prep Functions
