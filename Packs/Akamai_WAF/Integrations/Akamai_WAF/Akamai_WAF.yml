@@ -365,7 +365,7 @@ script:
       name: org_name
       required: true
       type: textArea
-    - description: The organization country.
+    - description: The organization country name.
       name: org_country
       required: true
       type: textArea

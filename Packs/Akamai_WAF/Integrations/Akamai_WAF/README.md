@@ -317,7 +317,7 @@ Create a new enrollment.
 | tech_contact_email | The email address of the tech contact. | Required | 
 | tech_contact_phone | The phone number  of the tech contact. | Required | 
 | org_name | The organization name. | Required | 
-| org_country | The organization country. | Required | 
+| org_country | The organization country name. | Required | 
 | org_city | The organization city. | Required | 
 | org_region | The organization region. | Required | 
 | org_postal_code | The organization postal code. | Required | 
