@@ -2,9 +2,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import copy
 import urllib3
-from typing import Dict, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,7 +14,8 @@ VENDOR = "forcepoint-dlp"
 PRODUCT = "forcepoint-dlp"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 10000
-DEFAULT_LIMIT = 10
+API_DEFAULT_LIMIT = 10000
+MAX_GET_IDS_CHUNK_SIZE = 1000
 DATEPARSER_SETTINGS = {
     "RETURN_AS_TIMEZONE_AWARE": True,
     "TIMEZONE": "UTC",
@@ -39,9 +38,14 @@ class Client(BaseClient):
     :param proxy (bool): specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool, **kwargs):
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool, utc_now: datetime,
+                 api_limit = API_DEFAULT_LIMIT,
+                 **kwargs):
         self.username = username
         self.password = password
+        self.api_limit = api_limit
+        self.utc_now = utc_now
+
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
@@ -89,7 +93,7 @@ class Client(BaseClient):
 
         return access_token
 
-    def get_token_request(self) -> Tuple[str, str]:
+    def get_token_request(self) -> tuple[str, str]:
         """
         Sends request to retrieve token.
 
@@ -103,29 +107,22 @@ class Client(BaseClient):
         token_response = self._http_request('POST', url_suffix='/auth/refresh-token', headers=headers)
         return token_response.get('access_token'), token_response.get('access_expires_in')
 
-    def get_events_request(self, size: int = DEFAULT_MAX_FETCH):
-        return self.http_request(
-            'GET',
-            url_suffix='/incidents',
-            resp_type='response',
-            ok_codes=[200, 204],
-            params={"size": size}
-        )
-
-    def get_open_incident_ids(self) -> List[int]:
+    def get_incidents(self, from_date, to_date) -> Any:
         return self._http_request(
             method="POST",
             json_data={
                 "type": "INCIDENTS",
+                "from_date": from_date,
+                "to_date": to_date,
             },
             url_suffix="/incidents",
-        ).get("incidents") or []
+        )
 
-    def get_incident(self, incident_id: int) -> Dict[str, Any]:
+    def get_incident_ids(self, incident_ids: list[int]) -> dict[str, Any]:
         return self._http_request(
             method="POST",
             json_data={
-                "ids": [incident_id],
+                "ids": incident_ids,
                 "type": "INCIDENTS",
             },
             url_suffix="/incidents/",
@@ -154,145 +151,93 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def get_incident_ids_by_time(
-    client: Client,
-    incident_ids: List[int],
-    start_time: datetime,
-    start_idx: int = 0,
-    end_idx: Optional[int] = None,
-) -> List[int]:
-    """Uses binary search to determine the incident ID to start fetching from.
-    This method will be called only in the first fetch.
-
-    Args:
-        client (Client): The client object
-        incident_ids (List[int]): List of all incident IDs
-        start_time (datetime): Time to start the fetch from
-        start_idx (int): Start index for the binary search
-        end_idx (int): End index for the binary search
-
-    Returns:
-        List[int]: The list of all incident IDs to fetch.
-    """
-    if end_idx is None:
-        end_idx = len(incident_ids) - 1
-
-    current_idx = (start_idx + end_idx) // 2
-
-    incident = client.get_incident(incident_ids[current_idx])
-    incident_time = arg_to_datetime(incident.get("first_reported_date", ""), settings=DATEPARSER_SETTINGS)
-    assert isinstance(incident_time, datetime)
-
-    if incident_time > start_time:
-        if current_idx == start_idx:
-            return incident_ids[start_idx:]
-        return get_incident_ids_by_time(
-            client,
-            incident_ids,
-            start_time,
-            start_idx=start_idx,
-            end_idx=current_idx - 1,
-        )
-    if incident_time < start_time:
-        if current_idx == start_idx:
-            return incident_ids[end_idx:]
-        return get_incident_ids_by_time(
-            client,
-            incident_ids,
-            start_time,
-            start_idx=current_idx + 1,
-            end_idx=end_idx,
-        )
-    return incident_ids[current_idx:]
-
-
-def get_open_incident_ids_to_fetch(
-    client: Client,
-    first_fetch: datetime,
-    last_id: Optional[int],
-) -> List[int]:
-    all_open_incident_ids: List[int] = client.get_open_incident_ids()
-    if not all_open_incident_ids:
-        return []
-    if isinstance(last_id, int):
-        # We filter out only events with ID greater than the last_id
-        return list(filter(lambda i: i > last_id, all_open_incident_ids))  # type: ignore
-    return get_incident_ids_by_time(
-        client,
-        all_open_incident_ids,
-        start_time=first_fetch,
-    )
-
-
-def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Creates an event for each report in the current incident.
-        Returns the list of events.
-    """
-    def report_to_event(report_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Transforms a single report data of the incident to an event.
-        """
-        event = copy.deepcopy(incident)
-        event["_time"] = event["first_reported_date"]
-        del event["reports"]
-        return event | report_data
-
-    return [report_to_event(event) for event in incident.get("reports", [])]
-
-
 """ COMMAND FUNCTIONS """
 
 
 def get_events_command(
     client: Client,
-    args: Dict[str, Any]
-) -> Tuple[CommandResults, List[Dict[str, Any]]]:
-    limit: int = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
-    assert isinstance(since_time, datetime)
-    events, _ = fetch_events_command(client, since_time, limit)
+    args: dict[str, Any]
+) -> tuple[CommandResults, List[dict[str, Any]]]:
+    # limit: int = arg_to_number(args.get('limit')) or DEFAULT_MAX_FETCH
+    # since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
+    # assert isinstance(since_time, datetime)
+    # events, _ = fetch_events_command(client, since_time, limit)
+    #
+    # result = CommandResults(
+    #     readable_output=tableToMarkdown("Open Incidents", events),
+    #     raw_response=events,
+    # )
+    # return result, events
+    pass  # FIXME
 
-    result = CommandResults(
-        readable_output=tableToMarkdown("Open Incidents", events),
-        raw_response=events,
-    )
-    return result, events
+def filter_incidents_by_type(events, event_type="INCIDENTS"):
+    return list(filter(lambda event: event["type"] == event_type, events))
 
+def chunks(l, n):
+    # looping till length l
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
 
 def fetch_events_command(
     client: Client,
     first_fetch: datetime,
     max_fetch: int,
-    last_id: Optional[int] = None,
-) -> Tuple[List[Dict[str, Any]], int]:
-    """Fetches Forcepoint DLP incidents as events to XSIAM.
-    Note: each report of incident will be considered as an event.
-
-    Args:
-        client (Client): The client object.
-        first_fetch (datetime): First fetch time.
-        max_fetch (int): Maximum number of events to fetch.
-        last_id (Optional[int]): The ID of the most recent incident ingested in previous runs. Defaults to None.
-
-    Returns:
-        Tuple[List[Dict[str, Any]], int]:
-            - A list of new events.
-            - ID of the most recent incident ingested in the current run.
+    last_fetch_time: datetime | None,
+    last_id: int | None = None,
+    until_time: datetime | None = None,
+    time_interval: int = 60,  # Time interval 60 seconds.
+) -> tuple[list[dict[str, Any]], int, datetime]:
     """
-    events: List[Dict[str, Any]] = []
-    incident_ids: List[int] = get_open_incident_ids_to_fetch(
-        client=client,
-        first_fetch=first_fetch,
-        last_id=last_id,
-    )
-    last_id = last_id or -1
-    for i in incident_ids:
-        incident = client.get_incident(i)
-        events.extend(incident_to_events(incident))
-        last_id = max(i, last_id)
-        if len(events) >= max_fetch:
-            break
+    Fetches Forcepoint DLP incidents as events to XSIAM.
+    Note: each report of incident will be considered as an event.
+    """
+    events = []
+    reached_until_time = False
+    from_time = last_fetch_time or first_fetch
+    to_time = from_time + timedelta(seconds=time_interval)
+    until_time = until_time or client.utc_now
+    while not len(events) >= max_fetch and not reached_until_time:
 
-    return events, last_id
+        incidents_response = client.get_incidents(from_time, to_time)
+        incidents = incidents_response["incidents"]
+        if incidents:
+            if incidents_response["total_count"] > client.api_limit and time_interval > 1:
+                # recurse in smaller time interval.
+                recurse_until_time = min(to_time, client.utc_now)
+                recuse_time_interval = time_interval // 60
+                recurse_events, last_id, recuse_last_fetch_time = fetch_events_command(client,
+                                                                                       first_fetch=first_fetch,
+                                                                                       max_fetch=max_fetch - len(events),
+                                                                                       last_fetch_time=from_time,
+                                                                                       last_id=last_id,
+                                                                                       until_time=recurse_until_time,
+                                                                                       time_interval=recuse_time_interval)
+                events.extend(recurse_events)
+                events = events[:max_fetch]
+                if len(events) == max_fetch:
+                    return events, last_id, recuse_last_fetch_time
+            else:
+                min_incident_id = incidents[0]["id"]
+                # Get incidents in chunks from Get Incidents
+                if last_id is not None:
+                    for event_ids_chunk in chunks(range(last_id, min_incident_id - 1), MAX_GET_IDS_CHUNK_SIZE):
+                        chunk_incidents_response = client.get_incident_ids(event_ids_chunk)
+                        events.extend(filter_incidents_by_type(chunk_incidents_response["incidents"]))
+                        events = events[:max_fetch]
+                        if len(events) == max_fetch:
+                            break
+
+                # Append current batch.
+                events.extend(incidents)
+                events = events[:max_fetch]
+
+                last_id = events[-1]["id"]
+
+        reached_until_time = to_time == until_time
+        from_time = to_time
+        to_time = min(from_time + timedelta(seconds=time_interval), until_time)
+
+    return events, last_id, from_time
 
 
 def test_module_command(client: Client, first_fetch: datetime) -> str:
@@ -319,6 +264,7 @@ def main():
             proxy=params.get("proxy", False),
             username=username,
             password=password,
+            utc_now=datetime.utcnow(),
         )
         if command == "test-module":
             return_results(test_module_command(client, first_fetch))
@@ -330,14 +276,27 @@ def main():
                 send_events_to_xsiam(events, VENDOR, PRODUCT)
 
         elif command == "fetch-events":
-            events, last_id = fetch_events_command(
+            # def fetch_events_command(
+            #     client: Client,
+            #     first_fetch: datetime,
+            #     max_fetch: int,
+            #     utc_now: datetime,
+            #     last_fetch_time: datetime,
+            #     last_id: int | None = None,
+            #     events: list[dict[str, Any]] | None = None,
+            #     time_interval: int = 60,  # Time interval 60 seconds.
+            # ) -> tuple[List[dict[str, Any]], int, datetime]:
+            events = []
+            last_id, last_fetch_time = fetch_events_command(
                 client=client,
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
+                last_fetch_time=demisto.getLastRun().get("last_fetch_time"),
                 last_id=demisto.getLastRun().get("last_id"),
+                events=events,
             )
             send_events_to_xsiam(events, VENDOR, PRODUCT)
-            demisto.setLastRun({"last_id": last_id})
+            demisto.setLastRun({"last_id": last_id, "last_fetch_time": last_fetch_time})
 
     # Log exceptions
     except Exception as e:
