@@ -7,7 +7,7 @@ This pack includes Cortex XSIAM content.
 1. Go to **Settings** > **Alerts**.
 2. In the **Syslog Server** field, add the IP address of the syslog server.
 ![link](https://raw.githubusercontent.com/demisto/content/4432c58042ef5f97fb762b33ab74863530627b0c/Packs/Portnox/doc_imgs/syslog_ip.png)
-3. click save.
+3. Click **Save**.
 4. Go to *Security* -> *events*
 5. click on the top right corner on the Plus button "+".
 ![link](https://raw.githubusercontent.com/demisto/content/4432c58042ef5f97fb762b33ab74863530627b0c/Packs/Portnox/doc_imgs/event_conf.png)
