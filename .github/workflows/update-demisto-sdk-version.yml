@@ -26,7 +26,6 @@ jobs:
     
     - name: Update dependencies
       run: |
-        echo "The value of myArg is ${{ inputs.release_version }}"
         poetry add --group dev demisto-sdk@latest
 
 #    - name: Create branch
@@ -42,9 +41,11 @@ jobs:
       run: |
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
-        git checkout -b ${{ inputs.release_version }}
+#        git checkout -b ${{ inputs.release_version }}
+        git checkout -b "1.18.1"
         git commit -m "poetry files" -a
-        git push origin ${{ inputs.release_version }}
-        gh pr create -B demisto-sdk-release -H master --title 'demisto-sdk-release' --body 'demisto-sdk-release' --reviewer ${{ inputs.reviewer }}
+#        git push origin ${{ inputs.release_version }}
+        git push origin "1.18.1"
+        gh pr create -B demisto-sdk-release -H master --title 'demisto-sdk-release' --body 'demisto-sdk-release' --reviewer "MosheEichler"
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
