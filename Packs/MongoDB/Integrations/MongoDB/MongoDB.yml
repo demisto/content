@@ -19,11 +19,9 @@ configuration:
 - defaultvalue: 'false'
   display: Use SSL/TLS secured connection
   name: use_ssl
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: Use the MongoDB integration to search and query entries in your MongoDB.
 display: MongoDB
@@ -31,21 +29,14 @@ name: MongoDB
 script:
   commands:
   - arguments:
-    - default: false
-      description: Name of the collection from which to get entries.
-      isArray: false
+    - description: Name of the collection from which to get entries.
       name: collection
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of ObjectIds to get. Can be retrieved from the `mongodb-query` command.
+    - description: A comma-separated list of ObjectIds to get. Can be retrieved from the `mongodb-query` command.
       isArray: true
       name: object_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets an entry from the database by the object ID.
-    execution: false
     name: mongodb-get-entry-by-id
     outputs:
     - contextPath: MongoDB.Entry._id
@@ -55,40 +46,21 @@ script:
       description: The collection of which the entry belongs to.
       type: String
   - arguments:
-    - default: false
-      description: Name of the collection to query.
-      isArray: false
+    - description: Name of the collection to query.
       name: collection
       required: true
-      secret: false
-    - default: false
-      description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Search by regex is supported, for more details refer to the Integration documentation.'
-      isArray: false
+    - description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Search by regex is supported, for more details refer to the Integration documentation.'
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limits the result returned from MongoDB
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Sorting order for the query results. Use the format "field1:asc,field2:desc".
-      isArray: false
+    - description: Sorting order for the query results. Use the format "field1:asc,field2:desc".
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: A comma-seperated list of fields to return. If not specified, will return all fields to context.
+    - description: A comma-seperated list of fields to return. If not specified, will return all fields to context.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for items by using the specified JSON query. Search by regex is supported.
-    execution: false
     name: mongodb-query
     outputs:
     - contextPath: MongoDB.Entry._id
@@ -98,21 +70,13 @@ script:
       description: The collection of which the entry belongs to.
       type: String
   - arguments:
-    - default: false
-      description: Name of the collection in which to insert the entry.
-      isArray: false
+    - description: Name of the collection in which to insert the entry.
       name: collection
       required: true
-      secret: false
-    - default: false
-      description: 'The entry to insert, in JSON format. Can include the `_id` argument or not, for example: `{"key": "value"}`'
-      isArray: false
+    - description: 'The entry to insert, in JSON format. Can include the `_id` argument or not, for example: `{"key": "value"}`'
       name: entry
       required: true
-      secret: false
-    deprecated: false
     description: Inserts an entry to the database.
-    execution: false
     name: mongodb-insert
     outputs:
     - contextPath: MongoDB.Entry._id
@@ -122,81 +86,48 @@ script:
       description: The collection of which the entry belongs to.
       type: String
   - arguments:
-    - default: false
-      description: The name of the collection in which to update an entry.
-      isArray: false
+    - description: The name of the collection in which to update an entry.
       name: collection
       required: true
-      secret: false
-    - default: false
-      description: 'A query that matches the document to update, in the format: `{"key": "value"}`.'
-      isArray: false
+    - description: 'A query that matches the document to update, in the format: `{"key": "value"}`.'
       name: filter
       required: true
-      secret: false
-    - default: false
-      description: 'The content with which to update the entry, in the format: {"$set": {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For more information, see the integration documentation.'
-      isArray: false
+    - description: 'The content with which to update the entry, in the format: {"$set": {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For more information, see the integration documentation.'
       name: update
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to update a single entry. If true, will set only the first found entry. If false, will set all found entries. Default is true.
-      isArray: false
       name: update_one
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Will create a new entry if no entires match the provided query. Default is false.
-      isArray: false
       name: upsert
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an entry in a collection.
-    execution: false
     name: mongodb-update
   - arguments:
-    - default: false
-      description: The name of the collection from which to delete an entry.
-      isArray: false
+    - description: The name of the collection from which to delete an entry.
       name: collection
       required: true
-      secret: false
-    - default: false
-      description: 'A query that matches the document to delete, for example: `{"key": "value"}`.'
-      isArray: false
+    - description: 'A query that matches the document to delete, for example: `{"key": "value"}`.'
       name: filter
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to delete a single entry from the database. If false, will set all found entries.
-      isArray: false
       name: delete_one
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes an entry from the database.
-    execution: false
     name: mongodb-delete
-  - deprecated: false
-    description: Lists all collections in the database.
-    execution: false
+  - description: Lists all collections in the database.
     name: mongodb-list-collections
     outputs:
     - contextPath: MongoDB.Collection.Name
@@ -205,55 +136,32 @@ script:
   - arguments:
     - default: true
       description: The name of the collection to create.
-      isArray: false
       name: collection
       required: true
-      secret: false
-    deprecated: false
     description: Creates a collection
-    execution: false
     name: mongodb-create-collection
   - arguments:
     - default: true
       description: The name of the collection to drop from the database.
-      isArray: false
       name: collection
       required: true
-      secret: false
-    deprecated: false
     description: Drops a collection from the database.
     execution: true
     name: mongodb-drop-collection
   - arguments:
-    - default: false
-      description: Name of the collection to query.
-      isArray: false
+    - description: Name of the collection to query.
       name: collection
       required: true
-      secret: false
-    - default: false
-      description: 'A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]'
-      isArray: false
+    - description: 'A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]'
       name: pipeline
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limits the number of results returned from MongoDB.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Offset to the first result returned from MongoDB.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for items by the specified JSON pipleline query.
-    execution: false
     name: mongodb-pipeline-query
     outputs:
     - contextPath: MongoDB.Entry._id
@@ -263,55 +171,34 @@ script:
       description: The collection of which the entry belongs to.
       type: String
   - arguments:
-    - default: false
-      description: The name of the collection in which to update entries.
-      isArray: false
+    - description: The name of the collection in which to update entries.
       name: collection
       required: true
-      secret: false
-    - default: false
-      description: 'A comma-separated list of queries that match the entries to update, in the format: `[{"key1": "value1"},{"key2": "value2"}]`. This list must match the comma-separated list of the update argument by order and size.'
+    - description: 'A comma-separated list of queries that match the entries to update, in the format: `[{"key1": "value1"},{"key2": "value2"}]`. This list must match the comma-separated list of the update argument by order and size.'
       isArray: true
       name: filter
       required: true
-      secret: false
-    - default: false
-      description: 'A comma-separated list of operations to update entries, in the format: `[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]`. You can use "Update Operators" or "Aggregation Pipeline". This list must match the comma-separated list of the filter argument by order and size.'
+    - description: 'A comma-separated list of operations to update entries, in the format: `[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]`. You can use "Update Operators" or "Aggregation Pipeline". This list must match the comma-separated list of the filter argument by order and size.'
       isArray: true
       name: update
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Will create a new entry if no entires match the provided queries (per query). This argument will effect all the provided queries. Default is false.
-      isArray: false
       name: upsert
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to update a single entry per query. If true, will set only the first found entry, If false, will set all found entries. This argument will effect all the provided queries. Default is true.
-      isArray: false
       name: update_one
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Bulk updates entries in a collection.
-    execution: false
     name: mongodb-bulk-update
   dockerimage: demisto/py3-tools:1.0.0.49703
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
