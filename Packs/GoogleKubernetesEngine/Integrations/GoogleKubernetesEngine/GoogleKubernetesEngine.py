@@ -4,12 +4,12 @@ from CommonServerPython import *  # noqa: F401
 # IMPORTS #
 ###########
 # STD packages
-from typing import Dict, Callable, Tuple, Any, Optional, List
+from typing import Any
+from collections.abc import Callable
 # 3-rd party packages
 from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
-from google.cloud.container_v1 import enums
 from google.oauth2 import service_account
 # Local packages
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -38,7 +38,7 @@ CLUSTER_CONTEXT = f'{INTEGRATION_CONTEXT_NAME}.Cluster(val.Name && val.Name == o
 NODE_POOL_CONTEXT = f'{INTEGRATION_CONTEXT_NAME}.NodePool(val.Name && val.Name == obj.Name)'
 OPERATION_CONTEXT = f'{INTEGRATION_CONTEXT_NAME}.Operation(val.Name && val.Name == obj.Name)'
 OPERATION_TABLE = ['Name', 'Zone', 'Status', 'StartTime']
-COMMAND_OUTPUT = Tuple[str, Dict[str, Any], Dict[str, Any]]
+COMMAND_OUTPUT = tuple[str, dict[str, Any], dict[str, Any]]
 API_TIMEOUT = 90
 
 
@@ -52,14 +52,19 @@ def handle_default_configuration():
     Returns:
         dict: arguments filled with default configuration if args not configured.
     """
-    command_arguments = demisto.args()
-    integration_parameters = demisto.params()
-    default_parameters = ['project', 'zone']
-    for param in default_parameters:
-        if param not in command_arguments:
-            command_arguments[param] = integration_parameters.get(f'default_{param}')
+    args = demisto.args()
+    params = demisto.params()
+    args |= {
+        'project':
+            args.get('project')
+            or params.get('credentials', {}).get('identifier')
+            or params.get('default_project'),
+        'zone':
+            args.get('zone')
+            or params.get('default_zone'),
+    }
 
-    return command_arguments
+    return args
 
 
 def google_client_setup(json_configuration: str) -> ClusterManagerClient:
@@ -300,10 +305,10 @@ def gcloud_clusters_list_command(client: ClusterManagerClient, project: str, zon
     raw_response_msg: Message = client.list_clusters(project_id=project,
                                                      zone=zone,
                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
 
     # Entry context
-    clusters_ec: List[dict] = [parse_cluster(cluster) for cluster in raw_response_dict.get('clusters', [])]
+    clusters_ec: list[dict] = [parse_cluster(cluster) for cluster in raw_response_dict.get('clusters', [])]
     entry_context = {
         CLUSTER_CONTEXT: clusters_ec,
     }
@@ -336,7 +341,7 @@ def gcloud_clusters_describe_command(client: ClusterManagerClient, project: str 
                                                    zone=zone,
                                                    timeout=API_TIMEOUT)
     # Entry context
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     cluster_ec = parse_cluster(raw_response_dict)
     entry_context = {
         CLUSTER_CONTEXT: cluster_ec,
@@ -349,7 +354,7 @@ def gcloud_clusters_describe_command(client: ClusterManagerClient, project: str 
 
 
 def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, cluster: str, zone: str,
-                                    basic_auth: Optional[str] = None) -> COMMAND_OUTPUT:
+                                    basic_auth: str | None = None) -> COMMAND_OUTPUT:
     """ Enable basic (username/password) auth for the cluster. Enable will create user admin with generated password.
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/update#--enable-basic-auth
 
@@ -366,16 +371,20 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
         dict: Operation raw response.
     """
     # Perform cluster update
-    upadte = {
+    update = {
         "username": "admin" if basic_auth == "enable" else ""
     }
-    raw_response_msg: Message = client.set_master_auth(action=enums.SetMasterAuthRequest.Action.SET_USERNAME,
-                                                       project_id=project,
-                                                       zone=zone,
-                                                       cluster_id=cluster,
-                                                       update=upadte,
-                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_msg: Message = client.set_master_auth(
+        request={
+            'action': 'SET_USERNAME',
+            'project_id': project,
+            'zone': zone,
+            'cluster_id': cluster,
+            'update': update,
+        },
+        timeout=API_TIMEOUT,
+    )
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -390,9 +399,9 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
 
 
 def gcloud_clusters_set_addons_command(client: ClusterManagerClient, project: str, cluster: str, zone: str,
-                                       http_load_balancing: Optional[str] = None,
-                                       kubernetes_dashboard: Optional[str] = None,
-                                       network_policy: Optional[str] = None) -> COMMAND_OUTPUT:
+                                       http_load_balancing: str | None = None,
+                                       kubernetes_dashboard: str | None = None,
+                                       network_policy: str | None = None) -> COMMAND_OUTPUT:
     """ Sets the addons for a specific cluster.
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/update#--update-addons
 
@@ -429,7 +438,7 @@ def gcloud_clusters_set_addons_command(client: ClusterManagerClient, project: st
                                                          cluster_id=cluster,
                                                          addons_config=update,
                                                          timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -444,7 +453,7 @@ def gcloud_clusters_set_addons_command(client: ClusterManagerClient, project: st
 
 
 def gcloud_clusters_set_legacy_auth_command(client: ClusterManagerClient, project: str, cluster: str, zone: str,
-                                            enable: Optional[str] = None) -> COMMAND_OUTPUT:
+                                            enable: str | None = None) -> COMMAND_OUTPUT:
     """ Enable or Disable legacy ABAC auth.
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/update#--enable-legacy-authorization
 
@@ -466,7 +475,7 @@ def gcloud_clusters_set_legacy_auth_command(client: ClusterManagerClient, projec
                                                        cluster_id=cluster,
                                                        enabled=(enable == 'true'),
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -482,8 +491,8 @@ def gcloud_clusters_set_legacy_auth_command(client: ClusterManagerClient, projec
 
 def gcloud_clusters_set_master_authorized_network_command(client: ClusterManagerClient, project: str, cluster: str,
                                                           zone: str,
-                                                          enable: Optional[str] = None,
-                                                          cidrs: Optional[str] = None) -> COMMAND_OUTPUT:
+                                                          enable: str | None = None,
+                                                          cidrs: str | None = None) -> COMMAND_OUTPUT:
     """ Enable or Disable authorized CIDRs to master node and add cidrs.
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/update#--master-authorized-networks
 
@@ -513,7 +522,7 @@ def gcloud_clusters_set_master_authorized_network_command(client: ClusterManager
                                                       cluster_id=cluster,
                                                       update=update,
                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -528,7 +537,7 @@ def gcloud_clusters_set_master_authorized_network_command(client: ClusterManager
 
 
 def gcloud_clusters_set_k8s_stackdriver_command(client: ClusterManagerClient, project: str, cluster: str, zone: str,
-                                                enable: Optional[str] = None) -> COMMAND_OUTPUT:
+                                                enable: str | None = None) -> COMMAND_OUTPUT:
     """ Enable or Disable k8s stackdriver.
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/update#--enable-stackdriver-kubernetes
 
@@ -555,7 +564,7 @@ def gcloud_clusters_set_k8s_stackdriver_command(client: ClusterManagerClient, pr
                                                               monitoring_service=update,
                                                               timeout=API_TIMEOUT)
 
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -570,7 +579,7 @@ def gcloud_clusters_set_k8s_stackdriver_command(client: ClusterManagerClient, pr
 
 
 def gcloud_clusters_set_binary_auth(client: ClusterManagerClient, project: str, cluster: str, zone: str,
-                                    enable: Optional[str] = None) -> COMMAND_OUTPUT:
+                                    enable: str | None = None) -> COMMAND_OUTPUT:
     """ Enable or Disable binary authorize.
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/update#--enable-binauthz
 
@@ -597,7 +606,7 @@ def gcloud_clusters_set_binary_auth(client: ClusterManagerClient, project: str, 
                                                       cluster_id=cluster,
                                                       update=update,
                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -612,7 +621,7 @@ def gcloud_clusters_set_binary_auth(client: ClusterManagerClient, project: str, 
 
 
 def gcloud_clusters_set_intra_node_visibility(client: ClusterManagerClient, project: str, cluster: str, zone: str,
-                                              enable: Optional[str] = None) -> COMMAND_OUTPUT:
+                                              enable: str | None = None) -> COMMAND_OUTPUT:
     """ Enable or Disable for intra node visibility in cluster.
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/update#--enable-intra-node-visibility
 
@@ -640,7 +649,7 @@ def gcloud_clusters_set_intra_node_visibility(client: ClusterManagerClient, proj
                                                       cluster_id=cluster,
                                                       update=update,
                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -675,9 +684,9 @@ def gcloud_node_pool_list_command(client: ClusterManagerClient, project: str, zo
                                                        zone=zone,
                                                        cluster_id=cluster,
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
-    node_pools_ec: List[dict] = [parse_node_pool(node_pool) for node_pool in raw_response_dict.get('nodePools', [])]
+    node_pools_ec: list[dict] = [parse_node_pool(node_pool) for node_pool in raw_response_dict.get('nodePools', [])]
     entry_context = {
         NODE_POOL_CONTEXT: node_pools_ec
     }
@@ -711,7 +720,7 @@ def gcloud_node_pool_describe_command(client: ClusterManagerClient, project: str
                                                      cluster_id=cluster,
                                                      node_pool_id=node_pool,
                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     node_pools_ec: dict = parse_node_pool(raw_response_dict)
     entry_context = {
@@ -726,8 +735,8 @@ def gcloud_node_pool_describe_command(client: ClusterManagerClient, project: str
 
 
 def gcloud_set_node_pool_management(client: ClusterManagerClient, project: str, zone: str, cluster: str,
-                                    node_pool: str, auto_repair: Optional[str] = None,
-                                    auto_upgrade: Optional[str] = None) -> COMMAND_OUTPUT:
+                                    node_pool: str, auto_repair: str | None = None,
+                                    auto_upgrade: str | None = None) -> COMMAND_OUTPUT:
     """ Disbale or Enable node-pool functionallity:
             1. auto-repair.
             2. auto-upgrade.
@@ -754,13 +763,16 @@ def gcloud_set_node_pool_management(client: ClusterManagerClient, project: str, 
     if auto_upgrade:
         update['auto_upgrade'] = auto_upgrade == 'enable'
 
-    raw_response_msg: Message = client.set_node_pool_management(project_id=project,
-                                                                zone=zone,
-                                                                cluster_id=cluster,
-                                                                node_pool_id=node_pool,
-                                                                management=update,
-                                                                timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_msg: Message = client.set_node_pool_management(
+        request={
+            'project_id': project,
+            'zone': zone,
+            'cluster_id': cluster,
+            'node_pool_id': node_pool,
+            'management': update,
+        },
+        timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -793,9 +805,9 @@ def gcloud_operations_list_command(client: ClusterManagerClient, project: str, z
     raw_response_msg: Message = client.list_operations(project_id=project,
                                                        zone=zone,
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
-    operations: List[dict] = [parse_operation(operation) for operation in raw_response_dict.get('operations', [])]
+    operations: list[dict] = [parse_operation(operation) for operation in raw_response_dict.get('operations', [])]
     entry_context = {
         OPERATION_CONTEXT: operations,
     }
@@ -828,7 +840,7 @@ def gcloud_operations_describe_command(client: ClusterManagerClient, project: st
                                                      zone=zone,
                                                      operation_id=operation,
                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operations: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -875,7 +887,7 @@ def main():
     # Execute command
     command = demisto.command()
     LOG(f'Command being called is {command}')
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         # Clusters
         "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-list": gcloud_clusters_list_command,
@@ -898,7 +910,9 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-operations-cancel": gcloud_operations_cancel_command,
     }
     try:
-        client: ClusterManagerClient = google_client_setup(json_configuration=demisto.getParam('credentials_json'))
+        client: ClusterManagerClient = google_client_setup(
+            demisto.params().get('credentials', {}).get('password')
+            or demisto.params().get('credentials_json'))
         command_arguments = handle_default_configuration()
         readable_output, context_entry, raw_response = commands[command](client=client, **command_arguments)
 

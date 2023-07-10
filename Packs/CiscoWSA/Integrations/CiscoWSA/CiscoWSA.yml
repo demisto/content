@@ -19,16 +19,13 @@ configuration:
 - display: "Port"
   name: port
   type: 0
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -68,24 +65,16 @@ script:
       description: Name of the policy. Unique identifier of the policy
     - name: profile_name
       required: true
-      description: (profile_name, auth). Use "No Authentication" in case of no authentication
-        required for the specific profile. Empty strings represents "global identification
-        profile". _all_ represents "All identification profiles".  Please  all inputs
-        comma separated.
+      description: (profile_name, auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated.
     - name: auth
       required: true
-      description: (profile_name,auth). Use "No Authentication" in case of no authentication
-        required for the specific profile. Empty strings represents "global identification
-        profile". _all_ represents "All identification profiles".  Please  all inputs
-        comma separated.
+      description: (profile_name,auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated.
     - name: policy_order
       required: true
-      description: Index of this specific profile in the collection. Its starts from
-        1. Order of policy in collection of policies. Not applicable for global_policy.
+      description: Index of this specific profile in the collection. Its starts from 1. Order of policy in collection of policies. Not applicable for global_policy.
     - name: policy_status
       required: true
-      description: 'Whether profile is enabled or disabled. Possible values: enable,
-        disable'
+      description: 'Whether profile is enabled or disabled. Possible values: enable, disable'
     outputs:
     - contextPath: wsa.response
       description: whether the result indicates if request is success or failure
@@ -99,25 +88,16 @@ script:
     - name: policy_status
       description: Enable/disable
     - name: profile_name
-      description: (profile_name, auth). Use "No Authentication" in case of no authentication
-        required for the specific profile. Empty strings represents "global identification
-        profile". _all_ represents "All identification profiles".  Please  all inputs
-        comma separated.
+      description: (profile_name, auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated.
     - name: policy_order
-      description: Index of this specific profile in the collection. Its starts from
-        1. Index of this specific profile in the collection. Its starts from 1. Order
-        of policy in collection of policies. Not applicable for global_policy.
+      description: Index of this specific profile in the collection. Its starts from 1. Index of this specific profile in the collection. Its starts from 1. Order of policy in collection of policies. Not applicable for global_policy.
     - name: auth
-      description: (profile_name,auth). Use "No Authentication" in case of no authentication
-        required for the specific profile. Empty strings represents "global identification
-        profile". _all_ represents "All identification profiles".  Please  all inputs
-        comma separated.
+      description: (profile_name,auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated.
     outputs:
     - contextPath: wsa.response
       description: whether the result indicates if request is success or failure
     description: Deleting an Access Policy
   dockerimage: demisto/python3:3.10.10.48392
-  runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:
