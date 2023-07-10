@@ -14,7 +14,9 @@ from Tests.scripts.lock_cloud_machines import get_my_place_in_the_queue, try_to_
         ([{'status': 'running'}], 1, 'running'),
         ([ConnectionError, {'status': 'running'}], 2, 'running'),
         ([ConnectionError, ConnectionError, {'status': 'running'}], 3, 'running'),
-        ([ConnectionError, ConnectionError, ConnectionError, {'status': 'running'}], 4, 'running')
+        ([ConnectionError, ConnectionError, ConnectionError, {'status': 'running'}], 4, 'running'),
+        ([ConnectionError, ConnectionError, ConnectionError, {'status': 'failed'}], 4, 'failed'),
+        ([ConnectionError, ConnectionError, {'status': 'done'}], 3, 'done')
     ],
 )
 def test_check_job_status_with_connection_errors(mocker, responses, expected_times_called, expected_status):
