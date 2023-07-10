@@ -39,7 +39,7 @@ def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
 
     else:  # requesting by log_id
         query_params = {
-            "from": last_run.pop('last_id'),
+            "from": last_run.get('last_id'),
             "sort": "date:1",
             "take": 100
         }
@@ -100,7 +100,7 @@ class Client(BaseClient):
             raw_response = self.get_access_token_request()
             set_integration_context({
                 "access_token": raw_response.get("access_token"),
-                "expired_token_time": raw_response.get("expires_in")
+                "expired_token_time": int(time.time())
             })
 
         return get_integration_context()["access_token"]
@@ -131,26 +131,33 @@ class Client(BaseClient):
         aggregated_events: List[dict] = []
 
         events = self.get_events_request(query_params)
-        while events:
-            for event in events:
+        try:
+            while events:
+                for event in events:
 
-                if len(aggregated_events) == fetch_events_limit:
-                    demisto.info(f'Reached the user-defined limit ({fetch_events_limit}) - stopping.')
-                    last_run['last_id'] = aggregated_events[-1].get('_id')
-                    break
+                    if len(aggregated_events) == fetch_events_limit:
+                        demisto.info(f'Reached the user-defined limit ({fetch_events_limit}) - stopping.')
+                        last_run['last_id'] = aggregated_events[-1].get('_id')
+                        break
 
-                aggregated_events.append(event)
+                    aggregated_events.append(event)
 
-            else:
-                # Finished iterating through all events in this batch
-                query_params['from'] = aggregated_events[-1].get('_id')
-                events = self.get_events_request(query_params)
-                continue
+                else:
+                    # Finished iterating through all events in this batch
+                    query_params.update({'from': aggregated_events[-1].get('_id'), 'take': 100})
+                    events = self.get_events_request(query_params)
+                    continue
 
-            demisto.info('Finished iterating through all events in this fetch run.')
-            break
+                demisto.info('Finished iterating through all events in this fetch run.')
+                break
+        except DemistoException as e:
+            if not e.res or e.res.status_code != 429:
+                raise e
+            demisto.info('Reached API rate limit, storing last id')
 
-        last_run['last_id'] = aggregated_events[-1].get('_id')
+        if aggregated_events:
+            last_run['last_id'] = aggregated_events[-1].get('_id')
+
         return aggregated_events
 
 

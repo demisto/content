@@ -33,9 +33,9 @@ class MockResponse:
 
 @pytest.mark.parametrize('params, last_run, expected_params', [
     ({'limit': '1', 'since': '2022-08-01T09:00:00Z'}, {}, {'q': 'date:[2022-08-01T09:00:00Z TO *]',
-                                                           'sort': 'date:1', 'page': 0, 'per_page': 1}),
-    ({'since': '2022-08-01T09:00:00Z'}, {'query': 'date:[2022-09-01T09:00:00Z TO *]', 'page': 2},
-     {'q': 'date:[2022-09-01T09:00:00Z TO *]', 'sort': 'date:1', 'page': 2, 'per_page': 1000}),
+                                                           'sort': 'date:1', 'per_page': 100}),
+    ({'since': '2022-08-01T09:00:00Z'}, {'last_id': '11111'},
+     {'from': '11111', 'sort': 'date:1', 'take': 100}),
 ])
 def test_auth0_events_params_good(params, last_run, expected_params):
     """
@@ -46,20 +46,10 @@ def test_auth0_events_params_good(params, last_run, expected_params):
     Then:
         - Make sure they are parsed correctly.
     """
-    query_params = prepare_query_params(params, last_run)
-
-    if query_params['q']:
-        assert query_params['q'] == 'date:[2022-09-01T09:00:00Z TO *]' if 'query' in last_run else \
-            query_params['q'] == 'date:[2022-08-01T09:00:00Z TO *]'
-
-    assert query_params == expected_params
+    assert prepare_query_params(params, last_run) == expected_params
 
 
-@pytest.mark.parametrize('params', [
-    {'limit': 'hello'},
-    {'since': 'hello'},
-])
-def test_auth0_events_params_bad(params):
+def test_auth0_events_params_bad():
     """
     Given:
         - Various dictionary bad values.
@@ -68,6 +58,7 @@ def test_auth0_events_params_bad(params):
     Then:
         - Make sure an Exception is raised.
     """
+    params = {'since': 'hello'}
     with pytest.raises(ValueError):
         prepare_query_params(params)
 
@@ -98,20 +89,17 @@ def test_fetch_events(requests_mock):
     """
     from OktaAuth0EventCollector import fetch_events_command
 
-    last_run = {'first_id': 2}
+    requests_mock.post(f'{CORE_URL}/oauth/token', json={"access_token": "token"})
+    requests_mock.get(f'{CORE_URL}/api/v2/logs', json=MOCK_EVENTS)
 
-    requests_mock.post(f'{CORE_URL}/auth/oauth2/v2/token', json={"access_token": "token"})
-    requests_mock.get(f'{CORE_URL}/api/1/events/types', json=MOCK_EVENT_TYPES)
-    requests_mock.get(f'{CORE_URL}/api/1/events', json=MOCK_EVENTS)
-
-    events, _ = fetch_events_command(Client(base_url='', client_id='', client_secret='', verify=False, proxy=False),
-                                     params={"limit": 3}, last_run=last_run)
+    events, last_run = fetch_events_command(Client(base_url=CORE_URL, client_id='', client_secret='', verify=False, proxy=False),
+                                            params={"since": "3 days", "limit": 3}, last_run={})
 
     assert len(events) == 3
-    assert events[0].get('id') == 2
+    assert last_run['last_id'] == '3'
 
 
-def test_fetch_events_with_iterations(requests_mock):
+def test_fetch_events_with_iterations(mocker):
     """
     Given:
         - fetch-events command execution.
@@ -123,39 +111,49 @@ def test_fetch_events_with_iterations(requests_mock):
     """
     from OktaAuth0EventCollector import fetch_events_command
 
-    requests_mock.post(f'{CORE_URL}/auth/oauth2/v2/token', json={"access_token": "token"})
-    requests_mock.get(f'{CORE_URL}/api/1/events/types', json=MOCK_EVENT_TYPES)
-    mock_request = requests_mock.get(f'{CORE_URL}/api/1/events', json=MOCK_EVENTS)
+    mocker.patch.object(Client, 'get_access_token', return_value='token')
+    logs_mock = mocker.patch.object(Client, '_http_request', side_effect=[MOCK_EVENTS[:2], MOCK_EVENTS[2:-1], [MOCK_EVENTS[-1]]])
 
-    events, _ = fetch_events_command(Client(base_url='', client_id='', client_secret='', verify=False, proxy=False),
-                                     params={'limit': 10}, last_run={})
+    client = Client(base_url=CORE_URL, client_id='', client_secret='', verify=False, proxy=False)
+    defined_limit = 4
 
-    assert len(events) == 10
-    assert mock_request.call_count == 3
+    events, last_run = fetch_events_command(client, {"limit": 4}, {})
+
+    assert len(events) == defined_limit
+    assert logs_mock.call_count == 3
+    assert last_run['last_id'] == '4'
 
 
-def test_fetch_events_with_last_event_ids(requests_mock):
+@pytest.mark.parametrize('int_context, expected_token', [
+    ({}, 'new_token'),
+    ({'access_token': 'token', 'expired_token_time': 1688852440}, 'token'),
+    ({'access_token': 'token', 'expired_token_time': 1688852439}, 'new_token')
+])
+def test_get_access_token(mocker, requests_mock, int_context, expected_token):
     """
     Given:
-        - fetch-events call, where first_id = 2 in LastRun obj.
+        - fetch-events command execution.
     When:
-        - Four events with ids 1, 2, 3 and 4 are retrieved from the API.
+        - Limit parameter value is 10.
+        - A single /events API call retrieves 4 events.
     Then:
-        - Make sure only events 2, 3 and 4 are returned (1 should not).
+        - Make sure the logs API is called 3 times.
     """
-    from OktaAuth0EventCollector import fetch_events_command
+    import time
 
-    last_run = {'last_event_ids': [1, 2]}
+    mocker.patch.object(time, 'time', return_value=1688935240)
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=int_context)
 
-    requests_mock.post(f'{CORE_URL}/auth/oauth2/v2/token', json={"access_token": "token"})
-    requests_mock.get(f'{CORE_URL}/api/1/events/types', json=MOCK_EVENT_TYPES)
-    requests_mock.get(f'{CORE_URL}/api/1/events', json=MOCK_EVENTS)
+    def set_int_context(context):
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
 
-    events, _ = fetch_events_command(Client(base_url='', client_id='', client_secret='', verify=False, proxy=False),
-                                     params={"limit": 2}, last_run=last_run)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_int_context)
+    requests_mock.post(f'{CORE_URL}/oauth/token', json={"access_token": "new_token"})
 
-    assert len(events) == 2
-    assert events[0].get('id') == 3
+    client = Client(base_url=CORE_URL, client_id='', client_secret='', verify=False, proxy=False)
+    access_token = client.get_access_token()
+
+    assert access_token == expected_token
 
 
 def test_get_events(mocker, requests_mock):
