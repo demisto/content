@@ -1,5 +1,7 @@
 id: Set list of indicator types
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Set list of indicator types
 description: This playbook takes IOCs as input and adds the type into a list to be able to calculate stats about the types of the extracted indicators
 starttaskid: "0"
@@ -36,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0adc17c8-e904-4f46-83ae-d95e2cf326ee
+    taskid: 947a0284-e96c-4747-84ea-d4ba3bd6e641
     type: regular
     task:
-      id: 0adc17c8-e904-4f46-83ae-d95e2cf326ee
+      id: 947a0284-e96c-4747-84ea-d4ba3bd6e641
       version: -1
       name: Add windows Path to list
       description: commands.local.cmd.list.add
@@ -53,8 +55,7 @@ tasks:
     scriptarguments:
       listData:
         complex:
-          root: ExtractedIndicators
-          accessor: Windows_Path
+          root: inputs.WindowsPaths
           transformers:
           - operator: uniq
           - operator: replaceMatch
@@ -92,10 +93,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 76d76cdf-c434-4dc8-8403-5c418b858bea
+    taskid: bd5b9cae-4b38-42e6-8c69-533696a8b3d4
     type: regular
     task:
-      id: 76d76cdf-c434-4dc8-8403-5c418b858bea
+      id: bd5b9cae-4b38-42e6-8c69-533696a8b3d4
       version: -1
       name: Add Domain to list
       description: commands.local.cmd.list.add
@@ -109,8 +110,7 @@ tasks:
     scriptarguments:
       listData:
         complex:
-          root: ExtractedIndicators
-          accessor: Domain
+          root: inputs.Domain
           transformers:
           - operator: uniq
           - operator: replaceMatch
@@ -148,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 4fbebc01-7365-4435-883f-f585a2a00f9b
+    taskid: 23e109cd-0c64-40e8-8e8f-d1ce0e3c648f
     type: regular
     task:
-      id: 4fbebc01-7365-4435-883f-f585a2a00f9b
+      id: 23e109cd-0c64-40e8-8e8f-d1ce0e3c648f
       version: -1
       name: Add URL to list
       description: commands.local.cmd.list.add
@@ -165,8 +165,7 @@ tasks:
     scriptarguments:
       listData:
         complex:
-          root: ExtractedIndicators
-          accessor: URL
+          root: inputs.URL
           transformers:
           - operator: uniq
           - operator: replaceMatch
@@ -204,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 50ec7a9c-816b-4bdf-82a1-b77dd15ac45c
+    taskid: a1eb5181-5cd6-4b2f-8df8-a1a1157bc0ce
     type: regular
     task:
-      id: 50ec7a9c-816b-4bdf-82a1-b77dd15ac45c
+      id: a1eb5181-5cd6-4b2f-8df8-a1a1157bc0ce
       version: -1
       name: Add Time & Date Indicator type to list
       description: commands.local.cmd.list.add
@@ -221,8 +220,7 @@ tasks:
     scriptarguments:
       listData:
         complex:
-          root: ExtractedIndicators
-          accessor: Windows_Date&Time
+          root: inputs.WindowsDateTime
           transformers:
           - operator: uniq
           - operator: replaceMatch
@@ -260,10 +258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 02d86e63-ba79-4b16-8921-5b2688d0b2dc
+    taskid: 220cde94-f327-4291-8556-79abd2373f77
     type: regular
     task:
-      id: 02d86e63-ba79-4b16-8921-5b2688d0b2dc
+      id: 220cde94-f327-4291-8556-79abd2373f77
       version: -1
       name: Add Email Address Indicator type to list
       description: commands.local.cmd.list.add
@@ -277,8 +275,7 @@ tasks:
     scriptarguments:
       listData:
         complex:
-          root: ExtractedIndicators
-          accessor: Email
+          root: inputs.EmailAddresses
           transformers:
           - operator: uniq
           - operator: replaceMatch
@@ -316,10 +313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3f30ce05-500b-4d63-8a2a-ce9e6b2b5ae0
+    taskid: 8cb7bdd1-81b4-49e4-82ab-034c97b31504
     type: regular
     task:
-      id: 3f30ce05-500b-4d63-8a2a-ce9e6b2b5ae0
+      id: 8cb7bdd1-81b4-49e4-82ab-034c97b31504
       version: -1
       name: Add Executable Indicator type to list
       description: commands.local.cmd.list.add
@@ -333,8 +330,7 @@ tasks:
     scriptarguments:
       listData:
         complex:
-          root: ExtractedIndicators
-          accessor: Executables
+          root: inputs.Executables
           transformers:
           - operator: uniq
           - operator: replaceMatch
@@ -508,6 +504,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
