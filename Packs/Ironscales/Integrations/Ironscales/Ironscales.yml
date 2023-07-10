@@ -30,35 +30,29 @@ configuration:
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
 - display: First fetch
   name: first_fetch
-  required: false
   type: 0
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   defaultvalue: Ironscales
   name: incidentType
-  required: false
   type: 13
   section: Connect
 description: IRONSCALES, a self-learning email security platform integration
@@ -172,7 +166,6 @@ script:
   dockerimage: demisto/python3:3.10.12.63474
   isFetchSamples: true
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

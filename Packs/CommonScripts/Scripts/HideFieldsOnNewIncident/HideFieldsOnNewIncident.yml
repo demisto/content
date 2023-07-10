@@ -16,7 +16,6 @@ args:
 - name: field
   description: Field definition object
 scripttarget: 0
-runonce: false
 dockerimage: demisto/python3:3.10.7.33922
 tests:
 - No tests (auto formatted)

@@ -113,7 +113,6 @@ outputs:
 - contextPath: DBotPredictTextLabel.InputTextTokens
   description: The input text
 scripttarget: 0
-runonce: false
 dockerimage: demisto/dl:1.1
 deprecated: true
 fromversion: 5.0.0
