@@ -380,7 +380,7 @@ def test_remove_tag_to_assets_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, assign_tag_to_assets_command
+    from CortexXpanse import Client, remove_tag_to_assets_command
 
     from test_data.raw_response import TAG_REMOVE_RAW
     from test_data.expected_results import TAG_REMOVE_RESULTS
@@ -401,24 +401,24 @@ def test_remove_tag_to_assets_command(requests_mock):
         'tags': 'Test'
     }
 
-    response = assign_tag_to_assets_command(client, args)
+    response = remove_tag_to_assets_command(client, args)
 
     assert response.outputs == TAG_REMOVE_RESULTS
     assert response.outputs_prefix == 'ASM.TagRemoval'
 
 
 def test_assign_tag_to_ranges_command(requests_mock):
-    """Tests assign_tag_to_assets_command function.
+    """Tests assign_tag_to_ranges_command function.
 
         Given:
-            - requests_mock instance to generate the appropriate assign_tag_to_assets_command( API response,
+            - requests_mock instance to generate the appropriate assign_tag_to_ranges_command( API response,
               loaded from a local JSON file.
         When:
-            - Running the 'assign_tag_to_assets_command'.
+            - Running the 'assign_tag_to_ranges_command'.
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, assign_tag_to_assets_command
+    from CortexXpanse import Client, assign_tag_to_ranges_command
 
     from test_data.raw_response import TAG_APPLY_RAW
     from test_data.expected_results import TAG_APPLY_RESULTS
@@ -439,24 +439,24 @@ def test_assign_tag_to_ranges_command(requests_mock):
         'tags': 'Test'
     }
 
-    response = assign_tag_to_assets_command(client, args)
+    response = assign_tag_to_ranges_command(client, args)
 
     assert response.outputs == TAG_APPLY_RESULTS
     assert response.outputs_prefix == 'ASM.TagAssignment'
 
 
 def test_remove_tag_to_ranges_command(requests_mock):
-    """Tests remove_tag_to_assets_command function.
+    """Tests remove_tag_to_ranges_command function.
 
         Given:
             - requests_mock instance to generate the appropriate remove_tag_to_assets_command( API response,
               loaded from a local JSON file.
         When:
-            - Running the 'assign_tag_to_assets_command'.
+            - Running the 'remove_tag_to_ranges_command'.
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, assign_tag_to_assets_command
+    from CortexXpanse import Client, remove_tag_to_ranges_command
 
     from test_data.raw_response import TAG_REMOVE_RAW
     from test_data.expected_results import TAG_REMOVE_RESULTS
@@ -477,7 +477,7 @@ def test_remove_tag_to_ranges_command(requests_mock):
         'tags': 'Test'
     }
 
-    response = assign_tag_to_assets_command(client, args)
+    response = remove_tag_to_ranges_command(client, args)
 
     assert response.outputs == TAG_REMOVE_RESULTS
     assert response.outputs_prefix == 'ASM.TagRemoval'
@@ -518,8 +518,8 @@ def test_fetch_incidents(requests_mock, mocker):
         last_run=last_run,
         first_fetch_time=1658452708759,
         severity=None,
-        status=[],
-        tags=[])
+        status=None,
+        tags=None)
 
     assert len(incidents) == 2
     assert incidents[0]['name'] == "Networking Infrastructure"
