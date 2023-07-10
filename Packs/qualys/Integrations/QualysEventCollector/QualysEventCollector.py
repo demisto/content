@@ -174,8 +174,7 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
 def parse_raw_response(response: Union[bytes, requests.Response]) -> dict:
     """
     Parses raw response from Qualys.
-    Tries to load as JSON. If fails to do so, tries to load as XML.
-    If both fails, returns an empty dict.
+    Load xml as JSON.
     Args:
         response (Union[bytes, requests.Response]): Response from Qualys service.
 
@@ -516,12 +515,13 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
     return 'ok'
 
 
-def should_run_host_detections_fetch(last_run, host_detections_fetch_interval: timedelta, datatime_now: datetime):
+def should_run_host_detections_fetch(last_run, host_detections_fetch_interval: timedelta, datetime_now: datetime):
     """
 
     Args:
         last_run: last run object.
         host_detections_fetch_interval: host detection fetch interval.
+        datetime_now: time now
 
     Returns: True if fetch host detections interval time has passed since last time that fetch run.
 
@@ -532,7 +532,7 @@ def should_run_host_detections_fetch(last_run, host_detections_fetch_interval: t
         # never run host detections fetch before
         return True
     demisto.debug(f'Should run host detections? {last_check_time=}, {host_detections_fetch_interval=}')
-    return datatime_now - last_check_time > host_detections_fetch_interval
+    return datetime_now - last_check_time > host_detections_fetch_interval
 
 
 """ MAIN FUNCTION """
@@ -600,7 +600,7 @@ def main():  # pragma: no cover
             host_next_run = {}
             if should_run_host_detections_fetch(last_run=last_run,
                                                 host_detections_fetch_interval=host_detections_fetch_interval,
-                                                datatime_now=datetime.now()):
+                                                datetime_now=datetime.now()):
                 host_next_run, host_list_detection_events = fetch_events(
                     client=client,
                     last_run=last_run,

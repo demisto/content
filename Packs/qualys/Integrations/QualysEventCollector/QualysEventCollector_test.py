@@ -103,7 +103,7 @@ def test_should_run_host_detections_fetch(last_run, fetch_interval_param, expect
     last_run_dict = {'host_last_fetch': last_run}
     should_run = should_run_host_detections_fetch(last_run=last_run_dict,
                                                   host_detections_fetch_interval=fetch_interval,
-                                                  datatime_now=datetime_now)
+                                                  datetime_now=datetime_now)
     assert should_run == expected_should_run
 
 
