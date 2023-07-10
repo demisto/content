@@ -39,9 +39,9 @@ jobs:
       run: |
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
-        git checkout -b demisto-sdk-release
+        git checkout -b ${{ inputs.release_version }}
         git commit -m "poetry files" -a
-        git push origin demisto-sdk-release
-        gh pr create -B demisto-sdk-release -H master --title 'demisto-sdk-release' --body 'demisto-sdk-release'
+        git push origin ${{ inputs.release_version }}
+        gh pr create -B demisto-sdk-release -H master --title 'demisto-sdk-release' --body 'demisto-sdk-release' --reviewer ${{ inputs.reviewer }}
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
