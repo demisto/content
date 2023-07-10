@@ -1605,14 +1605,8 @@ Sends chat messages on Zoom to either an individual user who is in your contact 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | Unique identifier of the user. | Required | 
-| at_contact | This field is required if the value of at_type field is set to 1. Email address of the contact. | Optional | 
-| at_type | The type of mention. You can use one of the following values: 1: Mention a contact. 2: Mention "all" to notify everyone in the channel.  | Optional | 
-| end_position | The end position of the mention. | Optional | 
-| start_position | The start position of the mention("@") in the message string. | Optional | 
-| rt_start_position | The start position of the rich text in the message string. | Optional | 
-| rt_end_position | The end position of the rich text. | Optional | 
-| format_type | The type of rich text. There is some special logic which is the same as on the Zoom client. 1. AddLink's position can not cross multi lines. 2. A BulletedList will clear the formatting of a NumberedList, Quote, or LeftIndent after it. 3. Likewise, a NumberedList will clear the formatting of a BulletedList, Quote, or LeftIndent after it. 4. Only AddLink, NumberedList and BulletedList can apply to a message which already applied a Quote. 5. A Quote will clear the formatting of all styles after it except AddLink, NumberedList, BulletedList, or Italic. 6. An AddLink will clear the formatting of BackgroundColor, FontColor, or Underline after it. 7. BackgroundColor, FontColor and Underline can not apply to a message which already applied AddLink. 8. BulletedList, NumberedList, LeftIndent, Paragraph, and Quote will automatically expand to apply to the whole line. Possible values are: FontSize, FontColor, BackgroundColor, LeftIndent, Paragraph, AddLink. | Optional | 
-| format_attr | This field is required if the value of the format_type field is listed below: 1.FontSize value: s for small, m for medium, or l for large font size. 2.FontColor and BackgroundColor value: only supports RGB value. For example: FFC0CB 3.LeftIndent value: a positive pixel length. 4.Paragraph value: h1 for Heading 1, h2 for Heading 2, or h3 for Heading 3. 5.AddLink value: must be a valid URL, with an http or https prefix. For example: <https://example.com>. | Optional | 
+| at_contact |  Email address of the mention contact. | Optional | 
+| is_markdown | if a markdown message provide in the message argument| Optional
 | message | The message to be sent. Maximum of 1024 characters. | Required | 
 | entry_ids | A list of the file IDs to send. This field only accepts a maximum of six file IDs.  | Optional | 
 | reply_main_message_id | The reply message's ID. This field only returns if the message is a reply message. | Optional | 

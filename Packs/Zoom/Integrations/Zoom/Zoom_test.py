@@ -1400,10 +1400,6 @@ def test_zoom_send_message_command_with_file(mocker):
 
     zoom_send_message_command(client,
                               user_id=user_id,
-                              at_contact='user2@example.com',
-                              at_type='Mention a contact',
-                              start_position=11,
-                              end_position=16,
                               message='Hello from @dima!',
                               to_channel='channel1',
                               entry_ids='entry_id'
@@ -1429,21 +1425,6 @@ def test_zoom_send_message_command(mocker):
     expected_request_payload = {
         'message': 'Hello from @dima!',
         'to_channel': 'channel1',
-        'at_items': [
-            {
-                'at_contact': 'user2@example.com',
-                'at_type': 1,
-                'start_position': 11,
-                'end_position': 16
-            }
-        ],
-        'rich_text': [
-            {'start_position': None,
-             'end_position': None,
-             'format_type': None,
-             'format_attr': None
-             }
-        ],
         'file_ids': []
     }
 
@@ -1459,10 +1440,6 @@ def test_zoom_send_message_command(mocker):
 
     result = zoom_send_message_command(client,
                                        user_id='user1',
-                                       at_contact='user2@example.com',
-                                       at_type='Mention a contact',
-                                       start_position=11,
-                                       end_position=16,
                                        message='Hello from @dima!',
                                        to_channel='channel1',
 
