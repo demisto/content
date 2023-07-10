@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Tuple
 import time
 
 
@@ -179,7 +178,7 @@ def test_module_command(client: Client, params: dict) -> str:
     return 'ok'
 
 
-def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     Gets log events from Okta Auth0.
     Args:
@@ -274,8 +273,6 @@ def main() -> None:
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
             events, last_run = fetch_events_command(client, params, last_run)
-            print(len(events))
-            print(last_run)
             add_time_to_events(events)
             send_events_to_xsiam(
                 events,

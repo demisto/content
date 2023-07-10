@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 import demistomock as demisto
 
@@ -7,11 +6,11 @@ from OktaAuth0EventCollector import Client, prepare_query_params
 from requests import Session
 
 
-CORE_URL = 'https://api.oktaauth0.com'
+CORE_URL = 'https://api.example.com'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

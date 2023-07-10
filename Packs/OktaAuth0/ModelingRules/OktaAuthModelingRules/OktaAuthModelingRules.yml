@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: auth0_okta_modeling_rule
+id: auth0_okta_ModelingRule
 name: Auth0 Okta Modeling Rule
 rules: ''
 schema: ''
