@@ -830,8 +830,8 @@ def test_add_user_to_misp(mocker):
     result = add_user_to_misp(demisto_args)
     expected_output = {
         'readable_output': '## MISP add user\nNew user was added to MISP.\nEmail:test@example.com',
-        'raw_response': mock_response,
-        'outputs': mock_response
+        'raw_response': mock_response.get('User', {}),
+        'outputs': mock_response.get('User', {})
     }
     assert result.readable_output == expected_output['readable_output']
     assert result.raw_response == expected_output['raw_response']
