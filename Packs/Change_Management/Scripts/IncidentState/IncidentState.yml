@@ -10,7 +10,6 @@ dockerimage: demisto/python3:3.10.1.25933
 enabled: true
 name: IncidentState
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

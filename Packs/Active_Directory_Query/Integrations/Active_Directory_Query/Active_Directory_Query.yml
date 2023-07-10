@@ -8,10 +8,6 @@ configuration:
   required: true
   section: Connect
   type: 0
-- advanced: true
-  display: Port. If not specified, the default port is 389, or 636 for LDAPS.
-  name: port
-  required: false
   section: Connect
   type: 0
 - display: Credentials
@@ -22,7 +18,7 @@ configuration:
 - advanced: true
   display: NTLM authentication
   name: ntlm
-  required: false
+  type: 8
   section: Connect
   type: 8
 - display: Base DN (for example "dc=company,dc=com")
@@ -59,12 +55,13 @@ configuration:
   - TLSv1_1
   - TLSv1_2
   - TLS_CLIENT
-  required: false
+  type: 15
   section: Connect
   type: 15
 - advanced: true
   display: Trust any certificate (not secure)
   name: unsecure
+  type: 8
   required: false
   section: Connect
   type: 8
@@ -84,7 +81,8 @@ configuration:
   type: 0
 - display: Group CN for terminated employees
   name: group-cn
-  required: false
+  defaultvalue: ""
+  type: 0
   section: Connect
   type: 0
 - additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
@@ -92,7 +90,7 @@ configuration:
   defaultvalue: 'true'
   display: Create user if does not exist
   name: create-if-not-exists
-  required: false
+  type: 8
   section: Connect
   type: 8
 contentitemexportablefields:
@@ -265,11 +263,11 @@ script:
     - description: The username of the account to enable (sAMAccountName).
       name: username
       required: true
-    - description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
-      name: base-dn
-    - auto: PREDEFINED
-      description: If true, the command will enable the user with his restored options
-      name: restore_user
+      description: "The username of the account to enable (sAMAccountName)."
+    - name: base-dn
+      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
+    - name: restore_user
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -505,9 +503,10 @@ script:
       - person
       - computer
       - group
-      required: true
-    - description: CSV list of attributes to include in the results, in addition to the default attributes.
-      name: attributes
+      description: 'The type of members to search. Can be: "Person", or "computer". Default is person.'
+      defaultValue: person
+    - name: attributes
+      description: CSV list of attributes to include in the results, in addition to the default attributes.
     - defaultValue: '180'
       description: Time limit (in seconds) for the search to run.
       name: time_limit
@@ -518,17 +517,15 @@ script:
       predefined:
       - 'false'
       - 'true'
-    - defaultValue: '*'
+    - name: sAMAccountName
       description: Queries results by the samAccountName attribute.
-      name: sAMAccountName
-    - description: The maximum number of records to return.
-      name: limit
-    - description: The page size to query. The limit value will be ignored.
-      name: page-size
-    - description: An opaque string received in a paged search, used for requesting subsequent entries.
-      name: page-cookie
-    description: Retrieves the list of users or computers that are members of the specified group.
-    name: ad-get-group-members
+      defaultValue: '*'
+    - name: limit
+      description: The maximum number of records to return.
+    - name: page-size
+      description: The page size to query. The limit value will be ignored.
+    - name: page-cookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
     - contextPath: ActiveDirectory.Groups.dn
       description: The group DN.
@@ -570,9 +567,9 @@ script:
     execution: true
     name: ad-delete-group
   - arguments:
-    - description: A User Profile indicator that contains user information, such as name, email address, etc.
-      name: user-profile
+    - name: user-profile
       required: true
+      description: A User Profile indicator that contains user information, such as name, email address, etc.
     - auto: PREDEFINED
       defaultValue: 'true'
       description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
@@ -620,10 +617,10 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - description: A User Profile indicator that contains user information, such as name and email address.
-      name: user-profile
+    - name: user-profile
       required: true
-    description: Retrieves a single user resource.
+      description: A User Profile indicator that contains user information, such as name and email address.
+    description: "Retrieves a single user resource."
     name: iam-get-user
     outputs:
     - contextPath: IAM.UserProfile
@@ -663,9 +660,12 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - description: A User Profile indicator that contains user information, such as name and email address.
+    - default: false
+      isArray: false
       name: user-profile
       required: true
+      secret: false
+      description: A User Profile indicator that contains user information, such as name and email address.
     - auto: PREDEFINED
       defaultValue: 'true'
       description: When set to true, after the command executes the user status in the 3rd-party integration is active.
@@ -673,7 +673,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.
+    description: 'Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.'
     name: iam-update-user
     outputs:
     - contextPath: IAM.UserProfile
@@ -713,9 +713,11 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - description: A User Profile indicator that contains user information, such as name and email address.
-      name: user-profile
+    - name: user-profile
       required: true
+      secret: false
+      description: "A User Profile indicator that contains user information, such as name and email address."
+    deprecated: false
     description: Disables a user.
     execution: true
     name: iam-disable-user
@@ -756,8 +758,9 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-  - arguments: []
+  - deprecated: false
     description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
+    execution: false
     name: get-mapping-fields
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
