@@ -697,7 +697,7 @@ script:
       isArray: false
       name: engine_name
       required: true
-    description: Commits the current changes.
+    description: Commits the current changes. May take a few minutes for the change to be seen in the UI.
     execution: false
     name: forcepoint-smc-commit-changes
     outputs:
@@ -708,7 +708,7 @@ script:
       description: The modifier of the commit change.
       type: String
     - contextPath: ForcepointSMC.Changes.Changed_on
-      description: When was the change made.
+      description: The date the change was made.
       type: Date
   isfetch: false
   runonce: false
