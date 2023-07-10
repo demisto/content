@@ -1,5 +1,5 @@
 {
-    "fireeye_hx_raw": {
+    "fireeye_hx3_raw": {
         "event_values": {
             "type": "string",
             "is_array": false
@@ -181,7 +181,7 @@
             "is_array": false
         }
     },
-    "fireeye_hx_audit_raw": {
+    "fireeye_hx_audit3_raw": {
         "_raw_log": {
             "type": "string",
             "is_array": false
