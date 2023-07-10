@@ -2,6 +2,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from typing import Dict, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -15,7 +16,6 @@ MAX_ITERATIONS = 50
 MAX_EVENTS_PER_REQUEST = 1000
 MAX_LIMIT = 5000
 DEFAULT_LIMIT = 1000
-
 
 ''' CLIENT CLASS '''
 
@@ -83,7 +83,7 @@ class Client(BaseClient):
 
         return access_token
 
-    def get_token_request(self) -> tuple[str, str]:
+    def get_token_request(self) -> Tuple[str, str]:
         """
         Sends request to retrieve token.
 
@@ -175,7 +175,7 @@ def test_module(client: Client):
 
 def get_events_command(
     client: Client,
-    args: dict,
+    args: Dict,
     max_fetch: Optional[int],
     vendor: str = VENDOR,
     product: str = PRODUCT,
@@ -217,7 +217,7 @@ def get_events_command(
 
 def fetch_events_from_saas_security(
     client: Client, max_fetch: Optional[int] = None, max_iterations: int = MAX_ITERATIONS
-) -> tuple[List[dict], Exception | None]:
+) -> Tuple[List[Dict], Exception | None]:
     """
     Fetches events from the saas-security queue.
 
@@ -226,7 +226,7 @@ def fetch_events_from_saas_security(
     api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id8089db72-8f30-
     4cce-93d2-e39446be650d
     """
-    events: List[dict] = []
+    events: List[Dict] = []
     under_max_fetch = True
 
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
