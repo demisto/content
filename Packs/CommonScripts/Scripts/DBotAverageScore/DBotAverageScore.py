@@ -2,11 +2,24 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def main():
-    context_data = demisto.context()
+def main():   # pragma: no cover
+    dbot_score_context_data = demisto.context().get('DBotScore', [])
+    return_results(calculate_all_average_scores(dbot_score_context_data))
+
+
+def calculate_all_average_scores(context_data: list[dict[str, Any]]) -> CommandResults:
+    """
+    Calculates the average score for each indicator in the context, and returns the results.
+
+    Args:
+        context_data (dict): 'DBotScore' context data, containing DBotScore entries to calculate the average for.
+
+    Returns:
+        CommandResults: A CommandResults object containing command's outputs.
+    """
     scores: dict[str, list[int]] = {}  # Format is 'indicator: [collected scores]'
 
-    for dbot_score_item in context_data.get('DBotScore', []):
+    for dbot_score_item in context_data:
         indicator = dbot_score_item['Indicator']
 
         if indicator not in scores:
@@ -16,15 +29,15 @@ def main():
 
     context_output = []
 
-    for indicator, score_list in scores.items():
-        context_output.append(create_average_score_context(indicator, score_list))
+    for indicator, scores_list in scores.items():
+        context_output.append(create_average_score_context(indicator=indicator, scores_list=scores_list))
 
-    return_results(CommandResults(
+    return CommandResults(
         outputs_prefix='DBotAvgScore',
         outputs_key_field='Indicator',
         outputs=context_output,
         readable_output=tableToMarkdown('DBot Average Scores', t=context_output),
-    ))
+    )
 
 
 def create_average_score_context(indicator: str, scores_list: list[int]) -> dict:
