@@ -65,7 +65,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - hashIncidentFields-test
 fromversion: 5.0.0
