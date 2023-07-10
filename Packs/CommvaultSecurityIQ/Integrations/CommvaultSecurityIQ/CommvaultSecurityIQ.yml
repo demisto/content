@@ -23,14 +23,14 @@ configuration:
   type: 9
 - display: Azure KeyVault Url
   name: AzureKeyVaultUrl
+  hiddenusername: true
+  displaypassword: AzureKeyVaultUrl
   required: false
   type: 0
 - display: Azure KeyVault Tenant ID
   name: AzureKeyVaultTenantId
-  required: false
-  type: 4
-- display: Azure KeyVault Client ID
-  name: AzureKeyVaultClientId
+  hiddenusername: true
+  displaypassword: Azure KeyVault Tenant ID
   required: false
   type: 4
 - display: Azure KeyVault Client Secret
@@ -39,6 +39,10 @@ configuration:
   displaypassword: Azure KeyVault Client Secret
   required: false
   type: 9
+- display: Azure KeyVault Client ID
+  name: AzureKeyVaultClientId
+  required: false
+  type: 4
 - display: 'Port mapping (<port> or <host port>:<docker port>) '
   name: longRunningPort
   required: false

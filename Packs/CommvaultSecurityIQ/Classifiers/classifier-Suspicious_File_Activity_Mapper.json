@@ -24,7 +24,7 @@
                 "End Time": {
                     "simple": "job_end_time"
                 },
-                "Commvault Event ID": {
+                "Event ID": {
                     "simple": "event_id"
                 },
                 "Commvault Event Time": {
