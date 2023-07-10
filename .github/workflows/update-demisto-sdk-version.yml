@@ -2,6 +2,9 @@ name: update-demisto-sdk-version
 
 on: workflow_dispatch
 
+permissions:
+  pull-requests: write
+
 jobs:
   update-dep:
     runs-on: ubuntu-latest
@@ -25,8 +28,7 @@ jobs:
       run: poetry add --group dev demisto-sdk@latest
 
     - name: Create branch
-      permissions:
-        pull-requests: write
+
       with:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
