@@ -406,11 +406,21 @@ script:
         isArray: false
         required: false
         secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
       - name: classification
         description: Return only results with this classification
         isArray: false
         required: false
         secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'MALICIOUS'
+          - 'SUSPICIOUS'
+          - 'GOODWARE'
+          - 'UNKNOWN'
       - name: page_size
         description: Number of results per query page
         defaultValue: 500

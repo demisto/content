@@ -423,6 +423,10 @@ script:
         isArray: false
         required: false
         secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
     outputs:
       - contextPath: ReversingLabs.create_yara_ruleset
         description: ''
