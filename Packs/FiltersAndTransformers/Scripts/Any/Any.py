@@ -26,22 +26,23 @@ def convert_all_inputs_to_list_of_strings(input) -> list[str]:
         return [str(input)]
 
 
-def all_from_left_that_exist_in_right(left_list: list[str], right_list: list[str]) -> list[str]:
+def common_elements(left_list: list[str], right_list: list[str]) -> list[str]:
     """
-    This function checks if any of the items in the left list is in the right list.
+    This function gets two lists of strings and returns a list of all values from the right list that are equal or contain
+
     Args:
-        left_list: the list to check if any of its items is in the right list.
-        right_list: the list to check if any of the items in the left list is in it.
+        left_list: list of strings to check if any of its items is in the right list.
+        right_list: list of strings to check if any of its items is equal or contains any of the items from the left list.
     Returns:
         A list containing all values from the left that are equal or contain values from the left.
         Note: The comparing is not case sensitive.
         if no values are equal or contain values from the right, returns an empty list.
     """
-    all_results = []
+    all_results: list = []
     for l_item in left_list:
-        for r_item in right_list:
-            if l_item in r_item or l_item.lower() in r_item.lower():
-                all_results.append(r_item)
+        all_results.extend(
+            r_item for r_item in right_list if l_item.lower() in r_item.lower()
+        )
     return all_results
 
 
@@ -52,8 +53,10 @@ def main():
     left_list = convert_all_inputs_to_list_of_strings(leftArg)
     right_list = convert_all_inputs_to_list_of_strings(rightArg)
 
-    res = all_from_left_that_exist_in_right(left_list, right_list)
+    res = common_elements(left_list, right_list)
 
+    # remove duplicates
+    res = [*set(res)]
     demisto.results(res)
 
 
