@@ -310,7 +310,7 @@ def test_list_drives_in_site(command, args, response, expected_result, mocker):
 
 
 def expected_upload_headers():
-    for header in [   # testing on the computer_architecture.pdf
+    return [
         {'Content-Length': '327680', 'Content-Range': 'bytes 0-327679/7450762',
          'Content-Type': 'application/octet-stream'},
         {'Content-Length': '327680', 'Content-Range': 'bytes 327680-655359/7450762',
@@ -357,8 +357,7 @@ def expected_upload_headers():
          'Content-Type': 'application/octet-stream'},
         {'Content-Length': '241802', 'Content-Range': 'bytes 7208960-7450761/7450762',
          'Content-Type': 'application/octet-stream'},
-    ]:
-        yield header
+    ]
 
 
 def validate_upload_attachments_flow(create_upload_mock, upload_query_mock):
