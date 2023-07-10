@@ -25,7 +25,7 @@ sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 PARAMS = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(PARAMS.get('unsecure'))
-FETCH_LIMIT = int(PARAMS.get('fetch_limit', 50))
+FETCH_LIMIT = int(PARAMS['fetch_limit'])
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
@@ -251,15 +251,14 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
 
     search_offset = last_run_data.get('offset', 0)
 
-    dem_params = PARAMS
-    occurred_look_behind = int(dem_params.get('occurrence_look_behind', 15) or 15)
+    occurred_look_behind = int(PARAMS.get('occurrence_look_behind', 15) or 15)
     extensive_log('[SplunkPyPreRelease] occurrence look behind is: {}'.format(occurred_look_behind))
 
-    occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
+    occured_start_time, now = get_fetch_start_times(PARAMS, service, last_run_time, occurred_look_behind)
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run time: {}, now: {}'.format(last_run_time, now))
 
-    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now, search_offset)
-    fetch_query = build_fetch_query(dem_params)
+    kwargs_oneshot = build_fetch_kwargs(PARAMS, occured_start_time, now, search_offset)
+    fetch_query = build_fetch_query(PARAMS)
 
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
@@ -1316,13 +1315,13 @@ def get_mapping_fields_command(service):
     search_offset = demisto.getLastRun().get('offset', 0)
 
     current_time_for_fetch = datetime.utcnow()
-    dem_params = PARAMS
-    if demisto.get(dem_params, 'timezone'):
-        timezone = dem_params['timezone']
+
+    if demisto.get(PARAMS, 'timezone'):
+        timezone = PARAMS['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(dem_params, 'useSplunkTime'):
+    if demisto.get(PARAMS, 'useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -1331,16 +1330,16 @@ def get_mapping_fields_command(service):
     start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
     last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+    earliest_fetch_time_fieldname = PARAMS.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = PARAMS.get("latest_fetch_time_fieldname", "latest_time")
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
-    searchquery_oneshot = dem_params['fetchQuery']
+    searchquery_oneshot = PARAMS['fetchQuery']
 
-    if demisto.get(dem_params, 'extractFields'):
-        extractFields = dem_params['extractFields']
+    if demisto.get(PARAMS, 'extractFields'):
+        extractFields = PARAMS['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
@@ -2197,7 +2196,7 @@ def splunk_submit_event_hec_command():
 
 def splunk_edit_notable_event_command(service, auth_token):
 
-    base_url = 'https://' + PARAMS['host'] + ':' + PARAMS['port'] + '/'
+    base_url = f'https://{PARAMS["host"]}:{PARAMS["port"]}/'
     sessionKey = get_auth_session_key(service) if not auth_token else None
 
     eventIDs = None
