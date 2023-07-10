@@ -406,6 +406,10 @@ script:
         isArray: false
         required: false
         secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
       - name: classification
         description: Return only results with this classification
         isArray: false
