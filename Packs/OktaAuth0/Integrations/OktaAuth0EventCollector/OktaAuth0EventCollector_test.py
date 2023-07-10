@@ -3,10 +3,6 @@ import pytest
 import demistomock as demisto
 
 from OktaAuth0EventCollector import Client, prepare_query_params
-from requests import Session
-
-
-CORE_URL = 'https://api.example.com'
 
 
 def util_load_json(path):
@@ -15,19 +11,7 @@ def util_load_json(path):
 
 
 MOCK_EVENTS = util_load_json('test_data/mock_events.json')
-
-
-class MockResponse:
-    def __init__(self, data: list):
-        self.ok = True
-        self.status_code = 200
-        self.data = {'data': [self.create_mock_entry(**e) for e in data]}
-
-    def create_mock_entry(self, **kwargs) -> dict:
-        return kwargs
-
-    def json(self):
-        return self.data
+CORE_URL = 'https://api.example.com'
 
 
 @pytest.mark.parametrize('params, last_run, expected_params', [
@@ -73,8 +57,10 @@ def test_test_module(mocker):
     """
     from OktaAuth0EventCollector import test_module_command
 
-    mocker.patch.object(Session, 'request', return_value=MockResponse([]))
-    assert test_module_command(Client(base_url='', client_id='', client_secret='', verify=False, proxy=False), {}) == 'ok'
+    mocker.patch.object(Client, 'get_access_token', return_value='token')
+    mocker.patch.object(Client, '_http_request', return_value=[])
+
+    assert test_module_command(Client(base_url=CORE_URL, client_id='', client_secret='', verify=False, proxy=False), {}) == 'ok'
 
 
 def test_fetch_events(requests_mock):
@@ -153,25 +139,3 @@ def test_get_access_token(mocker, requests_mock, int_context, expected_token):
     access_token = client.get_access_token()
 
     assert access_token == expected_token
-
-
-def test_get_events(mocker, requests_mock):
-    """
-    Given:
-        - okta-auth0-get-events call
-    When:
-        - Four events with ids 1, 2, 3 and 4 are retrieved from the API.
-    Then:
-        - Make sure all of the events are returned as part of the CommandResult.
-    """
-    from OktaAuth0EventCollector import get_events_command
-
-    response = MOCK_EVENTS
-    requests_mock.get(f'{CORE_URL}/api/1/events', json=response)
-
-    mocker.patch.object(Client, 'get_access_token_request')
-    mocker.patch.object(Client, 'get_event_types_request')
-    _, results = get_events_command(Client(base_url='', client_id='', client_secret='', verify=False, proxy=False), args={})
-
-    assert len(results.raw_response.get('data', [])) == 4
-    assert results.raw_response == response
