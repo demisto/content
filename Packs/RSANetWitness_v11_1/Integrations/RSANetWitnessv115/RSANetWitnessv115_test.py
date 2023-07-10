@@ -10,7 +10,8 @@ from RSANetWitnessv115 import Client, list_incidents_command, update_incident_co
     host_alerts_list_command, file_alerts_list_command, file_download_command, mft_download_request_command, \
     system_dump_download_request_command, process_dump_download_request_command, endpoint_isolate_from_network_command, \
     endpoint_update_exclusions_command, endpoint_isolation_remove_command, endpoint_command, create_time, create_filter, \
-    create_exclusions_list, remove_duplicates_in_items, remove_duplicates_for_fetch, fetch_incidents, paging_command
+    create_exclusions_list, remove_duplicates_in_items, remove_duplicates_for_fetch, fetch_incidents, paging_command, \
+    fetch_alerts_related_incident
 
 
 def util_load_json(path):
@@ -255,6 +256,28 @@ def test_get_incidents(mocker):
 
     items, _, timestamp = client.get_incidents()
     assert items == fetch_responses['get_inc_results']
+
+
+@pytest.mark.parametrize(
+    'alerts_limit',
+    [
+        (2),
+        (1)
+    ]
+)
+def test_fetch_alerts_related_incident(mocker, alerts_limit: int):
+    """
+    Given:
+            -alerts_limit
+    When:
+             Calling the fetch_alerts_related_incident command with alerts_limit.
+    Then:
+                Assert that the alerts_limit is as expected
+    """
+    fetch_responses = util_load_json('test_data/fetch_alerts.json')
+    mocker.patch.object(client, 'incident_list_alerts_request', return_value=fetch_responses)
+    res = fetch_alerts_related_incident(client, 'test_id', alerts_limit)
+    assert len(res) == alerts_limit
 
 
 @pytest.mark.parametrize(
