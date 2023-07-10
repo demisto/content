@@ -495,6 +495,7 @@ iZhq9FgKdJIJrHzg6onTh6uSkeg378q2DOfxyL6hKIl89o4iUyqHM6cJSA==
 
         ssl_client_ctx.check_hostname = False
         ssl_client_ctx.verify_mode = ssl.CERT_NONE
+        ssl_client_ctx.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
 
         ssl_server_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_server_ctx.verify_mode = ssl.CERT_REQUIRED
@@ -521,7 +522,7 @@ iZhq9FgKdJIJrHzg6onTh6uSkeg378q2DOfxyL6hKIl89o4iUyqHM6cJSA==
             thr.start()
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, \
-                     ssl_client_ctx.wrap_socket(s, server_side=False) as ss:
+                        ssl_client_ctx.wrap_socket(s, server_side=False) as ss:
                     ss.connect((server_ip, server_port))
             finally:
                 server.shutdown()
