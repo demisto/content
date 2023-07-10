@@ -125,7 +125,7 @@ async def handle_post(
             "host_name": hostname,
         }
         incident_body.update(
-            client.get_incident_details(incident["Description"])  # type: ignore
+            client.get_incident_details(incident.get("Description"))  # type: ignore
         )
     except Exception as err:
         logging.error(f"could not print REQUEST: {err}")
@@ -445,8 +445,8 @@ class Client(BaseClient):
         """
         context_info = get_integration_context()
         if 'tokenDetails' in context_info:
-            self.access_token = context_info['tokenDetails']['accessToken']
-            self.access_token_last_generation = context_info['tokenDetails']['accessTokenGenerationTime']
+            self.access_token = context_info.get('tokenDetails',{}).get('accessToken')
+            self.access_token_last_generation = context_info.get('tokenDetails',{}).get('accessTokenGenerationTime')
         if self.access_token_last_generation is None:
             demisto.debug("Token is not present, we will create new token.")
             if not self.generate_access_token(api_token):
@@ -487,7 +487,7 @@ class Client(BaseClient):
             "POST", "/ApiToken/User", None, request_body
         )
         try:
-            new_access_token = response["token"]
+            new_access_token = response.get("token")
             current_epoch = int(datetime.now().timestamp())
             self.current_api_token = new_access_token
             self.access_token = new_access_token
@@ -583,7 +583,7 @@ class Client(BaseClient):
         else:
             demisto.debug("Failed in parsing the message ")
         if extracted_message:
-            dts = datetime.fromisoformat(extracted_message["timestamp"])
+            dts = datetime.fromisoformat(extracted_message.get("timestamp"))
             self.create_incident(extracted_message, dts, incidentType, False)
 
     def create_incident(
@@ -604,7 +604,7 @@ class Client(BaseClient):
             incident = {
                 "name": f"Suspicious File Activity Detected at [{date_str}]",
                 "rawJSON": json.dumps(message_),
-                "occurred": message_["occurred"],
+                "occurred": message_.get("occurred"),
                 "type": incidentType,
                 "details": "\n".join(
                     [f"{k}: {v}" for k, v in message_.items() if v]
@@ -613,10 +613,10 @@ class Client(BaseClient):
             incidents.append(incident)
         if is_fetch:
             demisto.incidents(incidents)
-            # self.define_indicator(extracted_message["originating_client"])
+            # self.define_indicator(extracted_message.get("originating_client"))
         else:
             demisto.createIncidents(incidents)
-            # self.define_indicator(extracted_message["originating_client"])
+            # self.define_indicator(extracted_message.get("originating_client"))
 
     def get_events_list(self, last_run, first_fetch_time,max_fetch) -> Optional[List]:
         """
@@ -639,8 +639,8 @@ class Client(BaseClient):
         headers["pagingInfo"] = "0,{mfetch}".format(mfetch=max_fetch)
         resp = self.http_request("GET", event_endpoint, None, headers=headers)
         last_run_new = {'last_fetch': seconds_since_epoch}
-        if resp and resp["commservEvents"]:
-            return resp["commservEvents"], last_run_new
+        if resp and resp.get("commservEvents"):
+            return resp.get("commservEvents"), last_run_new
         return None, last_run_new
 
     def get_subclient_content_list(
@@ -655,7 +655,7 @@ class Client(BaseClient):
         resp = self.http_request(
             "GET", "/Subclient/" + str(subclient_id), None
         )
-        resp = resp["subClientProperties"][0]["content"]
+        resp = resp.get("subClientProperties",{}).get(0,{}).get("content")
         return resp
 
     def define_severity(self, anomaly_sub_type: str) -> Optional[str]:
@@ -787,12 +787,12 @@ class Client(BaseClient):
             demisto.log(f"Invalid job [{job_id}]")
             return None
         job_start_time = int(
-            job_details["jobs"][0]["jobSummary"]["jobStartTime"]
+            job_details.get("jobs",{}).get(0,{}).get("jobSummary",{}).get("jobStartTime")
         )
-        job_end_time = int(job_details["jobs"][0]["jobSummary"]["jobEndTime"])
-        subclient_id = job_details["jobs"][0]["jobSummary"]["subclient"][
+        job_end_time = int(job_details.get("jobs",{}).get(0,{}).get("jobSummary",{}).get("jobEndTime"))
+        subclient_id = job_details.get("jobs",{}).get(0,{}).get("jobSummary",{}).get("subclient",{}).get(
             "subclientId"
-        ]
+        )
         files_list, scanned_folder_list = self.fetch_file_details(
             job_id, subclient_id
         )
@@ -879,7 +879,7 @@ class Client(BaseClient):
         out = None
         self.validate_session_or_generate_token(self.current_api_token)
         response = self.http_request("GET", "/Job/" + str(job_id), None)
-        if response["totalRecordsWithoutPaging"] > 0:
+        if response.get("totalRecordsWithoutPaging") > 0:
             out = response
         return out
 
@@ -889,7 +889,7 @@ class Client(BaseClient):
         :param job_id: Job Id
         :return: list
         """
-        self.job_details_body["advOptions"] = {
+        self.job_details_body.get("advOptions") = {
             "advConfig": {
                 "browseAdvancedConfigBrowseByJob": {"jobId": int(job_id)}
             }
@@ -898,18 +898,18 @@ class Client(BaseClient):
         resp = self.http_request(
             "POST", "/DoBrowse", None, self.job_details_body
         )
-        browse_responses = resp["browseResponses"]
+        browse_responses = resp.get("browseResponses",[])
         file_list = []
         for browse_resp in browse_responses:
-            if browse_resp["respType"] == 0:
-                browse_result = browse_resp["browseResult"]
+            if browse_resp.get("respType") == 0:
+                browse_result = browse_resp.get("browseResult")
                 if "dataResultSet" in browse_result:
-                    for data_result_set in browse_result["dataResultSet"]:
+                    for data_result_set in browse_result.get("dataResultSet"):
                         file = {}
-                        filepath = data_result_set["path"]
-                        file["sizeinkb"] = data_result_set["size"]
+                        filepath = data_result_set.get("path")
+                        file["sizeinkb"] = data_result_set.get("size")
                         file["folder"] = "\\".join(filepath.split("\\")[:-1])
-                        file["filename"] = data_result_set["displayName"]
+                        file["filename"] = data_result_set.get("displayName")
                         file_list.append(file)
         return file_list
 
@@ -951,7 +951,7 @@ class Client(BaseClient):
         if "error" in response_json:
             if (
                     "was not found in this key vault"
-                    in response_json["error"]["message"]
+                    in response_json.get("error",{}).get("message","")
             ):
                 secret = None
         else:
@@ -985,10 +985,10 @@ class Client(BaseClient):
                 "GET", "/V4/SAML/{}".format(identity_server_name)
             )
             if "error" in response:
-                demisto.debug(f"Error [{response['error']['errorString']}]")
+                demisto.debug(f"Error [{response.get('error',{}).get('errorString','')}]")
                 return False
             else:
-                if response["enabled"]:
+                if response.get("enabled"):
                     demisto.debug(
                         f"SAML is enabled for identity server [{identity_server_name}]. Going to disable it"
                     )
@@ -998,9 +998,9 @@ class Client(BaseClient):
                         "/V4/SAML/{}".format(identity_server_name),
                         json_data=body,
                     )
-                    if response["errorCode"] > 0:
+                    if response.get("errorCode",0) > 0:
                         demisto.debug(
-                            f"Could not disable as [{response['errMessage']}]"
+                            f"Could not disable as [{response.get('errMessage')}]"
                         )
                         return False
         except Exception as error:
@@ -1019,10 +1019,10 @@ class Client(BaseClient):
             return False
 
         saml_identity_servers = [
-            s for s in response["identityServers"] if s["type"] == 1
+            s for s in response.get("identityServers") if s.get("type") == 1
         ]
         for identity_server_info in saml_identity_servers:
-            identity_server_name = identity_server_info["IdentityServerName"]
+            identity_server_name = identity_server_info.get("IdentityServerName")
             if self.disable_providers(identity_server_name):
                 demisto.debug(
                     f"Identity Server [{identity_server_name}] is disabled"
@@ -1041,19 +1041,19 @@ class Client(BaseClient):
             current_user = next(
                 (
                     user
-                    for user in response["users"]
-                    if user["email"] == user_email or user["UPN"] == user_email
+                    for user in response.get("users")
+                    if user.get("email") == user_email or user.get("UPN") == user_email
                 ),
                 None,
             )
             if current_user:
-                user_id = str(current_user["userEntity"]["userId"])
+                user_id = str(current_user.get("userEntity",{}).get("userId"))
                 response = self.http_request("GET", f"/User/{user_id}")
-                if response["users"][0]["enableUser"]:
+                if response.get("users",{}).get(0,{}).get("enableUser"):
                     response = self.http_request(
                         "PUT", f"/User/{user_id}/Disable"
                     )
-                    if response["response"][0]["errorCode"] > 0:
+                    if response.get("response",{}).get(0,{}).get("errorCode") > 0:
                         demisto.debug(
                             f"Failed to disable user [{user_email}]."
                         )
@@ -1074,9 +1074,9 @@ class Client(BaseClient):
         Get client id from the client name
         """
 
-        clientname = demisto.incident()["CustomFields"]["commvaultoriginatingclient"]
+        clientname = demisto.incident().get("CustomFields",{}).get("commvaultoriginatingclient")
         resp = self.http_request("GET", "/GetId?clientname=" + clientname)
-        return resp["clientId"]
+        return resp.get("clientId")
 
     def is_port_in_use(self, port: int) -> bool:
         """
@@ -1201,13 +1201,13 @@ def fetch_incidents(client, last_run, first_fetch_time) -> List:
 
     domain = client.get_host()
 
-    events = sorted(events, key=lambda d: d['timeSource'])
+    events = sorted(events, key=lambda d: d.get('timeSource'))
 
     lasttimestamp = None
 
     for event in events:
-        if event["eventCodeString"] == "14:337":
-            lasttimestamp = {'last_fetch': str(event['timeSource'])}
+        if event.get("eventCodeString") == "14:337":
+            lasttimestamp = {'last_fetch': str(event.get('timeSource'))}
             event_id = event[
                 field_mapper(
                     Constants.event_id, Constants.source_fetch_incidents
@@ -1252,9 +1252,9 @@ def disable_data_aging(client):
     resp = client.disable_data_aging()
     err_resp = ""
     if resp:
-        if "errorCode" in resp and int(resp["errorCode"]) != 0:
-            if resp["errorMessage"]:
-                err_resp = resp["errorMessage"]
+        if "errorCode" in resp and int(resp.get("errorCode")) != 0:
+            if resp.get("errorMessage"):
+                err_resp = resp.get("errorMessage")
         else:
             err_resp = "Successfully disabled data aging on the client"
     else:
@@ -1267,7 +1267,7 @@ def disable_data_aging(client):
 
 
 def copy_files_to_war_room():
-    files = demisto.incident()["CustomFields"]["commvaultfileslist"]
+    files = demisto.incident().get("CustomFields",{}).get("commvaultfileslist")
     out_resp = ""
     for file_ in files:
         out_resp = (
@@ -1304,7 +1304,7 @@ def fetch_and_disable_saml_identity_provider(client):
     if client.fetch_and_disable_saml_identity_provider():
         resp = "Successfully disabled SAML identity provider"
     else:
-        raise DemistoException("Could not disable SAML identity provider :- {}".format(response['errorMessage']))
+        raise DemistoException("Could not disable SAML identity provider :- {}".format(response.get('errorMessage')))
     return CommandResults(
         outputs_prefix='CommvaultSecurityIQ.Response',
         outputs_key_field='Response',
@@ -1353,17 +1353,17 @@ def main() -> None:
     cv_webservice_url: str = params.get("CVWebserviceUrl")
 
 
-    cv_api_token: str = demisto.get(params, 'CommvaultAPIToken.password')
+    cv_api_token: str = params.get('CommvaultAPIToken', {}).get('password')
     is_fetch: List[str] = params.get("isFetch")
     if not cv_webservice_url.endswith("/") :
         cv_webservice_url=cv_webservice_url+"/"
     client = Client(base_url=cv_webservice_url+"api", verify=False, proxy=False)
     is_valid_cv_token = None
     # Azure Key Vault Parameters
-    client.keyvault_url = params.get("AzureKeyVaultUrl")
-    client.keyvault_tenant_id = params.get("AzureKeyVaultTenantId")
+    client.keyvault_url = params.get("AzureKeyVaultUrl").get('password')
+    client.keyvault_tenant_id = params.get("AzureKeyVaultTenantId").get('password')
     client.keyvault_client_id = params.get("AzureKeyVaultClientId")
-    client.keyvault_client_secret = demisto.get(params, 'AzureKeyVaultClientSecret.password')
+    client.keyvault_client_secret = params.get('AzureKeyVaultClientSecret', {}).get('password')
     is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
     forwarding_rule_type: Optional[str] = params.get("forwardingRule")
     port: int = 0
@@ -1472,7 +1472,7 @@ def main() -> None:
         elif command == "commvault-security-set-disable-saml-provider":
             return_results(fetch_and_disable_saml_identity_provider(client))
         elif command == "commvault-security-set-disable-user":
-            user_email = demisto.args()["user_email"]
+            user_email = demisto.args().get("user_email")
             return_results(disable_user(client, user_email))
         elif command == "commvault-security-get-access-token-from-keyvault":
             client.set_secret_in_key_vault("")
