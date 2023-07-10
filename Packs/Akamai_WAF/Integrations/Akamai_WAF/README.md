@@ -300,7 +300,7 @@ Create a new enrollment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | Country. Default is US. | Required | 
+| country | The country code (two letter format) for the country where your organization is located.. Default is US. | Required | 
 | company | Company. | Required | 
 | organizational_unit | Organizational unit. | Required | 
 | city | The city of the admin contact. | Required | 

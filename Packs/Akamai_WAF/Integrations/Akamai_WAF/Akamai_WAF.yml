@@ -299,7 +299,7 @@ script:
     name: akamai-create-group
   - arguments:
     - defaultValue: US
-      description: Country.
+      description: The country code (two letter format) for the country where your organization is located.
       name: country
       required: true
       type: textArea
