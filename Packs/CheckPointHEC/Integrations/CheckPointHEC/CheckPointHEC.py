@@ -99,14 +99,15 @@ def test_module(client: Client):
     demisto.results('ok')
 
 
-def fetch_incidents(client: Client, first_fetch: str):
+def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
         last_fetch, _ = parse_date_range(first_fetch, DATE_FORMAT)
     result = client.query_events(start_date=last_fetch)
+    events = result['responseData'][:min(max_fetch, len(result['responseData']))]
 
     incidents: list[dict[str, Any]] = []
-    for event in result['responseData']:
+    for event in events:
         event_id = event.get('eventId')
         incidents.append({
             'name': f'#CP Event: {event_id}',
@@ -166,7 +167,9 @@ def main() -> None:  # pragma: no cover
             test_module(client)
         elif command == 'fetch-incidents':
             first_fetch = params.get('first_fetch')
-            fetch_incidents(client, first_fetch)
+            args = demisto.args()
+            max_fetch = int(args.get('max_fetch'))
+            fetch_incidents(client, first_fetch, max_fetch)
         elif command == 'checkpointhec-get-entity':
             args = demisto.args()
             return_results(checkpointhec_get_entity(client, args.get('entity')))

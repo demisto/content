@@ -39,36 +39,6 @@ configuration:
   required: true
   hiddenusername: true
 - section: Collect
-  advanced: true
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  defaultvalue: ACTIVE
-  type: 15
-  required: false
-  options:
-  - ACTIVE
-  - CLOSED
-- section: Collect
-  advanced: true
-  display: Fetch alerts with type
-  name: alert_type
-  type: 0
-  required: false
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
-- section: Collect
-  display: Minimum severity of alerts to fetch
-  name: min_severity
-  defaultvalue: Low
-  type: 15
-  required: true
-  options:
-  - Unknown
-  - Lowest
-  - Low
-  - Medium
-  - High
-  - Critical
-- section: Collect
   display: First fetch time
   name: first_fetch
   defaultvalue: 1 hour
