@@ -43,6 +43,6 @@ jobs:
         git checkout -b "1.18.1"
         git commit -m "poetry files" -a
         git push origin "1.18.1"
-        gh pr create -B demisto-sdk-release -H master --title 'demisto-sdk-release' --body 'demisto-sdk-release' --reviewer "MosheEichler"
+        gh pr create -B master -H "1.18.1" --title 'demisto-sdk-release' --body 'demisto-sdk-release' --reviewer "MosheEichler"
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
