@@ -1,0 +1,17 @@
+commonfields:
+  id: ShowCampaignUniqueSenders
+  version: -1
+name: ShowCampaignUniqueSenders
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Displays the number of unique senders of an email campaign.
+enabled: true
+scripttarget: 0
+subtype: python3
+fromversion: 6.0.0
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
