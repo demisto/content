@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
-import os
 import ssl
 import email
 from datetime import timezone
@@ -539,7 +538,7 @@ def load_client_cert_and_key(ssl_context: ssl.SSLContext, params: dict[str, Any]
     with NamedTemporaryFile(mode='w') as pem_file:
         pem_file.write(cert_and_pkey_pem)
         pem_file.flush()
-        os.fsync(pem_file.fileno())
+        pem_file.seek(0)
         ssl_context.load_cert_chain(certfile=pem_file.name, keyfile=None)
         return True
 
