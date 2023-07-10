@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
+
 
 ERROR_TITLES = {
     400: "400 Bad Request - The request was malformed, check the given arguments\n",
@@ -49,117 +49,118 @@ class Client(BaseClient):
                 raise e
         return res
 
-    def list_incidents_request(self, page_size: Optional[str], page_number: Optional[str],
-                               until: Optional[str], since: Optional[str]) -> dict:
+    def list_incidents_request(self, page_size: str | None, page_number: str | None,
+                               until: str | None, since: str | None) -> dict:
         params = assign_params(until=until, since=since, pageSize=page_size, pageNumber=page_number)
-        response = self._http_request('GET', 'rest/api/incidents', params=params)
+        return self._http_request('GET', 'rest/api/incidents', params=params)
 
-        return response
+    def get_incident_request(self, inc_id: str | None) -> dict:
+        return self._http_request('GET', f'rest/api/incidents/{inc_id}')
 
-    def get_incident_request(self, inc_id: Optional[str]) -> dict:
-        response = self._http_request('GET', f'rest/api/incidents/{inc_id}')
-
-        return response
-
-    def update_incident_request(self, id_: Optional[Any], status: Optional[Any], assignee: Optional[Any]) -> dict:
+    def update_incident_request(self, id_: Any | None, status: Any | None, assignee: Any | None) -> dict:
         data = assign_params(status=status, assignee=assignee)
-        response = self._http_request('PATCH', f'rest/api/incidents/{id_}', json_data=data)
+        return self._http_request('PATCH', f'rest/api/incidents/{id_}', json_data=data)
 
-        return response
+    def remove_incident_request(self, id_: str | None) -> dict:
+        return self._http_request(
+            'DELETE', f'rest/api/incidents/{id_}', return_empty_response=True
+        )
 
-    def remove_incident_request(self, id_: Optional[str]) -> dict:
-        response = self._http_request('DELETE', f'rest/api/incidents/{id_}', return_empty_response=True)
-        return response
-
-    def incident_add_journal_entry_request(self, id_: Optional[str], author, notes: Optional[str],
-                                           milestone: Optional[str]) -> dict:
+    def incident_add_journal_entry_request(self, id_: str | None, author, notes: str | None,
+                                           milestone: str | None) -> dict:
         data = assign_params(author=author, milestone=milestone, notes=notes)
-        response = self._http_request('POST', f'rest/api/incidents/{id_}/journal', json_data=data,
-                                      empty_valid_codes=[201], return_empty_response=True)
+        return self._http_request(
+            'POST',
+            f'rest/api/incidents/{id_}/journal',
+            json_data=data,
+            empty_valid_codes=[201],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def incident_list_alerts_request(self, page_size: Optional[str], page_number: Optional[str], id_: Optional[str]) \
-            -> dict:
+    def incident_list_alerts_request(self, page_size: str | None, page_number: str | None, id_: str | None) -> dict:
         params = assign_params(pageNumber=page_number, pageSize=page_size)
-        response = self._http_request('GET', f'rest/api/incidents/{id_}/alerts', params=params)
+        return self._http_request(
+            'GET', f'rest/api/incidents/{id_}/alerts', params=params
+        )
 
-        return response
-
-    def services_list_request(self, name: Optional[Any]) -> dict:
+    def services_list_request(self, name: Any | None) -> dict:
         params = assign_params(name=name)
-        response = self._http_request('GET', 'rest/api/services', params=params)
+        return self._http_request('GET', 'rest/api/services', params=params)
 
-        return response
-
-    def hosts_list_request(self, page_size: Optional[str], page_number: Optional[str], service_id: Optional[str],
-                           added_filter: Optional[dict]) -> dict:
+    def hosts_list_request(self, page_size: str | None, page_number: str | None, service_id: str | None,
+                           added_filter: dict | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id, pageNumber=page_number, pageSize=page_size)
         data = added_filter
-        response = self._http_request('GET', 'rest/api/hosts', params=params, json_data=data)
-        return response
+        return self._http_request(
+            'GET', 'rest/api/hosts', params=params, json_data=data
+        )
 
-    def snapshots_list_for_host_request(self, agent_id: Optional[str], service_id: Optional[str]) -> dict:
+    def snapshots_list_for_host_request(self, agent_id: str | None, service_id: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
-        response = self._http_request('GET', f'rest/api/host/{agent_id}/snapshots', params=params)
+        return self._http_request(
+            'GET', f'rest/api/host/{agent_id}/snapshots', params=params
+        )
 
-        return response
-
-    def snapshot_details_get_request(self, agent_id: Optional[str], snapshot_timestamp: Optional[str],
-                                     service_id: Optional[str], categories: Optional[list]) -> dict:
+    def snapshot_details_get_request(self, agent_id: str | None, snapshot_timestamp: str | None,
+                                     service_id: str | None, categories: list | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id, categories=categories)
-        response = self._http_request(
-            'GET', f'rest/api/host/{agent_id}/snapshots/{snapshot_timestamp}', params=params)
+        return self._http_request(
+            'GET',
+            f'rest/api/host/{agent_id}/snapshots/{snapshot_timestamp}',
+            params=params,
+        )
 
-        return response
-
-    def files_list_request(self, page_size: Optional[str], page_number: Optional[str],
-                           service_id: Optional[str]) -> dict:
+    def files_list_request(self, page_size: str | None, page_number: str | None,
+                           service_id: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id, pageNumber=page_number, pageSize=page_size)
-        response = self._http_request('GET', 'rest/api/files', params=params)
+        return self._http_request('GET', 'rest/api/files', params=params)
 
-        return response
-
-    def scan_request_request(self, agent_id: Optional[str], service_id: Optional[str], scan_type: Optional[str],
-                             cpu_max: Optional[str]) -> dict:
+    def scan_request_request(self, agent_id: str | None, service_id: str | None, scan_type: str | None,
+                             cpu_max: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id, scanType=scan_type, cpuMax=cpu_max)
-        response = self._http_request('POST', f'rest/api/host/{agent_id}/scan', params=params,
-                                      empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'POST',
+            f'rest/api/host/{agent_id}/scan',
+            params=params,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def scan_stop_request_request(self, agent_id: Optional[str], service_id: Optional[str],
-                                  scan_type: Optional[str]) -> dict:
+    def scan_stop_request_request(self, agent_id: str | None, service_id: str | None,
+                                  scan_type: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id, scanType=scan_type)
-        response = self._http_request('DELETE', f'rest/api/host/{agent_id}/scan', params=params,
-                                      empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'DELETE',
+            f'rest/api/host/{agent_id}/scan',
+            params=params,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def host_alerts_list_request(self, agent_id: Optional[str], service_id: Optional[str],
-                                 alert_category: Optional[str]) -> dict:
+    def host_alerts_list_request(self, agent_id: str | None, service_id: str | None,
+                                 alert_category: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id, alertCategory=alert_category)
-        response = self._http_request('GET', f'rest/api/host/{agent_id}/alerts', params=params)
+        return self._http_request(
+            'GET', f'rest/api/host/{agent_id}/alerts', params=params
+        )
 
-        return response
-
-    def file_alerts_list_request(self, checksum: Optional[str], service_id: Optional[str],
-                                 alert_category: Optional[str]) -> dict:
+    def file_alerts_list_request(self, checksum: str | None, service_id: str | None,
+                                 alert_category: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id, alertCategory=alert_category)
-        response = self._http_request('GET', f'rest/api/file/{checksum}/alerts', params=params)
+        return self._http_request(
+            'GET', f'rest/api/file/{checksum}/alerts', params=params
+        )
 
-        return response
-
-    def file_download_request(self, agent_id: Optional[str], service_id: Optional[str], path: Optional[str],
-                              count_files: Optional[str], max_file_size: Optional[Any]) -> dict:
+    def file_download_request(self, agent_id: str | None, service_id: str | None, path: str | None,
+                              count_files: str | None, max_file_size: Any | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
         if path and '*' in path:
@@ -170,77 +171,98 @@ class Client(BaseClient):
             url = f'rest/api/host/{agent_id}/download/download-file'
             data = {"path": path}
 
-        response = self._http_request(
-            'POST', url, params=params, json_data=data, empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'POST',
+            url,
+            params=params,
+            json_data=data,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def mft_download_request_request(self, agent_id: Optional[str], service_id: Optional[str]) -> dict:
+    def mft_download_request_request(self, agent_id: str | None, service_id: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
-        response = self._http_request('POST', f'rest/api/host/{agent_id}/download/mft', params=params,
-                                      empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'POST',
+            f'rest/api/host/{agent_id}/download/mft',
+            params=params,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def system_dump_download_request_request(self, agent_id: Optional[str], service_id: Optional[str]) -> dict:
+    def system_dump_download_request_request(self, agent_id: str | None, service_id: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
-        response = self._http_request(
-            'POST', f'rest/api/host/{agent_id}/download/system-dump', params=params,
-            empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'POST',
+            f'rest/api/host/{agent_id}/download/system-dump',
+            params=params,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def process_dump_download_request_request(self, agent_id: Optional[str], service_id: Optional[str],
-                                              process_id: Optional[str], eprocess: Optional[str],
-                                              file_name: Optional[str], path: Optional[str], file_hash: Optional[str],
-                                              process_create_utctime: Optional[str]) -> dict:
+    def process_dump_download_request_request(self, agent_id: str | None, service_id: str | None,
+                                              process_id: str | None, eprocess: str | None,
+                                              file_name: str | None, path: str | None, file_hash: str | None,
+                                              process_create_utctime: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
         data = assign_params(processId=process_id, eprocess=eprocess, fileName=file_name, path=path, hash=file_hash,
                              processCreateUtcTime=process_create_utctime)
-        response = self._http_request(
-            'POST', f'rest/api/host/{agent_id}/download/process-dump', params=params, json_data=data,
-            empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'POST',
+            f'rest/api/host/{agent_id}/download/process-dump',
+            params=params,
+            json_data=data,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def endpoint_isolate_from_network_request(self, agent_id: Optional[str], service_id: Optional[str],
-                                              allow_dns_only: Optional[str], exclusions: Optional[list],
-                                              comment: Optional[str]) -> dict:
+    def endpoint_isolate_from_network_request(self, agent_id: str | None, service_id: str | None,
+                                              allow_dns_only: str | None, exclusions: list | None,
+                                              comment: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
         data = assign_params(comment=comment, allowDnsOnlyBySystem=allow_dns_only, exclusions=exclusions)
 
-        response = self._http_request(
-            'POST', f'rest/api/host/{agent_id}/isolation', params=params, json_data=data,
-            empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'POST',
+            f'rest/api/host/{agent_id}/isolation',
+            params=params,
+            json_data=data,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def endpoint_update_exclusions_request(self, agent_id: Optional[str], service_id: Optional[str],
-                                           allow_dns_only: Optional[str], exclusions: Optional[list],
-                                           comment: Optional[str]) -> dict:
+    def endpoint_update_exclusions_request(self, agent_id: str | None, service_id: str | None,
+                                           allow_dns_only: str | None, exclusions: list | None,
+                                           comment: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
         data = assign_params(comment=comment, allowDnsOnlyBySystem=allow_dns_only, exclusions=exclusions)
-        response = self._http_request(
-            'PATCH', f'rest/api/host/{agent_id}/isolation', params=params, json_data=data,
-            empty_valid_codes=[200], return_empty_response=True)
+        return self._http_request(
+            'PATCH',
+            f'rest/api/host/{agent_id}/isolation',
+            params=params,
+            json_data=data,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
-        return response
-
-    def endpoint_isolation_remove_request(self, agent_id: Optional[str], service_id: Optional[str],
-                                          allow_dns_only: Optional[str], comment: Optional[str]) -> dict:
+    def endpoint_isolation_remove_request(self, agent_id: str | None, service_id: str | None,
+                                          allow_dns_only: str | None, comment: str | None) -> dict:
         service_id = service_id or self.service_id
         params = assign_params(serviceId=service_id)
         data = assign_params(comment=comment, allowDnsOnlyBySystem=allow_dns_only)
-        response = self._http_request(
-            'DELETE', f'rest/api/host/{agent_id}/isolation', params=params, json_data=data,
-            empty_valid_codes=[200], return_empty_response=True)
-
-        return response
+        return self._http_request(
+            'DELETE',
+            f'rest/api/host/{agent_id}/isolation',
+            params=params,
+            json_data=data,
+            empty_valid_codes=[200],
+            return_empty_response=True,
+        )
 
     def get_token(self) -> None:
         """Get a token from integration context or generate one,
@@ -256,7 +278,7 @@ class Client(BaseClient):
         else:
             self.generate_new_token(refresh_token)
 
-    def generate_new_token(self, refresh_token: Optional[str] = None) -> None:
+    def generate_new_token(self, refresh_token: str | None = None) -> None:
         """Generate a new token via an API request. save the new token to client's headers.
 
             Args:
@@ -288,7 +310,7 @@ class Client(BaseClient):
         else:
             raise DemistoException("Error in authentication process- couldn't generate a token")
 
-    def get_incidents(self) -> Tuple[List[Any], Any, Optional[Any]]:
+    def get_incidents(self) -> tuple[list[Any], Any, Any | None]:
         """Get incidents for fetch_incidents command.
 
         Return:
@@ -307,8 +329,7 @@ class Client(BaseClient):
             timestamp = last_run.get('timestamp', '')
             last_fetched_ids = last_run.get('last_fetched_ids', [])
         else:
-            last_fetch = arg_to_datetime(fetch_time, required=True)
-            if last_fetch:
+            if last_fetch := arg_to_datetime(fetch_time, required=True):
                 # convert to ISO 8601 format and add Z suffix
                 timestamp = last_fetch.strftime(DATE_FORMAT)
             last_fetched_ids = []
@@ -322,7 +343,7 @@ class Client(BaseClient):
 
         page_number = response.get('totalPages', 1) - 1
         total = 0
-        total_items: List[Dict] = []
+        total_items: list[dict] = []
         while total < fetch_limit and page_number >= 0:
             response = self.list_incidents_request(page_size, page_number, until, timestamp)
             items = response.get('items', [])
@@ -337,8 +358,8 @@ class Client(BaseClient):
         return total_items, last_fetched_ids, timestamp
 
 
-def paging_command(limit: Optional[int], page_size: Union[str, None, int], page_number: Optional[str], func_command,
-                   page_size_def='50', **kwargs) -> Tuple[Any, Union[list, Any]]:
+def paging_command(limit: int | None, page_size: Union[str, None, int], page_number: str | None, func_command,
+                   page_size_def='50', **kwargs) -> tuple[Any, Union[list, Any]]:
     """Generic command for requests that support paging.
 
        Args:
@@ -359,7 +380,7 @@ def paging_command(limit: Optional[int], page_size: Union[str, None, int], page_
         response = func_command(page_size, page_number, **kwargs)
         items = response.get('items', [])
     else:
-        if (page_number or page_size) and limit:
+        if page_number or page_size:
             raise DemistoException("Can't supply limit and page number/page size")
         page_size = page_size if limit > 100 else limit
         total = 0
@@ -375,16 +396,15 @@ def paging_command(limit: Optional[int], page_size: Union[str, None, int], page_
     return response, items
 
 
-def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = arg_to_number(args.get('limit'))
     # we always supply 'until' argument to prevent duplications due to paging
     until = create_time(args.get('until')) or get_now_time()
     since = create_time(args.get('since'))
     page_size = args.get('page_size')
     page_number = args.get('page_number')
-    inc_id = args.get('id')
 
-    if inc_id:
+    if inc_id := args.get('id'):
         response = client.get_incident_request(inc_id)
         items = [response]
         context_data = {'RSANetWitness115.Incidents(val.id === obj.id)': response}
@@ -401,16 +421,14 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     humanReadable = tableToMarkdown(text, output, ['Id', 'Title', 'Summary', 'Priority', 'RiskScore', 'Status',
                                                    'AlertCount', 'Created', 'LastUpdated', 'Assignee', 'Sources',
                                                    'Categories'])
-    command_results = CommandResults(
+    return CommandResults(
         outputs=context_data,
         readable_output=humanReadable,
-        raw_response=response
+        raw_response=response,
     )
 
-    return command_results
 
-
-def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get('id')
     status = args.get('status')
     assignee = args.get('assignee')
@@ -421,43 +439,37 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     humanReadable = tableToMarkdown(f'Updated Incident {id_}', items,
                                     ['Id', 'Title', 'Summary', 'Priority', 'RiskScore', 'Status',
                                      'AlertCount', 'Created', 'LastUpdated', 'Assignee', 'Sources', 'Categories'])
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix='RSANetWitness115.Incidents',
         outputs_key_field='id',
         outputs=response,
         readable_output=humanReadable,
-        raw_response=response
+        raw_response=response,
     )
 
-    return command_results
 
-
-def remove_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get('id')
 
     client.remove_incident_request(id_)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'Incident {id_} deleted successfully',
     )
 
-    return command_results
 
-
-def incident_add_journal_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def incident_add_journal_entry_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get('id')
     author = args.get('author') or client.get_username()
     notes = args.get('notes')
     milestone = args.get('milestone')
 
     client.incident_add_journal_entry_request(id_, author, notes, milestone)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'Journal entry added successfully for incident {id_} '
     )
 
-    return command_results
 
-
-def incident_list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def incident_list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get('id')
     page_number = args.get('page_number')
     page_size = args.get('page_size')
@@ -477,16 +489,14 @@ def incident_list_alerts_command(client: Client, args: Dict[str, Any]) -> Comman
     humanReadable = tableToMarkdown(text, output,
                                     ['Id', 'Title', 'Detail', 'Created', 'Source', 'RiskScore', 'Type', 'Events'],
                                     removeNull=True, )
-    command_results = CommandResults(
+    return CommandResults(
         outputs=context_data,
         readable_output=humanReadable,
-        raw_response=response
+        raw_response=response,
     )
 
-    return command_results
 
-
-def services_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def services_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     name = args.get('name')
 
     response = client.services_list_request(name)
@@ -505,7 +515,7 @@ def services_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
-def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def hosts_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     service_id = args.get('service_id')
     page_number = args.get('page_number')
     page_size = args.get('page_size')
@@ -536,15 +546,14 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     humanReadable = tableToMarkdown(text, output,
                                     ['agentId', 'hostName', 'riskScore', 'networkInterfaces', 'lastSeenTime'],
                                     removeNull=True)
-    command_results = CommandResults(
+    return CommandResults(
         outputs=context_data,
         readable_output=humanReadable,
-        raw_response=response
+        raw_response=response,
     )
-    return command_results
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def endpoint_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     endpoint_id = args.get('id')
     ip = args.get('ip')
     host_name = args.get('hostname')
@@ -579,24 +588,22 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
     return command_results
 
 
-def snapshots_list_for_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def snapshots_list_for_host_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     response = client.snapshots_list_for_host_request(agent_id, service_id)
 
     readable_output = [{'Snapshot Id': snapshot_id} for snapshot_id in response]
     humanReadable = tableToMarkdown(f'Snapshot list for agent id {agent_id}-', readable_output)
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix='RSANetWitness115.SnapshotsListForHost',
         outputs=response,
         readable_output=humanReadable,
-        raw_response=response
+        raw_response=response,
     )
 
-    return command_results
 
-
-def snapshot_details_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def snapshot_details_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     snapshot_timestamp = args.get('snapshot_timestamp')
     service_id = args.get('service_id')
@@ -610,17 +617,15 @@ def snapshot_details_get_command(client: Client, args: Dict[str, Any]) -> Comman
     humanReadable = tableToMarkdown(f'Snapshot details for agent id {agent_id}-'
                                     f' \nshowing {len(results)} results out of {len(response)}',
                                     results, ['hostName', 'agentId', 'scanStartTime', 'directory', 'fileName'])
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix='RSANetWitness115.SnapshotDetailsGet',
         readable_output=humanReadable,
         outputs=results,
-        raw_response=results
+        raw_response=results,
     )
 
-    return command_results
 
-
-def files_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def files_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     service_id = args.get('service_id')
     page_number = args.get('page_number')
     page_size = args.get('page_size')
@@ -641,74 +646,65 @@ def files_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                      'PE Resources', 'File Status', 'Remediation'],
                                     removeNull=True)
 
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=humanReadable,
         outputs=context_data,
-        raw_response=response
+        raw_response=response,
     )
 
-    return command_results
 
-
-def scan_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def scan_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     scan_type = 'QUICK_SCAN'
     cpu_max = args.get('cpu_max')
 
     client.scan_request_request(agent_id, service_id, scan_type, cpu_max)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f"Scan request for host {agent_id}, sent successfully",
     )
 
-    return command_results
 
-
-def scan_stop_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def scan_stop_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     scan_type = 'CANCEL_SCAN'
 
     client.scan_stop_request_request(agent_id, service_id, scan_type)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'Scan cancellation request for host {agent_id}, sent successfully',
     )
 
-    return command_results
 
-
-def host_alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def host_alerts_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     alert_category = args.get('alert_category')
 
     response = client.host_alerts_list_request(agent_id, service_id, alert_category)
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix='RSANetWitness115.HostAlerts',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
-    return command_results
 
 
-def file_alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_alerts_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     checksum = args.get('check_sum')
     service_id = args.get('service_id')
     alert_category = args.get('alert_category')
 
     response = client.file_alerts_list_request(checksum, service_id, alert_category)
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix='RSANetWitness115.FileAlerts',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
-    return command_results
 
-
-def file_download_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_download_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     path = args.get('path')
@@ -716,36 +712,32 @@ def file_download_command(client: Client, args: Dict[str, Any]) -> CommandResult
     max_file_size = args.get('max_file_size')
 
     client.file_download_request(agent_id, service_id, path, count_files, max_file_size)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'Request for download {path} sent successfully'
     )
 
-    return command_results
 
-
-def mft_download_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def mft_download_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
 
     client.mft_download_request_request(agent_id, service_id)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'MFT download request for host {agent_id} sent successfully'
     )
-    return command_results
 
 
-def system_dump_download_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def system_dump_download_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
 
     client.system_dump_download_request_request(agent_id, service_id)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'System Dump download request for host {agent_id} sent successfully'
     )
-    return command_results
 
 
-def process_dump_download_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def process_dump_download_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     process_id = args.get('process_id')
@@ -757,14 +749,12 @@ def process_dump_download_request_command(client: Client, args: Dict[str, Any]) 
 
     client.process_dump_download_request_request(agent_id, service_id, process_id, eprocess, file_name, path, file_hash,
                                                  process_create_utctime)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output='Process Dump request sent successfully'
     )
 
-    return command_results
 
-
-def endpoint_isolate_from_network_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def endpoint_isolate_from_network_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     allow_dns_only = args.get('allow_dns_only_by_system')
@@ -773,14 +763,12 @@ def endpoint_isolate_from_network_command(client: Client, args: Dict[str, Any]) 
 
     client.endpoint_isolate_from_network_request(agent_id, service_id, allow_dns_only, exclusion_list,
                                                  comment)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'Isolate request for Host {agent_id} has been sent successfully'
     )
 
-    return command_results
 
-
-def endpoint_update_exclusions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def endpoint_update_exclusions_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     allow_dns_only = args.get('allow_dns_only_by_system')
@@ -788,28 +776,26 @@ def endpoint_update_exclusions_command(client: Client, args: Dict[str, Any]) -> 
     comment = args.get('comment')
 
     client.endpoint_update_exclusions_request(agent_id, service_id, allow_dns_only, exclusion_list, comment)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'Isolate update exclusions request, for Host {agent_id} ,sent successfully'
     )
-    return command_results
 
 
-def endpoint_isolation_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def endpoint_isolation_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
     comment = args.get('comment')
     allow_dns_only = args.get('allow_dns_only_by_system')
 
     client.endpoint_isolation_remove_request(agent_id, service_id, allow_dns_only, comment)
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=f'Isolate remove request, for Host {agent_id} ,sent successfully'
     )
-    return command_results
 
 
 def fetch_incidents(client: Client) -> list:
     total_items, last_fetched_ids, timestamp = client.get_incidents()
-    incidents: List[Dict] = []
+    incidents: list[dict] = []
     new_ids = []
     for item in total_items:
         inc_id = item.get('id')
@@ -830,7 +816,7 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def is_new_run_time_equal_last_run_time(last_run_time: Optional[Any], new_run_time: Optional[Any]) -> bool:
+def is_new_run_time_equal_last_run_time(last_run_time: Any | None, new_run_time: Any | None) -> bool:
     """Check if the two given string times are equal.
 
        Args:
@@ -860,12 +846,11 @@ def remove_duplicates_for_fetch(items: list, last_fetched_ids: list) -> list:
        Returns:
            (list) New items without items from last fetch.
        """
-    new_items = []
-    for item in items:
-        if item.get('id') and item.get('id') not in last_fetched_ids:
-            new_items.append(item)
-
-    return new_items
+    return [
+        item
+        for item in items
+        if item.get('id') and item.get('id') not in last_fetched_ids
+    ]
 
 
 def remove_duplicates_in_items(items: list, id_key: str) -> list:
@@ -889,8 +874,8 @@ def remove_duplicates_in_items(items: list, id_key: str) -> list:
     return new_items
 
 
-def prepare_incidents_readable_items(items: List[Dict[str, Any]]) -> list:
-    readable_items = [
+def prepare_incidents_readable_items(items: list[dict[str, Any]]) -> list:
+    return [
         {
             'Id': item.get('id'),
             'Title': item.get('title'),
@@ -903,15 +888,14 @@ def prepare_incidents_readable_items(items: List[Dict[str, Any]]) -> list:
             'LastUpdated': item.get('lastUpdated'),
             'Assignee': item.get('assignee'),
             'Sources': item.get('sources'),
-            'Categories': item.get('categories')
-        } for item in items
+            'Categories': item.get('categories'),
+        }
+        for item in items
     ]
 
-    return readable_items
 
-
-def prepare_alerts_readable_items(items: List[Dict[str, Any]]) -> list:
-    readable_items = [
+def prepare_alerts_readable_items(items: list[dict[str, Any]]) -> list:
+    return [
         {
             'Id': item.get('id'),
             'Title': item.get('title'),
@@ -920,29 +904,27 @@ def prepare_alerts_readable_items(items: List[Dict[str, Any]]) -> list:
             'Source': item.get('source'),
             'RiskScore': item.get('riskScore'),
             'Type': item.get('type'),
-            'Events': item.get('events')
-        } for item in items
+            'Events': item.get('events'),
+        }
+        for item in items
     ]
 
-    return readable_items
 
-
-def prepare_hosts_readable_items(items: List[Dict[str, Any]]) -> list:
-    readable_items = [
+def prepare_hosts_readable_items(items: list[dict[str, Any]]) -> list[dict]:
+    return [
         {
             'agentId': item.get('agentId'),
             'hostName': item.get('hostName'),
             'riskScore': item.get('riskScore'),
             'networkInterfaces': item.get('networkInterfaces'),
-            'lastSeenTime': item.get('lastSeenTime')
-        } for item in items
+            'lastSeenTime': item.get('lastSeenTime'),
+        }
+        for item in items
     ]
 
-    return readable_items
 
-
-def prepare_files_readable_items(items: List[Dict[str, Any]]) -> list:
-    readable_items = [
+def prepare_files_readable_items(items: list[dict[str, Any]]) -> list[dict]:
+    return [
         {
             'File Name': item.get('firstFileName'),
             'Risk Score': item.get('globalRiskScore'),
@@ -950,31 +932,33 @@ def prepare_files_readable_items(items: List[Dict[str, Any]]) -> list:
             'Reputation': item.get('reputationStatus'),
             'Size': item.get('size'),
             'Signature': item.get('signature'),
-            'PE Resources': item.get('pe', {}).get('resources') if item.get('pe') else None,
+            'PE Resources': item.get('pe', {}).get('resources')
+            if item.get('pe')
+            else None,
             'File Status': item.get('fileStatus'),
-            'Remediation': item.get('remediationAction')
-        } for item in items
+            'Remediation': item.get('remediationAction'),
+        }
+        for item in items
     ]
 
-    return readable_items
 
-
-def prepare_paging_context_data(response: Dict[str, Any], items: List[Dict[str, Any]], suffix: str,
+def prepare_paging_context_data(response: dict[str, Any], items: list[dict[str, Any]], suffix: str,
                                 filter_id='id') -> dict:
-    if not items:
-        data = {}
-    else:
-        data = {
+    return (
+        {}
+        if not items
+        else {
             f'RSANetWitness115.{suffix}(val.{filter_id} === obj.{filter_id})': items,
-            f'RSANetWitness115.paging.{suffix}(true)': {"pageNumber": response.get('pageNumber'),
-                                                        "pageSize": response.get('pageSize'),
-                                                        "totalPages": response.get('totalPages'),
-                                                        "totalItems": response.get('totalItems'),
-                                                        "hasNext": response.get('hasNext'),
-                                                        "hasPrevious": response.get('hasPrevious')}
+            f'RSANetWitness115.paging.{suffix}(true)': {
+                "pageNumber": response.get('pageNumber'),
+                "pageSize": response.get('pageSize'),
+                "totalPages": response.get('totalPages'),
+                "totalItems": response.get('totalItems'),
+                "hasNext": response.get('hasNext'),
+                "hasPrevious": response.get('hasPrevious'),
+            },
         }
-
-    return data
+    )
 
 
 def exception_handler(res):
@@ -990,7 +974,7 @@ def exception_handler(res):
         exception = DemistoException(ERROR_TITLES.get(error_code, '') + error_msg)
 
     except Exception:
-        exception = DemistoException('Error in API call [{}] - {}'.format(res.status_code, res.reason))
+        exception = DemistoException(f'Error in API call [{res.status_code}] - {res.reason}')
 
     raise exception
 
@@ -1013,7 +997,7 @@ def build_error_msg(error_body: dict) -> str:
     return ret_error_msg
 
 
-def create_exclusions_list(ips_str_list: Optional[Any]) -> list:
+def create_exclusions_list(ips_str_list: Any | None) -> list:
     """Build exclusion list in API format from ip list.
 
        Args:
@@ -1034,7 +1018,7 @@ def create_exclusions_list(ips_str_list: Optional[Any]) -> list:
     return exclusion_list
 
 
-def create_filter(args: dict) -> Optional[dict]:
+def create_filter(args: dict) -> dict | None:
     """
     Create filter in the API format for hosts_list request.
 
@@ -1044,7 +1028,7 @@ def create_filter(args: dict) -> Optional[dict]:
        Returns:
            (str) The created filter.
        """
-    if 'ip' in args.keys():
+    if 'ip' in args:
         args['networkInterfaces.ipv4'] = args.pop('ip')
     expression_list = []
     for arg in args:
@@ -1069,7 +1053,7 @@ def create_filter(args: dict) -> Optional[dict]:
         return None
 
 
-def get_network_interfaces_info(endpoint: dict) -> Tuple[list, list]:
+def get_network_interfaces_info(endpoint: dict) -> tuple[list, list]:
     """Retrieve ip and mac lists from an endpoint item.
 
        Args:
@@ -1083,12 +1067,12 @@ def get_network_interfaces_info(endpoint: dict) -> Tuple[list, list]:
     mac_address_list = []
     for data in endpoint.get('networkInterfaces', []):
         ips_list.append(data.get('ipv4'))
-        mac_address_list.append((data.get('macAddress')))
+        mac_address_list.append(data.get('macAddress'))
 
     return ips_list, mac_address_list
 
 
-def create_time(given_time: Optional[Any]) -> Optional[str]:
+def create_time(given_time: Any | None) -> str | None:
     """
     Convert given argument time to iso format with Z ending, if received None returns None.
 
@@ -1100,20 +1084,18 @@ def create_time(given_time: Optional[Any]) -> Optional[str]:
        """
     if not given_time:
         return None
-    datetime_time = arg_to_datetime(given_time)
-    if not datetime_time:
+    if datetime_time := arg_to_datetime(given_time):
+        return datetime_time.strftime(DATE_FORMAT)
+    else:
         raise DemistoException("Time parameter supplied in invalid, make sure to supply a valid argument")
-    return datetime_time.strftime(DATE_FORMAT)
 
 
-def get_now_time() -> Optional[str]:
+def get_now_time() -> str | None:
     """
     Create a string time of the current time in date format.
-       """
-    now_time = arg_to_datetime('now')
-    if now_time:
-        str_now_time = now_time.strftime(DATE_FORMAT)
-        return str_now_time
+    """
+    if now_time := arg_to_datetime('now'):
+        return now_time.strftime(DATE_FORMAT)
     else:
         return None
 
@@ -1129,8 +1111,9 @@ def test_module(client: Client, params) -> None:
 
 
 def main() -> None:
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    command = demisto.command()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     url = params.get('url')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -1138,13 +1121,11 @@ def main() -> None:
     fetch_time = params.get('first_fetch', '1 days')
     fetch_limit = params.get('max_fetch', '100')
     cred = params.get('credentials')
-    headers: Dict[str, str] = {}
+    headers: dict[str, str] = {}
 
-    command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         client: Client = Client(url, verify_certificate, proxy, headers=headers, service_id=service_id,
                                 fetch_time=fetch_time, fetch_limit=fetch_limit, cred=cred)
         client.get_token()

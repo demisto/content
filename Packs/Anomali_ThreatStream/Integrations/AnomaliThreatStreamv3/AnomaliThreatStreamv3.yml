@@ -6385,7 +6385,7 @@ script:
       required: true
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
-  dockerimage: demisto/py3-tools:1.0.0.63856
+  dockerimage: demisto/py3-tools:1.0.0.64487
   runonce: false
   script: '-'
   subtype: python3
