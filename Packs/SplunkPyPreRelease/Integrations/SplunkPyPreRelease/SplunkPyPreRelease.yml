@@ -110,11 +110,6 @@ configuration:
 - display: HEC Token (HTTP Event Collector)
   name: hec_token
   type: 4
-  hidden: true
-- hiddenusername: true
-  name: hec_creds
-  type: 9
-  displaypassword: HEC Token (HTTP Event Collector)
 - display: 'HEC URL (e.g: https://localhost:8088).'
   name: hec_url
   type: 0
@@ -124,35 +119,35 @@ configuration:
 - display: Enrichment Types
   name: enabled_enrichments
   type: 16
-  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
   options:
   - Drilldown
   - Asset
   - Identity
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
 - display: Enrichment Timeout (Minutes)
   name: enrichment_timeout
-  defaultvalue: '5'
+  defaultvalue: "5"
   type: 0
   additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
-- display: 'Number of Events Per Enrichment Type'
+- display: Number of Events Per Enrichment Type
   name: num_enrichment_events
+  defaultvalue: "20"
   type: 0
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
-  defaultvalue: '20'
 - display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
   name: extensive_logs
   type: 8
 - display: 'Advanced: Fetch backwards window for the events occurrence time'
   name: occurrence_look_behind
+  defaultvalue: "15"
   type: 0
   additionalinfo: The fetch time range will be at least of the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk.
-  defaultvalue: '15'
-- additionalinfo: Use this parameter to specify a list of comma separated fields, which together are a unique identifier for the events you with to fetch.
-  display: 'Advanced: Unique ID fields'
+- display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   type: 0
+  additionalinfo: Use this parameter to specify a list of comma separated fields, which together are a unique identifier for the events you with to fetch.
 description: Runs queries on Splunk servers.
-display: SplunkPyPreRelease (Beta)
+display: SplunkPy Prerelease (Beta)
 name: SplunkPyPreRelease
 script:
   commands:
@@ -451,7 +446,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.63775
+  dockerimage: demisto/splunksdk:1.0.0.49073
   isfetch: true
   ismappable: true
   isremotesyncin: true
