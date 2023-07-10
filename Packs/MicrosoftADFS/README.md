@@ -44,4 +44,4 @@ When configuring the Windows Event Collector (WEC), use the following settings i
 - **Min. Event Level**: "Verbose"
 - **Event IDs Group**: "All"
 
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/7fc2db5236a9f40b3b98f061cded684525452578/Packs/MicrosoftADFS/doc_imgs/ADFSWEC.png)
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/e02f705471d65a49f8c50115bf2cc828e47a5390/Packs/MicrosoftADFS/doc_imgs/ADFSWEC.png)
