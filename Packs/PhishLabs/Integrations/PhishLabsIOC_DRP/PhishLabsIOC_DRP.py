@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 # Std imports
 from datetime import datetime
@@ -7,8 +9,6 @@ from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
 import urllib3
 
 # Local imports
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 """GLOBALS/PARAMS

@@ -14,52 +14,42 @@ configuration:
 - display: Use AppRole Auth Method
   name: use_approle
   type: 8
-  required: false
 - display: Username / Role ID
   displaypassword: Password / Secret ID
   name: credentials
   defaultvalue: ""
   type: 9
-  required: false
 - display: Authentication token
   name: token
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - displaypassword: Authentication token
-  name:  credentials_token
-  required: false
+  name: credentials_token
   hiddenusername: true
   type: 9
 - display: Vault enterprise namespace
   name: namespace
   defaultvalue: ""
   type: 0
-  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Fetches credentials
   name: isFetchCredentials
   defaultvalue: "true"
   type: 8
-  required: false
 - display: CSV list of secrets engine types to fetch secrets from
   additionalinfo: Possible values are KV, Cubbyhole, AWS.
   name: engines
   defaultvalue: KV,Cubbyhole
   type: 0
-  required: false
 - display: Concat username to credential object name
   name: concat_username_to_cred_name
   type: 8
-  required: false
   additionalinfo: Should be used in case there are several secrets under the same folder in order to make the credential object unique.
 script:
   script: ''
@@ -339,7 +329,6 @@ script:
       type: number
     description: Creates a new authentication token.
   dockerimage: demisto/hashicorp:1.0.0.63699
-  runonce: false
 tests:
 - hashicorp_test
 fromversion: 5.0.0

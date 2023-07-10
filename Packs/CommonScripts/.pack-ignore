@@ -254,12 +254,8 @@ GetDockerImageLatestTag
 GetDuplicatesMlv2
 DockerHardeningCheck
 
-[file:IPNetwork.yml]
-ignore=RM109
+[file:CloseInvestigationAsDuplicate.yml]
+ignore=BA124
 
-[file:IsInternalDomainName.yml]
-ignore=RM109
-
-[file:IsUrlPartOfDomain.yml]
-ignore=RM109
-
+[file:ContextContains.yml]
+ignore=BA124

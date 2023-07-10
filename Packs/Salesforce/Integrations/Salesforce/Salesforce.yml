@@ -20,41 +20,32 @@ configuration:
   name: clientID
   defaultvalue: ""
   type: 0
-  required: false
   hidden: true
 - display: Consumer Secret
   name: clientSecret
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - display: Consumer Key
   displaypassword: Consumer Secret
-  name:  credentials_client_secret
-  required: false
+  name: credentials_client_secret
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
-- display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser
-    automation)'
+- display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser automation)'
   name: fetchType
   defaultvalue: cases
   type: 0
-  required: false
 - display: Use system proxy settings
   name: useproxy
   type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 script:
   script: ''
   type: javascript
@@ -93,8 +84,7 @@ script:
       description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Cam be: "New", "Escalated", "On Hold",
-        or "Closed".'
+      description: 'The status of the case. Cam be: "New", "Escalated", "On Hold", or "Closed".'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: The reason for the case creation.
@@ -148,8 +138,7 @@ script:
       description: The Lead owner.
       type: string
     - contextPath: SalesForce.Lead.Status
-      description: 'The lead status. Can be: "New", "Nurturing", "Working", "Qualified",
-        or "Unqualified".'
+      description: 'The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified".'
       type: string
     - contextPath: SalesForce.Task.ID
       description: The ID of the task.
@@ -211,8 +200,7 @@ script:
     arguments:
     - name: path
       required: true
-      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object
-        "Case" with ID "5000Y000001EjzRQAS".'
+      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object "Case" with ID "5000Y000001EjzRQAS".'
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The Object ID of the case.
@@ -242,8 +230,7 @@ script:
       description: 'Origin of the case. Can be: "Web", "Phone", or "Email".'
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
-        or "Closed".'
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed".'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: The reason for the case creation.
@@ -297,8 +284,7 @@ script:
       description: The Lead owner.
       type: string
     - contextPath: SalesForce.Lead.Status
-      description: 'The Lead status. Can be: "New", "Nurturing", "Working", "Qualified",
-        or "Unqualified".'
+      description: 'The Lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified".'
       type: string
     - contextPath: SalesForce.Task.ID
       description: The ID of the task.
@@ -335,8 +321,7 @@ script:
     arguments:
     - name: path
       required: true
-      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object
-        "Case" with ID "5000Y000001EjzRQAS".'
+      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object "Case" with ID "5000Y000001EjzRQAS".'
     - name: json
       required: true
       description: The JSON file with fields and values of the object to be updated.
@@ -369,8 +354,7 @@ script:
       description: 'The origin of the Case. Can be: "Web", "Phone", or "Email".'
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Can be: "New", "Escalated", "On Hold"
-        ,or "Closed".'
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold" ,or "Closed".'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: The reason for the case creation.
@@ -424,8 +408,7 @@ script:
       description: The Lead owner.
       type: string
     - contextPath: SalesForce.Lead.Status
-      description: 'The Lead Status. Can be: "New", "Nurturing", "Working", "Qualified",
-        or "Unqualified".'
+      description: 'The Lead Status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified".'
       type: string
     - contextPath: SalesForce.Task.ID
       description: The ID of the task.
@@ -496,8 +479,7 @@ script:
       description: 'Origin of the Case. Can be: "Web", "Phone", or "Email".'
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
-        or "Closed".'
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed".'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: The reason for the case creation.
@@ -551,8 +533,7 @@ script:
       description: The Lead owner.
       type: string
     - contextPath: SalesForce.Lead.Status
-      description: 'The Lead status. Can be: "New", "Nurturing", "Working", "Qualified",
-        or "Unqualified".'
+      description: 'The Lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified".'
       type: string
     - contextPath: SalesForce.Task.ID
       description: The ID of the task.
@@ -654,14 +635,12 @@ script:
       description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
-        or "Closed".'
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed".'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: The reason for the case creation.
       type: string
-    description: Returns information on a case. All arguments are optional, but you
-      must specify at least one for the command to execute successfully.
+    description: Returns information on a case. All arguments are optional, but you must specify at least one for the command to execute successfully.
   - name: salesforce-create-case
     arguments:
     - name: subject
@@ -678,8 +657,7 @@ script:
       - On Hold
       - Closed
       - Escalated
-      description: 'The Case Status. Can be: "New", "On Hold", "Closed", or "Escalated".
-        Default is New.'
+      description: 'The Case Status. Can be: "New", "On Hold", "Closed", or "Escalated". Default is New.'
       defaultValue: New
     - name: origin
       auto: PREDEFINED
@@ -732,8 +710,7 @@ script:
       description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
-        or "Closed".'
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed".'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: The reason for the case creation.
@@ -807,8 +784,7 @@ script:
       description: 'Origin of the Case. Can be: "Web", "Phone", or "Email".'
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Can be: "New, "Escalated", "On Hold",
-        or "Closed".'
+      description: 'The status of the case. Can be: "New, "Escalated", "On Hold", or "Closed".'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: Reason for the case creation.
@@ -852,8 +828,7 @@ script:
       description: Origin of the Case. one of Web, Phone, Email.
       type: string
     - contextPath: SalesForce.Case.Status
-      description: 'Case Status. one of the following: New, Escalated, On Hold or
-        Closed.'
+      description: 'Case Status. one of the following: New, Escalated, On Hold or Closed.'
       type: string
     - contextPath: SalesForce.Case.Reason
       description: Reason for case creation
@@ -881,8 +856,7 @@ script:
     - contextPath: SalesForce.Comment.Reply.URL
       description: Reply URL link
       type: string
-    description: Add the comment to the chatter thread. Use this command only after
-      salesforce-push-comment
+    description: Add the comment to the chatter thread. Use this command only after salesforce-push-comment
   - name: salesforce-delete-case
     arguments:
     - name: oid
@@ -904,13 +878,10 @@ script:
       description: The ID of the parent case of the case comment. Required.
       type: string
     - contextPath: IsPublished
-      description: Whether the case comment is visible to customers in the Self-Service
-        portal (true). The label is published. This is the only CaseComment field
-        that can be updated through the API.
+      description: Whether the case comment is visible to customers in the Self-Service portal (true). The label is published. This is the only CaseComment field that can be updated through the API.
       type: boolean
     - contextPath: CommentBody
-      description: The text of the case body. Maximum size is 4,000 bytes. The label
-        is Body.
+      description: The text of the case body. Maximum size is 4,000 bytes. The label is Body.
       type: string
     - contextPath: CreatedById
       description: 'The created date by ID.'
@@ -927,8 +898,7 @@ script:
       description: 'The last modified date by ID.'
       type: string
     - contextPath: IsDeleted
-      description: Whether the object has been moved to the Recycle Bin (true). Label
-        is Deleted.
+      description: Whether the object has been moved to the Recycle Bin (true). Label is Deleted.
       type: boolean
     description: Returns a comment through the case number.
   - name: salesforce-post-casecomment
@@ -954,8 +924,7 @@ script:
       description: The user’s alias. Required. For example, jsmith.
       type: string
     - contextPath: CommunityNickname
-      description: The name used to identify the user in the Community application,
-        which includes the ideas and answers features.
+      description: The name used to identify the user in the Community application, which includes the ideas and answers features.
       type: string
     - contextPath: CreatedById
       description: 'Created by the ID.'
@@ -964,8 +933,7 @@ script:
       description: The user’s email address. Required.
       type: string
     - contextPath: LastLoginDate
-      description: The time and date when the user last successfully logged in. This
-        value is updated if 60 seconds have elapsed since the user’s last login.
+      description: The time and date when the user last successfully logged in. This value is updated if 60 seconds have elapsed since the user’s last login.
       type: string
     - contextPath: LastModifiedDate
       description: The last modified date.
@@ -977,12 +945,7 @@ script:
       description: Concatenation of FirstName and LastName. Limited to 121 characters.
       type: string
     - contextPath: Username
-      description: Contains the name that a user enters to log in to the API or the
-        user interface. Required. Must be in the form of an email address, all characters
-        should be lowercase, and unique across all organizations. Each added user
-        counts as a license. Every organization has a maximum number of licenses.
-        If you attempt to exceed the maximum number of licenses by inserting user
-        records, the attempt to create a user is rejected.
+      description: Contains the name that a user enters to log in to the API or the user interface. Required. Must be in the form of an email address, all characters should be lowercase, and unique across all organizations. Each added user counts as a license. Every organization has a maximum number of licenses. If you attempt to exceed the maximum number of licenses by inserting user records, the attempt to create a user is rejected.
       type: string
     - contextPath: UserRoleId
       description: The ID of the user’s UserRole. Label is Role ID.
@@ -997,12 +960,8 @@ script:
       description: The unique ID of the case.
       type: string
     - contextPath: Name
-      description: 'Name of the account. Required. Label is Account Name. Maximum
-        size is 255 characters. If the account has a record type of Person Account,
-        this value is the concatenation of the FirstName, MiddleName, LastName, and
-        Suffix of the associated person contact. You cannot modify this value.'
+      description: 'Name of the account. Required. Label is Account Name. Maximum size is 255 characters. If the account has a record type of Person Account, this value is the concatenation of the FirstName, MiddleName, LastName, and Suffix of the associated person contact. You cannot modify this value.'
       type: string
     description: 'Returns organization details from the case number. '
   isfetch: true
-  runonce: false
 fromversion: 5.0.0

@@ -19,11 +19,9 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -34,12 +32,9 @@ script:
       required: true
       description: The category name. Must be unique, alphanumeric name.
     - name: categoryDescription
-      description: The category description.  It may contain alphanumeric characters,
-        periods, and commas.
+      description: The category description.  It may contain alphanumeric characters, periods, and commas.
     - name: parent
-      description: "The category parent. 0 is the top-level category, and can be specified\
-        \ as the parent. \t Subcategories can be added to categories that have a parent\
-        \ of 0, but not to categories with a different parent."
+      description: "The category parent. 0 is the top-level category, and can be specified as the parent. \t Subcategories can be added to categories that have a parent of 0, but not to categories with a different parent."
       defaultValue: "0"
     outputs:
     - contextPath: Forcepoint.AddCategory.CategoryName
@@ -52,8 +47,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Select 'true' to retrieve a list of all the categories. Else, only
-        API-managed categories will be listed.
+      description: Select 'true' to retrieve a list of all the categories. Else, only API-managed categories will be listed.
       defaultValue: "false"
     outputs:
     - contextPath: ListCategories.CategoryName
@@ -100,8 +94,7 @@ script:
       description: Total URLs added to category.
     - contextPath: Forcepoint.AddAddressToCategory.Totals.AddedIPs
       description: Total IP addresses added to category.
-    description: Add URLs and IP addresses to an API-managed category. Refer to category
-      either by it's ID or by it's name.
+    description: Add URLs and IP addresses to an API-managed category. Refer to category either by it's ID or by it's name.
   - name: fp-delete-categories
     arguments:
     - name: categoryIDs
@@ -117,9 +110,7 @@ script:
       description: Category URLs
     - contextPath: Forcepoint.DeletedCategories.IPs
       description: Category IPs
-    description: Delete API-managed categories. Refer to categories you wish to delete
-      either by ID list or by name list. It is possible to pass both lists, when each
-      list refers to different categories.
+    description: Delete API-managed categories. Refer to categories you wish to delete either by ID list or by name list. It is possible to pass both lists, when each list refers to different categories.
   - name: fp-delete-address-from-category
     arguments:
     - name: categoryID
@@ -139,6 +130,5 @@ script:
       description: Total URLs deleted from category.
     - contextPath: Forcepoint.DeleteAddressesFromCategory.Totals.DeletedIPs
       description: Total IP addresses deleted from category.
-    description: ' Remove URLs, IP addresses, and ranges from a specific API-managed
-      category.  Refer to category either by it''s ID or by it''s name.'
+    description: ' Remove URLs, IP addresses, and ranges from a specific API-managed category.  Refer to category either by it''s ID or by it''s name.'
 fromversion: 5.0.0

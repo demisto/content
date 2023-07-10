@@ -11,7 +11,6 @@ configuration:
 - defaultvalue: '1671'
   display: Nexthink Engine Port (e.g. 1671)
   name: port
-  required: false
   type: 0
 - display: Username
   name: credentials
@@ -19,16 +18,11 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Nexthink helps IT teams deliver on the promise of the modern digital
-  workplace. Nexthink is the only solution to provide enterprises with a way to visualize,
-  act and engage across the entire IT ecosystem to lower IT cost and improve digital
-  employee experience.
+description: Nexthink helps IT teams deliver on the promise of the modern digital workplace. Nexthink is the only solution to provide enterprises with a way to visualize, act and engage across the entire IT ecosystem to lower IT cost and improve digital employee experience.
 display: Nexthink
 name: Nexthink
 script:
@@ -124,7 +118,7 @@ script:
     - contextPath: Nexthink.Endpoint.MACAddress
       description: Endpoint MAC address.
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3
