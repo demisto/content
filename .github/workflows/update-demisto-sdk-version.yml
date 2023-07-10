@@ -37,11 +37,11 @@ jobs:
 
     - name: create pull request
       run: |
-        git config user.name "Automated"
-        git config user.email "actions@users.noreply.github.com"
+        git config --global user.email "bot@demisto.com"
+        git config --global user.name "Content Bot"
         git checkout -b demisto-sdk-release
         git commit -m "poetry files" -a
         git push origin demisto-sdk-release
         gh pr create -B demisto-sdk-release -H master --title 'demisto-sdk-release' --body 'demisto-sdk-release'
       env:
-        token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+        GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
