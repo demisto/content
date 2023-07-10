@@ -14,15 +14,23 @@ configuration:
 - display: Client ID
   name: client_id
   type: 0
-  required: true
+  hidden: true
 - display: Client secret
   name: client_secret
   type: 4
-  required: true
+  hidden: true
+- display: Client ID
+  name: client_id_creds
+  type: 9
+  displaypassword: Client secret
 - display: Secret token
   name: secret_token
   type: 4
-  required: true
+  hidden: true
+- name: secret_token_creds
+  type: 9
+  displaypassword: Secret token
+  hiddenusername: true
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
@@ -43,16 +51,16 @@ configuration:
   display: Automatically create user if not found in update command
   name: create_if_not_exists
   type: 8
-- defaultvalue: User Profile - Salesforce Fusion (Incoming)
-  display: Incoming Mapper
+- display: Incoming Mapper
   name: mapper_in
-  required: true
   type: 0
-- defaultvalue: User Profile - Salesforce Fusion (Outgoing)
-  display: Outgoing Mapper
+  defaultvalue: User Profile - Salesforce Fusion (Incoming)
+  required: true
+- display: Outgoing Mapper
   name: mapper_out
-  required: true
   type: 0
+  defaultvalue: User Profile - Salesforce Fusion (Outgoing)
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
