@@ -3850,7 +3850,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
 ### misp-add-user
 
 ***
-Adding a new user to MISP.
+Add a new user to MISP.
 
 #### Base Command
 
@@ -3863,35 +3863,35 @@ Adding a new user to MISP.
 | email | The email address of the new user to be added. | Required | 
 | org_id | ID number indicating which organization the new user will be added to. | Required | 
 | role_id | Role of the new user to be added. | Required | 
-| password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, at least one lower-case character. | Required | 
+| password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, and at least one lower-case character. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.User.id | string | MISP User ID. | 
-| MISP.User.password | string | MISP User Password. | 
-| MISP.User.org_id | string | MISP User Organisation ID. | 
-| MISP.User.server_id | string | MISP User Server ID. | 
-| MISP.User.email | string | MISP User Email. | 
-| MISP.User.autoalert | boolean | MISP User Auto Alert. | 
-| MISP.User.authkey | string | MISP User Auth Key. | 
-| MISP.User.invited_by | string | MISP User Invited By. | 
-| MISP.User.gpgkey | string | MISP User GPG Key. | 
-| MISP.User.certif_public | string | MISP User Certif Public. | 
-| MISP.User.nids_sid | string | MISP User Nids Sid. | 
-| MISP.User.termsaccepted | boolean | MISP User Terms Accepted. | 
-| MISP.User.newsread | string | MISP User News Read. | 
-| MISP.User.role_id | string | MISP User Role ID. | 
-| MISP.User.change_pw | boolean | MISP User Change Password. | 
-| MISP.User.contactalert | boolean | MISP User Contact Alert. | 
-| MISP.User.disabled | boolean | MISP User Disabled. | 
-| MISP.User.expiration | string | MISP User Expiration. | 
-| MISP.User.current_login | string | MISP User Current Login. | 
-| MISP.User.last_login | string | MISP User Last Login. | 
-| MISP.User.force_logout | boolean | MISP User Force Logout. | 
-| MISP.User.date_created | string | MISP User Created Date. | 
-| MISP.User.date_modified | string | MISP User Modified Date. | 
+| MISP.User.id | string | MISP user ID. | 
+| MISP.User.password | string | MISP user password. | 
+| MISP.User.org_id | string | MISP user organisation ID. | 
+| MISP.User.server_id | string | MISP user server ID. | 
+| MISP.User.email | string | MISP user email. | 
+| MISP.User.autoalert | boolean | MISP user auto alert. | 
+| MISP.User.authkey | string | MISP User auth key. | 
+| MISP.User.invited_by | string | MISP user invited by. | 
+| MISP.User.gpgkey | string | MISP user GPG key. | 
+| MISP.User.certif_public | string | MISP User public certificate. | 
+| MISP.User.nids_sid | string | MISP user Network Intrusion Detection System \(NIDS\) Signature ID \(SID\). | 
+| MISP.User.termsaccepted | boolean | Whether MISP user terms were accepted. | 
+| MISP.User.newsread | string | MISP user news read. | 
+| MISP.User.role_id | string | MISP user role ID. | 
+| MISP.User.change_pw | boolean | Whether the MISP user password was changed. | 
+| MISP.User.contactalert | boolean | MISP user contact alert. | 
+| MISP.User.disabled | boolean | Whether the MISP user was disabled. | 
+| MISP.User.expiration | string | MISP user expiration. | 
+| MISP.User.current_login | string | MISP user current login. | 
+| MISP.User.last_login | string | MISP user last login. | 
+| MISP.User.force_logout | boolean | MISP user force logout. | 
+| MISP.User.date_created | string | MISP user created date. | 
+| MISP.User.date_modified | string | MISP user modified date. | 
 
 ### Input
 
@@ -4304,7 +4304,7 @@ Check a list of indicator values against the MISP warninglist.
 ### misp-get-organization-info
 
 ***
-Display organization ids and names.
+Display the organization IDs and names.
 
 #### Base Command
 
@@ -4319,19 +4319,8 @@ Display organization ids and names.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Organization.org_id | string | MISP Ogranization ID. | 
-| MISP.Organization.org_name | string | MISP Organization Name. | 
-
-#### Command Example
-
-```!misp-get-organization-info```
-
-#### Human Readable Output
-
->### MISP Organizations
->|id|name|
->|---|---|
->| 1 | orgname |
+| MISP.Organization.org_id | string | MISP organization ID. | 
+| MISP.Organization.org_name | string | MISP organization name. | 
 
 ### misp-get-role-info
 
@@ -4351,8 +4340,8 @@ Display role names and role ids.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Role.role_id | string | MISP Role ID. | 
-| MISP.Role.role_name | string | MISP Role Name. | 
+| MISP.Role.role_id | string | MISP role ID. | 
+| MISP.Role.role_name | string | MISP role name. | 
 
 #### Command Example
 
