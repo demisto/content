@@ -26,13 +26,13 @@ configuration:
   hiddenusername: true
   displaypassword: AzureKeyVaultUrl
   required: false
-  type: 0
+  type: 9
 - display: Azure KeyVault Tenant ID
   name: AzureKeyVaultTenantId
   hiddenusername: true
   displaypassword: Azure KeyVault Tenant ID
   required: false
-  type: 4
+  type: 9
 - display: Azure KeyVault Client Secret
   name: AzureKeyVaultClientSecret
   hiddenusername: true
