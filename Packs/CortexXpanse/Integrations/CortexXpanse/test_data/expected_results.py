@@ -1134,3 +1134,4 @@ ATTACK_SURFACE_RULES_RESULTS = [
 ]
 
 TAG_APPLY_RESULTS = "Assignment operation: succeeded"
+TAG_REMOVE_RESULTS = "Removal operation: succeeded"

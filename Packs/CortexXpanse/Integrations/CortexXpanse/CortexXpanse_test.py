@@ -331,7 +331,7 @@ def test_list_attack_surface_rules_command(requests_mock):
     assert response.outputs_key_field == 'attack_surface_rule_id'
 
 
-def assign_tag_to_assets_command(requests_mock):
+def test_assign_tag_to_assets_command(requests_mock):
     """Tests assign_tag_to_assets_command function.
 
         Given:
@@ -346,7 +346,7 @@ def assign_tag_to_assets_command(requests_mock):
 
     from test_data.raw_response import TAG_APPLY_RAW
     from test_data.expected_results import TAG_APPLY_RESULTS
-    requests_mock.post('https://test.com/public_api/v1/assets/tags/assets_internet_exposure/add/',
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/assets_internet_exposure/assign/',
                        json=TAG_APPLY_RAW)
 
     client = Client(
@@ -367,6 +367,120 @@ def assign_tag_to_assets_command(requests_mock):
 
     assert response.outputs == TAG_APPLY_RESULTS
     assert response.outputs_prefix == 'ASM.TagAssignment'
+
+
+def test_remove_tag_to_assets_command(requests_mock):
+    """Tests remove_tag_to_assets_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate remove_tag_to_assets_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'assign_tag_to_assets_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, assign_tag_to_assets_command
+
+    from test_data.raw_response import TAG_REMOVE_RAW
+    from test_data.expected_results import TAG_REMOVE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/assets_internet_exposure/remove/',
+                       json=TAG_REMOVE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = assign_tag_to_assets_command(client, args)
+
+    assert response.outputs == TAG_REMOVE_RESULTS
+    assert response.outputs_prefix == 'ASM.TagRemoval'
+
+
+def test_assign_tag_to_ranges_command(requests_mock):
+    """Tests assign_tag_to_assets_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate assign_tag_to_assets_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'assign_tag_to_assets_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, assign_tag_to_assets_command
+
+    from test_data.raw_response import TAG_APPLY_RAW
+    from test_data.expected_results import TAG_APPLY_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/assign/',
+                       json=TAG_APPLY_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = assign_tag_to_assets_command(client, args)
+
+    assert response.outputs == TAG_APPLY_RESULTS
+    assert response.outputs_prefix == 'ASM.TagAssignment'
+
+
+def test_remove_tag_to_ranges_command(requests_mock):
+    """Tests remove_tag_to_assets_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate remove_tag_to_assets_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'assign_tag_to_assets_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, assign_tag_to_assets_command
+
+    from test_data.raw_response import TAG_REMOVE_RAW
+    from test_data.expected_results import TAG_REMOVE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/remove/',
+                       json=TAG_REMOVE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = assign_tag_to_assets_command(client, args)
+
+    assert response.outputs == TAG_REMOVE_RESULTS
+    assert response.outputs_prefix == 'ASM.TagRemoval'
 
 
 def test_fetch_incidents(requests_mock, mocker):

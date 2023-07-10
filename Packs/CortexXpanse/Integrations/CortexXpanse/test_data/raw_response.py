@@ -1188,3 +1188,9 @@ TAG_APPLY_RAW = {
         "assign_tags": True
     }
 }
+
+TAG_REMOVE_RAW = {
+    "reply": {
+        "remove_tags": True
+    }
+}
