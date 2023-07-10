@@ -1760,6 +1760,7 @@ def create_release_command():
         'name': args.get('name'),
         'body': args.get('body'),
         'draft': argToBoolean(args.get('draft')),
+        'target_commitish': args.get('ref')
     }
     response = http_request('POST', url_suffix=RELEASE_SUFFIX, data=data)
     release_url = response.get('html_url')

@@ -2178,6 +2178,7 @@ Creates a release.
 | name | The name of the release. | Optional | 
 | tag_name | The name of the release tag. | Required | 
 | body | Text describing the contents of the tag. | Optional | 
+| ref | The target branch/commit SHA from where to create the release. | Optional | 
 | draft | Set to true to create a draft (unpublished) release, set to false to create a published one. Default is True. | Optional | 
 
 
