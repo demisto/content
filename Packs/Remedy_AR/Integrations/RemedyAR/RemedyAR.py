@@ -1,7 +1,7 @@
-from urllib.parse import quote_plus
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from urllib.parse import quote_plus
+
 from CommonServerUserPython import *  # noqa
 
 ''' IMPORTS '''

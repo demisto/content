@@ -4,7 +4,6 @@ commonfields:
   version: -1
 name: iot-security-check-servicenow
 script: '-'
-system: false
 tags:
 - iot
 timeout: '0'
