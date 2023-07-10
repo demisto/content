@@ -8,8 +8,8 @@ import time
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = "auth0"
-PRODUCT = "identity"
+VENDOR = "okta"
+PRODUCT = "auth0"
 DEFAULT_LIMIT = 1000
 EXPIRED_TOKEN_RANGE = 23 * 60 * 60  # https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#renew-access-tokens
 
@@ -274,6 +274,8 @@ def main() -> None:
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
             events, last_run = fetch_events_command(client, params, last_run)
+            print(len(events))
+            print(last_run)
             add_time_to_events(events)
             send_events_to_xsiam(
                 events,

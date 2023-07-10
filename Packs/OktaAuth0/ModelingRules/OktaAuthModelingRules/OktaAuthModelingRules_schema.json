@@ -1,5 +1,5 @@
 {
-    "auth0_identity_raw": {
+    "okta_auth0_raw": {
         "type": {
             "type": "string",
             "is_array": false

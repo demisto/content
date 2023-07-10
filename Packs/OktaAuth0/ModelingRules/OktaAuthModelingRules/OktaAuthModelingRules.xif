@@ -1,4 +1,4 @@
-[MODEL: dataset=auth0_identity_raw]
+[MODEL: dataset=okta_auth0_raw]
 alter
 	extracted_ip = arraycreate(json_extract_scalar(details, "$.request.ip")),
 	method = json_extract_scalar(details, "$.request.method"),

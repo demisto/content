@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: identity_auth0_modeling_rule
-name: Identity Auth0 Modeling Rule
+id: auth0_okta_modeling_rule
+name: Auth0 Okta Modeling Rule
 rules: ''
 schema: ''
-tags: identity
+tags: auth0

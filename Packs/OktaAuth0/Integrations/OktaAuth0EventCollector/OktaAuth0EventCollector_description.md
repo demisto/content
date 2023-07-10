@@ -26,4 +26,6 @@ Important: Your Auth0 log retention period depends your subscription level.
 | B2B Professional | 10 days |
 | Enterprise | 30 days |
 
+**Note from Aut0**: Auth0 does not provide real-time logs for your tenant. While we do our best to index events as they arrive, you may see some delays.
+
 For more information see [this](https://auth0.com/docs/deploy-monitor/logs/log-data-retention)
