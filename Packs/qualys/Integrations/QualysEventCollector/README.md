@@ -14,11 +14,11 @@ This integration was integrated and tested with version 3.15.2.0-1 of Qualys.
     | Password |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | First fetch time | if "First Fetch Time" set for long time ago, it may cause performance issues. | True |
-    | Vulnerability Fetch Interval | Time between fetches of vulnerabilities \(for example 12 hours, 60 minutes, etc\). | True |
+    | First fetch time | If "First Fetch Time" is set for a long time ago, it may cause performance issues. | True |
+    | Vulnerability Fetch Interval | Time between fetches of vulnerabilities \(for example 12 hours, 60 minutes, etc.\). | True |
     | Activity Logs Fetch Interval | Time between fetches of activity logs. | False |
-    | Activity Logs Fetch Limit | Limit on number of activity logs to fetch per fetch iteration. | True |
-    | Host Detections Fetch Limit | Limit on number of hosts to return the detections for it in a single fetch iteration. | True |
+    | Activity Logs Fetch Limit | Maximum number of activity logs to fetch per fetch iteration. | True |
+    | Host Detections Fetch Limit | Maximum number of hosts to return in a single fetch iteration. | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -62,7 +62,7 @@ Gets host detections from Qualys.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. | Optional | 
+| limit | Maximum number of results to return. | Optional | 
 | offset | Offset which events to return. | Optional | 
 | vm_scan_date_after | Date to return results from. | Optional | 
 
