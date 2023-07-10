@@ -526,7 +526,7 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
-    UNREMOVABLE_PACKS: "Base,CoreAlertFields,Core,CortexAttackSurfaceManagement"
+    UNREMOVABLE_PACKS: "Base"
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true

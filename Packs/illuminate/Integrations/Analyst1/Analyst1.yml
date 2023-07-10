@@ -4,17 +4,14 @@ commonfields:
 name: Analyst1
 display: Analyst1
 category: Data Enrichment & Threat Intelligence
-description: This integration utilizes Analyst1's system to enrich Demisto indicators
-  with data provided by the Analyst1 REST API, such as actor and malware information,
-  activity and reported dates, evidence and hit counts, and more.
+description: This integration utilizes Analyst1's system to enrich Demisto indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
 configuration:
 - display: Analyst1 API Credentials (username/password)
   name: credentials
   defaultvalue: ''
   type: 9
   required: true
-- display: Domain of Analyst1 server to use (format - server.thatyouuse.com - No
-    http/https)
+- display: Domain of Analyst1 server to use (format - server.thatyouuse.com - No http/https)
   name: server
   defaultvalue: analysis.cloud.analyst1.com
   type: 0
@@ -23,12 +20,10 @@ configuration:
   name: insecure
   defaultvalue: 'false'
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
-  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -41,7 +36,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -51,12 +45,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 script:
   script: '-'
@@ -89,12 +81,10 @@ script:
       description: The first date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Domain.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Domain.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.Domain.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -132,8 +122,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the Analyst1 REST API and enriches the given domain with
-      Analyst1 Indicator data
+    description: Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indicator data
   - name: email
     arguments:
     - name: email
@@ -161,12 +150,10 @@ script:
       description: The first date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Email.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Email.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.Email.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -201,8 +188,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the Analyst1 REST API and enriches the given email with Analyst1
-      indicator data.
+    description: Queries the Analyst1 REST API and enriches the given email with Analyst1 indicator data.
   - name: ip
     arguments:
     - name: ip
@@ -227,16 +213,13 @@ script:
       description: The confidence level of the data in Analyst1.
       type: string
     - contextPath: Analyst1.Ip.FirstHit
-      description: The first date this this indicator was seen in a source scanned
-        by Analyst1.
+      description: The first date this this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Ip.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Ip.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.Ip.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -271,8 +254,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the Analyst1 REST API and enriches the given IP address with
-      Analyst1 indicator data.
+    description: Queries the Analyst1 REST API and enriches the given IP address with Analyst1 indicator data.
   - name: file
     arguments:
     - name: file
@@ -303,16 +285,13 @@ script:
       description: The confidence level of the data in Analyst1.
       type: string
     - contextPath: Analyst1.File.FirstHit
-      description: The first date this this indicator was seen in a source scanned
-        by Analyst1.
+      description: The first date this this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.File.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.File.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.File.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -347,8 +326,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the Analyst1 REST API and enriches the given file with Analyst1
-      indicator data.
+    description: Queries the Analyst1 REST API and enriches the given file with Analyst1 indicator data.
   - name: analyst1-enrich-string
     arguments:
     - name: string
@@ -372,12 +350,10 @@ script:
       description: The first date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.String.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.String.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.String.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -400,8 +376,7 @@ script:
     - contextPath: Analyst1.String.Analyst1Link
       description: The URL of the matched indicator in Analyst1.
       type: string
-    description: Queries the Analyst1 REST API and enriches the given string with
-      Analyst1 indicator data
+    description: Queries the Analyst1 REST API and enriches the given string with Analyst1 indicator data
   - name: analyst1-enrich-ipv6
     arguments:
     - name: ip
@@ -425,12 +400,10 @@ script:
       description: The first date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Ipv6.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Ipv6.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.Ipv6.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -453,8 +426,7 @@ script:
     - contextPath: Analyst1.Ipv6.Analyst1Link
       description: The URL of the matched indicator in Analyst1.
       type: string
-    description: Queries the Analyst1 REST API and enriches the given IP address with
-      Analyst1 indicator data.
+    description: Queries the Analyst1 REST API and enriches the given IP address with Analyst1 indicator data.
   - name: analyst1-enrich-mutex
     arguments:
     - name: mutex
@@ -478,12 +450,10 @@ script:
       description: The first date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Mutex.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Mutex.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.Mutex.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -506,8 +476,7 @@ script:
     - contextPath: Analyst1.Mutex.Analyst1Link
       description: The URL of the matched indicator in Analyst1.
       type: string
-    description: Queries the Analyst1 REST API and enriches the given mutex with Analyst1
-      indicator data.
+    description: Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicator data.
   - name: analyst1-enrich-http-request
     arguments:
     - name: http-request
@@ -531,12 +500,10 @@ script:
       description: The first date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Httprequest.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Httprequest.HitCount
-      description: The total number of times this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of times this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.Httprequest.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -559,8 +526,7 @@ script:
     - contextPath: Analyst1.Httprequest.Analyst1Link
       description: The URL of the matched indicator in Analyst1.
       type: string
-    description: Queries the Analyst1 REST API and enriches the given HTTP request
-      with Analyst1 indicator data.
+    description: Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 indicator data.
   - name: url
     arguments:
     - name: url
@@ -588,12 +554,10 @@ script:
       description: The first date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Url.LastHit
-      description: The most recent date this indicator was seen in a source scanned
-        by Analyst1.
+      description: The most recent date this indicator was seen in a source scanned by Analyst1.
       type: date
     - contextPath: Analyst1.Url.HitCount
-      description: The total number of this indicator was seen in a source scanned
-        by Analyst1.
+      description: The total number of this indicator was seen in a source scanned by Analyst1.
       type: number
     - contextPath: Analyst1.Url.ReportedDates
       description: The dates this indicator was reported on in Analyst1.
@@ -628,10 +592,8 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the Analyst1 REST API and enriches the given URL with Analyst1
-      indicator data.
+    description: Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator data.
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

@@ -16,14 +16,11 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: This API queries alerts and alert data from the MS-ISAC API to enrich
-  and query alerts from the platform
+description: This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform
 display: MS-ISAC
 name: MS-ISAC
 script:
@@ -38,8 +35,7 @@ script:
       description: The event ID for this specific retrieval
       type: string
     - contextPath: MSISAC.Event.Stream
-      description: A list of data streams that were pulled from this MS-ISAC event.
-        These lists of dictionaries contain more detailed information
+      description: A list of data streams that were pulled from this MS-ISAC event. These lists of dictionaries contain more detailed information
       type: unknown
     - contextPath: MSISAC.Event.Stream.flow_id
       description: The ID for this specific data flow
@@ -89,8 +85,7 @@ script:
       description: The physical interface that this traffic traversed
       type: string
     - contextPath: MSISAC.Event.Stream.time
-      description: The time that this traffic occured in a more human readable format
-        than 'start'
+      description: The time that this traffic occured in a more human readable format than 'start'
       type: date
     - contextPath: MSISAC.Event.Stream.url
       description: The URL that was attempted with this traffic
@@ -132,11 +127,9 @@ script:
       description: The number of days worth of events to return. Must be one or greater
       name: days
       required: true
-    - description: If you want to search the list of events for a specific event,
-        specify this optional command to return just those results
+    - description: If you want to search the list of events for a specific event, specify this optional command to return just those results
       name: event_id
-    description: Retrieves a list of MS-ISAC events for a given number of days (one
-      or greater)
+    description: Retrieves a list of MS-ISAC events for a given number of days (one or greater)
     name: msisac-retrieve-events
     outputs:
     - contextPath: MSISAC.RetrievedEvents.event_id

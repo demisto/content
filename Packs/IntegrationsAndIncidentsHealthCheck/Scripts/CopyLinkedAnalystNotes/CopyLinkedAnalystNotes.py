@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Dict
 
 
-
 def create_grids(custom_fields, linked_incident):
     latest_related_incident_id = max(linked_incident)
     linked_list_data = demisto.executeCommand("getIncidents", {'id': latest_related_incident_id})
