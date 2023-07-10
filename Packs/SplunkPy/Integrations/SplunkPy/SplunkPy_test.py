@@ -9,6 +9,7 @@ from CommonServerPython import *
 from datetime import timedelta, datetime
 from collections import namedtuple
 
+
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, url="https://test.url.com", search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -423,6 +424,7 @@ data_test_check_error = [
 
 @pytest.mark.parametrize('args, out_error', data_test_check_error)
 def test_check_error(args, out_error):
+
     class Service:
         def __init__(self):
             self.apps = APPS
@@ -433,8 +435,9 @@ def test_check_error(args, out_error):
         raise splunk.DemistoException('empty')
     except splunk.DemistoException as error:
         output = str(error)
-    assert output == out_error, 'check_error(service, {})\n\treturns: {}\n\tinstead: {}'.format(args,
-                                                                                                output, out_error)
+    assert (
+        output == out_error
+    ), f'check_error(service, {args})\n\treturns: {output}\n\tinstead: {out_error}'
 
 
 EMPTY_CASE = {}
@@ -461,8 +464,9 @@ data_test_build_kv_store_query = [
 def test_build_kv_store_query(args, expected_query, mocker):
     mocker.patch('SplunkPy.get_key_type', return_value=None)
     output = splunk.build_kv_store_query(None, args)
-    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
-                                                                                                     expected_query)
+    assert (
+        output == expected_query
+    ), f'build_kv_store_query({args})\n\treturns: {output}\n\tinstead: {expected_query}'
 
 
 data_test_build_kv_store_query_with_key_val = [
@@ -515,6 +519,7 @@ data_test_get_keys_and_types = [
 
 @pytest.mark.parametrize('raw_keys, expected_keys', data_test_get_keys_and_types)
 def test_get_keys_and_types(raw_keys, expected_keys):
+
     class KVMock:
         def __init__(self):
             pass
@@ -523,11 +528,14 @@ def test_get_keys_and_types(raw_keys, expected_keys):
             return raw_keys
 
     output = splunk.get_keys_and_types(KVMock())
-    assert output == expected_keys, 'get_keys_and_types(kv_store)\n\treturns: {}\n\tinstead: {}'.format(output,
-                                                                                                        expected_keys)
+    assert (
+        output == expected_keys
+    ), f'get_keys_and_types(kv_store)\n\treturns: {output}\n\tinstead: {expected_keys}'
 
 
-START_OUTPUT = '#### configuration for {} store\n| field name | type |\n| --- | --- |'.format('name')
+START_OUTPUT = (
+    '#### configuration for name store\n| field name | type |\n| --- | --- |'
+)
 EMPTY_OUTPUT = ''
 STANDARD_CASE = {'field.test': 'number'}
 STANDARD_OUTPUT = '\n| field.test | number |'
@@ -1073,6 +1081,7 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
      4, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
+
     class Service:
         def __init__(self):
             self.token = 'fake_token'
@@ -1082,8 +1091,13 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    requests_mock.post(base_url + 'services/auth/login', json={'sessionKey': 'session_key'})
-    requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
+    requests_mock.post(
+        f'{base_url}services/auth/login', json={'sessionKey': 'session_key'}
+    )
+    requests_mock.post(
+        f'{base_url}services/notable_update',
+        json={'success': success, 'message': 'wow'},
+    )
     if not success:
         mocker.patch.object(demisto, 'error')
     service = Service()
