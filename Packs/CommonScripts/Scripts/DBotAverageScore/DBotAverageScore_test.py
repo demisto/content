@@ -1,7 +1,6 @@
-from pathlib import Path
-
-import demistomock as demisto
 from CommonServerPython import *
+
+from pathlib import Path
 
 import pytest
 
@@ -55,4 +54,3 @@ def test_calculate_all_average_scores(context_data: list[dict[str, Any]],
     assert results.outputs_key_field == 'Indicator'
     assert results.outputs == expected_context_output
     assert results.readable_output == expected_readable_output
-
