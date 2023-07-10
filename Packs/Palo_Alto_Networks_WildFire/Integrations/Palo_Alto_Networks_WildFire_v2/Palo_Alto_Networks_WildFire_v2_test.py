@@ -277,7 +277,8 @@ def test_file_command_with_array(mocker):
     )
     command_outputs = wildfire_file_command(
         {
-            "file": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51,8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51"
+            "file": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51"
+            ",8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51"
         }
     )
     assert len(command_outputs) == 2
