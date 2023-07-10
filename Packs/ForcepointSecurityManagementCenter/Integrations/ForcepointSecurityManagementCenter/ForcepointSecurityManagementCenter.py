@@ -77,13 +77,13 @@ def handle_rule_entities(ip_lists: list, host_list: list, domain_list: list):
     entities: List[Element] = []
 
     for ip_list in ip_lists:
-        entities.extend(list(IPList.objects.filter(ip_list, exact_match=True)))
+        entities.extend(list(IPList.objects.filter(name=ip_list, exact_match=True)))
 
     for host in host_list:
-        entities.extend(list(Host.objects.filter(host, exact_match=True)))
+        entities.extend(list(Host.objects.filter(name=host, exact_match=True)))
 
     for domain in domain_list:
-        entities.extend(list(DomainName.objects.filter(domain, exact_match=True)))
+        entities.extend(list(DomainName.objects.filter(name=domain, exact_match=True)))
 
     return entities
 
@@ -190,7 +190,7 @@ def update_iplist_command(args: dict[str, Any]) -> CommandResults:
     addresses = argToList(args.get('addresses', []))
     is_override = argToBoolean(args.get('is_override', False))
 
-    if not list(IPList.objects.filter(name, exact_match=True)):
+    if not list(IPList.objects.filter(name=name, exact_match=True)):
         raise DemistoException(f'IP List {name} was not found.')
 
     ip_list = IPList.update_or_create(name=name, append_lists=not is_override, iplist=addresses)
@@ -223,7 +223,7 @@ def list_iplist_command(args: dict[str, Any]) -> CommandResults:
 
     ip_lists = []
     if name:
-        ip_lists = list(IPList.objects.filter(name, exact_match=True))
+        ip_lists = list(IPList.objects.filter(name=name, exact_match=True))
     elif all_results:
         ip_lists = list(IPList.objects.all())
     else:
@@ -287,7 +287,7 @@ def list_host_command(args: dict[str, Any]) -> CommandResults:
 
     hosts = []
     if name:
-        hosts = list(Host.objects.filter(name, exact_match=True))
+        hosts = list(Host.objects.filter(name=name, exact_match=True))
     elif all_results:
         hosts = list(Host.objects.all())
     else:
@@ -363,7 +363,7 @@ def update_host_command(args: dict[str, Any]) -> CommandResults:
               'comment': args.get('comment', '')}
     remove_nulls_from_dictionary(kwargs)
 
-    if not list(Host.objects.filter(name, exact_match=True)):
+    if not list(Host.objects.filter(name=name, exact_match=True)):
         raise DemistoException(f'Host {name} was not found.')
 
     host = Host.update_or_create(**kwargs)
@@ -453,7 +453,7 @@ def list_domain_command(args: dict[str, Any]) -> CommandResults:
 
     domains = []
     if name:
-        domains = list(DomainName.objects.filter(name, exact_match=True))
+        domains = list(DomainName.objects.filter(name=name, exact_match=True))
     elif all_results:
         domains = list(DomainName.objects.all())
     else:
@@ -770,7 +770,7 @@ def delete_rule_command(args: dict[str, Any]) -> CommandResults:
     rule_name = args.get('rule_name', '')
     ip_version = args.get('ip_version', '')
 
-    if not list(FirewallPolicy.objects.filter(policy_name, exact_match=True)):
+    if not list(FirewallPolicy.objects.filter(name=policy_name, exact_match=True)):
         raise DemistoException(f'Firewall policy {policy_name} was not found.')
 
     policy = FirewallPolicy(policy_name)
@@ -831,7 +831,7 @@ def commit_changes_command(args: dict[str, Any]) -> CommandResults:
     """
     engine_name = args.get('engine_name', '')
 
-    if not list(Engine.objects.filter(engine_name, exact_match=True)):
+    if not list(Engine.objects.filter(name=engine_name, exact_match=True)):
         raise DemistoException(f'Engine {engine_name} was not found.')
 
     engine = Engine(engine_name)
