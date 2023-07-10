@@ -266,11 +266,11 @@ def test_list_alerts_command(requests_mock):
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
     from test_data.expected_results import LIST_ALERTS_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts/',
+    requests_mock.post('https://test.com/api/webapp/public_api/v2/alerts/get_alerts_multi_events/',
                        json=LIST_ALERTS_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com/api/webapp/public_api/v2',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -289,6 +289,84 @@ def test_list_alerts_command(requests_mock):
     assert response.outputs == LIST_ALERTS_RESULTS
     assert response.outputs_prefix == 'ASM.Alert'
     assert response.outputs_key_field == 'alert_id'
+
+
+def test_list_attack_surface_rules_command(requests_mock):
+    """Tests list_attack_surface_rules_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate list_attack_surface_rules_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'list_attack_surface_rules_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, list_attack_surface_rules_command
+
+    from test_data.raw_response import ATTACK_SURFACE_RULES_RAW
+    from test_data.expected_results import ATTACK_SURFACE_RULES_RESULTS
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/get_attack_surface_rules/',
+                       json=ATTACK_SURFACE_RULES_RAW)
+
+    client = Client(
+        base_url='https://test.com/api/webapp/public_api/v1',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'enabled_status': 'on',
+        'severity': 'high',
+        'limit': 2
+    }
+
+    response = list_attack_surface_rules_command(client, args)
+
+    assert response.outputs == ATTACK_SURFACE_RULES_RESULTS
+    assert response.outputs_prefix == 'ASM.AttackSurfaceRules'
+    assert response.outputs_key_field == 'attack_surface_rule_id'
+
+
+def assign_tag_to_assets_command(requests_mock):
+    """Tests assign_tag_to_assets_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate assign_tag_to_assets_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'assign_tag_to_assets_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, assign_tag_to_assets_command
+
+    from test_data.raw_response import TAG_APPLY_RAW
+    from test_data.expected_results import TAG_APPLY_RESULTS
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/tags/assets_internet_exposure/add/',
+                       json=TAG_APPLY_RAW)
+
+    client = Client(
+        base_url='https://test.com/api/webapp/public_api/v1',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = assign_tag_to_assets_command(client, args)
+
+    assert response.outputs == TAG_APPLY_RESULTS
+    assert response.outputs_prefix == 'ASM.TagAssignment'
 
 
 def test_fetch_incidents(requests_mock, mocker):

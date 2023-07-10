@@ -610,7 +610,7 @@ def list_attack_surface_rules_command(client: Client, args: dict[str, Any]) -> C
                                headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.AttackSurfaceRules',
-        outputs_key_field='attack_surface_rule_ids',
+        outputs_key_field='attack_surface_rule_id',
         outputs=parsed,
         raw_response=response,
         readable_output=markdown
