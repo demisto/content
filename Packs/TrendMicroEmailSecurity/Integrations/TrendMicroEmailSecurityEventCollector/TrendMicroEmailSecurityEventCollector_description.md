@@ -7,14 +7,14 @@ In order to use this integration, you need to enter your Trend Micro Email Secur
 ### For the service URL parameter, attention to the following table:
 
 The value of service URL varies according to your location:
-    | **Location** | **Service Root URL** |
-    | --- | --- |
-    | North America, Latin America and Asia Pacific | api.tmes.trendmicro.com |
-    | Europe, the Middle East and Africa | api.tmes.trendmicro.eu |
-    | Australia and New Zealand | api.tmes-anz.trendmicro.com |
-    | Japan | api.tmems-jp.trendmicro.com |
-    | Singapore | api.tmes-sg.trendmicro.com |
-    | India | api.tmes-in.trendmicro.com |
+| **Location** | **Service Root URL** |
+| --- | --- |
+| North America, Latin America and Asia Pacific | api.tmes.trendmicro.com |
+| Europe, the Middle East and Africa | api.tmes.trendmicro.eu |
+| Australia and New Zealand | api.tmes-anz.trendmicro.com |
+| Japan | api.tmems-jp.trendmicro.com |
+| Singapore | api.tmes-sg.trendmicro.com |
+| India | api.tmes-in.trendmicro.com |
 
 
 ### For API Key parameter, attention to the following:
