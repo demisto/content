@@ -33,4 +33,4 @@ subtype: python3
 fromversion: 5.0.0
 tests:
 - GetIndicatorDBotScore Test
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474
