@@ -1,12 +1,13 @@
 [MODEL: dataset=okta_auth0_raw]
 alter
-	extracted_ip = arraycreate(json_extract_scalar(details, "$.request.ip")),
+	extracted_ip = json_extract_scalar(details, "$.request.ip"),
 	method = json_extract_scalar(details, "$.request.method"),
 	status_code = json_extract_scalar(details, "$.response.statusCode")
 | alter
 	ip_v4 = if(ip !~= ":", ip, null),
     ip_v6 = if(ip ~= ":", ip, null),
-	extracted_ip = if(extracted_ip !~= ":", extracted_ip, null)
+	extracted_ipv4 = if(extracted_ip !~= ":", extracted_ip, null),
+	extracted_ipv6 = if(extracted_ip ~= ":", extracted_ip, null)
 | alter
 	xdm.event.type = type,
 	xdm.event.description = description,
@@ -28,8 +29,8 @@ alter
     xdm.network.http.method = if(method = "ACL", XDM_CONST.HTTP_METHOD_ACL, method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL , method = "BIND", XDM_CONST.HTTP_METHOD_BIND, method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, method = "COPY", XDM_CONST.HTTP_METHOD_COPY, method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, method = "GET", XDM_CONST.HTTP_METHOD_GET, method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, method = "LINK", XDM_CONST.HTTP_METHOD_LINK, method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, method = "POST", XDM_CONST.HTTP_METHOD_POST, method = "PRI", XDM_CONST.HTTP_METHOD_PRI, method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, method = "PUT", XDM_CONST.HTTP_METHOD_PUT, method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, method = null, null, to_string(method)),
 	xdm.source.user_agent = coalesce(json_extract_scalar(details, "$.request.userAgent"), user_agent),
 	xdm.network.http.url = json_extract_scalar(details, "$.request.channel"),
-	xdm.source.host.ipv4_addresses = extracted_ip,
-	xdm.source.host.ipv6_addresses = extracted_ip,
+	xdm.source.host.ipv4_addresses = arraycreate(extracted_ipv4),
+	xdm.source.host.ipv6_addresses = arraycreate(extracted_ipv6),
 	xdm.target.host.hostname = coalesce(json_extract_scalar(details, "$.response.body.name"), json_extract_scalar(details, "$.response.body.friendly_name")),
 	xdm.auth.auth_method = json_extract_scalar(details, "$.response.body.default_directory"),
 	xdm.network.http.content_type = json_extract_scalar(details, "$.response.body.enabled_locales"),
