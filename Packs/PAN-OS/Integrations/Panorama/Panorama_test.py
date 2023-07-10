@@ -1,5 +1,4 @@
 import json
-import io
 from defusedxml import ElementTree
 import pytest
 import requests_mock
@@ -38,7 +37,7 @@ integration_panorama_params = {
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -151,10 +150,10 @@ def test_add_argument_target():
 def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results_file: str):
     from Panorama import filter_rules_by_status
 
-    with open(rules_file, 'r') as f:
+    with open(rules_file) as f:
         rules = json.loads(f.read())
 
-    with open(expected_results_file, 'r') as f:
+    with open(expected_results_file) as f:
         expected_result = json.loads(f.read())
 
     result = filter_rules_by_status(disabled, rules)
@@ -2203,7 +2202,7 @@ class TestPanoramaPushToDeviceGroupCommand:
             ) for _ in range(push_to_devices_job_status_count)
         ]
 
-        with open('test_data/push_to_device_success.xml', 'r') as data_file:
+        with open('test_data/push_to_device_success.xml') as data_file:
             mocked_responses += [
                 MockedResponse(
                     text=data_file.read(),
@@ -2568,7 +2567,7 @@ def test_get_url_category__url_length_gt_1278(mocker):
     )
 
     # validate
-    assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
+    assert return_results_mock.call_args[0][0][1].readable_output == 'URL Node can be at most 1278 characters.'
 
 
 def test_get_url_category_multiple_categories_for_url(mocker):
@@ -2634,14 +2633,14 @@ class TestDevices:
 
     def test_with_specific_target_only(self, requests_mock):
         import Panorama
-        with open('test_data/devices_list.xml', 'r') as data_file:
+        with open('test_data/devices_list.xml') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices(targets=['target1'])) == [('target1', 'vsys1'), ('target1', 'vsys2')]
 
     def test_without_specify(self, requests_mock):
         import Panorama
-        with open('test_data/devices_list.xml', 'r') as data_file:
+        with open('test_data/devices_list.xml') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
@@ -6838,10 +6837,10 @@ def test_prettify_edls_arr(sample_file, expected_result_file):
     """
     from Panorama import prettify_edls_arr
 
-    with open(sample_file, 'r') as f:
+    with open(sample_file) as f:
         sample = json.loads(f.read())
 
-    with open(expected_result_file, 'r') as f:
+    with open(expected_result_file) as f:
         expected_result = json.loads(f.read())
 
     mock_result = prettify_edls_arr(sample)
