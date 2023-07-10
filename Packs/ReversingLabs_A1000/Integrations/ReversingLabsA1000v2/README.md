@@ -419,7 +419,29 @@ Retrieve sample analysis results
 
 #### Human Readable Output
 
->None
+>## ReversingLabs A1000 results for: a94775deb818a4d68635eeed3d16abc7f7b8bdd6
+>    **Type:** Binary/Archive  
+>    **Size:** 607237 bytes  
+>**MD5:** a322205db6c3b1c451725b84f1d010cc  
+>**SHA1:** a94775deb818a4d68635eeed3d16abc7f7b8bdd6  
+>**SHA256:** d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2  
+>**SHA512:** d1fd72d5a52d75f23836016772e8895d901fa5a1cb1f9b25ba455db6cccbd97e9daf43fde4f8bb77b43c0b5c4937405d51dece20cda7fa7db7600715c7769554  
+>**ID:** 3065  
+>    **Malware status:** malicious  
+>    **Local first seen:** 2022-12-19T11:39:10.929115Z  
+>    **Local last seen:** 2022-12-20T17:37:24.670052Z  
+>    **First seen:** 2022-12-19T11:39:11Z  
+>    **Last seen:** 2022-12-20T17:37:29Z  
+>    **DBot score:** 3  
+>    **Risk score:** 10  
+>**Threat name:** Win32.Trojan.Delf  
+> **Category:** archive  
+>    **Classification origin:** {'sha1': 'aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad', 'sha256': '43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1', 'sha512': '8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221', 'md5': '8521e64c683e47c1db64d80577513016', 'imphash': 'c57e34b759dff2e57f71960b2fdb93da'}  
+>    **Classification reason:** antivirus  
+>    **Aliases:** aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl.zip  
+>    **Extracted file count:** 85  
+>    **Identification name:** ZIP  
+>    **Identification version:** Generic  
 
 ### reversinglabs-a1000-upload-sample
 
