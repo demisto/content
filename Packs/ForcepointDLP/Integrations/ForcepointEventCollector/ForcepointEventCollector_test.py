@@ -295,7 +295,6 @@ def generate_mocked_event(event_id):
 def test_fetch_events(mocker, first_fetch, utc_now, max_fetch, last_fetch_time, api_limit, last_id, incidents_per_time, ids,
                       scenario, expected, expected_next_last_fetch_time):
 
-    mocked_client = mocker.Mock()
 
     def mock_get_incidents(from_date, to_date):
         from_date_str = from_date.strftime("%m/%d/%Y %H:%M:%S")
@@ -311,6 +310,7 @@ def test_fetch_events(mocker, first_fetch, utc_now, max_fetch, last_fetch_time, 
             "incidents": [generate_mocked_event(event_id) for event_id in ids]
         }
 
+    mocked_client = mocker.Mock()
     mocked_client.get_incidents.side_effect = mock_get_incidents
     mocked_client.get_incident_ids.side_effect = mock_get_incident_ids
     mocked_client.api_limit = api_limit
