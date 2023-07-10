@@ -547,7 +547,7 @@ Scope: `read:jira-work`
 ### jira-get-id-offset
 
 ***
-Returns the ID offset, which is the id of the first issue that was created in the current Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
+Returns the ID offset, which is the ID of the first issue that was created in the current Jira instance, or the ID of the first issue with respect to the given query argument if given. You can use its result as the initial ID when fetching incidents by the issue id field.
 
 Scope: `read:jira-work`
 
