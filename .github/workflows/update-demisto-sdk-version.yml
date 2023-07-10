@@ -1,7 +1,7 @@
 name: update-demisto-sdk-version
 on: workflow_dispatch
 permissions:
-  pull-requests: write
+  contents: write
 
 jobs:
   update-dep:
