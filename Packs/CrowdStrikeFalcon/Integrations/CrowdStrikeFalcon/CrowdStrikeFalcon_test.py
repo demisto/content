@@ -15,7 +15,7 @@ SERVER_URL = 'https://4.4.4.4'
 
 
 def load_json(file: str):
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 
@@ -2184,7 +2184,7 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
-    
+
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
         """
@@ -2209,7 +2209,8 @@ class TestFetch:
         assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:20:11Z', 'offset': 4, 'limit': 2,
                                                            'found_incident_ids': {'Detection ID: ldt:1': 1598462533,
                                                                                   'Detection ID: ldt:2': 1598462533}},
-                                                          {'time': '2020-09-04T09:22:10Z', 'last_fetched_incident': '3', 'offset': 4}]
+                                                          {'time': '2020-09-04T09:22:10Z', 'last_fetched_incident': '3',
+                                                           'offset': 4}]
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
@@ -2230,7 +2231,8 @@ class TestFetch:
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:20:11Z',
                                                              'offset': 2, 'limit': 2, "found_incident_ids":
-                                                             {'Detection ID: ldt:1': 1598462533, 'Detection ID: ldt:2': 1598462533}}
+                                                             {'Detection ID: ldt:1': 1598462533,
+                                                              'Detection ID: ldt:2': 1598462533}}
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -2253,7 +2255,7 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        a = demisto.setLastRun.mock_calls[0][1][0][0]
+        demisto.setLastRun.mock_calls[0][1][0][0]
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:16:11Z',
                                                              'offset': 0, 'limit': 2,
                                                              "found_incident_ids":
@@ -2397,12 +2399,12 @@ class TestIncidentFetch:
 
 
 def get_fetch_data():
-    with open('./test_data/test_data.json', 'r') as f:
+    with open('./test_data/test_data.json') as f:
         return json.loads(f.read())
 
 
 def get_fetch_data2():
-    with open('./test_data/test_data2.json', 'r') as f:
+    with open('./test_data/test_data2.json') as f:
         return json.loads(f.read())
 
 
@@ -2609,7 +2611,7 @@ def test_upload_ioc_command_fail(requests_mock, mocker):
     )
     with pytest.raises(DemistoException) as excinfo:
         upload_ioc_command(ioc_type='md5', value='testmd5')
-    assert "Failed to create IOC. Please try again." == excinfo.value.args[0]
+    assert excinfo.value.args[0] == "Failed to create IOC. Please try again."
 
 
 def test_upload_ioc_command_successful(requests_mock):
@@ -3031,6 +3033,7 @@ def test_update_custom_ioc_command(requests_mock):
             'indicators': [{'id': ioc_id, 'severity': updated_severity}]
         }:
             return True
+        return None
 
     requests_mock.patch(
         f'{SERVER_URL}/iocs/entities/indicators/v1',
@@ -3095,7 +3098,7 @@ def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
     )
     mocker.patch(RETURN_ERROR_TARGET)
     res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
-    assert 'No results found for md5 - testmd5' == res
+    assert res == 'No results found for md5 - testmd5'
 
 
 def test_get_ioc_device_count_command_exists(requests_mock):
@@ -3118,8 +3121,8 @@ def test_get_ioc_device_count_command_exists(requests_mock):
         status_code=200,
     )
     result = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
-    assert 'Indicator of Compromise **md5:testmd5** device count: **1**' == result['HumanReadable']
-    assert 'md5:testmd5' == result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID']
+    assert result['HumanReadable'] == 'Indicator of Compromise **md5:testmd5** device count: **1**'
+    assert result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID'] == 'md5:testmd5'
 
 
 def test_get_process_details_command_not_exists(requests_mock, mocker):
@@ -3291,7 +3294,7 @@ def test_search_device_command(requests_mock):
     result = outputs[0].to_context()
 
     context = result.get('EntryContext')
-    for key, value in context.items():
+    for key, _value in context.items():
         if 'Device' in key:
             assert context[key] == device_context
         if 'Endpoint' in key:
@@ -4232,7 +4235,6 @@ def test_error_in_get_detections_by_behaviors(mocker):
 
     # prepare
     from CrowdStrikeFalcon import get_detection_for_incident_command
-    mocker.patch.object
     mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
                  return_value={'resources': [{'dummy': 'test'}], 'meta': {'pagination': {'total': 1}}})
 
