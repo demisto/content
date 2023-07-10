@@ -8,7 +8,6 @@ This pack includes XSIAM content.
 2. The default content provided in this pack (including Winlogbeat templates) should be used as is.  We cannot support any changes made to this content.
 
 ## Configuration on Server Side
-​
 #### Validate that AD FS server role is enabled
 1. In the **Server Manager**, click **Manage** > **Add Roles and Features**.
 2. Click **Server Roles** in the left menu.
