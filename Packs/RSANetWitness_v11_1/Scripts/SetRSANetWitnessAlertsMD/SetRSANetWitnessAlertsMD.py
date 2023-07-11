@@ -19,23 +19,14 @@ def read_context_from_rsa_netwitness_alerts() -> dict:
 
 
 def json_to_md(incident_fields: dict) -> str:
-
-    md = ''
-
-    for incident_field in incident_fields:
-        md += tableToMarkdown(name=incident_field, t=incident_fields[incident_field])
-        md += '\n\n\n'
-
-    return md
+     return "\n\n\n".join(tableToMarkdown(name=incident_field, t=incident_fields[incident_field]) for incident_field in incident_fields)
 
 
 def main():
     incident_fields = read_context_from_rsa_netwitness_alerts()
-    md = json_to_md(incident_fields)
-
     return_results(
         CommandResults(
-            readable_output=md or "No data to present."
+            readable_output=json_to_md(incident_fields) or "No data to present."
         )
     )
 

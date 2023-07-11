@@ -810,8 +810,8 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
                 id_=incident_id,
                 page_size=None
             )
-        except Exception:
-            demisto.error("Error occurred while fetching alerts.")
+        except Exception as e:
+            demisto.error("Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
             raise
 
         items = response_body.get('items', [])
@@ -834,9 +834,9 @@ def fetch_incidents(client: Client, params: dict) -> list:
         # add to incident object an array of all related alerts
         if params.get('import_alerts'):
             max_alerts = int(params.get('max_alerts', DEFAULT_MAX_INCIDENT_ALERTS))
-            fetch_alerts = fetch_alerts_related_incident(client, inc_id, max_alerts)
-            item['alerts'] = fetch_alerts
-            item['alerts_ids'] = [alert['id'] for alert in fetch_alerts if fetch_alerts]
+            alerts = fetch_alerts_related_incident(client, inc_id, max_alerts)
+            item['alerts'] = alerts
+            item['alerts_ids'] = [alert['id'] for alert in alerts or ()]
 
         incident = {"name": f"RSA NetWitness {inc_id} - {item.get('title')}",
                     "occurred": item.get('created'),

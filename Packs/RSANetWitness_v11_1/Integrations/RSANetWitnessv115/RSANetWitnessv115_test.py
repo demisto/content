@@ -261,8 +261,8 @@ def test_get_incidents(mocker):
 @pytest.mark.parametrize(
     'alerts_limit',
     [
-        (2),
-        (1)
+        1,
+        2
     ]
 )
 def test_fetch_alerts_related_incident(mocker, alerts_limit: int):
