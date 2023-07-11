@@ -9,6 +9,8 @@ from typing import List, Tuple, Dict, Callable, Any, Optional
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+# this is a dummy update
+
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -90,7 +92,6 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_on': 'CreatedAt'
 }
 
-
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
@@ -139,7 +140,6 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
-
 
 def get_server_url(server_url: str) -> str:
     url = server_url
@@ -1850,7 +1850,6 @@ def test_module(client: Client, *_):
     demisto.results('ok')
     return '', {}, {}
 
-
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> List[Dict[str, Any]]:
     """get-remote-data command: Returns an updated incident and entries
 
@@ -1946,7 +1945,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     return [ticket] + entries
 
-
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
@@ -1997,7 +1995,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     return ticket_id
 
-
 def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     """get-mapping-fields command: Returns the list of fields for an incident type
 
@@ -2024,7 +2021,6 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> Dict[str
 
     demisto.debug(f'res is {res}\n')
     return res
-
 
 def main():
     """
