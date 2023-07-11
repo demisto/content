@@ -12,6 +12,7 @@ stages:
   - unittests-and-validations
   - prepare-testing-bucket
   - run-instances
+  - test_playbooks_report
   - upload-to-marketplace
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
