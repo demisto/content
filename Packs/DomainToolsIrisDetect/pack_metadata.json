@@ -1,6 +1,6 @@
 {
-    "name": "DomainToolsIrisDetect",
-    "description": "Iris Detect protects against malicious domains impersonating your brands and domains",
+    "name": "DomainTools Iris Detect",
+    "description": "Iris Detect protects against malicious domains impersonating your brands and supply chain.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "DomainTools Integrations",
