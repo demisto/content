@@ -271,12 +271,11 @@ def enforce_look_behind_time(last_run_time, now, look_behind_time):
 
 def get_fetch_start_times(params, service, last_run_earliest_time, occurence_time_look_behind):
     current_time_for_fetch = datetime.utcnow()
-    if demisto.get(params, 'timezone'):
-        timezone_ = params['timezone']
+    if timezone_ := params.get('timezone'):
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(params, 'useSplunkTime'):
+    if params.get('useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -547,7 +546,7 @@ class Notable:
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
         if (
-            demisto.get(notable_data, "owner")
+            notable_data.get("owner")
             and mapper.should_map
             and (owner := mapper.get_xsoar_user_by_splunk(notable_data["owner"]))
         ):
@@ -1414,12 +1413,11 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
     search_offset = demisto.getLastRun().get('offset', 0)
 
     current_time_for_fetch = datetime.utcnow()
-    if demisto.get(params, 'timezone'):
-        timezone_ = params['timezone']
+    if (timezone_ := params.get('timezone')):
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(params, 'useSplunkTime'):
+    if params.get('useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -1437,10 +1435,8 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
 
     searchquery_oneshot = params['fetchQuery']
 
-    if demisto.get(params, 'extractFields'):
-        extractFields = params['extractFields']
-        extra_raw_arr = extractFields.split(',')
-        for field in extra_raw_arr:
+    if (extractFields := params.get('extractFields')):
+        for field in extractFields.split(','):
             field_trimmed = field.strip()
             searchquery_oneshot = (
                 f'{searchquery_oneshot} | eval {field_trimmed}={field_trimmed}'
