@@ -2212,8 +2212,10 @@ class TestFetch:
                                           'incident_offset': 4,
                                           })
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:20:11Z', 'limit': 2, 'found_incident_ids': {'Detection ID: ldt:1': 1598462533,
-                                                                                  'Detection ID: ldt:2': 1598462533}}, {'time': '2020-09-04T09:22:10Z'}, {}]
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:20:11Z', 'limit': 2,
+                                                           'found_incident_ids': {'Detection ID: ldt:1': 1598462533,
+                                                                                  'Detection ID: ldt:2': 1598462533}},
+                                                          {'time': '2020-09-04T09:22:10Z'}, {}]
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
@@ -2232,8 +2234,9 @@ class TestFetch:
         from CrowdStrikeFalcon import fetch_incidents
 
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:20:11Z', 'limit': 2, 'found_incident_ids': {'Detection ID: ldt:1': 1598462533, 'Detection ID: ldt:2': 1598462533}}
-
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == {
+            'time': '2020-09-04T09:20:11Z', 'limit': 2, 'found_incident_ids': {'Detection ID: ldt:1': 1598462533,
+                                                                               'Detection ID: ldt:2': 1598462533}}
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -2256,7 +2259,8 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:16:11Z', 'limit': 2, 'found_incident_ids': {'Detection ID: ldt:1': 1598462533}}
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == {
+            'time': '2020-09-04T09:16:11Z', 'limit': 2, 'found_incident_ids': {'Detection ID: ldt:1': 1598462533}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
