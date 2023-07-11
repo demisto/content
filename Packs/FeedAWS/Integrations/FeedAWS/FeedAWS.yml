@@ -151,7 +151,7 @@ script:
       name: limit
     description: Fetches indicators from the feed.
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.64131
+  dockerimage: demisto/py3-tools:1.0.0.64758
   feed: true
   runonce: false
   script: '-'
