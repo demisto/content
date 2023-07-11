@@ -1250,11 +1250,12 @@ def get_remote_data_command(service: client.Service, args: dict,
     remote_args = GetRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
     notable_id = remote_args.remote_incident_id
-    search = f'|`incident_review` | eval last_modified_timestamp=_time \
-                | where rule_id="{notable_id}" \
-                | where last_modified_timestamp>{last_update_splunk_timestamp} \
-                | fields - time \
-                | map search=" search `notable_by_id($rule_id$)`"'
+    search = '|`incident_review` ' \
+             '| eval last_modified_timestamp=_time ' \
+             f'| where rule_id="{notable_id}" ' \
+             f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
+             '| fields - time ' \
+             '| map search=" search `notable_by_id($rule_id$)`"'
 
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
@@ -1302,12 +1303,11 @@ def get_modified_remote_data_command(service: client.Service, args):
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
-
-    search = f'|`incident_review` \
-                | eval last_modified_timestamp=_time \
-                | where last_modified_timestamp>{last_update_splunk_timestamp} \
-                | fields rule_id \
-                | dedup rule_id'
+    search = '|`incident_review` ' \
+             '| eval last_modified_timestamp=_time ' \
+             f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
+             '| fields rule_id ' \
+             '| dedup rule_id'
 
     demisto.debug(f'Performing get-modified-remote-data command with query: {search}')
     modified_notable_ids = [
