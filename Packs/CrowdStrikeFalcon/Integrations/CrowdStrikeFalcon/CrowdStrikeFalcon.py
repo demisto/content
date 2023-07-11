@@ -2344,7 +2344,7 @@ def fetch_incidents():
 
         raw_res = get_detections_entities(detections_ids)
 
-        if "resources" in raw_res:
+        if raw_res is not None and "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
                 detection['incident_type'] = incident_type
                 demisto.debug(
@@ -2391,7 +2391,7 @@ def fetch_incidents():
                                         'resources')
 
         raw_res = get_incidents_entities(incidents_ids)
-        if "resources" in raw_res:
+        if raw_res is not None and "resources" in raw_res:
             for incident in demisto.get(raw_res, "resources"):
                 incident['incident_type'] = incident_type
                 incident_to_context = incident_to_incident_context(incident)
