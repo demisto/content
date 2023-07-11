@@ -65,7 +65,7 @@ def main():
             str1 += res[i]
         else:
             str1 += res[i] + ", "
-    return_results(str(str1))
+    return_results(str1)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
