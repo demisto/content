@@ -34,7 +34,7 @@ filebeat.inputs:
           product: log
 ```
 
-**Please note**: The above configuration uses the default location of the logs. In case your linux saves the logs under a different location, you would need to change it in the yaml (under the `paths` field).
+**Please note**: The above configuration uses the default location of the logs. In case your Linux saves the logs under a different location, you would need to change it in the yaml file (under the `paths` field).
 
 
 ### Parsing Rules Supported Timestamp Formats
