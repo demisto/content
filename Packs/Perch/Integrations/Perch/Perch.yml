@@ -10,18 +10,22 @@ configuration:
   type: 0
 - display: API Token
   name: api-key
-  required: true
   type: 4
+  hidden: true
+- name: api-key_creds
+  type: 9
+  displaypassword: API Token
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
 - display: Use system proxy settings
   name: proxy
   type: 8
-- defaultvalue: '7'
-  display: Previous days to fetch
+- display: Previous days to fetch
   name: fetch_time
   type: 0
+  defaultvalue: '7'
 - display: Credentials
   name: credentials
   type: 9
