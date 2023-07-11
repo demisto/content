@@ -1,9 +1,5 @@
 from datetime import datetime
 from freezegun import freeze_time
-from tempfile import NamedTemporaryFile
-from socketserver import BaseServer, BaseRequestHandler, ThreadingTCPServer
-import threading
-import socket
 import pytest
 
 MAIL_STRING = br"""Delivered-To: to@test1.com
@@ -289,26 +285,32 @@ def test_get_eml_attachments():
     # *** The cert and key below are not used in the real services, and only used for testing.
     ({
         'password': '-----BEGIN CERTIFICATE----- '\
-                    'MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL '\
-                    'BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa '\
-                    'Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr '\
-                    'gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737 '\
-                    'kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K '\
-                    'fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G '\
-                    'A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud '\
-                    'DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF '\
-                    'AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM '\
-                    'Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a '\
-                    'XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW '\
-                    '0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo '\
-                    '5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM '\
-                    'UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ== '\
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
+                    'OzZEXmZyHr121wY= '\
                     '-----END CERTIFICATE----- '\
                     '-----BEGIN EC PRIVATE KEY----- '\
-                    'MIGkAgEBBDCmOdUkhzeHqGnwZSnXyFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4fa '\
-                    'E/W0C/0vmK+gBwYFK4EEACKhZANiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/ '\
-                    'MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh '\
-                    '255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y= '\
+                    'MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v '\
+                    'OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy '\
+                    '5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ '\
+                    'f8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
                     '-----END EC PRIVATE KEY-----'
     },
         True
@@ -320,26 +322,32 @@ def test_get_eml_attachments():
         'credentials': {
             'sshkey': '''
 -----BEGIN CERTIFICATE-----
-MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL
-BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa
-Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr
-gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737
-kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K
-fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G
-A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud
-DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF
-AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM
-Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a
-XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW
-0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo
-5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM
-UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ==
+MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN
+BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw
+NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu
+dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD
+TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE
+gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6
+N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs
+8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr
+BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y
+KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6
+iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG
+Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ
+AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve
+ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM
+05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J
+ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe
+TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z
+R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN
+l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+
+OzZEXmZyHr121wY=
 -----END CERTIFICATE-----
 -----BEGIN EC PRIVATE KEY-----
-MIGkAgEBBDCmOdUkhzeHqGnwZSnXyFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4fa
-E/W0C/0vmK+gBwYFK4EEACKhZANiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/
-MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh
-255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y=
+MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v
+OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy
+5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ
+f8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
 -----END EC PRIVATE KEY-----
 '''
         }
@@ -351,26 +359,32 @@ MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh
     # *** The cert and key below are not used in the real services, and only used for testing.
     ({
         'password': '-----BEGIN CERTIFICATE----- '\
-                    'MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL '\
-                    'BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa '\
-                    'Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr '\
-                    'gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737 '\
-                    'kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K '\
-                    'fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G '\
-                    'A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud '\
-                    'DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF '\
-                    'AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM '\
-                    'Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a '\
-                    'XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW '\
-                    '0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo '\
-                    '5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM '\
-                    'UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ== '\
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
+                    'OzZEXmZyHr121wY= '\
                     '-----END CERTIFICATE----- '\
                     '-----BEGIN PRIVATE KEY----- '\
-                    'MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCmOdUkhzeHqGnwZSnX '\
-                    'yFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4faE/W0C/0vmK+hZANiAAQ2iJqs8Ca+ '\
-                    'FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcu '\
-                    'rCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y= '\
+                    'MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA '\
+                    '47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO '\
+                    'kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx '\
+                    'dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
                     '-----END PRIVATE KEY-----'
     },
         True
@@ -382,26 +396,32 @@ MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh
         'credentials': {
             'sshkey': '''
 -----BEGIN CERTIFICATE-----
-MIICgjCCAWqgAwIBAgIUM5F15oX3zziMmqTnOwcLSW6ov2swDQYJKoZIhvcNAQEL
-BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MDQwNTM0MDBa
-Fw0zMzA3MDQwNTM0MDBaMA8xDTALBgNVBAMMBHRlc3QwdjAQBgcqhkjOPQIBBgUr
-gQQAIgNiAAQ2iJqs8Ca+FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737
-kWtSdolGPfjjxaHvFBcurCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5K
-fxZV0LhVY2ajeDB2MB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0G
-A1UdDgQWBBRQnkuPLTi8KfGdecmzD8koLvF2CzAMBgNVHRMBAf8EAjAAMA4GA1Ud
-DwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsF
-AAOCAQEADzI0kHdyb4tAnCCdN+xem8EimwEFbGgep5XME+gw9fS6kixdjjH0lJvM
-Y7e+v6qeB7CpTSp0Kowy20QIGbdvu9IdyDdeHSCWizhdcZQCUbqfFyXWGu3Hjr+a
-XfYYgUEffLvr5JXX6vA517Y+qd+s52snq5xwLcwAlhSyn/cAERmeZiyXdSxJ5GKW
-0lg5nwFneCcUH7w12UzcsOHPbw+O0kcZSOJ1X9dXfGJbbjH2ehP04c1yC6xznHBo
-5gXmyCLQyhWzx9evMfzSqsYEDnldlfuU2udB+l6gnmsAxmX6HxyypzKEK4EtupyM
-UAKOO0ZKW6fY7dXbiOtc5VWFrY2qmQ==
+MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN
+BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw
+NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu
+dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD
+TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE
+gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6
+N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs
+8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr
+BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y
+KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6
+iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG
+Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ
+AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve
+ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM
+05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J
+ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe
+TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z
+R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN
+l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+
+OzZEXmZyHr121wY=
 -----END CERTIFICATE-----
 -----BEGIN PRIVATE KEY-----
-MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCmOdUkhzeHqGnwZSnX
-yFa42iW6IF4X9TfLcq1t48ZU7zOJDfRQp4faE/W0C/0vmK+hZANiAAQ2iJqs8Ca+
-FRxOF7c3atmzVXZ19BXSII2/MGhSAOsYkk8+ApA4n737kWtSdolGPfjjxaHvFBcu
-rCjrSCXfje8zVD39AneXN2Uh255HhF8ItlZoKxSCn/5KfxZV0LhVY2Y=
+MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA
+47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO
+kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx
+dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
 -----END PRIVATE KEY-----
 '''
         }
@@ -419,14 +439,16 @@ def test_load_client_cert_and_key(cert_and_key, ok):
     ssl_ctx = ssl.create_default_context()
     assert (load_client_cert_and_key(ssl_ctx, params) == ok)
 
-    def _test_connect(ssl_client_ctx: ssl.SSLContext):
+    def _test_connect(
+        ssl_client_ctx: ssl.SSLContext,
+        require_client_auth: bool
+    ) -> bool:
+        from socketserver import BaseRequestHandler, ThreadingTCPServer
+        import threading
+        import socket
+
         class TestSSLServer(BaseRequestHandler):
-            def __init__(
-                self,
-                request,
-                client_address,
-                server
-            ) -> None:
+            def __init__(self, request, client_address, server) -> None:
                 self.__ssl_server_context: ssl.SSLContext = None  # type: ignore
                 BaseRequestHandler.__init__(self, request, client_address, server)
 
@@ -435,98 +457,46 @@ def test_load_client_cert_and_key(cert_and_key, ok):
 
             def handle(self) -> None:
                 try:
-                    with self.__ssl_server_context.wrap_socket(
-                            self.request,
-                            server_side=True,
-                            do_handshake_on_connect=False) as s:
-                        s.do_handshake()
+                    with self.__ssl_server_context.wrap_socket(self.request, server_side=True) as s:
+                        s.write(b'ok')
+                except Exception:
+                    pass
                 finally:
                     self.request.close()
 
-        # *** The cert and key below are not used in the real services, and only used for testing.
-        server_cert_and_key = '''
------BEGIN CERTIFICATE-----
-MIICpDCCAYygAwIBAgIUXAXF05FBOj9RwqAj8FN92fdqh3gwDQYJKoZIhvcNAQEN
-BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0yMzA3MTAxNTUzNTFa
-Fw0zOTA4MDMxNTQxNTVaMBUxEzARBgNVBAMMCnRlc3QubG9jYWwwdjAQBgcqhkjO
-PQIBBgUrgQQAIgNiAASx1e+Sl/kzvpaCon8C92vLw9/tBBvI4tQFD8lahBcbTakD
-d0XatOS0F9ko6knJYl4rkXaKLqf3d8ZhbJOfAa9Xyo7Sm9c7xldpdUr/eOWGpZAA
-SbGw7FWSDF4waFmIktajgZMwgZAwHwYDVR0jBBgwFoAU2UB6l6SU04vdN2aQhz+u
-vuecIQkwHQYDVR0OBBYEFA3dejB46+/wnw3Q+AW1oRHCW/umMAwGA1UdEwEB/wQC
-MAAwDgYDVR0PAQH/BAQDAgWgMBYGA1UdJQEB/wQMMAoGCCsGAQUFBwMBMBgGA1Ud
-EQEB/wQOMAyCCnRlc3QubG9jYWwwDQYJKoZIhvcNAQENBQADggEBAHMzaK5mDINh
-oMZVp/BjuV0TKFv/4zpEpRBPLl2LOnnTaBKxKUM6MdJ0Qv5MGR6PdGKnFQw+pvSX
-EFAlxgBkC785bUcXA9WXxVCjHQGcgyNU5YQRi05jWzHkZEkg/3034zR4QOnJIIPw
-vAxq8RbwfFp94X68MsQsX9g3jm0u6LPoMJSRKuL6yL7dhl19CUKBiposPlru1zJm
-fCIumvOZ+FPwXC2t3c+KhZzAH7c3tonWuMCQR7t+kGN0oqFpzLsn7U87xSlWmMLM
-E4j+t9oEzuqrSRIob/GblUVyfyKnNOrN7AqneLl4pwwxYwQIFDxtEy3Pp5YGgi6f
-52XOlZ+PYwU=
------END CERTIFICATE-----
------BEGIN EC PRIVATE KEY-----
-MIGkAgEBBDCSBZzgrQHM+YoRQBA/PjvO2l/fUyuG/DGnIqS4kvy+u6AIDAP02Dvd
-ykxovJvA1o2gBwYFK4EEACKhZANiAASx1e+Sl/kzvpaCon8C92vLw9/tBBvI4tQF
-D8lahBcbTakDd0XatOS0F9ko6knJYl4rkXaKLqf3d8ZhbJOfAa9Xyo7Sm9c7xldp
-dUr/eOWGpZAASbGw7FWSDF4waFmIktY=
------END EC PRIVATE KEY-----
-                      '''
-
-        # *** The cert below is not used in the real services, and only used for testing.
-        ca_cert = '''
------BEGIN CERTIFICATE-----
-MIIDJzCCAg+gAwIBAgIUALYDuYO2fKF7dhWhtCbNP2o50QwwDQYJKoZIhvcNAQEL
-BQAwGzEZMBcGA1UEAxMQRGVmYXVsdCBMb2NhbCBDQTAeFw0xOTA4MDMxNTQxNTVa
-Fw0zOTA4MDMxNTQxNTVaMBsxGTAXBgNVBAMTEERlZmF1bHQgTG9jYWwgQ0EwggEi
-MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCNEjdhN6HmpwN2fQC2oTkhSL3W
-5O/gSqi08Q8I4gjAA0+F1x7ZsBHkoGeCulNX+s4Auq6O18oEWAXW0nzLALOclcnD
-OyhM6hnQ+vjNRohPwYdUCvjHDHEKGY2uPo2irIpjzANC5b/9VdPY+7wM1zp+u4M4
-725w5x1SUgnceWuKVbemKAKESdAhS/edVXU7IfXNZf29fIhPpizW5Wb7ikcDnNXj
-G1l7l6n5Lix6YTSnty9TEsNta6lu8r4SuQ6KTIyOnRUdKPFuFQGKdelm0FJDwaGu
-tvPXgJmaEoU4hKdk3ER2Df5ZcpHlu3dVCjrzE9YC7/GTr1Uz/R+gwsAoZDz3AgMB
-AAGjYzBhMB8GA1UdIwQYMBaAFNlAepeklNOL3TdmkIc/rr7nnCEJMB0GA1UdDgQW
-BBTZQHqXpJTTi903ZpCHP66+55whCTAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB
-/wQEAwIBhjANBgkqhkiG9w0BAQsFAAOCAQEAZ3H+OWFq8Ov7XU3QqaqM0xPSLJ4L
-iswrHnQyS6Dss/e5tGYOzlk+LsagyiHzMTDzqlh9/97Pl7U5MGhcrS+fXI0JboEv
-hw2+2wTCesXhOnSdJ8fxU6LCQuPPjtzNKMKlES9GzPCI2VIFwjYWGnTagGtJK6mL
-2DtpqT1YMClLvZam5nyS/tZfq2KVV7QV5buWJSYLv8mHiG9MESzVy5aax++u+g/s
-vVMJGGpbfQnTdas34BHVKtJybZxjLIWA+IgFocIwsMaTu8yRGmLq/JgeMfHyTAGn
-iZhq9FgKdJIJrHzg6onTh6uSkeg378q2DOfxyL6hKIl89o4iUyqHM6cJSA==
------END CERTIFICATE-----
-                  '''
-
         ssl_client_ctx.check_hostname = False
-        ssl_client_ctx.verify_mode = ssl.CERT_NONE
-        ssl_client_ctx.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
+        ssl_client_ctx.verify_mode = ssl.CERT_REQUIRED
+        ssl_client_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+        ssl_client_ctx.load_verify_locations(cafile='./test_data/mail-listener-test-root-ca.cer.pem')
 
         ssl_server_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        ssl_server_ctx.verify_mode = ssl.CERT_REQUIRED
-        with NamedTemporaryFile(mode='w') as f:
-            f.write(server_cert_and_key)
-            f.flush()
-            f.seek(0)
-            ssl_server_ctx.load_cert_chain(certfile=f.name, keyfile=None)
+        if require_client_auth:
+            ssl_server_ctx.verify_mode = ssl.CERT_REQUIRED
+        else:
+            ssl_server_ctx.verify_mode = ssl.CERT_NONE
 
-        with NamedTemporaryFile(mode='w') as f:
-            f.write(ca_cert)
-            f.flush()
-            f.seek(0)
-            ssl_server_ctx.load_verify_locations(cafile=f.name)
+        ssl_server_ctx.load_cert_chain(certfile='./test_data/127.0.0.1.cer.pem',
+                                       keyfile='./test_data/127.0.0.1.opssl-priv.pem')
+        ssl_server_ctx.load_verify_locations(cafile='./test_data/mail-listener-test-root-ca.cer.pem')
 
         with ThreadingTCPServer(('', 0), TestSSLServer) as server:
             server.ssl_server_ctx = ssl_server_ctx
             server_ip, server_port = server.socket.getsockname()
 
-            def _serve_forever(server: BaseServer) -> None:
-                server.serve_forever()
-
-            thr = threading.Thread(target=_serve_forever, args=(server,), daemon=False)
+            thr = threading.Thread(target=server.serve_forever, daemon=False)
             thr.start()
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, \
                         ssl_client_ctx.wrap_socket(s, server_side=False) as ss:
                     ss.connect((server_ip, server_port))
+                    if ss.read() == b'ok':
+                        return True
+            except Exception:
+                pass
             finally:
                 server.shutdown()
                 thr.join()
+        return False
 
-    if ok:
-        _test_connect(ssl_ctx)
+    assert(_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=True) == ok)
+    assert(_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=False))
