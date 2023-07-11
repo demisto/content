@@ -28,6 +28,6 @@ alter deviceVersion = arrayindex(regextract(_raw_log ,"CEF\:0\|Portnox\|Portnox\
     xdm.target.domain = destinationDnsDomain,
     xdm.source.port = to_integer(sourceTranslatedPort),
     xdm.target.process.name = destinationServiceName,
-    xdm.observer.vendor = coalesce(deviceVersion,cefDeviceVersion),
+    xdm.observer.version = coalesce(deviceVersion,cefDeviceVersion),
     xdm.event.id = coalesce(cefDeviceEventClassId,deviceEventClassId),
     xdm.target.resource.name = target_resource;
