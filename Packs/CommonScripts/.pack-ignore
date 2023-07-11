@@ -248,6 +248,9 @@ ignore=BA124
 [file:EditServerConfig.yml]
 ignore=BA124
 
+[file:DateTimeNowToEpoch.yml]
+ignore=BA124
+
 [tests_require_network]
 Ping
 GetDockerImageLatestTag
