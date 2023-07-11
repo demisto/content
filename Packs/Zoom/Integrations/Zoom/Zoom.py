@@ -1526,7 +1526,12 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     search_key = args.get('search_key')
     exclude_child_message = args.get('exclude_child_message', False)
     limit = arg_to_number(args.get('limit', 50))
-    page_size = args.get('page_size')
+    page_size = arg_to_number(args.get('page_size'))
+
+    if limit and page_size and limit != page_size:
+        raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
+    else:
+        limit = page_size if page_size else limit
 
     if not to_contact and not to_channel:
         raise DemistoException(MISSING_ARGUMENT)
@@ -1550,8 +1555,9 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
                                                   search_key=search_key,
                                                   exclude_child_message=exclude_child_message,
                                                   next_page_token=next_page_token,
-                                                  page_size=page_size)
+                                                  page_size=limit)
         data = raw_data.get('messages', [])
+
         if limit and len(all_messages) + len(data) > limit:
             remaining_limit = limit - len(all_messages)
             data = data[:remaining_limit]
