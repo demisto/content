@@ -331,6 +331,8 @@ xsoar_server_master:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
+      variables:
+        KUBERNETES_CPU_REQUEST: 2000m
   variables:
     INSTANCE_ROLE: "Server Master"
 
