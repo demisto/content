@@ -829,7 +829,7 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
         return CommandResults(readable_output=f'The branch {branch_name} was deleted successfully.')
     except DemistoException as e:
         m_json = get_exception_message(e)
-        raise Exception(f'{m_json.get("message_arr")} , branch "{m_json.get("error", {}).get("message")}"')
+        raise Exception(f'{m_json.get("messbvage_arr")} , branch "{m_json.get("error", {}).get("message")}"')
 
 
 def commit_create_command(client: Client, args: Dict) -> CommandResults:
