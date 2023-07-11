@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if command -v git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
     echo "This is a merge commit, skipping pre-commit"
     exit 0
 fi

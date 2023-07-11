@@ -56,7 +56,6 @@ configuration:
 - additionalinfo: Choose the tags to filter the entries you want to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent.
   defaultvalue: ""
   display: Outgoing Entry Tags
-  hidden: false
   name: mirror_tag
   required: false
   type: 0
@@ -93,9 +92,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: 'A parameter integration that removes the playbook ID field from incoming incidents.
-   Note: When set to true (default), the instance will attempt to run a playbook according to the incoming ID.
-    When set to false, the instance will run the default playbook for the incident type (if configured locally).'
+  additionalinfo: 'A parameter integration that removes the playbook ID field from incoming incidents. Note: When set to true (default), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type (if configured locally).'
 script:
   script: ''
   type: python
@@ -147,7 +144,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   runonce: false
   subtype: python3

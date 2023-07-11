@@ -39,7 +39,6 @@ comment: >
 commonfields:
   id: ExpanseEnrichAttribution
   version: -1
-enabled: false
 name: ExpanseEnrichAttribution
 outputs:
 - contextPath: Expanse.AttributionIP.ip

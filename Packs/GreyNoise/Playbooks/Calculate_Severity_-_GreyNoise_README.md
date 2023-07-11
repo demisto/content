@@ -4,22 +4,28 @@ Calculate and assign the incident severity based on the highest returned severit
 - Current incident severity
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Calculate Severity Highest DBotScore For Ingress Network Traffic - GreyNoise
-* Calculate Severity Highest DBotScore For Egress Network Traffic - GreyNoise
+
+- Calculate Severity Highest DBotScore For Ingress Network Traffic - GreyNoise
+- Calculate Severity Highest DBotScore For Egress Network Traffic - GreyNoise
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+
+- Set
 
 ### Commands
-* setIncident
+
+- setIncident
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -28,6 +34,7 @@ This playbook does not use any integrations.
 | NetworkTrafficDirection | The direction of network traffic event associated with the Incident\(Egress/Ingress\). If not supplied, Ingress is considered. | Egress | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -39,5 +46,6 @@ This playbook does not use any integrations.
 | CriticalAssets.CriticalUserGroups | Critical user-groups involved in the incident. | unknown |
 
 ## Playbook Image
+
 ---
 ![Calculate Severity - GreyNoise](./../doc_files/Calculate_Severity_-_GreyNoise.png)

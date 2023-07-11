@@ -169,7 +169,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: triagesla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -304,13 +306,11 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3555
+          "y": 3745
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -661,7 +661,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -712,16 +714,16 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "151"
+      - "226"
       "yes":
-      - "149"
+      - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -920,
-          "y": 3190
+          "y": 3210
         }
       }
     note: false
@@ -1033,7 +1035,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: triagesla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1616,7 +1620,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1467.5,
+          "x": -1507.5,
           "y": 1640
         }
       }
@@ -1660,7 +1664,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1467.5,
+          "x": -1507.5,
           "y": 1775
         }
       }
@@ -1692,7 +1696,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1467.5,
+          "x": -1507.5,
           "y": 2160
         }
       }
@@ -1833,9 +1837,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1965,9 +1967,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -2018,7 +2018,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3370
+          "y": 3560
         }
       }
     note: false
@@ -2071,76 +2071,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "153":
-    id: "153"
-    taskid: 54c0f37b-b540-413b-8d1d-ff2f3c44e100
-    type: condition
-    task:
-      id: 54c0f37b-b540-413b-8d1d-ff2f3c44e100
-      version: -1
-      name: Did domain-squatting occur?
-      description: Checks whether the attacker tried to squat another domain involved in this incident.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "84"
-      "yes":
-      - "155"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Vendor
-                      iscontext: true
-                    right:
-                      value:
-                        simple: DomainSquatting
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: incident.reportedemailfrom
-                      iscontext: true
-                - - operator: greaterThanOrEqual
-                    left:
-                      value:
-                        simple: DBotScore.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "2"
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1775
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "154":
     id: "154"
     taskid: 74f8be3e-bd84-492b-8e45-e6ebd2d4cdd9
@@ -2148,104 +2078,21 @@ tasks:
     task:
       id: 74f8be3e-bd84-492b-8e45-e6ebd2d4cdd9
       version: -1
-      name: Domain-squatting
+      name: Spear Phishing
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "153"
+      - "225"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 970,
           "y": 1640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "155":
-    id: "155"
-    taskid: b58fc3ce-c37a-46c4-839b-ea035ef824de
-    type: regular
-    task:
-      id: b58fc3ce-c37a-46c4-839b-ea035ef824de
-      version: -1
-      name: Save domain-squatting result to incident field
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "84"
-    scriptarguments:
-      domainsquattingresult:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Vendor
-                iscontext: true
-              right:
-                value:
-                  simple: DomainSquatting
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: incident.reportedemailfrom
-                iscontext: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: '@'
-          - operator: LastArrayElement
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: The attacker used the domain **
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: '** which looks like another domain involved in this incident.'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 2000
         }
       }
     note: false
@@ -2520,7 +2367,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
+          "x": 500,
           "y": 1640
         }
       }
@@ -2650,7 +2497,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
+          "x": 500,
           "y": 1775
         }
       }
@@ -2711,7 +2558,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
+          "x": 500,
           "y": 2000
         }
       }
@@ -3510,6 +3357,123 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "225":
+    id: "225"
+    taskid: 04a23fe1-d4d1-4509-87c8-b9b00ec41c07
+    type: playbook
+    task:
+      id: 04a23fe1-d4d1-4509-87c8-b9b00ec41c07
+      version: -1
+      name: Spear Phishing Investigation
+      playbookName: Spear Phishing Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      DomainSquattingResults:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: DomainSquatting
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailfrom
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+      KeywordsToSearch:
+        complex:
+          root: inputs.KeyWordsToSearch
+      MailBody:
+        complex:
+          root: incident
+          accessor: emailbody
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.emailbodyhtml
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "226":
+    id: "226"
+    taskid: c2203ede-e9ad-40d8-82ed-80addb93ae9e
+    type: title
+    task:
+      id: c2203ede-e9ad-40d8-82ed-80addb93ae9e
+      version: -1
+      name: Email Is Benign
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "151"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -920,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -3523,9 +3487,8 @@ view: |-
       "151_16_Yes": 0.72,
       "151_223_#default#": 0.19,
       "152_28_yes": 0.38,
-      "153_155_yes": 0.44,
-      "153_84_#default#": 0.1,
-      "15_31_#default#": 0.6,
+      "15_30_Malicious": 0.48,
+      "15_31_#default#": 0.52,
       "162_163_yes": 0.41,
       "162_52_#default#": 0.22,
       "179_211_yes": 0.5,
@@ -3535,7 +3498,7 @@ view: |-
       "222_53_yes": 0.42,
       "222_56_#default#": 0.17,
       "223_224_yes": 0.47,
-      "33_149_yes": 0.18,
+      "33_30_yes": 0.1,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
       "79_84_#default#": 0.17
@@ -3543,7 +3506,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 5780,
-        "width": 3142.5,
+        "width": 3132.5,
         "x": -1782.5,
         "y": -510
       }
@@ -3740,6 +3703,14 @@ inputs:
   description: |-
     Specify whether to stop the playbook to take additional action before closing the incident.
     Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done.
+  playbookInputQuery:
+- key: KeyWordsToSearch
+  value: {}
+  required: false
+  description: |-
+    A comma-separated list of keywords to search in the email body.
+    For example: name of the organization finance app that the attacker might impersonate.
+    This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
 outputs: []
 tests:

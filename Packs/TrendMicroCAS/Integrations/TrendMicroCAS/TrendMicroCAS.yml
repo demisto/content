@@ -46,7 +46,6 @@ configuration:
   type: 16
   section: Collect
 - display: Event type to fetch
-  hidden: false
   name: event_type
   options:
   - securityrisk
@@ -58,7 +57,6 @@ configuration:
   section: Collect
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0

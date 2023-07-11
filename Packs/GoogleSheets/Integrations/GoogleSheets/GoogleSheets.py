@@ -26,9 +26,9 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 def prepare_result(response: dict, args: dict, readable_comment: str) -> CommandResults:
     """
         This function is for the UPDATE command result formatting
-        echo_spreadsheat is false then the HR will be only success or failed,
-        and the output will be empty.
-        if echo_spreadsheet is true then we prepare the HR and substitute the response to the output
+        echo_spreadsheet is false then the HR will be only success or failed.
+        If echo_spreadsheet is true then we prepare the HR.
+        In any case substitute the response to the output.
 
         Args:
             response: the response from the google API
@@ -38,7 +38,7 @@ def prepare_result(response: dict, args: dict, readable_comment: str) -> Command
             The command result ready for the server
     """
     markdown = f'### Successfully {readable_comment}\n'
-    outputs = None
+
     if argToBoolean(args.get('echo_spreadsheet')):
         human_readable = {
             'spreadsheet Id': response.get('spreadsheetId'),
@@ -52,7 +52,8 @@ def prepare_result(response: dict, args: dict, readable_comment: str) -> Command
         sheets = response.get('updatedSpreadsheet', {}).get('sheets')  # this is an array of sheet dicts
 
         markdown += tableToMarkdown('Content', create_list_id_title(sheets), headers=['SheetId', 'Sheet title'])
-        outputs = response
+
+    outputs = response
 
     results = CommandResults(
         readable_output=markdown,

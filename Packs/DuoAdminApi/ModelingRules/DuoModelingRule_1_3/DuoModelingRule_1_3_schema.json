@@ -67,6 +67,18 @@
     "integration": {
       "type": "string",
       "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "auth_device": {
+      "type": "string",
+      "is_array": false
+    },
+    "telephony_id": {
+      "type": "string",
+      "is_array": false
     }
   }
 }

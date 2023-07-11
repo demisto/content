@@ -21,6 +21,12 @@ configuration:
   name: key
   type: 4
   required: false
+  hidden: true
+- name: credentials_key
+  type: 9
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -95,7 +101,7 @@ script:
       description: Active Users on Prisma Access
     description: Query currently active users.
     deprecated: true
-  dockerimage: demisto/netmiko:1.0.0.49353
+  dockerimage: demisto/netmiko:1.0.0.61830
   runonce: false
   subtype: python3
 fromversion: 5.0.0

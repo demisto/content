@@ -375,3 +375,70 @@ ATTACHMENTS = {
         "content": "https://localhost/secure/attachment/18447/filename"
     }
 }
+
+
+ORGANIZATIONS = {
+    "_links": {
+        "base": "https://demistodev.atlassian.net",
+        "context": "",
+        "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization"
+    },
+    "isLastPage": True,
+    "limit": 50,
+    "size": 2,
+    "start": 0,
+    "values": [
+        {
+            "_links": {
+                "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization/23"
+            },
+            "id": "23",
+            "name": "TEST"
+        },
+        {
+            "_links": {
+                "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization/4"
+            },
+            "id": "4",
+            "name": "XSOAR"
+        }
+    ]
+}
+
+
+PROJECT_ROLES = {
+    "Agent":"https://demistodev.atlassian.net/rest/api/2/project/10804/role/11824",
+    "Administrator":"https://demistodev.atlassian.net/rest/api/2/project/10804/role/11823",
+}
+
+
+PROJECT_ROLE = {
+  "self": "https://demistodev.atlassian.net/rest/api/2/project/10804/role/11823",
+  "name": "Administrator",
+  "id": 11823,
+  "description": "Admins can do most things, like update settings and add other admins.",
+  "actors": [
+    {
+      "id": 44432,
+      "displayName": "XSOAR",
+      "type": "atlassian-user-role-actor",
+      "actorUser": {
+        "accountId": "123456789"
+      }
+    },
+    {
+      "id": 44430,
+      "displayName": "Demisto",
+      "type": "atlassian-user-role-actor",
+      "actorUser": {
+        "accountId": "987654321"
+      }
+    }
+  ],
+  "scope": {
+    "type": "PROJECT",
+    "project": {
+      "id": "10804"
+    }
+  }
+}

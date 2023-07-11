@@ -1,0 +1,474 @@
+id: Block Endpoint - Carbon Black Response V2.1
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block Endpoint - Carbon Black Response V2.1
+description: Carbon Black Response - isolates an endpoint for a given hostname.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73040a0e-cca5-4197-8089-f46650317040
+    type: start
+    task:
+      id: 73040a0e-cca5-4197-8089-f46650317040
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4d526596-75df-40b0-82c4-a26ccd094e3e
+    type: regular
+    task:
+      id: 4d526596-75df-40b0-82c4-a26ccd094e3e
+      version: -1
+      name: Isolate endpoint
+      description: Isolate the endpoint from the network.
+      script: '|||cb-edr-quarantine-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      sensor_id:
+        complex:
+          root: CarbonBlackEDR.Sensor
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d35be2d6-6709-40d0-846e-dc9aef142e30
+    type: title
+    task:
+      id: d35be2d6-6709-40d0-846e-dc9aef142e30
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: dfca2eb5-d11a-4752-8017-728837c5e97b
+    type: condition
+    task:
+      id: dfca2eb5-d11a-4752-8017-728837c5e97b
+      version: -1
+      name: Is VMware Carbon Black EDR v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    scriptarguments:
+      brandname:
+        simple: VMware Carbon Black EDR v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d4f20892-a8e1-421a-8df4-99e848ad6cf9
+    type: condition
+    task:
+      id: d4f20892-a8e1-421a-8df4-99e848ad6cf9
+      version: -1
+      name: 'Is the endpoint ready for isolation? '
+      description: |
+        Checks if the endpoint is ready for isolation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CarbonBlackEDR.Sensor
+                accessor: is_isolating
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ae9cdbc4-5f28-4f30-8f5d-7921ec1a99d7
+    type: condition
+    task:
+      id: ae9cdbc4-5f28-4f30-8f5d-7921ec1a99d7
+      version: -1
+      name: Is the Hostname or Sensor id defined?
+      description: Checks if the hostname or sensor ID is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.Hostname
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: cbEndpointList
+                accessor: computer_name
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Sensor_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1b2d65b4-ea00-4f7c-833b-680399f28d5b
+    type: regular
+    task:
+      id: 1b2d65b4-ea00-4f7c-833b-680399f28d5b
+      version: -1
+      name: Get host information from Carbon Black Enterprise Response
+      description: List the Carbon Black sensors.
+      script: '|||cb-edr-sensors-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: cbEndpointList=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: eb40f419-39ad-482a-8365-0a17e203b647
+    type: regular
+    task:
+      id: eb40f419-39ad-482a-8365-0a17e203b647
+      version: -1
+      name: Set sensor info
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: CarbonBlackEDR.Sensor
+      value:
+        complex:
+          root: cbEndpointList
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: cbEndpointList.computer_name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Hostname
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: cbEndpointList.id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Sensor_id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_4_#default#": 0.13,
+      "7_3_yes": 0.51,
+      "7_4_#default#": 0.35,
+      "8_4_#default#": 0.14
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1425,
+        "width": 690,
+        "x": -180,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: {}
+  required: false
+  description: The hostname to isolate.
+  playbookInputQuery:
+- key: Sensor_id
+  value: {}
+  required: false
+  description: The sensor ID of the endpoint.
+  playbookInputQuery:
+outputs:
+- contextPath: CarbonBlackEDR.Sensor
+  description: The sensor info.
+  type: unknown
+- contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
+  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed.
+- contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
+  description: The path of the EMET telemetry associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.os_environment_display_string
+  description: Human-readable string of the installed OS.
+- contextPath: CarbonBlackEDR.Sensor.emet_version
+  description: The EMET version associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.emet_dump_flags
+  description: The flags of the EMET dump associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.clock_delta
+  description: The clock delta associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.supports_cblr
+  description: Whether the sensor supports Carbon Black Live Response (CbLR).
+- contextPath: CarbonBlackEDR.Sensor.sensor_uptime
+  description: The uptime of the process.
+- contextPath: CarbonBlackEDR.Sensor.last_update
+  description: When the sensor was last updated.
+- contextPath: CarbonBlackEDR.Sensor.physical_memory_size
+  description: The size in bytes of physical memory.
+- contextPath: CarbonBlackEDR.Sensor.build_id
+  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
+- contextPath: CarbonBlackEDR.Sensor.uptime
+  description: Endpoint uptime in seconds.
+- contextPath: CarbonBlackEDR.Sensor.is_isolating
+  description: Boolean representing sensor-reported isolation status.
+- contextPath: CarbonBlackEDR.Sensor.event_log_flush_time
+  description: |-
+    If event_log_flush_time is set, the server will instruct the sensor to immediately
+    send all data before this date, ignoring all other throttling mechanisms.
+    To force a host current, set this value to a value far in the future.
+    When the sensor has finished sending its queued data, this value will be null.
+- contextPath: CarbonBlackEDR.Sensor.computer_dns_name
+  description: The DNS name of the endpoint on which the sensor is installed.
+- contextPath: CarbonBlackEDR.Sensor.emet_report_setting
+  description: The report setting of the EMET associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.id
+  description: The ID of this sensor.
+- contextPath: CarbonBlackEDR.Sensor.emet_process_count
+  description: The number of EMET processes associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.emet_is_gpo
+  description: Whether the EMET is a GPO.
+- contextPath: CarbonBlackEDR.Sensor.power_state
+  description: The sensor power state.
+- contextPath: CarbonBlackEDR.Sensor.network_isolation_enabled
+  description: Boolean representing the network isolation request status.
+- contextPath: CarbonBlackEDR.Sensor.systemvolume_free_size
+  description: The amount of free bytes on the system volume.
+- contextPath: CarbonBlackEDR.Sensor.status
+  description: The sensor status.
+- contextPath: CarbonBlackEDR.Sensor.num_eventlog_bytes
+  description: The number of event log bytes.
+- contextPath: CarbonBlackEDR.Sensor.sensor_health_message
+  description: Human-readable string indicating the sensor’s self-reported status.
+- contextPath: CarbonBlackEDR.Sensor.build_version_string
+  description: Human-readable string of the sensor version.
+- contextPath: CarbonBlackEDR.Sensor.computer_sid
+  description: Machine SID of this host.
+- contextPath: CarbonBlackEDR.Sensor.next_checkin_time
+  description: Next expected communication from this computer in server-local time and zone.
+- contextPath: CarbonBlackEDR.Sensor.node_id
+  description: The node ID associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.cookie
+  description: The cookie associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.emet_exploit_action
+  description: The EMET exploit action associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.computer_name
+  description: NetBIOS name of this computer.
+- contextPath: CarbonBlackEDR.Sensor.license_expiration
+  description: When the license of the sensor expires.
+- contextPath: CarbonBlackEDR.Sensor.supports_isolation
+  description: Whether the sensor supports isolation.
+- contextPath: CarbonBlackEDR.Sensor.parity_host_id
+  description: The ID of the parity host associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.supports_2nd_gen_modloads
+  description: Whether the sensor support modload of 2nd generation.
+- contextPath: CarbonBlackEDR.Sensor.network_adapters
+  description: A pipe-delimited list of IP,MAC pairs for each network interface.
+- contextPath: CarbonBlackEDR.Sensor.sensor_health_status
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
+- contextPath: CarbonBlackEDR.Sensor.registration_time
+  description: Time this sensor was originally registered in server-local time and zone.
+- contextPath: CarbonBlackEDR.Sensor.restart_queued
+  description: Whether a restart of the sensor is queued.
+- contextPath: CarbonBlackEDR.Sensor.notes
+  description: The notes associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.num_storefiles_bytes
+  description: Number of storefiles bytes associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.os_environment_id
+  description: The ID of the OS environment of the sensor.
+- contextPath: CarbonBlackEDR.Sensor.shard_id
+  description: The ID of the shard associated with the sensor.
+- contextPath: CarbonBlackEDR.Sensor.boot_id
+  description: A sequential counter of boots since the sensor was installed.
+- contextPath: CarbonBlackEDR.Sensor.last_checkin_time
+  description: Last communication with this computer in server-local time and zone.
+- contextPath: CarbonBlackEDR.Sensor.os_type
+  description: The operating system type of the computer.
+- contextPath: CarbonBlackEDR.Sensor.group_id
+  description: The sensor group ID this sensor is assigned to.
+- contextPath: CarbonBlackEDR.Sensor.uninstall
+  description: When set, indicates that the sensor will be directed to uninstall on the next check-in.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

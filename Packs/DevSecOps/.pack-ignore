@@ -1,4 +1,3 @@
-
 [file:DevSecOps_CodeQL_Alerts.json]
 ignore=IF100
 
@@ -18,7 +17,7 @@ ignore=IN145
 ignore=IN145
 
 [file:MinIO.yml]
-ignore=IN145
+ignore=IN145,DO109
 
 [file:DockerEngine.yml]
 ignore=IN145
@@ -40,3 +39,4 @@ ignore=BA101
 
 [file:Packs/DevSecOps/Integrations/LGTM/README.md]
 ignore=RM112
+

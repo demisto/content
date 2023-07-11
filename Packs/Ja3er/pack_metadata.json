@@ -10,7 +10,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Plug & Enrich",
+        "Free Enricher"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

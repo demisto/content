@@ -8,7 +8,6 @@ args:
 commonfields:
   id: JobCreator
   version: -1
-enabled: false
 name: JobCreator
 comment: Job Creator for the Content Management pack.
 outputs:
@@ -28,4 +27,4 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
 marketplaces:
-  - xsoar
+- xsoar

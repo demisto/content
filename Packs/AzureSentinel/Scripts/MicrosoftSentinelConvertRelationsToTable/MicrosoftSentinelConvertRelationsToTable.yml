@@ -1,7 +1,6 @@
 commonfields:
   id: MicrosoftSentinelConvertRelationsToTable
   version: -1
-enabled: false
 comment: This script is used to convert relations to a table.
 name: MicrosoftSentinelConvertRelationsToTable
 outputs:

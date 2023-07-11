@@ -19,10 +19,10 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.11.61265
 enabled: true
 name: UnitTest
-comment: ""
+comment: "Provides for automated testing of automations, playbooks, and sub-playbooks"
 runas: DBotWeakRole
 runonce: false
 script: ''

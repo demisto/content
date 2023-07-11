@@ -20,8 +20,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Select which attribute data fields of the event to save to context.
-    Leave empty to save all attributes.
+- display: Select which attribute data fields of the event to save to context. Leave empty to save all attributes.
   name: context_select
   options:
   - Category
@@ -44,13 +43,9 @@ configuration:
   - Value
   required: false
   type: 16
-- additionalinfo: This field limits the number of attributes for every event that
-    will be written to the context. Raising the number of attributes above 1000 may result in high memory
-    and disk usage. Contact Cortex XSOAR support before attempting to raise
-    this field above 1000.
+- additionalinfo: This field limits the number of attributes for every event that will be written to the context. Raising the number of attributes above 1000 may result in high memory and disk usage. Contact Cortex XSOAR support before attempting to raise this field above 1000.
   defaultvalue: '1000'
   display: Maximum attributes in the event
-  hidden: false
   name: attributes_limit
   required: false
   type: 0
@@ -85,9 +80,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of tags to include in the results. To exclude a tag, prefix the
-        tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". 
-        for example, "AND:tag1,tag2;OR:tag3".'
+      description: 'A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". for example, "AND:tag1,tag2;OR:tag3".'
       isArray: false
       name: tags
       required: false
@@ -105,9 +98,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Events published within the last "x" amount of time. Valid time
-        values are days, hours, and minutes (for example "5d", "12h", "30m"). This
-        filter uses the published timestamp of the event.
+      description: Events published within the last "x" amount of time. Valid time values are days, hours, and minutes (for example "5d", "12h", "30m"). This filter uses the published timestamp of the event.
       isArray: false
       name: last
       required: false
@@ -119,8 +110,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return events that include an attribute with the given UUID. Alternatively
-        the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002.
+      description: Return events that include an attribute with the given UUID. Alternatively the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002.
       isArray: false
       name: uuid
       required: false
@@ -339,8 +329,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
-        can pass CSV values to retrieve multiple responses.
+      description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You can pass CSV values to retrieve multiple responses.
       isArray: true
       name: file
       required: false
@@ -884,8 +873,7 @@ script:
     name: internal-misp-add-attribute
   - arguments:
     - default: false
-      description: 'A hash in MD5 format. If the "allSamples" argument is supplied,
-        this can be any one of the following: md5, sha1, and sha256.'
+      description: 'A hash in MD5 format. If the "allSamples" argument is supplied, this can be any one of the following: md5, sha1, and sha256.'
       isArray: false
       name: hash
       required: true
@@ -898,8 +886,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If set, will return all samples from events that match the hash
-        supplied in the "hash" argument.
+      description: If set, will return all samples from events that match the hash supplied in the "hash" argument.
       isArray: false
       name: allSamples
       predefined:
@@ -910,7 +897,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'false'
-      description: True to return all files unzipped. False to return one zipped file.  Default is "false". 
+      description: True to return all files unzipped. False to return one zipped file.  Default is "false".
       isArray: false
       name: unzip
       predefined:
@@ -1101,8 +1088,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The distribution setting used for the attributes and for the newly
-        created event, if relevant (0-3).
+      description: The distribution setting used for the attributes and for the newly created event, if relevant (0-3).
       isArray: false
       name: distribution
       predefined:
@@ -1114,8 +1100,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Flags all attributes created during the transaction to be marked
-        as "to_ids" or not.
+      description: Flags all attributes created during the transaction to be marked as "to_ids" or not.
       isArray: false
       name: to_ids
       predefined:
@@ -1124,16 +1109,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The category that will be assigned to the uploaded samples, (Payload
-        delivery, Artifacts dropped, Payload Installation, External Analysis).
+      description: The category that will be assigned to the uploaded samples, (Payload delivery, Artifacts dropped, Payload Installation, External Analysis).
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: Used to populate the event info field if no event ID is supplied.
-        Alternatively, if not supplied, MISP will generate a message showing that
-        it is a malware sample collection generated on the given day.
+      description: Used to populate the event info field if no event ID is supplied. Alternatively, if not supplied, MISP will generate a message showing that it is a malware sample collection generated on the given day.
       isArray: false
       name: info
       required: false
@@ -1164,8 +1146,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: This will populate the comment field of any attribute created using
-        this API.
+      description: This will populate the comment field of any attribute created using this API.
       isArray: false
       name: comment
       required: false
@@ -1331,15 +1312,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: ID of attribute to add sighting to (Must be filled if UUID is empty).
-        Can be retrieved from misp-search.
+      description: ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retrieved from misp-search.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: UUID of attribute to add sighting to (Must be filled if ID is empty).
-        Can be retrieved from misp-search.
+      description: UUID of attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from misp-search.
       isArray: false
       name: uuid
       required: false
@@ -1880,9 +1859,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Adds an IP object to the MISP event. The following arguments are optional,
-      but at least one must be supplied for the command to run successfully: "ip",
-      "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
+    description: 'Adds an IP object to the MISP event. The following arguments are optional, but at least one must be supplied for the command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
     execution: false
     name: misp-add-ip-object
     outputs:
@@ -1984,8 +1961,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return events that include an attribute with the given UUID. Alternatively
-        the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002
+      description: Return events that include an attribute with the given UUID. Alternatively the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002
       isArray: false
       name: uuid
       required: false
@@ -2012,9 +1988,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Search attributes of events published within the last "x" amount
-        of time. Valid time values are days, hours, and minutes (for example "5d",
-        "12h", "30m"). This filter uses the published timestamp of the event.
+      description: Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes (for example "5d", "12h", "30m"). This filter uses the published timestamp of the event.
       isArray: false
       name: last
       required: false

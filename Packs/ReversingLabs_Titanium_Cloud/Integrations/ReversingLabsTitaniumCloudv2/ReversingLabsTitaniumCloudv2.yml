@@ -14,7 +14,6 @@ configuration:
   type: 9
 - defaultvalue: C - Fairly reliable
   display: Reliability
-  hidden: false
   name: reliability
   options:
   - A+ - 3rd party enrichment
@@ -424,6 +423,10 @@ script:
         isArray: false
         required: false
         secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
     outputs:
       - contextPath: ReversingLabs.create_yara_ruleset
         description: ''
@@ -669,7 +672,7 @@ script:
       - contextPath: ReversingLabs.url_analyses_feed_from_date
         description: ''
         type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.63751
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.64132
   feed: false
   isfetch: false
   longRunning: false

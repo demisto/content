@@ -13,3 +13,12 @@ ignore=BA124
 [file:ProofpointTAPMostAttackedUsers.yml]
 ignore=BA124
 
+[file:ProofpointTAP.yml]
+ignore=PR101
+
+[file:ProofpointTAPModelingRules.yml]
+ignore=MR108
+
+[file:ProofpointTAPModelingRules_1_3.yml]
+ignore=MR108
+

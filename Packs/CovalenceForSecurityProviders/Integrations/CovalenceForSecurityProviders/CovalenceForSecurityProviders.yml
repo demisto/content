@@ -9,8 +9,7 @@ configuration:
   name: broker
   required: false
   type: 8
-- additionalinfo: Covalence's host (IP or domain) or broker's socket (ip:port) if
-    using broker
+- additionalinfo: Covalence's host (IP or domain) or broker's socket (ip:port) if using broker
   display: Host
   name: host
   required: true
@@ -31,17 +30,13 @@ configuration:
   name: timeout
   required: false
   type: 0
-- additionalinfo: When fetching incidents for the first time, this parameter specifies
-    in days how far the integration looks for incidents. For instance if set to "2",
-    it will pull all alerts in Covalence for the last 2 days and will create corresponding
-    incidents.
+- additionalinfo: When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents.
   defaultvalue: '1'
   display: First run time range
   name: first_run_time_range
   required: false
   type: 0
-- additionalinfo: Maximum number of alerts to be fetch per fetch command. It is advised
-    to not fetch more than 200 alerts.
+- additionalinfo: Maximum number of alerts to be fetch per fetch command. It is advised to not fetch more than 200 alerts.
   defaultvalue: '200'
   display: Fetch limit
   name: fetch_limit
@@ -70,8 +65,7 @@ configuration:
   required: false
   type: 0
   hidden: true
-description: Triggers by any alert from endpoint, cloud, and network security monitoring,
-  with mitigation steps where applicable. Query Covalence for more detail.
+description: Triggers by any alert from endpoint, cloud, and network security monitoring, with mitigation steps where applicable. Query Covalence for more detail.
 display: Covalence For Security Providers
 fromversion: 5.0.0
 name: Covalence For Security Providers
@@ -79,15 +73,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
       secret: false
     - default: false
-      description: Maximum number of alerts to be returned, if none provided will
-        be set to 1000
+      description: Maximum number of alerts to be returned, if none provided will be set to 1000
       isArray: false
       name: max_count
       required: false
@@ -123,8 +115,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -305,15 +296,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -349,8 +338,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
@@ -392,15 +380,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
       secret: false
     - default: false
-      description: Maximum number of connection summary by ip to be returned, if none
-        provided will be set to 100
+      description: Maximum number of connection summary by ip to be returned, if none provided will be set to 100
       isArray: false
       name: max_count
       required: false
@@ -412,8 +398,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: source ip filter, if used only connections related to the specified
-        source ip will be returned
+      description: source ip filter, if used only connections related to the specified source ip will be returned
       isArray: false
       name: source_ip
       required: false
@@ -431,8 +416,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: if "clients_only=true", only connections labeled as client connections
-        will be returned
+      description: if "clients_only=true", only connections labeled as client connections will be returned
       isArray: false
       name: clients_only
       required: false
@@ -450,8 +434,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -535,15 +518,13 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
       secret: false
     - default: false
-      description: Maximum number of connection summary by port to be returned, if
-        none provided will be set to 100
+      description: Maximum number of connection summary by port to be returned, if none provided will be set to 100
       isArray: false
       name: max_count
       required: false
@@ -555,8 +536,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: source ip filter, only connections related to the specified source
-        ip will be returned
+      description: source ip filter, only connections related to the specified source ip will be returned
       isArray: false
       name: source_ip
       required: true
@@ -574,8 +554,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: if "clients_only=true", only connections labeled as client connections
-        will be returned
+      description: if "clients_only=true", only connections labeled as client connections will be returned
       isArray: false
       name: clients_only
       required: false
@@ -593,8 +572,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -681,15 +659,13 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
       secret: false
     - default: false
-      description: Maximum number of DNS resolutions to be returned, if none provided
-        will be set to 100
+      description: Maximum number of DNS resolutions to be returned, if none provided will be set to 100
       isArray: false
       name: max_count
       required: false
@@ -713,29 +689,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Domain name filter, if used will only return DNS resolutions from
-        the specified domain name
+      description: Domain name filter, if used will only return DNS resolutions from the specified domain name
       isArray: false
       name: domain_name
       required: false
       secret: false
     - default: false
-      description: IP filter, if used will only return DNS resolutions to the specified
-        IP
+      description: IP filter, if used will only return DNS resolutions to the specified IP
       isArray: false
       name: resolved_ip
       required: false
       secret: false
     - default: false
-      description: Source IP filter, if used will only return DNS resolutions originating
-        from the specified IP
+      description: Source IP filter, if used will only return DNS resolutions originating from the specified IP
       isArray: false
       name: request_origin_ip
       required: false
       secret: false
     - default: false
-      description: Nameserver IP filter, if used will only return DNS resolutions
-        involving the specified nameserver IP
+      description: Nameserver IP filter, if used will only return DNS resolutions involving the specified nameserver IP
       isArray: false
       name: nameserver_ip
       required: false
@@ -747,8 +719,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -787,8 +758,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
@@ -806,8 +776,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
@@ -819,8 +788,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comment notes associated with the network, notes must be inside
-        quotes
+      description: Comment notes associated with the network, notes must be inside quotes
       isArray: false
       name: notes
       required: true
@@ -838,22 +806,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
       secret: false
     - default: false
-      description: Advanced filter query, if used any other parameters provided to
-        the command will be ignored
+      description: Advanced filter query, if used any other parameters provided to the command will be ignored
       isArray: false
       name: advanced_filter
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -940,8 +905,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
@@ -953,8 +917,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: List endpoint agents where the last session user is the one provided
-      as parameter
+    description: List endpoint agents where the last session user is the one provided as parameter
     execution: false
     name: cov-secpr-find-endpoint-agents-by-user
     outputs:
@@ -1035,8 +998,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
@@ -1129,8 +1091,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
@@ -1148,15 +1109,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
       secret: false
     deprecated: false
-    description: Search processes by name or advanced filter, at least one parameter
-      is required
+    description: Search processes by name or advanced filter, at least one parameter is required
     execution: false
     name: cov-secpr-search-endpoint-process
     outputs:
@@ -1201,15 +1160,13 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'Only required in broker mode, used to target a specific organization:
-        target_org="Acme Corporation"'
+      description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
       isArray: false
       name: target_org
       required: false
       secret: false
     - default: false
-      description: The name of installed software, quotes are required is space character
-        is used. At least one parameter is required.
+      description: The name of installed software, quotes are required is space character is used. At least one parameter is required.
       isArray: false
       name: name
       required: true
@@ -1227,8 +1184,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -1301,6 +1257,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: false
 tests:
 - No tests (auto formatted)

@@ -170,7 +170,6 @@ comment: Sends a HTTP request with advanced capabilities
 commonfields:
   id: HttpV2
   version: -1
-enabled: false
 name: HttpV2
 outputs:
 - contextPath: HttpRequest.Response.StatusCode

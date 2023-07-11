@@ -8,7 +8,6 @@ configuration:
   required: true
   type: 0
 - display: Username / Header Name
-  hidden: false
   name: credentials
   required: false
   type: 9
@@ -17,8 +16,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: 'true'
-  additionalinfo: Whether to fetch the schema from the transport using an introspection
-    query. When set to false, schema validation will not be performed.
+  additionalinfo: Whether to fetch the schema from the transport using an introspection query. When set to false, schema validation will not be performed.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -40,8 +38,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Primary key field in the response to provide a unique object in
-        the context. data.
+      description: Primary key field in the response to provide a unique object in the context. data.
       isArray: false
       name: outputs_key_field
       required: false
@@ -59,10 +56,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An optional comma-separated list of types, for example: boolean,number,number.
-        Optional values are: string, boolean and number. If not provided, integers
-        and booleans will be detected automatically, and the rest of the variables
-        will be handled as strings.'
+      description: 'An optional comma-separated list of types, for example: boolean,number,number. Optional values are: string, boolean and number. If not provided, integers and booleans will be detected automatically, and the rest of the variables will be handled as strings.'
       isArray: true
       name: variables_types
       required: false
@@ -97,8 +91,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Primary key field in the response to provide a unique object in
-        the context. data.
+      description: Primary key field in the response to provide a unique object in the context. data.
       isArray: false
       name: outputs_key_field
       required: false
@@ -116,10 +109,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An optional comma-separated list of types, for example: boolean,number,number.
-        Optional values are: string, boolean and number. If not provided, integers
-        and booleans will be detected automatically, and the rest of the variables
-        will be handled as strings.'
+      description: 'An optional comma-separated list of types, for example: boolean,number,number. Optional values are: string, boolean and number. If not provided, integers and booleans will be detected automatically, and the rest of the variables will be handled as strings.'
       isArray: true
       name: variables_types
       required: false

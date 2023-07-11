@@ -1220,7 +1220,7 @@ def get_last_update_in_splunk_time(last_update):
 
     try:
         splunk_timezone = int(params['timezone'])
-    except (KeyError, ValueError):
+    except (KeyError, ValueError, TypeError):
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
 

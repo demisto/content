@@ -12,10 +12,16 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 6. If you have a deployment with 100 firewalls or more, we recommend using your Panorama device and creating an EDL object there, which will be populated from the `PAN-OS EDL Service`. Then push the EDL object to the respective firewalls.
 7. Follow the instructions in the rest of this guide to make sure that the PAN-OS device is connected to the EDL service.
 
-***Important Note:***
-EDL is designed to spawn on two processes: nginx and python. Nginx is the process that listens on the configured port, while the python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the nginx process will listen on port 9009 and python on port 9010.
-When running without --network=host the python port is not exposed to the machine.
+***Important Notes:***
+- EDL is designed to spawn on two processes: NGNIX and Python. NGNIX is the process that listens on the configured port, while the Python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the NGNIX process will listen on port 9009 and Python on port 9010. When running without --network=host, the Python port is not exposed to the machine.
+- If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
+- When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
 
+
+## Troubleshooting
+- If you are encountering an 504 Gateway error:
+  1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
+  2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
 ## Use Cases
 ---
 1. Export a list of malicious IPs to block via a firewall.
@@ -148,7 +154,7 @@ Use the following arguments in the URL to change the request:
 | n                 | The maximum number of entries in the output. If no value is provided, uses the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50`                                       |
 | s                 | The starting entry index from which to export the indicators.                                                                                                       | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50`                                  |
 | v                 | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`).                                                                | `https://{server_host}/instance/execute/{instance_name}?v=JSON`                                     |
-| q                 | The query used to retrieve indicators from the system.                                                                                                              | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
+| q                 | The query used to retrieve indicators from the system. If you are using this argument, no more than 100,000 can be exported through the EDL.                                                                                                             | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
 | t                 | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.    | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip`                                 |
 | sp                | If set, strips ports off URLs.                                                                                                                                      | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&sp`                         |
 | pr                | If set, strips protocol off URLs.                                                                                                                                   | `https://{server_host}/instance/execute/{instance_name}?v=text&pr`                                  |

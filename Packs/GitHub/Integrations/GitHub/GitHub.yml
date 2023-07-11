@@ -13,7 +13,6 @@ configuration:
   section: Collect
 - defaultvalue: Issue
   display: Select an Issue or Pull requests to Fetch
-  hidden: false
   name: fetch_object
   options:
   - Issue

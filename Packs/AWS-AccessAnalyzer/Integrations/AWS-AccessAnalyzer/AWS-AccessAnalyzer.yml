@@ -67,16 +67,13 @@ configuration:
   type: 4
   hidden: true
 - display: First fetch time interval
-  additionalinfo: The time range to consider for the initial data fetch. (<number>
-    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). 
+  additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years).
   defaultvalue: 3 days
-  hidden: false
   name: first_fetch
   required: false
   type: 0
 - display: Maximum number of incidents to fetch every time.
   defaultvalue: '25'
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -96,19 +93,14 @@ configuration:
   type: 8
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds until a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout following
-    a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 seconds will be used.
+  additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout following a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
   defaultvalue: 60,10
   required: false
   type: 0
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-  Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
 description: Amazon Web Services IAM Access Analyzer
@@ -487,7 +479,7 @@ script:
     description: Updates findings with the new values provided in the request.
     execution: false
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.59315
+  dockerimage: demisto/boto3py3:1.0.0.62350
   isfetch: true
   longRunning: false
   longRunningPort: false

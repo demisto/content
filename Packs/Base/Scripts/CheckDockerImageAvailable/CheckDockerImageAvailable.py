@@ -2,8 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 import requests
 import re
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ACCEPT_HEADER = {
     'Accept': "application/json, "
@@ -120,7 +121,7 @@ def main():
         layers = res.json().get('layers')
 
         if not layers:
-            raise ValueError(f"No 'layers' found in json response: {res.content}")
+            raise ValueError(f'No "layers" found in json response: {res.content}')  # type: ignore[str-bytes-safe]
 
         layer_min = docker_min_layer(layers)
         headers['Range'] = "bytes=0-99"
@@ -132,7 +133,8 @@ def main():
         demisto.info(f"Docker image check [{docker_full_name}] downloaded layer content of len: {cont_len}")
 
         if cont_len < expected_len:
-            raise ValueError(f'Content returned is shorter than expected length: {expected_len}. Content: {res.content}')
+            raise ValueError(f'Content returned is shorter than expected length: {expected_len}. '
+                             f'Content: {res.content}')  # type: ignore[str-bytes-safe]
 
         demisto.results('ok')
 

@@ -9,13 +9,11 @@ configuration:
   required: true
   type: 0
 - display: The Client ID
-  hidden: false
   name: client_id
   required: false
   type: 0
 - defaultvalue: '1.0'
   display: The Client Version
-  hidden: false
   name: client_version
   required: false
   type: 0

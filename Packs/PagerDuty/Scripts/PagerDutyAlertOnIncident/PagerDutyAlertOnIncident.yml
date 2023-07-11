@@ -22,3 +22,5 @@ timeout: 0s
 tests:
 - PagerDuty Test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

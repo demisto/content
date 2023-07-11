@@ -237,3 +237,5 @@ GCP
  readme
  params
 Qradar
+XSIAM
+fromversion

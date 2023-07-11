@@ -49,9 +49,9 @@ def remove_existing_entity_b_indicators(entity_b_list: list, entity_b_query: str
     if entity_b_query:
         return []
     else:
-        query = f'value:{entity_b_list_to_remove[0]}'
+        query = f'value:"{entity_b_list_to_remove[0]}"'
         for entity_b in entity_b_list_to_remove[1:]:
-            query += f' or value:{entity_b}'
+            query += f' or value:"{entity_b}"'
     result_indicators_by_query = find_indicators_by_query(query)
     for indicator in result_indicators_by_query:
         if indicator.get('entity_b') in entity_b_list_to_remove:

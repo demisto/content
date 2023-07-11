@@ -17,12 +17,10 @@ args:
   name: instance_name
   required: true
   secret: false
-comment: Executes a command in Cortex XSOAR in debug mode and pulls logs from the
-  command execution.
+comment: Executes a command in Cortex XSOAR in debug mode and pulls logs from the command execution.
 commonfields:
   id: TroubleshootExecuteCommand
   version: -1
-enabled: false
 name: TroubleshootExecuteCommand
 outputs:
 - contextPath: TroubleshootExecuteCommand.command
@@ -62,8 +60,7 @@ outputs:
   description: "The file extension, for example: 'xls'."
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in the
-    file entries).
+  description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 script: '-'
 subtype: python3

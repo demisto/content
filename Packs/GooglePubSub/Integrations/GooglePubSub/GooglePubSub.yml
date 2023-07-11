@@ -18,7 +18,6 @@ configuration:
   section: Connect
 - display: Service account private key file contents (JSON).
   additionalinfo: See the Help tab for details on creating a Service Account file.
-  hidden: false
   name: service_account_json
   required: true
   type: 4
@@ -37,14 +36,12 @@ configuration:
   advanced: true
 - additionalinfo: ID of the project to use by default when no project ID is provided.
   display: Default project ID.
-  hidden: false
   name: default_project
   required: true
   type: 0
   section: Connect
 - additionalinfo: Subscription ID from which to fetch incidents.
   display: Fetch incidents using the subscription ID.
-  hidden: false
   name: default_subscription
   required: false
   type: 0
@@ -52,7 +49,6 @@ configuration:
 - additionalinfo: Maximum number of incidents created per fetch.
   defaultvalue: '50'
   display: Maximum number of incidents per fetch.
-  hidden: false
   name: default_max_msgs
   required: false
   type: 0
@@ -67,7 +63,6 @@ configuration:
 - additionalinfo: First fetch timestamp (<number> <time unit>. E.g., 12 hours, 7 days).
   defaultvalue: 3 days
   display: First fetch time.
-  hidden: false
   name: first_fetch_time
   required: false
   type: 0

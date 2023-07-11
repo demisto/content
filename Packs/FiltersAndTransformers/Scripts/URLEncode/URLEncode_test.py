@@ -1,40 +1,69 @@
 from URLEncode import *
+import demistomock as demisto
 
 
-def test_URLEncode():
-    """Unit test
+def test_URLEncode(mocker):
+    """
     Given
-    - url to encode.
+    - a valid url to encode.
+    - safe_character argument is set to default value: '/'.
+    - ignore_safe_character argument is set to default value: 'false'.
     When
     - call URLEncode transformer.
     Then
-    - validate The encoded url.
+    - the url is encoded except for the '/' character.
     """
-    res = main({'value': 'https://www.google.com/'})
-    assert res == 'https%3A//www.google.com/'
+    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.google.com/'})
+    mocked_return_results = mocker.patch('URLEncode.return_results')
+    main()
+    mocked_return_results.assert_called_once_with('https%3A//www.google.com/')
 
 
-def test_URLEncode_encoded_input():
-    """Unit test
+def test_URLEncode_without_safe_character(mocker):
+    """
     Given
-    - encoded url.
+    - a valid url to encode.
+    - safe_character argument is set to default value: '/'.
+    - ignore_safe_character argument is set to: 'true'.
     When
     - call URLEncode transformer.
     Then
-    - validate The url didnt changed since it was already encoded.
+    - the entire url is encoded including the default '/' character.
     """
-    res = main({'value': 'https%3A//www.google.com/'})
-    assert res == 'https%3A//www.google.com/'
+    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.google.com/', 'ignore_safe_character': 'true'})
+    mocked_return_results = mocker.patch('URLEncode.return_results')
+    main()
+    mocked_return_results.assert_called_once_with('https%3A%2F%2Fwww.google.com%2F')
 
 
-def test_URLEncode_partial_encoded_input():
-    """Unit test
+def test_URLEncode_with_safe_character(mocker):
+    """
     Given
-    - partial encoded url.
+    - a valid url to encode.
+    - safe_character argument is set to: '@'.
+    - ignore_safe_character argument is set to default value: 'false'.
     When
     - call URLEncode transformer.
     Then
-    - validate all the url is now encoded.
+    - the url is encoded except for the '@' character.
     """
-    res = main({'value': 'https%3A//www.google.com/url@to@encode'})
-    assert res == 'https%3A//www.google.com/url%40to%40encode'
+    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.@google@com/', 'safe_character': '@'})
+    mocked_return_results = mocker.patch('URLEncode.return_results')
+    main()
+    mocked_return_results.assert_called_once_with('https%3A%2F%2Fwww.@google@com%2F')
+
+
+def test_URLEncode_fail(mocker):
+    """
+    Given
+    - an exception is raised.
+    When
+    - call URLEncode transformer.
+    Then
+    - return_error function is called with the relevant error message.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.google.com/'})
+    mocker.patch('URLEncode.return_results', side_effect=Exception("Mocked error"))
+    mocked_return_error = mocker.patch('URLEncode.return_error')
+    main()
+    mocked_return_error.assert_called_once()

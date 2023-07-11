@@ -1,18 +1,58 @@
 {
-    "Name": "dc_c_dce_prd_13",
-    "Action": "allow",
-    "Location": "enterprise_zone_c",
-    "CustomUrlCategory": "url_azure_scm_repos_shrd",
-    "Application": "ms-ds-smb",
-    "Destination": [
-        "destination_example",
-        "destination_example"
+    "Location": "SA_FWs",
+    "NegateDestination": "",
+    "Disabled": "",
+    "ICMPUnreachable": "yes",
+    "Description": "bbbbbbbbbb",
+    "GroupTag": "moishy tags",
+    "LogForwardingProfile": "Log forwarding for SA",
+    "NegateSource": "",
+    "SecurityProfileGroup": "Prince Security Profile Group",
+    "SecurityProfile": {
+        "url-filtering": "",
+        "data-filtering": "",
+        "file-blocking": "",
+        "vulnerability": "",
+        "wildfire-analysis": "",
+        "spyware": "default",
+        "virus": "default"
+    },
+    "Target": {
+        "devices": [
+            "007051000185487",
+            "007051000188986"
+        ],
+        "negate": "no"
+    },
+    "Name": "jl-test-1",
+    "Type": "intrazone",
+    "From": "internal",
+    "DestinationDevice": "bad nam",
+    "Action": "reset-server",
+    "SourceDevice": "good name",
+    "Tags": [
+        "APIiiiiii",
+        "test2shared"
     ],
-    "From": "dc_c_gen_app_p",
-    "Service": "application-default",
-    "To": "dc_c_nprd_bztalk_app",
-    "Source": [
-        "azure_ir_nodes_nprd_grp_shrd",
-        "azure_ir_nodes_prd_grp_shrd"
-    ]
+    "SourceUser": "me",
+    "Application": "8x8",
+    "Service": [
+        "new group",
+        "service-http",
+        "service-https"
+    ],
+    "To": "internal",
+    "Source": "1.1.1.1",
+    "CustomUrlCategory": [
+        "alcohol-and-tobacco",
+        "auctions"
+    ],
+    "Destination": "my_shared_address_object_test",
+    "Options": {
+        "LogAtSessionStart": "yes",
+        "LogForwarding": "Log forwarding for SA",
+        "Schedule": "test-schedule",
+        "QoSMarking": "ip-precedence",
+        "DisableServerResponseInspection": "yes"
+    }
 }

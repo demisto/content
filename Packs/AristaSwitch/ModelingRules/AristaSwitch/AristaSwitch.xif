@@ -1,0 +1,463 @@
+/*****************************************************/
+/* Arista Networks EOS Switch Utility Rules          */
+/*****************************************************/
+
+/* Modeling Rule definition for mapping fields that are common to all of arista EOS event types. 
+    This rule should be called from within any event filter on Arista EOS switch modeling.  */
+/* https://arista.my.site.com/AristaCommunity/s/article/understanding-logging-levels */ 
+/* Log Format: timestamp hostname process: [seq number:] %FACILITY-Severity-Mnemonic: Message text */
+[RULE: arista_switch_common_fields_modeling]
+alter 
+    dvc_process_tuple = split(arrayindex(regextract(_raw_log, "<\d+>.+?\s+(\S+\s+\S+):\s+"),0)),
+    //seq_num = arrayindex(regextract(_raw_log, "<\d+>.+?\s+\S+\s+\w+: (\d+): \S+: .+"), 0),
+    facility_severity_mnemonic_tuple = split(arrayindex(regextract(_raw_log, "%(\S+\-\d\-\w+):"), 0), "-"),
+    message = arrayindex(regextract(_raw_log, "<\d+>.+ \S+ \S+: \S+: (.+)"), 0),  
+
+    // extract alternative token for the facility in case it is not in the expected format of %FACILITY-Severity-Mnemonic:
+    alternative_facility1 = arrayindex(regextract(_raw_log, "<\d+>.+? \S+ \w+: \d+: %{0,1}(\S+): .+"), 0), //if log includes sequence number 
+    alternative_facility2 = arrayindex(regextract(_raw_log, "<\d+>.+? \S+ \w+: %{0,1}(\S+): .+"), 0) // if log does not include a sequence a number
+| alter
+    dvc = arrayindex(dvc_process_tuple, 0),
+    process = arrayindex(dvc_process_tuple, 1), 
+    tuple_facility = arrayindex(facility_severity_mnemonic_tuple, 0), 
+    severity = arrayindex(facility_severity_mnemonic_tuple, 1), 
+    mnemonic = arrayindex(facility_severity_mnemonic_tuple, 2)
+| alter 
+    facility = coalesce(tuple_facility, alternative_facility1, alternative_facility2)
+| alter 
+    xdm.observer.name = dvc,
+    xdm.observer.type = facility,
+    xdm.source.application.name = process,
+    xdm.event.id = coalesce(mnemonic, facility),
+    xdm.event.type = coalesce(mnemonic, facility),
+    xdm.event.description = message,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.alert.severity = severity;
+
+
+/* Modeling Rule defintion for mapping the IP protocol field from the syslog payload to its corresponding XDM enum field. */
+[RULE: arista_switch_map_ip_protocol]
+alter xdm.network.ip_protocol = if(ip_proto="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, ip_proto="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, ip_proto="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, ip_proto="GGP",XDM_CONST.IP_PROTOCOL_GGP, ip_proto="IP",XDM_CONST.IP_PROTOCOL_IP, ip_proto="ST",XDM_CONST.IP_PROTOCOL_ST, ip_proto="TCP",XDM_CONST.IP_PROTOCOL_TCP, ip_proto="CBT",XDM_CONST.IP_PROTOCOL_CBT, ip_proto="EGP",XDM_CONST.IP_PROTOCOL_EGP, ip_proto="IGP",XDM_CONST.IP_PROTOCOL_IGP, ip_proto="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, ip_proto="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, ip_proto="PUP",XDM_CONST.IP_PROTOCOL_PUP, ip_proto="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, ip_proto="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, ip_proto="XNET",XDM_CONST.IP_PROTOCOL_XNET, ip_proto="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, ip_proto="UDP",XDM_CONST.IP_PROTOCOL_UDP, ip_proto="MUX",XDM_CONST.IP_PROTOCOL_MUX, ip_proto="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, ip_proto="HMP",XDM_CONST.IP_PROTOCOL_HMP, ip_proto="PRM",XDM_CONST.IP_PROTOCOL_PRM, ip_proto="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, ip_proto="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, ip_proto="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, ip_proto="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, ip_proto="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, ip_proto="RDP",XDM_CONST.IP_PROTOCOL_RDP, ip_proto="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, ip_proto="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, ip_proto="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, ip_proto="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, ip_proto="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, ip_proto="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, ip_proto="3PC",XDM_CONST.IP_PROTOCOL_3PC, ip_proto="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, ip_proto="XTP",XDM_CONST.IP_PROTOCOL_XTP, ip_proto="DDP",XDM_CONST.IP_PROTOCOL_DDP, ip_proto="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, ip_proto="TP",XDM_CONST.IP_PROTOCOL_TP, ip_proto="IL",XDM_CONST.IP_PROTOCOL_IL, ip_proto="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, ip_proto="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, ip_proto="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, ip_proto="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, ip_proto="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, ip_proto="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, ip_proto="GRE",XDM_CONST.IP_PROTOCOL_GRE, ip_proto="DSR",XDM_CONST.IP_PROTOCOL_DSR, ip_proto="BNA",XDM_CONST.IP_PROTOCOL_BNA, ip_proto="ESP",XDM_CONST.IP_PROTOCOL_ESP, ip_proto="AH",XDM_CONST.IP_PROTOCOL_AH, ip_proto="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, ip_proto="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, ip_proto="NARP",XDM_CONST.IP_PROTOCOL_NARP, ip_proto="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, ip_proto="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, ip_proto="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, ip_proto="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, ip_proto="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, ip_proto="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, ip_proto="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, ip_proto="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, ip_proto="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, ip_proto="RVD",XDM_CONST.IP_PROTOCOL_RVD, ip_proto="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, ip_proto="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, ip_proto="VISA",XDM_CONST.IP_PROTOCOL_VISA, ip_proto="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, ip_proto="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, ip_proto="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, ip_proto="WSN",XDM_CONST.IP_PROTOCOL_WSN, ip_proto="PVP",XDM_CONST.IP_PROTOCOL_PVP, ip_proto="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, ip_proto="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, ip_proto="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, ip_proto="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, ip_proto="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, ip_proto="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, ip_proto="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, ip_proto="VINES",XDM_CONST.IP_PROTOCOL_VINES, ip_proto="TTP",XDM_CONST.IP_PROTOCOL_TTP, ip_proto="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, ip_proto="DGP",XDM_CONST.IP_PROTOCOL_DGP, ip_proto="TCF",XDM_CONST.IP_PROTOCOL_TCF, ip_proto="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, ip_proto="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, ip_proto="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, ip_proto="LARP",XDM_CONST.IP_PROTOCOL_LARP, ip_proto="MTP",XDM_CONST.IP_PROTOCOL_MTP, ip_proto="AX25",XDM_CONST.IP_PROTOCOL_AX25, ip_proto="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, ip_proto="MICP",XDM_CONST.IP_PROTOCOL_MICP, ip_proto="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, ip_proto="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, ip_proto="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, ip_proto="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, ip_proto="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, ip_proto="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, ip_proto="PIM",XDM_CONST.IP_PROTOCOL_PIM, ip_proto="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, ip_proto="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, ip_proto="QNX",XDM_CONST.IP_PROTOCOL_QNX, ip_proto="AN",XDM_CONST.IP_PROTOCOL_AN, ip_proto="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, ip_proto="SNP",XDM_CONST.IP_PROTOCOL_SNP, ip_proto="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, ip_proto="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, ip_proto="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, ip_proto="PGM",XDM_CONST.IP_PROTOCOL_PGM, ip_proto="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, ip_proto="DDX",XDM_CONST.IP_PROTOCOL_DDX, ip_proto="IATP",XDM_CONST.IP_PROTOCOL_IATP, ip_proto="STP",XDM_CONST.IP_PROTOCOL_STP, ip_proto="SRP",XDM_CONST.IP_PROTOCOL_SRP, ip_proto="UTI",XDM_CONST.IP_PROTOCOL_UTI, ip_proto="SMP",XDM_CONST.IP_PROTOCOL_SMP, ip_proto="SM",XDM_CONST.IP_PROTOCOL_SM, ip_proto="PTP",XDM_CONST.IP_PROTOCOL_PTP, ip_proto="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, ip_proto="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, ip_proto="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, ip_proto="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, ip_proto="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, ip_proto="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, ip_proto="SPS",XDM_CONST.IP_PROTOCOL_SPS, ip_proto="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, ip_proto="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, ip_proto="FC",XDM_CONST.IP_PROTOCOL_FC, ip_proto="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, ip_proto="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, ip_proto="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, ip_proto="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP, ip_proto="MANET",XDM_CONST.IP_PROTOCOL_MANET, ip_proto="HIP",XDM_CONST.IP_PROTOCOL_HIP, ip_proto="SHIM6",XDM_CONST.IP_PROTOCOL_SHIM6, ip_proto="WESP",XDM_CONST.IP_PROTOCOL_WESP, ip_proto="ROHC",XDM_CONST.IP_PROTOCOL_ROHC, ip_proto="RESERVED",XDM_CONST.IP_PROTOCOL_RESERVED,ip_proto="0",XDM_CONST.IP_PROTOCOL_HOPOPT, ip_proto="1",XDM_CONST.IP_PROTOCOL_ICMP, ip_proto="2",XDM_CONST.IP_PROTOCOL_IGMP, ip_proto="3",XDM_CONST.IP_PROTOCOL_GGP, ip_proto="4",XDM_CONST.IP_PROTOCOL_IP, ip_proto="5",XDM_CONST.IP_PROTOCOL_ST, ip_proto="6",XDM_CONST.IP_PROTOCOL_TCP, ip_proto="7",XDM_CONST.IP_PROTOCOL_CBT, ip_proto="8",XDM_CONST.IP_PROTOCOL_EGP, ip_proto="9",XDM_CONST.IP_PROTOCOL_IGP, ip_proto="10",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, ip_proto="11",XDM_CONST.IP_PROTOCOL_NVP_II, ip_proto="12",XDM_CONST.IP_PROTOCOL_PUP, ip_proto="13",XDM_CONST.IP_PROTOCOL_ARGUS, ip_proto="14",XDM_CONST.IP_PROTOCOL_EMCON, ip_proto="15",XDM_CONST.IP_PROTOCOL_XNET, ip_proto="16",XDM_CONST.IP_PROTOCOL_CHAOS, ip_proto="17",XDM_CONST.IP_PROTOCOL_UDP, ip_proto="18",XDM_CONST.IP_PROTOCOL_MUX, ip_proto="19",XDM_CONST.IP_PROTOCOL_DCN_MEAS, ip_proto="20",XDM_CONST.IP_PROTOCOL_HMP, ip_proto="21",XDM_CONST.IP_PROTOCOL_PRM, ip_proto="22",XDM_CONST.IP_PROTOCOL_XNS_IDP, ip_proto="23",XDM_CONST.IP_PROTOCOL_TRUNK_1, ip_proto="24",XDM_CONST.IP_PROTOCOL_TRUNK_2, ip_proto="25",XDM_CONST.IP_PROTOCOL_LEAF_1, ip_proto="26",XDM_CONST.IP_PROTOCOL_LEAF_2, ip_proto="27",XDM_CONST.IP_PROTOCOL_RDP, ip_proto="28",XDM_CONST.IP_PROTOCOL_IRTP, ip_proto="29",XDM_CONST.IP_PROTOCOL_ISO_TP4, ip_proto="30",XDM_CONST.IP_PROTOCOL_NETBLT, ip_proto="31",XDM_CONST.IP_PROTOCOL_MFE_NSP, ip_proto="32",XDM_CONST.IP_PROTOCOL_MERIT_INP, ip_proto="33",XDM_CONST.IP_PROTOCOL_DCCP, ip_proto="34",XDM_CONST.IP_PROTOCOL_3PC, ip_proto="35",XDM_CONST.IP_PROTOCOL_IDPR, ip_proto="36",XDM_CONST.IP_PROTOCOL_XTP, ip_proto="37",XDM_CONST.IP_PROTOCOL_DDP, ip_proto="38",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, ip_proto="39",XDM_CONST.IP_PROTOCOL_TP, ip_proto="40",XDM_CONST.IP_PROTOCOL_IL, ip_proto="41",XDM_CONST.IP_PROTOCOL_IPV6, ip_proto="42",XDM_CONST.IP_PROTOCOL_SDRP, ip_proto="43",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, ip_proto="44",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, ip_proto="45",XDM_CONST.IP_PROTOCOL_IDRP, ip_proto="46",XDM_CONST.IP_PROTOCOL_RSVP, ip_proto="47",XDM_CONST.IP_PROTOCOL_GRE, ip_proto="48",XDM_CONST.IP_PROTOCOL_DSR, ip_proto="49",XDM_CONST.IP_PROTOCOL_BNA, ip_proto="50",XDM_CONST.IP_PROTOCOL_ESP, ip_proto="51",XDM_CONST.IP_PROTOCOL_AH, ip_proto="52",XDM_CONST.IP_PROTOCOL_I_NLSP, ip_proto="53",XDM_CONST.IP_PROTOCOL_SWIPE, ip_proto="54",XDM_CONST.IP_PROTOCOL_NARP, ip_proto="55",XDM_CONST.IP_PROTOCOL_MOBILE, ip_proto="56",XDM_CONST.IP_PROTOCOL_TLSP, ip_proto="57",XDM_CONST.IP_PROTOCOL_SKIP, ip_proto="58",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, ip_proto="59",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, ip_proto="60",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, ip_proto="62",XDM_CONST.IP_PROTOCOL_CFTP, ip_proto="64",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, ip_proto="65",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, ip_proto="66",XDM_CONST.IP_PROTOCOL_RVD, ip_proto="67",XDM_CONST.IP_PROTOCOL_IPPC, ip_proto="69",XDM_CONST.IP_PROTOCOL_SAT_MON, ip_proto="70",XDM_CONST.IP_PROTOCOL_VISA, ip_proto="71",XDM_CONST.IP_PROTOCOL_IPCV, ip_proto="72",XDM_CONST.IP_PROTOCOL_CPNX, ip_proto="73",XDM_CONST.IP_PROTOCOL_CPHB, ip_proto="74",XDM_CONST.IP_PROTOCOL_WSN, ip_proto="75",XDM_CONST.IP_PROTOCOL_PVP, ip_proto="76",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, ip_proto="77",XDM_CONST.IP_PROTOCOL_SUN_ND, ip_proto="78",XDM_CONST.IP_PROTOCOL_WB_MON, ip_proto="79",XDM_CONST.IP_PROTOCOL_WB_EXPAK, ip_proto="80",XDM_CONST.IP_PROTOCOL_ISO_IP, ip_proto="81",XDM_CONST.IP_PROTOCOL_VMTP, ip_proto="82",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, ip_proto="83",XDM_CONST.IP_PROTOCOL_VINES, ip_proto="84",XDM_CONST.IP_PROTOCOL_TTP, ip_proto="85",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, ip_proto="86",XDM_CONST.IP_PROTOCOL_DGP, ip_proto="87",XDM_CONST.IP_PROTOCOL_TCF, ip_proto="88",XDM_CONST.IP_PROTOCOL_EIGRP, ip_proto="89",XDM_CONST.IP_PROTOCOL_OSPFIGP, ip_proto="90",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, ip_proto="91",XDM_CONST.IP_PROTOCOL_LARP, ip_proto="92",XDM_CONST.IP_PROTOCOL_MTP, ip_proto="93",XDM_CONST.IP_PROTOCOL_AX25, ip_proto="94",XDM_CONST.IP_PROTOCOL_IPIP, ip_proto="95",XDM_CONST.IP_PROTOCOL_MICP, ip_proto="96",XDM_CONST.IP_PROTOCOL_SCC_SP, ip_proto="97",XDM_CONST.IP_PROTOCOL_ETHERIP, ip_proto="98",XDM_CONST.IP_PROTOCOL_ENCAP, ip_proto="100",XDM_CONST.IP_PROTOCOL_GMTP, ip_proto="101",XDM_CONST.IP_PROTOCOL_IFMP, ip_proto="102",XDM_CONST.IP_PROTOCOL_PNNI, ip_proto="103",XDM_CONST.IP_PROTOCOL_PIM, ip_proto="104",XDM_CONST.IP_PROTOCOL_ARIS, ip_proto="105",XDM_CONST.IP_PROTOCOL_SCPS, ip_proto="106",XDM_CONST.IP_PROTOCOL_QNX, ip_proto="107",XDM_CONST.IP_PROTOCOL_AN, ip_proto="108",XDM_CONST.IP_PROTOCOL_IPCOMP, ip_proto="109",XDM_CONST.IP_PROTOCOL_SNP, ip_proto="110",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, ip_proto="111",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, ip_proto="112",XDM_CONST.IP_PROTOCOL_VRRP, ip_proto="113",XDM_CONST.IP_PROTOCOL_PGM, ip_proto="115",XDM_CONST.IP_PROTOCOL_L2TP, ip_proto="116",XDM_CONST.IP_PROTOCOL_DDX, ip_proto="117",XDM_CONST.IP_PROTOCOL_IATP, ip_proto="118",XDM_CONST.IP_PROTOCOL_STP, ip_proto="119",XDM_CONST.IP_PROTOCOL_SRP, ip_proto="120",XDM_CONST.IP_PROTOCOL_UTI, ip_proto="121",XDM_CONST.IP_PROTOCOL_SMP, ip_proto="122",XDM_CONST.IP_PROTOCOL_SM, ip_proto="123",XDM_CONST.IP_PROTOCOL_PTP, ip_proto="124",XDM_CONST.IP_PROTOCOL_ISIS, ip_proto="125",XDM_CONST.IP_PROTOCOL_FIRE, ip_proto="126",XDM_CONST.IP_PROTOCOL_CRTP, ip_proto="127",XDM_CONST.IP_PROTOCOL_CRUDP, ip_proto="128",XDM_CONST.IP_PROTOCOL_SSCOPMCE, ip_proto="129",XDM_CONST.IP_PROTOCOL_IPLT, ip_proto="130",XDM_CONST.IP_PROTOCOL_SPS, ip_proto="131",XDM_CONST.IP_PROTOCOL_PIPE, ip_proto="132",XDM_CONST.IP_PROTOCOL_SCTP, ip_proto="133",XDM_CONST.IP_PROTOCOL_FC, ip_proto="134",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, ip_proto="135",XDM_CONST.IP_PROTOCOL_MOBILITY, ip_proto="136",XDM_CONST.IP_PROTOCOL_UDPLITE, ip_proto="137",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP, ip_proto="138",XDM_CONST.IP_PROTOCOL_MANET, ip_proto="139",XDM_CONST.IP_PROTOCOL_HIP, ip_proto="140",XDM_CONST.IP_PROTOCOL_SHIM6, ip_proto="141",XDM_CONST.IP_PROTOCOL_WESP, ip_proto="142",XDM_CONST.IP_PROTOCOL_ROHC, ip_proto="255",XDM_CONST.IP_PROTOCOL_RESERVED,to_string(ip_proto));
+
+
+[MODEL: dataset="arista_switch_raw"]
+/*** AAA (Authentication, Authorization, and Accounting) Events 
+    (https://www.arista.com/en/um-eos/eos-user-security) ***/
+call arista_switch_common_fields_modeling
+| filter facility = "AAA" 
+| alter 
+    username = arrayindex(regextract(message, "user (\S+)"), 0),
+    src =  arrayindex(regextract(message, "\[from:\s*(\S+)\]"), 0),  
+    service =  arrayindex(regextract(message, "service:{0,1}\s*\'{0,1}([^\]\']+)"), 0),
+    reason = arrayindex(regextract(message, "reason:\s*([^\|]+?)\]"), 0), // relevant only for mnemonic="LOGIN_FAILED" 
+    auth_method = arrayindex(regextract(message, "Authentication method \'([^\']+)\'"), 0) // relevant only for mnemonic="AUTHN_FALLBACK" 
+| alter 
+    src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ipv6 = if(src ~= "\w{1,3}\:", src, null),
+    src_hostname = if(src !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" and src !~= "\w{1,3}\:", src, null)
+| alter 
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.host.hostname = src_hostname,
+    xdm.source.process.name = service, 
+    xdm.source.user.username = username,
+    xdm.event.outcome = if(mnemonic IN ("LOGIN", "LOGOUT"), XDM_CONST.OUTCOME_SUCCESS, mnemonic="AUTHN_FALLBACK", XDM_CONST.OUTCOME_PARTIAL, mnemonic="LOGIN_FAILED", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = reason, // relevant only for mnemonic="LOGIN_FAILED" 
+    xdm.auth.auth_method = auth_method, // relevant only for mnemonic="AUTHN_FALLBACK" 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION); 
+    
+
+/*** Accounting Events 
+    (https://www.arista.com/en/um-eos/eos-user-security) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "ACCOUNTING" 
+| alter 
+    message_header = split(arrayindex(regextract(message, "\S+\s+\S+\s+\S+\s+\S+\s+\S+"), 0)),
+    task_id = arrayindex(regextract(message, "task_id=(\d+)"), 0),
+    elapsed_time = arrayindex(regextract(message, "elapsed_time=(\S+)"), 0),
+    service = arrayindex(regextract(message, "service=(\S+)"), 0),
+    privilege_level = arrayindex(regextract(message, "priv\-lvl=(\d+)"), 0),
+    cmd = arrayindex(regextract(message, "cmd=(.+)[\w+=]*"), 0)
+| alter 
+    dvc = arrayindex(message_header, 0), // the target switch hostname 
+    username = arrayindex(message_header, 1), // user who logged in to the switch 
+    login_process = arrayindex(message_header, 2), // eg. ssh 
+    src =  arrayindex(message_header, 3), // the source remote host that initiated the login 
+    process_phase =  arrayindex(message_header, 4) // indicates whether the process started (start) or completed (stop)
+| alter 
+    src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ipv6 = if(src ~= "\w{1,3}\:", src, null),
+    src_hostname = if(src !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" and src !~= "\w{1,3}\:", src, null),
+    dst_ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    dst_ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null),
+    dst_hostname = if(dvc !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" and dvc !~= "\w{1,3}\:", dvc, null)
+| alter 
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.host.hostname = src_hostname,
+    xdm.source.user.username = username, 
+    xdm.source.process.name = login_process,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.host.hostname = dst_hostname,
+    xdm.target.process.name = service, 
+    xdm.target.process.identifier = task_id, 
+    xdm.target.process.command_line = cmd,
+    xdm.event.duration = to_number(elapsed_time),
+    xdm.event.is_completed = if(process_phase = "stop", true, false),
+    xdm.auth.privilege_level = if(privilege_level in ("0", "1"), XDM_CONST.PRIVILEGE_LEVEL_USER , privilege_level = "15", XDM_CONST.PRIVILEGE_LEVEL_ADMIN , privilege_level),
+    xdm.auth.auth_method = login_process;
+
+
+/*** ACL (Access List) Events 
+    (https://www.arista.com/en/um-eos/eos-acls-and-route-maps) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "ACL"
+| alter
+    acl_tuple = split(arrayindex(regextract(message, "list\s+(\S+\s+\S+\s+\S+\s+\S+\s+\S+)"), 0)),
+    src_ip = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "([\d\.\:]+)\(*\d{0,5}\)*\s*\-\>\s*\S+"), 0), null),
+    dst_ip = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "\S+\s*\-\>\s*([\d\.\:]+)"), 0), null),
+    src_port = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "\((\d{1,5})\)\s*\-\>"), 0), null),
+    dst_port = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "\-\>\s*[\d\.\:]+\((\d{1,5})\)"), 0), null),
+    icmp_type = if(mnemonic = "IPACCESS", to_integer(arrayindex(regextract(message, "type=(\d+)"), 0)), null),
+    icmp_code = if(mnemonic = "IPACCESS", to_integer(arrayindex(regextract(message, "code=(\d+)"), 0)), null),
+    smac1 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "(\S{12,17})\s*\-\>\s*\S+$"), 0), null), // smac -> dmac 
+    smac2 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "([a-fA-F\d\:\-]{12,17})\s+\S+\s*\:\s*\d{1,5}\s*\-\>\s*\S+\s+\S+"), 0), null), // smac sip : spt -> dmac dip : dpt
+    smac3 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "([a-fA-F\d\:\-]{12,17})\s+\S+\s*\-\>"), 0), null), // smac sip -> dmac dip
+    dmac1 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "\S+\s*\-\>\s*(\S{12,17})$"), 0), null), // smac -> dmac
+    dmac2 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "\-\>\s*([a-fA-F\d\:\-]{12,17})\s+\S+\s*\:\s*\d{1,5}$"), 0), null), // smac sip : spt -> dmac dip : dpt
+    dmac3 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "\-\>\s*([a-fA-F\d\:\-]{12,17})\s+\S+$"), 0), null), // smac sip -> dmac dip
+    sip1 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "[a-fA-F\d\:\-]{12,17}\s+(\S+)\s*\:\s*\d{1,5}\s*\-\>\s*\S+\s+\S+"), 0), null), // smac sip : spt -> dmac dip : dpt
+    sip2 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "[a-fA-F\d\:\-]{12,17}\s+(\S+)\s*\-\>"), 0), null), // smac sip -> dmac dip
+    dip1 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "\-\>\s*[a-fA-F\d\:\-]{12,17}\s+(\S+)\s*\:\s*\d{1,5}$"), 0), null), // smac sip : spt -> dmac dip : dpt
+    dip2 = if(mnemonic="MACACCESS", arrayindex(regextract(message, "\-\>\s*[a-fA-F\d\:\-]{12,17}\s+(\S+)$"), 0), null), // smac sip -> dmac dip
+    spt = if(mnemonic="MACACCESS", arrayindex(regextract(message, "[a-fA-F\d\:\-]{12,17}\s+\S+\s*\:\s*(\d{1,5})\s*\-\>\s*\S+\s+\S+"), 0), null), // smac sip : spt -> dmac dip : dpt
+    dpt = if(mnemonic="MACACCESS", arrayindex(regextract(message, "\-\>\s*[a-fA-F\d\:\-]{12,17}\s+\S+\s*\:\s*(\d{1,5})$"), 0), null), // smac sip : spt -> dmac dip : dpt
+    proto = if(mnemonic="MACACCESS", uppercase(arrayindex(regextract(message, "([a-zA-Z]+)\s+[a-fA-F\d\:\-]{12,17}\s+[\d\.\:a-fA-F]+\s*\:\s*\d{1,5}\s*\-\>"), 0)), null)
+| alter 
+    acl_name = arrayindex(acl_tuple, 0),
+    switch_interface = arrayindex(acl_tuple, 1),
+    acl_filter_action = arrayindex(acl_tuple, 2),
+    ip_proto = if(mnemonic = "IPACCESS", uppercase(arrayindex(acl_tuple, 3)), null), 
+    vlan_num = if(mnemonic = "MACACCESS", to_integer(arrayindex(acl_tuple, 3)), null),
+    src_ip = coalesce(src_ip, sip1, sip2),
+    dst_ip = coalesce(dst_ip, dip1, dip2),
+    src_mac = coalesce(smac1, smac2, smac3),
+    dst_mac = coalesce(dmac1, dmac2, dmac3),
+    src_port = to_integer(coalesce(src_port, spt)),
+    dst_port = to_integer(coalesce(dst_port, dpt))
+| alter 
+    src_ipv4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    src_ipv6 = if(src_ip ~= "\w{1,3}\:", src_ip, null),
+    dst_ipv4 = if(dst_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst_ip, null),
+    dst_ipv6 = if(dst_ip ~= "\w{1,3}\:", dst_ip, null),
+    ip_proto = coalesce(ip_proto, proto)
+| call arista_switch_map_ip_protocol
+| alter 
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.port = src_port, 
+    xdm.source.host.mac_addresses = arraycreate(src_mac),
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.port = dst_port, 
+    xdm.target.host.mac_addresses = arraycreate(dst_mac),
+    xdm.target.interface = switch_interface,
+    xdm.target.vlan = vlan_num,
+    xdm.observer.action = acl_filter_action,
+    xdm.event.outcome = if(acl_filter_action = "permitted", XDM_CONST.OUTCOME_SUCCESS, acl_filter_action="denied", XDM_CONST.OUTCOME_FAILED, acl_filter_action),
+    xdm.event.outcome_reason = acl_name, 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK),
+    xdm.network.rule = acl_name, 
+    xdm.network.icmp.type = icmp_type,
+    xdm.network.icmp.code = icmp_code;
+
+
+/*** BFD (Bidirectional Forwarding Detection) Events 
+    (https://www.arista.com/en/um-eos/eos-bidirectional-forwarding-detection) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "BFD" 
+| alter 
+    peer_ip =  arrayindex(regextract(message, "ip:\s*([^,]+)"), 0),  
+    interface =  arrayindex(regextract(message, "intf:\s*([^,]+)"), 0),  
+    state = uppercase(arrayindex(regextract(message, "changed state from \S+ to (\S+)"), 0)),
+    old_state = uppercase(arrayindex(regextract(message, "changed state from (\S+) to \S+"), 0)),
+    reason = arrayindex(regextract(message, "diag (\S+)"), 0) // diagnostic code specifying the local system reason for the last change to Down state
+| alter 
+    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
+    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
+| alter 
+    xdm.target.ipv4 = peer_ipv4,
+    xdm.target.ipv6 = peer_ipv6,
+    xdm.target.interface = interface,
+    xdm.target.resource.value = state,
+    xdm.target.resource.type = if(state != null and state != "", "state", null),
+    xdm.target.resource_before.value = old_state,
+    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
+    xdm.observer.action = state,
+    xdm.event.outcome = if(state = "UP", XDM_CONST.OUTCOME_SUCCESS, state="DOWN", XDM_CONST.OUTCOME_FAILED, state != null, XDM_CONST.OUTCOME_UNKNOWN, null),
+    xdm.event.outcome_reason = reason, 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** BGP (Border Gateway Protocol) RIB (Routing Information Base) Events 
+    (https://www.arista.com/en/um-eos/eos-border-gateway-protocol-bgp) ***/  
+call arista_switch_common_fields_modeling
+| filter facility contains "BGP" 
+| alter 
+    peer_ip = arrayindex(regextract(message, "peer\s*([a-fA-F\d\:\.]+)"), 0),  
+    rib_src_peer_ip = arrayindex(regextract(message, "peer\s*([a-fA-F\d\:\.]+)\+\d{1,5}"), 0),
+    rib_src_peer_port = to_integer(arrayindex(regextract(message, "peer\s*[a-fA-F\d\:\.]+\+(\d{1,5})"), 0)),   
+    neighbor_ip = arrayindex(regextract(message, "neighbor\s*(\S+)"), 0),  
+    asn =  to_integer(arrayindex(regextract(message, "AS (\d+)"), 0)), 
+    old_state1 = arrayindex(regextract(message, "old state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE:
+    old_state2 = arrayindex(regextract(message, "\(AS \d+\) (\S+) to \S+"), 0),  //  Rib: %BGP-BFD-STATE-CHANGE:
+    new_state1 = arrayindex(regextract(message, "new state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE: 
+    new_state2 = arrayindex(regextract(message, "\(AS \d+\) \S+ to (\S+)"), 0), // Rib: %BGP-BFD-STATE-CHANGE:
+    trigger_event = arrayindex(regextract(message, "old state \S+ event (\S+) new state \S+"), 0),
+    bytes = to_integer(arrayindex(regextract(message, "sent to neighbor .+? (\d+) bytes"), 0))
+| alter 
+    peer_ip = coalesce(peer_ip, rib_src_peer_ip, neighbor_ip),
+    old_state = uppercase(coalesce(old_state1, old_state2)),
+    new_state = uppercase(coalesce(new_state1, new_state2))
+| alter 
+    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
+    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
+| alter 
+    xdm.source.sent_bytes = bytes,
+    xdm.source.ipv4 = if(rib_src_peer_ip != null, peer_ipv4, null),
+    xdm.source.ipv6 = if(rib_src_peer_ip != null, peer_ipv6, null),
+    xdm.source.port = if(rib_src_peer_port != null, rib_src_peer_port, null),
+    xdm.target.ipv4 = peer_ipv4,
+    xdm.target.ipv6 = peer_ipv6,
+    xdm.target.asn.as_number = asn,
+    xdm.target.resource.type = if(new_state != null and new_state != "", "state", null),
+    xdm.target.resource.value = new_state,
+    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
+    xdm.target.resource_before.value = old_state,
+    xdm.observer.action = new_state,
+    xdm.event.is_completed = if(new_state = "ESTABLISHED", true, new_state != null, false, null),
+    xdm.event.outcome = if(new_state in("UP", "ESTABLISHED"), XDM_CONST.OUTCOME_SUCCESS, new_state in("DOWN", "ACTIVE"), XDM_CONST.OUTCOME_FAILED, new_state in("IDLE", "CONNECT", "OPENSENT", "OPENCONFIRM"), XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = trigger_event, 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** ETH Events 
+    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "ETH" 
+| alter 
+    host_mac_address =  arrayindex(regextract(message, "Host ([a-fA-F\d\:\-]{12,17})"), 0),  
+    src_interface =  arrayindex(regextract(message, "between interface (\S+)"), 0),  
+    dst_interface =  arrayindex(regextract(message, "between interface \S+ and interface (\S+)"), 0),  
+    vlan = to_integer(arrayindex(regextract(message, "in VLAN (\d+)"), 0))
+| alter 
+    xdm.source.vlan = vlan,
+    xdm.source.interface = src_interface,
+    xdm.source.host.mac_addresses = arraycreate(host_mac_address),
+    xdm.target.vlan = vlan, 
+    xdm.target.interface = dst_interface,
+    xdm.target.host.mac_addresses = arraycreate(host_mac_address),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** EBRA (Ethernet Bridging Agent) Line Protocol Events ***/
+call arista_switch_common_fields_modeling
+| filter facility="LINEPROTO"
+| alter 
+    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
+    state =  arrayindex(regextract(message, "changed state to (\S+)"), 0)
+| alter 
+    ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
+| alter 
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.interface = interface,
+    xdm.source.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.target.ipv4 = ipv4,
+    xdm.target.ipv6 = ipv6,
+    xdm.target.interface = interface,
+    xdm.target.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.event.outcome = state,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** FLOW CONTROL Events 
+    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
+call arista_switch_common_fields_modeling
+| filter facility="FLOWCONTROL"
+| alter 
+    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
+    ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
+| alter 
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.interface = interface,
+    xdm.source.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.target.ipv4 = ipv4,
+    xdm.target.ipv6 = ipv6,
+    xdm.target.interface = interface,
+    xdm.target.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** IGMP (Internet Group Management Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-igmp-and-igmp-snooping) ***/  
+call arista_switch_common_fields_modeling
+| filter facility contains "IGMP"
+| alter 
+    vlan = to_integer(arrayindex(regextract(message, "VLAN (\d+)"), 0)), 
+    src_ip =  arrayindex(regextract(message, "received from (\S+) on"), 0),  
+    dst_ip =  arrayindex(regextract(message, "received from \S+ on \S+ for ([a-fA-F\d\.\:]+)"), 0),  
+    interface =  arrayindex(regextract(message, "received from \S+ on ([\w\-\/]+)"), 0) 
+| alter 
+    src_ipv4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    src_ipv6 = if(src_ip ~= "\w{1,3}\:", src_ip, null),
+    dst_ipv4 = if(dst_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst_ip, null),
+    dst_ipv6 = if(dst_ip ~= "\w{1,3}\:", dst_ip, null),
+    ip_proto = "IGMP"
+| call arista_switch_map_ip_protocol
+| alter 
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.interface = interface,
+    xdm.target.vlan = vlan,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** LAG (Link Aggregation Group) Events 
+    (https://arista.my.site.com/AristaCommunity/s/article/how-to-configure-link-aggregation-groups-in-eos) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "LAG" 
+| alter 
+    interface =  arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
+    remote_switch_name = arrayindex(regextract(message, "\((\w+)\)\s*[a-fA-F\d\.\:]+\--"), 0),
+    remote_switch_ip = arrayindex(regextract(message, "\(\w+\)\s*([a-fA-F\d\.\:]+)\--"), 0),
+    remote_switch_interface = arrayindex(regextract(message, "\(\w+\)\s*[a-fA-F\d\.\:]+\--\s*([^\*]+)"), 0),
+    reason =  arrayindex(regextract(message, "due to:\s*(.+)"), 0)
+| alter 
+    dst_ipv4 = if(remote_switch_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remote_switch_ip, null),
+    dst_ipv6 = if(remote_switch_ip ~= "\w{1,3}\:", remote_switch_ip, null)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.host.hostname = remote_switch_name,
+    xdm.target.interface = remote_switch_interface,
+    xdm.event.outcome = mnemonic, 
+    xdm.event.outcome_reason = reason,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** LLDP (Link Layer Discovery Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-link-layer-discovery-protocol) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "LLDP" 
+| alter 
+    interface =  arrayindex(regextract(message, "on interface ([\w\/]+)"), 0),  
+    remote_chassis_id = arrayindex(regextract(message, "neighbor with chassisId (\S+)"), 0),
+    remote_interface = arrayindex(regextract(message,  "neighbor with chassisId \S+ and portId \"*([\w\/]+)\"*"), 0)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.interface = remote_interface,
+    xdm.target.host.device_id = remote_chassis_id,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** PROCMGR (Process Manager) Events ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "PROCMGR" 
+| alter 
+    process1 =  arrayindex(regextract(message, "^\'(\S+)\'"), 0),  
+    process2 =  arrayindex(regextract(message, "from \'(\S+)\'"), 0),  
+    process3 =  arrayindex(regextract(message, "Restarting \'(\S+)\'"), 0),  
+    process4 =  arrayindex(regextract(message, "\'(\S+)\' starting"), 0),  
+    process5 =  arrayindex(regextract(message, "\'(\S+)\' \(PID"), 0),  
+    pid = to_integer(arrayindex(regextract(message, "[\s\(]PID=(\d+)"), 0)),
+    ppid = arrayindex(regextract(message, "PPID=(\d+)"), 0),
+    exe_path = arrayindex(regextract(message, "execing \'([^\']+)"), 0)
+| alter 
+    process_name = coalesce(process1, process2, process3, process4, process5)
+| alter 
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = pid,
+    xdm.source.process.parent_id = ppid,
+    xdm.source.process.executable.path = exe_path;
+
+
+/*** SECURITY Events 
+    (https://www.arista.com/en/um-eos/eos-security) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SECURITY" 
+| alter 
+    user =  arrayindex(regextract(message, "Session for user (\S+) on"), 0),  
+    session_service =  arrayindex(regextract(message, "Session for user \S+ on service (\S+)"), 0),
+    outcome =  arrayindex(regextract(message, "(\w+) due to"), 0),  
+    reason =  arrayindex(regextract(message, "due to ([^\.]+)"), 0)
+| alter 
+    xdm.source.user.username  = user,
+    xdm.source.process.name = session_service,
+    xdm.event.outcome = outcome, 
+    xdm.event.outcome_reason = reason,
+    xdm.auth.auth_method = session_service;
+
+
+/*** STP (Spanning Tree Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-spanning-tree-protocol) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SPANTREE" 
+| alter 
+    interface = arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
+    vlan = to_integer(arrayindex(regextract(message, "instance V[Ll](\d+)"), 0)),
+    action = arrayindex(regextract(message, "has been (\w+ \S+ instance)"), 0),
+    state = arrayindex(regextract(message, "state is now (.+)"), 0)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.vlan = vlan,
+    xdm.event.operation = action, 
+    xdm.event.outcome = if(state = "not stable", XDM_CONST.OUTCOME_FAILED, state = "stable", XDM_CONST.OUTCOME_SUCCESS, null),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** SYS (System) Configuration Agent Events ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SYS"
+| alter 
+    user = arrayindex(regextract(message, "from \S+ by (\S+)"), 0),  
+    target_ip = arrayindex(regextract(message, "from \S+ by \S+ on \S+\s*\(([^\)]+)"), 0),
+    interface = if(process = "ConfigAgent", arrayindex(regextract(message, "^\w+\(([^\)]+)"), 0), null)
+| alter 
+    dst_ipv4 = if(target_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", target_ip, null),
+    dst_ipv6 = if(target_ip ~= "\w{1,3}\:", target_ip, null)
+| alter 
+    xdm.source.interface = interface,
+    xdm.source.user.username = user,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6;
+
+
+/*** Fallback for All Other Arista Switch Event Types. 
+    This filter is defined for handling all other Arista event types 
+    that do not have an explicit dedicated filter, hence only generic mapping is applied. ***/  
+call arista_switch_common_fields_modeling
+| filter 
+    facility not in ("AAA", "ACCOUNTING", "ACL", "BFD", "BGP", "ETH", "FLOWCONTROL", "IGMP", "LAG", "LINEPROTO", "LLDP", "PROCMGR", "SECURITY", "SPANTREE", "SYS") 
+    and facility !~= "IGMP|BGP"
+| alter 
+    user = arrayindex(regextract(message, "for user (\S+)"), 0),  
+    uid = arrayindex(regextract(message, "uid=(\d+)"), 0),
+    process_name = arrayindex(regextract(message, "process \'([^\']+)"), 0),
+    role = arrayindex(regextract(message, "role \'([^\']+)"), 0)
+| alter
+    roles = arraycreate(role)
+| alter 
+    xdm.source.process.name = process_name,
+    xdm.source.user.groups = roles,
+    xdm.source.user.username = user,
+    xdm.source.user.identifier = uid; 
+
+/*** End of Arista EOS Switch Modeling Rules ***/

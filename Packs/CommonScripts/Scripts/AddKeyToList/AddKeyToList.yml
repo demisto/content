@@ -16,7 +16,7 @@ args:
   isArray: false
   name: value
   required: true
-  secret: false 
+  secret: false
 - default: false
   description: Append to key.
   isArray: false
@@ -44,7 +44,6 @@ comment: Adds/Replaces a key in key/value store backed by an XSOAR list.
 commonfields:
   id: AddKeyToList
   version: -1
-enabled: false
 name: AddKeyToList
 script: '-'
 system: false

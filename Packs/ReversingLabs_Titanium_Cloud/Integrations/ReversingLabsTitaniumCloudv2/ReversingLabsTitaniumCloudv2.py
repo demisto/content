@@ -312,18 +312,25 @@ def functional_similarity_command():
     except Exception as e:
         return_error(str(e))
 
-    results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'functional_similarity': sha1_list},
-        readable_output="Full report is returned in a downloadable file"
-    )
+    results = functional_similarity_output(sha1_list)
 
     file_results = fileResult(
         f'RHA1 Functional Similarity report file for hash {hash_value}',
         json.dumps(sha1_list, indent=4),
         file_type=EntryType.ENTRY_INFO_FILE
     )
+
     return_results([results, file_results])
+
+
+def functional_similarity_output(sha1_list):
+    results = CommandResults(
+        outputs_prefix='ReversingLabs',
+        outputs={'functional_similarity': sha1_list},
+        readable_output="Full report is returned in a downloadable file"
+    )
+
+    return results
 
 
 def rha1_analytics_command():
@@ -521,6 +528,12 @@ def uri_index_command():
     except Exception as e:
         return_error(str(e))
 
+    results, file_results = uri_index_output(sha1_list, uri)
+
+    return_results([results, file_results])
+
+
+def uri_index_output(sha1_list, uri):
     results = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'uri_index': sha1_list},
@@ -533,7 +546,7 @@ def uri_index_command():
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
-    return_results([results, file_results])
+    return results, file_results
 
 
 def advanced_search_command():
@@ -552,6 +565,12 @@ def advanced_search_command():
     except Exception as e:
         return_error(str(e))
 
+    results, file_results = advanced_search_output(result_list)
+
+    return_results([results, file_results])
+
+
+def advanced_search_output(result_list):
     results = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'advanced_search': result_list},
@@ -564,7 +583,7 @@ def advanced_search_command():
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
-    return_results([results, file_results])
+    return results, file_results
 
 
 def expression_search_command():
@@ -589,6 +608,12 @@ def expression_search_command():
     except Exception as e:
         return_error(str(e))
 
+    results, file_results = expression_search_output(result_list)
+
+    return_results([results, file_results])
+
+
+def expression_search_output(result_list):
     results = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'expression_search': result_list},
@@ -601,7 +626,7 @@ def expression_search_command():
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
-    return_results([results, file_results])
+    return results, file_results
 
 
 def file_download_command():
@@ -619,11 +644,19 @@ def file_download_command():
     except Exception as e:
         return_error(str(e))
 
+    results = file_download_output(hash_value)
+
+    file_results = fileResult(hash_value, response.content)
+
+    return_results([results, file_results])
+
+
+def file_download_output(hash_value):
     results = CommandResults(
         readable_output=f"Requested sample is available for download under the name {hash_value}"
     )
 
-    return_results([results, fileResult(hash_value, response.content)])
+    return results
 
 
 def file_upload_command():
@@ -833,6 +866,12 @@ def dynamic_analysis_results_command():
 
     response_json = response.json()
 
+    results, file_results = dynamic_analysis_results_output(response_json, sha1)
+
+    return_results([results, file_results])
+
+
+def dynamic_analysis_results_output(response_json, sha1):
     dbot_score = Common.DBotScore(
         indicator=sha1,
         indicator_type=DBotScoreType.FILE,
@@ -858,7 +897,7 @@ def dynamic_analysis_results_command():
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
-    return_results([results, file_results])
+    return results, file_results
 
 
 def certificate_analytics_command():
@@ -878,6 +917,12 @@ def certificate_analytics_command():
 
     response_json = response.json()
 
+    results, file_results = certificate_analytics_output(response_json, thumbprint)
+
+    return_results([results, file_results])
+
+
+def certificate_analytics_output(response_json, thumbprint):
     results = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'certificate_analytics': response_json},
@@ -890,7 +935,7 @@ def certificate_analytics_command():
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
-    return_results([results, file_results])
+    return results, file_results
 
 
 def yara_ruleset_command():
@@ -1138,13 +1183,19 @@ def reanalyze_sample_command():
     except Exception as e:
         return_error(str(e))
 
-    results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"reanalyze_sample": response.text},
-        readable_output=response.text
-    )
+    results = reanalyze_sample_output(response.text)
 
     return_results(results)
+
+
+def reanalyze_sample_output(response_text):
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"reanalyze_sample": response_text},
+        readable_output=response_text
+    )
+
+    return results
 
 
 def imphash_similarity_command():
@@ -1218,6 +1269,12 @@ def url_downloaded_files_command():
     except Exception as e:
         return_error(str(e))
 
+    results = url_downloaded_files_output(response, url)
+
+    return_results(results)
+
+
+def url_downloaded_files_output(response, url):
     files = tableToMarkdown("Downloaded files", response)
     markdown = f"## ReversingLabs Files Downloaded from URL {url}\n {files}"
 
@@ -1227,7 +1284,7 @@ def url_downloaded_files_command():
         readable_output=markdown
     )
 
-    return_results(results)
+    return results
 
 
 def url_latest_analyses_feed_command():
@@ -1252,6 +1309,12 @@ def url_latest_analyses_feed_command():
     except Exception as e:
         return_error(str(e))
 
+    results, file_results = url_latest_analyses_feed_output(response)
+
+    return_results([results, file_results])
+
+
+def url_latest_analyses_feed_output(response):
     analyses = tableToMarkdown("Latest URL analyses", response)
     markdown = f"## ReversingLabs Latest URL Analyses Feed\n {analyses}"
 
@@ -1268,7 +1331,7 @@ def url_latest_analyses_feed_command():
 
     )
 
-    return_results([results, file_results])
+    return results, file_results
 
 
 def url_analyses_feed_from_date_command():
@@ -1297,6 +1360,12 @@ def url_analyses_feed_from_date_command():
     except Exception as e:
         return_error(str(e))
 
+    results, file_results = url_analyses_feed_from_date_output(response, start_time)
+
+    return_results([results, file_results])
+
+
+def url_analyses_feed_from_date_output(response, start_time):
     analyses = tableToMarkdown("URL analyses from specified date", response)
     markdown = f"## ReversingLabs URL Analyses Feed From Date {start_time}\n {analyses}"
 
@@ -1313,7 +1382,7 @@ def url_analyses_feed_from_date_command():
 
     )
 
-    return_results([results, file_results])
+    return results, file_results
 
 
 def main():

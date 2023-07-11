@@ -54,7 +54,6 @@ script:
       type: string
     description: Retrieves server details
   dockerimage: demisto/python3:3.10.8.37233
-hidden: false
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -20,7 +20,6 @@ configuration:
 - display: Username
   name: credentials
   required: false
-  hiddenusername: false
   type: 9
 - display: Use Basic Authentication
   additionalinfo: Check this checkbox to use the basic authentication method. Auth Token authentication will be used by default. To use basic authentication method, enter values for the Username and Password parameters.
@@ -51,7 +50,7 @@ configuration:
   required: false
   type: 8
 
-script: 
+script:
   script: ''
   commands:
   - name: vd-predefined-application-list
@@ -2264,14 +2263,14 @@ script:
       description: Auth Client Credentials.
       type: String
   - name: vd-auth-test
-    description: Run a connectivity test to verify that the OAuth process worked.  
+    description: Run a connectivity test to verify that the OAuth process worked.
 
 
   isfetch: false
   runonce: false
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.61265
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

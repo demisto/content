@@ -14,19 +14,16 @@ configuration:
   type: 4
 - additionalinfo: Enter site name of deployment area
   display: Site
-  hidden: false
   name: site
   required: true
   type: 0
 - additionalinfo: Enter concentrator name of deployment area
   display: Concentrator
-  hidden: false
   name: concentrator
   required: true
   type: 0
 - additionalinfo: Enter map name of deployment area
   display: Map
-  hidden: false
   name: map
   required: true
   type: 0
@@ -40,14 +37,12 @@ configuration:
   type: 13
 - additionalinfo: Fetch only events with listed tags
   display: Tags
-  hidden: false
   name: tags
   required: false
   type: 0
 - additionalinfo: Fetch only events with selected event types
   defaultvalue: zone_event
   display: Event types
-  hidden: false
   name: event_types
   options:
   - zone_event

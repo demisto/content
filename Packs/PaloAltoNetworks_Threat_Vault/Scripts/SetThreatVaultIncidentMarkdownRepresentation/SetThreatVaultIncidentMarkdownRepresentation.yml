@@ -16,3 +16,5 @@ runas: DBotWeakRole
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+skipprepare:
+- script-name-incident-to-alert

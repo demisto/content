@@ -8,8 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -33,8 +32,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -74,8 +72,7 @@ configuration:
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then
-    the value set as Indicator Type will be ignored.
+- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   required: false
@@ -84,28 +81,22 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: JMESPath expression for extracting the indicators. You can use http://jmespath.org/
-    to identify the proper expression.
+- additionalinfo: JMESPath expression for extracting the indicators. You can use http://jmespath.org/ to identify the proper expression.
   display: JMESPath Extractor
   name: extractor
   required: true
   type: 0
-- additionalinfo: The JSON attribute that holds the indicator value. Default value
-    is 'indicator'.
+- additionalinfo: The JSON attribute that holds the indicator value. Default value is 'indicator'.
   display: JSON Indicator Attribute
   name: indicator
   required: false
   type: 0
-- additionalinfo: "Send specified data in a POST request. When specified, by default\
-    \ will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify\
-    \ a different Content-Type (for example: application/json) use the Headers config\
-    \ param."
+- additionalinfo: "Send specified data in a POST request. When specified, by default will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify a different Content-Type (for example: application/json) use the Headers config param."
   display: POST Data
   name: data
   required: false
   type: 0
-- additionalinfo: "Headers to add to the http request. Specify each header on a single\
-    \ line in the format: 'Name: Value'. For example: 'User-Agent: XSOAR Feed'"
+- additionalinfo: "Headers to add to the http request. Specify each header on a single line in the format: 'Name: Value'. For example: 'User-Agent: XSOAR Feed'"
   display: Headers
   name: headers
   required: false
@@ -123,16 +114,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0

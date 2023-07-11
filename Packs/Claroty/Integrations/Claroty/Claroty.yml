@@ -30,7 +30,6 @@ configuration:
   type: 8
 - defaultvalue: 7 days
   display: The initial time to fetch from
-  hidden: false
   name: fetch_time
   required: false
   type: 0
@@ -40,7 +39,6 @@ configuration:
   type: 0
   defaultvalue: '10'
 - display: Minimal severity to fetch by
-  hidden: false
   name: severity
   required: false
   type: 15
@@ -50,18 +48,15 @@ configuration:
   - High
   - Critical
 - display: Site ID to fetch by
-  hidden: false
   name: site_id
   required: false
   type: 0
   additionalinfo: All sites if none selected
 - display: Fetch by alert type
-  hidden: false
   name: alert_type
   required: false
   type: 0
 - display: Exclude resolved alerts
-  hidden: false
   name: exclude_resolved_alerts
   required: false
   type: 8

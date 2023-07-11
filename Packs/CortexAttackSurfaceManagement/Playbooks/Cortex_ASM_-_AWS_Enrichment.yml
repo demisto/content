@@ -536,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 1c72f18b-885b-4405-842b-cb0214445f59
+    taskid: 9338a30d-d587-4213-86f2-881555dd5995
     type: regular
     task:
-      id: 1c72f18b-885b-4405-842b-cb0214445f59
+      id: 9338a30d-d587-4213-86f2-881555dd5995
       version: -1
       name: Set cloud grid field
       description: |-
@@ -562,7 +562,11 @@ tasks:
       val2:
         simple: n/a
       val3:
-        simple: n/a
+        complex:
+          root: AWS.EC2.Instances.NetworkInterfaces.Association
+          accessor: IpOwnerId
+          transformers:
+          - operator: FirstArrayElement
       val4:
         complex:
           root: AWS.EC2.Instances

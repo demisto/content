@@ -96,5 +96,6 @@
       "Source": "AWS"
     },
     { "Key": "env", "Value": "sbx", "Source": "AWS" }
-  ]
+  ],
+ "report_type": "summary"
 }

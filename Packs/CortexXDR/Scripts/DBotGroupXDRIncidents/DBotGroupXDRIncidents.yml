@@ -6,16 +6,14 @@ args:
   isArray: false
   name: returnWidgetType
   predefined:
-    - scatter
-    - summary
-    - incidents
+  - scatter
+  - summary
+  - incidents
   required: false
   secret: false
 - default: false
   defaultValue: 1 months ago
-  description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: fromDate
   required: false
@@ -46,7 +44,7 @@ args:
   isArray: false
   name: modelExpiration
   predefined:
-    - ''
+  - ''
   required: false
   secret: false
 - auto: PREDEFINED
@@ -56,14 +54,13 @@ args:
   isArray: false
   name: forceRetrain
   predefined:
-    - 'True'
-    - 'False'
+  - 'True'
+  - 'False'
   required: false
   secret: false
 - default: false
   defaultValue: xdralerts.osactorprocesscommandline,xdralerts.actionprocessimagecommandline,xdralerts.causalityactorprocesscommandline,xdralerts.actorprocesscommandline,xdralerts.description
-  description: Comma-separated list of additional incident fields to display, but
-    which will not be taken into account when computing similarity.
+  description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
   isArray: false
   name: fieldsToDisplay
   required: false
@@ -72,16 +69,15 @@ comment: Train clustering model on Cortex XDR incident type.
 commonfields:
   id: DBotGroupXDRIncidents
   version: -1
-enabled: false
 name: DBotGroupXDRIncidents
 script: '-'
 subtype: python3
 system: false
 tags:
-  - widget
+- widget
 timeout: 3.6µs
 type: python
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 6.2.0
 dockerimage: demisto/python3:3.9.7.24076

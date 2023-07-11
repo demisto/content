@@ -2,7 +2,6 @@ comment: Close the XSOAR incident if the IoT ServiceNow ticket was closed. This 
 commonfields:
   id: iot-security-check-servicenow
   version: -1
-enabled: false
 name: iot-security-check-servicenow
 script: '-'
 system: false

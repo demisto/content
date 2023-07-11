@@ -1,0 +1,101 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "issueLinkTypes": [
+            {
+                "id": "10000",
+                "name": "Blocks",
+                "inward": "is blocked by",
+                "outward": "blocks",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10000"
+            },
+            {
+                "id": "10001",
+                "name": "Cloners",
+                "inward": "is cloned by",
+                "outward": "clones",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10001"
+            },
+            {
+                "id": "10002",
+                "name": "Duplicate",
+                "inward": "is duplicated by",
+                "outward": "duplicates",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10002"
+            },
+            {
+                "id": "10202",
+                "name": "Post-Incident Reviews",
+                "inward": "is reviewed by",
+                "outward": "reviews",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10202"
+            },
+            {
+                "id": "10201",
+                "name": "Problem/Incident",
+                "inward": "is caused by",
+                "outward": "causes",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10201"
+            },
+            {
+                "id": "10003",
+                "name": "Relates",
+                "inward": "relates to",
+                "outward": "relates to",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10003"
+            }
+        ]
+    },
+    "HumanReadable": "### Issue Link Types\n|ID|Inward|Name|Outward|\n|---|---|---|---|\n| 10000 | is blocked by | Blocks | blocks |\n| 10001 | is cloned by | Cloners | clones |\n| 10002 | is duplicated by | Duplicate | duplicates |\n| 10202 | is reviewed by | Post-Incident Reviews | reviews |\n| 10201 | is caused by | Problem/Incident | causes |\n| 10003 | relates to | Relates | relates to |\n",
+    "EntryContext": {
+        "Jira.IssueLinkType": [
+            {
+                "id": "10000",
+                "name": "Blocks",
+                "inward": "is blocked by",
+                "outward": "blocks",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10000"
+            },
+            {
+                "id": "10001",
+                "name": "Cloners",
+                "inward": "is cloned by",
+                "outward": "clones",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10001"
+            },
+            {
+                "id": "10002",
+                "name": "Duplicate",
+                "inward": "is duplicated by",
+                "outward": "duplicates",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10002"
+            },
+            {
+                "id": "10202",
+                "name": "Post-Incident Reviews",
+                "inward": "is reviewed by",
+                "outward": "reviews",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10202"
+            },
+            {
+                "id": "10201",
+                "name": "Problem/Incident",
+                "inward": "is caused by",
+                "outward": "causes",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10201"
+            },
+            {
+                "id": "10003",
+                "name": "Relates",
+                "inward": "relates to",
+                "outward": "relates to",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issueLinkType/10003"
+            }
+        ]
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

@@ -7,7 +7,6 @@ comment: |-
 commonfields:
   id: ShowCampaignIncidentsOwners
   version: -1
-enabled: false
 name: ShowCampaignIncidentsOwners
 script: '-'
 system: false

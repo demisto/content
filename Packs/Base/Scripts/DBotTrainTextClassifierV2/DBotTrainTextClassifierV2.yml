@@ -168,7 +168,6 @@ comment: Train a machine learning text classifier.
 commonfields:
   id: DBotTrainTextClassifierV2
   version: -1
-enabled: false
 name: DBotTrainTextClassifierV2
 outputs:
 - contextPath: DBotPhishingClassifier.ModelName
@@ -193,8 +192,10 @@ tags:
 - ml
 timeout: 12µs
 type: python
-dockerimage: demisto/ml:1.0.0.47457
+dockerimage: demisto/ml:1.0.0.62124
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar

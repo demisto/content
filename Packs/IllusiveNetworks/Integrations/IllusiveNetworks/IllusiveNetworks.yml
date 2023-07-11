@@ -13,7 +13,6 @@ configuration:
   type: 0
   section: Connect
 - display: API Token
-  hidden: false
   name: api_token
   required: true
   type: 4
@@ -42,14 +41,12 @@ configuration:
   advanced: true
 - defaultvalue: 3 days
   display: The initial time to fetch from
-  hidden: false
   name: fetch_time
   required: false
   type: 0
   section: Collect
 - defaultvalue: ALL
   display: Fetch only incidents with forensics
-  hidden: false
   name: has_forensics
   options:
   - 'True'
@@ -650,7 +647,7 @@ script:
     description: Retrieve forensics artifacts from Illusive's forensics
     execution: false
     name: illusive-get-forensics-artifacts
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

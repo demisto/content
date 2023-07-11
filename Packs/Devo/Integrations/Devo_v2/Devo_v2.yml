@@ -4,11 +4,10 @@ commonfields:
 name: Devo_v2
 display: Devo v2
 category: Analytics & SIEM
-description: Use the Devo v2 integration to query Devo for alerts, lookup tables, with support of pagination, and to write to lookup tables.
 configuration:
   - display: Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query)
     name: reader_endpoint
-    defaultvalue: https://apiv2-eu.devo.com/search/query
+    defaultvalue: https://apiv2-us.devo.com/search/query
     type: 0
     required: true
   - display: Port (e.g. 443)
@@ -30,7 +29,7 @@ configuration:
     required: false
   - display: Devo base domain
     name: linq_link_base
-    defaultvalue: https://eu.devo.com
+    defaultvalue: https://us.devo.com
     type: 0
     required: false
   - display: Fetch incidents
@@ -58,10 +57,12 @@ configuration:
     name: fetch_incidents_deduplication
     type: 0
     required: false
+    hidden: true
   - display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
     name: fetch_incidents_limit
     type: 0
     required: false
+    defaultvalue: "50"
   - display: Incidents Fetch Interval
     name: incidentFetchInterval
     type: 19
@@ -69,9 +70,9 @@ configuration:
     defaultvalue: "1"
   - display: Global query default timeout in seconds
     name: timeout
-    defaultvalue: "60"
     type: 0
     required: false
+    defaultvalue: "60"
   - display: Trust any certificate (not secure)
     name: insecure
     type: 8
@@ -81,7 +82,7 @@ configuration:
     type: 8
     required: false
 script:
-  script: ''
+  script: ""
   type: python
   commands:
     - name: devo-run-query
@@ -97,7 +98,7 @@ script:
         - name: items_per_page
           description: Enter the per page value you want to set.
           required: false
-          defaultValue: "1000"
+          defaultValue: "50"
         - name: queryTimeout
           description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
           defaultValue: "60"
@@ -118,7 +119,7 @@ script:
         - name: table_name
           description: name of alert table to fetch alerts from a table. If not provided 'siem.logtrust.alert.info' will be used.
         - name: prefix
-          description: This is required when user wants to fetch from custom alert tables.
+          description: Prefix to use for the column names.
         - name: from
           description: Start datetime for alerts to fetch.
           required: true
@@ -127,7 +128,7 @@ script:
         - name: items_per_page
           description: Enter the per page value you want to set.
           required: false
-          defaultValue: "1000"
+          defaultValue: "50"
         - name: filters
           description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
           isArray: true
@@ -171,7 +172,7 @@ script:
         - name: items_per_page
           description: Enter the per page value you want to set.
           required: false
-          defaultValue: "1000"
+          defaultValue: "50"
       outputs:
         - contextPath: Devo.MultiResults
           description: A list of dictionary results.
@@ -216,10 +217,11 @@ script:
           type: unknown
       description: Writes lookup table entry records to a specified Devo table.
       execution: true
-  dockerimage: demisto/devo:1.0.0.54875
+  dockerimage: demisto/devo:1.0.0.61805
   isfetch: true
   runonce: false
   subtype: python3
 tests:
   - No test - no instance
 fromversion: 5.0.0
+description: Use the Devo v2 integration to query Devo for alerts, lookup tables, with support of pagination, and to write to lookup tables.

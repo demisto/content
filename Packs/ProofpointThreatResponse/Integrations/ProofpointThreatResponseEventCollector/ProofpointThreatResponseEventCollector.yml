@@ -64,7 +64,6 @@ configuration:
   advanced: true
 - additionalinfo: You can find this value by navigating to Sources > JSON event source > POST URL.
   display: POST URL of the JSON alert source.
-  hidden: false
   name: post_url_id
   required: false
   type: 0

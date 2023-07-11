@@ -75,7 +75,6 @@ configuration:
 - additionalinfo: Fetch specific incident types. Default value is "All".
   defaultvalue: All
   display: Fetch incident types
-  hidden: false
   name: incidentsToFetch
   options:
   - All

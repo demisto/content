@@ -10,7 +10,6 @@ configuration:
   type: 0
 - defaultvalue: '5555'
   display: Pentera API port
-  hidden: false
   name: port
   required: true
   type: 0
@@ -19,7 +18,6 @@ configuration:
   required: true
   type: 0
 - display: TGT  (The token from Pentera UI in Administration -> API Clients)
-  hidden: false
   name: tgt
   required: true
   type: 4

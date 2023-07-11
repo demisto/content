@@ -12,16 +12,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: Comma-separated list of additional incident fields to display, but
-    which will not be taken into account when computing similarity.
+  description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
   isArray: false
   name: fieldsToDisplay
   required: false
@@ -29,30 +26,29 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: summary
-  description: Return model summary or incidents in specific group according to the
-    search query.
+  description: Return model summary or incidents in specific group according to the search query.
   isArray: false
   name: returnType
   predefined:
-    - summary
-    - incidents
+  - summary
+  - incidents
   required: false
   secret: false
-comment: Show clustering model information - model summary and incidents in specific
-  cluster.
+comment: Show clustering model information - model summary and incidents in specific cluster.
 commonfields:
   id: DBotShowClusteringModelInfo
   version: -1
-enabled: false
 name: DBotShowClusteringModelInfo
 script: '-'
 subtype: python3
 system: false
 tags:
-  - widget
+- widget
 timeout: '0'
 type: python
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.61265
+marketplaces:
+- xsoar

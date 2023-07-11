@@ -10,8 +10,14 @@ configuration:
   type: 0
 - display: API Token
   name: token
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Token
+  name: credentials_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -36,7 +42,7 @@ script:
   - description: 'Data related to the number of hacktivism tweets recently created. Blueliv provides two types of feeds: the first one contains the most popular hacktivism hashtags and the second one contains the countries where more number of hacktivism tweets are coming from.'
     execution: false
     name: blueliv-get-hacktivism-feed
-  dockerimage: demisto/blueliv:1.0.0.165
+  dockerimage: demisto/blueliv:1.0.0.52588
   isfetch: false
   runonce: false
   script: ''

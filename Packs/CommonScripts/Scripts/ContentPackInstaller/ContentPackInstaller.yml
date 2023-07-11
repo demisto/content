@@ -29,7 +29,6 @@ args:
 commonfields:
   id: ContentPackInstaller
   version: -1
-enabled: false
 name: ContentPackInstaller
 comment: Content packs installer from marketplace.
 outputs:

@@ -5,4 +5,14 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
-JAMF
+jamf
+
+[file:Jamf.yml]
+ignore=MR108
+
+[file:Jamf_1_3.yml]
+ignore=MR108
+
+[file:jamf.yml]
+ignore=PR101
+

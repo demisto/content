@@ -2,9 +2,7 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'false'
-  description: Whether to retrieve all users, including users who are out of the office.
-    If "true" will retrieve all users. If "false", will only retrieve users who are
-    not out of office. Default is "false".
+  description: Whether to retrieve all users, including users who are out of the office. If "true" will retrieve all users. If "false", will only retrieve users who are not out of office. Default is "false".
   isArray: false
   name: include_OOO_users
   predefined:
@@ -23,7 +21,6 @@ comment: Retrieves users who are currently on call.
 commonfields:
   id: GetUsersOnCall
   version: -1
-enabled: false
 name: GetUsersOnCall
 script: '-'
 subtype: python3

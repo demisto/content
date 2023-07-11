@@ -16,7 +16,6 @@ comment: Calculates the entropy for the given data.
 commonfields:
   id: CalculateEntropy
   version: -1
-enabled: false
 name: CalculateEntropy
 outputs:
 - contextPath: EntropyResult.checked_value

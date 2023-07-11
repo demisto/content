@@ -5,25 +5,21 @@ commonfields:
 configuration:
 - additionalinfo: For example, https://yourorg.safebreach.com
   display: SafeBreach Managment URL
-  hidden: false
   name: url
   required: true
   type: 0
 - additionalinfo: Obtained with "config accounts" SafeBreach command
   display: Account ID
-  hidden: false
   name: accountId
   required: true
   type: 0
 - additionalinfo: Generated with "config apikeys add" SafeBreach command
   display: API Key
-  hidden: false
   name: apiKey
   required: true
   type: 4
 - defaultvalue: Network Access,Network Inspection,Endpoint,Email,Web,Data Leak
   display: Insight Category
-  hidden: false
   name: insightCategory
   options:
   - Network Access
@@ -36,7 +32,6 @@ configuration:
   type: 16
 - defaultvalue: Hash,Domain,URI,Command,Port,Protocol
   display: Insight Data Type
-  hidden: false
   name: insightDataType
   options:
   - Hash
@@ -50,7 +45,6 @@ configuration:
 - additionalinfo: Non-Behavioral Indicator from this integration instance will be marked with this reputation
   display: Non Behavioral Indicator Reputation
   name: nonBehavioralReputation
-  hidden: false
   defaultvalue: Bad
   options:
   - None
@@ -61,7 +55,6 @@ configuration:
   type: 15
 - additionalinfo: Behavioral Indicator from this integration instance will be marked with this reputation
   display: Behavioral Reputation
-  hidden: false
   name: behavioralReputation
   defaultvalue: Suspicious
   options:
@@ -74,7 +67,6 @@ configuration:
 - additionalinfo: The maximum number of indicators to generate. The default is 1000.
   defaultvalue: '1000'
   display: Indicators Limit
-  hidden: false
   name: indicatorLimit
   required: false
   type: 0
@@ -563,7 +555,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Datetime
-  dockerimage: demisto/python3:3.10.11.59070
+  dockerimage: demisto/python3:3.10.11.61265
   feed: true
   isfetch: false
   longRunning: false

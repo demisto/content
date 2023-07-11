@@ -407,7 +407,7 @@ script:
       description: Operating System name
       type: string
     - contextPath: VisionOne.Endpoint_Info.osVersion
-      description: Operating System nersion
+      description: Operating System version
       type: string
     - contextPath: VisionOne.Endpoint_Info.osDescription
       description: Description of the Operating System
@@ -841,7 +841,7 @@ script:
       type: string
     description: Updates the status of a workbench alert
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.11.61265
   isFetchSamples: true
   isfetch: true
   runonce: false

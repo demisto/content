@@ -25,7 +25,6 @@ configuration:
   type: 0
 - defaultvalue: Negotiate
   display: Authentication Method
-  hidden: false
   name: auth_method
   options:
   - Negotiate
@@ -40,13 +39,7 @@ configuration:
   name: ssl
   required: false
   type: 8
-description: "PowerShell Remoting is a comprehensive built-in remoting subsystem that is a\
-  \ part of Microsoft's native Windows management framework (WMF) and Windows remote\
-  \ management (WinRM).\nThis feature allows you to handle most remoting tasks in\
-  \ any configuration you might encounter by creating a remote PowerShell session\
-  \ to Windows hosts and executing commands in the created session.\nThe integration\
-  \ includes out-of-the-box commands which supports agentless forensics for remote\
-  \ hosts."
+description: "PowerShell Remoting is a comprehensive built-in remoting subsystem that is a part of Microsoft's native Windows management framework (WMF) and Windows remote management (WinRM).\nThis feature allows you to handle most remoting tasks in any configuration you might encounter by creating a remote PowerShell session to Windows hosts and executing commands in the created session.\nThe integration includes out-of-the-box commands which supports agentless forensics for remote hosts."
 display: PowerShell Remoting (Beta)
 name: PowerShell Remoting
 script:
@@ -56,8 +49,7 @@ script:
       isArray: false
       name: host
       required: true
-    - description: PowerShell commands (can be single or multiple in order of execution)
-        to run on the target machine.
+    - description: PowerShell commands (can be single or multiple in order of execution) to run on the target machine.
       name: command
       required: true
     description: Executes remote PowerShell commands on a single host.
@@ -96,8 +88,7 @@ script:
       - "false"
     - name: check_hash
       defaultValue: "false"
-      description: 'Whether to compare the value of the original file with the downloaded file and
-        return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
+      description: 'Whether to compare the value of the original file with the downloaded file and return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
       auto: PREDEFINED
       predefined:
       - "true"
@@ -188,8 +179,7 @@ script:
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether to compare the values of the original file and uploaded file and
-        return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
+      description: 'Whether to compare the values of the original file and uploaded file and return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
       name: check_hash
       predefined:
       - "true"
@@ -229,17 +219,13 @@ script:
       isArray: false
       name: host
       required: true
-    - description: The path on the hostname on which to create the ETL file. For example
-        c:\temp\myhost.etl. Default is "C:\Users\<username>\AppData\Local\Temp\NetTraces\NetTrace.etl".
+    - description: The path on the hostname on which to create the ETL file. For example c:\temp\myhost.etl. Default is "C:\Users\<username>\AppData\Local\Temp\NetTraces\NetTrace.etl".
       name: etl_path
       required: true
-    - description: 'The filter to apply when creating the ETL file. For example IPv4.Address=1.1.1.1
-        to capture traffic just from the 1.1.1.1 IP address. If no filter is specified
-        all traffic will be recorded. For more examples, see: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details.'
+    - description: 'The filter to apply when creating the ETL file. For example IPv4.Address=1.1.1.1 to capture traffic just from the 1.1.1.1 IP address. If no filter is specified all traffic will be recorded. For more examples, see: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details.'
       name: etl_filter
     - defaultValue: "10"
-      description: The maximum file size for the ETL. Once the file has reached this
-        size, the capture will stop. For example 10MB. The default size is 10MB.
+      description: The maximum file size for the ETL. Once the file has reached this size, the capture will stop. For example 10MB. The default size is 10MB.
       name: etl_max_size
     - auto: PREDEFINED
       defaultValue: "no"
@@ -248,8 +234,7 @@ script:
       predefined:
       - "yes"
       - "no"
-    description: This command starts the recording of an ETL file on a Windows endpoint.
-      An ETL file is just like a PCAP file which is created by the Windows Netsh command.
+    description: This command starts the recording of an ETL file on a Windows endpoint. An ETL file is just like a PCAP file which is created by the Windows Netsh command.
     name: ps-remote-etl-create-start
     outputs:
     - contextPath: PsRemote.CommandResult
@@ -277,35 +262,32 @@ script:
     description: Ends the recording of an ETL file on a Windows endpoint.
     name: ps-remote-etl-create-stop
     outputs:
-      - contextPath: PsRemote.CommandResult
-        description: The stop ETL command results.
-        type: string
-      - contextPath: PsRemote.CommandName
-        description: The name of the command that ran on the host.
-        type: string
-      - contextPath: PsRemote.EtlFileName
-        description: The name of the ETL file.
-        type: string
-      - contextPath: PsRemote.EtlFilePath
-        description: The path and name of the ETL file.
-      - contextPath: PsRemote.Host
-        description: The host the command was invoked on.
-        type: string
-      - contextPath: PsRemote.FQDN
-        description: The Fully Qualified Domain Name of the host on which the command was invoked.
-        type: string
+    - contextPath: PsRemote.CommandResult
+      description: The stop ETL command results.
+      type: string
+    - contextPath: PsRemote.CommandName
+      description: The name of the command that ran on the host.
+      type: string
+    - contextPath: PsRemote.EtlFileName
+      description: The name of the ETL file.
+      type: string
+    - contextPath: PsRemote.EtlFilePath
+      description: The path and name of the ETL file.
+    - contextPath: PsRemote.Host
+      description: The host the command was invoked on.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Fully Qualified Domain Name of the host on which the command was invoked.
+      type: string
   - arguments:
     - description: 'A single hostname or IP address on which to run the command.'
       isArray: false
       name: host
       required: true
     - defaultValue: all
-      description: The registry key or hive to export. For example, reg_key_hive=`HKEY_LOCAL_MACHINE`.
-        If the user specifies "all", the entire registry will be exported.
-        Default is "all".
+      description: The registry key or hive to export. For example, reg_key_hive=`HKEY_LOCAL_MACHINE`. If the user specifies "all", the entire registry will be exported. Default is "all".
       name: reg_key_hive
-    - description: The path and name on the Windows host where the registry file will
-        be created. For example, file_path=c:\hklm.reg.
+    - description: The path and name on the Windows host where the registry file will be created. For example, file_path=c:\hklm.reg.
       name: file_path
       required: true
     description: Exports the specified registry of hive to a file.
@@ -345,14 +327,14 @@ script:
     description: Extracts the master file table from the volume.
     name: ps-remote-export-mft
     outputs:
-      - contextPath: PsRemote.ExportMFT
-        description: The extract master file table command result.
-      - contextPath: PsRemote.Host
-        description: The host on which the command was invoked.
-        type: string
-      - contextPath: PsRemote.FQDN
-        description: The Fully Qualified Domain Name of the host on which the command was invoked.
-        type: string
+    - contextPath: PsRemote.ExportMFT
+      description: The extract master file table command result.
+    - contextPath: PsRemote.Host
+      description: The host on which the command was invoked.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Fully Qualified Domain Name of the host on which the command was invoked.
+      type: string
   dockerimage: demisto/powershell-ubuntu:7.2.2.29705
   runonce: false
   script: ''

@@ -10,8 +10,14 @@ configuration:
   type: 0
 - display: Kenna API key
   name: key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: Kenna API key
+  name:  credentials_key
+  required: false
+  hiddenusername: true
+  type: 9
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -580,7 +586,7 @@ script:
     - contextPath: Kenna.ConnectorRunsList.ReopenedVulnerabilities
       description: Amount of re-opened vulnerabilities.
       type: Number
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: false
   longRunning: false

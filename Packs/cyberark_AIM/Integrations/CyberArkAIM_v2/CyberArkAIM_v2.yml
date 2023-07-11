@@ -9,40 +9,33 @@ configuration:
   required: true
   type: 0
 - display: AppID as configured in AIM
-  hidden: false
   name: app_id
   required: false
   type: 0
 - display: Folder to search in safe
-  hidden: false
   name: folder
   required: true
   type: 0
 - display: Safe to search in
-  hidden: false
   name: safe
   required: true
   type: 0
 - display: A comma-separated list of credential names in the safe.
   additionalinfo: Partial names are not supported. If left empty, no credentials will be fetched.
-  hidden: false
   name: credential_names
   required: false
   type: 12
 - display: Username
-  hidden: false
   name: credentials
   required: false
   type: 9
 - additionalinfo: Add a certificate file in text format to use to connect to the CyberArk AIM server.
   display: Certificate File as Text
-  hidden: false
   name: cert_text
   required: false
   type: 12
 - additionalinfo: Add a key file in text format to use to connect to the CyberArk AIM server.
   display: Key File as Text
-  hidden: false
   name: key_text
   required: false
   type: 4

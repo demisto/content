@@ -11,12 +11,10 @@ args:
   name: TrendingCvesCount
   required: false
   secret: false
-comment: 'Display bar chart based on cves count and trending cves count with the different
-  colors. '
+comment: 'Display bar chart based on cves count and trending cves count with the different colors. '
 commonfields:
   id: DisplayCVEChartScript
   version: -1
-enabled: false
 name: DisplayCVEChartScript
 script: '-'
 subtype: python3

@@ -11,7 +11,6 @@ configuration:
   type: 0
 - additionalinfo: A user having APIs access privileges credentials.
   display: Username
-  hidden: false
   name: credentials
   required: true
   type: 9
@@ -20,7 +19,6 @@ configuration:
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
@@ -35,14 +33,12 @@ configuration:
 - additionalinfo: 'Set the time frame to get incidents by. Default is 7 days. Other examples: 30 seconds, 1 minute, 4 hours, 2 days...'
   defaultvalue: 7 days
   display: Get incidents from last
-  hidden: false
   name: fetchTime
   required: false
   type: 0
 - additionalinfo: Will only fetch incident with a risk higher or equal to the selected value.
   defaultvalue: '1'
   display: Get incidents from risk level
-  hidden: false
   name: riskFrom
   options:
   - '1'
@@ -59,7 +55,6 @@ configuration:
   type: 15
 - additionalinfo: In the Nozomi platform, alerts are single events and incidents are an aggregation of alerts. By default only alerts will be fetched by CORTEX XSOAR, however, if selected, incidents will also be fetched.
   display: Fetch also Nozomi incidents
-  hidden: false
   name: fecthAlsoIncidents
   required: false
   type: 8
@@ -199,7 +194,7 @@ script:
     - contextPath: Nozomi.IpByMac.mac
       description: Mac found the ips.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

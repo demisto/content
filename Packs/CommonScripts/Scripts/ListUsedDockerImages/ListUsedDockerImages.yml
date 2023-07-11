@@ -25,7 +25,6 @@ comment: 'List all Docker images that are in use by the installed integrations a
 commonfields:
   id: ListUsedDockerImages
   version: -1
-enabled: false
 name: ListUsedDockerImages
 outputs:
 - contextPath: UsedDockerImages.DockerImage

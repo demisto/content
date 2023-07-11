@@ -21,7 +21,6 @@ comment: Compares a single timestamp to a list of timestamps.
 commonfields:
   id: TimeStampCompare
   version: -1
-enabled: false
 name: TimeStampCompare
 outputs:
 - contextPath: TimeStampCompare.TestedTime

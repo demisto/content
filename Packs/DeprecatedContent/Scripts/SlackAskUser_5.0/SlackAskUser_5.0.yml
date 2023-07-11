@@ -24,8 +24,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Which task should we close with the reply. If none then no playbook
-    tasks will be closed.
+  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
   isArray: false
   name: task
   required: false
@@ -51,7 +50,6 @@ comment: Deprecated. Use the SlackAsk script instead.
 commonfields:
   id: SlackAskUser
   version: -1
-enabled: false
 name: SlackAskUser
 script: '-'
 system: true

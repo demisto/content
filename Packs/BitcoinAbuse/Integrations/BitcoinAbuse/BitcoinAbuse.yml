@@ -10,8 +10,14 @@ configuration:
   defaultvalue: 'true'
 - display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Key
+  name: credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -136,7 +142,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: bitcoinabuse-get-indicators
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: true
   isFetchSamples: true
   runonce: false

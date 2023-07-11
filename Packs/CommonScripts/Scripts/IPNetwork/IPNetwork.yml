@@ -8,7 +8,6 @@ args:
 commonfields:
   id: IPNetwork
   version: -1
-enabled: false
 name: IPNetwork
 comment: |
   Gather information regarding CIDR -

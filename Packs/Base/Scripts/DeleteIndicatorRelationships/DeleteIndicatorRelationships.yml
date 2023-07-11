@@ -9,7 +9,6 @@ comment: This automation allows to delete a relationship between indicator objec
 commonfields:
   id: DeleteIndicatorRelationships
   version: -1
-enabled: false
 name: DeleteIndicatorRelationships
 script: '-'
 system: false

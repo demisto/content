@@ -2,7 +2,6 @@ comment: Retrieves the number of users who are currently on call.
 commonfields:
   id: GetNumberOfUsersOnCall
   version: -1
-enabled: false
 name: GetNumberOfUsersOnCall
 script: '-'
 tags:

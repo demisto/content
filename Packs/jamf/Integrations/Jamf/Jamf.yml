@@ -5,8 +5,7 @@ commonfields:
 name: jamf
 display: jamf (Deprecated)
 category: Endpoint
-description: Deprecated. Use Jamf v2 instead. Jamf device management. Please note,
-  this integration is currently only compatible with the Jamf V1 API.
+description: Deprecated. Use Jamf v2 instead. Jamf device management. Please note, this integration is currently only compatible with the Jamf V1 API.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -45,8 +44,7 @@ script:
     arguments:
     - name: match
       required: true
-      description: Match criteria. e.g. to retrieve all computers associated with
-        a user use $UserID
+      description: Match criteria. e.g. to retrieve all computers associated with a user use $UserID
     outputs:
     - contextPath: Jamf.Computers.ID
       description: Computer ID
@@ -86,7 +84,6 @@ script:
       description: Computer real name
     - contextPath: Jamf.Computers.Room
       description: Computer room
-hidden: false
 deprecated: true
 tests:
 - No test

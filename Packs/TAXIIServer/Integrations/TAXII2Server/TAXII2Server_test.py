@@ -9,7 +9,7 @@ import demistomock as demisto
 
 HEADERS = {
     'Authorization': _basic_auth_str("username", "password"),
-    'Accept': '*/*',
+    'Accept': 'application/taxii+json',
 }
 
 

@@ -141,7 +141,7 @@ requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # py
 apiConfigured = False
 
 # Others are not mandatory as user may choose to only use XML API commands and not SSH
-KEY = demisto.params().get('key', {})
+KEY = secret_key = demisto.params().get('credentials_key', {}).get('password') or demisto.params().get('key', {})
 PORT = demisto.params().get('port')
 
 # Does user intend to leverage SSH commands
@@ -218,7 +218,6 @@ PAN_OS_ERROR_DICT = {
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
-    pass
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
@@ -408,7 +407,7 @@ def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str
                   </gpcs></cloud_services></plugins></request>''' % (xmlComputer, b64User)
 
         if tenant:
-            tenant_entry = f"<tenant-name><entry name='{tenant}'></entry></tenant-name>"
+            tenant_entry = f"<multi-tenant><tenant-name><entry name='{tenant}'></entry></tenant-name>"
             cmd = cmd.replace('<gpcs>', f'<gpcs>{tenant_entry}').replace('</logout_mobile_user>',
                                                                          '</logout_mobile_user></multi-tenant>')
         params = {

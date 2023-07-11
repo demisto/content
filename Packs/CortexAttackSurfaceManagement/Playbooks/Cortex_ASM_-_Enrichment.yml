@@ -1105,10 +1105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 5198686f-a3c5-4c75-8508-e51635974a3a
+    taskid: a1c806a0-c11f-4ea3-8adb-d4c1a3ffc466
     type: regular
     task:
-      id: 5198686f-a3c5-4c75-8508-e51635974a3a
+      id: a1c806a0-c11f-4ea3-8adb-d4c1a3ffc466
       version: -1
       name: Set service owners from Tag grid field
       description: |-
@@ -1127,6 +1127,8 @@ tasks:
       keys:
         simple: Name,Email,Source,Timestamp
       val1:
+        simple: n/a
+      val2:
         complex:
           root: alert.asmtags.Value
           filters:
@@ -1150,8 +1152,6 @@ tasks:
                   simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
               unpack_matches: {}
           - operator: uniq
-      val2:
-        simple: n/a
       val3:
         complex:
           root: alert.asmtags

@@ -10,13 +10,11 @@ configuration:
   type: 0
 - defaultvalue: '443'
   display: Port Number
-  hidden: false
   name: port
   required: true
   type: 0
 - defaultvalue: Common
   display: The administrative partition
-  hidden: false
   name: partition
   required: false
   type: 0

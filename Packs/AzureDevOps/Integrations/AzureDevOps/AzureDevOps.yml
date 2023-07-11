@@ -1009,7 +1009,7 @@ script:
     description: Generate the login url used for Authorization code flow.
     execution: false
     name: azure-devops-generate-login-url
-    arguments: [] 
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.52480
   isremotesyncout: true
   ismappable: true
@@ -1022,6 +1022,5 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
-beta: false
 tests:
 - playbook-AzureDevOps-Test

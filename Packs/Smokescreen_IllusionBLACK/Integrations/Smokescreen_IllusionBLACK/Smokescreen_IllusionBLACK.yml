@@ -9,7 +9,6 @@ configuration:
   required: true
   type: 0
 - display: IllusionBLACK API Client Id
-  hidden: false
   name: client_id
   required: true
   type: 0
@@ -26,7 +25,6 @@ configuration:
   required: false
   type: 8
 - display: First fetch time for fetching incidents (2 days, 3 weeks, etc)
-  hidden: false
   name: first_fetch
   required: false
   type: 0

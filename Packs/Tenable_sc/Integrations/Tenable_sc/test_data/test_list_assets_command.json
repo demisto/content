@@ -1,0 +1,25 @@
+{
+    "test_case_1":{
+        "args": {
+            "manageable": "true"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable":[{"description":"asset_1_description","groups":[],"id":"1","ipCount":141,"modifiedTime":"1684660372","name":"asset_1_name",
+        "owner":{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"},"tags":"","type":"dynamic","uuid":"uuid"}], "usable":[
+        {"description":"This asset uses the Scan Summary plugin to detect if a host has been scanned by Nessus. The Scan Summary plugin contains the list of tests conducted during the most recent scan.",
+        "groups":[],"id":"2","ipCount":158,"modifiedTime":"1673270083","name":"Systems that have been Scanned","owner":{"firstname":"test","id":"1","lastname":"","username":"test",
+        "uuid":"uuid"},"tags":"","type":"dynamic","uuid":"uuid"}]},"timestamp":1687158077,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Assets\n|ID|Name|Owner|Type|HostCount|LastModified|\n|---|---|---|---|---|---|\n| 1 | asset_1_name | test | dynamic | 141 | 2023-05-21T09:12:52Z |\n",
+        "expected_ec": [{"ID": "1", "Name": "asset_1_name", "Owner": "test", "Type": "dynamic", "HostCount": 141, "LastModified": "2023-05-21T09:12:52Z"}]
+    },
+    "test_case_2":{
+        "args": {
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable":[{"description":"asset_1_description","groups":[],"id":"1","ipCount":141,"modifiedTime":"1684660372","name":"asset_1_name",
+        "owner":{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"},"tags":"","type":"dynamic","uuid":"uuid"}], "usable":[
+        {"description":"This asset uses the Scan Summary plugin to detect if a host has been scanned by Nessus. The Scan Summary plugin contains the list of tests conducted during the most recent scan.",
+        "groups":[],"id":"2","ipCount":158,"modifiedTime":"1673270083","name":"Systems that have been Scanned","owner":{"firstname":"test","id":"1","lastname":"","username":"test",
+        "uuid":"uuid"},"tags":"","type":"dynamic","uuid":"uuid"}]},"timestamp":1687158077,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Assets\n|ID|Name|Owner|Type|HostCount|LastModified|\n|---|---|---|---|---|---|\n| 2 | Systems that have been Scanned | test | dynamic | 158 | 2023-01-09T13:14:43Z |\n",
+        "expected_ec": [{"ID": "2", "Name": "Systems that have been Scanned", "Owner": "test", "Type": "dynamic", "HostCount": 158, "LastModified": "2023-01-09T13:14:43Z"}]        
+    }
+}

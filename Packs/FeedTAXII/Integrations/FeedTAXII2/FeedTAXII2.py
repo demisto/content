@@ -238,6 +238,7 @@ def main():  # pragma: no cover
     key = params.get('creds_certificate', {}).get('password') or params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root')
+    update_custom_fields = params.get('update_custom_fields') or False
 
     demisto.info(f'{objects_to_fetch=}')
 
@@ -260,6 +261,7 @@ def main():  # pragma: no cover
             certificate=certificate,
             key=key,
             default_api_root=default_api_root,
+            update_custom_fields=update_custom_fields,
         )
         client.initialise()
         commands = {

@@ -16,21 +16,17 @@ configuration:
   name: apikey
   required: true
   type: 4
-- additionalinfo: Whether to allow connections without verifying SSL certificates
-    validity.
+- additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
 - additionalinfo: Whether to use XSOAR’s system proxy settings to connect to the API
   display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
-- additionalinfo: If it is not provided, incidents from past 24 hours will be fetched
-    by default.
+- additionalinfo: If it is not provided, incidents from past 24 hours will be fetched by default.
   defaultvalue: 1 day
   display: First fetch timestamp (<number> <time unit>, e.g., 6 hours, 1 day)
   name: first_fetch
@@ -44,16 +40,13 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: If this is left blank, maximum 50 incidents will be fetched at a
-    time.
+- additionalinfo: If this is left blank, maximum 50 incidents will be fetched at a time.
   defaultvalue: '50'
   display: Fetch limit (Max value is 200, Recommended value is 50 or less)
-  hidden: false
   name: max_fetch
   required: false
   type: 0
-description: Use this Content Pack to search logs, fetch incident logs from LogPoint,
-  analyze them for underlying threats, and respond to these threats in real-time.
+description: Use this Content Pack to search logs, fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.
 display: LogPoint SIEM Integration
 name: LogPoint SIEM Integration
 script:
@@ -78,9 +71,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Displays incidents between the provided two Timestamps ts_from and
-      ts_to. By default, this command will display first 50 incidents of the past
-      24 hours but limit can be set to get desired number of incidents.
+    description: Displays incidents between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 incidents of the past 24 hours but limit can be set to get desired number of incidents.
     execution: false
     name: lp-get-incidents
     outputs:
@@ -164,22 +155,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Object ID of a particular incident. It is the value contained in
-        'id' key of the incidents obtained from 'lp-get-incidents' command.
+      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
       isArray: false
       name: incident_obj_id
       required: true
       secret: false
     - default: false
-      description: Incident Id of a particular incident. It is the value contained
-        in 'incident_id' key of the incidents obtained from 'lp-get-incidents' command.
+      description: Incident Id of a particular incident. It is the value contained in 'incident_id' key of the incidents obtained from 'lp-get-incidents' command.
       isArray: false
       name: incident_id
       required: true
       secret: false
     - default: false
-      description: Incident Detection TImestamp. It is the value contained in 'detection_timestamp'
-        key of the incidents obtained from 'lp-get-incidents' command.
+      description: Incident Detection TImestamp. It is the value contained in 'detection_timestamp' key of the incidents obtained from 'lp-get-incidents' command.
       isArray: false
       name: date
       required: true
@@ -599,10 +587,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Displays incident states data between the provided two Timestamps
-      ts_from and ts_to. By default, this command will display first 50 data of the
-      past 24 hours but limit can be set to get desired number of incident states
-      data.
+    description: Displays incident states data between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 data of the past 24 hours but limit can be set to get desired number of incident states data.
     execution: false
     name: lp-get-incident-states
     outputs:
@@ -620,8 +605,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Object ID of a particular incident. It is the value contained in
-        'id' key of the incidents obtained from 'lp-get-incidents' command.
+      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
       isArray: false
       name: incident_obj_id
       required: true
@@ -642,16 +626,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Object ID of a particular incident. It is the value contained in
-        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
-        id can be provided by separating them using comma.
+      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
       secret: false
     - default: false
-      description: Id of the user whom the incidents are assigned.  It can be displayed
-        using 'lp-get-users' command.
+      description: Id of the user whom the incidents are assigned.  It can be displayed using 'lp-get-users' command.
       isArray: false
       name: new_assignee
       required: true
@@ -666,9 +647,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Object ID of a particular incident. It is the value contained in
-        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
-        id can be provided by separating them using comma.
+      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
@@ -683,9 +662,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Object ID of a particular incident. It is the value contained in
-        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
-        id can be provided by separating them using comma.
+      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
@@ -700,9 +677,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Object ID of a particular incident. It is the value contained in
-        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
-        id can be provided by separating them using comma.
+      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
@@ -795,31 +770,27 @@ script:
       type: String
   - arguments:
     - default: false
-      description: LogPoint search query. This should be the exact query to use
-        to search logs in the LogPoint UI.
+      description: LogPoint search query. This should be the exact query to use to search logs in the LogPoint UI.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
       defaultValue: Last 5 minutes
-      description: 'Time range. For example: Last 30 minutes, Last 7 days, etc. If
-        not provided, it will use "Last 5 minutes" as the time range by default.'
+      description: 'Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use "Last 5 minutes" as the time range by default.'
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: Number of logs to fetch. If not provided, the first 100 logs will be
-        displayed.
+      description: Number of logs to fetch. If not provided, the first 100 logs will be displayed.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided,
-        it will display logs from all repos.
+      description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos.
       isArray: true
       name: repos
       required: false
@@ -830,8 +801,7 @@ script:
     name: lp-get-searchid
     outputs:
     - contextPath: LogPoint.search_id
-      description: Search ID. Use this ID in the lp-search-logs command to get the search
-        result.
+      description: Search ID. Use this ID in the lp-search-logs command to get the search result.
       type: String
   - arguments:
     - default: false
@@ -862,5 +832,5 @@ tests:
 - LogPoint SIEM Integration - Test Playbook 2
 - LogPoint SIEM Integration - Test Playbook 3
 defaultmapperin: LogPoint-mapper
-defaultclassifier: null
+defaultclassifier:
 fromversion: 6.0.0

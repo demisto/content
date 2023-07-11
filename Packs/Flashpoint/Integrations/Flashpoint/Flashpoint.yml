@@ -28,35 +28,27 @@ configuration:
 - additionalinfo: The maximum limit is 100 for alerts and 1000 for compromised credentials.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: 'Date or relative timestamp to start fetching the incidents from.
-    (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd,
-    yyyy-mm-ddTHH:MM:SSZ, etc).'
+- additionalinfo: 'Date or relative timestamp to start fetching the incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc).'
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Whether to fetch the Flashpoint alerts or the compromised credentials.
-    Would choose "Compromised Credentials" if nothing selected.
+- additionalinfo: Whether to fetch the Flashpoint alerts or the compromised credentials. Would choose "Compromised Credentials" if nothing selected.
   defaultvalue: Compromised Credentials
   display: Fetch Type
-  hidden: false
   name: fetch_type
   options:
   - 'Compromised Credentials'
   - 'Alerts'
   required: false
   type: 15
-- additionalinfo: Adds the 'is_fresh' flag to compromised credential queries so it
-    only ingests username/password combinations if they haven't been seen before.
+- additionalinfo: Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before.
   defaultvalue: 'true'
   display: Fetch fresh compromised credentials alerts
-  hidden: false
   name: is_fresh_compromised_credentials
   required: false
   type: 8
@@ -751,8 +743,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of alerts to retrieve in the response. (Maximum allowed
-        size is 100).
+      description: Number of alerts to retrieve in the response. (Maximum allowed size is 100).
       isArray: false
       name: size
       required: false
@@ -796,8 +787,7 @@ script:
       description: The body of the alert in text/plain format.
       type: String
     - contextPath: Flashpoint.Alerts.source.container.basetypes
-      description: The data types for the thread or channel in which the content was
-        posted.
+      description: The data types for the thread or channel in which the content was posted.
       type: Unknown
     - contextPath: Flashpoint.Alerts.source.container.container.title
       description: The title of the container.
@@ -824,12 +814,10 @@ script:
       description: The first time this piece of data was observed by Flashpoint.
       type: Date
     - contextPath: Flashpoint.Alerts.source.first_observed_at.raw
-      description: The first time this piece of data was observed by Flashpoint, as
-        raw format.
+      description: The first time this piece of data was observed by Flashpoint, as raw format.
       type: String
     - contextPath: Flashpoint.Alerts.source.first_observed_at.timestamp
-      description: The first time this piece of data was observed by Flashpoint, as
-        a timestamp.
+      description: The first time this piece of data was observed by Flashpoint, as a timestamp.
       type: Number
     - contextPath: Flashpoint.Alerts.source.fpid
       description: The ID of the resource.
@@ -838,12 +826,10 @@ script:
       description: The last time this piece of data was observed by Flashpoint.
       type: Date
     - contextPath: Flashpoint.Alerts.source.last_observed_at.raw
-      description: The last time this piece of data was observed by Flashpoint, as
-        raw format.
+      description: The last time this piece of data was observed by Flashpoint, as raw format.
       type: String
     - contextPath: Flashpoint.Alerts.source.last_observed_at.timestamp
-      description: The last time this piece of data was observed by Flashpoint, as
-        a timestamp.
+      description: The last time this piece of data was observed by Flashpoint, as a timestamp.
       type: Number
     - contextPath: Flashpoint.Alerts.source.native_id
       description: The ID used by the original site for the resource.
@@ -867,12 +853,10 @@ script:
       description: The original site or platform where the resource was published.
       type: String
     - contextPath: Flashpoint.Alerts.source.site_actor.names.aliases
-      description: The alias of the user who created the message, authored the blog
-        post, or posted a product for sale.
+      description: The alias of the user who created the message, authored the blog post, or posted a product for sale.
       type: Unknown
     - contextPath: Flashpoint.Alerts.source.site_actor.names.handle
-      description: The handle of the user who created the message, authored the blog
-        post, or posted a product for sale.
+      description: The handle of the user who created the message, authored the blog post, or posted a product for sale.
       type: String
     - contextPath: Flashpoint.Alerts.source.sort_date
       description: Sort date of the alert.
@@ -946,26 +930,21 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'The maximum number of result objects to return per page. Note:
-        The maximum value is 1,000.'
+      description: 'The maximum number of result objects to return per page. Note: The maximum value is 1,000.'
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: 'Specify a page number to retrieve the compromised credentials.
-        Note: The multiplication of page_size and page_number parameters cannot exceed
-        10,000.'
+      description: 'Specify a page number to retrieve the compromised credentials. Note: The multiplication of page_size and page_number parameters cannot exceed 10,000.'
       isArray: false
       name: page_number
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sort the compromised credential''s breach data by either created
-        or first observed date. Note: Will consider ascending as default for sort_order
-        if sort_date is initialized.'
+      description: 'Sort the compromised credential''s breach data by either created or first observed date. Note: Will consider ascending as default for sort_order if sort_date is initialized.'
       isArray: false
       name: sort_date
       predefined:
@@ -975,8 +954,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specify the order to sort the data in. Note: Requires sort_date
-        along with the given argument.'
+      description: 'Specify the order to sort the data in. Note: Requires sort_date along with the given argument.'
       isArray: false
       name: sort_order
       predefined:
@@ -986,8 +964,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to fetch the fresh compromised credentials or not. Possible
-        values are: true, false.'
+      description: 'Whether to fetch the fresh compromised credentials or not. Possible values are: true, false.'
       isArray: false
       name: is_fresh
       predefined:
@@ -996,8 +973,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the compromised credentials based on the filter values
-      provided in the command arguments.
+    description: Retrieves the compromised credentials based on the filter values provided in the command arguments.
     execution: false
     name: flashpoint-compromised-credentials-list
     outputs:
@@ -1008,8 +984,7 @@ script:
       description: Affected domain of the IoC.
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.basetypes
-      description: The array contains the underlying type of the credentials object,
-        in this case  ["credential-sighting"].
+      description: The array contains the underlying type of the credentials object, in this case  ["credential-sighting"].
       type: Unknown
     - contextPath: Flashpoint.CompromisedCredential._source.body.raw
       description: This is the raw content captured from the breach Flashpoint discovered.
@@ -1039,8 +1014,7 @@ script:
       description: Flashpoint ID of the breach.
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.breach.source
-      description: Data source of breach (i.e. Analyst Research, CredentialStealer,
-        etc.).
+      description: Data source of breach (i.e. Analyst Research, CredentialStealer, etc.).
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.breach.source_type
       description: Type of source of the breach.
@@ -1052,8 +1026,7 @@ script:
       description: Victim of the breach.
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.credential_record_fpid
-      description: This is the Flashpoint ID of the associated record object. This
-        is used to retrieve sightings for a credential.
+      description: This is the Flashpoint ID of the associated record object. This is used to retrieve sightings for a credential.
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.customer_id
       description: Customer ID of the IoC.
@@ -1074,20 +1047,16 @@ script:
       description: The Flashpoint ID of this credentials object.
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.header_.indexed_at
-      description: Timestamp for when this document was indexed into the Flashpoint
-        database.
+      description: Timestamp for when this document was indexed into the Flashpoint database.
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.header_.pipeline_duration
       description: Pipeline duration header information of the IoC.
       type: String
     - contextPath: Flashpoint.CompromisedCredential._source.is_fresh
-      description: This will be "true" if the credential has not been seen before,
-        and it hasn't been marked "not fresh" by an analyst. (Historical breaches
-        are not "fresh".).
+      description: This will be "true" if the credential has not been seen before, and it hasn't been marked "not fresh" by an analyst. (Historical breaches are not "fresh".).
       type: Boolean
     - contextPath: Flashpoint.CompromisedCredential._source.last_observed_at.date-time
-      description: If exists, time object for when the credential was previously observed.
-        Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ.
+      description: If exists, time object for when the credential was previously observed. Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ.
       type: Date
     - contextPath: Flashpoint.CompromisedCredential._source.last_observed_at.timestamp
       description: UNIX timestamp.
@@ -1111,13 +1080,10 @@ script:
       description: Integer value that represents number of characters in password.
       type: Number
     - contextPath: Flashpoint.CompromisedCredential._source.password_complexity.probable_hash_algorithms
-      description: List of possible hash algorithms suspected based on textpattern
-        of the password (May include values like "MD5", "SHA-1", "SHA-256", "bcrypt",
-        etc.)
+      description: List of possible hash algorithms suspected based on textpattern of the password (May include values like "MD5", "SHA-1", "SHA-256", "bcrypt", etc.)
       type: Unknown
     - contextPath: Flashpoint.CompromisedCredential._source.times_seen
-      description: Integer representing the number of times the credential has been
-        seen at Flashpoint.
+      description: Integer representing the number of times the credential has been seen at Flashpoint.
       type: Number
     - contextPath: Flashpoint.CompromisedCredential._type
       description: Type of the IoC.
@@ -1128,7 +1094,7 @@ script:
     - contextPath: Flashpoint.CompromisedCredential.sort
       description: Sort value of the IoC.
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

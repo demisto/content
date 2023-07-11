@@ -15,9 +15,8 @@ comment: This script is an example script of how to link an incident to a task i
 commonfields:
   id: CherwellIncidentOwnTask
   version: -1
-enabled: false
 name: CherwellIncidentOwnTask
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.58677
 subtype: python3
 script: '-'
 system: false
@@ -30,3 +29,5 @@ dependson:
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

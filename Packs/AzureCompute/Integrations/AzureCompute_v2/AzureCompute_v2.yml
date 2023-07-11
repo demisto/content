@@ -10,30 +10,61 @@ configuration:
   type: 0
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   required: false
   type: 4
+  hidden: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
+  hidden: true
+- name: cred_auth_id
+  required: false
+  type: 9
+  displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
+  hiddenusername: true
+- name: cred_token
+  required: false
+  type: 9
+  displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
+  hiddenusername: true
+- name: cred_enc_key
+  required: false
+  type: 9
+  displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
+  hiddenusername: true
+- name: cred_certificate_thumbprint
+  required: false
+  type: 9
+  displaypassword: Certificate Thumbprint
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  hiddenusername: true
+- display: Private Key
   name: private_key
   required: false
   type: 14
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
 - display: Default Subscription ID
   name: subscription_id
   required: false
   type: 4
+  hidden: true
+- displaypassword: Default Subscription ID
+  name: cred_subscription_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -666,7 +697,7 @@ script:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
       description: The address ID.
       type: String
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.62171
   feed: false
   isfetch: false
   longRunning: false

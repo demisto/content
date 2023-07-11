@@ -21,7 +21,7 @@ def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = 
         Tasks with given states related to given incident.
     """
     args: Dict[str, Any] = {
-        'incidentId': incident_id
+        'inc_id': incident_id
     }
     # leave states empty to get all tasks
     if task_states:
