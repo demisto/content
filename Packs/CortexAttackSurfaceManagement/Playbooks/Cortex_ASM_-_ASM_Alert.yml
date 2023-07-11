@@ -2546,12 +2546,12 @@ tasks:
     task:
       id: e85a39ea-488e-4de4-8cfd-3416d2fb7ba8
       version: -1
-      name: Cortex ASM - Jira Notification_EXPANDR-3213
+      name: Cortex ASM - Jira Notification
       type: playbook
       iscommand: false
       brand: ""
       description: 'This playbook is used to Jira tickets directed toward service owners to notify them of their internet exposures.'
-      playbookName: Cortex ASM - Jira Notification_EXPANDR-3213
+      playbookName: Cortex ASM - Jira Notification
     nexttasks:
       '#none#':
       - "134"
@@ -2664,9 +2664,9 @@ tasks:
     task:
       id: 2f89be33-0e0f-4989-8328-d783ee1fdd08
       version: -1
-      name: Cortex ASM - ServiceNow Notification_EXPANDR-3213
+      name: Cortex ASM - ServiceNow Notification
       description: This playbook is used to ServiceNow tickets directed toward service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - ServiceNow Notification_EXPANDR-3213
+      playbookName: Cortex ASM - ServiceNow Notification
       type: playbook
       iscommand: false
       brand: ""
@@ -2705,9 +2705,9 @@ tasks:
     task:
       id: 57a99cce-e18a-433c-83a1-7f109d34cdb6
       version: -1
-      name: Cortex ASM - Email Notification_EXPANDR-3213
+      name: Cortex ASM - Email Notification
       description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - Email Notification_EXPANDR-3213
+      playbookName: Cortex ASM - Email Notification
       type: playbook
       iscommand: false
       brand: ""
