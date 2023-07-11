@@ -1766,7 +1766,7 @@ def rawToDict(raw):
                     val = single_key_val[1]
                     key = single_key_val[0].strip()
 
-                    result[key] = f"{result[key]},{val}" if key in result else val
+                    result[key] = f"{result[key]},{val}" if key in tuple(result.keys()) else val
         else:
             # search for the pattern: `key="value", `
             # (the double quotes are optional)
