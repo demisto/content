@@ -1793,7 +1793,7 @@ Initiates the MFT download to the endpoint server.
 | --- | --- | --- |
 | agent_id | The host agent ID. | Required | 
 | service_id | The service ID of the endpoint server to be connected. | Optional |
-| path | Drive or NTFS Mount path for which MFT is requested. | Optional |
+| path | Drive or NTFS mount path for which MFT is requested. | Optional |
 
 
 #### Context Output
