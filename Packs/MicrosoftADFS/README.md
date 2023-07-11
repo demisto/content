@@ -30,6 +30,7 @@ This pack includes XSIAM content.
 Use the following option to collect events from the vendor:
 ​
 - [Broker VM - Windows Event Collector (Recommended)](#broker-vm)
+- [XDRC (XDR Collector)](#xdrc-xdr-collector)
 ​
 ​
 ### Broker VM (Windows Event Collector)
@@ -44,3 +45,14 @@ When configuring the Windows Event Collector (WEC), use the following settings i
 - **Event IDs Group**: "All"
 
 ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/e02f705471d65a49f8c50115bf2cc828e47a5390/Packs/MicrosoftADFS/doc_imgs/ADFSWEC.png)
+
+### XDRC (XDR Collector)
+​
+To configure the XDR collector, use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+
+The AD FS XDR collector template can be found in **Settings** -> **Configurations** -> **XDR Collectors** -> **+Add Profile** -> **Windows** -> **Winlogbeat** -> **Next** -> **Winlogbeat Configuration File**.
+
+**Note:** The AD FS XDR Collector currently supports the following event IDs:
+```html
+510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207
+```
