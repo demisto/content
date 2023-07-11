@@ -52,8 +52,8 @@ The application must have *user_impersonation* permission and must allow public 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Default Subscription ID |  | True |
-    | Default Resource Group Name |  | True |
+    | Default Subscription ID | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
+    | Default Resource Group Name | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
@@ -63,7 +63,7 @@ The application must have *user_impersonation* permission and must allow public 
     | Application redirect URI (for user-auth mode) |  | False |
     | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
