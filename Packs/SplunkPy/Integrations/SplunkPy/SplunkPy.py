@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 import dateparser
 import pytz
 import requests
-from datetime import timezone
 from splunklib import client
 from splunklib import results
 from splunklib.data import Record
@@ -270,14 +269,14 @@ def enforce_look_behind_time(last_run_time, now, look_behind_time):
     return last_run_time
 
 
-def get_fetch_start_times(dem_params, service, last_run_earliest_time, occurence_time_look_behind):
-    current_time_for_fetch = datetime.now(timezone.utc)
-    if demisto.get(dem_params, 'timezone'):
-        timezone_ = dem_params['timezone']
+def get_fetch_start_times(params, service, last_run_earliest_time, occurence_time_look_behind):
+    current_time_for_fetch = datetime.utcnow()
+    if demisto.get(params, 'timezone'):
+        timezone_ = params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(dem_params, 'useSplunkTime'):
+    if demisto.get(params, 'useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -293,9 +292,9 @@ def get_fetch_start_times(dem_params, service, last_run_earliest_time, occurence
     return occured_start_time, now
 
 
-def build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offset):
-    occurred_start_time_fieldname = dem_params.get("earliest_occurrence_time_fieldname", "earliest_time")
-    occurred_end_time_fieldname = dem_params.get("latest_occurrence_time_fieldname", "latest_time")
+def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset):
+    occurred_start_time_fieldname = params.get("earliest_occurrence_time_fieldname", "earliest_time")
+    occurred_end_time_fieldname = params.get("latest_occurrence_time_fieldname", "latest_time")
 
     extensive_log(f'[SplunkPy] occurred_start_time_fieldname: {occurred_start_time_fieldname}')
     extensive_log(f'[SplunkPy] occured_start_time: {occured_start_time}')
@@ -308,11 +307,11 @@ def build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offse
     }
 
 
-def build_fetch_query(dem_params):
-    fetch_query = dem_params['fetchQuery']
+def build_fetch_query(params):
+    fetch_query = params['fetchQuery']
 
-    if demisto.get(dem_params, 'extractFields'):
-        extractFields = dem_params['extractFields']
+    if demisto.get(params, 'extractFields'):
+        extractFields = params['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
@@ -323,6 +322,7 @@ def build_fetch_query(dem_params):
 
 def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_object: "Cache" = None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
+    params = demisto.params()
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
 
@@ -332,20 +332,19 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
 
     search_offset = last_run_data.get('offset', 0)
 
-    dem_params = demisto.params()
-    occurred_look_behind = int(dem_params.get('occurrence_look_behind', 15) or 15)
+    occurred_look_behind = int(params.get('occurrence_look_behind', 15) or 15)
     extensive_log(f'[SplunkPy] occurrence look behind is: {occurred_look_behind}')
 
-    occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_earliest_time, occurred_look_behind)
+    occured_start_time, now = get_fetch_start_times(params, service, last_run_earliest_time, occurred_look_behind)
 
     # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
     latest_time = last_run_latest_time or now
-    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offset)
-    fetch_query = build_fetch_query(dem_params)
+    kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
+    fetch_query = build_fetch_query(params)
 
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
-    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
+    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
     reader = results.ResultsReader(oneshotsearch_results)
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
@@ -459,7 +458,7 @@ class Enrichment:
         self.type = enrichment_type
         self.id = enrichment_id
         self.data = data or []
-        self.creation_time = creation_time or datetime.now(timezone.utc).isoformat()
+        self.creation_time = creation_time if creation_time else datetime.utcnow().isoformat()
         self.status = status or Enrichment.IN_PROGRESS
 
     @classmethod
@@ -565,7 +564,7 @@ class Notable:
         labels = []
         if params.get('parseNotableEventsRaw'):
             for key, value in rawToDict(notable_data['_raw']).items():
-                if not isinstance(value, str): 
+                if not isinstance(value, str):
                     value = convert_to_str(value)
                 labels.append({'type': key, 'value': value})
         if demisto.get(notable_data, 'security_domain'):
@@ -650,7 +649,7 @@ class Notable:
 
         Returns (bool): True if the enrichment process exceeded the given timeout, False otherwise
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()
         exceeding_timeout = False
 
         for enrichment in self.enrichments:
@@ -777,7 +776,7 @@ def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backs
     """
     if not raw_dict:
         raw_dict = rawToDict(notable_data.get('_raw', ''))
-    raw_list = []  # type: list
+    raw_list = []
     for field in fields:
         raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
     if add_backslash:
@@ -1407,20 +1406,20 @@ def create_mapping_dict(total_parsed_results, type_field):
     return types_map
 
 
-def get_mapping_fields_command(service: client.Service, mapper, dem_params: dict):
+def get_mapping_fields_command(service: client.Service, mapper, params: dict):
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
-    type_field = dem_params.get('type_field', 'source')
+    type_field = params.get('type_field', 'source')
     total_parsed_results = []
     search_offset = demisto.getLastRun().get('offset', 0)
 
-    current_time_for_fetch = datetime.now(timezone.utc)
-    if demisto.get(dem_params, 'timezone'):
-        timezone_ = dem_params['timezone']
+    current_time_for_fetch = datetime.utcnow()
+    if demisto.get(params, 'timezone'):
+        timezone_ = params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(dem_params, 'useSplunkTime'):
+    if demisto.get(params, 'useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -1436,10 +1435,10 @@ def get_mapping_fields_command(service: client.Service, mapper, dem_params: dict
         'offset': search_offset,
     }
 
-    searchquery_oneshot = dem_params['fetchQuery']
+    searchquery_oneshot = params['fetchQuery']
 
-    if demisto.get(dem_params, 'extractFields'):
-        extractFields = dem_params['extractFields']
+    if demisto.get(params, 'extractFields'):
+        extractFields = params['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
@@ -1646,7 +1645,7 @@ class ResponseReaderWrapper(io.RawIOBase):
 
 
 def get_current_splunk_time(splunk_service: client.Service):
-    t = datetime.now(timezone.utc) - timedelta(days=3)
+    t = datetime.utcnow() - timedelta(days=3)
     time = t.strftime(SPLUNK_TIME_FORMAT)
     kwargs_oneshot = {'count': 1, 'earliest_time': time}
     searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S")' \
@@ -1755,7 +1754,7 @@ def quote_group(text):
 
 
 def rawToDict(raw):
-    result = {}  # type: Dict[str, str]
+    result: dict[str, str] = {}
     try:
         result = json.loads(raw)
     except ValueError:
@@ -1921,7 +1920,7 @@ def requests_handler(url, message, **kwargs):
 
 
 def build_search_kwargs(args, polling=False):
-    t = datetime.now(timezone.utc) - timedelta(days=7)
+    t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
 
     kwargs_normalsearch: dict[str, Any] = {
@@ -2349,7 +2348,7 @@ def test_module(service: client.Service, params: dict) -> None:
 
     # validate fetch
     if params.get('isFetch'):
-        t = datetime.now(timezone.utc) - timedelta(hours=1)
+        t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs = {'count': 1, 'earliest_time': time}
         query = params['fetchQuery']
@@ -2357,7 +2356,7 @@ def test_module(service: client.Service, params: dict) -> None:
             if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
-            for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
+            for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):
 
                 if isinstance(item, results.Message):
                     continue

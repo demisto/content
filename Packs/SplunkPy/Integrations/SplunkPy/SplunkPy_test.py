@@ -1,6 +1,5 @@
 from copy import deepcopy
 import pytest
-from datetime import timezone
 from splunklib.binding import AuthenticationError
 
 import SplunkPy as splunk
@@ -724,15 +723,10 @@ def test_reset_enriching_fetch_mechanism(mocker):
 @pytest.mark.parametrize(
     "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
     [
+        (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
         (
-            datetime.now(timezone.utc).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
-            5,
-            False,
-        ),
-        (
-            (datetime.now(timezone.utc) - timedelta(minutes=6)).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
+            (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
+            datetime.utcnow().isoformat(),
             5,
             True,
         ),
