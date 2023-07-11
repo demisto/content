@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": -1380
+          "y": -1400
         }
       }
     note: false
@@ -77,12 +77,13 @@ tasks:
     nexttasks:
       '#none#':
       - "138"
+      - "155"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 70,
-          "y": -1250
+          "y": -1270
         }
       }
     note: false
@@ -3350,8 +3351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": -1120
+          "x": -170,
+          "y": -1130
         }
       }
     note: false
@@ -4046,6 +4047,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: 40310eb7-7cb6-486b-82f7-34dcd60cfde4
+    type: regular
+    task:
+      id: 40310eb7-7cb6-486b-82f7-34dcd60cfde4
+      version: -1
+      name: Initialize remediation objectives grid field
+      description: Initialize "ASM - Remediation Objectives" to defaults in case playbook is re-run.
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      asmremediationobjectives:
+        simple: '[{"option": "File a ServiceNow Ticket", "statement": "In this case, a ServiceNow ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "File a Jira Ticket", "statement": "In this case, a Jira ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "Send a notification email", "statement": "In this case, an email ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "Manual remediation", "statement": "In this case, we will require you to manually remediate this exposure."}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": -1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -4062,10 +4098,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7895,
+        "height": 7915,
         "width": 3700,
         "x": -1980,
-        "y": -1380
+        "y": -1400
       }
     }
   }
