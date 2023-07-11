@@ -250,6 +250,7 @@ ignore=BA124
 
 [file:DateTimeNowToEpoch.yml]
 ignore=BA124
+ignore=CJ105
 
 [tests_require_network]
 Ping
