@@ -1857,7 +1857,7 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
 
 def severity_to_level(severity: str | None) -> int | float:
     match severity:
-        case'informational':
+        case 'informational':
             return 0.5
         case 'critical':
             return 4
