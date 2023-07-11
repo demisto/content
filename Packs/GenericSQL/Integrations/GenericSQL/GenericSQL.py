@@ -1,3 +1,5 @@
+from sqlalchemy.exc import ResourceClosedError
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -153,13 +155,18 @@ class Client:
 
         result = self.connection.execute(sql_query, bind_vars)
         self.connection.commit()
-        # For avoiding responses with lots of records
-        results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+        try:
+            # For avoiding responses with lots of records
+            results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+        except ResourceClosedError:
+            pass
         headers = []
         if results:
             # if the table isn't empty
-            headers = list(results[0].keys() if results[0].keys() else '')
+            headers = list(results[0]._fields if results[0]._fields else '')
         return results, headers
+
+
 
 
 def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
