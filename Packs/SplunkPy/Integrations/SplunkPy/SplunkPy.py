@@ -995,7 +995,8 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object: 
         cache_object (Cache): The enrichment mechanism cache object
     """
     handled_notables = []
-    enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5'))) or 5
+    if not (enrichment_timeout := arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))):
+        enrichment_timeout = 5
     notables = cache_object.submitted_notables
     total = len(notables)
     demisto.debug(f"Trying to handle {len(notables[:MAX_HANDLE_NOTABLES])}/{total} open enrichments")
