@@ -7,9 +7,10 @@ import json
 import traceback
 from datetime import datetime, timedelta
 import time
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 # flake8: noqa
 

@@ -6,8 +6,9 @@ import re
 import urllib.request
 import urllib.parse
 import urllib.error
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 handle_proxy()
 

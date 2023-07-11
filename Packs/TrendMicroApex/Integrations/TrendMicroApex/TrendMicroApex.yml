@@ -13,21 +13,17 @@ configuration:
   type: 0
 - display: API Key
   name: token
-  required: false
   type: 4
   hidden: true
 - displaypassword: API Token
-  name:  credentials_api_token
-  required: false
+  name: credentials_api_token
   hiddenusername: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
 display: Trend Micro Apex One
@@ -36,9 +32,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The suspicious object type to query
-      isArray: false
       name: type
       predefined:
       - ip
@@ -46,17 +40,10 @@ script:
       - file_sha1
       - domain
       - file
-      required: false
-      secret: false
-    - default: false
-      description: Filters the list to suspicious objects that match the specified string
-      isArray: false
+    - description: Filters the list to suspicious objects that match the specified string
       name: content_filter
-      required: false
-      secret: false
     deprecated: true
     description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
-    execution: false
     name: trendmicro-apex-usdo-list
     outputs:
     - contextPath: TrendMicroApex.USDO.type
@@ -76,9 +63,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The suspicious object type
-      isArray: false
       name: type
       predefined:
       - ip
@@ -87,45 +72,27 @@ script:
       - domain
       - file
       required: true
-      secret: false
-    - default: false
-      description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
-      isArray: false
+    - description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
       name: content
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects)
-      isArray: false
       name: scan_action
       predefined:
       - log
       - block
       - quarantine
       required: true
-      secret: false
-    - default: false
-      description: Description of the object.
-      isArray: false
+    - description: Description of the object.
       name: notes
-      required: false
-      secret: false
-    - default: false
-      description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
-      isArray: false
+    - description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
       name: expiration
-      required: false
-      secret: false
     deprecated: true
     description: Add suspicious file, file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
-    execution: false
     name: trendmicro-apex-usdo-add
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The suspicious object type
-      isArray: false
       name: type
       predefined:
       - ip
@@ -133,22 +100,15 @@ script:
       - file_sha1
       - domain
       required: true
-      secret: false
-    - default: false
-      description: The suspicious object content for the specified type
-      isArray: false
+    - description: The suspicious object content for the specified type
       name: content
       required: true
-      secret: false
     deprecated: true
     description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
-    execution: false
     name: trendmicro-apex-usdo-delete
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The suspicious object type to query
-      isArray: false
       name: type
       predefined:
       - ip
@@ -156,17 +116,9 @@ script:
       - file_sha1
       - domain
       - file
-      required: false
-      secret: false
-    - default: false
-      description: Filters the list to suspicious objects that match the specified string
-      isArray: false
+    - description: Filters the list to suspicious objects that match the specified string
       name: content_filter
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
-    execution: false
     name: trendmicro-apex-udso-list
     outputs:
     - contextPath: TrendMicroApex.UDSO.type
@@ -186,9 +138,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The suspicious object type
-      isArray: false
       name: type
       predefined:
       - ip
@@ -197,45 +147,26 @@ script:
       - domain
       - file
       required: true
-      secret: false
-    - default: false
-      description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
-      isArray: false
+    - description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
       name: content
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects)
-      isArray: false
       name: scan_action
       predefined:
       - log
       - block
       - quarantine
       required: true
-      secret: false
-    - default: false
-      description: Description of the object.
-      isArray: false
+    - description: Description of the object.
       name: notes
-      required: false
-      secret: false
-    - default: false
-      description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
-      isArray: false
+    - description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
       name: expiration
-      required: false
-      secret: false
-    deprecated: false
     description: Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
-    execution: false
     name: trendmicro-apex-udso-add
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The suspicious object type
-      isArray: false
       name: type
       predefined:
       - ip
@@ -243,138 +174,62 @@ script:
       - file_sha1
       - domain
       required: true
-      secret: false
-    - default: false
-      description: The suspicious object content for the specified type
-      isArray: false
+    - description: The suspicious object content for the specified type
       name: content
       required: true
-      secret: false
-    - default: false
-      description: 'Description of the object (maximum length: 256 characters).'
-      isArray: false
+    - description: 'Description of the object (maximum length: 256 characters).'
       name: notes
-      required: false
-      secret: false
-    - default: false
-      description: The scan action to perform on the suspicious object.
-      isArray: false
+    - description: The scan action to perform on the suspicious object.
       name: scan_action
-      required: false
-      secret: false
-    deprecated: false
     description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
-    execution: false
     name: trendmicro-apex-udso-delete
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to allow multiple matches or not. If this parameter is set to "false", and the provided parameters match multiple agents, the action will be unsuccessful.
-      isArray: false
       name: multi_match
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The GUID of the managed product agent
-      isArray: false
+    - description: The GUID of the managed product agent
       name: entity_id
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the managed product agent
-      isArray: false
+    - description: The IP address of the managed product agent
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: The MAC address of the managed product agent
-      isArray: false
+    - description: The MAC address of the managed product agent
       name: mac_address
-      required: false
-      secret: false
-    - default: false
-      description: The endpoint name of the managed product agent
-      isArray: false
+    - description: The endpoint name of the managed product agent
       name: host_name
-      required: false
-      secret: false
-    - default: false
-      description: The Trend Micro product on the server instance
-      isArray: false
+    - description: The Trend Micro product on the server instance
       name: product
-      required: false
-      secret: false
-    deprecated: false
     description: Isolate an agent from the network
-    execution: false
     name: trendmicro-apex-isolate
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to allow multiple matches or not. If this argument is set to "false", and the provided parameters match multiple agents, the action will be unsuccessful.
-      isArray: false
       name: multi_match
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The GUID of the managed product agent
-      isArray: false
+    - description: The GUID of the managed product agent
       name: entity_id
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the managed product agent
-      isArray: false
+    - description: The IP address of the managed product agent
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: The MAC address of the managed product agent
-      isArray: false
+    - description: The MAC address of the managed product agent
       name: mac_address
-      required: false
-      secret: false
-    - default: false
-      description: The endpoint name of the managed product agent
-      isArray: false
+    - description: The endpoint name of the managed product agent
       name: host_name
-      required: false
-      secret: false
-    - default: false
-      description: The Trend Micro product on the server instance
-      isArray: false
+    - description: The Trend Micro product on the server instance
       name: product
-      required: false
-      secret: false
-    deprecated: false
     description: Restore an isolated agent connection to the network.
-    execution: false
     name: trendmicro-apex-restore
   - arguments:
-    - default: false
-      description: 'The log ID of the first record to query. Note: For Pattern Update Status and Engine Update Status logs, the value of page_token must be "0".'
-      isArray: false
+    - description: 'The log ID of the first record to query. Note: For Pattern Update Status and Engine Update Status logs, the value of page_token must be "0".'
       name: page_token
-      required: false
-      secret: false
-    - default: false
-      description: 'The date/time of the first record to query, in one of the following formats:  ''2020-06-21T08:00:00Z'', ''Jun 21 2020 08:00:00 GMT+00:00''. In some cases the command might return logs that were created before the specified time. This is a known issue with the API.'
-      isArray: false
+    - description: 'The date/time of the first record to query, in one of the following formats:  ''2020-06-21T08:00:00Z'', ''Jun 21 2020 08:00:00 GMT+00:00''. In some cases the command might return logs that were created before the specified time. This is a known issue with the API.'
       name: since_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of log data to retrieve.
-      isArray: false
       name: log_type
       predefined:
       - Data Loss Prevention
@@ -397,17 +252,10 @@ script:
       - Product Auditing Events
       - Intrusion Prevention
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The number of items to return. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a maximum of 1000 logs of detection types from the server. The `Pattern Update Status` and `Engine Update Status` log types returns all logs (no maximum) from the specified "since_time". In some cases the command might return alerts that were created before the specified time. This is a known issue with the API.
-    execution: false
     name: trendmicro-apex-list-logs
     outputs:
     - contextPath: TrendMicroApex.Log.LogVersion
@@ -430,67 +278,33 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Log
       description: 'The scan action to perform. Can be ''Log'', ''Block'' or ''Quarantine''. Default is ''Log''. '
-      isArray: false
       name: file_scan_action
       predefined:
       - Log
       - Block
       - Quarantine
       required: true
-      secret: false
-    - default: false
-      description: Additional information.
-      isArray: false
+    - description: Additional information.
       name: note
-      required: false
-      secret: false
-    - default: false
-      description: The entry ID of the file to upload.
-      isArray: false
+    - description: The entry ID of the file to upload.
       name: entry_id
       required: true
-      secret: false
-    deprecated: false
     description: Adds the uploaded file information to the User-Defined Suspicious Objects list. If the file already exists, it will be updated with the new arguments.
-    execution: false
     name: trendmicro-apex-udso-file-add
   - arguments:
-    - default: false
-      description: The GUID of the managed product server.
-      isArray: false
+    - description: The GUID of the managed product server.
       name: entity_id
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the endpoint.
-      isArray: false
+    - description: The IP address of the endpoint.
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: The MAC address of the endpoint.
-      isArray: false
+    - description: The MAC address of the endpoint.
       name: mac_address
-      required: false
-      secret: false
-    - default: false
-      description: The name of the endpoint.
-      isArray: false
+    - description: The name of the endpoint.
       name: host_name
-      required: false
-      secret: false
-    - default: false
-      description: The Trend Micro product name.
-      isArray: false
+    - description: The Trend Micro product name.
       name: product
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of managed product servers reporting to Apex One Central.
-    execution: false
     name: trendmicro-apex-managed-servers-list
     outputs:
     - contextPath: TrendMicroApex.Server.entity_id
@@ -512,45 +326,19 @@ script:
       description: The API actions that can be performed on the server.
       type: String
   - arguments:
-    - default: false
-      description: The GUID of the Security Agent.
-      isArray: false
+    - description: The GUID of the Security Agent.
       name: entity_id
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the endpoint.
-      isArray: false
+    - description: The IP address of the endpoint.
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: The MAC address of the endpoint.
-      isArray: false
+    - description: The MAC address of the endpoint.
       name: mac_address
-      required: false
-      secret: false
-    - default: false
-      description: The name of the endpoint.
-      isArray: false
+    - description: The name of the endpoint.
       name: host_name
-      required: false
-      secret: false
-    - default: false
-      description: The Trend Micro product name.
-      isArray: false
+    - description: The Trend Micro product name.
       name: product
-      required: false
-      secret: false
-    - default: false
-      description: The GUID of the product server that manages the Security Agent.
-      isArray: false
+    - description: The GUID of the product server that manages the Security Agent.
       name: managing_server_id
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of Security Agents.
-    execution: false
     name: trendmicro-apex-security-agents-list
     outputs:
     - contextPath: TrendMicroApex.Agent.entity_id
@@ -584,48 +372,26 @@ script:
       description: Lists the API actions that can be performed on the agent.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The number of records to retrieve. Default is 50.
-      isArray: false
       name: limit
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page from which to start retrieving records. Default is 0.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Filter the agents by endpoint name (partial string match).
-      isArray: false
+    - description: Filter the agents by endpoint name (partial string match).
       name: filter_by_endpoint_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter the agents by endpoint type. Can be "Desktop" or "Server".
-      isArray: false
       name: filter_by_endpoint_type
       predefined:
       - Desktop
       - Server
-      required: false
-      secret: false
-    - default: false
-      description: 'Filter the agents by endpoint IP address range represented by comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address"'
-      isArray: false
+    - description: 'Filter the agents by endpoint IP address range represented by comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address"'
       name: filter_by_ip_address
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter the agents by operating system.
-      isArray: false
       name: filter_by_operating_system
       predefined:
       - Windows XP
@@ -644,11 +410,7 @@ script:
       - Symbian
       - Windows Mobile
       - Windows General
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
-    execution: false
     name: trendmicro-apex-endpoint-sensors-list
     outputs:
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.agentGuid
@@ -697,128 +459,51 @@ script:
       description: The Trend Micro product type on the server instance.
       type: Number
   - arguments:
-    - default: false
-      description: Filter by file name (partial string match).
-      isArray: false
+    - description: Filter by file name (partial string match).
       name: file_name_contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter by file name (exact match). Supports comma-separated values.
-      isArray: false
+    - description: Filter by file name (exact match). Supports comma-separated values.
       name: file_name_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by file path (exact match). Supports comma separated values.
-      isArray: false
+    - description: Filter by file path (exact match). Supports comma separated values.
       name: file_path_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by account (partial string match). Supports comma separated values.
-      isArray: false
+    - description: Filter by account (partial string match). Supports comma separated values.
       name: account_contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter by account (exact match). Supports comma separated values.
-      isArray: false
+    - description: Filter by account (exact match). Supports comma separated values.
       name: account_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by command line (partial string match). Supports comma separated values.
-      isArray: false
+    - description: Filter by command line (partial string match). Supports comma separated values.
       name: command_line_contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter by command line (exact match). Supports comma separated values. list.
-      isArray: false
+    - description: Filter by command line (exact match). Supports comma separated values. list.
       name: command_line_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by registry key (partial string match). Supports comma separated values.
-      isArray: false
+    - description: Filter by registry key (partial string match). Supports comma separated values.
       name: registry_key_contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter by registry key (exact match). Supports comma separated values. list.
-      isArray: false
+    - description: Filter by registry key (exact match). Supports comma separated values. list.
       name: registry_key_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by registry name (partial string match). Supports comma separated values.
-      isArray: false
+    - description: Filter by registry name (partial string match). Supports comma separated values.
       name: registry_name_contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter by registry name (exact match). Supports comma separated values. list.
-      isArray: false
+    - description: Filter by registry name (exact match). Supports comma separated values. list.
       name: registry_name_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by registry data (partial string match). Supports comma separated values.
-      isArray: false
+    - description: Filter by registry data (partial string match). Supports comma separated values.
       name: registry_data_contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter by registry data (exact match). Supports comma separated values. list.
-      isArray: false
+    - description: Filter by registry data (exact match). Supports comma separated values. list.
       name: registry_data_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by host name (partial string match). Supports comma separated values.
-      isArray: false
+    - description: Filter by host name (partial string match). Supports comma separated values.
       name: host_name_contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter by host name - (exact match). Supports comma separated values.
-      isArray: false
+    - description: Filter by host name - (exact match). Supports comma separated values.
       name: host_name_is
-      required: false
-      secret: false
-    - default: false
-      description: Filter by file path (partial string match). Supports comma separated values.
-      isArray: false
+    - description: Filter by file path (partial string match). Supports comma separated values.
       name: file_path_contains
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Operator used in the investigation. 'AND' - return endpoints that match all the criteria specified. 'OR' - return endpoints that match one of the specified criteria.
-      isArray: false
       name: operator
       predefined:
       - AND
       - OR
       required: true
-      secret: false
-    - default: false
-      description: Criteria string to show in the auditing log.
-      isArray: false
+    - description: Criteria string to show in the auditing log.
       name: criteria_kvp
-      required: false
-      secret: false
-    - default: false
-      description: The source of criteria used to store the record in BIF. The default value is 0 (UNKNOWN).
-      isArray: false
+    - description: The source of criteria used to store the record in BIF. The default value is 0 (UNKNOWN).
       name: criteria_source
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Scope of the search results. For example, if the value is Three months, perform assessment on data within the last 90 days only. Can be "Default", "All", "One month", "Three months", "Six months", or "Twelve months".
-      isArray: false
       name: search_period
       predefined:
       - Default
@@ -827,11 +512,7 @@ script:
       - Three months
       - Six months
       - Twelve months
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new historical investigation on all Security Agents with Endpoint Sensor enabled using the specified criteria, search operator, and match condition.
-    execution: false
     name: trendmicro-apex-historical-investigation-create
     outputs:
     - contextPath: TrendMicroApex.HistoricalInvestigation.taskId
@@ -850,64 +531,32 @@ script:
       description: The GUID of the server.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The number of records to retrieve. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page from which to start retrieving records. Default is 0.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The scan schedule ID of the investigation to retrieve.
-      isArray: false
+    - description: The scan schedule ID of the investigation to retrieve.
       name: scan_schedule_id
-      required: false
-      secret: false
-    - default: false
-      description: Filter the results by task name (partial string match).
-      isArray: false
+    - description: Filter the results by task name (partial string match).
       name: filter_by_task_name
-      required: false
-      secret: false
-    - default: false
-      description: Filter the results by creator name (partial string match).
-      isArray: false
+    - description: Filter the results by creator name (partial string match).
       name: filter_by_creator_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter the results by the scan method type. Can be "Search Windows registry", "Memory scan using YARA", or "Disk scan using OpenIOC".
-      isArray: false
       name: filter_by_scan_type
       predefined:
       - Search Windows registry
       - Memory scan using YARA
       - Disk scan using OpenIOC
-      required: false
-      secret: false
-    - default: false
-      description: Filter the results by criteria name (partial string match).
-      isArray: false
+    - description: Filter the results by criteria name (partial string match).
       name: filter_by_criteria_name
-      required: false
-      secret: false
-    - default: false
-      description: 'The method used for the investigation. Supports comma-separated values. Possible values are: "Windows registry", "YARA rule file", "IOC rule file", and "Disk IOC rule file".'
+    - description: 'The method used for the investigation. Supports comma-separated values. Possible values are: "Windows registry", "YARA rule file", "IOC rule file", and "Disk IOC rule file".'
       isArray: true
       name: scan_type
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a list of all investigation results.
-    execution: false
     name: trendmicro-apex-investigation-result-list
     outputs:
     - contextPath: TrendMicroApex.InvestigationResult.scanSummaryId
@@ -989,10 +638,6 @@ script:
       description: Error response if server communication is unsuccessful.
       type: String
   dockerimage: demisto/pycef:1.0.0.61516
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

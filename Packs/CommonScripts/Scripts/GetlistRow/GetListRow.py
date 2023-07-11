@@ -32,15 +32,14 @@ def lines_to_context_format(list_lines, headers):
 
 
 def parse_relevant_rows(headers, lines, header, value, context, parse_all=False):
+    outputs_key_field = ['list_name', 'parse_all']
     if parse_all:
         lines_context = lines_to_context_format(lines, headers)
-        output_condition = "getListRow.Result(val.list_name == obj.list_name && val.parse_all == obj.parse_all)"
     else:
         header_location = headers.index(header)
         specific_lines_to_parse = [line for line in lines if line[header_location] == value]
         lines_context = lines_to_context_format(specific_lines_to_parse, headers)
-        output_condition = '''GetListRow(val.header && val.list_name == obj.list_name &&
-                           val.header == obj.header && val.value == obj.value && val.parse_all == obj.parse_all)'''
+        outputs_key_field.extend(['header', 'value'])
     if not lines_context:
         return CommandResults(
             readable_output="No results found"
@@ -48,7 +47,8 @@ def parse_relevant_rows(headers, lines, header, value, context, parse_all=False)
     context["Results"] = lines_context
     human_readable = tableToMarkdown('List Result', lines_context, headers=headers, removeNull=True)
     return CommandResults(
-        outputs_prefix=output_condition,
+        outputs_prefix='GetListRow',
+        outputs_key_field=outputs_key_field,
         outputs=context,
         readable_output=human_readable
     )

@@ -17,7 +17,7 @@ echo ${PUBLIC_IP} > public_ip
 echo "wait 90 seconds to ensure server is ready for ssh"
 sleep 90s
 
-USER="ec2-user"
+USER="gcp-user"
 
 echo "add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts

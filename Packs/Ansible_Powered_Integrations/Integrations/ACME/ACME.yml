@@ -555,7 +555,6 @@ script:
     description: Send direct requests to an ACME server
     name: acme-inspect
   dockerimage: demisto/ansible-runner:1.0.0.21184
-  runonce: false
   script: ''
   subtype: python3
   type: python

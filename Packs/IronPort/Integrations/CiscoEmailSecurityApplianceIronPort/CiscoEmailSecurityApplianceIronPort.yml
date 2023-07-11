@@ -25,11 +25,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -41,8 +39,7 @@ script:
       predefined:
       - 1d
       - 1h
-      description: Use this attribute to retrieve report(s) for a specified duration.
-        Must provide either this or duration argument
+      description: Use this attribute to retrieve report(s) for a specified duration. Must provide either this or duration argument
     - name: report_type
       required: true
       auto: PREDEFINED
@@ -96,24 +93,15 @@ script:
       - mail_virus_type_detail
       description: The type of report to fetch
     - name: max
-      description: Use this attribute to limit the number of results returned by the
-        report. n is the number of results that you want the report to return and
-        can assume values from 1 through 1000. Default is 30
+      description: Use this attribute to limit the number of results returned by the report. n is the number of results that you want the report to return and can assume values from 1 through 1000. Default is 30
       defaultValue: "30"
     - name: duration
-      description: Aggregate report(s) for the specified duration. Supported values
-        of TZD are Z , +hh:mm , or -hh:mm. Format should be YYYY-MM-DDThh:mmTZD/YYYY-MM-DDThh:mmTZD
+      description: Aggregate report(s) for the specified duration. Supported values of TZD are Z , +hh:mm , or -hh:mm. Format should be YYYY-MM-DDThh:mmTZD/YYYY-MM-DDThh:mmTZD
     - name: entity
-      description: Use this attribute to retrieve reports based on a specified entity
-        such as email address, IP address, and so on. You can choose whether to exactly
-        match the specified text or look for items starting with the specified text
-        (for instance, starts with "ex" will match "example.com").
+      description: Use this attribute to retrieve reports based on a specified entity such as email address, IP address, and so on. You can choose whether to exactly match the specified text or look for items starting with the specified text (for instance, starts with "ex" will match "example.com").
     - name: starts_with
-      description: Use this attribute to retrieve items starting with the specified
-        entity value. This attribute must be used in conjunction with the entity attribute
-        and value must be set to true , for example, entity=us&starts_with=true .
+      description: Use this attribute to retrieve items starting with the specified entity value. This attribute must be used in conjunction with the entity attribute and value must be set to true , for example, entity=us&starts_with=true .
     description: Retrieve email security appliance statistical reports.
-  runonce: false
 tests:
 - No Tests
 fromversion: 5.0.0

@@ -67,7 +67,7 @@ In addition, make sure ***Instance execute external*** is enabled.
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
- - Note: This option is available from Cortex XSOAR v5.5.0 and later.
+ - Note: This option is available from Cortex XSOAR v5.5.0. Currently, Cortex XSOAR 8 is not supported.
 
 ### 2. Using NGINX as reverse proxy
 In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relays the HTTPS requests posted from Microsoft Teams
@@ -110,6 +110,8 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
+The information in this video is for Cortex XSOAR 6 only.
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
             type="video/mp4"/>
@@ -167,39 +169,6 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 7. Navigate to **Configure** and fill in the **Bot endpoint address**.
 8. Navigate to **Client Secrets** and click the **Add a client secret for your bot** button, and wait a few seconds to allow the secret to be generated.
 9. Store the generated secret securely for the next steps.
-
-
-#### Using the App Studio for development environment (Deprecated - Use `Developer Portal` instead.)
-1. Download the ZIP file located at the bottom of this article.
-2. In Microsoft Teams, access the Store.
-3. Search for and click **App Studio**.
-4. Click the **Open** button.
-5. For the **Bot** option, click **Open**.
-6. Click the **Manifest editor** tab.
-7. Click the **Import an existing app** button, and select the ZIP file that you downloaded.
-8. Click the app widget, and in the **Identification** section, click the **Generate** button to generate a unique App ID.  The following parameters are automatically populated in the ZIP file, use this information for reference.
-  - **Short name**: Demisto Bot
-  - **App ID**: the App ID for configuring in Cortex XSOAR.
-  - **Package name**: demisto.bot (this is a unique identifier for the app in the Store)
-  - **Version**: 1.0.0 (this is a unique identifier for the app in the Store)
-  - **Short description**: Mechanism for mirroring between Cortex XSOAR and Microsoft Teams.
-  - **Long description**: Demisto Bot is the mechanism that enables messaging team members and channels, executing Cortex XSOAR commands directly from Teams, and mirroring investigation data between Cortex XSOAR and Microsoft Teams
-
-9. From the left-side navigation pane, under Capabilities, click **Bots > Set up**.
-10. Configure the settings under the **Scope** section, and click **Create bot**.
-  - In the **Name** field, enter *Demisto Bot*.
-  - In the **Scope** section, select the following checkboxes: `Personal`, `Team`, and `Group Chat`.
-
-11. Record the **Bot ID**, which you will need when configuring the integration in Cortex XSOAR.
-![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MSTeams-BotID.png)
-12. Click **Generate new password**. Record the password, which you will need when configuring the integration in Cortex XSOAR.
-13. In the **Messaging endpoints** section, enter the URL to which messages will be sent (to the Demisto Bot).
-  - To enable calling capabilities on the Bot enter the same URL to the **Calling endpoints** section.
-14. In the **Domain and permissions** section, under **AAD App ID** enter the Bot ID.
-15. From the left-side navigation pane, under Finish, click **Test and distribute**.
-16. To download the new bot file, which now includes App Details, click **Download**.
-17. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
-
 
 
 ### In order to connect to the Azure Network Security Groups use one of the following methods:
@@ -318,7 +287,7 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 
 - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
 
-#### Using the Developer Portal
+#### Using the Developer Portal and Microsoft Azure Portal
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
@@ -335,13 +304,6 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 14. Click the **Add to team** button.
 15. In the search box, type the name of the team to which you want to add the bot.
 16. Click the **Add** button on the wanted team and then click the **Apply** button.
-
-#### Using the App Studio (Deprecated - Use `Developer Portal` instead.)
-1. In Microsoft Teams, access the Store.
-2. Search for **Demisto Bot** and click the Demisto Bot widget.
-3. Click the arrow on the **Open** button and select **Add to a team**.
-4. In the search box, type the name of the team to which to add the bot.
-5. Click **Set up** and configure the new app.
 
 
 ## Known Limitations
@@ -1127,28 +1089,30 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
     This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
-    In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
+    To troubleshoot:
+   1. first verify the Docker container is up and running and publish the configured port to the outside world (currently not supported in XSOAR 8):
 
-    From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
+       From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
 
-    You should see the following, assuming port 7000 is used:
+       You should see the following, assuming port 7000 is used:
 
-    `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
+       `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
 
-    If the Docker container is up and running, try running cURL queries, to verify the web server is up and running and listens on the configured URL:
+       If the Docker container is up and running, try running cURL queries to verify the web server is up and running and listens on the configured URL:
 
-     - To the messaging endpoint from a separate box.
-     - From the Cortex XSOAR machine to localhost.
+        - To the messaging endpoint from a separate box.
+        - From the Cortex XSOAR machine to localhost.
+          - Note: The web server supports only POST method queries. 
+        
+   2. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
 
-       - Note: The web server supports only POST method queries.
-
-    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
-
-    If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+   3. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate.
+       1. Run `openssl s_client -connect <domain.com>:443` .
+       2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
-    Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
+   4. Try inserting your configured message endpoint in a browser and click **Enter**. If `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
 
-    In some cases, a connection is not created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
+   5. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 

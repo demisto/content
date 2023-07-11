@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Main file for RubrikPolaris Integration."""
 from typing import Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 from rubrik_polaris.rubrik_polaris import PolarisClient
 from rubrik_polaris.exceptions import ProxyException

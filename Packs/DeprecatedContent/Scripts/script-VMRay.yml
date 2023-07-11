@@ -41,7 +41,6 @@ scripttarget: 0
 dependson:
   must:
   - VMRay|||upload_sample
-runonce: false
 runas: DBotWeakRole
 timeout: 0s
 deprecated: true

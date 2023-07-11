@@ -6,7 +6,6 @@ enabled: true
 name: SplunkShowDrilldown
 script: '-'
 subtype: python3
-system: false
 tags:
 - dynamic-section
 timeout: '0'
@@ -16,7 +15,6 @@ contentitemexportablefields:
     fromServerVersion: ''
 dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
-runonce: false
 tests:
 - SplunkShowEnrichment
 fromversion: 6.0.0

@@ -10,16 +10,13 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Must be created from the Teams API Integration section.
   display: API Token
   name: token
-  required: false
   type: 4
 description: Deprecated. Use the OpsGenieV3 integration instead.
 display: Opsgenie v2 (Deprecated)
@@ -31,21 +28,11 @@ tests:
 script:
   commands:
   - arguments:
-    - default: false
-      description: Maximum results to return
-      isArray: false
+    - description: Maximum results to return
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: OpsGenie field to sort by
-      isArray: false
+    - description: OpsGenie field to sort by
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: List the current alerts from OpsGenie.
-    execution: false
     name: opsgenie-list-alerts
     outputs:
     - contextPath: OpsGenieV2.Alerts.acknowledged
@@ -131,34 +118,18 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: Alert message.
-      isArray: false
+    - description: Alert message.
       name: message
       required: true
-      secret: false
-    - default: false
-      description: Client-defined identifier of the alert
-      isArray: false
+    - description: Client-defined identifier of the alert
       name: alias
-      required: false
-      secret: false
-    - default: false
-      description: Description field of the alert that is generally used to provide a detailed information about the alert.
-      isArray: false
+    - description: Description field of the alert that is generally used to provide a detailed information about the alert.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Dictionary of team/user/escalation/schedule for notifications. Dictionary containing type and ID.
+    - description: Dictionary of team/user/escalation/schedule for notifications. Dictionary containing type and ID.
       isArray: true
       name: responders
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Incident Priority.
-      isArray: false
       name: priority
       predefined:
       - P1
@@ -166,11 +137,7 @@ script:
       - P3
       - P4
       - P5
-      required: false
-      secret: false
     description: Create an Alert in opsgenie
-    deprecated: false
-    execution: false
     name: opsgenie-create-alert
     outputs:
     - contextPath: OpsGenieV2.CreatedAlert.action
@@ -202,15 +169,10 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the alert from opsgenie
-      isArray: false
+    - description: The ID of the alert from opsgenie
       name: alert-id
       required: true
-      secret: false
-    deprecated: false
     description: Delete an Alert from OpsGenie
-    execution: false
     name: opsgenie-delete-alert
     outputs:
     - contextPath: OpsGenieV2.DeletedAlert.action
@@ -242,15 +204,10 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the alert from opsgenie
-      isArray: false
+    - description: The ID of the alert from opsgenie
       name: alert-id
       required: true
-      secret: false
-    deprecated: false
     description: Delete an Alert from OpsGenie
-    execution: false
     name: opsgenie-get-alert
     outputs:
     - contextPath: OpsGenieV2.Alert.acknowledged
@@ -336,15 +293,10 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: The ID of the alert from opsgenie
-      isArray: false
+    - description: The ID of the alert from opsgenie
       name: alert-id
       required: true
-      secret: false
-    deprecated: false
     description: Acknowledge an alert in OpsGenie
-    execution: false
     name: opsgenie-ack-alert
     outputs:
     - contextPath: OpsGenieV2.AckedAlert.action
@@ -376,15 +328,10 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: Schedule to retrieve from LR
-      isArray: false
+    - description: Schedule to retrieve from LR
       name: schedule-id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve the provided Schedule (by ID) from LR
-    execution: false
     name: opsgenie-get-schedule
     outputs:
     - contextPath: OpsGenieV2.Schedule.description
@@ -434,21 +381,11 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: Max number of results to return.
-      isArray: false
+    - description: Max number of results to return.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: OpsGenie field to sort on
-      isArray: false
+    - description: OpsGenie field to sort on
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: List Schedules
-    execution: false
     name: opsgenie-list-schedules
     outputs:
     - contextPath: OpsGenieV2.Schedules.description
@@ -498,15 +435,9 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: Schedule from which to return on-call users
-      isArray: false
+    - description: Schedule from which to return on-call users
       name: schedule-id
-      required: false
-      secret: false
-    deprecated: false
     description: Get the on-call users for the provided schedule
-    execution: false
     name: opsgenie-get-on-call
     outputs:
     - contextPath: OpsGenieV2.OnCall._parent.enabled
@@ -529,15 +460,10 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: ID Of opsgenie alert
-      isArray: false
+    - description: ID Of opsgenie alert
       name: alert-id
       required: true
-      secret: false
-    deprecated: false
     description: Close an OpsGenie Alert
-    execution: false
     name: opsgenie-close-alert
     outputs:
     - contextPath: OpsGenieV2.CloseAlert.action
@@ -569,10 +495,6 @@ script:
       type: Boolean
 
   dockerimage: demisto/python3:3.10.10.48392
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

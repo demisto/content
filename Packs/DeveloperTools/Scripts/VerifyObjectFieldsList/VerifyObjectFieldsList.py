@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from typing import Dict, Any, Tuple
 
 
