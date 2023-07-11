@@ -81,6 +81,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
   - [Cortex ASM - Remediation Confirmation Scan](#cortex-asm---remediation-confirmation-scan)
   - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+  - [Cortex ASM - Remediation Objectives](#cortex-asm---remediation-objectives)
   - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
   - [Cortex ASM - Remediation](#cortex-asm---remediation)
   - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
@@ -141,7 +142,7 @@ A playbook that given the IP address enriches GCP information relevant to ASM al
 
 Playbook that given the IP address enriches Prisma Cloud information relevant to ASM alerts.
 
-![Cortex ASM - Prisma Cloud Enrichment](https://raw.githubusercontent.com/demisto/content/fb81c4212b33f1020dce1abc4f0198d4a0256936/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Prisma_Cloud_Enrichment.png)
+![Cortex ASM - Prisma Cloud Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Prisma_Cloud_Enrichment.png)
 
 #### Cortex ASM - Qualys Enrichment
 
@@ -159,12 +160,19 @@ A playbook that given the IP address enriches Rapid7 information relevant to ASM
 
 A playbook that creates an ASM Remediation Confirmation Scan using an existing service ID, if the scan does not already exist;. It then polls for results of a scan.
 
-![Cortex ASM - Remediation Confirmation Scan](https://raw.githubusercontent.com/demisto/content/ec3ba284d4f60e27928a2dc4db19d8758a36fe98/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Confirmation_Scan.png)
+![Cortex ASM - Remediation Confirmation Scan](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Confirmation_Scan.png)
+
 #### Cortex ASM - Remediation Guidance
 
 A playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
 
 ![Cortex ASM - Remediation Guidance](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Guidance.png)
+
+#### Cortex ASM - Remediation Objectives
+
+A playbook that populates the remediation objectives field that is used to display the remediation actions to the end user.
+
+![Cortex ASM - Remediation Objectives](https://raw.githubusercontent.com/demisto/content/5f71853b59431ca60b1b783867b89f819accfefd/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Objectives.png)
 
 #### Cortex ASM - Remediation Path Rules
 
