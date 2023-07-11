@@ -238,3 +238,6 @@ GCP
  params
 Qradar
 XSIAM
+fromversion
+xpanse
+JavaScript

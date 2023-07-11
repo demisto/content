@@ -1,22 +1,14 @@
 args:
-- default: false
-  description: Information about the packs to install including pack ID and version.
+- description: Information about the packs to install including pack ID and version.
   isArray: true
   name: packs_data
   required: true
-  secret: false
-- default: false
-  description: The key in which the pack ID is stored.
-  isArray: false
+- description: The key in which the pack ID is stored.
   name: pack_id_key
   required: true
-  secret: false
-- default: false
-  description: The key in which the pack version is stored. Enter "latest" to update all packs to the latest version.
-  isArray: false
+- description: The key in which the pack version is stored. Enter "latest" to update all packs to the latest version.
   name: pack_version_key
   required: true
-  secret: false
 commonfields:
   id: MarketplacePackInstaller
   version: -1
@@ -34,7 +26,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 deprecated: true
 tags:
 - configuration
