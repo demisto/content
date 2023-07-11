@@ -931,7 +931,7 @@ def repository_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     outputs = []
 
-    if (response_count := response.get('count') and isinstance(response.get('count'), int)) and response_count >= start:
+    if (response_count := response.get('count')) and isinstance(response_count, int) and response_count >= start:
         min_index = min(response_count, end)
         for repo in response.get('value', [])[start:min_index]:
             outputs.append(repo)
@@ -1093,7 +1093,7 @@ def pipeline_run_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.pipeline_run_list_request(project, pipeline_id)
 
     outputs = []
-    if (response_count := response.get('count') and isinstance(response.get('count'), int)) and response_count >= start:
+    if (response_count := response.get('count')) and isinstance(response_count, int) and response_count >= start:
         min_index = min(response_count, end)
         for run in response.get('value', [])[start:min_index]:
             data = generate_pipeline_run_output(run, project)
