@@ -567,7 +567,7 @@ switch (command) {
     case 'test-module':
         res = sendRequest('GET','user');
         if (res.response.id == undefined){
-            throw 'Test integration failed response = ' + JSON.stringify(res);
+            throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
         }
     case 'demisto-api-post':
     case 'core-api-post':
