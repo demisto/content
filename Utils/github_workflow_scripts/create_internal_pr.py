@@ -56,7 +56,7 @@ def main():
 
     # labels should already contain the contribution label from the external PR.
     # We want to replace the 'External' with 'Internal' label
-    labels = [label.name.replace("External", "Internal") for label in merged_pr.labels]
+    labels = [label.name.replace("External PR", "Internal PR") for label in merged_pr.labels]
     for label in labels:
         pr.add_to_labels(label)
         print(f'{t.cyan}"{label}" label added to the Internal PR{t.normal}')

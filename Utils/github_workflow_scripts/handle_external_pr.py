@@ -32,8 +32,8 @@ XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
 COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
-EXTERNAL_LABEL = "External"
-SECURITY_LABEL = "Security"
+EXTERNAL_LABEL = "External PR"
+SECURITY_LABEL = "Security Review"
 SECURITY_CONTENT_ITEMS = [
     "Playbooks",
     "IncidentTypes",
