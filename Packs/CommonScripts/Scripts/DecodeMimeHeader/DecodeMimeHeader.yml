@@ -16,5 +16,5 @@ outputs:
   description: The result of decoded value.
   type: string
 scripttarget: 0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
