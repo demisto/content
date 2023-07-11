@@ -1528,7 +1528,7 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50))
     page_size = arg_to_number(args.get('page_size'))
 
-    if limit and page_size and limit != page_size:
+    if limit and page_size and limit != 50:
         raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
     else:
         limit = page_size if page_size else limit
