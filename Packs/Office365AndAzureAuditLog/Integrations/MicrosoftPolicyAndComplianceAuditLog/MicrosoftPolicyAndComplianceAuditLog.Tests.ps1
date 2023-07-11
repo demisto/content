@@ -6,7 +6,7 @@ Param()
 BeforeAll {
     . "$PSScriptRoot/MicrosoftPolicyAndComplianceAuditLog.ps1"
 }
-
+. "$PSScriptRoot/MicrosoftPolicyAndComplianceAuditLog.ps1"  # temporary
 class MockClient : ExchangeOnlinePowershellV3Client {
     CreateSession() {}
     DisconnectSession() {}
