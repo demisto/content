@@ -1179,6 +1179,6 @@ LIST_INCIDENTS_RESULTS = {
     "xpanse_risk_score": 75
 }
 
-INCIDENT_UPDATE_RESULTS = "Update operation successful: true"
+INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
 
 ALERT_UPDATE_RESULTS = [602]
