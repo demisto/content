@@ -18,11 +18,10 @@ dependson:
   must:
   - demisto-api-post
   - demisto-api-get
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: ExportIncidentsToCSV
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

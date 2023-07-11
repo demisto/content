@@ -426,7 +426,7 @@ def fetch_incidents_command(
     client: Client,
     max_results: int,
     last_run: Dict,
-    first_fetch_time: Optional[str],
+    first_fetch_time: str,
     minimum_severity: str
 ) -> Tuple[Dict, List]:
     """
@@ -449,7 +449,7 @@ def fetch_incidents_command(
         last_fetch = last_run.get("start_time")
 
     else:
-        last_fetch = dateparser.parse(first_fetch_time).strftime(THOUSAND_EYES_DATE_TIME_FORMAT)
+        last_fetch = dateparser.parse(first_fetch_time).strftime(THOUSAND_EYES_DATE_TIME_FORMAT)  # type: ignore[union-attr]
 
     incidents_to_create: List = []
     incident_created_time: str = ""

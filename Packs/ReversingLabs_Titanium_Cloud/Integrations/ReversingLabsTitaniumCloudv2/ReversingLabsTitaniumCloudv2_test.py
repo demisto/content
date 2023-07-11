@@ -4,7 +4,7 @@ from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_out
     analyze_url_output, detonate_sample_output, yara_matches_feed_output, yara_retro_matches_feed_output, \
     functional_similarity_output, uri_index_output, advanced_search_output, expression_search_output, \
     dynamic_analysis_results_output, certificate_analytics_output, reanalyze_sample_output, url_downloaded_files_output, \
-    url_latest_analyses_feed_output, url_analyses_feed_from_date_output
+    url_latest_analyses_feed_output, url_analyses_feed_from_date_output, yara_ruleset_output, yara_retro_actions_output
 import demistomock as demisto
 import pytest
 
@@ -218,5 +218,23 @@ def test_url_analyses_feed_from_date_output():
     test_context = load_json("test_data/url_analyses_date_context.json")
 
     result, _ = url_analyses_feed_from_date_output(test_report, "1688913146")
+
+    assert result.to_context() == test_context
+
+
+def test_yara_ruleset_output_info():
+    test_report = load_json("test_data/yara_ruleset_info.json")
+    test_context = load_json("test_data/yara_ruleset_info_context.json")
+
+    result = yara_ruleset_output("get_yara_ruleset_info", test_report)
+
+    assert result.to_context() == test_context
+
+
+def test_yara_retro_output_status():
+    test_report = load_json("test_data/yara_retro_status.json")
+    test_context = load_json("test_data/yara_retro_status_context.json")
+
+    result = yara_retro_actions_output("check_yara_retro_status", test_report)
 
     assert result.to_context() == test_context

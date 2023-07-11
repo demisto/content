@@ -14,57 +14,44 @@ configuration:
 - defaultvalue: '1.0'
   display: API version
   name: version
-  required: false
   type: 0
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - defaultvalue: 'false'
   display: On 'Fetch incidents' import all alerts related to the incident
   name: importAlerts
-  required: false
   type: 8
 - defaultvalue: 1 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
 - defaultvalue: '100'
   display: 'Fetch limit: the maximum number of incidents to fetch'
   name: fetch_limit
-  required: false
   type: 0
-description:  Deprecated. Use RSA NetWitness v11.5 instead
+description: Deprecated. Use RSA NetWitness v11.5 instead
 display: RSA NetWitness v11.1 (Deprecated)
 name: RSA NetWitness v11.1
 deprecated: true
 script:
   commands:
   - arguments:
-    - default: false
-      description: The incident id
-      isArray: false
+    - description: The incident id
       name: incidentId
       required: true
-      secret: false
-    deprecated: false
     description: Get details of a specific incident, including all alerts related with the incident.
-    execution: false
     name: netwitness-get-incident
     outputs:
     - contextPath: NetWitness.Incidents.id
@@ -242,41 +229,19 @@ script:
       description: An Active Directory (AD) domain
       type: Unknown
   - arguments:
-    - default: false
-      description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z). Use to retrieve incidents created on and after this timestamp.
-      isArray: false
+    - description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z). Use to retrieve incidents created on and after this timestamp.
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z). Use to retrieve incidents created on and before this timestamp.
-      isArray: false
+    - description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z). Use to retrieve incidents created on and before this timestamp.
       name: until
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '200'
+    - defaultValue: '200'
       description: The maximum number of incidents to retrieve. default  is 200.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Use this to retrieve incidents from the last number of days specified.
-      isArray: false
+    - description: Use this to retrieve incidents from the last number of days specified.
       name: lastDays
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The requested page number.
-      isArray: false
       name: pageNumber
-      required: false
-      secret: false
-    deprecated: false
     description: 'Get a list of incidents in a specific time frame. One of the followings must be specified:  since, until, lastDays'
-    execution: false
     name: netwitness-get-incidents
     outputs:
     - contextPath: NetWitness.Incidents.id
@@ -379,16 +344,11 @@ script:
       description: Next page number that wasn't fetched in the last command run (will be empty if all incidents were fetched).
       type: Number
   - arguments:
-    - default: false
-      description: The incident's id
-      isArray: false
+    - description: The incident's id
       name: incidentId
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The current status
-      isArray: false
       name: status
       predefined:
       - New
@@ -398,17 +358,9 @@ script:
       - RemediationComplete
       - Closed
       - ClosedFalsePositive
-      required: false
-      secret: false
-    - default: false
-      description: The NetWitness user identifier of the user currently working on the incident.
-      isArray: false
+    - description: The NetWitness user identifier of the user currently working on the incident.
       name: assignee
-      required: false
-      secret: false
-    deprecated: false
     description: Update a specific incident.  Currently, an incident’s status and assignee may be modified
-    execution: false
     name: netwitness-update-incident
     outputs:
     - contextPath: NetWitness.Incidents.id
@@ -508,26 +460,16 @@ script:
       description: Unique destination IP addresses.
       type: Unknown
   - arguments:
-    - default: false
-      description: The incident id
-      isArray: false
+    - description: The incident id
       name: incidentId
       required: true
-      secret: false
-    deprecated: false
     description: Delete a specific incident, by its id.
-    execution: false
     name: netwitness-delete-incident
   - arguments:
-    - default: false
-      description: The incident id
-      isArray: false
+    - description: The incident id
       name: incidentId
       required: true
-      secret: false
-    deprecated: false
     description: Get all the alerts related to a specific incident.
-    execution: false
     name: netwitness-get-alerts
     outputs:
     - contextPath: NetWitness.Alerts.id
@@ -608,10 +550,7 @@ script:
     - contextPath: NetWitness.Alerts.events.destination.user.adDomain
       description: An Active Directory (AD) domain
       type: Unknown
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python2

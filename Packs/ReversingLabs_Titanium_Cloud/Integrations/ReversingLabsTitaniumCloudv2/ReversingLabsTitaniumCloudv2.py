@@ -1006,13 +1006,19 @@ def yara_ruleset_command():
 
     response_json = response.json()
 
+    results = yara_ruleset_output(output_key, response_json)
+
+    return_results(results)
+
+
+def yara_ruleset_output(output_key, response_json):
     results = CommandResults(
         outputs_prefix="ReversingLabs",
         outputs={output_key: response_json},
         readable_output=response_json
     )
 
-    return_results(results)
+    return results
 
 
 def yara_matches_feed_command():
@@ -1110,13 +1116,19 @@ def yara_retro_actions_command():
 
     response_json = response.json()
 
+    results = yara_retro_actions_output(output_key, response_json)
+
+    return_results(results)
+
+
+def yara_retro_actions_output(output_key, response_json):
     results = CommandResults(
         outputs_prefix="ReversingLabs",
         outputs={output_key: response_json},
         readable_output=response_json
     )
 
-    return_results(results)
+    return results
 
 
 def yara_retro_matches_feed_command():

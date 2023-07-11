@@ -270,6 +270,6 @@ view: |-
     }
   }
 tests:
-- No tests (auto formatted)
+- Test Playbook - MDE - Retrieve File
 fromversion: 6.5.0
 system: true

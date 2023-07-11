@@ -27,11 +27,9 @@ configuration:
   type: 4
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
 script:
   script: ""
@@ -959,7 +957,6 @@ script:
     description: Revert config to given savepoint
     outputs: []
   dockerimage: demisto/opnsense:1.0.0.63724
-  runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:

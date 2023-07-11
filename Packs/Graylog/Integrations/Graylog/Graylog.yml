@@ -22,36 +22,30 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   defaultvalue: 3 days
   type: 0
-  required: false
   section: Collect
 - display: The query that is used to fetch events as incidents (lucene syntax)
   name: fetch_query
   type: 0
-  required: false
   section: Collect
   advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
   section: Collect
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
   section: Connect
 script:
   script: ''
@@ -101,11 +95,9 @@ script:
       required: true
       description: Query (Lucene syntax)
     - name: range
-      default: false
       description: Relative timeframe to search in. Default 300s
       defaultValue: "300"
     - name: limit
-      default: false
       description: Maximum number of messages to return. Default 20
       defaultValue: "20"
     - name: offset
@@ -144,7 +136,6 @@ script:
     - name: per_page
       description: how many per page (integer)
     - name: timerange
-      default: false
       description: Relative timerange to search in seconds
       defaultValue: "300"
     - name: sort_by
@@ -166,7 +157,6 @@ script:
       required: true
       description: Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss.
     - name: limit
-      default: false
       description: Maximum number of messages to return.
       defaultValue: "20"
     - name: offset
@@ -192,9 +182,8 @@ script:
       description: Search results of Absolute search
       type: String
     description: Search with absolute times
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

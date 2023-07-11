@@ -6,8 +6,7 @@ args:
   defaultValue: "443"
   description: Port to check
   name: Port
-comment: Use this automation to check for validity of your SSL certificate and get
-  the time until expiration.
+comment: Use this automation to check for validity of your SSL certificate and get the time until expiration.
 commonfields:
   id: SSLVerifierV2
   version: -1
@@ -25,7 +24,6 @@ outputs:
   description: Days to expiration
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

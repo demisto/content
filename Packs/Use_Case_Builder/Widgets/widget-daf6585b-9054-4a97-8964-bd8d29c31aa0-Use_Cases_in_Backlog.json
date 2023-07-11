@@ -1,0 +1,36 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "daf6585b-9054-4a97-8964-bd8d29c31aa0",
+    "isPredefined": true,
+    "name": "Use Cases in Backlog",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#989898": {
+                    "value": 0
+                }
+            },
+            "type": "above"
+        },
+        "valuesFormat": "abbreviated"
+    },
+    "query": "usecasedevelopmentstage:Backlog",
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

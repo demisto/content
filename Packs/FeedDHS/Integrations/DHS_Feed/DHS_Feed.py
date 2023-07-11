@@ -1,15 +1,15 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from copy import copy
 
 import dateparser
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 
 import tempfile
-from typing import Optional, List, Dict, Union, Text, Iterator, Any, Iterable, Tuple
+from typing import Optional, List, Dict, Union, Iterator, Any, Iterable, Tuple
 import uuid
 
 from xmltodict import parse
@@ -72,7 +72,7 @@ class TaxiiClient:
             urllib3.disable_warnings()
             self.verify = verify
 
-    def _request(self, url: str, data: Text) -> str:
+    def _request(self, url: str, data: str) -> str:
         data = data.replace('{COLLECTION}', self._collection)
         return requests.post(
             url,
@@ -94,9 +94,9 @@ class TaxiiClient:
         return parse(self._request(url, data)).get("taxii_11:Poll_Response", {})
 
 
-def safe_data_get(data: Dict, keys: Union[Iterable[Text], Text], prefix: str = '',
+def safe_data_get(data: Dict, keys: Union[Iterable[str], str], prefix: str = '',
                   default: Optional[Any] = None):
-    keys = [keys] if isinstance(keys, Text) else keys
+    keys = [keys] if isinstance(keys, str) else keys
     if prefix:
         keys = map(lambda x: ':'.join([prefix, x]), keys)
     temp_data = data
@@ -135,8 +135,7 @@ class Indicators:
     def _indicators(block: Dict) -> Iterator[Dict]:
         indicator = safe_data_get(block, ['Indicators', 'Indicator'], prefix='stix', default={})
         if isinstance(indicator, List):
-            for single_indicator in indicator:
-                yield single_indicator
+            yield from indicator
         else:
             yield indicator
 
@@ -358,8 +357,10 @@ def get_first_fetch(first_fetch_string: str) -> str:
 
 def main():
     params = demisto.params()
-    key = fix_rsa_data(params.get('key', ''), 4)
-    crt = params.get('crt', '')
+    key = fix_rsa_data(
+        params.get('key_creds', {}).get('password')
+        or params.get('key', ''), 4)
+    crt = params.get('crt_creds', {}).get('password') or params.get('crt', '')
     collection = params.get('collection')
     tags = argToList(params['tags']) if params.get('tags') else None
     client = TaxiiClient(key, crt, collection, base_url=params.get('base_url'),

@@ -13,7 +13,6 @@ comment: |-
   In order to run successfully, the script should be configured to trigger on SLA breach, through field edit mode.
 enabled: true
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted.

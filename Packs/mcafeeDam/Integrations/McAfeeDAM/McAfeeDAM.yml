@@ -20,26 +20,20 @@ configuration:
   name: batchSize
   defaultvalue: "10"
   type: 0
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Validate ceritifacte
   name: secure
   defaultvalue: "false"
   type: 8
-  required: false
-- display: Rule Name, If fetch incident is checked, this field is mandatory and will
-    be used to get DAM alerts only triggered by this rule
+- display: Rule Name, If fetch incident is checked, this field is mandatory and will be used to get DAM alerts only triggered by this rule
   name: ruleName
   defaultvalue: ""
   type: 0
-  required: false
 script:
   script: ''
   type: javascript
@@ -72,8 +66,7 @@ script:
     - contentPath: rules
       contextPath: rules
       description: DAM rules.
-    description: Gets a DAM alert from McAfee Database Activity Monitoring by alert
-      ID.
+    description: Gets a DAM alert from McAfee Database Activity Monitoring by alert ID.
   - name: dam-get-latest-by-rule
     arguments:
     - name: ruleName
@@ -83,8 +76,7 @@ script:
     - name: count
       description: Number of alerts to retrieve. The default is 10.
     - name: timeBack
-      description: Filter DAM alerts and import alerts that where created only in
-        the last X minutes. The default is the last 10 minutes.
+      description: Filter DAM alerts and import alerts that where created only in the last X minutes. The default is the last 10 minutes.
     outputs:
     - contentPath: id
       contextPath: AlertId
@@ -109,7 +101,6 @@ script:
       description: DAM Rules
     description: Gets the latest DAM alerts by rule name.
   isfetch: true
-  runonce: false
 tests:
 - No test
 fromversion: 5.0.0

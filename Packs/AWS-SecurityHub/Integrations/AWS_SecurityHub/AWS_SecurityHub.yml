@@ -8,13 +8,11 @@ commonfields:
 configuration:
 - display: Role Arn
   name: roleArn
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: Role Session Name
   name: roleSessionName
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -39,30 +37,25 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
-  required: false
   type: 15
   section: Connect
   advanced: true
 - display: Role Session Duration
   name: sessionDuration
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: Access Key
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret Key
 - display: Access Key
   name: access_key
-  required: false
   type: 0
   section: Connect
   hidden: true
 - display: Secret Key
   name: secret_key
-  required: false
   type: 4
   section: Connect
   hidden: true
@@ -70,7 +63,6 @@ configuration:
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -78,41 +70,34 @@ configuration:
   name: retries
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: PrivateLink service URL.
   name: endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
-  required: false
   type: 0
   section: Collect
   defaultvalue: 15 days
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - display: Security Hub Incidents Severity Level
   name: sh_severity
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -125,27 +110,23 @@ configuration:
   - Critical
 - display: Additional Incidents Filters
   name: additionalFilters
-  required: false
   type: 0
   section: Collect
   advanced: true
   additionalinfo: "A comma-separated list of additional incident filters in the format 'name=name1,value=value1,comparison=comparison1."
 - display: Change findings workflow to 'NOTIFIED'
   name: archiveFindings
-  required: false
   type: 8
   section: Collect
   advanced: true
   additionalinfo: "Notify the resource owner about the security issue. You can use this status when you are not the resource owner, and you need intervention from the resource owner in order to resolve a security issue."
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -153,7 +134,6 @@ configuration:
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming and Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
   name: mirror_direction
   type: 15
-  required: false
   section: Collect
   options:
   - None
@@ -167,7 +147,6 @@ configuration:
   additionalinfo: 'After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved'
   name: resolve_finding
   type: 8
-  required: false
   section: Collect
   defaultvalue: 'true'
   hidden:
@@ -175,7 +154,6 @@ configuration:
 - display: Finding Type
   name: finding_type
   additionalinfo: 'You can set the type of the findings to be fetched: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch findings with the finding type that match TTPs.'
-  required: false
   type: 16
   section: Collect
   advanced: true
@@ -189,7 +167,6 @@ configuration:
   additionalinfo: 'You can set the workflow status of the findings to be fetched: "New", "Notified", "Resolved", "Suppressed". For example, if you set the workflow status to "Suppressed", the integration will only fetch findings with the workflow status of Suppressed.'
   name: workflow_status
   type: 16
-  required: false
   section: Collect
   advanced: true
   options:
@@ -200,7 +177,6 @@ configuration:
 - display: Product Name
   name: product_name
   additionalinfo: 'You can enter a comma-separated list of product names. In order to get the product name, click Integrations in the AWS - Security Hub menu. Use only the product name (the value after the colon (:)) for this parameter.'
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -210,39 +186,17 @@ name: AWS - Security Hub
 script:
   commands:
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
-      isArray: false
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: Override arguments and send a formatted JSON file.
-      isArray: false
+    - description: Override arguments and send a formatted JSON file.
       name: raw_json
-      required: false
-      secret: false
-    deprecated: false
     description: Disables Security Hub in your account only in the current Region. To disable Security Hub in all Regions, you must submit one request per Region where you have enabled Security Hub. When you disable Security Hub for a master account, it doesn't disable Security Hub for any associated member accounts. When you disable Security Hub, your existing findings and insights and any Security Hub configuration settings are deleted after 90 days and can't be recovered. Any standards that were enabled are disabled, and your master and member account associations are removed. If you want to save your existing findings, you must export them before you disable Security Hub.
-    execution: false
     name: aws-securityhub-disable-security-hub
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
@@ -320,1217 +274,565 @@ script:
     - contextPath: AWS-SecurityHub.UnprocessedFindings
       description: The list of findings that were not updated.
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
-      isArray: false
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: Override arguments and send a formatted JSON file.
-      isArray: false
+    - description: Override arguments and send a formatted JSON file.
       name: raw_json
-      required: false
-      secret: false
-    - default: false
-      description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2"'
-      isArray: false
+    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2"'
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: Enables Security Hub for your account in the current Region or the Region you specify in the request. Enabling Security Hub also enables the CIS AWS Foundations standard. When you enable Security Hub, you grant to Security Hub the permissions necessary to gather findings from AWS Config, Amazon GuardDuty, Amazon Inspector, and Amazon Macie. To learn more, see Setting Up AWS Security Hub.
-    execution: false
     name: aws-securityhub-enable-security-hub
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
-      isArray: false
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: Override arguments and send a formatted JSON file.
-      isArray: false
+    - description: Override arguments and send a formatted JSON file.
       name: raw_json
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: product_arn_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings
-      isArray: false
       name: product_arn_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: aws_account_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: aws_account_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: generator_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: generator_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: first_observed_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: first_observed_at_end
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: last_observed_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: last_observed_at_end
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: created_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: created_at_end
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: updated_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: updated_at_end
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A date range unit for the date filter.
-      isArray: false
       name: date_range_unit
       predefined:
       - DAYS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: severity_label_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: severity_label_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: title_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: title_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: description_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: description_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: recommendation_text_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: recommendation_text_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: source_url_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: source_url_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: product_fields_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: product_fields_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: product_fields_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: product_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: product_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: company_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: company_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: user_defined_fields_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: user_defined_fields_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: user_defined_fields_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_path_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_path_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_direction_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_direction_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_protocol_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_protocol_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_source_ip_v4_cidr
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_source_ip_v6_cidr
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_source_domain_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_source_domain_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_source_mac_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_source_mac_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_destination_ip_v4_cidr
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_destination_ip_v6_cidr
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_destination_domain_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_destination_domain_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: process_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: process_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: process_path_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: process_path_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: process_launched_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: process_launched_at_end
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: process_terminated_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: process_terminated_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_value_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_value_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_category_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_category_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: threat_intel_indicator_last_observed_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: threat_intel_indicator_last_observed_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_source_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_source_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_source_url_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_source_url_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_partition_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_partition_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_region_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_region_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: resource_tags_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: resource_tags_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: resource_tags_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_image_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_image_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: resource_aws_ec2_instance_ip_v4_addresses_cidr
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: resource_aws_ec2_instance_ip_v6_addresses_cidr
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_key_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_key_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_iam_instance_profile_arn_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_iam_instance_profile_arn_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_vpc_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_vpc_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_subnet_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_subnet_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: resource_aws_ec2_instance_launched_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: resource_aws_ec2_instance_launched_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_s3_bucket_owner_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_s3_bucket_owner_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_s3_bucket_owner_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_s3_bucket_owner_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_iam_access_key_user_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_iam_access_key_user_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_iam_access_key_status_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_iam_access_key_status_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: resource_aws_iam_access_key_created_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: resource_aws_iam_access_key_created_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_container_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_container_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_container_image_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_container_image_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_container_image_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_container_image_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: resource_container_launched_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: resource_container_launched_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: resource_details_other_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: resource_details_other_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: resource_details_other_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: compliance_status_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: compliance_status_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: verification_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: verification_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: workflow_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: workflow_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: record_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: record_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: related_findings_product_arn_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: related_findings_product_arn_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: related_findings_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: related_findings_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: note_text_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: note_text_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: note_updated_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: note_updated_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: note_updated_by_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: note_updated_by_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A value for the keyword.
-      isArray: false
+    - description: A value for the keyword.
       name: keyword_value
-      required: false
-      secret: false
-    - default: false
-      description: The finding attribute used to sort findings.
-      isArray: false
+    - description: The finding attribute used to sort findings.
       name: sort_criteria_field
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The order used to sort findings.
-      isArray: false
       name: sort_criteria_sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: Paginates results. On your first call to the GetFindings operation, set the value of this parameter to NULL. For subsequent calls to the operation, fill nextToken in the request with the value of nextToken from the previous response to continue listing data.
-      isArray: false
+    - description: Paginates results. On your first call to the GetFindings operation, set the value of this parameter to NULL. For subsequent calls to the operation, fill nextToken in the request with the value of nextToken from the previous response to continue listing data.
       name: next_token
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of findings that match the specified criteria.
-    execution: false
     name: aws-securityhub-get-findings
     outputs:
     - contextPath: AWS-SecurityHub.Findings.SchemaVersion
@@ -2110,39 +1412,17 @@ script:
       description: The token that is required for pagination.
       type: string
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
-      isArray: false
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: Override arguments and send a formatted JSON file.
-      isArray: false
+    - description: Override arguments and send a formatted JSON file.
       name: raw_json
-      required: false
-      secret: false
-    deprecated: false
     description: Provides the details for the Security Hub master account to the current member account.
-    execution: false
     name: aws-securityhub-get-master-account
     outputs:
     - contextPath: AWS-SecurityHub.Master.AccountId
@@ -2161,55 +1441,25 @@ script:
       description: 'A list of details about the Security Hub master account for the current member account. '
       type: Unknown
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
-      isArray: false
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: Override arguments and send a formatted JSON file.
-      isArray: false
+    - description: Override arguments and send a formatted JSON file.
       name: raw_json
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: <p>Specifies which member accounts the response includes based on their relationship status with the master account. The default value is <code>TRUE</code>. If <code>onlyAssociated</code> is set to <code>TRUE</code>, the response includes member accounts whose relationship status with the master is set to <code>ENABLED</code> or <code>DISABLED</code>. If <code>onlyAssociated</code> is set to <code>FALSE</code>, the response includes all existing member accounts. </p>
-      isArray: false
       name: only_associated
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: 'Paginates results. Set the value of this parameter to NULL on your first call to the ListMembers operation. For subsequent calls to the operation, fill nextToken in the request with the value of nextToken from the previous response to continue listing data.'
-      isArray: false
+    - description: 'Paginates results. Set the value of this parameter to NULL on your first call to the ListMembers operation. For subsequent calls to the operation, fill nextToken in the request with the value of nextToken from the previous response to continue listing data.'
       name: next_token
-      required: false
-      secret: false
-    deprecated: false
     description: Lists details about all member accounts for the current Security Hub master account.
-    execution: false
     name: aws-securityhub-list-members
     outputs:
     - contextPath: AWS-SecurityHub.Members.AccountId
@@ -2237,1205 +1487,568 @@ script:
       description: The token that is required for pagination.
       type: string
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
-      isArray: false
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: Override arguments and send a formatted JSON file.
-      isArray: false
+    - description: Override arguments and send a formatted JSON file.
       name: raw_json
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: product_arn_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: product_arn_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: aws_account_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: aws_account_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: generator_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: generator_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: first_observed_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: first_observed_at_end
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A date range unit for the date filter.
-      isArray: false
       name: date_range_unit
       predefined:
       - DAYS
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: last_observed_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: last_observed_at_end
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: created_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: created_at_end
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: updated_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: updated_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: severity_label_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: severity_label_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: title_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: title_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: description_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: description_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: recommendation_text_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: recommendation_text_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: source_url_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: source_url_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: product_fields_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: product_fields_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: product_fields_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: product_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: product_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: company_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: company_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: user_defined_fields_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: user_defined_fields_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: user_defined_fields_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_path_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_path_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: malware_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: malware_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_direction_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_direction_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_protocol_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_protocol_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_source_ip_v4_cidr
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_source_ip_v6_cidr
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_source_domain_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_source_domain_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_source_mac_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_source_mac_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_destination_ip_v4_cidr
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: network_destination_ip_v6_cidr
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: network_destination_domain_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: network_destination_domain_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: process_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: process_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: process_path_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: process_path_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: process_launched_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: process_launched_at_end
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: process_terminated_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: process_terminated_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_value_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_value_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_category_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_category_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: threat_intel_indicator_last_observed_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: threat_intel_indicator_last_observed_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_source_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_source_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: threat_intel_indicator_source_url_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: threat_intel_indicator_source_url_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_partition_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_partition_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_region_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_region_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: resource_tags_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: resource_tags_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: resource_tags_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_type_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_type_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_image_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_image_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: resource_aws_ec2_instance_ip_v4_addresses_cidr
-      required: false
-      secret: false
-    - default: false
-      description: A finding's CIDR value.
-      isArray: false
+    - description: A finding's CIDR value.
       name: resource_aws_ec2_instance_ip_v6_addresses_cidr
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_key_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_key_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_iam_instance_profile_arn_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_iam_instance_profile_arn_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_vpc_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_vpc_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_ec2_instance_subnet_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_ec2_instance_subnet_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: resource_aws_ec2_instance_launched_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: resource_aws_ec2_instance_launched_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_s3_bucket_owner_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_s3_bucket_owner_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_s3_bucket_owner_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_s3_bucket_owner_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_iam_access_key_user_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_iam_access_key_user_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_aws_iam_access_key_status_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_aws_iam_access_key_status_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: resource_aws_iam_access_key_created_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: resource_aws_iam_access_key_created_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_container_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_container_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_container_image_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_container_image_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: resource_container_image_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: resource_container_image_name_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: resource_container_launched_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: resource_container_launched_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The key of the map filter.
-      isArray: false
+    - description: The key of the map filter.
       name: resource_details_other_key
-      required: false
-      secret: false
-    - default: false
-      description: The value for the key in the map filter.
-      isArray: false
+    - description: The value for the key in the map filter.
       name: resource_details_other_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to apply to a key value when querying for findings with a map filter.
-      isArray: false
       name: resource_details_other_comparison
       predefined:
       - EQUALS
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: compliance_status_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: compliance_status_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: verification_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: verification_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: workflow_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: workflow_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: record_state_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: record_state_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: related_findings_product_arn_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: related_findings_product_arn_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: related_findings_id_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: related_findings_id_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: note_text_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: note_text_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A start date for the date filter.
-      isArray: false
+    - description: A start date for the date filter.
       name: note_updated_at_start
-      required: false
-      secret: false
-    - default: false
-      description: An end date for the date filter.
-      isArray: false
+    - description: An end date for the date filter.
       name: note_updated_at_end
-      required: false
-      secret: false
-    - default: false
-      description: The string filter value.
-      isArray: false
+    - description: The string filter value.
       name: note_updated_by_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The condition to be applied to a string value when querying for findings.
-      isArray: false
       name: note_updated_by_comparison
       predefined:
       - EQUALS
       - PREFIX
-      required: false
-      secret: false
-    - default: false
-      description: A value for the keyword.
-      isArray: false
+    - description: A value for the keyword.
       name: keyword_value
-      required: false
-      secret: false
-    - default: false
-      description: The updated note text.
-      isArray: false
+    - description: The updated note text.
       name: note_text
-      required: false
-      secret: false
-    - default: false
-      description: The principal that updated the note.
-      isArray: false
+    - description: The principal that updated the note.
       name: note_updated_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The updated record state for the finding.
-      isArray: false
       name: record_state
       predefined:
       - ACTIVE
       - ARCHIVED
-      required: false
-      secret: false
     deprecated: true
     description: Deprecated, use aws-securityhub-batch-update-findings instead.
-    execution: false
     name: aws-securityhub-update-findings
   - name: get-remote-data
-    deprecated: false
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
-    execution: false
     arguments:
     - name: id
-      default: false
       description: The remote incident ID.
-      isArray: false
       required: true
-      secret: false
     - name: lastUpdate
-      default: false
       defaultValue: '0'
       description: The UTC timestamp in seconds since the last update. The incident is only updated if it was modified after the last update time.
-      isArray: false
-      required: false
-      secret: false
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
   dockerimage: demisto/boto3py3:1.0.0.52713
-  feed: false
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
