@@ -72,7 +72,8 @@ def main():
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):
         if not demisto.dt(demisto.context(), re.sub('\(.*\)', '', dt)):
-            return_error("Incorrect dt path: no ids found")
+            demisto.debug(f"Could not find the dt path: {dt} in the context: {demisto.context()}")
+            return_error(f"Incorrect dt path {dt}: no ids found in the context: {demisto.context()}")
         demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
                         "that all ids have finished running.")
 
