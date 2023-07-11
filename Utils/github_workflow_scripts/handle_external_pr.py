@@ -16,8 +16,7 @@ from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-# TODO modify to actual SE
-SECURITY_REVIEWER = "kgal-pan"
+SECURITY_REVIEWER = "efelmandar"
 REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
