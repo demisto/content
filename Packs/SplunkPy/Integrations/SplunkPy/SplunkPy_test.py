@@ -999,7 +999,7 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
                                                 func_call_kwargs: dict, expected_closure_data: dict):
     class Jobs:
         def oneshot(self, _, output_mode: str):
-            assert output_mode == 'json'
+            assert output_mode == splunk.OUTPUT_MODE_JSON
             return notable_data
 
     class Service:
@@ -1045,7 +1045,7 @@ def test_get_remote_data_command_with_message(mocker):
 
     class Jobs:
         def oneshot(self, _, output_mode: str):
-            assert output_mode == "json"
+            assert output_mode == splunk.OUTPUT_MODE_JSON
             return Message("test message")
 
     class Service:
@@ -1065,12 +1065,11 @@ def test_get_remote_data_command_with_message(mocker):
     mocker.patch(
         "SplunkPy.results.JSONResultsReader", return_value=[Message("test message")]
     )
-    mocker.patch.object(demisto, "results")
     mocker.patch("SplunkPy.isinstance", return_value=True)
 
     splunk.get_remote_data_command(Service(), **func_call_kwargs)
     (debug_message,) = debug_mock.call_args_list[1][0]
-    assert debug_message == "Message from splunk-sdk message: test message"
+    assert debug_message == "Splunk-SDK message: test message"
 
 
 def test_get_modified_remote_data_command(mocker):

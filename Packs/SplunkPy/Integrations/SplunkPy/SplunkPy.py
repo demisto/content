@@ -304,13 +304,12 @@ def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset):
         "output_mode": OUTPUT_MODE_JSON,
     }
 
-  
+
 def build_fetch_query(params):
     fetch_query = params['fetchQuery']
 
-
-    if demisto.get(params, 'extractFields'):
-        extractFields = params['extractFields']
+    if (extract_fields := params.get('extractFields')):
+        extractFields = extract_fields
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
@@ -1307,6 +1306,7 @@ def get_modified_remote_data_command(service: client.Service, args):
     Returns:
         GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
     """
+    modified_notable_ids: list = []
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
     search = '|`incident_review` ' \
@@ -1316,11 +1316,15 @@ def get_modified_remote_data_command(service: client.Service, args):
              '| dedup rule_id'
     demisto.debug(f'Performing get-modified-remote-data command with query: {search}')
 
-    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON)):
-        if handle_message(item):
-            continue
-        modified_notable_ids.append(item['rule_id'])
-
+    modified_notable_ids.extend(
+        item['rule_id']
+        for item in results.JSONResultsReader(
+            service.jobs.oneshot(
+                search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON
+            )
+        )
+        if not handle_message(item)
+    )
     if len(modified_notable_ids) >= MIRROR_LIMIT:
         demisto.info(f'Warning: More than {MIRROR_LIMIT} notables have been modified since the last update.')
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
@@ -1851,7 +1855,6 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
     if searchID is not None:
         args['searchID'] = searchID
 
-
     auth_header = (
         {"Authorization": f"Bearer {auth_token}"} if auth_token else {"Authorization": sessionKey}
     )
@@ -2055,7 +2058,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
         if isinstance(item, results.Message):
             if "Error in" in item.message:
                 raise ValueError(item.message)
-            demisto.debug(f"Message from splunk-sdk message: {item.message}")
+            demisto.debug(f"Splunk-SDK message: {item.message}")
             parsed_batch_results.append(convert_to_str(item.message))
 
         elif isinstance(item, dict):
@@ -2409,7 +2412,7 @@ def replace_keys(data):
     return data
 
 
-def kv_store_collection_create(service: client.Service, args: dict) -> None:
+def kv_store_collection_create(service: client.Service, args: dict) -> CommandResults:
     try:
         service.kvstore.create(args['kv_store_name'])
     except HTTPError as error:
@@ -2417,10 +2420,10 @@ def kv_store_collection_create(service: client.Service, args: dict) -> None:
             raise DemistoException(
                 f"KV store collection {service.namespace['app']} already exists.",
             ) from error
+        raise
+
     return CommandResults(
         readable_output=f"KV store collection {service.namespace['app']} created successfully",
-        {},
-        {},
     )
 
 
@@ -2628,8 +2631,20 @@ def get_connection_args(params: dict) -> dict:
 
 
 def handle_message(item: results.Message | dict) -> bool:
+    """Checks if the response from JSONResultsReader is a message object.
+        The message can be info etc.
+        such as: "the test table is empty"
+
+    Args:
+        item (results.Message | dict): The item to be checked. It can be either a `results.Message`
+            object or a dictionary.
+
+    Returns:
+        bool: Returns `True` if the item is an instance of `results.Message`, `False` otherwise.
+
+    """
     if isinstance(item, results.Message):
-        demisto.debug(f"Message from splunk-sdk message: {item.message}")
+        demisto.debug(f"Splunk-SDK message: {item.message}")
         return True
     return False
 
