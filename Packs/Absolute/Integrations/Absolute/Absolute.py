@@ -404,7 +404,7 @@ def validate_device_freeze_type_offline(offline_time_seconds):
         # must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days)
         offline_time_seconds_valid = 1200 <= offline_time_seconds <= 172800000
         if not offline_time_seconds_valid:
-            raise_demisto_exception("the offline_time_seconds arg is not valid. Must be between 1200 seconds"
+            raise_demisto_exception("the offline_time_seconds arg is not valid. xMust be between 1200 seconds"
                                     " (20 minutes) and 172800000 seconds (2000 days).")
     return offline_time_seconds
 
