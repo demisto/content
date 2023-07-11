@@ -256,13 +256,13 @@ def main():
 
     # assign reviewers / request review from
     content_reviewer = determine_reviewer(REVIEWERS, content_repo)
-    pr.add_to_assignees(assignees=content_reviewer)
+    pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 
     # Add security reviewer if the PR contains
     if is_requires_security_reviewer(pr_files):
         reviewers.append(SECURITY_REVIEWER)
-        pr.add_to_assignees(assignees=SECURITY_REVIEWER)
+        pr.add_to_assignees(SECURITY_REVIEWER)
         pr.add_to_labels(SECURITY_LABEL)
 
     pr.create_review_request(reviewers=reviewers)
