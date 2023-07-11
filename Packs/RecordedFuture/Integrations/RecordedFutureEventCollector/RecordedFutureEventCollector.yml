@@ -14,7 +14,7 @@ configuration:
   type: 9
   section: Connect
 - display: Trust any certificate (not secure)
-  name: insecure
+  name: unsecure
   type: 8
   section: Connect
 - display: Use system proxy settings
