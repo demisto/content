@@ -2907,6 +2907,7 @@ Triggers a GitHub workflow on a given repository and workflow.
 | repository | The GitHub repository name. | Optional | 
 | branch | The branch to trigger the workflow on. | Optional | 
 | workflow | The name of your workflow file. | Required | 
+| inputs | The inputs for the workflow. | Optional | 
 
 #### Context Output
 
