@@ -836,7 +836,7 @@ def build_misp_complex_filter(demisto_query: str):
     regex_and = r'(AND:)([^\;]+)(;)?'
     regex_or = r'(OR:)([^\;]+)(;)?'
     regex_not = r'(NOT:)([^\;]+)(;)?'
-    misp_query_params = dict()
+    misp_query_params: Dict[Any, Any] = {}
 
     match_and = re.search(regex_and, demisto_query, re.MULTILINE)
     match_or = re.search(regex_or, demisto_query, re.MULTILINE)
@@ -908,7 +908,10 @@ def build_attributes_search_response(response: Union[dict, requests.Response],
 
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-    attributes = response_object.get('Attribute')
+    if isinstance(response_object, dict):
+        attributes = response_object.get('Attribute')
+    else:  # Response
+        attributes = response_object.json().get('Attribute')
     return get_limit_attribute_search_outputs(attributes)
 
 
@@ -969,7 +972,10 @@ def build_attributes_search_response_return_only_values(response_object: Union[d
     """returns list of attributes' values that match the search query when user set the arg 'compact' to True"""
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-    attributes = response_object.get('Attribute')
+    if isinstance(response_object, dict):
+        attributes = response_object.get('Attribute', [])
+    else:  # Response
+        attributes = response_object.json().get('Attribute', [])
     return [attribute.get('value') for attribute in attributes]
 
 
@@ -1019,23 +1025,23 @@ def search_attributes(demisto_args: dict) -> CommandResults:
     response = PYMISP.search(**args)
     if response:
         if outputs_should_include_only_values:
-            response_for_context = build_attributes_search_response_return_only_values(response)
-            number_of_results = len(response_for_context)
+            response_for_context_list = build_attributes_search_response_return_only_values(response)
+            number_of_results = len(response_for_context_list)
             md = tableToMarkdown(f"MISP search-attributes returned {number_of_results} attributes",
-                                 response_for_context[:number_of_results], ["Value"])
+                                 response_for_context_list[:number_of_results], ["Value"])
         else:
-            response_for_context = build_attributes_search_response(response, include_correlations)
-            attribute_highlights = attribute_response_to_markdown_table(response_for_context)
+            response_for_context_dict = build_attributes_search_response(response, include_correlations)
+            attribute_highlights = attribute_response_to_markdown_table(response_for_context_dict)
 
             pagination_message = f"Current page size: {limit}\n"
-            if len(response_for_context) == limit:
+            if len(response_for_context_dict) == limit:
                 pagination_message += f"Showing page {page} out others that may exist"
             else:
                 pagination_message += f"Showing page {page}"
             md = tableToMarkdown(
-                f"MISP search-attributes returned {len(response_for_context)} attributes\n {pagination_message}",
+                f"MISP search-attributes returned {len(response_for_context_dict)} attributes\n {pagination_message}",
                 attribute_highlights, removeNull=True)
-
+        response_for_context = response_for_context_list or response_for_context_dict
         return CommandResults(
             raw_response=response,
             readable_output=md,
@@ -1058,7 +1064,10 @@ def build_events_search_response(response: Union[dict, requests.Response], demis
     response_object = copy.deepcopy(response)
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-    events = [event.get('Event') for event in response_object]
+    if isinstance(response_object, requests.Response):
+        events = [event.get('Event') for event in response_object.json()]
+    else:  # dict
+        events = [event.get('Event') for event in response_object]
     for i in range(0, len(events)):
         # Filter object from keys in event_args
         events[i] = {key: events[i].get(key) for key in EVENT_FIELDS if key in events[i]}
@@ -1357,7 +1366,12 @@ def add_object(event_id: str, obj: MISPObject):
         convert_timestamp_to_readable(attribute, None)
     response['Object']['timestamp'] = misp_convert_timestamp_to_date_string(response.get('Object', {}).get('timestamp'))
     formatted_response = replace_keys_from_misp_to_context_data(response)
-    formatted_response.update({"ID": event_id})
+    if isinstance(formatted_response, str):
+        formatted_response = f'{formatted_response} ID:{event_id}'
+    elif isinstance(formatted_response, dict):
+        formatted_response.update({"ID": event_id})
+    else:
+        formatted_response.append({"ID": event_id})
 
     human_readable = f'Object has been added to MISP event ID {event_id}'
     return CommandResults(
@@ -1370,7 +1384,7 @@ def add_object(event_id: str, obj: MISPObject):
 
 def add_file_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     file_path = demisto.getFilePath(entry_id).get('path')
     obj = FileObject(file_path)
     return add_object(event_id, obj)
@@ -1378,7 +1392,7 @@ def add_file_object(demisto_args: dict):
 
 def add_email_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     email_path = demisto.getFilePath(entry_id).get('path')
     name = demisto.getFilePath(entry_id).get('name', '')
     if name.endswith(".msg"):
@@ -1393,7 +1407,7 @@ def add_domain_object(demisto_args: dict):
     domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
     """
     text = demisto_args.get('text')
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     domain = demisto_args.get('name')
     obj = MISPObject('domain-ip')
     ips = argToList(demisto_args.get('ip'))
@@ -1414,7 +1428,7 @@ def add_url_object(demisto_args: dict):
         'last_seen',
         'first_seen'
     ]
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     url = demisto_args.get('url')
     url_parse = urlparse(url)
     url_obj = [{'url': url}]
@@ -1433,9 +1447,9 @@ def add_url_object(demisto_args: dict):
 
 
 def add_generic_object_command(demisto_args: dict):
-    event_id = demisto_args.get('event_id')
-    template = demisto_args.get('template')
-    attributes = demisto_args.get('attributes').replace("'", '"')
+    event_id = demisto_args.get('event_id', '')
+    template = demisto_args.get('template', '')
+    attributes = demisto_args.get('attributes', '').replace("'", '"')
     try:
         args = json.loads(attributes)
         if not isinstance(args, list):
@@ -1452,7 +1466,7 @@ def convert_arg_to_misp_args(demisto_args, args_names):
 
 
 def add_ip_object(demisto_args: dict):
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     ip_object_args = [
         'dst_port',
         'src_port',
@@ -1531,7 +1545,7 @@ def create_updated_attribute_instance(demisto_args: dict, attribute_uuid: str) -
 
 
 def update_attribute_command(demisto_args: dict) -> CommandResults:
-    attribute_uuid = demisto_args.get('attribute_uuid')
+    attribute_uuid = demisto_args.get('attribute_uuid', '')
     attribute_instance = create_updated_attribute_instance(demisto_args, attribute_uuid)
     attribute_instance_response = PYMISP.update_attribute(attribute=attribute_instance, attribute_id=attribute_uuid)
     if isinstance(attribute_instance_response, dict) and attribute_instance_response.get('errors'):
@@ -1587,7 +1601,7 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
     if 'errors' in event:
         raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
     try:
-        attribute_data = json.loads(demisto_args.get("attribute_data"))
+        attribute_data = json.loads(demisto_args.get("attribute_data", ''))
     except Exception as e:
         raise DemistoException(f'Invalid attribute_data: \nError message: {str(e)}')
     for event_attribute in event.attributes:
