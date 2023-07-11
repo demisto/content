@@ -112,7 +112,8 @@ def get_partial_response(response: str, start: str, end: str):
     start_index = response.index(start) + len(start)
     end_index = response.index(end)
     result = response[start_index:end_index].strip()
-    result = result.removeprefix(WARNING).strip()
+    if result.startswith(WARNING):
+        result = result.replace(WARNING, '').strip()
     return result
 
 
@@ -148,7 +149,7 @@ def get_next_page_activity_logs(footer):
     return max_id
 
 
-def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[List | None, str | None]:
+def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[ Optional[list], Optional[str]]:
     """
     Handles Host list detection response - parses xml to json and gets the list
     Args:
@@ -297,7 +298,7 @@ def get_detections_from_hosts(hosts):
     return fetched_events
 
 
-def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[list | None, dict]:
+def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
     """ Get logs activity from qualys
     Args:
         client: Qualys client
@@ -331,7 +332,7 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client, last_time, max_fetch, next_page=None) -> tuple[list | None, dict]:
+def get_host_list_detections_events(client, last_time, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
     """ Get host list detections from qualys
     Args:
         client: Qualys client
@@ -351,6 +352,7 @@ def get_host_list_detections_events(client, last_time, max_fetch, next_page=None
 
     if newest_event_time == last_time:
         edited_host_detections = []
+        # pass
     else:
         edited_host_detections = get_detections_from_hosts(host_list_events)
         demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} events.')
@@ -371,7 +373,7 @@ def get_host_list_detections_events(client, last_time, max_fetch, next_page=None
 
 
 def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_event_field, next_page_field,
-                 previous_run_time_field, max_fetch: int | None = 0):
+                 previous_run_time_field, max_fetch: int = 0):
     """ Fetches activity logs and host list detections
     Args:
         client: command client
