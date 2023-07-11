@@ -289,7 +289,7 @@
          "is_array":false
       },
       "severity":{
-         "type":"int",
+         "type":"string",
          "is_array":false
       },
       "description":{
