@@ -1,5 +1,5 @@
 fromversion: 8.3.0
-id: portnox_modeling_rule
+id: portnox_ModelingRule
 name: Portnox Modeling Rule
 rules: ''
 schema: ''
