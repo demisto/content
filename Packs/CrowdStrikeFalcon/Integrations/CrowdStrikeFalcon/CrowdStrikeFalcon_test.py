@@ -2198,6 +2198,7 @@ class TestFetch:
 
         """
         from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'params', return_value={})
         mocker.patch.object(demisto, 'getLastRun',
                             return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
                                           'detection_offset': 2,
@@ -2206,7 +2207,7 @@ class TestFetch:
                                           'incident_offset': 4,
                                           })
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z', 'limit': 2, "found_incidents_ids": {}},
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
                                                           {'time': '2020-09-04T09:22:10Z'}]
 
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
