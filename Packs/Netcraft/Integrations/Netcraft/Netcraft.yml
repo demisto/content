@@ -15,15 +15,12 @@ configuration:
   name: limit
   defaultvalue: "100"
   type: 0
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -215,7 +212,6 @@ script:
       description: The ID of the takedown to escalate.
     description: Escalates a takedown.
     deprecated: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 deprecated: true

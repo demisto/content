@@ -1,6 +1,6 @@
-from abc import ABCMeta
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from abc import ABCMeta
 from typing import Callable, Tuple
 from collections import defaultdict
 from bs4 import BeautifulSoup

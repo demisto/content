@@ -1,15 +1,15 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import functools
 import uuid
 import json
-from typing import Callable
+from collections.abc import Callable
 from flask import Flask, request, make_response, jsonify, Response
 from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from dateutil.parser import parse
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
-import demistomock as demisto
-from CommonServerPython import *
 
 ''' GLOBAL VARIABLES '''
 HTTP_200_OK = 200
@@ -133,7 +133,7 @@ class TAXII2Server:
         self._http_server = http_server
         self._service_address = service_address
         self.fields_to_present = fields_to_present
-        self.has_extension = False if fields_to_present == {'name', 'type'} else True
+        self.has_extension = fields_to_present != {'name', 'type'}
         self._auth = None
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
@@ -142,7 +142,7 @@ class TAXII2Server:
             raise Exception(f'Wrong TAXII 2 Server version: {version}. '
                             f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
         self._collections_resource: list = []
-        self.collections_by_id: dict = dict()
+        self.collections_by_id: dict = {}
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
         self.types_for_indicator_sdo = types_for_indicator_sdo or []
@@ -188,7 +188,7 @@ class TAXII2Server:
         Creates collection resources from collection params.
         """
         collections_resource = []
-        collections_by_id = dict()
+        collections_by_id = {}
         for name, query_dict in collections.items():
             description = ''
             if isinstance(query_dict, dict):
@@ -309,10 +309,9 @@ class TAXII2Server:
             'objects': objects,
         }
 
-        if self.version == TAXII_VER_2_1:
-            if total > offset + limit:
-                response['more'] = True
-                response['next'] = str(limit + offset)
+        if self.version == TAXII_VER_2_1 and total > offset + limit:
+            response['more'] = True
+            response['next'] = str(limit + offset)
 
         content_range = f'items {offset}-{len(objects)}/{total}'
         return response, first_added, last_added, content_range
@@ -467,19 +466,18 @@ def taxii_validate_url_param(f: Callable) -> Callable:
         """
         api_root = kwargs.get('api_root')
         collection_id = kwargs.get('collection_id')
-        if api_root and not api_root == API_ROOT:
+        if api_root and api_root != API_ROOT:
             return handle_response(HTTP_404_NOT_FOUND,
                                    {'title': 'Unknown API Root',
                                     'description': f"Unknown API Root {api_root}. Check possible API Roots using "
                                                    f"'{SERVER.discovery_route}'"})
 
-        if collection_id:
-            if not SERVER.collections_by_id.get(collection_id):
-                return handle_response(HTTP_404_NOT_FOUND,
-                                       {'title': 'Unknown Collection',
-                                        'description': f'No collection with id "{collection_id}". '
-                                                       f'Use "/{api_root}/collections/" to get '
-                                                       f'all existing collections.'})
+        if collection_id and not SERVER.collections_by_id.get(collection_id):
+            return handle_response(HTTP_404_NOT_FOUND,
+                                   {'title': 'Unknown Collection',
+                                    'description': f'No collection with id "{collection_id}". '
+                                                   f'Use "/{api_root}/collections/" to get '
+                                                   f'all existing collections.'})
 
         return f(*args, **kwargs)
 
@@ -633,11 +631,11 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                         extensions.append(extension_definition)
                 elif stix_ioc:
                     iocs.append(stix_ioc)
-    if not is_manifest and iocs and is_demisto_version_ge('6.6.0'):
-        if relationships := create_relationships_objects(iocs, extensions):
-            total += len(relationships)
-            iocs.extend(relationships)
-            iocs = sorted(iocs, key=lambda k: k['modified'])
+    if not is_manifest and iocs \
+            and is_demisto_version_ge('6.6.0') and (relationships := create_relationships_objects(iocs, extensions)):
+        total += len(relationships)
+        iocs.extend(relationships)
+        iocs = sorted(iocs, key=lambda k: k['modified'])
     return iocs, extensions, total
 
 
@@ -656,13 +654,13 @@ def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     elif stix_type == 'windows-registry-key':
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
     elif stix_type == 'file':
-        if 'md5' == get_hash_type(value):
+        if get_hash_type(value) == 'md5':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
-        elif 'sha1' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha1':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
-        elif 'sha256' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha256':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
-        elif 'sha512' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha512':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
         else:
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
@@ -777,6 +775,7 @@ def get_labels_for_indicator(score):
         return ['anomalous-activity']
     elif int(score) == 3:
         return ['malicious-activity']
+    return None
 
 
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple:
@@ -817,12 +816,14 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
         'created': created_parsed,
         'modified': modified_parsed,
     }
+    if xsoar_type == ThreatIntel.ObjectsNames.REPORT:
+        stix_object['object_refs'] = []
     if is_sdo:
         stix_object['name'] = xsoar_indicator.get('value')
     else:
         stix_object = build_sco_object(stix_object, xsoar_indicator)
 
-    xsoar_indicator_to_return = dict()
+    xsoar_indicator_to_return = {}
 
     # filter only requested fields
     if SERVER.has_extension and SERVER.fields_to_present:
@@ -1177,7 +1178,7 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
         return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Manifest Request Error',
                                                       'description': error})
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
-    query_time_str = "{:.3f}".format(query_time)
+    query_time_str = f"{query_time:.3f}"
 
     return handle_response(
         status_code=HTTP_200_OK,
@@ -1227,7 +1228,7 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
                                                       'description': error})
 
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
-    query_time_str = "{:.3f}".format(query_time)
+    query_time_str = f"{query_time:.3f}"
 
     return handle_response(
         status_code=HTTP_200_OK,
@@ -1289,6 +1290,7 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
             for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
                 if hash_value := stix_ioc.get("hashes").get(hash_type):
                     return hash_value
+            return None
 
         else:
             return stix_ioc.get('value') or stix_ioc.get('name')
@@ -1333,8 +1335,35 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
             relationship_object['Description'] = description
 
         relationships_list.append(relationship_object)
-
+    handle_report_relationships(relationships_list, stix_iocs)
     return relationships_list
+
+
+def handle_report_relationships(relationships: list[dict[str, Any]], stix_iocs: list[dict[str, Any]]):
+    """Handle specific behavior of report relationships.
+
+    Args:
+        relationships (list[dict[str, Any]]): the created relationships list.
+        stix_iocs (list[dict[str, Any]]): the ioc objects.
+    """
+    id_to_report_objects = {
+        stix_ioc.get('id'): stix_ioc
+        for stix_ioc in stix_iocs
+        if stix_ioc.get('type') == 'report'}
+
+    for relationship in relationships:
+        if source_report := id_to_report_objects.get(relationship.get('source_ref')):
+            object_refs = source_report.get('object_refs', [])
+            object_refs.extend(
+                [relationship.get('target_ref'), relationship.get('id')]
+            )
+            source_report['object_refs'] = sorted(object_refs)
+        if target_report := id_to_report_objects.get(relationship.get('target_ref')):
+            object_refs = target_report.get('object_refs', [])
+            object_refs.extend(
+                [relationship.get('source_ref'), relationship.get('id')]
+            )
+            target_report['object_refs'] = sorted(object_refs)
 
 
 def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value_to_id: dict, extensions: list) -> list:

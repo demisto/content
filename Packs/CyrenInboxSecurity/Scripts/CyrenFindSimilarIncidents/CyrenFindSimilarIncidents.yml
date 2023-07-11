@@ -32,7 +32,6 @@ outputs:
 - contextPath: cyrenSimilarIncidentCsv
   description: comma separated raw ids
   type: Unknown
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

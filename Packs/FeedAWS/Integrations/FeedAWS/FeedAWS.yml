@@ -71,12 +71,10 @@ configuration:
   - us-west-2
   - GLOBAL
   - All
-  required: false
   type: 16
   defaultvalue: 'All'
 - display: Fetch indicators
   name: feed
-  required: false
   defaultvalue: 'true'
   type: 8
 - defaultvalue: Good
@@ -87,7 +85,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
   additionalinfo: Indicators from this integration instance will be marked with this reputation
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -111,12 +108,10 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ""
-  required: false
   options:
   - never
   - interval
@@ -124,32 +119,26 @@ configuration:
   - suddenDeath
   type: 17
 - name: feedExpirationInterval
-  required: false
   display: ""
   type: 1
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   defaultvalue: "true"
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Use the AWS feed integration to fetch indicators from the feed.
 display: AWS Feed
@@ -157,22 +146,13 @@ name: AWS Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: limits the number of context indicators to output
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Fetches indicators from the feed.
-    execution: false
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.64131
+  dockerimage: demisto/py3-tools:1.0.0.64758
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

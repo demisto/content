@@ -1,21 +1,21 @@
 [MODEL: dataset = microsoft_windows_raw]
-filter provider_name contains "Microsoft-Windows-"
+filter provider_name contains "Microsoft-Windows-Security-"
 |alter IpPort=json_extract_scalar(event_data ,"$.IpPort"),
 LogLevel=lowercase(log_level),
-xdm.event.original_event_type=coalesce(event_action,task)
+EventType=coalesce(event_action,task,"")
 |alter 
 xdm.source.ipv4=if(json_extract_scalar(event_data ,"$.IpAddress") contains "." and json_extract_scalar(event_data ,"$.IpAddress") not contains ":",json_extract_scalar(event_data ,"$.IpAddress"),json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") contains ".", arrayindex(regextract(json_extract_scalar(event_data ,"$.IpAddress"),"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),null),
 xdm.source.ipv6=if(json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") not contains ".",json_extract_scalar(event_data ,"$.IpAddress"),json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") contains ".", arrayindex(regextract(json_extract_scalar(event_data ,"$.IpAddress"),"(.*?)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),0),null),
 xdm.source.port=if(IpPort~="\d+",to_integer(IpPort),null),
 xdm.source.user.username=coalesce(if(json_extract_scalar(event_data ,"$.SubjectUserName") not contains "*$",json_extract_scalar(event_data ,"$.SubjectUserName") ),if(json_extract_scalar(user, "$.name") not contains "*$",json_extract_scalar(user, "$.name")),if(json_extract_scalar(user_data,"$.SubjectUserName") not contains "*$",json_extract_scalar(user_data,"$.SubjectUserName"))),
-xdm.source.process.executable.path=json_extract_scalar(event_data ,"$.ProcessName"),
-xdm.source.process.name=arrayindex(regextract(json_extract_scalar(event_data ,"$.ProcessName"),"\\([^\\]+)$"),0),
+xdm.source.process.executable.path=coalesce(json_extract_scalar(event_data ,"$.ProcessName"),process_path),
+xdm.source.process.name=coalesce(arrayindex(regextract(json_extract_scalar(event_data ,"$.ProcessName"),"\\([^\\]+)$"),0),process_name),
 xdm.source.user.identifier=coalesce(json_extract_scalar(event_data ,"$.SubjectUserSid"),json_extract_scalar(user ,"$.identifier"),json_extract_scalar(user,"$.SubjectUserSid")),
 xdm.target.user.identifier=json_extract_scalar(event_data ,"$.TargetUserSid"),
 xdm.source.user.domain=coalesce(json_extract_scalar(event_data ,"$.SubjectDomainName"),json_extract_scalar(user,"$.domain"),json_extract_scalar(user_data,"$.SubjectDomainName")),
 xdm.target.user.domain=json_extract_scalar(event_data ,"$.TargetDomainName"),
-xdm.target.user.username=if(json_extract_scalar(event_data ,"$.TargetUserName") not contains "*$" AND xdm.event.original_event_type!="Security Group Management",json_extract_scalar(event_data ,"$.TargetUserName")),
-xdm.target.user.groups=if(json_extract_scalar(event_data ,"$.TargetUserName") not contains "*$" AND xdm.event.original_event_type="Security Group Management",arraycreate(json_extract_scalar(event_data ,"$.TargetUserName"))),
+xdm.target.user.username=if(json_extract_scalar(event_data ,"$.TargetUserName") not contains "*$" AND EventType!="Security Group Management",json_extract_scalar(event_data ,"$.TargetUserName")),
+xdm.target.user.groups=if(json_extract_scalar(event_data ,"$.TargetUserName") not contains "*$" AND EventType="Security Group Management",arraycreate(json_extract_scalar(event_data ,"$.TargetUserName"))),
 xdm.source.host.hostname=coalesce(host_name,computer_name,if(json_extract_scalar(event_data ,"$.SubjectUserName") contains "*$",json_extract_scalar(event_data ,"$.SubjectUserName") ),if(json_extract_scalar(user, "$.name") contains "*$",json_extract_scalar(user, "$.name")),if(json_extract_scalar(user_data,"$.SubjectUserName") contains "*$",json_extract_scalar(user_data,"$.SubjectUserName"))),
 xdm.source.host.fqdn=json_extract_scalar(event_data ,"$.WorkstationName"),
 xdm.event.type=channel,
@@ -33,6 +33,11 @@ logonType=json_extract_scalar(event_data ,"$.LogonType"),
 userType=json_extract_scalar(user,"$.type"),
 xdm.source.host.os_family=XDM_CONST.OS_FAMILY_WINDOWS,
 xdm.event.operation_sub_type=arrayindex(regextract(message,"(^.*?)\."),0),
+xdm.source.host.os=os_subtype,
+xdm.event.original_event_type=EventType,
+xdm.source.process.command_line=process_cmd,
+xdm.source.process.executable.md5=process_md5,
+xdm.source.process.executable.sha256=process_sha256,
 xdm.event.outcome=if(event_result="success",XDM_CONST.OUTCOME_SUCCESS, event_result="failure",XDM_CONST.OUTCOME_FAILED, event_result)
 |alter xdm.logon.type =if(logonType="2", XDM_CONST.LOGON_TYPE_INTERACTIVE,logonType="3",XDM_CONST.LOGON_TYPE_NETWORK, logonType="4", XDM_CONST.LOGON_TYPE_BATCH ,logonType="5",XDM_CONST.LOGON_TYPE_SERVICE , logonType ="6", XDM_CONST.LOGON_TYPE_PROXY , logonType="7", XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS , logonType="8", XDM_CONST.LOGON_TYPE_NETWORK_CLEARTEXT, logonType="9",XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS ,logonType="10",XDM_CONST.LOGON_TYPE_REMOTE_INTERACTIVE  ,logonType="11", XDM_CONST.LOGON_TYPE_CACHED_INTERACTIVE, logonType="12", XDM_CONST.LOGON_TYPE_CACHED_REMOTE_INTERACTIVE , logonType="13", XDM_CONST.LOGON_TYPE_CACHED_UNLOCK,logonType),
 xdm.source.user.user_type=if(userType contains "User",XDM_CONST.USER_TYPE_REGULAR, userType contains "Service", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT , userType contains "Computer",XDM_CONST.USER_TYPE_MACHINE_ACCOUNT ,userType);

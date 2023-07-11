@@ -18,7 +18,6 @@ args:
   required: true
   description: DT expression.
 scripttarget: 0
-runonce: false
 tests:
 - No tests - script used for testing
 fromversion: 5.0.0
