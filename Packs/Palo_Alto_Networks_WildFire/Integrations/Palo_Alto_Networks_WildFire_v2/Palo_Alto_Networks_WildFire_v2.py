@@ -1499,7 +1499,7 @@ def wildfire_file_command(args: dict):
         else:
             command_results = wildfire_get_file_report(element, args)[0]
             command_results_list.append(command_results)
-            return command_results
+    return command_results_list
 
 
 def wildfire_get_sample(file_hash):
