@@ -15,9 +15,11 @@ enabled: true
 args:
 - name: left
   required: true
+  isarray: false
   description: Value to check if it exists in the right side. can be a single value or an array.
 - name: right
   required: true
+  isarray: false
   description: Value to check if it includes string or substrings from the left. can be a single value or an array.
 scripttarget: 0
 fromversion: 5.0.0

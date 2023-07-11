@@ -38,6 +38,8 @@ def common_elements(left_list: list[str], right_list: list[str]) -> list[str]:
         Note: The comparing is not case sensitive.
         if no values are equal or contain values from the right, returns an empty list.
     """
+    left_list = left_list.split(",")
+    right_list = right_list.split(",")
     all_results: list = []
     for l_item in left_list:
         all_results.extend(
@@ -53,11 +55,17 @@ def main():
     left_list = convert_all_inputs_to_list_of_strings(leftArg)
     right_list = convert_all_inputs_to_list_of_strings(rightArg)
 
-    res = common_elements(left_list, right_list)
+    res = common_elements(leftArg, rightArg)
 
     # remove duplicates
     res = [*set(res)]
-    demisto.results(res)
+    str1 = ""
+    for i in range(len(res)):
+        if i == len(res) - 1:
+            str1 += res[i]
+        else:
+            str1 += res[i] + ", "
+    return_results(str(str1))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
