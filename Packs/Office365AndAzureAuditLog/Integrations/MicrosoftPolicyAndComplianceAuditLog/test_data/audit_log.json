@@ -1,0 +1,59 @@
+{
+    "Actor": [
+        {
+            "ID": "avishai@demistodev.onmicrosoft.com",
+            "Type": 5
+        },
+        {
+            "ID": "User",
+            "Type": 2
+        }
+    ],
+    "ActorContextId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+    "AzureActiveDirectoryEventType": 1,
+    "CreationTime": "2023-07-06T10:23:26",
+    "ExtendedProperties": [
+        {
+            "Name": "additionalDetails",
+            "Value": "{\"User-Agent\":\"python-requests/2.31.0\"}"
+        },
+        {
+            "Name": "extendedAuditEventCategory",
+            "Value": "Group"
+        }
+    ],
+    "Id": "20f59fde-792d-4bb7-b49d-4177ae70636f",
+    "InterSystemsId": "66cf5fbf-a989-4f8e-ba90-3ce51b5d93a9",
+    "IntraSystemId": "2ea1409c-7c77-45f1-a932-665bc8c59904",
+    "ModifiedProperties": [],
+    "ObjectId": "Group_dd6f53aa-f5a0-4d6a-922a-8a9e63423f04",
+    "Operation": "Delete group.",
+    "OrganizationId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+    "RecordType": 8,
+    "ResultStatus": "Success",
+    "SupportTicketId": "",
+    "Target": [
+        {
+            "ID": "Group_dd6f53aa-f5a0-4d6a-922a-8a9e63423f04",
+            "Type": 2
+        },
+        {
+            "ID": "dd6f53aa-f5a0-4d6a-922a-8a9e63423f04",
+            "Type": 2
+        },
+        {
+            "ID": "Group",
+            "Type": 2
+        },
+        {
+            "ID": "TestTeamd34745c0-98c3-4f9a-81e1-e8b07e3900d8",
+            "Type": 1
+        }
+    ],
+    "TargetContextId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+    "UserId": "avishai@demistodev.onmicrosoft.com",
+    "UserKey": "100300009ABC2878@demistodev.onmicrosoft.com",
+    "UserType": 0,
+    "Version": 1,
+    "Workload": "AzureActiveDirectory"
+}
