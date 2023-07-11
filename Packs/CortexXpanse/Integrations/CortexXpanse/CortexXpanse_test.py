@@ -498,7 +498,7 @@ def test_list_incidents_command(requests_mock):
 
     from test_data.raw_response import LIST_INCIDENTS_RAW
     from test_data.expected_results import LIST_INCIDENTS_RESULTS
-    requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/remove/',
+    requests_mock.post('https://test.com/public_api/v1/incidents/get_incidents/',
                        json=LIST_INCIDENTS_RAW)
 
     client = Client(
