@@ -4,7 +4,7 @@ name: Handle Hello World Alert
 description: This is a playbook which will handle the alerts coming from the Hello World
   service
 starttaskid: "0"
-fromversion: 5.0.0
+fromversion: 6.0.0
 tasks:
   "0":
     id: "0"
