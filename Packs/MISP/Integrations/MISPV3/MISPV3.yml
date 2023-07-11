@@ -2485,11 +2485,11 @@ script:
       name: email
       required: true
       type: textArea
-    - description: ID number indicating which organization the new user will be added to.
+    - description: ID number indicating which organization the new user will be added to. In order to get the org_id, use the command misp-get-organization-info.
       name: org_id
       required: true
       type: textArea
-    - description: Role of the new user to be added
+    - description: Role of the new user to be added. In order to get the role_id, use the command misp-get-role-info.
       name: role_id
       required: true
       type: textArea

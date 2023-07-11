@@ -567,7 +567,7 @@ def get_organizations_info():
         if org_id and org_name:
             org_info.append({'name': org_name, 'id': org_id})
     if org_info:
-        human_readable = tableToMarkdown('MISP Organizations', org_info, headers=('id', 'name'))
+        human_readable = tableToMarkdown('MISP Organizations', org_info, headers=['id', 'name'], removeNull=True)
     else:
         human_readable = 'There are no organization ids and names'
     return CommandResults(
@@ -590,7 +590,7 @@ def get_role_info():
         if role_name and role_id:
             role_info.append({'name': role_name, 'id': role_id})
     if role_info:
-        human_readable = tableToMarkdown('MISP Roles', role_info, headers=('id', 'name'))
+        human_readable = tableToMarkdown('MISP Roles', role_info, headers=['id', 'name'], removeNull=True)
     else:
         human_readable = 'There are no role ids and names'
     return CommandResults(

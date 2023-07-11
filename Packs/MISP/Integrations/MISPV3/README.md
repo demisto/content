@@ -3861,8 +3861,8 @@ Add a new user to MISP.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | email | The email address of the new user to be added. | Required | 
-| org_id | ID number indicating which organization the new user will be added to. | Required | 
-| role_id | Role of the new user to be added. | Required | 
+| org_id | ID number indicating which organization the new user will be added to. In order to get the org_id, use the command misp-get-organization-info. | Required | 
+| role_id | Role of the new user to be added. In order to get the role_id, use the command misp-get-role-info. | Required | 
 | password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, and at least one lower-case character. | Required | 
 
 #### Context Output
