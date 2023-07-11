@@ -965,7 +965,7 @@ script:
       name: tag
       description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
       required: false
-      outputs:
+    outputs:
       - contextPath: AzureStorage.ResourceGroup.id
         description: 'The unique identifier of the Azure storage resource group.'
         type: String
