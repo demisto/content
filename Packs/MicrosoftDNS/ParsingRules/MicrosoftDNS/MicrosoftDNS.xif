@@ -1,6 +1,7 @@
 [INGEST:vendor="microsoft", product="dns", target_dataset="microsoft_dns_raw", no_hit=keep]
-// 6/10/2022 5:11:49 AM
-alter tmp_time_String1 = arrayindex(regextract(_raw_log,"\d+\/\d+\/\d+\s\d+\:\d+\:\d+ \w{2}" ),0)
+// Support only date time of format: MM/dd/yyyy hh:mm:ss [AM|PM]. For example: 6/10/2022 5:11:49 AM
+filter _raw_log ~= "\d+\/\d+\/\d+\s\d+\:\d+\:\d+ \w{2}"
+| alter tmp_time_String1 = arrayindex(regextract(_raw_log,"\d+\/\d+\/\d+\s\d+\:\d+\:\d+ \w{2}" ),0)
 | alter tmp_event_time1 = parse_timestamp("%m/%d/%Y %I:%M:%S %p",tmp_time_String1)
 // 30/01/2023 13:18:25
 | alter tmp_time_String2 = arrayindex(regextract(_raw_log,"\d+\/\d+\/\d+\s\d+\:\d+\:\d+" ),0)
