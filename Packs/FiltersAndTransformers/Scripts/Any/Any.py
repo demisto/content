@@ -38,8 +38,8 @@ def common_elements(left_list: list[str], right_list: list[str]) -> list[str]:
         Note: The comparing is not case sensitive.
         if no values are equal or contain values from the right, returns an empty list.
     """
-    left_list = left_list.split(",")
-    right_list = right_list.split(",")
+    left_list = argToList(left_list)
+    right_list = argToList(right_list)
     all_results: list = []
     for l_item in left_list:
         all_results.extend(
