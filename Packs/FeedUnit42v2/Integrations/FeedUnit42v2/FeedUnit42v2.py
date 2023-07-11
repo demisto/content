@@ -531,7 +531,8 @@ def create_list_relationships(relationships_objects, id_to_object):
     relationships_list = []
 
     for relationships_object in relationships_objects:
-
+        if relationships_object['id'] == 'relationship--569f75a0-0674-49c9-b7f8-405240da1d88':
+            print(3)
         relationship_type = relationships_object.get('relationship_type')
         if relationship_type not in RELATIONSHIP_TYPES:
             if relationship_type == 'indicates':
@@ -575,7 +576,7 @@ def create_list_relationships(relationships_objects, id_to_object):
     return relationships_list
 
 
-def test_module(client: Client) -> str:
+def mtest_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -713,7 +714,7 @@ def main():  # pragma: no cover
         client = Client(api_key, verify)
 
         if command == 'test-module':
-            result = test_module(client)
+            result = mtest_module(client)
             demisto.results(result)
 
         elif command == 'fetch-indicators':
@@ -735,6 +736,7 @@ def main():  # pragma: no cover
             return_results(get_indicators_command(client, args, feed_tags, tlp_color))
 
     except Exception as err:
+        raise err
         return_error(str(err))
 
 
