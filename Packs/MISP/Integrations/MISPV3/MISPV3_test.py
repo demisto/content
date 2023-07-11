@@ -1,5 +1,4 @@
 import pytest
-import io
 from CommonServerPython import *
 from CommonServerPython import DemistoException, Common
 from requests.models import Response
@@ -48,7 +47,7 @@ TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '145', '144']),  # 3 events in
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -296,7 +295,7 @@ def test_is_tag_list_invalid(mocker):
     with pytest.raises(DemistoException) as e:
         is_tag_list_valid(["abc", 100, "200", -1, '0'])
         if not e:
-            assert False
+            raise AssertionError
 
 
 @pytest.mark.parametrize('malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids, return_suspicious_tag_ids',
@@ -618,7 +617,7 @@ def test_warninglist_response(mocker):
     from MISPV3 import warninglist_command
     demisto_args = {"value": "8.8.8.8"}
     warninglist_response = util_load_json("test_data/warninglist_response.json")
-    with io.open("test_data/warninglist_outputs.md", mode="r", encoding="utf-8") as f:
+    with open("test_data/warninglist_outputs.md", encoding="utf-8") as f:
         warninglist_expected_output = f.read()
     mocker.patch("pymisp.ExpandedPyMISP.values_in_warninglist", return_value=warninglist_response)
     assert warninglist_command(demisto_args).to_context()['HumanReadable'] == warninglist_expected_output
