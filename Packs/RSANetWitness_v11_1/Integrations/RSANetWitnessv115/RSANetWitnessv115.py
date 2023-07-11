@@ -810,7 +810,7 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
                 id_=incident_id,
                 page_size=None
             )
-        except Exception as e:
+        except Exception:
             demisto.error("Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
             raise
 

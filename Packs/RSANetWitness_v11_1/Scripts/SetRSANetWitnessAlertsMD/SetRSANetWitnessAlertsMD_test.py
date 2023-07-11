@@ -37,7 +37,7 @@ def test_json_to_md(alerts_fields):
         "|created|detail|events|id|riskScore|source|title|type|\n"
         "|---|---|---|---|---|---|---|---|\n"
         "| 2023-07-03T11:04:16.408Z |  |  | dummy_id | 50 | NetWitness Investigate | sk_test300 | Log |\n"
-        "| 2023-07-03T11:04:24.256Z |  |  | dummy_id | 50 | NetWitness Investigate | sk_test300 | Log |\n\n\n\n"
+        "| 2023-07-03T11:04:24.256Z |  |  | dummy_id | 50 | NetWitness Investigate | sk_test300 | Log |\n"
     )
 
 

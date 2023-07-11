@@ -2,24 +2,26 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 KEYS_INCIDENT_FIELDS = {
-    'rsaalerts': 'RSA Alerts',
+    "rsaalerts": "RSA Alerts",
 }
 
 
 def read_context_from_rsa_netwitness_alerts() -> dict:
-
-    incident = demisto.incident().get('CustomFields', {})
+    incident = demisto.incident().get("CustomFields", {})
 
     data: dict = {}
     for key in KEYS_INCIDENT_FIELDS:
-        if (field_content := incident.get(key)):
+        if field_content := incident.get(key):
             data[KEYS_INCIDENT_FIELDS[key]] = field_content
 
     return data
 
 
 def json_to_md(incident_fields: dict) -> str:
-     return "\n\n\n".join(tableToMarkdown(name=incident_field, t=incident_fields[incident_field]) for incident_field in incident_fields)
+    return "\n\n\n".join(
+        tableToMarkdown(name=key, t=val)
+        for key, val in incident_fields.items()
+    )
 
 
 def main():
@@ -31,5 +33,5 @@ def main():
     )
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
