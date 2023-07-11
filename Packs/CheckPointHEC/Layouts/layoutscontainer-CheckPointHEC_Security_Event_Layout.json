@@ -8,6 +8,81 @@
                 "type": "summary"
             },
             {
+                "hidden": false,
+                "id": "u9xzifnfzu",
+                "name": "Check Point Info",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "checkpointheccustomer",
+                                "height": 53,
+                                "id": "a4340fc0-1f89-11ee-a584-e72e916fb060",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "checkpointhecsaas",
+                                "height": 53,
+                                "id": "aaa2ca40-1f89-11ee-a584-e72e916fb060",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "state",
+                                "height": 53,
+                                "id": "b0885790-1f89-11ee-a584-e72e916fb060",
+                                "index": 2,
+                                "listId": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "checkpointhectype",
+                                "height": 53,
+                                "id": "a89b1360-1f89-11ee-a584-e72e916fb060",
+                                "index": 0,
+                                "listId": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "checkpointhecsaas",
+                                "height": 53,
+                                "id": "abb524a0-1f89-11ee-a584-e72e916fb060",
+                                "index": 1,
+                                "listId": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Security Event Info",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
                 "id": "caseinfoid",
                 "name": "Incident Info",
                 "sections": [
@@ -117,7 +192,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -172,7 +247,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -231,7 +306,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -273,7 +348,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -296,67 +371,6 @@
                         "name": "Investigation Data",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-88a85390-1b3a-11ee-9fe5-7fafe43650e2",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "checkpointheccustomer",
-                                "height": 22,
-                                "id": "9ed5d110-1b3a-11ee-9fe5-7fafe43650e2",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "checkpointhecentity",
-                                "height": 22,
-                                "id": "a07c2e10-1b3a-11ee-9fe5-7fafe43650e2",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "checkpointhecsaas",
-                                "height": 22,
-                                "id": "a1baefa0-1b3a-11ee-9fe5-7fafe43650e2",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "checkpointhecstate",
-                                "height": 22,
-                                "id": "a2e69e60-1b3a-11ee-9fe5-7fafe43650e2",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "checkpointhectype",
-                                "height": 22,
-                                "id": "a3e4fb90-1b3a-11ee-9fe5-7fafe43650e2",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Security Event Details",
-                        "static": false,
-                        "w": 2,
                         "x": 0,
                         "y": 2
                     }

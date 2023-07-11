@@ -121,8 +121,8 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
                 'checkpointheccustomer': event.get('customerId'),
                 'checkpointhecsaas': event.get('saas'),
                 'checkpointhecentity': event.get('entityId'),
-                'checkpointhecstate': event.get('state'),
                 'checkpointhectype': event.get('type'),
+                'state': event.get('state'),  # From CommonTypes Pack
             },
         })
 
