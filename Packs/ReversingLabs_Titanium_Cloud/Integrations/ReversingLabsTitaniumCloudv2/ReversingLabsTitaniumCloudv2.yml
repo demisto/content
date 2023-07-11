@@ -515,8 +515,7 @@ script:
       - name: results_per_page
         description: Number of results per query
         defaultValue: 1000
-        isArray: false1 conflict ￼Prev  ￼Next 
-
+        isArray: false
         required: false
         secret: false
       - name: max_results
