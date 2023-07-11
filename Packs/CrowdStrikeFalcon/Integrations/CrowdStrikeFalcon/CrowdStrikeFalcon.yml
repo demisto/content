@@ -404,6 +404,10 @@ script:
       - read
       - write
       - admin
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     - auto: PREDEFINED
       defaultValue: batch
       description: 'The target to run the command for. Possible values are: "single" and "batch".'
@@ -2788,10 +2792,16 @@ script:
       description: The vulnerability name.
       type: String
   - arguments:
-    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+    - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: true
+      required: false
+      deprecated: true
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve
+      isArray: true
+      required: false
+      default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
