@@ -40,7 +40,7 @@ Retrieve specific entity
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | Entity id to retrie. | Required | 
+| entity | Entity id to retrieve. | Required | 
 
 #### Context Output
 

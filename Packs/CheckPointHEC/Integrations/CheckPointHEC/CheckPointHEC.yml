@@ -69,7 +69,7 @@ script:
   - name: checkpointhec-get-entity
     arguments:
       - name: entity
-        description: Entity id to retrie
+        description: Entity id to retrieve
         required: true
     description: Retrieve specific entity
     outputs:
