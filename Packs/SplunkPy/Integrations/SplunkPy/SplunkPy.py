@@ -563,11 +563,11 @@ class Notable:
         incident["rawJSON"] = json.dumps(notable_data)
 
         labels = []
-        if demisto.get(params, 'parseNotableEventsRaw') and params['parseNotableEventsRaw']:
-            rawDict = rawToDict(notable_data['_raw'])
-            for rawKey in rawDict:
-                val = rawDict[rawKey] if isinstance(rawDict[rawKey], str) else convert_to_str(rawDict[rawKey])
-                labels.append({'type': rawKey, 'value': val})
+        if params.get('parseNotableEventsRaw'):
+            for key, value in rawToDict(notable_data['_raw']).items():
+                if not isinstance(value, str): 
+                    value = convert_to_str(value)
+                labels.append({'type': key, 'value': value})
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
@@ -1770,7 +1770,7 @@ def rawToDict(raw):
                     val = single_key_val[1]
                     key = single_key_val[0].strip()
 
-                    result[key] = f"{result[key]},{val}" if key in list(result.keys()) else val
+                    result[key] = f"{result[key]},{val}" if key in result else val
         else:
             # search for the pattern: `key="value", `
             # (the double quotes are optional)
@@ -2558,7 +2558,7 @@ def get_kv_store_config(kv_store: client.KVStoreCollection) -> str:
     readable = [f'#### configuration for {kv_store.name} store',
                 '| field name | type |',
                 '| --- | --- |']
-    readable.extend(f'| {_key} | {val} |' for _key, val in list(keys.items()))
+    readable.extend(f'| {_key} | {val} |' for _key, val in keys.items())
     return '\n'.join(readable)
 
 
