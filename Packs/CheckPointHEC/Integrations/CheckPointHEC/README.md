@@ -7,21 +7,18 @@ This integration was integrated and tested with version 1.0.0 of CheckPointHEC
 2. Search for CheckPointHEC.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net) |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | Client ID |  | True |
-    | Client Secret |  | True |
-    | Fetch alerts with status (ACTIVE, CLOSED) |  | False |
-    | Fetch alerts with type | Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability' | False |
-    | Minimum severity of alerts to fetch |  | True |
-    | First fetch time |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incidents Fetch Interval |  | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net) | True |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | Maximum number of incidents per fetch | False |
+    | Client ID | True |
+    | Client Secret | True |
+    | First fetch time | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Incidents Fetch Interval | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
