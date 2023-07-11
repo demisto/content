@@ -1,5 +1,5 @@
 [INGEST:vendor="cisco", product="isr", target_dataset="cisco_isr_raw", no_hit = keep]
-filter _raw_log contains "UTC"
+filter _raw_log ~= "\:[\s|\s\*]+\w+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3}\sUTC" or _raw_log ~= "\:[\s|\s\*]+(\w+\s\d+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"
 | alter
         tmp_time1 = arrayindex(regextract(_raw_log, "\:[\s|\s\*]+(\w+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"),0),
         tmp_Year = format_timestamp("%Y",_insert_time),
