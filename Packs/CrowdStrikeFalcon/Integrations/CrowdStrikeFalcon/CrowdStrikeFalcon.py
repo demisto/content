@@ -2322,7 +2322,7 @@ def fetch_incidents():
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
 
-    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
+    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', "")
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
 
