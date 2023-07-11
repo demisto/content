@@ -1,87 +1,46 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
-from RankServiceOwners import score, main, rank, _canonicalize, aggregate, _get_k
+from RankServiceOwners import (
+    score,
+    main,
+    rank,
+    _canonicalize,
+    aggregate,
+    _get_k,
+    OwnerFeaturizationPipeline,
+    get_model,
+    featurize,
+    normalize,
+)
 from contextlib import nullcontext as does_not_raise
+import numpy as np
+from unittest.mock import Mock
 
 
 @pytest.mark.parametrize('owners,expected_out', [
     (
         # returned in sorted order
-        [
-            {
-                'Name': 'bob', 'Email': 'bob@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 0.5, 'Justification': ''
-            },
-            {
-                'Name': 'alice', 'Email': 'alice@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-        ],
-        [
-            {
-                'Name': 'alice', 'Email': 'alice@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'bob', 'Email': 'bob@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 0.5, 'Justification': ''
-            },
-        ]
+        [{'Ranking Score': 0.5}, {'Ranking Score': 1}],
+        [{'Ranking Score': 1}, {'Ranking Score': 0.5}]
     ),
     (
         # wraps one test case from _get_k
         [
-            {
-                'Name': 'a', 'Email': 'a@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 10, 'Justification': ''
-            },
-            {
-                'Name': 'b', 'Email': 'b@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'c', 'Email': 'c@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'd', 'Email': 'd@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'e', 'Email': 'e@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'f', 'Email': 'f@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
+            {'Ranking Score': 10},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
         ],
         [
-            {
-                'Name': 'a', 'Email': 'a@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 10, 'Justification': ''
-            },
-            {
-                'Name': 'b', 'Email': 'b@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'c', 'Email': 'c@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'd', 'Email': 'd@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'e', 'Email': 'e@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
-            {
-                'Name': 'f', 'Email': 'f@example.com', 'Source': '',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
-            },
+            {'Ranking Score': 10},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
+            {'Ranking Score': 1},
         ]
     ),
 ])
@@ -121,7 +80,7 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2'},
         ]
     ),
     # same email, no names
@@ -133,7 +92,7 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1', 'Count': 2},
+            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1'},
         ]
     ),
     # same email, same names
@@ -147,8 +106,8 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
-            {'Name': 'Alice', 'Email': 'bob@example.com', 'Source': 'source2', 'Timestamp': '2', 'Count': 1},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2'},
+            {'Name': 'Alice', 'Email': 'bob@example.com', 'Source': 'source2', 'Timestamp': '2'},
         ]
     ),
     # no email, different names
@@ -158,8 +117,8 @@ def test_canonicalize(owner, expected_out):
             {'name': 'bob', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'bob'},
         ],
         [
-            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Count': 1},
-            {'Name': 'bob', 'Email': '', 'Source': 'source2', 'Timestamp': '2', 'Count': 1},
+            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
+            {'Name': 'bob', 'Email': '', 'Source': 'source2', 'Timestamp': '2'},
         ]
     ),
     # no email, same names
@@ -169,7 +128,7 @@ def test_canonicalize(owner, expected_out):
             {'name': 'alice', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'alice'},
         ],
         [
-            {'Name': 'alice', 'Email': '', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'alice', 'Email': '', 'Source': 'source1 | source2', 'Timestamp': '2'},
         ]
     ),
     # some emails present, others missing
@@ -185,8 +144,8 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice'},
         ],
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
-            {'Name': 'alice', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2'},
+            {'Name': 'alice', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4'},
         ]
     ),
     # empty input
@@ -198,47 +157,47 @@ def test_canonicalize(owner, expected_out):
 def test_aggregate(owners, expected_out):
     assert sorted(aggregate(owners), key=lambda x: sorted(x.items())) == sorted(expected_out, key=lambda x: sorted(x.items()))
 
-
-@pytest.mark.parametrize('deduplicated, expected_out', [
-    # equal counts
-    (
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
-        ],
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Ranking Score': 1.0},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Ranking Score': 1.0},
-        ]
-    ),
-    # unequal counts
-    (
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2', 'Count': 1},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
-        ],
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2', 'Ranking Score': 0.5},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Ranking Score': 1.0},
-        ]
-    ),
-    # empty owners
-    (
-        [],
-        []
-    )
+@pytest.mark.parametrize('owners,expected_out', [
+    ([0.5, 1], [0.67, 0.83]),
+    ([1, 10, 100], [.5, .55, .95]),
+    ([], []),
 ])
-def test_score(deduplicated, expected_out):
-    assert score(deduplicated) == expected_out
+def test_normalize_scores(owners, expected_out):
+    assert np.allclose(normalize(owners), expected_out, atol=0.01)
 
 
-@pytest.mark.parametrize('owners, expected_out', [
+def test_score(mocker):
+    mocker.patch(
+        'RankServiceOwners.load_pickled_xpanse_object',
+        return_value=get_model()
+    )
+
+    asm_system_ids = ["afr-rdp-1", "j291mv-is"]
+
+    owners = [
+        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP | \
+            Chain: GCP project owner of a service account attached to the VM | \
+                Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP', 'Timestamp': '1'},
+        {'Name': 'Brandon', 'Email': 'brandon@example.com', 'Source': 'GCP | \
+            Owner-In-Tags-From-GCP | Tenable.io | New-Log-Source', 'Timestamp': '2'},
+        {'Name': 'Chun', 'Email': 'chun@example.com', 'Source': 'SNOW-CMDB', 'Timestamp': '3'},
+        {'Name': 'Divya', 'Email': 'divya@example.com', 'Source': 'Chain: Chain: \VM launches with a service account, \
+            which belongs to GCP project my-project that grants Editor permissions to svc-acct@my-project.gserviceaccount.com, \
+                which this person can impersonate', 'Timestamp': '4'},
+        {'Name': 'Automation First Remediation', 'Email': 'afr@example.com', 'Source': 'GCP | Splunk', 'Timestamp': '5'},
+    ]
+    scores_out = [owner['Ranking Score'] for owner in score(asm_system_ids=asm_system_ids, owners=owners)]
+    assert np.allclose(scores_out, np.array([4, 7, 31, 0.33, 15]), atol=0.01)
+
+
+@pytest.mark.parametrize('owners, asm_system_ids, expected_out', [
     # ideal input
     (
         [
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -249,6 +208,7 @@ def test_score(deduplicated, expected_out):
     # empty input
     (
         [],
+        [],
         []
     ),
     # ideal input with new string field added
@@ -257,6 +217,7 @@ def test_score(deduplicated, expected_out):
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 'val1'},
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 'val2'},
         ],
+        [''],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -270,6 +231,7 @@ def test_score(deduplicated, expected_out):
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 1},
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 2},
         ],
+        [''],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -283,6 +245,7 @@ def test_score(deduplicated, expected_out):
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 1},
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -296,6 +259,7 @@ def test_score(deduplicated, expected_out):
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 'val1'},
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -309,6 +273,7 @@ def test_score(deduplicated, expected_out):
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': None},
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -319,10 +284,12 @@ def test_score(deduplicated, expected_out):
     # bad inputs -- None
     (
         None,
+        None,
         []
     ),
     # bad inputs -- None
     (
+        [None],
         [None],
         []
     ),
@@ -331,6 +298,7 @@ def test_score(deduplicated, expected_out):
         [
             {'name': None, 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -343,6 +311,7 @@ def test_score(deduplicated, expected_out):
         [
             {'name': 'a', 'email': None, 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'a', 'Email': None, 'Source': 'source1', 'Timestamp': '1',
@@ -355,6 +324,7 @@ def test_score(deduplicated, expected_out):
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'source': None, 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': '', 'Timestamp': '1',
@@ -367,6 +337,7 @@ def test_score(deduplicated, expected_out):
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': None},
         ],
+        [''],
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
@@ -379,6 +350,7 @@ def test_score(deduplicated, expected_out):
         [
             {'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
@@ -391,6 +363,7 @@ def test_score(deduplicated, expected_out):
         [
             {'name': 'a', 'source': 'source1', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '1',
@@ -403,6 +376,7 @@ def test_score(deduplicated, expected_out):
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'timestamp': '1'},
         ],
+        [''],
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': '', 'Timestamp': '1',
@@ -415,6 +389,7 @@ def test_score(deduplicated, expected_out):
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1'},
         ],
+        [''],
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '',
@@ -428,6 +403,7 @@ def test_score(deduplicated, expected_out):
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 1},
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 2},
         ],
+        [''],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': 2,
@@ -436,13 +412,22 @@ def test_score(deduplicated, expected_out):
         ]
     ),
 ])
-def test_main(mocker, owners, expected_out, capfd):
+def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
     # Construct payload
     arg_payload = {}
     arg_payload["owners"] = owners
+    arg_payload["asmsystemids"] = asm_system_ids
     mocker.patch.object(demisto,
                         'args',
                         return_value=arg_payload)
+
+    model_mock = Mock()
+    model_mock.predict.return_value = np.array([1.0])
+
+    mocker.patch(
+        'RankServiceOwners.load_pickled_xpanse_object',
+        return_value=model_mock
+    )
 
     # Execute main using a mock that we can inspect for `executeCommand`
     demisto_execution_mock = mocker.patch.object(demisto, 'executeCommand')
@@ -525,3 +510,347 @@ def test_get_k_bad_values(target_k, k_tol, a_tol, min_score_proportion, expected
             a_tol=a_tol,
             min_score_proportion=min_score_proportion,
         )
+
+
+# Featurization Pipeline Tests
+def test_get_num_distinct_reasons():
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_num_reasons({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'GCP | Chain: GCP project owner of a service account attached to the VM \
+            | Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP',
+        'Timestamp': '1'
+    })
+    assert out == 4
+
+
+def test_get_num_distinct_sources():
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_num_distinct_sources({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'GCP | Chain: GCP project owner of a service account attached to the VM \
+            | Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP',
+        'Timestamp': '1'
+    })
+    assert out == 2
+
+
+def test_get_min_path_length():
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_min_path_length({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'X',
+        'Timestamp': '1'
+    })
+    assert out == 1
+
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_min_path_length({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'Chain: Chain: Chain: Chain: X',
+        'Timestamp': '1'
+    })
+    assert out == 5
+
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_min_path_length({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'X | Chain: Chain: Chain: Chain: Y',
+        'Timestamp': '1'
+    })
+    assert out == 1
+
+
+def test_get_name_similarity_person_asset():
+    owner = {
+        'Name': 'Amira Muhammad',
+        'Email': 'amuhammad@example.com',
+        'Source': 'irrelevant',
+        'Timestamp': '1'
+    }
+
+    # has 1/1 matched
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_name_similarity_person_asset(["amira-instance"], owner)
+    assert np.isclose(out, 1, rtol=0.01)
+
+    # has 1/2 matched
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_name_similarity_person_asset(["amira-instance", "abc-123"], owner)
+    assert out > 1
+
+    # has weak match
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_name_similarity_person_asset(["afm-instance"], owner)
+    assert out > 0
+    assert out < 1
+
+    # has no match
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_name_similarity_person_asset(["cp-instance"], owner)
+    assert out == 0
+
+    # has no asset name info
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_name_similarity_person_asset([], owner)
+    assert out == 0
+
+    # has no owner details
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_name_similarity_person_asset(["amira-instance"], {})
+    assert out == 0
+
+
+def test_get_in_cmdb():
+    # CMDB attested
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_in_cmdb({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'ABC-XYZ CMDB',
+        'Timestamp': '1'
+    })
+    assert out == 1
+
+    # CMDB not attested
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_in_cmdb({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'Some other source',
+        'Timestamp': '1'
+    })
+    assert out == 0
+
+
+def test_get_in_logs():
+    # Splunk attested
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_in_logs({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'Splunk',
+        'Timestamp': '1'
+    })
+    assert out == 1
+
+    # arbitrary log attested
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_in_logs({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'some LOG source',
+        'Timestamp': '1'
+    })
+    assert out == 1
+
+    # logs not attested
+    pipeline = OwnerFeaturizationPipeline()
+    out = pipeline.get_in_logs({
+        'Name': 'Amira',
+        'Email': 'amira@example.com',
+        'Source': 'Some other source',
+        'Timestamp': '1'
+    })
+    assert out == 0
+
+
+def test_base_case():
+    """
+    Verifies the working case.
+    """
+    asm_system_ids = ["afr-rdp-1", "j291mv-is"]
+
+    owners = [
+        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP | \
+            Chain: GCP project owner of a service account attached to the VM | \
+                Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP', 'Timestamp': '1'},
+        {'Name': 'Brandon', 'Email': 'brandon@example.com', 'Source': 'GCP | \
+            Owner-In-Tags-From-GCP | Tenable.io | New-Log-Source', 'Timestamp': '2'},
+        {'Name': 'Chun', 'Email': 'chun@example.com', 'Source': 'SNOW-CMDB', 'Timestamp': '3'},
+        {'Name': 'Divya', 'Email': 'divya@example.com', 'Source': 'Chain: Chain: \VM launches with a service account, \
+            which belongs to GCP project my-project that grants Editor permissions to svc-acct@my-project.gserviceaccount.com, \
+                which this person can impersonate', 'Timestamp': '4'},
+        {'Name': 'Automation First Remediation', 'Email': 'afr@example.com', 'Source': 'GCP | Splunk', 'Timestamp': '5'},
+    ]
+
+    observed_output = featurize(asm_system_ids, owners)
+    expected_output = np.array(
+        [
+            # Columns are:
+            #  idx_num_reasons = 0,
+            #  idx_num_distinct_sources = 1,
+            #  idx_min_path_length = 2,
+            #  idx_name_similarity_person_asset = 3,
+            #  idx_is_attested_in_cmdb = 4,
+            #  idx_is_attested_in_recent_logs = 5,
+            [4, 2, 1, 0.0, 0, 0],
+            [4, 2, 1, 0.0, 0, 1],
+            [1, 1, 1, 0.0, 1, 0],
+            [1, 1, 3, 0.0, 0, 0],
+            [2, 2, 1, 1.0, 0, 1],
+        ]
+    )
+    assert np.allclose(observed_output, expected_output)
+
+
+def test_missing_data():
+    """
+    Should not fail if no system IDs or owners are provided
+    """
+    observed_output = featurize([], [])
+    assert np.array_equal(observed_output, np.empty(shape=(0, 6)))
+
+
+@pytest.fixture
+def model():
+    return get_model()
+
+
+def test_model_must_be_fit_on_same_shape(model):
+    """
+    Verifies the model raises an error if X is an unexpected shape.
+    """
+    default_X = np.array(
+        [
+            [10, 1, 1, 0.3, 1, 0],
+            [5, 2, 1, 0.3, 1, 0],
+            [1, 3, 1, 0.3, 1, 0]
+        ]
+    )
+    alt_X = np.random.rand(5, 10)
+    assert alt_X.shape[1] != default_X.shape[1]
+
+    with pytest.raises(ValueError):
+        model.fit(default_X).score(alt_X)
+
+
+def test_cmdb_on_top(model):
+    """
+    CMDB-attested should generally (not always) beat even well-attested others.
+
+    This is a request from the Remediation Content team,
+    who express a strong prior from customers that "my CMDB is correct".
+    Enough evidence CAN counteract this tendency.
+    """
+    # candidates with CMDB evidence tend to win
+    X = np.array(
+        [
+            [1, 1, 3, 0, 1, 0],  # in CMDB but otherwise much worse than second person
+            # not in CMDB but otherwise an extremely strong candidate --
+            # 3 paths, 2 distinct verbs, much more direct link, very similar name, in logs
+            [3, 2, 1, 0, 0, 1],
+        ]
+    )
+    scores = model.predict(X)
+    assert scores[0] > scores[1]
+
+    # candidates with CMDB evidence CAN be outranked
+    overwhelmingly_owner2 = np.array(
+        [
+            [1, 1, 3, 0.01, 1, 0],  # in CMDB but otherwise much worse than second person
+            # not in CMDB but otherwise an extremely strong candidate --
+            # 20 paths, 10 distinct verbs, much more direct link, very similar name, in logs
+            [20, 10, 1, 0.9, 0, 1],
+        ]
+    )
+    scores = model.predict(overwhelmingly_owner2)
+    assert scores[1] > scores[0]
+
+
+def test_impact_of_total_paths(model):
+    """
+    More paths --> more likely (all else equal).
+    """
+    X = np.array(
+        [
+            [6, 2, 1, 0.5, 1, 1],
+            [5, 2, 1, 0.5, 1, 1],
+        ]
+    )
+    scores = model.predict(X)
+    assert scores[0] > scores[1]
+
+
+def test_impact_of_distinct_verbs(model):
+    """
+    More verbs --> more likely (all else equal).
+    """
+    X = np.array(
+        [
+            [5, 3, 1, 0.5, 1, 1],
+            [5, 2, 1, 0.5, 1, 1],
+        ]
+    )
+    scores = model.predict(X)
+    assert scores[0] > scores[1]
+
+
+def test_impact_of_min_path_length(model):
+    """
+    Shorter path length --> more likely (all else equal).
+    """
+    X = np.array(
+        [
+            [5, 2, 1, 0.5, 1, 1],
+            [5, 2, 2, 0.5, 1, 1],
+        ]
+    )
+    scores = model.predict(X)
+    assert scores[0] > scores[1]
+
+
+def test_impact_of_name_similarity(model):
+    """
+    More similar name --> more likely (all else equal).
+    """
+    X = np.array(
+        [
+            [5, 2, 1, 0.6, 1, 1],
+            [5, 2, 1, 0.5, 1, 1],
+        ]
+    )
+    scores = model.predict(X)
+    assert scores[0] > scores[1]
+
+
+def test_impact_of_cmdb(model):
+    """
+    In CMDB --> more likely (all else equal).
+    """
+    X = np.array(
+        [
+            [5, 2, 1, 0.5, 1, 1],
+            [5, 2, 1, 0.5, 0, 1],
+        ]
+    )
+    scores = model.predict(X)
+    assert scores[0] > scores[1]
+
+
+def test_impact_of_logs(model):
+    """
+    In logs --> more likely (all else equal).
+    """
+    X = np.array(
+        [
+            [5, 2, 1, 0.5, 1, 1],
+            [5, 2, 1, 0.5, 1, 0],
+        ]
+    )
+    scores = model.predict(X)
+    assert scores[0] > scores[1]
+
+
+def test_one_owner(model):
+    X = np.array(
+        [
+            [1., 0., 1., 0., 0., 0.],
+        ]
+    )
+    assert model.predict(X)
