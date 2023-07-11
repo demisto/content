@@ -63,8 +63,9 @@ def test_create_rule_command(mocker):
     client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
     create_rule_command(client, args={'security_group_name': 'securityGroup', 'security_rule_name': 'test_rule',
                         'direction': 'Inbound', 'action': 'Allow', 'protocol': 'Any', 'source': 'Any',
-                                      'source_ports': '900-1000', 'destination_ports': '1,2,3,4-6'}, params={'subscription_id': 'subscriptionID',
-                                                                                                             'resource_group_name': 'resourceGroupName'})
+                                      'source_ports': '900-1000', 'destination_ports': '1,2,3,4-6'},
+                        params={'subscription_id': 'subscriptionID',
+                                'resource_group_name': 'resourceGroupName'})
     properties = client.http_request.call_args_list[0][1].get('data').get('properties')
     assert properties.get('protocol') == '*'
     assert properties.get('sourceAddressPrefix') == '*'
@@ -115,8 +116,9 @@ def test_get_rule(mocker):
     from AzureNetworkSecurityGroups import get_rule_command
     client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
     result = get_rule_command(client,
-                              args={'security_group_name': 'groupName', 'security_rule_name': 'wow'}, params={'subscription_id': 'subscriptionID',
-                                                                                                              'resource_group_name': 'resourceGroupName'})
+                              args={'security_group_name': 'groupName', 'security_rule_name': 'wow'},
+                              params={'subscription_id': 'subscriptionID',
+                                      'resource_group_name': 'resourceGroupName'})
     assert '### Rules wow' in result.readable_output
     assert result.outputs[0].get('name') == 'wow'
 
