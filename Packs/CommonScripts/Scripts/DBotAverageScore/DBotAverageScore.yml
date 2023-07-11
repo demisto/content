@@ -9,9 +9,9 @@ tags:
 - Utility
 outputs:
 - contextPath: DBotAvgScore.Indicator
-  description: The indicator the average score is for
+  description: The indicator the average score is for.
 - contextPath: DBotAvgScore.Score
-  description: The average score for the indicator
+  description: The average score for the indicator.
 enabled: true
 subtype: python3
 dockerimage: demisto/python3:3.10.12.63474
