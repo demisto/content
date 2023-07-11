@@ -1,7 +1,6 @@
 commonfields:
-  id: 7d2bed4e-c150-493c-8695-7ba759dc4506
-  version: 3
-vcShouldKeepItemLegacyProdMachine: false
+  id: DateTimeNowToEpoch
+  version: -1
 name: DateTimeNowToEpoch
 script: ''
 type: python
@@ -10,9 +9,9 @@ comment: Returns the current datetime as an epoch value for timestamp comparison
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
