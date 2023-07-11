@@ -2,7 +2,8 @@
 # Portnox
 This pack includes Cortex XSIAM content.
 
-## Portnox Alert configuration
+## configuration on the server side
+*On Portnox server run the following configurations.*
 
 1. Go to **Settings** > **Alerts**.
 2. In the **Syslog Server** field, add the IP address of the syslog server.
@@ -29,6 +30,8 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
-4. When configuring the Syslog Collector, change the format to CEF.
+4. When configuring the Syslog Collector, change the format to CEF and set:
+   - vendor as vendor - Portnox
+   - product as product - Portnox
 
 *NOTE:* The log format is CEF. The name of the Vender and the Product will be based on the vendor and product fields in the raw data.
