@@ -1,0 +1,742 @@
+id: Containment Plan - Block Indicators
+version: -1
+name: Containment Plan - Block Indicators
+description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles blocking of indicators as a crucial step in the containment action."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0eab88db-3b97-46e9-8040-fc0e5ccdd72b
+    type: start
+    task:
+      id: 0eab88db-3b97-46e9-8040-fc0e5ccdd72b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 42177fdd-e676-4494-8430-473b77c4d326
+    type: regular
+    task:
+      id: 42177fdd-e676-4494-8430-473b77c4d326
+      version: -1
+      name: Auto add to XSIAM hash block list
+      description: Block lists requested files which have not already been block listed or added to allow list.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      comment:
+        complex:
+          root: alert
+          accessor: alertname
+      hash_list:
+        complex:
+          root: ListCompare.LeftOnly
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6555f437-9362-4b64-8416-9a207801acc8
+    type: title
+    task:
+      id: 6555f437-9362-4b64-8416-9a207801acc8
+      version: -1
+      name: Done - Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c769a542-379a-42a7-8cb0-325e6b48e2b4
+    type: condition
+    task:
+      id: c769a542-379a-42a7-8cb0-325e6b48e2b4
+      version: -1
+      name: Should block indicators?
+      description: Whether to block the indicators  based on the input values.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8292a09a-8cd0-450e-899f-a2dd294b9d28
+    type: playbook
+    task:
+      id: 8292a09a-8cd0-450e-899f-a2dd294b9d28
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoBlockIndicators
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: ListCompare.LeftOnly
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ListCompare.LeftOnly
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: ListCompare.LeftOnly
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: ListCompare.LeftOnly
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      URL:
+        complex:
+          root: ListCompare.LeftOnly
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: ListCompare.LeftOnly
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.URL
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 58da2cac-8a9e-4f4f-88de-623361cde61f
+    type: regular
+    task:
+      id: 58da2cac-8a9e-4f4f-88de-623361cde61f
+      version: -1
+      name: Set Block list files to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: BlockedFilesHash
+      value:
+        complex:
+          root: Core.blocklist.added_hashes
+          accessor: fileHash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e2a45461-aaf2-4ccd-8e87-2fd847c86038
+    type: regular
+    task:
+      id: e2a45461-aaf2-4ccd-8e87-2fd847c86038
+      version: -1
+      name: Set Blocked Indicators to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: BlockedIndicators
+      value:
+        complex:
+          root: IndicatorsToBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 039f34e2-b80d-4fb3-898d-a0bbc151ea49
+    type: condition
+    task:
+      id: 039f34e2-b80d-4fb3-898d-a0bbc151ea49
+      version: -1
+      name: Should block the indicators based on the incident context?
+      description: Whether to block the indicators based on the incident context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: ListCompare
+                accessor: LeftOnly
+            iscontext: true
+          right:
+            value:
+              simple: No Values
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: ListCompare
+                accessor: Both
+            iscontext: true
+          right:
+            value:
+              simple: No Values
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ListCompare
+                accessor: LeftOnly
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4394e286-e62e-41f9-8019-92748ab84bd3
+    type: regular
+    task:
+      id: 4394e286-e62e-41f9-8019-92748ab84bd3
+      version: -1
+      name: compare the indicators to block with blocked indicators
+      description: Compare  two lists and put the differences in context.
+      scriptName: CompareLists
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      left:
+        complex:
+          root: inputs.FileHash
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.FilePath
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.URL
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorsha256
+                iscontext: true
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: No Values
+      right:
+        complex:
+          root: parentIncidentContext
+          accessor: BlockedIndicators
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: No Values
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f8c2ef29-8616-42a0-804d-8cc3c9f49763
+    type: condition
+    task:
+      id: f8c2ef29-8616-42a0-804d-8cc3c9f49763
+      version: -1
+      name: Is file hash exist?
+      description: Checks if the file hash exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: ListCompare
+                accessor: LeftOnly
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.FileHash
+            iscontext: true
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.FilePath
+            iscontext: true
+          right:
+            value:
+              simple: c:\windows\explorer.exe
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_2_#default#": 0.12,
+      "14_3_yes": 0.55,
+      "24_1_yes": 0.44,
+      "24_8_#default#": 0.23,
+      "3_24_yes": 0.54,
+      "3_2_#default#": 0.14
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1725,
+        "width": 380,
+        "x": 450,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: BlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: Set to 'True' to block the indicators.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
+  playbookInputQuery:
+- key: FileHash
+  value: {}
+  required: false
+  description: The file hash to block.
+  playbookInputQuery:
+- key: IP
+  value: {}
+  required: false
+  description: The IP indicators.
+  playbookInputQuery:
+- key: Domain
+  value: {}
+  required: false
+  description: The domain indicators.
+  playbookInputQuery:
+- key: URL
+  value: {}
+  required: false
+  description: The URL indicator.
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: The username to disable.
+  playbookInputQuery:
+- key: FilePath
+  value: {}
+  required: false
+  description: The path of the file to block.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2
