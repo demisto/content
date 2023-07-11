@@ -15,13 +15,13 @@ configuration:
   name: subscription_id
   required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
   section: Connect
 - display: Default Resource Group Name
   name: resource_group_name
   required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -951,57 +951,57 @@ script:
   - description: Gets all resource groups for a subscription.
     name: azure-storage-resource-group-list
     arguments:
-      - default: false
-        description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-        isArray: false
-        name: subscription_id
-        required: false
-        secret: false
-      - name: limit
-        description: Limit on the number of resource groups to return. Default value is 50.
-        required: false
-        defaultValue: 50
-      - default: false
-        name: tag
-        description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
-        required: false
-        outputs:
-        - contextPath: AzureStorage.ResourceGroup.id
-          description: 'The unique identifier of the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.name
-          description: 'The name of the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.type
-          description: 'The type of the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.location
-          description: 'The location of the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.properties.provisioningState
-          description: 'The provisioning state of the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.tags.Owner
-          description: 'The owner tag of the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.tags
-          description: 'The tags associated with the Azure storage resource group.'
-          type: Unknown
-        - contextPath: AzureStorage.ResourceGroup.tags.Name
-          description: 'The name tag of the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.managedBy
-          description: 'The entity that manages the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-name
-          description: 'The AKS managed cluster name tag associated with the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-rg
-          description: 'The AKS managed cluster resource group tag associated with the Azure storage resource group.'
-          type: String
-        - contextPath: AzureStorage.ResourceGroup.tags.type
-          description: 'The type tag associated with the Azure storage resource group.'
-          type: String
+    - default: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - name: limit
+      description: Limit on the number of resource groups to return. Default value is 50.
+      required: false
+      defaultValue: 50
+    - default: false
+      name: tag
+      description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
+      required: false
+      outputs:
+      - contextPath: AzureStorage.ResourceGroup.id
+        description: 'The unique identifier of the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.name
+        description: 'The name of the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.type
+        description: 'The type of the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.location
+        description: 'The location of the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.properties.provisioningState
+        description: 'The provisioning state of the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.tags.Owner
+        description: 'The owner tag of the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.tags
+        description: 'The tags associated with the Azure storage resource group.'
+        type: Unknown
+      - contextPath: AzureStorage.ResourceGroup.tags.Name
+        description: 'The name tag of the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.managedBy
+        description: 'The entity that manages the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-name
+        description: 'The AKS managed cluster name tag associated with the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-rg
+        description: 'The AKS managed cluster resource group tag associated with the Azure storage resource group.'
+        type: String
+      - contextPath: AzureStorage.ResourceGroup.tags.type
+        description: 'The type tag associated with the Azure storage resource group.'
+        type: String
   - description: Generate the login url used for Authorization code flow.
     name: azure-storage-generate-login-url
     arguments: []
