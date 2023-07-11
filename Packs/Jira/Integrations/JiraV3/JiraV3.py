@@ -2980,7 +2980,9 @@ def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tupl
     jql_query = f'{query} ORDER BY created ASC' if query else 'ORDER BY created ASC'
     query_params = create_query_params(jql_query=jql_query, max_results=1)
     res = client.run_query(query_params=query_params)
-    return res, issues[0].get('id', '') if (issues := res.get('issues', [])) else None
+    if (issues := res.get('issues', [])):
+        return res, issues[0].get('id', '')
+    return res, None
 
 
 # Fetch Incidents
