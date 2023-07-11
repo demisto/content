@@ -1005,7 +1005,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-storage-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.64970
   runonce: false
   script: '-'
   subtype: python3
