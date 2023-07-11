@@ -35,3 +35,12 @@ filebeat.inputs:
 ```
 
 **Please note**: The above configuration uses the default location of the logs. In case your linux saves the logs under a different location, you would need to change it in the yaml (under the `paths` field).
+
+
+### Parsing Rules Supported timestamp formats
+
+The following are supported:
+* yyyy-mm-dd hh:mm:ss.ms(3) -zzzz
+* yyyy-mm-ddThh:mm:ss.ms(*) "-zzzz" (At the beginning pf the code)
+* yyyy-mm-ddThh:mm:ss.ms(3)Z (Available for the **ts** field)
+* yyyy-mm-ddThh:mm:ss.ms(*) (Available for the **ts** field) 
