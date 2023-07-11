@@ -48,9 +48,18 @@ When configuring the Windows Event Collector (WEC), use the following settings i
 
 ### XDRC (XDR Collector)
 ​
-To configure the XDR collector, use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+To create or configure the Filebeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/XDR-Collectors).
 
-The AD FS XDR collector template can be found in **Settings** -> **Configurations** -> **XDR Collectors** -> **+Add Profile** -> **Windows** -> **Winlogbeat** -> **Next** -> **Winlogbeat Configuration File**.
+As Cortex XSIAM provides a YAML template for Microsoft AD FS Event Logs, you can use the following steps to create a collection profile:
+
+ 1. In Cortex XSIAM, select **Settings** → **Configurations** → **XDR Collectors** → **Profiles** → **+Add Profile** → **Windows**.
+ 2. Select **Winlogbeat**, then click **Next**.
+ 3. Configure the General Information parameters:
+   - Profile Name — Specify a unique Profile Name to identify the profile. The name can contain only letters, numbers, or spaces, and must be no more than 30 characters. The name you choose will be visible from the list of profiles when you configure a policy.
+
+   - Add description here — (Optional) Provide additional context for the purpose or business reason that explains why you are creating the profile.
+
+ 4. Configure the settings for the profile selected in Step 2. To add the "Microsoft AD FS" template, select it and click **Add**.
 
 **Note:** The AD FS XDR Collector currently supports the following event IDs:
 ```html
