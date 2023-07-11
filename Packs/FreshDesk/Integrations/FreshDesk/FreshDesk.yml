@@ -11,16 +11,21 @@ configuration:
 - display: API Token. (You must enter either the API token or your Freshdesk credentials)
   name: token
   type: 4
+  hidden: true
+- name: token_creds
+  type: 9
+  displaypassword: API Token. (You must enter either the API token or your Freshdesk credentials)
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
 - display: Use system proxy settings
   name: proxy
   type: 8
-- defaultvalue: 24 hours
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
+  defaultvalue: 24 hours
 - display: Username
   name: credentials
   type: 9
