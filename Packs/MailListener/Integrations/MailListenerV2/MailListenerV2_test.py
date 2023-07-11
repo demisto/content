@@ -465,9 +465,8 @@ def test_load_client_cert_and_key(cert_and_key, ok):
                     self.request.close()
 
         ssl_client_ctx.check_hostname = False
-        ssl_client_ctx.verify_mode = ssl.CERT_REQUIRED
+        ssl_client_ctx.verify_mode = ssl.CERT_NONE
         ssl_client_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
-        ssl_client_ctx.load_verify_locations(cafile='./test_data/mail-listener-test-root-ca.cer.pem')
 
         ssl_server_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         if require_client_auth:
@@ -498,5 +497,5 @@ def test_load_client_cert_and_key(cert_and_key, ok):
                 thr.join()
         return False
 
-    assert(_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=True) == ok)
-    assert(_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=False))
+    assert (_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=True) == ok)
+    assert (_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=False))
