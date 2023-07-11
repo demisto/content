@@ -2871,12 +2871,6 @@ inputs:
   required: false
   description: Search Splunk for related REvil - Kaseya breach web access logs activity.
   playbookInputQuery:
-- key: EDLDomainBlocklist
-  value:
-    simple: Demisto Remediation - Domain EDL
-  required: false
-  description: The name of the EDL Domain Block List.
-  playbookInputQuery:
 - key: QRadarDomainFieldName
   value:
     simple: domain
