@@ -318,8 +318,6 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
         """
         account_name = args.get('account_name', '')
         container_name = args.get('container_name', '')
-        # url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
-        #       f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/\
 providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}'
 
@@ -350,13 +348,13 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
             resp_type='response'
         )
 
-    def storage_subscriptions_list_request(self):
+    def list_subscriptions_request(self):
         return self.ms_client.http_request(
             method='GET',
             full_url=f'https://management.azure.com/subscriptions?api-version={API_VERSION}')
 
     def list_resource_groups_request(self, subscription_id: str | None,
-                                     filter_by_tag: str | None, limit: str | int | None) -> Dict:
+                                     filter_by_tag: str | None, limit: int) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourcegroups?'
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
@@ -745,6 +743,16 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
 
 
 def storage_blob_containers_delete(client: ASClient, params: Dict, args: Dict) -> str:
+    """
+    This function deletes a given blob container.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+    Returns:
+        str: A string that represent the status of the request.
+    """
+
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
@@ -772,8 +780,8 @@ def storage_subscriptions_list(client: ASClient) -> CommandResults:
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    res = client.storage_subscriptions_list_request()
-    subscriptions = res.get('value', '[res]')
+    res = client.list_subscriptions_request()
+    subscriptions = res.get('value', [res])
 
     return CommandResults(
         outputs_prefix='AzureStorage.Subscription',

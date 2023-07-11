@@ -955,7 +955,7 @@ Gets all resource groups for a subscription.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID, optional. Note: This field will override instance param 'Subscription ID'. | Optional | 
-| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
 #### Context Output
