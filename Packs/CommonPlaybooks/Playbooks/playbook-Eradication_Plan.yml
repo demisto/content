@@ -239,6 +239,7 @@ tasks:
       id: 4c625140-7998-49e8-82c5-aeee98dfc0ca
       version: -1
       name: Eradication Plan - Delete File
+      description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook handles the deletion of files as a crucial step in the eradication action."
       playbookName: Eradication Plan - Delete File
       type: playbook
       iscommand: false
@@ -248,9 +249,6 @@ tasks:
       '#none#':
       - "55"
     scriptarguments:
-      AutoEradicate:
-        complex:
-          root: inputs.AutoEradicate
       EndpointID:
         complex:
           root: inputs.EndpointID
@@ -272,7 +270,7 @@ tasks:
               equals: {}
               lhs:
                 value:
-                  simple: inputs.FilePath
+                  simple: inputs.AutoEradicate
                 iscontext: true
               lhsB: {}
               options: {}
@@ -326,9 +324,9 @@ tasks:
       '#none#':
       - "55"
     scriptarguments:
-      AutoEradicate:
+      UserRemediation:
         complex:
-          root: inputs.AutoEradicate
+          root: inputs.UserRemediation
       Username:
         complex:
           root: inputs.AutoEradicate
@@ -398,9 +396,6 @@ tasks:
       '#none#':
       - "55"
     scriptarguments:
-      AutoEradicate:
-        complex:
-          root: inputs.AutoEradicate
       EndpointID:
         complex:
           root: inputs.EndpointID
@@ -422,7 +417,7 @@ tasks:
               equals: {}
               lhs:
                 value:
-                  simple: inputs.FilePath
+                  simple: inputs.AutoEradicate
                 iscontext: true
               lhsB: {}
               options: {}
@@ -435,6 +430,9 @@ tasks:
                 value:
                   simple: inputs.FilePath
                 iscontext: true
+      ProcessTermination:
+        complex:
+          root: inputs.ProcessTermination
     separatecontext: true
     continueonerrortype: ""
     loop:

@@ -459,7 +459,7 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: inputs.DomainToBlock
+            root: inputs.Domain
             transformers:
             - operator: uniq
         fieldassociated: ""
