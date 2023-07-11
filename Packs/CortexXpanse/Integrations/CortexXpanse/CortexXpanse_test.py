@@ -575,7 +575,7 @@ def test_update_alert_command(requests_mock):
 
     from test_data.raw_response import ALERT_UPDATE_RAW
     from test_data.expected_results import ALERT_UPDATE_RESULTS
-    requests_mock.post('https://test.com/public_api/v1/incidents/get_incidents/',
+    requests_mock.post('https://test.com/public_api/v1/alerts/update_alerts/',
                        json=ALERT_UPDATE_RAW)
 
     client = Client(
