@@ -16,12 +16,10 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: "USTA is an Cyber Intelligence Platform that responds directly and effectively to today's complex cyber threats. "
 display: USTA
@@ -251,7 +249,7 @@ script:
     - contextPath: Usta.CloseIncident.id
       description: If the incident is closed, returns the id value that was closed.
     name: usta-close-incident
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

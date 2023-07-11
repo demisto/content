@@ -19,7 +19,6 @@ args:
   description: 'Malicious ratio threshold to set indicator as suspicious. '
   defaultValue: "0.3"
 scripttarget: 0
-runonce: false
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

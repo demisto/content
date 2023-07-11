@@ -11,37 +11,29 @@ configuration:
   type: 4
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Include Behavior data in incidents
   name: behavior
-  required: false
   type: 8
 - defaultvalue: '10'
   display: How many events to pull from Expander per run
   name: page_limit
-  required: false
   type: 0
 - defaultvalue: '7'
   display: How many days to pull past events on first run
   name: first_run
-  required: false
   type: 0
 - display: Minimum severity of Expanse Exposure to create an incident for
   name: minimum_severity
-  required: false
   type: 15
   defaultvalue: WARNING
   options:
@@ -59,10 +51,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Submits an IP address to check.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -161,10 +150,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Submits a domain to check.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -398,10 +384,7 @@ script:
       isArray: true
       name: common_name
       required: true
-      secret: false
-    deprecated: false
     description: Returns information about the domain certificate.
-    execution: false
     name: expanse-get-certificate
     outputs:
     - contextPath: Expanse.Certificate.SearchTerm
@@ -509,16 +492,9 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: The timestamp denoting the earliest behavior data to fetch, in ISO-8601 UTC format.
-      isArray: false
+    - description: The timestamp denoting the earliest behavior data to fetch, in ISO-8601 UTC format.
       name: start_time
-      required: false
-      secret: false
-    deprecated: false
     description: Returns Risky Flows for the specified IP address. The maximum number of results is 20.
-    execution: false
     name: expanse-get-behavior
     outputs:
     - contextPath: Expanse.Behavior.SearchTerm
@@ -587,10 +563,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Deprecated command by Expanse. Returns exposure information about the ip.
-    execution: false
     name: expanse-get-exposures
     outputs:
     - contextPath: Expanse.Exposures.SearchTerm
@@ -650,13 +623,9 @@ script:
   - arguments:
     - default: true
       description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
-      isArray: false
       name: common_name
       required: true
-      secret: false
-    deprecated: false
     description: Returns all domains which have been seen with the specified certificate.
-    execution: false
     name: expanse-get-domains-for-certificate
     outputs:
     - contextPath: Expanse.IPDomains.SearchTerm
@@ -672,10 +641,7 @@ script:
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
   dockerimage: demisto/python3:3.9.5.21272
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

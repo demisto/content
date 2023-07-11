@@ -14,21 +14,17 @@ configuration:
 - display: API Key
   name: token
   type: 4
-  required: false
   hidden: true
 - displaypassword: API Key
-  name:  credentials_token
-  required: false
+  name: credentials_token
   hiddenusername: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -41,7 +37,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -51,12 +46,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 script:
   script: ''
@@ -86,9 +79,7 @@ script:
       required: true
       description: The value of the given field.
     - name: limit
-      required: false
-      description: 'The maximum number of domains to display. Possible values are:
-        "0", "1", "5", "10", "25", "100", "250", or 1"000. Default is "25".'
+      description: 'The maximum number of domains to display. Possible values are: "0", "1", "5", "10", "25", "100", "250", or 1"000. Default is "25".'
     outputs:
     - contextPath: HostIo.Search.Field
       description: The field to look up.
@@ -102,8 +93,7 @@ script:
     - contextPath: HostIo.Search.Total
       description: The total number of domains associated with the given field.
       type: Number
-    description: Returns a list of domains associated with a specific field, and the
-      total number of these domains.
+    description: Returns a list of domains associated with a specific field, and the total number of these domains.
   - name: domain
     arguments:
     - name: domain
@@ -140,15 +130,13 @@ script:
       description: The country of the registrant.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: The date when the domain was last updated in ISO8601 format (i.e.,
-        '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated in ISO8601 format (i.e., '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.NameServers
       description: Name of the server where the domain exists.
       type: String
     description: Returns domain information.
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

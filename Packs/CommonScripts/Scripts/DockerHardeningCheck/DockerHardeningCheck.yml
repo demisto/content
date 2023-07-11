@@ -41,8 +41,7 @@ args:
   defaultValue: cgroup
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.12.62631
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
