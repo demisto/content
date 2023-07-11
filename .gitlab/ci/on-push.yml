@@ -554,6 +554,7 @@ xsoar_ng_server_ga:
     LOCK_MACHINE_NAME: "qa2-test-9999302868747"
 
     UNREMOVABLE_PACKS: "Base"
+  timeout: 36 hours
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
