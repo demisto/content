@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Eradication Plan
-description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
 starttaskid: "0"
 tasks:
   "0":
@@ -141,7 +141,7 @@ tasks:
             - operator: uniq
         fieldassociated: ""
         placeholder: ""
-        tooltip: Please consider carefully whether the process termination could impact system processes with similar name.
+        tooltip: Please consider carefully whether the process termination could impact system processes with a similar name.
         readonly: false
       title: Which Eradication actions would you like to perform?
       description: Select which eradication actions to perform.

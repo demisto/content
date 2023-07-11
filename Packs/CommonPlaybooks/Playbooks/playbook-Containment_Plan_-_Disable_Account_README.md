@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Account - Generic v2
+Block Account - Generic v2
 
 ### Integrations
 
@@ -22,7 +22,7 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* setParentIncidentContext
+setParentIncidentContext
 
 ## Playbook Inputs
 

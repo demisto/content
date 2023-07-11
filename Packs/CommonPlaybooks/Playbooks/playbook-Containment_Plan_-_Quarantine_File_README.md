@@ -30,7 +30,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | FileContainment | Set to 'True' to quarantine the identified file. | True | Optional |
-| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine. | Quarantine | Optional |
+| FileRemediation | Choose 'Quarantine' or 'Delete' to avoid file remediation conflicts. <br/>For example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine. | Quarantine | Optional |
 | FilePath | The path of the file to block. |  | Optional |
 | FileHash | The file hash to block. |  | Optional |
 | EndpointID | The endpoint ID to run commands over. |  | Optional |

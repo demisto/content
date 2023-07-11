@@ -1,5 +1,5 @@
 This playbook is one of the sub-playbooks in the containment plan. 
-This playbook handles the clearing of users' sessions as a crucial step in the containment action. (currently, the playbook supports only Okta)
+This playbook handles the clearing of users' sessions as a crucial step in the containment action. (Currently, the playbook supports only Okta.)
 
 
 ## Dependencies
@@ -34,7 +34,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | ClearUserSessions | Set to 'True' to clear the user active Okta sessions. | True | Optional |
 | Username | The username to disable. |  | Optional |
-| IAMUserDomain | The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain. |  | Optional |
+| IAMUserDomain | The Okta IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain. |  | Optional |
 
 ## Playbook Outputs
 

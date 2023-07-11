@@ -1,7 +1,7 @@
 id: Containment Plan - Isolate Device
 version: -1
 name: Containment Plan - Isolate Device
-description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles isolating the Endpoint as a crucial step in the containment action."
+description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles isolating the endpoint as a crucial step in the containment action."
 starttaskid: "0"
 tasks:
   "0":
@@ -181,7 +181,7 @@ tasks:
       id: 7ed6fb17-577b-4bf3-8708-7a212ce724f0
       version: -1
       name: Compare endpoint ID with isolated endpoints in the incident
-      description: Compare  two lists and put the differences in context.
+      description: Compare two lists and put the differences in context.
       scriptName: CompareLists
       type: regular
       iscommand: false
@@ -322,7 +322,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -384,7 +384,7 @@ inputs:
 - key: EndpointHostName
   value: {}
   required: false
-  description: The endpoint Hostname.
+  description: The endpoint hostname.
   playbookInputQuery:
 outputs: []
 tests:

@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Containment Plan
-description: "This playbook handles all the containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+description: "This playbook handles all the containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
 starttaskid: "0"
 tasks:
   "0":
@@ -228,7 +228,7 @@ tasks:
       version: -1
       name: Should containment automatically?
       description: |+
-        Whether to containment actions automatically or manually.
+        Whether to perform containment actions automatically or manually.
 
       type: condition
       iscommand: false

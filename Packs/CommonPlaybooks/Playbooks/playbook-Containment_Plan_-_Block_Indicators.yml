@@ -131,7 +131,7 @@ tasks:
       id: c769a542-379a-42a7-8cb0-325e6b48e2b4
       version: -1
       name: Should block indicators?
-      description: Whether to block the indicators  based on the input values.
+      description: Whether to block the indicators based on the input values.
       type: condition
       iscommand: false
       brand: ""
@@ -528,7 +528,7 @@ tasks:
       id: 4394e286-e62e-41f9-8019-92748ab84bd3
       version: -1
       name: compare the indicators to block with blocked indicators
-      description: Compare  two lists and put the differences in context.
+      description: Compare two lists and put the differences in context.
       scriptName: CompareLists
       type: regular
       iscommand: false

@@ -1,7 +1,7 @@
 id: Containment Plan - Clear User Sessions
 version: -1
 name: Containment Plan - Clear User Sessions
-description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles the clearing of users' sessions as a crucial step in the containment action. (currently, the playbook supports only Okta)\n"
+description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles the clearing of users' sessions as a crucial step in the containment action. (Currently, the playbook supports only Okta.)\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -375,7 +375,7 @@ tasks:
       id: 725fe300-6380-4936-8ab3-e176c0bef34f
       version: -1
       name: Compare the users with cleared users sessions in the incident
-      description: Compare  two lists and put the differences in context.
+      description: Compare two lists and put the differences in context.
       scriptName: CompareLists
       type: regular
       iscommand: false
@@ -471,7 +471,7 @@ inputs:
 - key: IAMUserDomain
   value: {}
   required: false
-  description: The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain.
+  description: The Okta IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain.
   playbookInputQuery:
 outputs: []
 tests:

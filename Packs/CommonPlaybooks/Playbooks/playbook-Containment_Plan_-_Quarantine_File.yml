@@ -360,7 +360,7 @@ inputs:
   value:
     simple: Quarantine
   required: false
-  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
+  description: "Choose 'Quarantine' or 'Delete' to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
   playbookInputQuery:
 - key: FilePath
   value: {}

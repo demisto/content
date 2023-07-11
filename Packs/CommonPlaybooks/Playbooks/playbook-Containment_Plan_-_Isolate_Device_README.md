@@ -32,7 +32,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | HostContainment | Whether to execute endpoint isolation. | True | Optional |
 | EndpointID | The endpoint ID to run commands over. |  | Optional |
-| EndpointHostName | The endpoint Hostname. |  | Optional |
+| EndpointHostName | The endpoint hostname. |  | Optional |
 
 ## Playbook Outputs
 

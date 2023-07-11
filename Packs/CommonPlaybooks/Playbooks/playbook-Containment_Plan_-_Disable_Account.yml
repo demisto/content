@@ -228,7 +228,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -269,7 +269,7 @@ tasks:
       id: 46906c55-db0e-48d1-8c1c-38cb34384cd0
       version: -1
       name: Compare the input usernames with disabled users in the incident
-      description: Compare  two lists and put the differences in context.
+      description: Compare two lists and put the differences in context.
       scriptName: CompareLists
       type: regular
       iscommand: false
