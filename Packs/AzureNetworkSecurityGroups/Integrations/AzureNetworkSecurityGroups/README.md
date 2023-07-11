@@ -35,7 +35,8 @@ List all network security groups.
 `azure-nsg-security-groups-list`
 #### Input
 
-There are no input arguments for this command.
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 
 #### Context Output
 
@@ -47,8 +48,6 @@ There are no input arguments for this command.
 | AzureNSG.SecurityGroup.type | String | The security group's type. | 
 | AzureNSG.SecurityGroup.location | String | The security group's location. | 
 | AzureNSG.SecurityGroup.tags | String | The security group's tags. | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 
 
 #### Command Example
