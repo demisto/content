@@ -708,6 +708,9 @@ You will be automatically redirected to a link with the following structure:
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
+### azure-nsg-subscriptions-list
+***
+Gets all subscriptions for a tenant.
 #### Base Command
 
 `azure-nsg-subscriptions-list`
