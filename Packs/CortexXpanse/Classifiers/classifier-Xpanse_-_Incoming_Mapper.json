@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Mapper for Xpanse Alerts",
     "feed": false,
     "id": "Xpanse - Incoming Mapper",
     "mapping": {
@@ -132,8 +132,11 @@
 						"root": "original_tags",
 						"transformers": []
 					}
-				}
-			}
+				},
+                "Xpanse Category": {
+                    "simple": "asm_alert_categories"
+                }
+            }
 		}
     },
     "name": "Xpanse - Incoming Mapper",

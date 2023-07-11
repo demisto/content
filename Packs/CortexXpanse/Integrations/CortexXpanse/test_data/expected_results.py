@@ -1134,4 +1134,51 @@ ATTACK_SURFACE_RULES_RESULTS = [
 ]
 
 TAG_APPLY_RESULTS = "Assignment operation: True"
-TAG_REMOVE_RESULTS = "Removal operation: succeeded"
+TAG_REMOVE_RESULTS = "Removal operation: True"
+
+LIST_INCIDENTS_RESULTS = {
+    "ASM": {
+        "Incident": {
+            "aggregated_score": 75,
+            "alert_categories": null,
+            "alert_count": 4,
+            "alerts_grouping_status": "Enabled",
+            "assigned_user_mail": null,
+            "assigned_user_pretty_name": null,
+            "creation_time": 1688705047063,
+            "critical_severity_alert_count": 0,
+            "description": "'Google WebFramework Angular at suppliers.expander.expanse.co:443' detected by ASM on 3 hosts ",
+            "detection_time": null,
+            "high_severity_alert_count": 0,
+            "host_count": 3,
+            "hosts": [
+                "1.1.1.1:null",
+            ],
+            "incident_id": "5471",
+            "incident_name": null,
+            "incident_sources": [
+                "ASM"
+            ],
+            "low_severity_alert_count": 4,
+            "manual_description": null,
+            "manual_score": null,
+            "manual_severity": null,
+            "med_severity_alert_count": 0,
+            "modification_time": 1689048065832,
+            "notes": null,
+            "original_tags": [
+                "BU:Prod Ev2 Branch"
+            ],
+            "resolve_comment": "",
+            "resolved_timestamp": null,
+            "rule_based_score": 75,
+            "severity": "low",
+            "starred": false,
+            "status": "new",
+            "tags": [],
+            "user_count": 0,
+            "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5471",
+            "xpanse_risk_score": 75
+        }
+    }
+}

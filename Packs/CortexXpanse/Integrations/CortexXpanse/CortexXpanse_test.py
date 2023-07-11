@@ -435,7 +435,7 @@ def test_assign_tag_to_ranges_command(requests_mock):
         },
         proxy=False)
     args = {
-        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'range_id_list': '11111111-1111-1111-1111-111111111111',
         'tags': 'Test'
     }
 
@@ -473,7 +473,7 @@ def test_remove_tag_to_ranges_command(requests_mock):
         },
         proxy=False)
     args = {
-        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'range_id_list': '11111111-1111-1111-1111-111111111111',
         'tags': 'Test'
     }
 
@@ -481,6 +481,45 @@ def test_remove_tag_to_ranges_command(requests_mock):
 
     assert response.outputs == TAG_REMOVE_RESULTS
     assert response.outputs_prefix == 'ASM.TagRemoval'
+
+
+def test_list_incidents_command(requests_mock):
+    """Tests list_incidents_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate list_incidents_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'list_incidents_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, list_incidents_command
+
+    from test_data.raw_response import LIST_INCIDENTS_RAW
+    from test_data.expected_results import LIST_INCIDENTS_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/remove/',
+                       json=LIST_INCIDENTS_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'limit': 1,
+        'status': 'new'
+    }
+
+    response = list_incidents_command(client, args)
+
+    assert response.outputs == LIST_INCIDENTS_RESULTS
+    assert response.outputs_prefix == 'ASM.Incident'
+    assert response.outputs_key_field == 'incident_id'
 
 
 def test_fetch_incidents(requests_mock, mocker):
