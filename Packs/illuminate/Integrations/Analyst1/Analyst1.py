@@ -228,8 +228,8 @@ class Client(BaseClient):
 
     def perform_test_request(self):
         data: dict = self._http_request(method='GET', url_suffix='')
-        if data['links'] is None:
-            raise DemistoException('Invalid URL or Credentials. JSON structure not recognized')
+        if data.get('links') is None:
+            raise DemistoException('Invalid URL or Credentials. JSON structure not recognized.')
         return
 
     def enrich_indicator(self, indicator: str, indicator_type: str) -> EnrichmentOutput:
@@ -476,7 +476,7 @@ def analyst1_get_indicator(client: Client, args) -> Optional[CommandResults]:
     return None
 
 
-def analyst1_batch_check_command(client: Client, args):
+def analyst1_batch_check_command(client: Client, args) -> Optional[CommandResults]:
     raw_data = client.get_batch_search(argsToStr(args, 'values'))
     # assume succesful result or client will have errored
     if len(raw_data['results']) > 0:
@@ -490,7 +490,7 @@ def analyst1_batch_check_command(client: Client, args):
     return None
 
 
-def analyst1_batch_check_post(client: Client, args: dict):
+def analyst1_batch_check_post(client: Client, args: dict) -> Optional[dict]:
     runpath = 'values'
     values = args.get('values')
     if values is None or not values:
@@ -541,7 +541,7 @@ def analyst1_batch_check_post(client: Client, args: dict):
     return None
 
 
-def analyst1_evidence_submit(client: Client, args: dict):
+def analyst1_evidence_submit(client: Client, args: dict) -> Optional[CommandResults]:
     raw_data = client.post_evidence(argsToStr(args, 'fileName'),
                                     argsToStr(args, 'fileContent'), argsToStr(args, 'fileEntryId'),
                                     argsToStr(args, 'fileClassification'), argsToStr(args, 'tlp'), argsToStr(args, 'sourceId'))
@@ -556,7 +556,7 @@ def analyst1_evidence_submit(client: Client, args: dict):
     return command_results
 
 
-def analyst1_evidence_status(client: Client, args: dict):
+def analyst1_evidence_status(client: Client, args: dict) -> Optional[CommandResults]:
     raw_data = client.get_evidence_status(argsToStr(args, 'uuid'))
 
     if not raw_data or raw_data is None:
@@ -617,7 +617,7 @@ def a1_tasking_array_from_rules(rulesJson: dict) -> list:
     return taskings_list
 
 
-def analyst1_get_sensor_taskings_command(client: Client, args: dict):
+def analyst1_get_sensor_taskings_command(client: Client, args: dict) -> List[CommandResults]:
     raw_data = client.get_sensor_taskings(argsToStr(args, 'sensor_id'), argsToInt(args, 'timeout', 200))
 
     simplified_data: dict = raw_data
@@ -663,7 +663,7 @@ def analyst1_get_sensor_taskings_command(client: Client, args: dict):
     return command_results_list
 
 
-def analyst1_get_sensors_command(client: Client, args: dict):
+def analyst1_get_sensors_command(client: Client, args: dict) -> Optional[CommandResults]:
     sensor_raw_data = client.get_sensors(argsToInt(args, 'page', 1), argsToInt(args, 'pageSize', 50))
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorList',
@@ -675,7 +675,7 @@ def analyst1_get_sensors_command(client: Client, args: dict):
     return command_results
 
 
-def analyst1_get_sensor_diff(client: Client, args: dict):
+def analyst1_get_sensor_diff(client: Client, args: dict) -> List[CommandResults]:
     raw_data = client.get_sensor_diff(argsToStr(args, 'sensor_id'), argsToStr(args, 'version'), argsToInt(args, 'timeout', 200))
     # CommandResults creates both "outputs" and "human readable" in one go using updated XSOAR capabilities
 

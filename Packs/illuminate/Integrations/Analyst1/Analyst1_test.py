@@ -298,6 +298,22 @@ MOCK_SENSORS: dict = {
         }
     ]
 }
+MOCK_TEST_REQUEST_GOOD = {
+    "links": [
+        {
+            "rel": "self",
+            "href": "https://mock.com/api/1_0"
+        }
+    ]
+}
+MOCK_TEST_REQUEST_INVALID = {
+    "cannotfindme": [
+        {
+            "rel": "self",
+            "href": "https://mock.com/api/1_0"
+        }
+    ]
+}
 
 
 MOCK_CLIENT_PARAMS = {
@@ -534,6 +550,17 @@ def test_analyst1_evidence_submit(requests_mock, mock_client):
     assert command_results.outputs.get('uuid') == 'uuid_value'
 
 
+def test_analyst1_evidence_submit_error(requests_mock, mock_client):
+    args: dict = {
+        'fileName': 'name.txt', 'sourceId': '1', 'tlp': 'clear', 'fileClassification': 'u'
+    }
+    try:
+        analyst1_evidence_submit(mock_client, args)
+    except DemistoException:
+        return
+    assert False
+
+
 def test_analyst1_evidence_status_200_emptyid(requests_mock, mock_client):
     requests_mock.get(
         f'https://{MOCK_SERVER}/api/1_0/evidence/uploadStatus/uuid_value',
@@ -719,6 +746,28 @@ def test_analyst1_get_sensor_config_command(requests_mock, mock_client):
     assert command_results.outputs.get('warRoomEntry') is not None
     # json expectation adds quotes, anomaly of unit testing
     assert command_results.outputs.get('config_text') == 'response text goes here'
+
+
+def test_perform_test_request_good(requests_mock, mock_client):
+    requests_mock.get(
+        f'https://{MOCK_SERVER}/api/1_0/',
+        json=MOCK_TEST_REQUEST_GOOD
+    )
+    try:
+        perform_test_module(mock_client)
+    except DemistoException:
+        assert False
+
+
+def test_perform_test_request_invalid(requests_mock, mock_client):
+    requests_mock.get(
+        f'https://{MOCK_SERVER}/api/1_0/',
+        json=MOCK_TEST_REQUEST_INVALID
+    )
+    try:
+        perform_test_module(mock_client)
+    except DemistoException as e:
+        assert str(e) == 'Invalid URL or Credentials. JSON structure not recognized.'
 
 
 def test_argsToStr():
