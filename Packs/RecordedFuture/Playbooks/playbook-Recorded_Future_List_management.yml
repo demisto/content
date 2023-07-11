@@ -53,6 +53,8 @@ tasks:
     scriptarguments:
       ignore-outputs:
         simple: "false"
+      limit:
+        simple: "100"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -116,12 +118,13 @@ tasks:
         label: ""
         labelarg:
           simple: Do you want to...
-        required: false
+        required: true
         gridcolumns: []
         defaultrows: []
-        type: multiSelect
+        type: singleSelect
         options: []
         optionsarg:
+        - {}
         - simple: Add
         - simple: Remove
         - simple: View
