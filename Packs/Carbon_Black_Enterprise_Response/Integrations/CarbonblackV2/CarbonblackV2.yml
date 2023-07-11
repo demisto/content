@@ -22,30 +22,24 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Fetch Alert Severity Threshold Higher Than
   name: fetchAlertsSeverityThreshold
   defaultvalue: ""
   type: 0
-  required: false
 - display: Maximum Number Of Incidents To Fetch
   name: rows
   defaultvalue: "10"
   type: 0
-  required: false
 script:
   script: ''
   type: javascript
@@ -70,15 +64,13 @@ script:
       description: Alert report name (watchlist_id) to filter by
     - name: query
       default: true
-      description: Query string. Accepts the same data as the search box on the Binary
-        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+      description: Query string. Accepts the same data as the search box on the Binary Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
     - name: rows
       description: Return this many rows, 10 by default.
     - name: start
       description: Start at this row, 0 by default.
     - name: sort
-      description: Sort rows by this field and order. server_added_timestamp desc
-        by default.
+      description: Sort rows by this field and order. server_added_timestamp desc by default.
     - name: facet
       description: Return facet results. 'false' by default, set to 'true' for facets.
     outputs:
@@ -132,15 +124,13 @@ script:
       description: Filter binary by hostname
     - name: query
       default: true
-      description: Query string. Accepts the same data as the search box on the Binary
-        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+      description: Query string. Accepts the same data as the search box on the Binary Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
     - name: rows
       description: Return this many rows, 10 by default.
     - name: start
       description: Start at this row, 0 by default.
     - name: sort
-      description: Sort rows by this field and order. server_added_timestamp desc
-        by default.
+      description: Sort rows by this field and order. server_added_timestamp desc by default.
     - name: facet
       description: Return facet results. 'false' by default, set to 'true' for facets.
     outputs:
@@ -290,8 +280,7 @@ script:
   - name: cb-get-hash-blacklist
     arguments:
     - name: filter
-      description: 'OPTIONAL filters blacklist by fields. Example: filter="md5hash
-        == put_your_hash_here"'
+      description: 'OPTIONAL filters blacklist by fields. Example: filter="md5hash == put_your_hash_here"'
     outputs:
     - contextPath: CbResponse.BlockedHashes.MD5
       description: Blocked MD5
@@ -311,8 +300,7 @@ script:
       description: Last block hostname
     - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
       description: Last block sensor ID
-    description: Returns a list of hashes on block list, with each list entry describing
-      one hash on block list.
+    description: Returns a list of hashes on block list, with each list entry describing one hash on block list.
   - name: cb-get-process
     arguments:
     - name: pid
@@ -332,8 +320,7 @@ script:
     - contextPath: Process.Siblings.MD5
       description: The sibling Process MD5
     - contextPath: Process.CbSegmentID
-      description: Cb 'segment' where this process instance is stored. Required to
-        fetch further info on a process.
+      description: Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Parent.MD5
       description: The parent Process MD5
     - contextPath: Process.Children.CommandLine
@@ -341,14 +328,11 @@ script:
     - contextPath: Process.Hostname
       description: Process Hostname
     - contextPath: Process.Parent.CbSegmentID
-      description: The parent Cb 'segment' where this process instance is stored.
-        Required to fetch further info on a process.
+      description: The parent Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.CbID
-      description: Cb unique ID for this process instance - required (together with
-        CbSegmentID) to fetch further info on a process.
+      description: Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Siblings.CbSegmentID
-      description: The sibling Cb 'segment' where this process instance is stored.
-        Required to fetch further info on a process.
+      description: The sibling Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Children.Name
       description: The children Process Name
     - contextPath: Process.Parent.Name
@@ -362,11 +346,9 @@ script:
     - contextPath: Process.PID
       description: Process PID
     - contextPath: Process.Children.CbSegmentID
-      description: The children Cb 'segment' where this process instance is stored.
-        Required to fetch further info on a process.
+      description: The children Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Children.CbID
-      description: The children Cb unique ID for this process instance - required
-        (together with CbSegmentID) to fetch further info on a process.
+      description: The children Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Path
       description: Process Path
     - contextPath: Process.Parent.PID
@@ -378,8 +360,7 @@ script:
     - contextPath: Process.Children.PID
       description: The children Process PID
     - contextPath: Process.Parent.CbID
-      description: The parent Cb unique ID for this process instance - required (together
-        with CbSegmentID) to fetch further info on a process.
+      description: The parent Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.CommandLine
       description: Process CommandLine
     - contextPath: Process.Siblings.CommandLine
@@ -395,8 +376,7 @@ script:
     - contextPath: Process.Children.MD5
       description: The children Process MD5
     - contextPath: Process.Siblings.CbID
-      description: The sibling Cb unique ID for this process instance - required (together
-        with CbSegmentID) to fetch further info on a process.
+      description: The sibling Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Siblings.Path
       description: The sibling Process Path
     - contextPath: Process.Siblings.PID
@@ -404,8 +384,7 @@ script:
     - contextPath: Process.StartTime
       description: Start time of the process.
       type: date
-    description: Gets basic process information for segment (segment_id) of process
-      (process_id)
+    description: Gets basic process information for segment (segment_id) of process (process_id)
   - name: cb-get-processes
     arguments:
     - name: name
@@ -422,15 +401,13 @@ script:
       description: Filter processes by md5 hash
     - name: query
       default: true
-      description: Query string. Accepts the same data as the search box on the Binary
-        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+      description: Query string. Accepts the same data as the search box on the Binary Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
     - name: rows
       description: Return this many rows, 10 by default.
     - name: start
       description: Start at this row, 0 by default.
     - name: sort
-      description: Sort rows by this field and order. server_added_timestamp desc
-        by default.
+      description: Sort rows by this field and order. server_added_timestamp desc by default.
     - name: facet
       description: Return facet results. 'false' by default, set to 'true' for facets.
     outputs:
@@ -447,11 +424,9 @@ script:
     - contextPath: Process.PID
       description: Process PID
     - contextPath: Process.CbID
-      description: Cb unique ID for this process instance - required (together with
-        CbSegmentID) to fetch further info on a process.
+      description: Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.CbSegmentId
-      description: Cb "segment" where this process instance is stored. Required to
-        fetch further info on a process.
+      description: Cb "segment" where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Parent.PID
       description: Process Parent PID
     - contextPath: Process.Parent.Name
@@ -499,8 +474,7 @@ script:
       description: the internal CB process id; this is the id field in search results
     - name: segid
       required: true
-      description: the process segment id; this is the segment_id field in search
-        results.
+      description: the process segment id; this is the segment_id field in search results.
     outputs:
     - contextPath: Process.CrossProc.OtherProcessMD5
       description: Other process MD5
@@ -515,8 +489,7 @@ script:
     - contextPath: Process.Path
       description: Process Path
     - contextPath: Process.CbID
-      description: Cb unique ID for this process instance - required (together with
-        CbSegmentID) to fetch further info on a process.
+      description: Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Parent.Name
       description: The parent Process Name
     - contextPath: Process.Hostname
@@ -528,8 +501,7 @@ script:
     - contextPath: Process.CrossProc.OtherProcessCbID
       description: Other process CbID
     - contextPath: Process.CbSegmentID
-      description: Cb 'segment' where this process instance is stored. Required to
-        fetch further info on a process.
+      description: Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Name
       description: Process Name
     - contextPath: Process.CrossProc.Time
@@ -550,8 +522,7 @@ script:
       description: Registry time
     - contextPath: Process.Modules.Time
       description: Module time
-    description: Retrieve all process events for a given process segmented by segment
-      ID
+    description: Retrieve all process events for a given process segmented by segment ID
   - name: cb-quarantine-device
     arguments:
     - name: sensor
@@ -576,8 +547,7 @@ script:
     - name: hostname
       description: returns the sensor registration(s) with matching hostname
     - name: groupid
-      description: returns the sensor registration(s) in the specified sensor group
-        id
+      description: returns the sensor registration(s) in the specified sensor group id
     outputs:
     - contextPath: CbResponse.Sensors.Status
       description: Sensor Status
@@ -702,8 +672,7 @@ script:
     - name: name
       description: name of this watchlist
     - name: indexType
-      description: the type of watchlist. Valid values are 'modules' and 'events'
-        for binary and process watchlists, respectively
+      description: the type of watchlist. Valid values are 'modules' and 'events' for binary and process watchlists, respectively
     description: Modify a watchlist in Carbon black Response.
   - name: cb-alert-update
     arguments:
@@ -718,8 +687,7 @@ script:
       - Unresolved
       - In Progress
       - False Positive
-      description: 'Updated alert''s status: Resolved,Unresolved,In Progress or False
-        Positive'
+      description: 'Updated alert''s status: Resolved,Unresolved,In Progress or False Positive'
     - name: setIgnored
       auto: PREDEFINED
       predefined:
@@ -779,8 +747,7 @@ script:
     - contextPath: File.Description
       description: The binary description.
     - contextPath: File.DigSig.Result
-      description: The Carbon Black decision after checking this binary's digital
-        signature.
+      description: The Carbon Black decision after checking this binary's digital signature.
     - contextPath: File.LastSeen
       description: LThe lst time the binary was seen.
     - contextPath: File.Path
@@ -805,10 +772,8 @@ script:
       description: The file version.
     - contextPath: File.Signature.Description
       description: The description of the signature.
-    description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip
-      file containing the requested file and it's metadata.
+    description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing the requested file and it's metadata.
   isfetch: true
-  runonce: false
   dockerimage: demisto/python:2.7.18.8715
 tests:
 - Carbon Black Response Test

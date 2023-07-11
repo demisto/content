@@ -7,8 +7,7 @@ type: javascript
 tags:
 - email
 - reputation
-comment: Check if an email address's domain is trying to squat other domain using
-  Levenshtein distance algorithm
+comment: Check if an email address's domain is trying to squat other domain using Levenshtein distance algorithm
 system: true
 args:
 - name: email
@@ -58,5 +57,4 @@ outputs:
   description: The DBot score
   type: number
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
