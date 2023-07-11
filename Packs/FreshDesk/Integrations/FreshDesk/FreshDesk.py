@@ -17,7 +17,7 @@ PARAMS = demisto.params()
 CREDS = PARAMS.get('credentials')
 USERNAME = CREDS.get('identifier') if CREDS else None
 PASSWORD = CREDS.get('password') if CREDS else None
-TOKEN = PARAMS.get('token')
+TOKEN = PARAMS.get('token_creds', {}).get('password') or PARAMS.get('token')
 
 if not (USERNAME and PASSWORD) and not TOKEN:
     err_msg = 'You must provide either your Freshdesk account API key or the ' \
@@ -30,9 +30,9 @@ AUTH = (TOKEN, 'X') if TOKEN else (USERNAME, PASSWORD)
 # How much time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time', '24 hours')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = PARAMS['url'][:-1] if (PARAMS.get('url') and PARAMS['url'].endswith('/')) else PARAMS['url']
+SERVER = PARAMS['url'].removesuffix('/')
 # Should we use SSL
-USE_SSL = not demisto.params().get('insecure', False)
+USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v2/'
 
@@ -181,10 +181,7 @@ def reformat_ticket_context(context):
             context[new_key] = val
             del context[key]
         elif 'Cc' in key:
-            if key.endswith('s'):
-                new_key = key[:-1].replace('Cc', 'CC')
-            else:
-                new_key = key.replace('Cc', 'CC')
+            new_key = key.removesuffix('s').replace('Cc', 'CC')
             context[new_key] = val
             del context[key]
 
@@ -198,7 +195,7 @@ def reformat_ticket_context(context):
     additional_fields = {}
     for key, val in list(context.items()):
         if key not in standard_context_outputs:
-            if not ((isinstance(val, list) or isinstance(val, dict)) and len(val) == 0):
+            if not ((isinstance(val, dict | list)) and len(val) == 0):
                 additional_fields[key] = val
         else:
             new_context[key] = val
@@ -366,7 +363,7 @@ def additional_fields_to_args(args, additional_fields_arg_name):
         for field_and_val in fields_and_vals:
             field_and_val = field_and_val.split('=')
             # If the length doesn't equal 2, means there were either no equal signs or more than one
-            if not len(field_and_val) == 2:
+            if len(field_and_val) != 2:
                 err_msg = 'It appears you entered either too many or too few' \
                           ' equal signs in the \'additional_fields\' argument.'
                 return_error(err_msg)
@@ -397,7 +394,7 @@ def ticket_to_incident(ticket):
     incident = {}
     # Incident Title
     subject = ticket.get('subject', '').encode('ascii', 'replace').decode("utf-8")
-    incident['name'] = 'Freshdesk Ticket: "{}"'.format(subject)
+    incident['name'] = f'Freshdesk Ticket: "{subject}"'
     # Incident update time - the ticket's update time - The API does not support filtering tickets by creation time
     # but only by update time. The update time will be the creation time of the incidents and the incident id check will
     # prevent duplications of incidents.
@@ -425,9 +422,8 @@ def get_additional_fields(args):
         elif filter == 'spam':
             additional_fields.append('spam')
     requester = args.get('requester')
-    if requester:
-        if '@' in requester:
-            additional_fields.append('email')
+    if requester and '@' in requester:
+        additional_fields.append('email')
     company_id = args.get('company_id')
     if company_id:
         additional_fields.append('company_id')
@@ -473,7 +469,7 @@ def handle_array_input(args):
     attchs_present = args.get('attachments')
     if attchs_present:
         for arr_input in array_inputs:
-            if arr_input in args.keys():
+            if arr_input in args:
                 if arr_input != 'attachments':
                     args[arr_input + '[]'] = argToList(args.get(arr_input))
                     del args[arr_input]
@@ -481,7 +477,7 @@ def handle_array_input(args):
                     args[arr_input] = argToList(args.get(arr_input))
     else:
         for arr_input in array_inputs:
-            if arr_input in args.keys():
+            if arr_input in args:
                 args[arr_input] = argToList(args.get(arr_input))
     return args
 
@@ -578,7 +574,7 @@ def handle_number_input(args):
     ]
     # Convert cmd args that are expected to be numbers from strings to numbers
     for num_arg in number_args:
-        if num_arg in args.keys():
+        if num_arg in args:
             args[num_arg] = int(args.get(num_arg))
     return args
 
@@ -766,14 +762,14 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         LOG(res.json())
         LOG(res.text)
         LOG.print_log()
-        err_msg = 'Error in API call to Freshdesk Integration [{}] - {}'.format(res.status_code, res.reason)
+        err_msg = f'Error in API call to Freshdesk Integration [{res.status_code}] - {res.reason}'
         err = json.loads(res.content)
         if err.get('errors'):
             for error in err.get('errors'):
                 err_msg += '\n' + json.dumps(error, indent=2)
         else:
             for key, value in res.json().items():
-                err_msg += '\n{}: {}'.format(key, value)
+                err_msg += f'\n{key}: {value}'
         return_error(err_msg)
     # Handle response with no content
     elif res.status_code == 204:
@@ -930,7 +926,7 @@ def update_ticket(args):
     args = clean_arguments(args)
 
     # The service endpoint to request from
-    endpoint_url = 'tickets/{}'.format(ticket_number)
+    endpoint_url = f'tickets/{ticket_number}'
 
     response = None
     if not args.get('attachments'):
@@ -1016,7 +1012,7 @@ def update_ticket_command():
 
 def get_ticket(args):
     ticket_number = args.get('id')
-    endpoint_url = 'tickets/{}'.format(ticket_number)
+    endpoint_url = f'tickets/{ticket_number}'
     url_params = {}
 
     # Check if embedding additional info in API response was specified in cmd args
@@ -1096,7 +1092,7 @@ def get_ticket_command():
 
 
 def delete_ticket(ticket_id):
-    endpoint_url = 'tickets/{}'.format(ticket_id)
+    endpoint_url = f'tickets/{ticket_id}'
     response = http_request('DELETE', endpoint_url)
     return response
 
@@ -1118,7 +1114,7 @@ def delete_ticket_command():
         'ID': int(ticket_id),
         'AdditionalFields': {'Deleted': True}
     }
-    message = 'Soft-Deleted Ticket #{}'.format(ticket_id)
+    message = f'Soft-Deleted Ticket #{ticket_id}'
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -1294,7 +1290,7 @@ def ticket_reply(args):
     ticket_id = args.get('ticket_id')
     del args['ticket_id']
     args = handle_array_input(args)
-    endpoint_url = 'tickets/{}/reply'.format(ticket_id)
+    endpoint_url = f'tickets/{ticket_id}/reply'
 
     response = None
     if not args.get('attachments'):
@@ -1374,7 +1370,7 @@ def create_ticket_note(args):
     # Set defaults for 'private' and 'incoming' fields if not set by user
     args['private'] = args.get('private', 'true')
     args['incoming'] = args.get('incoming', 'false')
-    endpoint_url = 'tickets/{}/notes'.format(ticket_id)
+    endpoint_url = f'tickets/{ticket_id}/notes'
 
     response = None
     if not args.get('attachments'):
@@ -1454,7 +1450,7 @@ def create_ticket_note_command():
 
 
 def get_ticket_conversations(ticket_id):
-    endpoint_url = 'tickets/{}/conversations'.format(ticket_id)
+    endpoint_url = f'tickets/{ticket_id}/conversations'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -1489,7 +1485,7 @@ def get_ticket_conversations_command():
         'ID': int(ticket_id),
         'Conversation': contexts
     }
-    title = 'Conversations of Ticket #{}'.format(ticket_id)
+    title = f'Conversations of Ticket #{ticket_id}'
     human_readable = tableToMarkdown(title, readable_contexts, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1551,8 +1547,8 @@ def list_contacts_command():
         # Parse individual contact response in context
         context = format_contact_context(contact)
         contexts.append(context)
-    filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.items()])
-    title = 'Contacts Filtered by {}'.format(filters_as_strings) if filters else 'All Contacts'
+    filters_as_strings = ', '.join([f'{key}: {val}' for key, val in filters.items()])
+    title = f'Contacts Filtered by {filters_as_strings}' if filters else 'All Contacts'
     human_readable = tableToMarkdown(title, contexts, removeNull=False)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1601,7 +1597,7 @@ def get_contact(args):
         except Exception as e:
             return_error(e)
 
-    endpoint_url = 'contacts/{}'.format(contact_id)
+    endpoint_url = f'contacts/{contact_id}'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -1682,7 +1678,7 @@ def list_canned_response_folders_command():
 
 
 def get_canned_response_folder(id):
-    endpoint_url = 'canned_response_folders/{}/responses'.format(id)
+    endpoint_url = f'canned_response_folders/{id}/responses'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -1710,7 +1706,7 @@ def get_canned_response_folder_command():
         context, context_readable = attachments_into_context(cr, context)
         contexts.append(context)
         readable_contexts.append(context_readable)
-    title = 'Details of Canned Responses in CR Folder #{}'.format(cr_folder_id)
+    title = f'Details of Canned Responses in CR Folder #{cr_folder_id}'
     human_readable = tableToMarkdown(title, readable_contexts, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1860,10 +1856,10 @@ try:
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
-    elif demisto.command() in commands.keys():
+    elif demisto.command() in commands:
         # Execute that command
         commands[demisto.command()]()
 
 # Log exceptions
 except Exception as e:
-    return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)), e)
+    return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}", e)
