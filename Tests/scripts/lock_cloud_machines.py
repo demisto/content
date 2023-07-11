@@ -107,7 +107,7 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
             logging.debug(f'Try to get the status of job ID {job_id} in attempt number {attempt_num}')
             response = requests.get(user_endpoint, headers=headers)
             response_as_json = response.json()
-            logging.debug(f'{user_endpoint=} raw response = {response_as_json} for {job_id=}')
+            logging.debug(f'{user_endpoint=} raw response={response_as_json} for {job_id=}')
             return response_as_json.get('status')
         except requests.ConnectionError as error:
             logging.error(f'Got connection error: {error} in attempt number {attempt_num}')
