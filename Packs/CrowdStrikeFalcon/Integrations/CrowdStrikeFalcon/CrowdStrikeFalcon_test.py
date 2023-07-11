@@ -2215,6 +2215,28 @@ class TestFetch:
         assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
                                                           {'time': '2020-09-04T09:22:10Z'}]
 
+    @freeze_time("2020-08-26 17:22:13 UTC")
+    def delete_offset_test(self, set_up_mocks, mocker):
+        """
+        Tests the change of logic done in fetch. Validates that it's done smoothly
+        Given:
+            Old getLastRun which holds two lists with offset key
+        When:
+            The offset is inside the lastRun
+        Then:
+            The offset is deleted from the lastRun
+
+        """
+
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'params', return_value={})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[{'time': '2020-09-04T09:16:10Z', 'offset': 2},
+                                          {'time': '2020-09-04T09:22:10Z', 'offset': 4}])
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
+                                                          {'time': '2020-09-04T09:22:10Z'}]
+
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         """
