@@ -1136,7 +1136,7 @@ ATTACK_SURFACE_RULES_RESULTS = [
 TAG_APPLY_RESULTS = "Assignment operation: True"
 TAG_REMOVE_RESULTS = "Removal operation: True"
 
-LIST_INCIDENTS_RESULTS = {
+LIST_INCIDENTS_RESULTS = [{
     "aggregated_score": 75,
     "alert_categories": null,
     "alert_count": 4,
@@ -1177,7 +1177,7 @@ LIST_INCIDENTS_RESULTS = {
     "user_count": 0,
     "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5471",
     "xpanse_risk_score": 75
-}
+}]
 
 INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
 
