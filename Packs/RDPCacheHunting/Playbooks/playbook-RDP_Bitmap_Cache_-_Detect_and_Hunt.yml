@@ -152,6 +152,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      similiarity_threshold:
+        simple: "0.3"
       string_A:
         complex:
           root: File
