@@ -25,5 +25,5 @@ There are no inputs for this script.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotAvgScore.Indicator | The indicator the average score is for. | Unknown |
-| DBotAvgScore.Score | The average score for the indicator. | Unknown |
+| DBotAvgScore.Indicator | The indicator the average score is for. | string |
+| DBotAvgScore.Score | The average score for the indicator. | number |
