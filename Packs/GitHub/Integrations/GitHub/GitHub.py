@@ -2047,7 +2047,7 @@ def github_trigger_workflow_command():
     }
     data = assign_params(
         ref=branch,
-        inputs=inputs
+        inputs=json.loads(inputs)
     )
     response = http_request('POST', url_suffix=suffix, headers=headers, data=data)
 
