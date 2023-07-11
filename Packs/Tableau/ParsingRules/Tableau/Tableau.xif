@@ -1,5 +1,5 @@
 [INGEST:vendor="tableau", product="log", target_dataset="tableau_log_raw", no_hit=keep]
-filter | filter _raw_log ~= "\"ts\":\"[^\"]+\"" or _raw_log ~= "^[^\s]+\s+[^\s]+\s+[^\s]+\s+(\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+)\s+\"[^\"]+\"" or _raw_log ~= "\d+\-\d+\-\d+\s+\d+:\d+:\d+.\d+\s+\W\d+"
+filter _raw_log ~= "\"ts\":\"[^\"]+\"" or _raw_log ~= "^[^\s]+\s+[^\s]+\s+[^\s]+\s+(\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+)\s+\"[^\"]+\"" or _raw_log ~= "\d+\-\d+\-\d+\s+\d+:\d+:\d+.\d+\s+\W\d+"
 | alter 
     tmp1_full_timestamp= arraystring(regextract(_raw_log, "\d+\-\d+\-\d+\s+\d+:\d+:\d+.\d+\s+\W\d+"), ""),
     tmp2_full_datetime = arraystring(regextract(_raw_log, "^[^\s]+\s+[^\s]+\s+[^\s]+\s+(\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+)\s+\"[^\"]+\""), ""),
