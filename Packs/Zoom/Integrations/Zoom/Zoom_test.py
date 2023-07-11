@@ -1557,7 +1557,7 @@ def test_zoom_list_messages_command(mocker):
         ]
     }
     expacted_result = {
-        "ChatMessage": [
+        "messages": [
             {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
              "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
             {"id": "message_id_2", "message": "Message 2", "sender": "sender_2",
@@ -1585,11 +1585,11 @@ def test_zoom_list_messages_command(mocker):
     )
 
     assert result.outputs == expacted_result
-    assert result.outputs['ChatMessage'][0]['id'] == expacted_result['ChatMessage'][0]['id']
-    assert result.outputs['ChatMessage'][0]['message'] == expacted_result['ChatMessage'][0]['message']
-    assert result.outputs['ChatMessage'][0]['sender'] == expacted_result['ChatMessage'][0]['sender']
-    assert result.outputs['ChatMessage'][0]['sender_display_name'] == expacted_result['ChatMessage'][0]['sender_display_name']
-    assert result.outputs['ChatMessage'][0]['date_time'] == expacted_result['ChatMessage'][0]['date_time']
+    assert result.outputs['messages'][0]['id'] == expacted_result['messages'][0]['id']
+    assert result.outputs['messages'][0]['message'] == expacted_result['messages'][0]['message']
+    assert result.outputs['messages'][0]['sender'] == expacted_result['messages'][0]['sender']
+    assert result.outputs['messages'][0]['sender_display_name'] == expacted_result['messages'][0]['sender_display_name']
+    assert result.outputs['messages'][0]['date_time'] == expacted_result['messages'][0]['date_time']
 
 
 def test_zoom_update_message_command(mocker):

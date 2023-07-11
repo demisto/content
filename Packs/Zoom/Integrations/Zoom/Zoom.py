@@ -1588,9 +1588,9 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     md += '\n' + 'Messages next token:' + raw_data.get('next_page_token', '')
 
     return CommandResults(
-        outputs_prefix='Zoom',
+        outputs_prefix='Zoom.ChatMessage',
         readable_output=md,
-        outputs={'ChatMessage': all_messages,
+        outputs={'messages': all_messages,
                  'ChatMessageNextToken': raw_data.get('next_page_token')},
         raw_response=raw_data
     )
