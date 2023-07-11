@@ -498,7 +498,7 @@ def test_fetch_incidents(requests_mock, mocker):
     import json
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
-    requests_mock.post('https://test.com/public_api/v1/alerts/get_alerts/',
+    requests_mock.post('https://test.com/public_api/v2/alerts/get_alerts_multi_events/',
                        json=LIST_ALERTS_RESPONSE)
 
     client = Client(
