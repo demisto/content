@@ -807,7 +807,7 @@ def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> C
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
     tag = args.get('tag')
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit')) or 50
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')

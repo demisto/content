@@ -212,7 +212,7 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     security_group_name = args.get('security_group_name')
     security_groups = argToList(security_group_name)
-    rules_limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    rules_limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     rules_offset = int(args.get('offset', '1')) - 1  # As offset will start at 1
     rules: List = []
 

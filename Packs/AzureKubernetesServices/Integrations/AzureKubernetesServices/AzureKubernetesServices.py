@@ -204,7 +204,7 @@ def ks_subscriptions_list(client: AKSClient) -> CommandResults:
     """
         Gets a list of subscriptions.
     Args:
-        client: The microsoft client.
+        client: The AKS client.
     Returns:
         CommandResults: The command results in MD table and context data.
     """
@@ -229,8 +229,8 @@ def ks_resource_group_list(client: AKSClient, params: Dict, args: Dict) -> Comma
     List all resource groups in the subscription.
     Args:
         client (AKSClient): AKS client.
-        args (Dict[str, Any]): command arguments.
         params (Dict[str, Any]): configuration parameters.
+        args (Dict[str, Any]): command arguments.
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
