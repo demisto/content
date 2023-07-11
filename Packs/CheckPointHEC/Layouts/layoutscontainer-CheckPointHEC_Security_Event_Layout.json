@@ -59,13 +59,11 @@
                                 "startCol": 2
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "checkpointhecsaas",
+                                "fieldId": "checkpointhecentity",
                                 "height": 53,
-                                "id": "abb524a0-1f89-11ee-a584-e72e916fb060",
+                                "id": "7405be00-202b-11ee-b262-3763e4f7e303",
                                 "index": 1,
-                                "listId": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }
