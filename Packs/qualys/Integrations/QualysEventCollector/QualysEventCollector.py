@@ -149,7 +149,7 @@ def get_next_page_activity_logs(footer):
     return max_id
 
 
-def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[ Optional[list], Optional[str]]:
+def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[Optional[list], Optional[str]]:
     """
     Handles Host list detection response - parses xml to json and gets the list
     Args:
@@ -373,7 +373,7 @@ def get_host_list_detections_events(client, last_time, max_fetch, next_page=None
 
 
 def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_event_field, next_page_field,
-                 previous_run_time_field, max_fetch: int = 0):
+                 previous_run_time_field, max_fetch: Optional[int] = 0):
     """ Fetches activity logs and host list detections
     Args:
         client: command client
