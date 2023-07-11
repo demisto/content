@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -1605
+          "y": -1625
         }
       }
     note: false
@@ -192,19 +192,46 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d624b2a0-9b5d-4e82-8d78-14d59118f6eb
+    taskid: 421a0baf-99f2-4d53-8765-896cbe4b1242
     type: regular
     task:
-      id: d624b2a0-9b5d-4e82-8d78-14d59118f6eb
+      id: 421a0baf-99f2-4d53-8765-896cbe4b1242
       version: -1
       name: Suspicious strings hunting
-      description: This script runs stringsifter ML tool for malware anlisys and ranking of words.
+      description: This script runs teh StringSifter ML tool for malware anlisys and ranking of words. You can enter an entryID or string_text as input.
+      scriptName: StringSifter
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "15"
+    scriptarguments:
+      file_name:
+        complex:
+          root: File.Name
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: original
+      string_text:
+        complex:
+          root: File
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: original
+          accessor: Text
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -421,10 +448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4bc78403-23a5-4f01-80ed-407c8d375421
+    taskid: 518d9ea8-d979-44ce-855a-cde44efb6ed6
     type: regular
     task:
-      id: 4bc78403-23a5-4f01-80ed-407c8d375421
+      id: 518d9ea8-d979-44ce-855a-cde44efb6ed6
       version: -1
       name: Set String Sifter results in the layout
       description: Creates a Grid table from items or key-value pairs.
@@ -441,7 +468,7 @@ tasks:
       context_path:
         simple: Stringsifter.Results
       grid_id:
-        simple: rdpcachehuntingstringsifter
+        simple: incidentrdpcachehuntingstringsifter
       keys:
         simple: Rating,Word
     separatecontext: false
@@ -490,10 +517,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: a49ebc08-91f6-43c2-87c8-955d43094de5
+    taskid: df18b27d-6d0f-408e-895f-e2e1890041d8
     type: regular
     task:
-      id: a49ebc08-91f6-43c2-87c8-955d43094de5
+      id: df18b27d-6d0f-408e-895f-e2e1890041d8
       version: -1
       name: Set strings similarity results in the layout
       description: Creates a Grid table from items or key-value pairs.
@@ -511,6 +538,8 @@ tasks:
         simple: StringSimilarity
       grid_id:
         simple: incidentrdpachehuntingstringssimilarity
+      keys:
+        simple: StringA,StringB,SimilarityScore
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1509,10 +1538,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3700,
+        "height": 3720,
         "width": 2530,
         "x": -840,
-        "y": -1605
+        "y": -1625
       }
     }
   }
