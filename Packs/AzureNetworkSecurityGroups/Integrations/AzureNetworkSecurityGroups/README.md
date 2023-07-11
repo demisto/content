@@ -1,5 +1,5 @@
 Azure network security groups are used to filter network traffic to and from Azure resources in an Azure virtual network.
-This integration was integrated and tested with version 2022-09-01 of Azure Network Security Groups
+This integration was integrated and tested with version 2022-09-01 of Azure Network Security Groups.
 ## Configure Azure Network Security Groups on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,8 +9,8 @@ This integration was integrated and tested with version 2022-09-01 of Azure Netw
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value. | True |
-    | Default Resource Group Name |There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.  | True |
+     | Default Subscription ID | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
+    | Default Resource Group Name |There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.  | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -47,6 +47,8 @@ There are no input arguments for this command.
 | AzureNSG.SecurityGroup.type | String | The security group's type. | 
 | AzureNSG.SecurityGroup.location | String | The security group's location. | 
 | AzureNSG.SecurityGroup.tags | String | The security group's tags. | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 
 
 #### Command Example
@@ -89,8 +91,8 @@ List all rules of the specified security groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | A comma-separated list of the names of the security groups. | Required | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 | limit | The maximum number of rules to display. Default is 50. | Optional | 
 | offset | The index of the first rule to display. Used for pagination. Default is 0. | Optional | 
 
@@ -195,8 +197,8 @@ Delete a security rule.
 | --- | --- | --- |
 | security_group_name | The name of the security group. | Required | 
 | security_rule_name | The name of the rule to be deleted. | Required |
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -233,8 +235,8 @@ Create a security rule.
 | destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional | 
 | destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
 | description | A description to add to the rule. | Optional |
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -319,8 +321,8 @@ Update a security rule. If one does not exist, it will be created.
 | destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional | 
 | destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
 | description | A description to add to the rule. | Optional | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. |Optional|
 
 
 #### Context Output
@@ -397,8 +399,8 @@ Get a specific rule.
 | --- | --- | --- |
 | security_group_name | The name of the security group. | Optional | 
 | security_rule_name | A comma-separated list of the names of the rules to get. | Optional |
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name| The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. |Optional|
 
 
 #### Context Output
@@ -795,7 +797,7 @@ Gets all resource groups for a subscription.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
 #### Context Output
