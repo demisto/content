@@ -7105,3 +7105,64 @@ def test_build_tag_element(mocker, device_group, vsys, args, expected_response):
     mocker.patch('Panorama.VSYS', vsys)
     response = build_tag_element(**args)
     assert response == expected_response
+
+
+@pytest.mark.parametrize("element_to_change, element_value, current_objects_items, params_element, "
+                         "expected_exception, expected_warning, expected_warning_exit", [
+                             ('tag', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
+                             ('tag', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>',
+                              False, False, False),  # Not last tag
+                             ('tag', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
+                             ('tag', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
+                              False, True, False),  # Non-existent tag & existent > warning
+                             ('source', ['source'], ['source'], '', True, False, False)  # raise exception
+                         ])
+def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_value, current_objects_items, params_element,
+                                         expected_exception, expected_warning, expected_warning_exit):
+    """
+    Given:
+     - element_to_change: The element to be changed in the rule.
+     - element_value: The value(s) to be removed from the element.
+     - current_objects_items: The current items present in the element.
+     - params_element: The expected element value in the request body.
+     - expected_exception: Flag indicating whether an exception is expected to be raised.
+     - expected_warning: Flag indicating whether a warning is expected to be returned.
+     - expected_warning_exit: Flag indicating whether the warning is expected to trigger an exit.
+
+    When:
+     - Running the panorama_edit_rule_items function to remove element from rule.
+
+    Then:
+     - Ensure that the expected response matches the actual response.
+     - If expected_exception is True, assert that the correct exception is raised.
+     - If expected_warning is True, assert that the correct warning message is returned.
+     - If expected_warning_exit is True, assert that the warning triggers an exit.
+     - If expected_warning_exit is False, assert the correct values in the request body, the success message,
+       and the call to return_results.
+    """
+    from Panorama import panorama_edit_rule_items
+
+    mocker.patch('Panorama.VSYS', 'vsys1')
+    mocker.patch('Panorama.DEVICE_GROUP', '')
+    mocker.patch('Panorama.panorama_get_current_element', return_value=current_objects_items)
+    mock_return_warning = mocker.patch('Panorama.return_warning')
+    request_mock = mocker.patch(
+        'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+    )
+
+    return_results_mock = mocker.patch('Panorama.return_results')
+
+    if expected_exception:
+        with pytest.raises(Exception, match=f'The object: {element_to_change} must have at least one item.'):
+            panorama_edit_rule_items('rulename', element_to_change, element_value, 'remove')
+    else:
+        panorama_edit_rule_items('rulename', element_to_change, element_value, 'remove')
+
+        if expected_warning:
+            mock_return_warning.assert_called_once_with('The following tags do not exist: nonexistent_tag',
+                                                        exit=expected_warning_exit)
+
+        if not expected_warning_exit:
+            assert request_mock.call_args.kwargs['body']['action'] == 'edit'
+            assert request_mock.call_args.kwargs['body']['element'] == params_element
+            assert return_results_mock.call_args[0][0]['HumanReadable'] == 'Rule edited successfully.'
