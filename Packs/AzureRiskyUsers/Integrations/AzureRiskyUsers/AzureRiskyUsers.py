@@ -237,7 +237,7 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
-    skip_token: CommandResults | str = ''
+    skip_token: CommandResults | str | None = None
 
     if page > 1:
         offset = limit * (page - 1)
@@ -331,7 +331,7 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
     detected_date_time_before = args.get('detected_date_time_before', '')
     detected_date_time_after = args.get('detected_date_time_after', '')
     order_by = args.get('order_by', 'detectedDateTime desc')
-    skip_token: CommandResults | str = ''
+    skip_token: CommandResults | str | None = None
 
     if page > 1:
         offset = limit * (page - 1)
