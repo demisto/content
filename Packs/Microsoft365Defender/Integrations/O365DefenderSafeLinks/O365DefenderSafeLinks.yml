@@ -939,7 +939,7 @@ script:
   runonce: false
   script: "-"
   type: powershell
-  dockerimage: demisto/pwsh-exchange:1.0.0.34118
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
 fromversion: 6.0.0
 tests:
 - No Test
