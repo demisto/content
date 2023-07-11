@@ -798,7 +798,7 @@ def endpoint_isolation_remove_command(client: Client, args: dict[str, Any]) -> C
 
 def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: int) -> list[dict[str, Any]]:
     """
-    Returns the alerts that are associated with an incident.
+    Returns the alerts that are associated with the given incident.
     """
     alerts: list[dict] = []
     has_next = True
