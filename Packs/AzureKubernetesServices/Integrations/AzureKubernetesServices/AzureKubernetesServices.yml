@@ -390,7 +390,7 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.64970
   runonce: false
   script: '-'
   subtype: python3
