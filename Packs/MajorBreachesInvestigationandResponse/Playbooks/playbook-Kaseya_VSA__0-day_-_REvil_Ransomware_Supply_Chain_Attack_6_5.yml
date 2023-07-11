@@ -1172,7 +1172,6 @@ tasks:
       '#default#':
       - "43"
       "yes":
-      - "62"
       - "90"
     separatecontext: false
     conditions:
