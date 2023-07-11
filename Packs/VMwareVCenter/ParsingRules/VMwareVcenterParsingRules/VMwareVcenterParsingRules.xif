@@ -1,5 +1,7 @@
 [INGEST:vendor="vmware", product="vcenter", target_dataset="vmware_vcenter_raw", no_hit=keep]
-alter 
+// Support only date time of format: yyyy-MM-ddThh:mm:ss.nnnnnn[+|-]nn:nn. For example: 2022-01-01T10:00:00.012345+00:00
+filter _raw_log ~= "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+[+|-]\d+:\d+"
+| alter
     tmp_date_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s(\d{4}\-\d{2}\-\d{2})T"), ""),
     tmp_time_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T(\d{2}\:\d{2}\:\d{2}\.)"), ""),
     tmp_mili_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.(\d+)"), ""),

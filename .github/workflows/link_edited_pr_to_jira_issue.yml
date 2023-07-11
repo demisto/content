@@ -32,9 +32,9 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_LINK: ${{ github.event.pull_request.html_url }}
           PR_BODY: ${{ github.event.pull_request.body }}
-          USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
-          PASSWORD: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_PASSWORD }}
-          INSTANCE_URL: ${{ secrets.ENGINE_URL }}
+          USERNAME: ${{ secrets.SECRET_CHECK_USER_NG }}
+          PASSWORD: ${{ secrets.SECRET_CHECK_PASS_NG }}
+          INSTANCE_URL: ${{ secrets.GOLD_SERVER_URL_NG }}
         run: |
           echo "Checking for related Jira issues to PR: $PR_NUMBER"
           cd Utils/github_workflow_scripts/jira_integration_scripts
