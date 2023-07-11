@@ -41,6 +41,6 @@ filebeat.inputs:
 
 The following are supported:
 * yyyy-mm-dd hh:mm:ss.ms(3) -zzzz
-* yyyy-mm-ddThh:mm:ss.ms(*) "-zzzz" (At the beginning pf the code)
+* yyyy-mm-ddThh:mm:ss.ms(*) "-zzzz" (At the beginning of the code)
 * yyyy-mm-ddThh:mm:ss.ms(3)Z (Available for the **ts** field in the raw log)
 * yyyy-mm-ddThh:mm:ss.ms(*) (Available for the **ts** field in in the raw log) 
