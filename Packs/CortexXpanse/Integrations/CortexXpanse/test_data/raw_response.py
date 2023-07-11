@@ -1243,3 +1243,15 @@ LIST_INCIDENTS_RAW = {
         ]
     }
 }
+
+INCIDENT_UPDATE_RAW = {
+    "reply": True
+}
+
+ALERT_UPDATE_RAW = {
+    "reply": {
+        "alerts_ids": [
+            602,
+        ]
+    }
+}

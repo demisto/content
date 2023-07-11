@@ -522,6 +522,82 @@ def test_list_incidents_command(requests_mock):
     assert response.outputs_key_field == 'incident_id'
 
 
+def test_update_incident_command(requests_mock):
+    """Tests update_incident_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate update_incident_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'update_incident_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, update_incident_command
+
+    from test_data.raw_response import INCIDENT_UPDATE_RAW
+    from test_data.expected_results import INCIDENT_UPDATE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/incidents/update_incident/',
+                       json=INCIDENT_UPDATE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'incident_id': 1,
+        'status': 'new'
+    }
+
+    response = update_incident_command(client, args)
+
+    assert response.outputs == INCIDENT_UPDATE_RESULTS
+    assert response.outputs_prefix == 'ASM.IncidentUpdate'
+
+
+def test_update_alert_command(requests_mock):
+    """Tests update_alert_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate update_alert_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'update_alert_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, update_alert_command
+
+    from test_data.raw_response import ALERT_UPDATE_RAW
+    from test_data.expected_results import ALERT_UPDATE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/incidents/get_incidents/',
+                       json=ALERT_UPDATE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'alert_id_list': 602,
+        'status': 'new'
+    }
+
+    response = update_alert_command(client, args)
+
+    assert response.outputs == ALERT_UPDATE_RESULTS
+    assert response.outputs_prefix == 'ASM.UpdatedAlerts'
+
+
 def test_fetch_incidents(requests_mock, mocker):
     """Tests fetch_incidents function.
 

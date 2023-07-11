@@ -1182,3 +1182,15 @@ LIST_INCIDENTS_RESULTS = {
         }
     }
 }
+
+INCIDENT_UPDATE_RESULTS = {
+    "ASM": {
+        "IncidentUpdate": "Update operation successful: true"
+    }
+}
+
+ALERT_UPDATE_RESULTS = {
+    "ASM": {
+        "UpdatedAlerts": [602]
+    }
+}
