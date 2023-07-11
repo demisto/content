@@ -151,16 +151,11 @@ xpanse-prepare-testing-bucket-upload-flow:
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Install Packs"
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Destroy instances"
     - job-done
     - exit "$EXIT_CODE"
 
-
-install-packs-in-server6_6:
-  extends: .install_packs_in_xsoar_server
-  variables:
-    INSTANCE_ROLE: "Server 6.6"
 
 install-packs-in-server6_8:
   extends: .install_packs_in_xsoar_server
@@ -176,6 +171,11 @@ install-packs-in-server6_10:
   extends: .install_packs_in_xsoar_server
   variables:
     INSTANCE_ROLE: "Server 6.10"
+
+install-packs-in-server6_11:
+  extends: .install_packs_in_xsoar_server
+  variables:
+    INSTANCE_ROLE: "Server 6.11"
 
 install-packs-in-server-master:
   extends: .install_packs_in_xsoar_server
@@ -259,13 +259,13 @@ install-packs-in-xsiam-ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
-    UNREMOVABLE_PACKS: "Base,CoreAlertFields,Core,CortexAttackSurfaceManagement"
+    UNREMOVABLE_PACKS: "Base"
 
 
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_6", "install-packs-in-server6_8", "install-packs-in-server6_9", "install-packs-in-server6_10", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_8", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -285,7 +285,7 @@ upload-packs-to-marketplace:
     - .bucket-upload-rule
     - .default-job-settings
   script:
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
