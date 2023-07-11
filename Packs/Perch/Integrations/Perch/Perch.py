@@ -14,13 +14,13 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
-API_KEY = demisto.params().get('api-key')
-FETCH_TIME = int(demisto.params().get('fetch_time', '7'))
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-    demisto.params()['url']
-USE_SSL = not demisto.params().get('insecure', False)
+PARAMS = demisto.params()
+USERNAME = PARAMS.get('credentials').get('identifier')
+PASSWORD = PARAMS.get('credentials').get('password')
+API_KEY = PARAMS.get('api-key_creds', {}).get('password') or PARAMS.get('api-key')
+FETCH_TIME = int(PARAMS.get('fetch_time', '7'))
+SERVER = PARAMS['url'].removesuffix('/')
+USE_SSL = not PARAMS.get('insecure', False)
 BASE_URL = SERVER + '/v1'
 
 # Remove proxy if not set to true in params
@@ -92,6 +92,7 @@ def find_key_by_value(val, dic_map):
     for key, value in dic_map.items():
         if value == val:
             return key
+    return None
 
 
 def format_alerts(alert):
@@ -442,7 +443,7 @@ def create_indicator_command():
 def fetch_alerts(last_run, headers):
     last_fetch = last_run.get('time')
     url = '/alerts'
-    statuses_to_fetch = demisto.params().get('soc_status', [])
+    statuses_to_fetch = PARAMS.get('soc_status', [])
     if statuses_to_fetch:
         items = []
         for status in statuses_to_fetch:
@@ -476,7 +477,7 @@ def fetch_alerts_command():
 def test_module():
     try:
         headers = authenticate()
-        if demisto.params().get('isFetch'):
+        if PARAMS.get('isFetch'):
             last_run = {'time': 1561017202}
             fetch_alerts(last_run, headers)
         demisto.results('ok')
