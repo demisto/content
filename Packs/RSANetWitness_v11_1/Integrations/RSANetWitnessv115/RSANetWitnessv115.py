@@ -578,7 +578,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> list[CommandResult
             vendor='RSA NetWitness 11.5 Response')
 
         endpoint_context = endpoint_entry.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        md = tableToMarkdown(f'RSA NetWitness -  Endpoint: {host.get("agentId")}', endpoint_context)
+        md = tableToMarkdown(f'RSA NetWitness 11.5 -  Endpoint: {host.get("agentId")}', endpoint_context)
 
         command_results.append(CommandResults(
             readable_output=md,
@@ -833,12 +833,12 @@ def fetch_incidents(client: Client, params: dict) -> list:
 
         # add to incident object an array of all related alerts
         if params.get('import_alerts'):
-            max_alerts = int(params.get('max_alerts', DEFAULT_MAX_INCIDENT_ALERTS))
+            max_alerts = arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS
             alerts = fetch_alerts_related_incident(client, inc_id, max_alerts)
             item['alerts'] = alerts
             item['alerts_ids'] = [alert['id'] for alert in alerts or ()]
 
-        incident = {"name": f"RSA NetWitness {inc_id} - {item.get('title')}",
+        incident = {"name": f"RSA NetWitness 11.5 {inc_id} - {item.get('title')}",
                     "occurred": item.get('created'),
                     "rawJSON": json.dumps(item)}
         # items arrived from last to first - change order
@@ -867,8 +867,8 @@ def is_new_run_time_equal_last_run_time(last_run_time: Any | None, new_run_time:
         last_run_datetime = arg_to_datetime(last_run_time)
         new_datetime = arg_to_datetime(new_run_time)
 
-    except ValueError:
-        raise DemistoException("Incorrect date time in fetch")
+    except ValueError as e:
+        raise DemistoException("Incorrect date time in fetch") from e
 
     return last_run_datetime == new_datetime
 

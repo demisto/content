@@ -57,7 +57,7 @@ Commands affected by this limitation are:
 ## Configure RSA NetWitness on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RSA NetWitness.
+2. Search for RSA NetWitness v11.5.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -780,7 +780,7 @@ Retrieves host information for a specific endpoint. To use this command, service
 
 >|Hostname|ID|IPAddress|MACAddress|Vendor|
 >|---|---|---|---|---|
->| hostName | 1 | ['1.1.1.1'] | 111::111:11:111:11 | RSA NetWitness Response |
+>| hostName | 1 | ['1.1.1.1'] | 111::111:11:111:11 | RSA NetWitness 11.5 Response |
 
 
 ### rsa-nw-snapshots-list-for-host
