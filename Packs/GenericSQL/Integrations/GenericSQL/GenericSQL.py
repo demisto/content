@@ -152,6 +152,7 @@ class Client:
             sql_query = text(sql_query)
 
         result = self.connection.execute(sql_query, bind_vars)
+        self.connection.commit()
         # For avoiding responses with lots of records
         results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
         headers = []
