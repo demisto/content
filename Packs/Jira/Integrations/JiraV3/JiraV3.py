@@ -2971,7 +2971,7 @@ def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tupl
 
     Args:
         client (JiraBaseClient): The Jira client.
-        query (str): The query that will be used to retrieve the first issue ID in it. 
+        query (str): The query that will be used to retrieve the first issue ID in it.
 
     Returns:
         int | None: The smallest issue ID with respect to the query argument, and None if the query

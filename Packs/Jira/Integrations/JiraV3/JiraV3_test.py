@@ -2132,7 +2132,7 @@ class TestJiraFetchIncidents:
         Given:
             - Arguments to use when calling the fetch incidents mechanism
         When
-            - We are fetching by the issue ID, the ID offset is set to 0, we try to acquire the smallest issue ID 
+            - We are fetching by the issue ID, the ID offset is set to 0, we try to acquire the smallest issue ID
             with respect to the fetch query, but there are no issues returned from the fetch query
         Then
             - Validate that an error is returned, stating that there are no issues with respect to the configured fetch query
