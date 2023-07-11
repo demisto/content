@@ -125,7 +125,7 @@ class Client(BaseClient):
             fetch_events_limit (int): The fetch limit parameter configured in the instance.
 
         Return:
-            (list[dict]): The list of the aggregated events.    
+            (list[dict]): The list of the aggregated events.
         """
         aggregated_events: List[dict] = []
 
