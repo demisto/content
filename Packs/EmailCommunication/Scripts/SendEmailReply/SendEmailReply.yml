@@ -39,7 +39,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.11.58677
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
