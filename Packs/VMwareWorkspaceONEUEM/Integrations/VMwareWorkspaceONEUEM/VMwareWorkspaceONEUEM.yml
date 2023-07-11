@@ -12,13 +12,17 @@ configuration:
 - additionalinfo: API key required for additional authorization.
   display: API Key
   name: aw_tenant_code
-  required: true
   type: 4
-- additionalinfo: Username of administrative account with read access.
-  display: Username
-  name: credentials
-  required: true
+  hidden: true
+- name: aw_tenant_code_creds
   type: 9
+  displaypassword: API Key
+  hiddenusername: true
+- display: Username
+  name: credentials
+  type: 9
+  additionalinfo: Username of administrative account with read access.
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
