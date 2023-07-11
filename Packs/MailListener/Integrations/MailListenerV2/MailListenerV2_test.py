@@ -437,6 +437,10 @@ def test_load_client_cert_and_key(cert_and_key, ok):
         'clientCertAndKey': cert_and_key
     }
     ssl_ctx = ssl.create_default_context()
+    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_NONE
+    ssl_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+
     assert (load_client_cert_and_key(ssl_ctx, params) == ok)
 
     def _test_connect(
@@ -463,10 +467,6 @@ def test_load_client_cert_and_key(cert_and_key, ok):
                     pass
                 finally:
                     self.request.close()
-
-        ssl_client_ctx.check_hostname = False
-        ssl_client_ctx.verify_mode = ssl.CERT_NONE
-        ssl_client_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
 
         ssl_server_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         if require_client_auth:
