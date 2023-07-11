@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: This automation takes several alerts fields from the RSA NetWitness alerts context and displays them as markdown in the layout.
+comment: This automation takes several alert fields from the RSA NetWitness alerts context and displays them as markdown in the layout.
 enabled: true
 scripttarget: 0
 subtype: python3
