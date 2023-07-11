@@ -9,6 +9,12 @@
     "categories": [
         "Endpoint"
     ],
+    "dependencies": {
+        "CloudIncidentResponse": {
+            "mandatory": true,
+            "display_name": "Cloud Incident Response"
+        }
+    },
     "excludedDependencies": [
         "Dropbox"
     ],
