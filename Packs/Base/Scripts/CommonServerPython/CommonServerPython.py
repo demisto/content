@@ -10664,18 +10664,16 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     :return: The new incidents ids
     :rtype: ``dict``
     """
-    demisto.debug('lb: Remove old incidents ids, current time is {}'.format(current_time))
+    demisto.debug('lb: Remove old incidents ids')
     look_back_in_seconds = look_back * 60
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
     new_found_incidents_ids = {}
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time <= deletion_threshold_in_seconds:
+        if current_time - addition_time < deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
-            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
-        else:
-            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
+
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
@@ -10713,7 +10711,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
 
 
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, id_field='id'):
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
     Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
     with the new time and limit.
@@ -10752,25 +10750,24 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
                   "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
     remove_incident_ids = True
 
-    new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
         }
-    else:        
+    elif len(incidents) < fetch_limit or look_back == 0:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
             'time': latest_incident_fetched_time,
         }
-        if latest_incident_fetched_time == start_fetch_time:
-            # we are still on the same time, no need to remove old incident ids
-            remove_incident_ids = False
-            # As we stuck, we need to update the limit anyway (even if the `lookback` is off)
-            new_last_run['limit'] = new_limit
+    else:
+        remove_incident_ids = False
+        new_last_run = {
+            'time': start_fetch_time,
+        }
 
     if look_back > 0:
-        new_last_run['limit'] = new_limit
+        new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     else:
         new_last_run['limit'] = fetch_limit
 
@@ -10830,12 +10827,13 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
                                                                            created_time_field,
                                                                            date_format,
                                                                            increase_last_run_time,
-                                                                           id_field=id_field,
                                                                            )
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
 
-    updated_last_run['found_incident_ids'] = found_incidents
+    if found_incidents:
+        updated_last_run.update({'found_incident_ids': found_incidents})
+
     last_run.update(updated_last_run)
 
     return last_run
