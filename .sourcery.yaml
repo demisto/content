@@ -136,7 +136,8 @@ rule_settings:
     - while-guard-to-condition
     - while-to-for
 
-  disable: []
+  disable: 
+    - use-or-for-fallback
 
   rule_types:
     - refactoring
