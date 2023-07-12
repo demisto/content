@@ -441,7 +441,7 @@ def generate_pipeline_run_output(response: dict, project: str) -> dict:
     """
     outputs = copy.deepcopy(response)
     created_date = arg_to_datetime(outputs.get('createdDate'))
-    outputs['createdDate'] = created_date.isoformat() if created_date is not None else created_date
+    outputs['createdDate'] = created_date.isoformat() if created_date else created_date
     outputs['run_id'] = outputs.pop('id')
     outputs['project'] = project
     outputs['result'] = outputs.get('result', 'unknown')
