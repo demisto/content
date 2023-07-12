@@ -1,0 +1,27 @@
+{
+    "name": "HIPAA Compliance",
+    "description": "Ensure your organization is following HIPAA guidelines with the relevant dashboard and report evidence.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSIAM",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+    ],
+    "created": "2023-03-20T13:16:53Z",
+    "useCases": [
+        "Compliance"
+    ],
+    "keywords": [
+        "compliance"
+    ],
+    "modules": [
+        "compliance"
+    ],
+    "marketplaces": [
+    "marketplacev2"
+    ]
+
+}
