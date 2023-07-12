@@ -850,7 +850,7 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     author_email = args.get('author_email', None)
 
     if not file_name and not entry_id:
-        raise Exception('You must specify either the "file_name" and "file_content" or the "entry_id" of the file.')
+        raise Exception('You must specify either the "file_name" and "file_content" or the "entry_id" of the fihle.')
     if file_name and entry_id:
         raise Exception('You must specify the "file_name" and "file_content" or the "entry_id" of the file, not both.')
     elif entry_id:
