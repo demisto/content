@@ -15,6 +15,7 @@ def run(options):
     }
 
     with open(options.json_path_file, 'w') as secrets_out_file:
+        logging.info(f'@@@@@@@@@@@@@@@@@@@@{json5.dumps(secret_file, quote_keys=True)}')
         try:
             secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
         except Exception as e:
