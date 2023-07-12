@@ -1,17 +1,23 @@
 {
-  "id": "Getting Started With XSOAR Wizard",
+  "id": "Getting Started With XSOAR",
   "version": -1,
-  "modified": "2023-06-26T11:55:54.250933+03:00",
+  "modified": "2023-07-11T11:55:54.250933+03:00",
   "fromVersion": "6.9.0",
-  "name": "Getting Started With XSOAR Wizard",
+  "name": "Getting Started With XSOAR",
   "description": "Welcome to the Getting Started with XSOAR Wizard! This will serve as your step-by-step walk through on Getting your XSOAR server up and running",
   "dependency_packs": [{
       "name": "Sample Incident Generator",
-      "min_required": 1,
-      "packs": [{
+      "min_required": 2,
+      "packs": [
+      {
         "name": "SampleIncidentGenerator",
         "display_name": "Sample Incident Generator"
-      }]
+      },
+      {
+        "name": "Case Management",
+        "display_name": "CaseManagement-Generic"
+      }
+      ]
     },
     {
       "name": "Sandbox",
@@ -44,6 +50,14 @@
         {
           "name": "MicrosoftGraphMail",
           "display_name": "Microsoft Graph Mail"
+        },
+        {
+          "name": "MailSenderNew",
+          "display_name": "Mail Sender (NEW)"
+        },
+        {
+          "name": "MailListener",
+          "display_name": "Mail Listener"
         }
       ]
     },
@@ -74,6 +88,31 @@
         {
           "name": "FeedMitreAttackv2",
           "display_name": "Mitre Attack v2"
+        },
+        {
+          "name": "Unit42Intel",
+          "display_name": "Unit 42 Intel"
+        },
+        {
+          "name": "FeedTorExitAddresses",
+          "display_name": "Tor Exit Addresses Feed"
+        },
+        {
+          "name": "FeedOffice365",
+          "display_name": "Office 365 Feed"
+        },
+        {
+          "name": "Feedsslabusech",
+          "display_name": "Abuse.ch SSL Blacklist Feed"
+        }
+      ]
+    },
+    {
+      "name": "Network Security",
+      "min_required": 0,
+      "packs": [{
+        "name": "PAN-OS",
+        "display_name": "PAN-OS by Palo Alto Networks"
         }
       ]
     }
@@ -178,6 +217,54 @@
           "new": "Enable 'Splunk' to fetch notables, events, or run queries"
         },
         "description": "Configure 'Splunk' to fetch notables, events, or run queries."
+      },
+      {
+        "name": "Unit 42 Intel",
+        "action": {
+          "existing": "Configure 'Unit 42 Intel' to fetch Indicators, Campaigns, Threat Actors, Malware, etc from our Unit 42 Threat Research team.  Note - This feed requires the Autofocus key that came with the TIM license.",
+          "new": "Enable 'Unit 42 Intel' to fetch Indicators, Campaigns, Threat Actors, Malware, etc from our Unit 42 Threat Research team.  Note - This feed requires the Autofocus key that came with the TIM license."
+        },
+        "description": "Configure 'Unit 42 Intel' to fetch Indicators, Campaigns, Threat Actors, Malware, etc from our Unit 42 Threat Research team.  Note - This feed requires the Autofocus key that came with the TIM license."
+      },
+      {
+        "name": "PAN-OS by Palo Alto Network",
+        "action": {
+          "existing": "Configure 'Pan-OS' to Create and manage custom security rules on Palo Alto Networks NGFWs. Query PAN-OS Logs, Manage EDLS, and More!",
+          "new": "Enable 'Pan-OS' to Create and manage custom security rules on Palo Alto Networks NGFWs. Query PAN-OS Logs, Manage EDLS, and More!"
+        },
+        "description": "Configure 'Pan-OS' to Create and manage custom security rules on Palo Alto Networks NGFWs. Query PAN-OS Logs, Manage EDLS, and More!"
+      },
+      {
+        "name": "Tor Exit Addresses Feed",
+        "action": {
+          "existing": "Configure 'Tor Exit Addresses Feed' to fetch Tor Exit Address Indicators. Malicious cyber actors use Tor to mask their identity when engaging in malicious cyber activity",
+          "new": "Enable 'Tor Exit Addresses Feed' to fetch Tor Exit Address Indicators. Malicious cyber actors use Tor to mask their identity when engaging in malicious cyber activity"
+        },
+        "description": "Configure 'Tor Exit Addresses Feed' to fetch Tor Exit Address Indicators. Malicious cyber actors use Tor to mask their identity when engaging in malicious cyber activity"
+      },
+      {
+        "name": "Office 365 Feed",
+        "action": {
+          "existing": "Configure 'Office 365 Feed' to fetch IP and URL Indicators provided by the Microsoft read-only API.",
+          "new": "Enable 'Office 365 Feed' to fetch IP and URL Indicators provided by the Microsoft read-only API."
+        },
+        "description": "Configure 'Office 365 Feed' to fetch IP and URL Indicators provided by the Microsoft read-only API."
+      },
+       {
+        "name": "Abuse.ch SSL Blacklist Feed",
+        "action": {
+          "existing": "Configure 'Abuse.ch SSL Blacklist Feed' which contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and identified as being associated with a malicious SSL certificate.",
+          "new": "Enable 'Abuse.ch SSL Blacklist Feed' which contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and identified as being associated with a malicious SSL certificate."
+        },
+        "description": "Configure 'Abuse.ch SSL Blacklist Feed' which contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and identified as being associated with a malicious SSL certificate."
+      },
+      {
+        "name": "Mail Listener",
+        "action": {
+          "existing": "Configure 'Mail Listener' to listen to mail box and fetch emails that can be used to trigger an incident",
+          "new": "Enable 'Mail Listener' to listen to a mail box and fetch emails that can be used to trigger an incident"
+        },
+        "description": "Configure 'Mail Listener' to listen to mail box and fetch emails that can be used to trigger an incident"
       }
     ],
     "next": [{
