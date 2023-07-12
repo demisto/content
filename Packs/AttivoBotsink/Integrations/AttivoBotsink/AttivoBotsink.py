@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import json
 import os
@@ -8,8 +10,6 @@ from datetime import datetime
 import requests
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

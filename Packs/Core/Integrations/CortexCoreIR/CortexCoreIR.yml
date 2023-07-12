@@ -6,28 +6,23 @@ commonfields:
 configuration:
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
-  required: false
   type: 0
   hidden: true
 - display: API Key ID
   name: apikey_id
-  required: false
   type: 4
   hidden: true
 - display: API Key
   name: apikey
-  required: false
   type: 4
   hidden: true
 - additionalinfo: The timeout of the HTTP requests sent to Cortex API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
-  required: false
   type: 0
 description: The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Investigation & Response
@@ -35,49 +30,26 @@ name: Cortex Core - IR
 script:
   commands:
   - arguments:
-    - default: false
-      description: Links the response action to the triggered incident.
-      isArray: false
+    - description: Links the response action to the triggered incident.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command.
-      isArray: false
+    - description: The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command.
       name: endpoint_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
-      isArray: false
       name: suppress_disconnected_endpoint_error
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Isolates the specified endpoint.
     execution: true
     name: core-isolate-endpoint
@@ -87,49 +59,26 @@ script:
       description: The endpoint ID.
       type: String
   - arguments:
-    - default: false
-      description: Links the response action to the triggered incident.
-      isArray: false
+    - description: Links the response action to the triggered incident.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: The endpoint ID (string) to reverse the isolation. Retrieve it from the core-get-endpoints command.
-      isArray: false
+    - description: The endpoint ID (string) to reverse the isolation. Retrieve it from the core-get-endpoints command.
       name: endpoint_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Suppress an error when trying to unisolate a disconnected endpoint. When set to false, an error is be returned.
-      isArray: false
       name: suppress_disconnected_endpoint_error
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Reverses the isolation of an endpoint.
     execution: true
     name: core-unisolate-endpoint
@@ -139,36 +88,23 @@ script:
       description: Isolates the specified endpoint.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of endpoint IDs.
+    - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_id_list
-      required: false
-      secret: false
-    - default: false
-      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
       isArray: true
       name: dist_name
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of IP addresses.
         Example: 8.8.8.8,1.1.1.1
       isArray: true
       name: ip_list
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The group name to which the agent belongs.
         Example: group_name1,group_name2
       isArray: true
       name: group_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
       isArray: true
       name: platform
@@ -177,131 +113,81 @@ script:
       - linux
       - macos
       - android
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alias names.
         Examples: alias_name1,alias_name2
       isArray: true
       name: alias_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether the endpoint was isolated or unisolated.
-      isArray: false
       name: isolate
       predefined:
       - isolated
       - unisolated
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Hostname
         Example: hostname1,hostname2
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were first seen after {first_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: first_seen_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were first seen before {first_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: first_seen_lte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were last seen before {last_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: last_seen_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were last seen before {last_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: last_seen_lte
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: Maximum number of endpoints to return per page. The default and maximum is 30.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
-      isArray: false
       name: sort_by
       predefined:
       - first_seen
       - last_seen
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: asc
       description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The status of the endpoint to filter.
-      isArray: false
       name: status
       predefined:
       - connected
       - disconnected
       - lost
       - uninstalled
-      required: false
-      secret: false
     - name: username
       description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
       isArray: true
-    deprecated: false
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
-    execution: false
     name: core-get-endpoints
     outputs:
     - contextPath: Core.Endpoint.endpoint_id
@@ -487,9 +373,7 @@ script:
       - error
     description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
     name: core-endpoint-alias-change
-  - deprecated: false
-    description: Gets a list of all the agent versions to use for creating a distribution list.
-    execution: false
+  - description: Gets a list of all the agent versions to use for creating a distribution list.
     name: core-get-distribution-versions
     outputs:
     - contextPath: Core.DistributionVersions.windows
@@ -502,16 +386,11 @@ script:
       description: A list of Mac agent versions.
       type: Unknown
   - arguments:
-    - default: false
-      description: A string representing the name of the installation package.
-      isArray: false
+    - description: A string representing the name of the installation package.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "String, valid values are:\n• windows \n• linux\n• macos \n• android"
-      isArray: false
       name: platform
       predefined:
       - windows
@@ -519,35 +398,22 @@ script:
       - macos
       - android
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         A string representing the type of package to create.
         standalone - An installation for a new agent
         upgrade - An upgrade of an agent from ESM
-      isArray: false
       name: package_type
       predefined:
       - standalone
       - upgrade
       required: true
-      secret: false
-    - default: false
-      description: agent_version returned from core-get-distribution-versions. Not required for Android platfoms.
-      isArray: false
+    - description: agent_version returned from core-get-distribution-versions. Not required for Android platfoms.
       name: agent_version
       required: true
-      secret: false
-    - default: false
-      description: Information about the package.
-      isArray: false
+    - description: Information about the package.
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
-    execution: false
     name: core-create-distribution
     outputs:
     - contextPath: Core.Distribution.id
@@ -566,16 +432,12 @@ script:
       description: Information about the package.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The ID of the installation package.
         Copy the distribution_id from the "id" field on Endpoints > Agent Installation page.
-      isArray: false
       name: distribution_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The installation package type. Valid
         values are:
@@ -586,7 +448,6 @@ script:
         • pkg - For Mac
         • x86 - For Windows
         • x64 - For Windows
-      isArray: false
       name: package_type
       predefined:
       - upgrade
@@ -597,10 +458,7 @@ script:
       - x86
       - x64
       required: true
-      secret: false
-    deprecated: false
     description: Gets the distribution URL for downloading the installation package.
-    execution: false
     name: core-get-distribution-url
     outputs:
     - contextPath: Core.Distribution.id
@@ -610,15 +468,11 @@ script:
       description: URL for downloading the installation package.
       type: String
   - arguments:
-    - default: false
-      description: Status of distribution IDs, in a comma-separated list.
+    - description: Status of distribution IDs, in a comma-separated list.
       isArray: true
       name: distribution_ids
       required: true
-      secret: false
-    deprecated: false
     description: Gets the status of the installation package.
-    execution: false
     name: core-get-create-distribution-status
     outputs:
     - contextPath: Core.Distribution.id
@@ -628,16 +482,10 @@ script:
       description: Installation package status.
       type: String
   - arguments:
-    - default: false
-      description: User’s email address.
-      isArray: false
+    - description: User’s email address.
       name: email
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The audit log type.
-      isArray: false
       name: type
       predefined:
       - REMOTE_TERMINAL
@@ -662,87 +510,51 @@ script:
       - REPORTING
       - DASHBOARD
       - BROKER_VM
-      required: false
-      secret: false
-    - default: false
-      description: The audit log subtype.
-      isArray: false
+    - description: The audit log subtype.
       name: sub_type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Result type
-      isArray: false
       name: result
       predefined:
       - SUCCESS
       - FAIL
       - PARTIAL
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Return logs when the timestamp is after 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: timestamp_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Return logs when the timestamp is before the 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: timestamp_lte
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: Maximum number of audit logs to return per page. The default and maximum is 30.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies the field by which to sort the results. By default the sort is defined as creation-time and descending. Can be "type", "sub_type", "result", or "timestamp".
-      isArray: false
       name: sort_by
       predefined:
       - type
       - sub_type
       - result
       - timestamp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: desc
       description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc".
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Gets management logs. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
-    execution: false
     name: core-get-audit-management-logs
     outputs:
     - contextPath: Core.AuditManagementLogs.AUDIT_ID
@@ -785,20 +597,13 @@ script:
       description: Log's insert time.
       type: Date
   - arguments:
-    - default: false
-      description: A comma-separated list of endpoint IDs.
+    - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_ids
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of endpoint names.
+    - description: A comma-separated list of endpoint names.
       isArray: true
       name: endpoint_names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
       isArray: true
       name: type
@@ -809,10 +614,7 @@ script:
       - Agent Service
       - Agent Modules
       - Agent Status
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The report subtype.
       isArray: true
       name: sub_type
@@ -849,59 +651,36 @@ script:
       - Minimal Content
       - Reboot Eequired
       - Missing Disc Access
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The result type. Can be "Success" or "Fail". If not passed, returns all event reports.
       isArray: true
       name: result
       predefined:
       - Success
       - Fail
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Return logs that their timestamp is greater than 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: timestamp_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Return logs for which the timestamp is before the 'timestamp_lte'.
 
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: timestamp_lte
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: The maximum number of reports to return. Default and maximum is 30.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The field by which to sort results. Can be "type", "category", "trapsversion", "timestamp", or "domain").
-      isArray: false
       name: sort_by
       predefined:
       - type
@@ -909,22 +688,14 @@ script:
       - trapsversion
       - timestamp
       - domain
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: asc
       description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc".
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Gets agent event reports. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
-    execution: false
     name: core-get-audit-agent-reports
     outputs:
     - contextPath: Core.AuditAgentReports.ENDPOINTID
@@ -973,38 +744,22 @@ script:
       description: The domain of the endpoint.
       type: String
   - arguments:
-    - default: false
-      description: Links the response action to the triggered incident.
-      isArray: false
+    - description: Links the response action to the triggered incident.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash.
+    - description: String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
-      secret: false
-    - default: false
-      description: String that represents additional information regarding the action.
-      isArray: false
+    - description: String that represents additional information regarding the action.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Choose either regular response or detailed response. Default value = false, regular response.
-      isArray: false
       name: detailed_response
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Block lists requested files which have not already been block listed or added to allow lists.
-    execution: false
     name: core-blocklist-files
     outputs:
     - contextPath: Core.blocklist.added_hashes
@@ -1014,38 +769,22 @@ script:
       description: Added fileHash to blocklist
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the triggered incident.
-      isArray: false
+    - description: Links the response action to the triggered incident.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: String that represents a list of hashed files you want to add to allow lists. Must be a valid SHA256 hash.
+    - description: String that represents a list of hashed files you want to add to allow lists. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
-      secret: false
-    - default: false
-      description: String that represents additional information regarding the action.
-      isArray: false
+    - description: String that represents additional information regarding the action.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Choose either regular response or detailed response. Default value = false, regular response.
-      isArray: false
       name: detailed_response
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Adds requested files to allow list if they are not already on block list or allow list.
-    execution: false
     name: core-allowlist-files
     outputs:
     - contextPath: Core.allowlist.added_hashes
@@ -1055,177 +794,84 @@ script:
       description: Added fileHash to allowlist
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the triggered incident.
-      isArray: false
+    - description: Links the response action to the triggered incident.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: List of endpoint IDs.
+    - description: List of endpoint IDs.
       isArray: true
       name: endpoint_id_list
       required: true
-      secret: false
-    - default: false
-      description: String that represents the path of the file you want to quarantine.
-      isArray: false
+    - description: String that represents the path of the file you want to quarantine.
       name: file_path
       required: true
-      secret: false
-    - default: false
-      description: String that represents the file’s hash. Must be a valid SHA256 hash.
-      isArray: false
+    - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
-    execution: false
     name: core-quarantine-files
     polling: true
   - arguments:
-    - default: false
-      description: String that represents the endpoint ID.
-      isArray: false
+    - description: String that represents the endpoint ID.
       name: endpoint_id
       required: true
-      secret: false
-    - default: false
-      description: String that represents the file hash. Must be a valid SHA256 hash.
-      isArray: false
+    - description: String that represents the file hash. Must be a valid SHA256 hash.
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      description: String that represents the file path.
-      isArray: false
+    - description: String that represents the file path.
       name: file_path
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the quarantine status for a selected file.
-    execution: false
     name: core-get-quarantine-status
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: String that represents the file in hash. Must be a valid SHA256 hash.
-      isArray: false
+    - description: String that represents the file in hash. Must be a valid SHA256 hash.
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
-      isArray: false
+    - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
       name: endpoint_id
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Restores a quarantined file on requested endpoints.
-    execution: false
     name: core-restore-file
     polling: true
   - arguments:
-    - default: false
-      description: Links the response action to the triggered incident.
-      isArray: false
+    - description: Links the response action to the triggered incident.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: List of endpoint IDs.
+    - description: List of endpoint IDs.
       isArray: true
       name: endpoint_id_list
-      required: false
-      secret: false
-    - default: false
-      description: Name of the distribution list.
+    - description: Name of the distribution list.
       isArray: true
       name: dist_name
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: gte_first_seen
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: gte_last_seen
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: lte_first_seen
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: lte_last_seen
-      required: false
-      secret: false
-    - default: false
-      description: List of IP addresses.
+    - description: List of IP addresses.
       isArray: true
       name: ip_list
-      required: false
-      secret: false
-    - default: false
-      description: Name of the endpoint group.
+    - description: Name of the endpoint group.
       isArray: true
       name: group_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of operating system.
       isArray: true
       name: platform
@@ -1234,61 +880,33 @@ script:
       - linux
       - macos
       - android
-      required: false
-      secret: false
-    - default: false
-      description: Endpoint alias name.
+    - description: Endpoint alias name.
       isArray: true
       name: alias
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Choose if an endpoint has been isolated. Select "isolated" or "unisolated".
-      isArray: false
       name: isolate
       predefined:
       - isolated
       - unisolated
-      required: false
-      secret: false
-    - default: false
-      description: Name of the host.
+    - description: Name of the host.
       isArray: true
       name: hostname
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Choose whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency.
-      isArray: false
       name: all
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: For polling use.
+    - description: For polling use.
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: core-endpoint-scan
@@ -1301,62 +919,29 @@ script:
       description: Was the scan aborted.
       type: Boolean
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: List of endpoint IDs.
+    - description: List of endpoint IDs.
       isArray: true
       name: endpoint_id_list
-      required: false
-      secret: false
-    - default: false
-      description: Name of the distribution list.
+    - description: Name of the distribution list.
       isArray: true
       name: dist_name
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: gte_first_seen
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: gte_last_seen
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: lte_first_seen
-      required: false
-      secret: false
-    - default: false
-      description: Epoch timestamp in milliseconds.
-      isArray: false
+    - description: Epoch timestamp in milliseconds.
       name: lte_last_seen
-      required: false
-      secret: false
-    - default: false
-      description: List of IP addresses.
+    - description: List of IP addresses.
       isArray: true
       name: ip_list
-      required: false
-      secret: false
-    - default: false
-      description: Name of the endpoint group.
+    - description: Name of the endpoint group.
       isArray: true
       name: group_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of operating system.
       isArray: true
       name: platform
@@ -1365,42 +950,25 @@ script:
       - linux
       - macos
       - android
-      required: false
-      secret: false
-    - default: false
-      description: Endpoint alias name.
+    - description: Endpoint alias name.
       isArray: true
       name: alias
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Choose whether an endpoint has been isolated. Select "isolated" or "unisolated".
-      isArray: false
       name: isolate
       predefined:
       - isolated
       - unisolated
-      required: false
-      secret: false
-    - default: false
-      description: Name of the host.
+    - description: Name of the host.
       isArray: true
       name: hostname
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency.
-      isArray: false
       name: all
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Cancel the selected endpoints scan. A scan can only be cancelled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
     execution: true
     name: core-endpoint-scan-abort
@@ -1412,15 +980,10 @@ script:
       description: Was the scan cancelled.
       type: Boolean
   - arguments:
-    - default: false
-      description: The endpoint ID. Retrieve by running the core-get-endpoints command.
-      isArray: false
+    - description: The endpoint ID. Retrieve by running the core-get-endpoints command.
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the policy name for a specific endpoint.
-    execution: false
     name: core-get-policy
     outputs:
     - contextPath: Core.Policy
@@ -1433,79 +996,44 @@ script:
       description: Endpoint ID.
       type: string
   - arguments:
-    - default: false
-      description: A comma-separated list of the script names.
+    - description: A comma-separated list of the script names.
       isArray: true
       name: script_name
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the script descriptions.
+    - description: A comma-separated list of the script descriptions.
       isArray: true
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the users who created the script.
+    - description: A comma-separated list of the users who created the script.
       isArray: true
       name: created_by
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of scripts returned to the War Room. Default is 50.
-      isArray: false
+    - description: The maximum number of scripts returned to the War Room. Default is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: (Int) Offset in the data set. Default is 0.
-      isArray: false
+    - description: (Int) Offset in the data set. Default is 0.
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Choose to run the script on a Windows operating system.
-      isArray: false
       name: windows_supported
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Choose to run the script on a Linux operating system.
-      isArray: false
       name: linux_supported
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Choose to run the script on a Mac operating system.
-      isArray: false
       name: macos_supported
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Choose if the script has a high-risk outcome.
-      isArray: false
       name: is_high_risk
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of scripts available in the scripts library.
-    execution: false
     name: core-get-scripts
     outputs:
     - contextPath: Core.Scripts
@@ -1542,104 +1070,55 @@ script:
       description: Globally Unique Identifier of the script, used to identify the script when executing.
       type: string
   - arguments:
-    - default: false
-      description: Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the core-get-endpoints command.
-      isArray: false
+    - description: Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the core-get-endpoints command.
       name: endpoint_ids
       required: true
-      secret: false
-    deprecated: false
     description: Deletes selected endpoints in the Cortex app. You can delete up to 1000 endpoints.
-    execution: false
     name: core-delete-endpoints
   - arguments:
-    - default: false
-      description: Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the core-get-endpoints command.
+    - description: Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the core-get-endpoints command.
       isArray: true
       name: endpoint_ids
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of violation. Possible values are: "cd-rom", "disk drive", "floppy disk", and "portable device".'
-      isArray: false
       name: type
       predefined:
       - cd-rom
       - disk drive
       - floppy disk
       - portable device
-      required: false
-      secret: false
-    - default: false
-      description: 'Timestamp of the violation. Violations that are greater than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Timestamp of the violation. Violations that are greater than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time).'
       name: timestamp_gte
-      required: false
-      secret: false
-    - default: false
-      description: 'Timestamp of the violation. Violations that are less than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Timestamp of the violation. Violations that are less than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time).'
       name: timestamp_lte
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of IP addresses.
+    - description: Comma-separated list of IP addresses.
       isArray: true
       name: ip_list
-      required: false
-      secret: false
-    - default: false
-      description: Name of the vendor.
+    - description: Name of the vendor.
       isArray: true
       name: vendor
-      required: false
-      secret: false
-    - default: false
-      description: Vendor ID.
+    - description: Vendor ID.
       isArray: true
       name: vendor_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the product.
+    - description: Name of the product.
       isArray: true
       name: product
-      required: false
-      secret: false
-    - default: false
-      description: Product ID.
+    - description: Product ID.
       isArray: true
       name: product_id
-      required: false
-      secret: false
-    - default: false
-      description: Serial number.
+    - description: Serial number.
       isArray: true
       name: serial
-      required: false
-      secret: false
-    - default: false
-      description: Hostname.
+    - description: Hostname.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of violation IDs.
+    - description: Comma-separated list of violation IDs.
       isArray: true
       name: violation_id_list
-      required: false
-      secret: false
-    - default: false
-      description: Username.
+    - description: Username.
       isArray: true
       name: username
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
-    execution: false
     name: core-get-endpoint-device-control-violations
     outputs:
     - contextPath: Core.EndpointViolations
@@ -1688,64 +1167,33 @@ script:
       description: Endpoint ID of the violation.
       type: string
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of endpoint IDs.
+    - description: Comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of file paths on the Windows platform.
+    - description: A comma-separated list of file paths on the Windows platform.
       isArray: true
       name: windows_file_paths
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of file paths on the Linux platform.
+    - description: A comma-separated list of file paths on the Linux platform.
       isArray: true
       name: linux_file_paths
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of file paths on the Mac platform.
+    - description: A comma-separated list of file paths on the Mac platform.
       isArray: true
       name: mac_file_paths
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
+    - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
-    execution: false
     name: core-retrieve-files
     polling: true
     outputs:
@@ -1753,15 +1201,11 @@ script:
       description: ID of the action to retrieve files from selected endpoints.
       type: string
   - arguments:
-    - default: false
-      description: Action ID retrieved from the core-retrieve-files command.
+    - description: Action ID retrieved from the core-retrieve-files command.
       isArray: true
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
-    execution: false
     name: core-retrieve-file-details
     outputs:
     - contextPath: File
@@ -1795,15 +1239,10 @@ script:
       description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
   - arguments:
-    - default: false
-      description: Unique identifier of the script, returned by the core-get-scripts command.
-      isArray: false
+    - description: Unique identifier of the script, returned by the core-get-scripts command.
       name: script_uid
       required: true
-      secret: false
-    deprecated: false
     description: Gets the full definition of a specific script in the scripts library.
-    execution: false
     name: core-get-script-metadata
     outputs:
     - contextPath: Core.ScriptMetadata
@@ -1849,15 +1288,10 @@ script:
       description: If the script_output_type is a dictionary, an array with friendly name, name, and type for each output.
       type: Unknown
   - arguments:
-    - default: false
-      description: Unique identifier of the script, returned by the core-get-scripts command.
-      isArray: false
+    - description: Unique identifier of the script, returned by the core-get-scripts command.
       name: script_uid
       required: true
-      secret: false
-    deprecated: false
     description: Gets the code of a specific script in the script library.
-    execution: false
     name: core-get-script-code
     outputs:
     - contextPath: Core.ScriptCode
@@ -1870,15 +1304,11 @@ script:
       description: Unique identifier of the script.
       type: string
   - arguments:
-    - default: false
-      description: The action ID of the selected request. After performing an action, you will receive an action ID.
+    - description: The action ID of the selected request. After performing an action, you will receive an action ID.
       isArray: true
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the status of the requested actions according to the action ID.
-    execution: false
     name: core-action-status-get
     outputs:
     - contextPath: Core.GetActionStatus
@@ -1894,40 +1324,20 @@ script:
       description: The specified action ID.
       type: number
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
-      isArray: false
+    - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
-      isArray: false
+    - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
-      secret: false
-    - default: false
-      description: Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
-      isArray: false
+    - description: Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
       name: parameters
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: The timeout in seconds for this execution.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Initiates a new endpoint script execution action using a script from the script library.
-    execution: false
     name: core-run-script
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -1937,46 +1347,23 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it. it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it. it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
-      isArray: false
+    - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: Section of a script you want to initiate on an endpoint, for example, print("7").
-      isArray: false
+    - description: Section of a script you want to initiate on an endpoint, for example, print("7").
       name: snippet_code
       required: true
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Initiates a new endpoint script execution action using the provided snippet code.
-    execution: false
     name: core-run-snippet-code-script
     polling: true
     outputs:
@@ -1987,15 +1374,11 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-    - default: false
-      description: Action IDs retrieved from the core-run-script command.
+    - description: Action IDs retrieved from the core-run-script command.
       isArray: true
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the status of a script execution action.
-    execution: false
     name: core-get-script-execution-status
     outputs:
     - contextPath: Core.ScriptStatus.general_status
@@ -2035,15 +1418,11 @@ script:
       description: Number of endpoints in "aborted" status.
       type: Number
   - arguments:
-    - default: false
-      description: Action IDs retrieved from the core-run-script command.
+    - description: Action IDs retrieved from the core-run-script command.
       isArray: true
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve the results of a script execution action.
-    execution: false
     name: core-get-script-execution-results
     outputs:
     - contextPath: Core.ScriptResult.action_id
@@ -2089,21 +1468,15 @@ script:
       description: The output of the command executed by the script.
       type: array
   - arguments:
-    - default: false
-      description: Action ID retrieved from the core-run-script command.
+    - description: Action ID retrieved from the core-run-script command.
       isArray: true
       name: action_id
       required: true
-      secret: false
-    - default: false
-      description: Endpoint ID. Can be retrieved by running the core-get-endpoints command.
+    - description: Endpoint ID. Can be retrieved by running the core-get-endpoints command.
       isArray: true
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the files retrieved from a specific endpoint during a script execution.
-    execution: false
     name: core-get-script-execution-result-files
     outputs:
     - contextPath: File.Size
@@ -2140,53 +1513,26 @@ script:
       description: The extension of the file.
       type: String
   - arguments:
-    - default: false
-      description: Link the response action to triggered incident.
-      isArray: false
+    - description: Link the response action to triggered incident.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
-      isArray: false
+    - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of shell commands to execute.
-      isArray: false
+    - description: Comma-separated list of shell commands to execute.
       name: commands
       required: true
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: The timeout in seconds for this execution.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Initiate a new endpoint script execution of shell commands.
-    execution: false
     name: core-run-script-execute-commands
     polling: true
     outputs:
@@ -2197,53 +1543,28 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+    - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       isArray: true
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints.
+    - description: Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints.
       isArray: true
       name: file_path
       required: true
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: The timeout in seconds for this execution.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Initiates a new endpoint script execution to delete the specified file.
-    execution: false
     name: core-run-script-delete-file
     polling: true
     outputs:
@@ -2254,53 +1575,28 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+    - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       isArray: true
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints.
+    - description: Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints.
       isArray: true
       name: file_path
       required: true
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: The timeout in seconds for this execution.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Initiates a new endpoint script execution to check if file exists.
-    execution: false
     name: core-run-script-file-exists
     polling: true
     outputs:
@@ -2311,53 +1607,28 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+    - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       isArray: true
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
+    - description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
       isArray: true
       name: process_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: The timeout in seconds for this execution.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: For polling use
+    - description: For polling use
       isArray: true
       name: action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Polling timeout in seconds.
-      isArray: false
+    - description: Polling timeout in seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Initiates a new endpoint script execution kill process.
-    execution: false
     name: core-run-script-kill-process
     polling: true
     outputs:
@@ -2368,27 +1639,17 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-    - default: false
-      description: The endpoint ID.
+    - description: The endpoint ID.
       isArray: true
       name: id
-      required: false
-      secret: false
     - default: true
       description: The endpoint IP address.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The endpoint hostname.
+    - description: The endpoint hostname.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information about an endpoint.
-    execution: false
     name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname
@@ -2416,34 +1677,20 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-    - default: false
-      description: String that represents the file’s hash. Must be a valid SHA256 hash.
-      isArray: false
+    - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      description: The new verdict of the file. 0 - benign, 1 - malware.
+    - description: The new verdict of the file. 0 - benign, 1 - malware.
       predefined:
       - '0'
       - '1'
-      isArray: false
       name: new_verdict
       required: true
-      secret: false
-    - default: false
-      description: String that represents the reason of the report
-      isArray: false
+    - description: String that represents the reason of the report
       name: reason
       required: true
-      secret: false
-    - default: false
-      description: User’s email address.
-      isArray: false
+    - description: User’s email address.
       name: email
-      required: false
-      secret: false
-    deprecated: false
     description: Reports to WildFire about incorrect hash verdict through Cortex.
     execution: true
     name: core-report-incorrect-wildfire
@@ -2455,135 +1702,76 @@ script:
       description: The new verdict of the file.
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
+    - description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
-      secret: false
-    - default: false
-      description: String that represents additional information regarding the action.
-      isArray: false
+    - description: String that represents additional information regarding the action.
       name: comment
-      required: false
-      secret: false
-    deprecated: false
     description: Removes requested files from allow list.
-    execution: false
     name: core-remove-allowlist-files
     outputs:
     - contextPath: Core.allowlist.removed_hashes
       description: Removed file hash
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the incident that triggered it.
-      isArray: false
+    - description: Links the response action to the incident that triggered it.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
+    - description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
-      secret: false
-    - default: false
-      description: String that represents additional information regarding the action.
-      isArray: false
+    - description: String that represents additional information regarding the action.
       name: comment
-      required: false
-      secret: false
-    deprecated: false
     description: Removes requested files from block list.
-    execution: false
     name: core-remove-blocklist-files
     outputs:
     - contextPath: Core.blocklist.removed_hashes
       description: Removed fileHash from blocklist
       type: Number
   - arguments:
-    - default: false
-      description: Name of the exclusion.
-      isArray: false
+    - description: Name of the exclusion.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: 'Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
-      isArray: false
+    - description: 'Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
       name: filterObject
       required: true
-      secret: false
-    - default: false
-      description: String that represents additional information regarding the action.
-      isArray: false
+    - description: String that represents additional information regarding the action.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ENABLED
       description: Status of exclusion. default value = ENABLED
-      isArray: false
       name: status
       predefined:
       - ENABLED
       - DISABLED
-      required: false
-      secret: false
-    deprecated: false
     description: Adds alert exclusion rule based on filterObject.
-    execution: false
     name: core-add-exclusion
     outputs:
     - contextPath: Core.exclusion.rule_id
       description: Added exclusion rule id
       type: Number
   - arguments:
-    - default: false
-      description: The desired alert_exclusion_id to be removed
-      isArray: false
+    - description: The desired alert_exclusion_id to be removed
       name: alert_exclusion_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete an alert exclusion rule based on rule ID.
-    execution: false
     name: core-delete-exclusion
     outputs:
     - contextPath: Core.deletedExclusion.rule_id
       description: Deleted exclusion rule id
       type: Number
   - arguments:
-    - default: false
-      description: Links the response action to the tenant that triggered it.
-      isArray: false
+    - description: Links the response action to the tenant that triggered it.
       name: tenant_ID
-      required: false
-      secret: false
-    - default: false
-      description: 'Filter object for the exclusion. Example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
-      isArray: false
+    - description: 'Filter object for the exclusion. Example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
       name: filterObject
-      required: false
-      secret: false
-    - default: false
-      description: Limit for the response. You will get the first "limit" exclusions. Default value is 20.
-      isArray: false
+    - description: Limit for the response. You will get the first "limit" exclusions. Default value is 20.
       name: limit
-      required: false
-      secret: false
       defaultValue: '20'
-    deprecated: false
     description: Get a list of the alerts exclusion.
-    execution: false
     name: core-get-exclusion
     outputs:
     - contextPath: Core.exclusion.ALERT_WHITELIST_ID
@@ -2645,15 +1833,11 @@ script:
       type: Number
 
   - arguments:
-    - default: false
-      description: A comma-separated list of alert IDs.
+    - description: A comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
       required: true
-      secret: false
-    deprecated: false
     description: Returns information about each alert ID.
-    execution: false
     name: core-get-cloud-original-alerts
     outputs:
     - contextPath: Core.OriginalAlert.event._time
@@ -2783,15 +1967,11 @@ script:
       description: Ingestion time.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of alert IDs.
+    - description: A comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
       required: true
-      secret: false
-    deprecated: false
     description: Returns dynamic analysis of each alert ID.
-    execution: false
     name: core-get-dynamic-analysis
     outputs:
     - contextPath: Core.DynamicAnalysis.causalityId
@@ -3188,15 +2368,11 @@ script:
       description: ''
       type: String
   - arguments:
-    - default: false
-      description: The sha256 of a file.
+    - description: The sha256 of a file.
       isArray: true
       name: sha256
       required: true
-      secret: false
-    deprecated: false
     description: Get the prevalence of a file, identified by sha256.
-    execution: false
     name: core-get-hash-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Hash.value
@@ -3212,15 +2388,11 @@ script:
       description: The prevalence of the hash.
       type: Number
   - arguments:
-    - default: false
-      description: The IP address.
+    - description: The IP address.
       isArray: true
       name: ip_address
       required: true
-      secret: false
-    deprecated: false
     description: Get the prevalence of an ip, identified by ip_address.
-    execution: false
     name: core-get-IP-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Ip.value
@@ -3236,15 +2408,11 @@ script:
       description: The prevalence of the IP.
       type: Number
   - arguments:
-    - default: false
-      description: The domain name.
+    - description: The domain name.
       isArray: true
       name: domain_name
       required: true
-      secret: false
-    deprecated: false
     description: Get the prevalence of a domain, identified by domain_name.
-    execution: false
     name: core-get-domain-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Domain.value
@@ -3260,15 +2428,11 @@ script:
       description: The prevalence of the domain.
       type: Number
   - arguments:
-    - default: false
-      description: The process name.
+    - description: The process name.
       isArray: true
       name: process_name
       required: true
-      secret: false
-    deprecated: false
     description: Get the prevalence of a process, identified by process_name.
-    execution: false
     name: core-get-process-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Process.value
@@ -3284,21 +2448,15 @@ script:
       description: The prevalence of the process.
       type: Number
   - arguments:
-    - default: false
-      description: The key name of a registry path.
+    - description: The key name of a registry path.
       isArray: true
       name: key_name
       required: true
-      secret: false
-    - default: false
-      description: The value name of a registry path.
+    - description: The value name of a registry path.
       isArray: true
       name: value_name
       required: true
-      secret: false
-    deprecated: false
     description: Get the prevalence of a registry_path, identified by key_name, value_name.
-    execution: false
     name: core-get-registry-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Registry.value
@@ -3314,15 +2472,11 @@ script:
       description: The prevalence of the registry.
       type: Number
   - arguments:
-    - default: false
-      description: The process command line.
+    - description: The process command line.
       isArray: true
       name: process_command_line
       required: true
-      secret: false
-    deprecated: false
     description: Get the prevalence of a process_command_line, identified by process_command_line.
-    execution: false
     name: core-get-cmd-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Cmd.value
@@ -3338,48 +2492,30 @@ script:
       description: The prevalence of the Cmd.
       type: Number
   - arguments:
-    - default: false
-      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to assign the tag.
+    - description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to assign the tag.
       isArray: true
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: The tag name to assign to the endpoint(s).
-      isArray: false
+    - description: The tag name to assign to the endpoint(s).
       name: tag
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of endpoint IDs by which to filter the results.
+    - description: A comma-separated list of endpoint IDs by which to filter the results.
       isArray: true
       name: endpoint_id_list
-      required: false
-      secret: false
-    - default: false
-      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
       isArray: true
       name: dist_name
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of IP addresses.
         Example: 8.8.8.8,1.1.1.1
       isArray: true
       name: ip_list
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of group name to which the agent belongs.
         Example: group_name1,group_name2
       isArray: true
       name: group_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The endpoint platform.
       isArray: true
       name: platform
@@ -3388,137 +2524,85 @@ script:
       - linux
       - macos
       - android
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alias names.
         Examples: alias_name1,alias_name2
       isArray: true
       name: alias_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether the endpoint was isolated or unisolated.
-      isArray: false
       name: isolate
       predefined:
       - isolated
       - unisolated
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of hostnames.
         Example: hostname1,hostname2
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were first seen after {first_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: first_seen_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were first seen before {first_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: first_seen_lte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were last seen before {last_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: last_seen_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were last seen before {last_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: last_seen_lte
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The status of the endpoint to filter.
-      isArray: false
       name: status
       predefined:
       - connected
       - disconnected
       - lost
       - uninstalled
-      required: false
-      secret: false
-    deprecated: false
     description: Add a tag to one or more endpoints.
-    execution: false
     name: core-add-endpoint-tag
   - arguments:
-    - default: false
-      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to remove the tag.
+    - description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to remove the tag.
       isArray: true
       name: endpoint_ids
       required: true
-      secret: false
-    - default: false
-      description: The tag name to remove from the endpoint(s).
-      isArray: false
+    - description: The tag name to remove from the endpoint(s).
       name: tag
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of endpoint IDs to filter by them.
+    - description: A comma-separated list of endpoint IDs to filter by them.
       isArray: true
       name: endpoint_id_list
-      required: false
-      secret: false
-    - default: false
-      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
       isArray: true
       name: dist_name
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of IP addresses.
         Example: 8.8.8.8,1.1.1.1
       isArray: true
       name: ip_list
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of group names to which the agent belongs.
         Example: group_name1,group_name2
       isArray: true
       name: group_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The endpoint platform.
       isArray: true
       name: platform
@@ -3527,93 +2611,59 @@ script:
       - linux
       - macos
       - android
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alias names.
         Examples: alias_name1,alias_name2
       isArray: true
       name: alias_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether the endpoint was isolated or unisolated.
-      isArray: false
       name: isolate
       predefined:
       - isolated
       - unisolated
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of hostnames.
         Example: hostname1,hostname2
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were first seen after {first_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: first_seen_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were first seen before {first_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: first_seen_lte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were last seen before {last_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: last_seen_gte
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         All the agents that were last seen before {last_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date)
-      isArray: false
       name: last_seen_lte
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The status of the endpoint to filter.
-      isArray: false
       name: status
       predefined:
       - connected
       - disconnected
       - lost
       - uninstalled
-      required: false
-      secret: false
-    deprecated: false
     description: Remove a tag from one or more endpoints.
-    execution: false
     name: core-remove-endpoint-tag
   - name: core-list-users
     description: Retrieve a list of the current users in your environment.
@@ -3789,15 +2839,11 @@ script:
       isArray: true
     name: core-remove-user-role
     description: Remove one or more users from a role.
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests
 fromversion: 6.2.0

@@ -1,0 +1,59 @@
+{
+    "test_case_1":{
+        "args": {
+            "manageable": "true"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable":
+        [{"description":"","id":"1000003","modifiedTime":"1676363551","name":"Host Discovery Policy",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"A simple scan to discover live hosts and open ports.","id":"2","name":"Host Discovery"},
+        "tags":"","uuid":"uuid"},
+        {"description":"","id":"1000004","modifiedTime":"1676363770","name":"Basic Network Scan Policy",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"A full system scan suitable for any host.","id":"3","name":"Basic Network Scan"},
+        "tags":"","uuid":"uuid"}],
+        "usable":[{"description":"","id":"1000001","modifiedTime":"1676363770","name":"Basic Network Scan Policy",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"A full system scan suitable for any host.","id":"3","name":"Basic Network Scan"},
+        "tags":"","uuid":"uuid"},
+        {"description":"","id":"1000002","modifiedTime":"1676368175","name":"Advanced Network Scan",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"Configure a scan without using any recommendations.","id":"1","name":"Advanced Scan"},
+        "tags":"","uuid":"uuid"}]}, 
+        "timestamp":1687094296,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan Policies\n|ID|Name|Type|Group|Owner|LastModified|\n|---|---|---|---|---|---|\n| 1000003 | Host Discovery Policy | Host Discovery | Full Access | lmanager | 2023-02-14T08:32:31Z |\n| 1000004 | Basic Network Scan Policy | Basic Network Scan | Full Access | lmanager | 2023-02-14T08:36:10Z |\n",
+        "expected_ec": [{"ID": "1000003", "Name": "Host Discovery Policy", "Type": "Host Discovery", "Group": "Full Access", "Owner": "lmanager", "LastModified": "2023-02-14T08:32:31Z"}, {"ID": "1000004", "Name": "Basic Network Scan Policy", "Type": "Basic Network Scan", "Group": "Full Access", "Owner": "lmanager", "LastModified": "2023-02-14T08:36:10Z"}]
+    },
+    "test_case_2":{
+        "args": {
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable":
+        [{"description":"","id":"1000003","modifiedTime":"1676363551","name":"Host Discovery Policy",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"A simple scan to discover live hosts and open ports.","id":"2","name":"Host Discovery"},
+        "tags":"","uuid":"uuid"},
+        {"description":"","id":"1000004","modifiedTime":"1676363770","name":"Basic Network Scan Policy",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"A full system scan suitable for any host.","id":"3","name":"Basic Network Scan"},
+        "tags":"","uuid":"uuid"}],
+        "usable":[{"description":"","id":"1000001","modifiedTime":"1676363770","name":"Basic Network Scan Policy",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"A full system scan suitable for any host.","id":"3","name":"Basic Network Scan"},
+        "tags":"","uuid":"uuid"},
+        {"description":"","id":"1000002","modifiedTime":"1676368175","name":"Advanced Network Scan",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policyTemplate":{"agent":"false","description":"Configure a scan without using any recommendations.","id":"1","name":"Advanced Scan"},
+        "tags":"","uuid":"uuid"}]}, 
+        "timestamp":1687094296,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan Policies\n|ID|Name|Type|Group|Owner|LastModified|\n|---|---|---|---|---|---|\n| 1000001 | Basic Network Scan Policy | Basic Network Scan | Full Access | lmanager | 2023-02-14T08:36:10Z |\n| 1000002 | Advanced Network Scan | Advanced Scan | Full Access | lmanager | 2023-02-14T09:49:35Z |\n",
+        "expected_ec": [{"ID": "1000001", "Name": "Basic Network Scan Policy", "Type": "Basic Network Scan", "Group": "Full Access", "Owner": "lmanager", "LastModified": "2023-02-14T08:36:10Z"}, {"ID": "1000002", "Name": "Advanced Network Scan", "Type": "Advanced Scan", "Group": "Full Access", "Owner": "lmanager", "LastModified": "2023-02-14T09:49:35Z"}]
+    }
+}

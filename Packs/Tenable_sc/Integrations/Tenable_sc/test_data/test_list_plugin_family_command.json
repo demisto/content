@@ -1,0 +1,54 @@
+{
+    "test_case_1": {
+        "args": {"limit": "1", "is_active": "true"},
+        "mock_response": {"error_code":0,"error_msg":"","response":[{"id":"0"},{"id":"1"}],"timestamp":1684676253,"type":"regular","warnings":[]},
+        "expected_hr": "### Plugin families:\n|Plugin ID|Is Active|\n|---|---|\n| 0 | true |\n",
+        "expected_ec": [
+          {
+            "ID": "0"
+          }
+      ]
+    },
+    "test_case_2": {
+        "args": {},
+        "mock_response": {"error_code":0,"error_msg":"","response":[{"id":"0","name":"N/A"},{"id":"1","name":"test"}],"timestamp":1684676253,"type":"regular","warnings":[]},
+        "expected_hr": "### Plugin families:\n|Plugin ID|Plugin Name|\n|---|---|\n| 0 | N/A |\n| 1 | test |\n",
+        "expected_ec": [
+          {
+            "ID": "0",
+            "Name": "N/A"
+          },
+          {
+            "ID": "1",
+            "Name": "test"
+          }
+        ]
+    },
+    "test_case_3": {
+        "args": {"plugin_id": "0"},
+        "mock_response": {"error_code":0,"error_msg":"","response":{"count":0,"id":"0","name":"N/A","plugins":[],"type":"compliance"},"timestamp":1684676703,"type":"regular","warnings":[]},
+        "expected_hr": "### Plugin families:\n|Plugin ID|Plugin Name|\n|---|---|\n| 0 | N/A |\n",
+        "expected_ec": [
+          {
+            "Count": 0,
+            "ID": "0",
+            "Name": "N/A",
+            "Type": "compliance"
+          }
+        ]
+    },
+    "test_case_4": {
+        "args": {"plugin_id": "0"},
+        "mock_response": {"error_code":0,"error_msg":"","response":{"count":0,"id":"0","name":"N/A","plugins":[],"type":"active"},"timestamp":1684676703,"type":"regular","warnings":[]},
+        "expected_hr": "### Plugin families:\n|Plugin ID|Plugin Name|Is Active|\n|---|---|---|\n| 0 | N/A | true |\n",
+        "expected_ec": [
+          {
+            "Count": 0,
+            "ID": "0",
+            "Name": "N/A",
+            "Type": "active"
+          }
+        ]
+    }
+}
+

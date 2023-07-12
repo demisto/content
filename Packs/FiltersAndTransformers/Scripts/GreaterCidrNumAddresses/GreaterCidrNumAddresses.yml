@@ -1,16 +1,10 @@
 args:
-- default: false
-  description: IP/CIDR, e.g. 192.168.0.0/24
-  isArray: false
+- description: IP/CIDR, e.g. 192.168.0.0/24
   name: left
   required: true
-  secret: false
-- default: false
-  description: The number of addresses to be greater from.
-  isArray: false
+- description: The number of addresses to be greater from.
   name: right
   required: true
-  secret: false
 comment: Check if number of availble addresses in IPv4 or IPv6 CIDR is greater than given number.
 commonfields:
   id: GreaterCidrNumAddresses
@@ -19,7 +13,6 @@ enabled: true
 name: GreaterCidrNumAddresses
 script: '-'
 subtype: python3
-system: false
 tags:
 - filter
 timeout: '0'

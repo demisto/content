@@ -1,0 +1,18 @@
+commonfields:
+  id: cvss_color
+  version: -1
+name: cvss_color
+comment: This dynamic automation parses the CVSS score of a CVE and presents it in the layout in color according to its score.
+script: ''
+type: python
+tags:
+- dynamic-indicator-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

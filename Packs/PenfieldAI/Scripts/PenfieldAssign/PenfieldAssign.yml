@@ -10,12 +10,10 @@ args:
   predefined:
   - "Yes"
   - "No"
-  description: Whether this script should actually assign the incident by overwriting
-    owner. Defaults to yes.
+  description: Whether this script should actually assign the incident by overwriting owner. Defaults to yes.
   defaultValue: "Yes"
 name: PenfieldAssign
 script: '-'
-system: false
 tags:
 - management
 - user

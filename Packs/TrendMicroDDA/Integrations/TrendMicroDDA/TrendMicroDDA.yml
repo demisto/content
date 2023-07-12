@@ -15,7 +15,6 @@ configuration:
   name: ip_address
   defaultvalue: ""
   type: 0
-  required: false
 - display: API Key
   name: apiKey
   defaultvalue: ""
@@ -24,16 +23,13 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Protocol Version
   name: protocol_version
   defaultvalue: "1.5"
   type: 0
-  required: false
 script:
   script: ''
   type: python
@@ -273,7 +269,7 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

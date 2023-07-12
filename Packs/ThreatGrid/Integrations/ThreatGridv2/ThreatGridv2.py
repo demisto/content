@@ -94,6 +94,11 @@ class Client(BaseClient):
         offset: Optional[int] = None,
         artifact: Optional[str] = None,
         summary: Optional[str] = None,
+        user_only: Optional[bool] = False,
+        org_only: Optional[bool] = False,
+        sha1: Optional[str] = None,
+        sha256: Optional[str] = None,
+        md5: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Retrieves the Sample Info record of a submission by sample ID.
 
@@ -110,6 +115,11 @@ class Client(BaseClient):
         params = remove_empty_elements({
             "limit": limit,
             "offset": offset,
+            "user_only": user_only,
+            "org_only": org_only,
+            "md5": md5,
+            "sha1": sha1,
+            "sha256": sha256,
         })
 
         url_suffix = f"samples/{sample_id}" if sample_id else "samples"
@@ -203,10 +213,14 @@ class Client(BaseClient):
         return self._http_request(
             "GET", urljoin(API_V2_PREFIX, f"samples/{sample_id}/state"))
 
-    def upload_sample(self,
-                      files: Optional[Dict] = None,
-                      payload: Optional[Dict] = None,
-                      private: Optional[bool] = None) -> Dict[str, Any]:
+    def upload_sample(
+        self,
+        files: Optional[Dict] = None,
+        payload: Optional[Dict] = None,
+        private: Optional[bool] = None,
+        vm: Optional[str] = None,
+        playbook: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """Submits a sample (file or URL) to Malware Analytics for analysis.
         Args:
             files (dict, optional): File name and path in XSOAR.
@@ -215,13 +229,16 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-
+        params = remove_empty_elements({
+            'private': private,
+            'vm': vm,
+            'playbook': playbook
+        })
         return self._http_request("POST",
                                   urljoin(API_V2_PREFIX, "samples"),
                                   files=files,
                                   data=payload,
-                                  params=remove_empty_elements(
-                                      {'private': private}))
+                                  params=params)
 
     def associated_samples(self, arg_name: str, arg_value: str,
                            url_arg: str) -> Dict[str, Any]:
@@ -840,16 +857,24 @@ def upload_sample_command(
     file_id = args.get("file_id")
     url = args.get("url")
     private = optional_arg_to_boolean(args.get("private"))
+    vm = args.get("vm")
+    playbook = args.get("playbook")
 
     if (file_id and url) or (not file_id and not url):
         raise ValueError("You must specified file_id or url, not both.")
 
     if file_id:
         file = parse_file_to_sample(file_id)
-        response = client.upload_sample(files=file, private=private)
+        response = client.upload_sample(files=file,
+                                        private=private,
+                                        vm=vm,
+                                        playbook=playbook)
     else:
         payload = {"url": url}
-        response = client.upload_sample(payload=payload, private=private)
+        response = client.upload_sample(payload=payload,
+                                        private=private,
+                                        vm=vm,
+                                        playbook=playbook)
     uploaded_sample = response["data"]
 
     return CommandResults(
@@ -877,6 +902,11 @@ def get_sample_command(
     is_summary = get_arg_from_command_name(args["command_name"], 3)
     arg_name = is_summary if is_summary == "summary" else arg_name
     sample_id = args.get("sample_id")
+    sha1 = args.get("sha1")
+    sha256 = args.get("sha256")
+    md5 = args.get("md5")
+    user_only = args.get("user_only")
+    org_only = args.get("org_only")
 
     artifact = args.get("artifact")
     limit, offset, pagination_message = pagination(args)
@@ -892,6 +922,11 @@ def get_sample_command(
         offset=offset,
         artifact=artifact,
         summary=SAMPLE_ARGS[arg_name]["summary"],  # type: ignore[arg-type]
+        user_only=user_only,
+        org_only=org_only,
+        sha1=sha1,
+        sha256=sha256,
+        md5=md5,
     )
 
     sample_details = response

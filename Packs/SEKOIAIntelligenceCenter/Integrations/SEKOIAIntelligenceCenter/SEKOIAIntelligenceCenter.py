@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """SEKOIA.IO Integration for Cortex XSOAR (aka Demisto)
 """
 import ipaddress
@@ -6,8 +8,6 @@ import traceback
 import urllib3
 from stix2patterns.pattern import Pattern as PatternParser  # noqa: E402
 
-import demistomock as demisto
-from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()

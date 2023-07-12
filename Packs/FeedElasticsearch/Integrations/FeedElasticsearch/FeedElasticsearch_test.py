@@ -1,3 +1,6 @@
+from CommonServerPython import *
+
+
 class MockHit:
     def __init__(self, hit_val):
         self._hit_val = hit_val
@@ -171,7 +174,9 @@ def test_hit_to_indicator():
     assert ioc[CUSTOM_TYPE_KEY] == ''
 
 
-def test_extract_indicators_from_insight_hit(mocker):
+def test_extract_indicators_from_insight_hit2(mocker):
+    params: dict = {'client_type': 'OpenSearch'}
+    mocker.patch.object(demisto, 'params', return_value=params)
     import FeedElasticsearch as esf
     mocker.patch.object(esf, 'hit_to_indicator', return_value=dict(PARSED_INSIGHT_HIT))
     ioc_lst, ioc_enrch_lst = esf.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT, ['tag1', 'tag2'], 'AMBER')
@@ -220,35 +225,54 @@ def test_create_enrichment_batches_mult_indicators():
 
 
 def test_elasticsearch_builder_called_with_username_password(mocker):
-    from elasticsearch import Elasticsearch
+    """
+    Given:
+        - basic authentication parameters are provided (username and password)
+    When:
+        - creating an Elasticsearch client
+    Then:
+        - ensure the client is created with the correct parameters
+    """
     import FeedElasticsearch as esf
-    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    es_mock = mocker.patch.object(esf.Elasticsearch, '__init__', return_value=None)
     username = 'demisto'
     password = 'mock'
-    client = esf.ElasticsearchClient(username=username, password=password)
-    client._elasticsearch_builder()
-    assert es_mock.call_args[1].get('http_auth') == (username, password)
+    esf.ElasticsearchClient(username=username, password=password)
+    assert es_mock.call_args[1].get('http_auth') == ('demisto', 'mock')
     assert es_mock.call_args[1].get('api_key') is None
 
 
 def test_elasticsearch_builder_called_with_api_key(mocker):
-    from elasticsearch import Elasticsearch
+    """
+    Given:
+        - api key authentication parameters are provided (api key id and api key)
+    When:
+        - creating an Elasticsearch client
+    Then:
+        - ensure the client is created with the correct parameters
+    """
     import FeedElasticsearch as esf
-    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    es_mock = mocker.patch.object(esf.Elasticsearch, '__init__', return_value=None)
     api_id = 'demisto'
     api_key = 'mock'
-    client = esf.ElasticsearchClient(api_key=api_key, api_id=api_id)
-    client._elasticsearch_builder()
+    esf.ElasticsearchClient(api_key=api_key, api_id=api_id)
     assert es_mock.call_args[1].get('http_auth') is None
     assert es_mock.call_args[1].get('api_key') == (api_id, api_key)
 
 
 def test_elasticsearch_builder_called_with_no_creds(mocker):
-    from elasticsearch import Elasticsearch
+    """
+    Given:
+        - no authentication parameter are provided
+    When:
+        - creating an Elasticsearch client
+    Then:
+        - ensure the client is created with the correct parameters (edge this, this use-case should not happen as '401
+          Unauthorized - Incorrect or invalid username or password' message will be returned
+    """
     import FeedElasticsearch as esf
-    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
-    client = esf.ElasticsearchClient()
-    client._elasticsearch_builder()
+    es_mock = mocker.patch.object(esf.Elasticsearch, '__init__', return_value=None)
+    esf.ElasticsearchClient()
     assert es_mock.call_args[1].get('http_auth') is None
     assert es_mock.call_args[1].get('api_key') is None
 

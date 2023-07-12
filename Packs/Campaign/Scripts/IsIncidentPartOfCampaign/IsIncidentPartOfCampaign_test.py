@@ -37,6 +37,12 @@ def test_check_incidents_ids_in_campaign(mocker, incidents_ids_set, result):
     assert result == check_incidents_ids_in_campaign('1', incidents_ids_set)
 
 
+def test_check_incidents_ids_in_campaign_for_closed_incident(mocker):
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=Exception("Item not found"))
+    assert not check_incidents_ids_in_campaign('1', {"11"})
+
+
 def test_check_incidents_ids_in_campaign_no_incidents():
     assert check_incidents_ids_in_campaign([], {'11', '12'}) is False
 

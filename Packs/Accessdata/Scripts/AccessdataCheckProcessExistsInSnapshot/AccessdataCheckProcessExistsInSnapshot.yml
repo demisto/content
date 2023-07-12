@@ -21,7 +21,6 @@ outputs:
   description: ""
   type: boolean
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - No test

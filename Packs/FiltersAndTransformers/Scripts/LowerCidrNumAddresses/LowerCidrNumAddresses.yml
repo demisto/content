@@ -1,16 +1,10 @@
 args:
-- default: false
-  description: IPv4/CIDR, e.g. 192.168.0.0/24
-  isArray: false
+- description: IPv4/CIDR, e.g. 192.168.0.0/24
   name: left
   required: true
-  secret: false
-- default: false
-  description: The number of addresses to lower from.
-  isArray: false
+- description: The number of addresses to lower from.
   name: right
   required: true
-  secret: false
 comment: Check if number of availble addresses in IPv4 CIDR is lower than given number.
 commonfields:
   id: LowerCidrNumAddresses
@@ -19,7 +13,6 @@ enabled: true
 name: LowerCidrNumAddresses
 script: '-'
 subtype: python3
-system: false
 tags:
 - filter
 timeout: '0'

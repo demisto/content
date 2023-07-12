@@ -283,4 +283,4 @@ outputs:
   description: A list of files that were not retrieved.
   type: string
 tests:
-- No tests (auto formatted)
+- Test Playbook - CrowdStrike Falcon - Retrieve File

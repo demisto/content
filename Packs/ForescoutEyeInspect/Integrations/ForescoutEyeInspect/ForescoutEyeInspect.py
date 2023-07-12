@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # type: ignore
 from copy import deepcopy
 from typing import Any, Dict, Tuple, Type
@@ -5,8 +7,6 @@ from urllib.parse import urljoin
 
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # disable insecure warnings

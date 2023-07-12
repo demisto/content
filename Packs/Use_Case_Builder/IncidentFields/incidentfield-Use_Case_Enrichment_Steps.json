@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecaseenrichmentsteps",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecaseenrichmentsteps",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Enrichment Steps",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "Select the enrichment steps that are required in your use case",
+    "required": false,
+    "selectValues": [
+        "User Enrichment",
+        "Host Enrichment",
+        "URL Enrichment",
+        "Domain Enrichment",
+        "Email Address Enrichment",
+        "File Enrichment",
+        "IP Enrichment"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

@@ -23,7 +23,6 @@ outputs:
   description: The endpoint IP.
   type: string
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.4.28442
 tests:
