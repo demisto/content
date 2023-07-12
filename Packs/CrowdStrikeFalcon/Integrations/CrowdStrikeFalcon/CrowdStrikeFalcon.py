@@ -2472,7 +2472,6 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 ''' COMMANDS FUNCTIONS '''
 
 
-
 def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
     """This function migrated from old last run object to new last run object
 
@@ -2631,12 +2630,12 @@ def fetch_incidents():
             idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
                                                                       last_run=current_fetch_info_idp_detections,
                                                                       fetch_limit=fetch_limit, id_field='name')
-            last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
+            updated_last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
                                               look_back=look_back,
                                               created_time_field='occurred', id_field='name', date_format=IDP_DATE_FORMAT)
-            current_fetch_info_idp_detections.update(last_run)
+            current_fetch_info_idp_detections = updated_last_run
             demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
 
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections])
