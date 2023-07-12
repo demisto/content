@@ -17,24 +17,20 @@ configuration:
 - additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - additionalinfo: Whether to use XSOAR system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
   hidden: true
   name: feedIncremental
-  required: false
   type: 8
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Suspicious
@@ -45,7 +41,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
@@ -63,12 +58,10 @@ configuration:
 - defaultvalue: '1'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - additionalinfo: Collections List to include for fetching.
   display: Indicator collections
@@ -87,13 +80,11 @@ configuration:
   - suspicious_ip/open_proxy
   - suspicious_ip/socks_proxy
   - malware/cnc
-  required: false
   type: 16
 - additionalinfo: Date to start fetching indicators from.
   defaultvalue: 3 days
   display: Indicator first fetch
   name: indicators_first_fetch
-  required: false
   type: 0
 - additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 objects with different amount of indicators). If you face some runtime errors, lower the value.
   defaultvalue: '2'
@@ -105,12 +96,10 @@ configuration:
   - '3'
   - '4'
   - '5'
-  required: false
   type: 15
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
@@ -120,12 +109,10 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ''
   name: feedExpirationPolicy
   type: 17
-  required: false
   options:
   - never
   - interval
@@ -134,7 +121,6 @@ configuration:
 - display: ''
   name: feedExpirationInterval
   type: 1
-  required: false
 description: Use Group-IB Threat Intelligence & Attribution Feed integration to fetch IOCs from various Group-IB collections.
 display: Group-IB Threat Intelligence & Attribution Feed
 name: Group-IB Threat Intelligence & Attribution Feed
@@ -142,9 +128,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: GIB Collection to get indicators from.
-      isArray: false
       name: collection
       predefined:
       - compromised/mule
@@ -161,18 +145,12 @@ script:
       - suspicious_ip/socks_proxy
       - malware/cnc
       required: true
-      secret: false
-    - default: false
-      description: Incident Id to get indicators(if set, all the indicators will be provided from particular incident)
-      isArray: false
+    - description: Incident Id to get indicators(if set, all the indicators will be provided from particular incident)
       name: id
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: '50'
       description: Limit of indicators to display in War Room
-      isArray: false
       name: limit
       predefined:
       - '10'
@@ -180,17 +158,10 @@ script:
       - '30'
       - '40'
       - '50'
-      required: false
-      secret: false
-    deprecated: false
     description: Get limited count of indicators for specified collection and get all indicators from particular events by id.
-    execution: false
     name: gibtia-get-indicators
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

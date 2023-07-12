@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Vectra Event Collector XSIAM Integration
 
@@ -8,8 +10,6 @@ It uses version 2.2 of Vectra AI REST API.
 See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
-import demistomock as demisto
-from CommonServerPython import *
 from typing import Dict, Any, Tuple, List
 import pytest
 from datetime import datetime, timedelta

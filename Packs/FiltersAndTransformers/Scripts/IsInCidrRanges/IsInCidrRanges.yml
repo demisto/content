@@ -17,10 +17,8 @@ args:
 - name: right
   required: true
   isArray: true
-  description: A comma-delimited list of IPv4 ranges in CIDR notation against which
-    to match.
+  description: A comma-delimited list of IPv4 ranges in CIDR notation against which to match.
 scripttarget: 0
-runonce: false
 dockerimage: demisto/python3:3.10.4.28442
 runas: DBotWeakRole
 tests:

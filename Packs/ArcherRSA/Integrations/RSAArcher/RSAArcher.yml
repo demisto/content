@@ -26,51 +26,40 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
-- display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
-    in minutes)
+- display: Timezone offset in minutes of the RSA Archer server machine (+60, -60, in minutes)
   name: timeZone
   defaultvalue: ""
   type: 0
-  required: false
 - display: Application ID for fetch
   name: fetchApplicationId
   defaultvalue: ""
   type: 0
-  required: false
 - display: The application's base ID. For example "Incident ID"
   name: fieldsToDisplay
   defaultvalue: ""
   type: 0
-  required: false
 - display: fetchFilter - Specific filters for fetching in the form of an xml string
   name: fetchFilter
   defaultvalue: ""
   type: 0
-  required: false
 - display: Use Archer's REST API instead of its SOAP API
   name: useRest
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Use European Time format (dd/mm/yyyy) instead of the American one
   name: useEuropeanTime
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -83,8 +72,7 @@ script:
       description: ID of the application to create record in
     - name: fieldsToValues
       required: true
-      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
-        Field name is case sensitive.'
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }. Field name is case sensitive.'
     outputs:
     - contextPath: Archer.Record.Id
       description: Content Id
@@ -102,8 +90,7 @@ script:
       description: ID of the application to update record in
     - name: fieldsToValues
       required: true
-      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
-        Field name is case sensitive.'
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }. Field name is case sensitive.'
     - name: incidentId
       description: 'The incident id of the record. For example: id=12345 for INC-12345'
     description: Updates existing content record in the given application.
@@ -173,8 +160,7 @@ script:
       required: true
       description: ID of the application to search records in
     - name: fieldsToDisplay
-      description: 'Fields to present in the search results in array format (for example:
-        "Title,Incident Summary")'
+      description: 'Fields to present in the search results in array format (for example: "Title,Incident Summary")'
       isArray: true
       defaultValue: Incident ID
     - name: maxResults
@@ -217,8 +203,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Get an extended responses with all of the data regarding this search.
-        For example, "fullData=true"
+      description: Get an extended responses with all of the data regarding this search. For example, "fullData=true"
     outputs:
     - contextPath: Archer.Record.Id
       description: Content Id
@@ -314,10 +299,8 @@ script:
       description: 'ID of the application to get the incident from. For example: applicationId="75"'
     - name: incidentIds
       required: true
-      description: 'The Incident IDs to get details for, separated by commas. For
-        example: IncidentIds="12345,67891" '
-    description: Fetch specific incident from Archer to the war room. Also used for
-      manual fetching automation
+      description: 'The Incident IDs to get details for, separated by commas. For example: IncidentIds="12345,67891" '
+    description: Fetch specific incident from Archer to the war room. Also used for manual fetching automation
   - name: archer-get-file
     deprecated: true
     arguments:
@@ -338,11 +321,9 @@ script:
     - name: entryId
       description: The entry id of the file in Demisto's context
     - name: associatedField
-      description: 'Archer field name to associate the file with. Initial value is:
-        "Supporting Documentation"'
+      description: 'Archer field name to associate the file with. Initial value is: "Supporting Documentation"'
       defaultValue: Supporting Documentation
-    description: Uploads a file to Archer and adds its id to the context attached
-      files
+    description: Uploads a file to Archer and adds its id to the context attached files
   - name: archer-add-to-detailed-analysis
     deprecated: true
     arguments:
@@ -355,8 +336,7 @@ script:
       description: 'The incident id of the record. For example: id=12345 for INC-12345'
     - name: value
       required: true
-      description: 'The value you want to add to Detailed Analysis. For example: value="test
-        string"'
+      description: 'The value you want to add to Detailed Analysis. For example: value="test string"'
     description: Add data to Archer's Detailed Analysis field
   - name: archer-get-user-id
     deprecated: true
@@ -374,15 +354,12 @@ script:
     - name: fieldID
       required: true
       description: Field Id
-    description: Returns a list of values for a specified field, e.g., fieldID=16114.
-      This command only works for value list fields (type 4).
+    description: Returns a list of values for a specified field, e.g., fieldID=16114. This command only works for value list fields (type 4).
   - name: archer-reset-cache
     deprecated: true
     arguments: []
-    description: Reset Archer's integration cache. Run this command if you change
-      the fields of your Archer application
+    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
   isfetch: true
-  runonce: false
 tests:
 - Archer-Test-Playbook
 fromversion: 5.0.0

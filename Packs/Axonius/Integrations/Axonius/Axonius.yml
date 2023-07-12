@@ -14,11 +14,9 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: This integration is for fetching information about assets in Axonius.
 display: Axonius
@@ -26,21 +24,12 @@ name: Axonius
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices
-      isArray: false
+    - description: The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices
       name: saved_query_name
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    deprecated: false
     description: Gather device info by saved query
-    execution: false
     name: axonius-get-devices-by-savedquery
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
@@ -74,21 +63,12 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users
-      isArray: false
+    - description: The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users
       name: saved_query_name
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    deprecated: false
     description: Gather user info by saved query
-    execution: false
     name: axonius-get-users-by-savedquery
     outputs:
     - contextPath: Axonius.Users.adapter_list_length
@@ -116,27 +96,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The user email address to search for within Axonius.
-      isArray: false
+    - description: The user email address to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather user info by email address
-    execution: false
     name: axonius-get-users-by-mail
     outputs:
     - contextPath: Axonius.Users.adapter_list_length
@@ -164,27 +132,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The user email address to search for within Axonius.
-      isArray: false
+    - description: The user email address to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather user info by email address using regex
-    execution: false
     name: axonius-get-users-by-mail-regex
     outputs:
     - contextPath: Axonius.Users.adapter_list_length
@@ -212,27 +168,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The username to search for within Axonius.
-      isArray: false
+    - description: The username to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather user info by username
-    execution: false
     name: axonius-get-users-by-username
     outputs:
     - contextPath: Axonius.Users.adapter_list_length
@@ -260,27 +204,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The username to search for within Axonius.
-      isArray: false
+    - description: The username to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather user info by username using regex
-    execution: false
     name: axonius-get-users-by-username-regex
     outputs:
     - contextPath: Axonius.Users.adapter_list_length
@@ -308,27 +240,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The hostname to search for within Axonius.
-      isArray: false
+    - description: The hostname to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather device info by hostname
-    execution: false
     name: axonius-get-devices-by-hostname
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
@@ -362,27 +282,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The hostname to search for within Axonius using regex.
-      isArray: false
+    - description: The hostname to search for within Axonius using regex.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather device info by hostname using regex
-    execution: false
     name: axonius-get-devices-by-hostname-regex
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
@@ -416,27 +324,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The IP address to search for within Axonius.
-      isArray: false
+    - description: The IP address to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather device info by IP address
-    execution: false
     name: axonius-get-devices-by-ip
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
@@ -470,27 +366,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The IP address to search for within Axonius.
-      isArray: false
+    - description: The IP address to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather device info by IP address using regex
-    execution: false
     name: axonius-get-devices-by-ip-regex
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
@@ -524,27 +408,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The MAC address to search for within Axonius.
-      isArray: false
+    - description: The MAC address to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather device info by MAC address
-    execution: false
     name: axonius-get-devices-by-mac
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
@@ -578,27 +450,15 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: The MAC address to search for within Axonius.
-      isArray: false
+    - description: The MAC address to search for within Axonius.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Axonius fields to return.
+    - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Gather device info by MAC address using regex
-    execution: false
     name: axonius-get-devices-by-mac-regex
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
@@ -632,62 +492,42 @@ script:
       description: Tags assigned to the asset
       type: String
   - arguments:
-    - default: false
-      description: Name of tag to add
-      isArray: false
+    - description: Name of tag to add
       name: tag_name
       required: true
-      secret: false
-    - default: false
-      description: IDs of assets
+    - description: IDs of assets
       isArray: true
       name: ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of Asset. Device or User
-      isArray: false
       name: type
       predefined:
       - devices
       - users
       required: true
-      secret: false
-    deprecated: false
     description: Add tag to assets
-    execution: false
     name: axonius-add-tag
     outputs:
     - contextPath: Axonius.assets.updates
       description: Number of assets updated
       type: Number
   - arguments:
-    - default: false
-      description: Name of tag to remove
-      isArray: false
+    - description: Name of tag to remove
       name: tag_name
       required: true
-      secret: false
-    - default: false
-      description: IDs of assets
+    - description: IDs of assets
       isArray: true
       name: ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of Asset. Devices or Users
       isArray: true
       name: type
       predefined:
       - devices
       - users
-      required: false
-      secret: false
-    deprecated: false
     description: Remove tag from assets
-    execution: false
     name: axonius-remove-tag
     outputs:
     - contextPath: Axonius.asset.updates
@@ -695,7 +535,6 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Type of Asset. Device or User
       isArray: true
       name: type
@@ -703,10 +542,7 @@ script:
       - devices
       - users
       required: true
-      secret: false
-    deprecated: false
     description: Get all saved query of a given asset type.
-    execution: false
     name: axonius-get-saved-queries
     outputs:
     - contextPath: Axonius.Devices.saved_queries
@@ -717,7 +553,6 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Type of Asset. Device or User
       isArray: true
       name: type
@@ -725,20 +560,13 @@ script:
       - devices
       - users
       required: true
-      secret: false
-    deprecated: false
     description: Get all tags of a given asset type.
-    execution: false
     name: axonius-get-tags
     outputs:
     - contextPath: Axonius.tags
       description: Axonius Tags
       type: Unknown
   dockerimage: demisto/axonius:1.0.0.40908
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

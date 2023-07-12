@@ -1,43 +1,20 @@
 args:
-- default: false
-  description: get file entry from file name
-  isArray: false
+- description: get file entry from file name
   name: pcapFileName
-  required: false
-  secret: false
 - default: true
   description: File entry from the WarRoom
-  isArray: false
   name: entryID
-  required: false
-  secret: false
-- default: false
-  defaultValue: '50'
+- defaultValue: '50'
   description: Limit the output of the capture file output's flows (starts from 0).
-  isArray: false
   name: limit
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: Index of where to output flows (starts from 0).
-  isArray: false
   name: start
-  required: false
-  secret: false
-- default: false
-  defaultValue: '512'
+- defaultValue: '512'
   description: "Limit the HttpFileData field (in bytes)\t\t"
-  isArray: false
   name: limitData
-  required: false
-  secret: false
-- default: false
-  description: The allowed content types to display, separated with comma, uses startswith to find a match (ie text,image will display text\html, and image\png).
-  isArray: false
+- description: The allowed content types to display, separated with comma, uses startswith to find a match (ie text,image will display text\html, and image\png).
   name: allowedContentTypes
-  required: false
-  secret: false
 comment: Allows to parse and extract http flows (requests & responses) from a pcap/pcapng file.
 commonfields:
   id: PcapHTTPExtractor
@@ -85,7 +62,6 @@ outputs:
   description: Time the packet was sniffed (unixtime).
   type: String
 script: ''
-system: false
 tags:
 - pcap
 - http

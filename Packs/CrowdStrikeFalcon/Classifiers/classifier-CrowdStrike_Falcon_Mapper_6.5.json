@@ -18,6 +18,18 @@
                 "Assigned User": {
                     "simple": "assigned_to_uid"
                 },
+                "CrowdStrike Falcon Behaviour Pattern Disposition Details": {
+                    "complex": {
+                        "accessor": "pattern_disposition_details",
+                        "filters": [],
+                        "root": "behaviors",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
                 "Behaviour Objective": {
                     "simple": "behaviors.objective"
                 },
@@ -136,13 +148,13 @@
                     }
                 },
                 "dbotMirrorDirection": {
-                	"simple": "mirror_direction"
+                    "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                	"simple": "detection_id"
+                    "simple": "detection_id"
                 },
                 "dbotMirrorInstance": {
-                	"simple": "mirror_instance"
+                    "simple": "mirror_instance"
                 },
                 "IncomingMirrorError": {
                   "simple": "in_mirror_error"
@@ -235,37 +247,37 @@
                     }
                 },
                 "severity": {
-					"complex": {
-						"filters": [],
-						"root": "fine_score",
-						"transformers": [
-							{
-								"args": {
-									"map_from": {
-										"value": {
-											"simple": "1-24,25-49,50-74,75-100"
-										}
-									},
-									"map_to": {
-										"value": {
-											"simple": "1,2,3,4"
-										}
-									},
-									"sep": {}
-								},
-								"operator": "MapRangeValues"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "filters": [],
+                        "root": "fine_score",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "map_from": {
+                                        "value": {
+                                            "simple": "1-24,25-49,50-74,75-100"
+                                        }
+                                    },
+                                    "map_to": {
+                                        "value": {
+                                            "simple": "1,2,3,4"
+                                        }
+                                    },
+                                    "sep": {}
+                                },
+                                "operator": "MapRangeValues"
+                            }
+                        ]
+                    }
+                },
                 "dbotMirrorDirection": {
-                	"simple": "mirror_direction"
+                    "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                	"simple": "incident_id"
+                    "simple": "incident_id"
                 },
                 "dbotMirrorInstance": {
-                	"simple": "mirror_instance"
+                    "simple": "mirror_instance"
                 },
                 "IncomingMirrorError": {
                   "simple": "in_mirror_error"
@@ -325,25 +337,25 @@
                 "Agent Version": {
                     "simple": "device.agent_version"
                 },
-				"Agents ID": {
-					"complex": {
-						"accessor": "device_id",
-						"filters": [],
-						"root": "device",
-						"transformers": [
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "hosts.device_id"
-										}
-									}
-								},
-								"operator": "append"
-							}
-						]
-					}
+                "Agents ID": {
+                    "complex": {
+                        "accessor": "device_id",
+                        "filters": [],
+                        "root": "device",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "hosts.device_id"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            }
+                        ]
+                    }
                 },
                 "Behavior": {
                     "simple": "behaviors"
@@ -703,139 +715,139 @@
                 "Users": {
                     "simple": "behaviors.user_name"
                 },
-				"name": {
-					"complex": {
-						"filters": [],
-						"root": "incident_type",
-						"transformers": [
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "incident_id"
-										}
-									}
-								},
-								"operator": "append"
-							},
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "detection_id"
-										}
-									}
-								},
-								"operator": "append"
-							},
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "device.hostname"
-										}
-									}
-								},
-								"operator": "append"
-							},
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "hosts.hostname"
-										}
-									}
-								},
-								"operator": "append"
-							},
-							{
-								"args": {
-									"item": {
-										"value": {
-											"simple": "Detected Techniques"
-										}
-									}
-								},
-								"operator": "append"
-							},
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "techniques"
-										}
-									}
-								},
-								"operator": "append"
-							},
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "behaviors.technique"
-										}
-									}
-								},
-								"operator": "append"
-							},
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_type",
+                        "transformers": [
                             {
-								"operator": "uniq"
-							},
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": " - "
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "fine_score",
-						"transformers": [
-							{
-								"args": {
-									"item": {
-										"isContext": true,
-										"value": {
-											"simple": "max_severity"
-										}
-									}
-								},
-								"operator": "append"
-							},
-							{
-								"args": {
-									"map_from": {
-										"value": {
-											"simple": "0-20,21-40,41-60,61-80,81-100"
-										}
-									},
-									"map_to": {
-										"value": {
-											"simple": "Informational,Low,Medium,High,Critical"
-										}
-									},
-									"sep": {}
-								},
-								"operator": "MapRangeValues"
-							}
-						]
-					}
-				}
-			}
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "incident_id"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "detection_id"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "device.hostname"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "hosts.hostname"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "args": {
+                                    "item": {
+                                        "value": {
+                                            "simple": "Detected Techniques"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "techniques"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "behaviors.technique"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "operator": "uniq"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "fine_score",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "max_severity"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            },
+                            {
+                                "args": {
+                                    "map_from": {
+                                        "value": {
+                                            "simple": "0-20,21-40,41-60,61-80,81-100"
+                                        }
+                                    },
+                                    "map_to": {
+                                        "value": {
+                                            "simple": "Informational,Low,Medium,High,Critical"
+                                        }
+                                    },
+                                    "sep": {}
+                                },
+                                "operator": "MapRangeValues"
+                            }
+                        ]
+                    }
+                }
+            }
         }
     },
     "name": "CrowdStrike Falcon Mapper",

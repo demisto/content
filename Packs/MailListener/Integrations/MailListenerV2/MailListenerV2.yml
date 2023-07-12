@@ -30,23 +30,19 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - display: Fetch mails from these senders addresses only (eg. admin@demo.com,test@demo.com)
   name: permittedFromAdd
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Fetch mails from these domains only (eg. demo.com, test.com)
   name: permittedFromDomain
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -54,50 +50,42 @@ configuration:
   additionalinfo: Whether to query search with headers when filtering by sender's email address.
   display: Query search with headers
   name: with_headers
-  required: false
   type: 8
   section: Collect
   advanced: true
 - defaultvalue: 1 hour
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
 - defaultvalue: '50'
   display: The maximum number of incidents to fetch each time
   name: limit
-  required: false
   type: 0
   section: Collect
 - display: Delete processed emails
   name: delete_processed
-  required: false
   type: 8
   section: Collect
   advanced: true
 - display: Include raw body in incidents
   name: Include_raw_body
-  required: false
   type: 8
   section: Collect
   advanced: true
 - display: Save the email .eml file
   name: save_file
-  required: false
   type: 8
   section: Collect
   advanced: true
 - defaultvalue: 'true'
   display: Use TLS for connection (defaults to True)
   name: TLS_connection
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -106,9 +94,7 @@ display: Mail Listener v2
 name: Mail Listener v2
 script:
   commands:
-  - deprecated: false
-    description: Retrieves emails according to the configuration.
-    execution: false
+  - description: Retrieves emails according to the configuration.
     name: mail-listener-list-emails
     outputs:
     - contextPath: MailListener.EmailPreview.Subject
@@ -127,15 +113,10 @@ script:
       description: The ID of the email.
       type: string
   - arguments:
-    - default: false
-      description: The message ID retrieved from the 'mail-listener-list-emails' command.
-      isArray: false
+    - description: The message ID retrieved from the 'mail-listener-list-emails' command.
       name: message-id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves an email by email ID.
-    execution: false
     name: mail-listener-get-email
     outputs:
     - contextPath: MailListener.Email.to
@@ -169,21 +150,13 @@ script:
       description: The headers of the email.
       type: String
   - arguments:
-    - default: false
-      description: The message ID retrieved from the 'mail-listener-list-emails' command.
-      isArray: false
+    - description: The message ID retrieved from the 'mail-listener-list-emails' command.
       name: message-id
       required: true
-      secret: false
-    deprecated: false
     description: Fetches an email by message ID and returns the information in an eml file format.
-    execution: false
     name: mail-listener-get-email-as-eml
   dockerimage: demisto/py3-tools:1.0.0.64131
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
