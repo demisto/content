@@ -73,6 +73,22 @@ configuration:
   - WHITE
   required: false
   type: 15
+- name: feedReliability
+  display: Source Reliability
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
 description: Searches for CVE information using OpenCVE.
 display: OpenCVE (Community Contribution)
 name: OpenCVE
@@ -312,4 +328,6 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: CVE Search v2
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
