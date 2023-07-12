@@ -106,7 +106,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 defaultmapperin: ZeroTrustAnalyticsPlatform - Incoming Mapper
 defaultmapperout: ZeroTrustAnalyticsPlatform - Outgoing Mapper

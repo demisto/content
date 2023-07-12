@@ -77,7 +77,7 @@ script:
       required: true
     description: Get the stix2 json bundle of indicators from a given report
     name: dragos-get-stix2
-  dockerimage: demisto/python3:3.10.11.57890
+  dockerimage: demisto/python3:3.10.12.63474
   isFetchSamples: true
   isfetch: true
   script: ''

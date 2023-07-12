@@ -508,6 +508,8 @@ class Taxii2FeedClient:
         for key, value in extensions.items():
             if key.startswith('extension-definition--'):
                 custom_fields = value.get('CustomFields', {})
+                if not custom_fields:
+                    custom_fields = value
                 score = value.get('score', None)
                 break
         return custom_fields, score
