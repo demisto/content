@@ -28,6 +28,12 @@ configuration:
   required: false
   type: 8
   section: Connect
+- display: Hide sensitive details from email
+  name: hide_sensitive
+  required: false
+  defaultvalue: 'true'
+  type: 8
+  section: Collect
 - display: The maximum number of events per fetch.
   additionalinfo: The maximum number of events to fetch every time fetch is executed.
   defaultvalue: "1000"

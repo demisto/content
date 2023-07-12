@@ -6,6 +6,7 @@ from TrendMicroEmailSecurityEventCollector import (
     managing_set_last_run,
     fetch_by_event_type,
     fetch_events_command,
+    remove_sensitive_from_events,
     NoContentException,
     DATE_FORMAT_EVENT,
 )
@@ -51,6 +52,25 @@ def test_handle_error_no_content_with_other_errors(mock_client: Client):
 
     with pytest.raises(DemistoException):
         mock_client.handle_error_no_content(Response())
+
+
+@pytest.mark.parametrize(
+    "event, expected_results",
+    [
+        (
+            {
+                "subject": "test",
+                "attachments": [{"fileName": "test", "sha256": "test"}],
+            },
+            {"attachments": [{"sha256": "test"}]},
+        ),
+        ({"subject": "test", "attachments": []}, {"attachments": []}),
+        ({"subject": "test", "attachments": None}, {"attachments": None}),
+    ],
+)
+def test_remove_sensitive_from_events(event: dict, expected_results: dict):
+    remove_sensitive_from_events(event)
+    assert event == expected_results
 
 
 # def test_generate_authorization_encoded(mock_client: Client):
@@ -169,7 +189,7 @@ def test_fetch_by_event_type_token_unquote(
     mock_api = mocker.patch.object(
         mock_client, "get_logs_request", side_effect=event_mock
     )
-    fetch_by_event_type(mock_client, "", "", limit, next_token, "")
+    fetch_by_event_type(mock_client, "", "", limit, next_token, "", False)
     assert mock_api.call_args[0][1]["token"] == "abc abc"
 
 
@@ -198,7 +218,7 @@ def test_fetch_by_event_type_returned_next_token_none(
           in the second iteration the function returns `next_token == None`
     """
     mocker.patch.object(mock_client, "get_logs_request", side_effect=event_mock)
-    _, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "")
+    _, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "", False)
 
     assert not next_token
 
@@ -262,7 +282,7 @@ def test_fetch_by_event_type(
     mock_api = mocker.patch.object(
         mock_client, "get_logs_request", side_effect=event_mock
     )
-    events, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "")
+    events, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "", False)
 
     assert len(events) == expected_results["len_events"]
     assert mock_api.call_count == expected_results["call_count"]
@@ -310,7 +330,7 @@ def test_fetch_by_event_type(
                 {"limit": 1000, "start": "2023-09-11T15:47:25Z"},
                 {"limit": 1000, "start": "2023-02-11T15:47:25Z"},
             ],
-        )
+        ),
     ],
 )
 def test_fetch_events_command(
@@ -332,9 +352,5 @@ def test_fetch_events_command(
 
     assert mock_func.call_count == 3
     for i in range(3):
-        assert (
-            mock_func.call_args_list[i][1]["limit"] == expected_calls[i]["limit"]
-        )
-        assert (
-            mock_func.call_args_list[i][1]["start"] == expected_calls[i]["start"]
-        )
+        assert mock_func.call_args_list[i][1]["limit"] == expected_calls[i]["limit"]
+        assert mock_func.call_args_list[i][1]["start"] == expected_calls[i]["start"]

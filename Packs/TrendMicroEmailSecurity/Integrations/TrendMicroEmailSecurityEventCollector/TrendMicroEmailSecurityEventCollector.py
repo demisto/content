@@ -125,9 +125,9 @@ def managing_set_last_run(
     if no_more_events_in_current_range_time:
         # save the time_from for a specific `event_type` for the next fetch
         # the `start` time of the next fetch is time_to + 1 second
-        last_run[f"time_{event_type}_from"] = (
-            time_to + timedelta(seconds=1)
-        ).strftime(DATE_FORMAT_EVENT)
+        last_run[f"time_{event_type}_from"] = (time_to + timedelta(seconds=1)).strftime(
+            DATE_FORMAT_EVENT
+        )
 
         # removing the `next_token` for a specific `event_type` from the `last_run`
         last_run.pop(f"next_token_{event_type}", None)
@@ -150,6 +150,17 @@ def order_first_fetch(first_fetch: str) -> str:
             "Please put in the First Fetch Time parameter a value that is at most 72 hours / 3 days"
         )
     return arg_to_datetime(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
+
+def remove_sensitive_from_events(event: dict) -> dict:
+    if "subject" in event:
+        del event['subject']
+
+    if (attachments := event.get("attachments")) and isinstance(attachments, list):
+        attachments = [{k: v for k, v in attachment.items() if k != "fileName"} for attachment in attachments]
+        event.update({"attachments": attachments})
+
+    return event
 
 
 """ COMMAND FUNCTIONS """
@@ -191,6 +202,7 @@ def fetch_events_command(
         tuple[list[dict], dict]: List of all event logs of all types,
                                  The updated `last_run` obj.
     """
+    hide_sensitive = argToBoolean(args.get("hide_sensitive", True))
     time_to = datetime.now()
     limit: int = arg_to_number(args.get("max_fetch", "1000"))  # type: ignore[assignment]
 
@@ -206,6 +218,7 @@ def fetch_events_command(
             limit=limit,
             token=last_run.get(f"next_token_{event_type}"),
             event_type=event_type,
+            hide_sensitive=hide_sensitive,
         )
 
         events.extend(events_by_type)
@@ -228,7 +241,13 @@ def fetch_events_command(
 
 
 def fetch_by_event_type(
-    client: Client, start: str, end: str, limit: int, token: str | None, event_type: str
+    client: Client,
+    start: str,
+    end: str,
+    limit: int,
+    token: str | None,
+    event_type: str,
+    hide_sensitive: bool,
 ) -> tuple[list[dict], str | None]:
     """
     Fetch the event logs by type.
@@ -275,6 +294,8 @@ def fetch_by_event_type(
             # Iterate over each event log, update their `type` and `_time` fields
             for event in res.get("logs"):
                 event.update({"_time": event.get("timestamp"), "logType": event_type})
+                if hide_sensitive:
+                    remove_sensitive_from_events(event)
 
             events_res.extend(res.get("logs"))
         else:
