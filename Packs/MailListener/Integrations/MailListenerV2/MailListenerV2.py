@@ -11,7 +11,6 @@ from imap_tools import OR
 from imapclient import IMAPClient
 
 
-
 class Email(object):
     def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int) -> None:
         """

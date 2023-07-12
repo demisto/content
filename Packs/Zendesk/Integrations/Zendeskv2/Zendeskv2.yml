@@ -22,7 +22,6 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
   section: Connect
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
   defaultvalue: None
@@ -35,19 +34,16 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
 - display: Close mirrored incidents
   name: close_incident
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: If true, XSOAR will mirror also the ticket closeing.
   hidden:
   - marketplacev2
 - display: Get incident attachments
   name: get_attachments
-  required: false
   type: 8
   section: Collect
   advanced: true
@@ -57,7 +53,6 @@ configuration:
   hidden:
   - marketplacev2
   name: mirror_tags
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -65,7 +60,6 @@ configuration:
   name: time_filter
   defaultvalue: created-at
   type: 15
-  required: false
   options:
   - created-at
   - updated-at
@@ -76,7 +70,6 @@ configuration:
   name: ticket_types
   defaultvalue: all
   type: 16
-  required: false
   options:
   - all
   - problem
@@ -89,7 +82,6 @@ configuration:
   name: ticket_status
   defaultvalue: all
   type: 16
-  required: false
   options:
   - all
   - new
@@ -104,7 +96,6 @@ configuration:
   name: ticket_priority
   defaultvalue: all
   type: 16
-  required: false
   options:
   - all
   - low
@@ -116,39 +107,32 @@ configuration:
 - display: Fetch tickets query filter
   name: fetch_query
   type: 0
-  required: false
   section: Collect
   advanced: true
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   defaultvalue: '50'
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
-  required: false
 - display: Incident type
   name: incidentType
   defaultvalue: Zendesk Ticket
   type: 13
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
 script:
@@ -172,7 +156,7 @@ script:
     - name: role
       auto: PREDEFINED
       predefined:
-      - end_user
+      - end-user
       - agent
       - admin
       description: The user's role.
@@ -484,7 +468,7 @@ script:
     - name: role
       auto: PREDEFINED
       predefined:
-      - end_user
+      - end-user
       - agent
       - admin
       description: The user's role. Possible values are "end-user", "agent", or "admin".
@@ -856,33 +840,33 @@ script:
     - name: page_number
       description: The page number (used for pagination).
     outputs:
-      - contextPath: Zendesk.Group.created_at
-        description: The time the group was created.
-        type: Date
-      - contextPath: Zendesk.Group.default
-        description: If the group is the default one for the account.
-        type: Boolean
-      - contextPath: Zendesk.Group.deleted
-        description: true if the group is deleted false otherwise.
-        type: Boolean
-      - contextPath: Zendesk.Group.description
-        description: The description of the group.
-        type: String
-      - contextPath: Zendesk.Group.id
-        description: The group ID.
-        type: Number
-      - contextPath: Zendesk.Group.is_public
-        description: If true, the group is public. If false, the group is private. You can't change a private group to a public group
-        type: Boolean
-      - contextPath: Zendesk.Group.name
-        description: The name of the group.
-        type: String
-      - contextPath: Zendesk.Group.updated_at
-        description: The time of the last update of the group.
-        type: Date
-      - contextPath: Zendesk.Group.url
-        description: The API URL of the group.
-        type: String
+    - contextPath: Zendesk.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: Zendesk.Group.default
+      description: If the group is the default one for the account.
+      type: Boolean
+    - contextPath: Zendesk.Group.deleted
+      description: true if the group is deleted false otherwise.
+      type: Boolean
+    - contextPath: Zendesk.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: Zendesk.Group.id
+      description: The group ID.
+      type: Number
+    - contextPath: Zendesk.Group.is_public
+      description: If true, the group is public. If false, the group is private. You can't change a private group to a public group
+      type: Boolean
+    - contextPath: Zendesk.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: Zendesk.Group.updated_at
+      description: The time of the last update of the group.
+      type: Date
+    - contextPath: Zendesk.Group.url
+      description: The API URL of the group.
+      type: String
   - name: zendesk-ticket-list
     description: |-
       List Zendesk tickets. 
@@ -1061,6 +1045,13 @@ script:
       description: A comment to add to the ticket.
     - name: html_comment
       description: An HTML comment to add to the ticket.
+    - name: public
+      description: true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     - name: collaborators
       isArray: true
       description: Users to add as CC's when creating a ticket.
@@ -1258,6 +1249,13 @@ script:
       description: A comment to add to the ticket.
     - name: html_comment
       description: An HTML comment to add to the ticket.
+    - name: public
+      description: true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status
@@ -1556,44 +1554,24 @@ script:
     description: Clears the Zendesk integration cache.
   - name: get-remote-data
     arguments:
-    - default: false
-      description: The remote incident ID.
-      isArray: false
+    - description: The remote incident ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
-      isArray: false
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
     description: Get remote data from a remote incident. Note that this method will not update the current incident. It's used for debugging purposes.
-    execution: false
-  - deprecated: false
-    description: Returns the list of fields for an incident type.
-    execution: false
+  - description: Returns the list of fields for an incident type.
     name: get-mapping-fields
   - arguments:
-    - default: false
-      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
-      isArray: false
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of incidents that were modified since the last update. Note that this method is used for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
-    execution: false
     name: get-modified-remote-data
-  - deprecated: false
-    description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
-    execution: false
+  - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
   ismappable: true
   isremotesyncin: true

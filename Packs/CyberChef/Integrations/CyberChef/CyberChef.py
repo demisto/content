@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 
 
-
 def test_module(client):
     data = {'input': 'One, two, three, four.',
             'recipe': 'to decimal'}

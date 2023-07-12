@@ -4,7 +4,6 @@ from base64 import b64encode
 from typing import Any, Dict
 
 
-
 def encode_string(value: str) -> str:
     b64 = b64encode(value.encode('ascii'))
     return b64.hex()

@@ -19,7 +19,6 @@ dependson:
   must:
   - '|||cofense-report-list'
   - '|||cofense-report-download'
-runonce: false
 dockerimage: demisto/python3:3.10.12.62631
 runas: DBotWeakRole
 fromversion: 6.0.0

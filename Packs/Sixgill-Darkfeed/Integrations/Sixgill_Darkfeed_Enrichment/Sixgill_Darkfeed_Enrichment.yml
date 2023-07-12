@@ -18,13 +18,11 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -40,7 +38,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Collect
 - defaultvalue: indicatorType
@@ -51,14 +48,12 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
   section: Collect
   advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   section: Collect
   advanced: true
@@ -73,17 +68,10 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each IP in the input list.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -164,17 +152,10 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each domain name in the input list.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -255,17 +236,10 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each URL in the input list.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -346,17 +320,10 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each file hash in the input list.
-    execution: false
     name: file
     outputs:
     - contextPath: DBotScore.Indicator
@@ -446,17 +413,10 @@ script:
       isArray: true
       name: actor
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per actor to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each actor in the input list.
-    execution: false
     name: sixgill-get-actor
     outputs:
     - contextPath: SixgillDarkfeed.Actor.created
@@ -522,17 +482,10 @@ script:
       isArray: true
       name: post_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per post ID to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each post ID in the input list.
-    execution: false
     name: sixgill-get-post-id
     outputs:
     - contextPath: SixgillDarkfeed.Postid.created
@@ -593,10 +546,6 @@ script:
       description: Link to the IOC on Virustotal and an abstraction of the number of detections; MITRE ATT&CK tactics and techniques.
       type: Unknown
   dockerimage: demisto/sixgill:1.0.0.63753
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -13,16 +13,13 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: '2000'
   display: Request Timeout
   name: timeout
-  required: false
   type: 0
 description: Deprecated. Use Cisco Security Management Appliance instead.
 display: CiscoEmailSecurity (Beta) (Deprecated)
@@ -30,22 +27,14 @@ name: CiscoEmailSecurity
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The minutes and the seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The minutes and the seconds must be 00, due to an API limitation.'
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The minutes and the seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The minutes and the seconds must be 00, due to an API limitation.'
       name: end_date
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Fetch data from a specific counter. Possible values are "reporting_system", "mail_incoming_traffic_summary", "mail_vof_threat_summary", "mail_vof_specific_threat_summary", and "mail_amp_threat_summary".
-      isArray: false
       name: counter
       predefined:
       - reporting_system
@@ -54,17 +43,10 @@ script:
       - mail_vof_specific_threat_summary
       - mail_amp_threat_summary
       required: true
-      secret: false
-    - default: false
-      defaultValue: Hosted_Cluster
+    - defaultValue: Hosted_Cluster
       description: Cisco device group name
-      isArray: false
       name: device_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves details of an email security report by counter type.
-    execution: false
     name: cisco-email-security-report-get
     outputs:
     - contextPath: CiscoEmailSecurity.Report.MailAmpThreatSummary.incoming_malicious
@@ -170,176 +152,100 @@ script:
       description: The number of ims spam increment over case messages.
       type: Number
   - arguments:
-    - default: false
-      description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: end_date
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The maximum number of records to retrieve.
         If you set a limit you should also use an offset.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify an offset value to retrieve a subset of records starting with the offset value.
         If you use an offset you should also set a retrieval limit.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Attachment name operator to filter by.
         If you want to use attachment, you need to pass the following arguments: attachment_name_operator and attachment_name_value. Possible values are: "is", "begins_with", and "contains".
-      isArray: false
       name: attachment_name_operator
       predefined:
       - is
       - begins_with
       - contains
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Attachment name value to filter by.
         If you want to use attachment, you need to pass the following arguments: attachment_name_operator and attachment_name_value.
-      isArray: false
       name: attachment_name_value
-      required: false
-      secret: false
-    - default: false
-      description: File SHA256 hash to filter by.
-      isArray: false
+    - description: File SHA256 hash to filter by.
       name: file_hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Recipient filter operator to filter by.
         If you want to use recipient, you need to pass the following arguments: recipient_filter_operator and recipient_filter_value. Possible values are: "is", "begins_with", and "contains".
-      isArray: false
       name: recipient_filter_operator
       predefined:
       - is
       - begins_with
       - "contains\t"
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Recipient filter value to filter with.
         If you want to use recipient, you need to pass the following arguments: recipient_filter_operator and recipient_filter_value.
-      isArray: false
       name: recipient_filter_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Sender filter operator to filter with.
         If you want to use sender, you need to pass the following arguments: sender_filter_operator and sender_filter_value. Possible values are: "is", "begins_with", and "contains".
-      isArray: false
       name: sender_filter_operator
       predefined:
       - is
       - begins_with
       - contains
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Sender filter value to filter by.
         If you want to use sender, you need to pass the following arguments: sender_filter_operator and sender_filter_value.
-      isArray: false
       name: sender_filter_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Subject filter operator to filter by
         If you want to use subject, you need to pass the following arguments: subject_filter_operator and subject_filter_value. Possible values are: "is", "begins_with", and "contains".
-      isArray: false
       name: subject_filter_operator
       predefined:
       - is
       - begins_with
       - contains
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Subject filter value to filter by.
         If you want to use subject, you need to pass the following arguments: subject_filter_operator and subject_filter_value.
-      isArray: false
       name: subject_filter_value
-      required: false
-      secret: false
-    - default: false
-      description: Message ID to filter with
-      isArray: false
+    - description: Message ID to filter with
       name: message_id
-      required: false
-      secret: false
-    - default: false
-      description: Cisco message ID to filter by.
-      isArray: false
+    - description: Cisco message ID to filter by.
       name: cisco_message_id
-      required: false
-      secret: false
-    - default: false
-      description: Sender IP address to filter by.
-      isArray: false
+    - description: Sender IP address to filter by.
       name: sender_ip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Message direction to filter by. Possible values are "incoming" and "outgoing".
-      isArray: false
       name: message_direction
       predefined:
       - incoming
       - outgoing
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to filter by positive spam positive. Possible values are: "True" and "False".'
-      isArray: false
       name: spam_positive
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to filter by in spam quarantine. Possible values: are "True" and "False".'
-      isArray: false
       name: quarantined_as_spam
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Quarantine status to filter. Possible values are: "POLICY", "AMP", "AV", "UNCLASSIFIED", "DLP", and "OUTBREAK".'
-      isArray: false
       name: quarantine_status
       predefined:
       - POLICY
@@ -348,80 +254,48 @@ script:
       - UNCLASSIFIED
       - DLP
       - OUTBREAK
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'URL reputation to filter by. Possible values are: "Malicious" and "Suspicious".'
-      isArray: false
       name: url_reputation
       predefined:
       - Malicious
       - Suspicious
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Virus positive to filter by. Possible values are: "True" and "False".'
-      isArray: false
       name: virus_positive
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Domain name operator to filter by.
         If you want to use domain filter, you need to pass the following arguments: domain_name_operator and domain_name_value. Possible values are: "is", "begins_with", and "contains".
-      isArray: false
       name: domain_name_operator
       predefined:
       - is
       - begins_with
       - contains
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Domain name value to filter by.
         If you want to use domain filter, you need to pass the following arguments: domain_name_operator and domain_name_value.
-      isArray: false
       name: domain_name_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to filter by contained malicious URLs. Possible values are: "True" and "False".'
-      isArray: false
       name: contained_malicious_urls
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to filter by is contained natural URLs. Possible values are: "True" and "False".'
-      isArray: false
       name: contained_neutral_urls
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         Macro file types detected to filter by.
         temlate of macro_file_types_detected -  Microsoft%20Office%20Files,Adobe%20Portable%20Document%20Format
-      isArray: false
       name: macro_file_types_detected
-      required: false
-      secret: false
-    deprecated: false
     description: Executes a search for messages in Cisco Email Security.
-    execution: false
     name: cisco-email-security-messages-search
     outputs:
     - contextPath: CiscoEmailSecurity.Messages.attributes.direction
@@ -479,39 +353,22 @@ script:
       description: The message verdict chart.
       type: String
   - arguments:
-    - default: false
-      description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: end_date
       required: true
-      secret: false
-    - default: false
-      description: Cisco message ID to filter with.
-      isArray: false
+    - description: Cisco message ID to filter with.
       name: cisco_id
       required: true
-      secret: false
-    - default: false
-      description: Message ID to filter with.
-      isArray: false
+    - description: Message ID to filter with.
       name: message_id
       required: true
-      secret: false
-    - default: false
-      description: Appliance serial number to filter with.
-      isArray: false
+    - description: Appliance serial number to filter with.
       name: appliance_serial_number
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves details of a message.
-    execution: false
     name: cisco-email-security-message-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.Message.attachments
@@ -590,165 +447,87 @@ script:
       description: The message timestamp.
       type: String
   - arguments:
-    - default: false
-      description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: end_date
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the number of records to retrieve.
         If you use a limit you should also use a offset.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify an offset value to retrieve a subset of records starting with the offset value.
         If you use an offset you should also set a retrieval limit.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: From address to filter by.
-      isArray: false
+    - description: From address to filter by.
       name: order_by_from_address
-      required: false
-      secret: false
-    - default: false
-      description: To address to filter by.
-      isArray: false
+    - description: To address to filter by.
       name: order_by_to_address
-      required: false
-      secret: false
-    - default: false
-      description: Subject to filter by
-      isArray: false
+    - description: Subject to filter by
       name: order_by_subject
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'From address order to filter by. Possible values are: "asc" and "desc".'
-      isArray: false
       name: order_dir_from_address
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'To address order to filter by. Possible values are: "asc" and "desc".'
-      isArray: false
       name: order_dir_to_address
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Subject order to filter by. Possible values are: "asc" and "desc".'
-      isArray: false
       name: order_dir_subject
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: Recipient value to filter by.
-      isArray: false
+    - description: Recipient value to filter by.
       name: recipient_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Recipient operator to filter by. Possible values are: "is", "begins_with", and "contains".'
-      isArray: false
       name: recipient_operator
       predefined:
       - is
       - begins_with
       - contains
-      required: false
-      secret: false
-    - default: false
-      description: Filter value to filter by.
-      isArray: false
+    - description: Filter value to filter by.
       name: filter_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Filter operator to filter by. Possible values are: "is", "begins_with", and "contains".'
-      isArray: false
       name: filter_operator
       predefined:
       - is
       - begins_with
       - contains
-      required: false
-      secret: false
-    deprecated: false
     description: Executes a search for spam quarantine.
-    execution: false
     name: cisco-email-security-spam-quarantine-search
   - arguments:
-    - default: false
-      description: Message ID to filter by.
-      isArray: false
+    - description: Message ID to filter by.
       name: message_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves details for a quarantined message.
-    execution: false
     name: cisco-email-security-spam-quarantine-message-details-get
   - arguments:
-    - default: false
-      description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: end_date
       required: true
-      secret: false
-    - default: false
-      description: Cisco message ID to filter by.
-      isArray: false
+    - description: Cisco message ID to filter by.
       name: cisco_id
       required: true
-      secret: false
-    - default: false
-      description: Message ID to filter by.
-      isArray: false
+    - description: Message ID to filter by.
       name: message_id
       required: true
-      secret: false
-    - default: false
-      description: Appliance serial number to filter by.
-      isArray: false
+    - description: Appliance serial number to filter by.
       name: appliance_serial_number
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves details on a DLP.
-    execution: false
     name: cisco-email-security-dlp-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.DLP.attachments
@@ -821,39 +600,22 @@ script:
       description: The datetime of the DLP.
       type: String
   - arguments:
-    - default: false
-      description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: end_date
       required: true
-      secret: false
-    - default: false
-      description: Cisco message ID to filter by.
-      isArray: false
+    - description: Cisco message ID to filter by.
       name: cisco_id
       required: true
-      secret: false
-    - default: false
-      description: Message ID to filter by.
-      isArray: false
+    - description: Message ID to filter by.
       name: message_id
       required: true
-      secret: false
-    - default: false
-      description: Appliance serial number to filter by.
-      isArray: false
+    - description: Appliance serial number to filter by.
       name: appliance_serial_number
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves details of an AMP.
-    execution: false
     name: cisco-email-security-amp-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.AMP.ampDetails.description
@@ -914,39 +676,22 @@ script:
       description: The datetime of the AMP.
       type: String
   - arguments:
-    - default: false
-      description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'Start datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
-      isArray: false
+    - description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
       name: end_date
       required: true
-      secret: false
-    - default: false
-      description: Cisco message ID to filter by.
-      isArray: false
+    - description: Cisco message ID to filter by.
       name: cisco_id
       required: true
-      secret: false
-    - default: false
-      description: Message ID to filter by.
-      isArray: false
+    - description: Message ID to filter by.
       name: message_id
       required: true
-      secret: false
-    - default: false
-      description: Appliance serial number to filter by.
-      isArray: false
+    - description: Appliance serial number to filter by.
       name: appliance_serial_number
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves details of a URL.
-    execution: false
     name: cisco-email-security-url-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.URL.attachments
@@ -1010,77 +755,50 @@ script:
       description: The datetime of the URL details.
       type: String
   - arguments:
-    - default: false
-      description: A list of ID's to delete, comma separated.
+    - description: A list of ID's to delete, comma separated.
       isArray: true
       name: messages_ids
       required: true
-      secret: false
-    deprecated: false
     description: Deletes quarantined messages.
-    execution: false
     name: cisco-email-security-spam-quarantine-messages-delete
   - arguments:
-    - default: false
-      description: A comma-separated list of IDs to release.
+    - description: A comma-separated list of IDs to release.
       isArray: true
       name: messages_ids
       required: true
-      secret: false
-    deprecated: false
     description: Releases quarantined messages.
-    execution: false
     name: cisco-email-security-spam-quarantine-messages-release
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'List type to filter by. Possible values are: "safelist" and "blocklist".'
-      isArray: false
       name: list_type
       predefined:
       - safelist
       - blocklist
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify an offset value to retrieve a subset of records starting with the offset value.
         If you use an offset you should also set a retrieval limit.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify an offset value to retrieve a subset of records starting with the offset value.
         If you use a offset you should also use a limit.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: View by sender or recipient.
-      isArray: false
       name: view_by
       predefined:
       - sender
       - recipient
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'How to order the results. Possible values are: "sender" and "recipient".'
-      isArray: false
       name: order_by
       predefined:
       - sender
       - recipient
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a list of entries.
-    execution: false
     name: cisco-email-security-list-entries-get
     outputs:
     - contextPath: CiscoEmailSecurity.ListEntries.Safelist.senderList
@@ -1109,106 +827,63 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'List type. Possible values are: "safelist" and "blocklist".'
-      isArray: false
       name: list_type
       predefined:
       - safelist
       - blocklist
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Select the action to perform on the list. Possible values are: "add", "edit", and "append".'
-      isArray: false
       name: action
       predefined:
       - add
       - edit
       - append
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of recipient addresses on which to perform the action. separated)
+    - description: A comma-separated list of recipient addresses on which to perform the action. separated)
       isArray: true
       name: recipient_addresses
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of recipient lists on which to perform the action.
+    - description: A comma-separated list of recipient lists on which to perform the action.
       isArray: true
       name: recipient_list
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of sender addresses on which to perform the action.
+    - description: A comma-separated list of sender addresses on which to perform the action.
       isArray: true
       name: sender_addresses
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of sender lists on which to perform the action.
+    - description: A comma-separated list of sender lists on which to perform the action.
       isArray: true
       name: sender_list
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: View by "sender" or "recipient".
-      isArray: false
       name: view_by
       predefined:
       - sender
       - recipient
       required: true
-      secret: false
-    deprecated: false
     description: Performs actions on list entries. Supports add, edit, and append.
-    execution: false
     name: cisco-email-security-list-entry-add
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: List type
-      isArray: false
       name: list_type
       predefined:
       - safelist
       - blocklist
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of recipient lists to delete.
-      isArray: false
+    - description: A comma-separated list of recipient lists to delete.
       name: recipient_list
-      required: false
-      secret: false
-    - default: false
-      description: A comma-seaprated list of sender lists to delete.
-      isArray: false
+    - description: A comma-seaprated list of sender lists to delete.
       name: sender_list
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: View by "sender" or "recipient".
-      isArray: false
       name: view_by
       predefined:
       - sender
       - recipient
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a list entry.
-    execution: false
     name: cisco-email-security-list-entry-delete
   dockerimage: demisto/python3:3.10.8.37753
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
