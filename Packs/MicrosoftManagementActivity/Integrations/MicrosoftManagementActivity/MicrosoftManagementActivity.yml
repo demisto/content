@@ -260,7 +260,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: ms-management-activity-generate-login-url
     arguments: []
-  dockerimage: demisto/pyjwt3:1.0.0.63826
+  dockerimage: demisto/pyjwt3:1.0.0.65022
   isfetch: true
   runonce: false
   script: '-'
