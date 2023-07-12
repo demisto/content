@@ -24,11 +24,11 @@ REMOVE = 'remove'
 INCIDENT_STATUSES = [
     "new",
     "under_investigation",
-    "resolved_ - _no_longer_observed",
-    "resolved_ - _no_risk",
-    "resolved_ - _risk_accepted",
-    "resolved_ - _contested_asset",
-    "resolved_ - _remediated_automatically",
+    "resolved_-_no_longer_observed",
+    "resolved_-_no_risk",
+    "resolved_-_risk_accepted",
+    "resolved_-_contested_asset",
+    "resolved_-_remediated_automatically",
     "resolved"
 ]
 
@@ -270,6 +270,8 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
         args (dict): all command arguments, usually passed from ``demisto.args()``.
             ``args['alert_id_list']`` List of integers of the Alert ID.
             ``args['severity']`` List of strings of the Alert severity.
+            ``args['status']`` List of strings of the Alert status.
+            ``args['business_units_list']`` List of business units of the Alert status.
             ``args['lte_creation_time']`` string of time format "2019-12-31T23:59:00".
             ``args['gte_creation_time']`` string of time format "2019-12-31T23:59:00".
             ``args['sort_by_creation_time']`` optional - enum (asc,desc).
@@ -283,6 +285,8 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     alert_id_list = argToList(args.get('alert_id_list'))
     severity = argToList(args.get('severity'))
+    status = argToList(args.get('status'))
+    business_units_list = argToList(args.get('business_units_list'))
     lte_creation_time = args.get('lte_creation_time')
     gte_creation_time = args.get('gte_creation_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
@@ -307,6 +311,10 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
         search_params.append({"field": "alert_id_list", "operator": "in", "value": alert_id_ints})  # type: ignore
     if severity:
         search_params.append({"field": "severity", "operator": "in", "value": severity})
+    if status:
+        search_params.append({"field": "status", "operator": "in", "value": status})
+    if business_units_list:
+        search_params.append({"field": "business_units_list", "operator": "in", "value": business_units_list})
     if lte_creation_time:
         search_params.append({
             'field': 'creation_time',
