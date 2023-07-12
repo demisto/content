@@ -28,5 +28,5 @@ For more information about API Key see [here](https://docs.trendmicro.com/en-us/
 
 
 ### Max Fetch
-Note: There are three types of fetches that the integration fetches, when the max fetch parameter is set to 1000 then 1000 logs will be retrieved from each type so that a total of 3000 logs can be retrieved.
+Note: During an integration fetch, there are three types of fetches available, with the maximum fetch parameter set to 1000, 1000 logs will be retrieved for each type, resulting in a total of 3000 logs.
 

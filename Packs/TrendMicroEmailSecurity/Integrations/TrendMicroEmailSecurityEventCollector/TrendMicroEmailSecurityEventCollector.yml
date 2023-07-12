@@ -30,7 +30,7 @@ configuration:
   section: Connect
 - display: The maximum number of events per fetch.
   additionalinfo: The maximum number of events to fetch every time fetch is executed.
-  defaultvalue: 1000
+  defaultvalue: "1000"
   name: max_fetch
   required: false
   type: 0
@@ -51,7 +51,7 @@ script:
     description: Manual command to fetch events and display them.
     name: trend-micro-get-events
     arguments:
-    - name: limit
+    - name: max_fetch
       description: The maximum number of events to get.
       defaultValue: "500"
     - name: since

@@ -19,6 +19,7 @@ URL_SUFFIX = {
     "blocked_traffic": "/api/v1/log/mailtrackinglog",
     "policy_logs": "/api/v1/log/policyeventlog",
 }
+EVENT_TYPES = ("accepted_traffic", "blocked_traffic", "policy_logs")
 
 """ CLIENT CLASS """
 
@@ -46,7 +47,6 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def generate_authorization_encoded(self, username: str, api_key: str) -> str:
-        """ """
         auto_bytes = f"{username}:{api_key}".encode()
         return base64.b64encode(auto_bytes).decode()
 
@@ -192,10 +192,11 @@ def fetch_events_command(
                                  The updated `last_run` obj.
     """
     time_to = datetime.now()
-    limit: int = arg_to_number(args.get("max_fetch", "500"))  # type: ignore[assignment]
+    limit: int = arg_to_number(args.get("max_fetch", "1000"))  # type: ignore[assignment]
 
     events: list[dict] = []
-    for event_type in ("accepted_traffic", "blocked_traffic", "policy_logs"):
+    new_last_run: dict[str, str] = {}
+    for event_type in EVENT_TYPES:
         time_from = last_run.get(f"time_{event_type}_from") or first_fetch
 
         events_by_type, next_token = fetch_by_event_type(
@@ -208,7 +209,7 @@ def fetch_events_command(
         )
 
         events.extend(events_by_type)
-        last_run = managing_set_last_run(
+        last_run_for_type = managing_set_last_run(
             client=client,
             len_events=len(events_by_type),
             limit=limit,
@@ -218,11 +219,12 @@ def fetch_events_command(
             next_token=next_token,
             event_type=event_type,
         )
-    demisto.info(
+        new_last_run.update(last_run_for_type)
+    demisto.debug(
         f"The fetch process has ended, the amount of logs for this {len(events)}"
     )
 
-    return events, last_run
+    return events, new_last_run
 
 
 def fetch_by_event_type(
@@ -265,7 +267,8 @@ def fetch_by_event_type(
         try:
             res = client.get_logs_request(event_type, params)
         except NoContentException:
-            demisto.info(f"No content returned from api, {params=}")
+            next_token = None
+            demisto.debug(f"No content returned from api, {params=}")
             break
 
         if res.get("logs"):
@@ -274,14 +277,18 @@ def fetch_by_event_type(
                 event.update({"_time": event.get("timestamp"), "logType": event_type})
 
             events_res.extend(res.get("logs"))
+        else:
+            next_token = None
+            break
 
         if next_token := res.get("nextToken"):
             params["token"] = urllib.parse.unquote(next_token)
         else:
-            demisto.info(f"No returned `nextToken` for the {event_type} type")
+            next_token = None
+            demisto.debug(f"No returned `nextToken` for the {event_type} type")
             break
 
-    demisto.info(
+    demisto.debug(
         f"The fetch process of the type {event_type} has ended,"
         f" the amount of logs for this type: {len(events_res)}"
     )
@@ -317,6 +324,7 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
         elif command in ("trend-micro-get-events", "fetch-events"):
             if command == "trend-micro-get-events":
+                should_update_last_run = False
                 since = order_first_fetch(params.get("since") or "3 days")
                 events, _ = fetch_events_command(client, args, since, last_run={})
                 return_results(
@@ -324,13 +332,18 @@ def main() -> None:  # pragma: no cover
                 )
             elif command == "fetch-events":
                 should_push_events = True
+                should_update_last_run = True
                 events, last_run = fetch_events_command(
                     client, params, first_fetch, last_run=last_run
                 )
-                demisto.setLastRun(last_run)
 
             if should_push_events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug("The events were pushed to XSIAM")
+
+                if should_update_last_run:
+                    demisto.setLastRun(last_run)
+                    demisto.debug("The last_run updated")
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
