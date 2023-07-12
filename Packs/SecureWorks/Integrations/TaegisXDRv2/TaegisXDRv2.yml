@@ -1,7 +1,6 @@
 commonfields:
-  id: TaegisXDR
+  id: TaegisXDRv2
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: TaegisXDRv2
 display: TaegisXDR v2
 category: Data Enrichment & Threat Intelligence
@@ -544,4 +543,6 @@ script:
   runonce: false
   subtype: python3
   isFetchSamples: true
-sourcemoduleid: TaegisXDR
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
