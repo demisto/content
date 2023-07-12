@@ -9,15 +9,16 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+- displaypassword: API Secret Key
+  additionalinfo: The API Secret Key allows you to programmatically integrate with the Armis ecosystem.
   name: credentials
   required: true
   hiddenusername: true
   type: 9
 - display: First fetch time
-  defaultvalue: 3 days
+  defaultvalue: 3 Days
   name: first_fetch
+  required: true
   type: 0
   section: Collect
 - display: Number of events to fetch per fetch.
