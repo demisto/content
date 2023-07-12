@@ -342,7 +342,6 @@ credentials = None
 # NOTE: Same method used in EWSMailSender
 # If you are modifying this probably also need to modify in the other file
 def exchangelib_cleanup():     # pragma: no cover
-    key_protocols = list(exchangelib.protocol.CachingProtocol._protocol_cache.items())
     try:
         exchangelib.close_connections()
     except Exception as ex:
