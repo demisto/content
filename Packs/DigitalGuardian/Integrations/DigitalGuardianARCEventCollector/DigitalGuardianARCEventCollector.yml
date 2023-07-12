@@ -7,29 +7,30 @@ commonfields:
   version: -1
 configuration:
 - display: Auth Server URL (e.g. https://SomeUrl.com)
-  name: Auth Server URL
+  name: auth_server_url
   required: true
   type: 0
   section: Connect
 - display: Gateway Base URL (e.g. https://SomeUrl.com)
-  name: Gateway Base URL
+  name: gateway_base_url
   required: true
   type: 0
   section: Connect
 - display: Client ID
-  name: Client ID
+  name: client_id
   required: true
   type: 0
   section: Connect
 - displaypassword: Client Secret
   additionalinfo: Client Secret
-  name: Client Secret
+  name: client_secret
   required: true
   section: Connect
   hiddenusername: true
   type: 9
 - display: Export Profile
-  name: Export Profile
+  additionalinfo: GUID of export profile, part of the export URL
+  name: export_profile
   required: true
   type: 0
   section: Connect
@@ -41,8 +42,8 @@ configuration:
   type: 0
 - defaultvalue: 1000
   section: Collect
-  display: Number of events per fetch
-  name: Number_of_events
+  display: Max events per fetch
+  name: number_of_events
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -71,6 +72,7 @@ script:
       - 'false'
       required: true
     - default: false
+      defaultValue: 1000
       description: Maximum results to return.
       isArray: false
       name: limit

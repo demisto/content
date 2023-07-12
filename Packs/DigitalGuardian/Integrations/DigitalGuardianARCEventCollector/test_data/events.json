@@ -1,8 +1,8 @@
 [
   {
-    "dg_name": "tstringer has attached a Salesforce data to an email",
+    "dg_name": "test has attached a Salesforce data to an email",
     "inc_creator": "dg",
-    "inc_assign": "jbortnick@dgdemo",
+    "inc_assign": "test@dgdemo",
     "inc_state": "Created",
     "dg_description": "This file outlook.exe was going to [demo.digitalg@gmail.com]",
     "inc_id": "230523-WIQHA",
@@ -15,8 +15,8 @@
   },
   {
     "dg_name": "Demo 10",
-    "inc_creator": "tstringer@dgdemo",
-    "inc_assign": "tstringer@dgdemo",
+    "inc_creator": "demo@dgdemo",
+    "inc_assign": "demo@dgdemo",
     "inc_state": "Escalated",
     "dg_description": "-",
     "inc_id": "230523-RG0AB",

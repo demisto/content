@@ -99,9 +99,9 @@
     ],
     "data": [
         [
-            "tstringer has attached a Salesforce data to an email",
+            "test has attached a Salesforce data to an email",
             "dg",
-            "jbortnick@dgdemo",
+            "test@dgdemo",
             "Created",
             "This file outlook.exe was going to [demo.digitalg@gmail.com]",
             "230523-WIQHA",
@@ -114,8 +114,8 @@
         ],
         [
             "Demo 10",
-            "tstringer@dgdemo",
-            "tstringer@dgdemo",
+            "demo@dgdemo",
+            "demo@dgdemo",
             "Escalated",
             "-",
             "230523-RG0AB",

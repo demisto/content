@@ -71,9 +71,9 @@ def test_get_events_command(mocker):
                     client_secret="22", export_profile="33")
     events, _ = get_events(client, args)
 
-    mock_events = util_load_json('test_data/events_mock_1_response.json')
+    expected_events = util_load_json('test_data/events_mock_1_response.json')
 
-    assert events == mock_events
+    assert events == expected_events
 
 
 def test_create_events_for_push():
