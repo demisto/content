@@ -1,0 +1,60 @@
+[
+    {
+        "id": "1964949", 
+        "name": "Russia-Region", 
+        "type": "DSTN_OTHER", 
+        "addresses": [], 
+        "description": "Russia based destination group", 
+        "creatorContext": "ZIA", 
+        "ipCategories": [], 
+        "countries": ["COUNTRY_RU"], 
+        "urlCategories": [], 
+        "ipAddresses": []
+    },
+    {
+        "id": "1971364", 
+        "name": "Algeria-Region", 
+        "type": "DSTN_OTHER", 
+        "addresses": [], 
+        "creatorContext": "ZIA", 
+        "ipCategories": [], 
+        "countries": ["COUNTRY_AL"], 
+        "urlCategories": [], 
+        "ipAddresses": []
+    }, 
+    {
+        "id": "1971539", 
+        "name": "India_Destination", 
+        "type": "DSTN_OTHER", 
+        "addresses": [], 
+        "creatorContext": "ZIA", 
+        "ipCategories": [], 
+        "countries": ["COUNTRY_IN"], 
+        "urlCategories": [], 
+        "ipAddresses": []
+    }, 
+    {
+        "id": "1997898", 
+        "name": "Test99", 
+        "type": "DSTN_IP", 
+        "addresses": ["127.0.0.2"], 
+        "description": "Localhost v2", 
+        "creatorContext": "ZIA", 
+        "ipCategories": [], 
+        "countries": [], 
+        "urlCategories": [], 
+        "ipAddresses": ["127.0.0.2"]
+    },
+    {
+        "id": "2001335", 
+        "name": "Test01", 
+        "type": "DSTN_IP", 
+        "addresses": ["127.0.0.1"], 
+        "description": "Localhost v1", 
+        "creatorContext": "ZIA", 
+        "ipCategories": [], 
+        "countries": [], 
+        "urlCategories": [], 
+        "ipAddresses": ["127.0.0.1"]
+    }
+]

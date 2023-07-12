@@ -13,10 +13,12 @@ def util_load_json(path):
 
 
 class TestFetchActivity:
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def create_client(self, mocker):
         self.base_url = "https://test.com"
         self.tenant_name = "test"
         self.token_url = f'{self.base_url}/ccx/oauth2/{self.tenant_name}/token'
+        mocker.patch.object(Client, 'get_access_token', return_value="1234")
         self.client = Client(base_url=self.base_url,
                              refresh_token='refresh_token',
                              client_id="test12",
@@ -27,7 +29,8 @@ class TestFetchActivity:
                              headers={
                                  'Accept': 'application/json',
                                  'Content-Type': 'application/json'
-                             })
+                             },
+                             max_fetch=25000)
 
     @staticmethod
     def create_response_by_limit(from_date, to_date, offset, user_activity_entry_count=False, limit=1):
@@ -76,54 +79,45 @@ class TestFetchActivity:
         """
         from WorkdayEventCollector import get_max_fetch_activity_logging
         mocker.patch.object(Client, 'get_activity_logging_request', side_effect=self.create_response_by_limit)
-        requests_mock.post(self.token_url, json={"access_token": "1234"})
         res = get_max_fetch_activity_logging(client=self.client, logging_to_fetch=loggings_to_fetch,
                                              from_date="2023-04-15T07:00:00.000Z",
                                              to_date="2023-04-16T07:00:00.000Z")
         assert len(res) == loggings_to_fetch
 
     DUPLICATED_ACTIVITY_LOGGINGS = [
-        (('2023-04-15T07:00:00Z', 5, 2, 0), 2, 5, {}, '2023-04-15T07:00:00Z'),
-        (('2023-04-15T07:00:00Z', 5, 1, 0), 1, 1, {'last_fetched_loggings_ids': {'1', '2', '3', '0'}},
-         '2023-04-15T07:00:00Z')]
+        (('2023-04-15T07:00:00Z', 5, 2, 0), 5, {}),
+        (('2023-04-15T07:00:00Z', 5, 1, 0), 4, {'last_log': 0})]
 
-    @pytest.mark.parametrize("args, len_of_last_loggings, len_of_activity_loggings, last_run, time_to_check",
+    @pytest.mark.parametrize("args, len_of_activity_loggings, last_run",
                              DUPLICATED_ACTIVITY_LOGGINGS)
-    def test_remove_duplicated_activity_logging(self, args, len_of_last_loggings, len_of_activity_loggings, last_run,
-                                                time_to_check):
+    def test_remove_duplicated_activity_logging(self, args, len_of_activity_loggings, last_run):
         """
         Given: responses with potential duplications from last fetch.
         When: running fetch command.
         Then: return last responses with the latest requestTime to check if there are duplications.
 
         """
-        from WorkdayEventCollector import remove_duplicated_activity_logging
+        from WorkdayEventCollector import remove_duplications
         loggings = self.create_response_with_duplicates(*args)
-        activity_loggings, last_fetched_loggings_ids = remove_duplicated_activity_logging(loggings, last_run, time_to_check)
-        assert len(last_fetched_loggings_ids) == len_of_last_loggings
+        if 'last_log' in last_run:
+            last_run['last_log'] = loggings[last_run.get('last_log')]
+        activity_loggings = remove_duplications(loggings, last_run)
         assert len(activity_loggings) == len_of_activity_loggings
 
-    def test_remove_milliseconds_from_string(self):
+    def test_remove_milliseconds_from_time_of_logging(self):
         """
             Given: loggings with time string with milliseconds
             When: Fetching loggings from Workday
             Then: Remove the milliseconds.
 
         """
-        from WorkdayEventCollector import remove_milliseconds_from_time_of_loggings
-        activity_loggings = []
-        res: dict = util_load_json('test_data/single_loggings_response.json')
-        requests_time = ['2023-04-24T07:00:00.123Z', '2023-04-24T07:00:00.000Z']
-        final_times = ['2023-04-24T07:00:00Z', '2023-04-24T07:00:00Z']
-        for time in requests_time:
-            logging = res.copy()
-            logging['requestTime'] = time
-            activity_loggings.append(logging)
+        from WorkdayEventCollector import remove_milliseconds_from_time_of_logging
+        activity_logging: dict = util_load_json('test_data/single_loggings_response.json')
+        requests_time = '2023-04-24T07:00:00.123Z'
+        final_time = '2023-04-24T07:00:00Z'
+        activity_logging['requestTime'] = requests_time
 
-        remove_milliseconds_from_time_of_loggings(activity_loggings)
-        assert len(activity_loggings) == 2
-        assert activity_loggings[0].get('requestTime') == final_times[0]
-        assert activity_loggings[1].get('requestTime') == final_times[1]
+        assert remove_milliseconds_from_time_of_logging(activity_logging) == final_time
 
     def test_get_activity_logging_command(self, mocker):
         """
@@ -179,7 +173,7 @@ class TestFetchActivity:
 
         assert activity_loggings == fetched_events.get('fetched_events')
         assert new_last_run.get('last_fetch_time') == '2023-04-15T07:00:00Z'
-        assert set(new_last_run.get('last_fetched_loggings_ids')) == {'2', '3'}
+        assert new_last_run.get('last_log').get('taskId') == '3'
 
         # assert no new results when given the last_run:
         fetched_events = util_load_json('test_data/fetch_activity_loggings.json')
@@ -198,4 +192,13 @@ class TestFetchActivity:
                                                        'to_date': '2023-04-15T08:00:00Z'}
         assert activity_loggings == []
         assert new_last_run.get('last_fetch_time') == '2023-04-15T07:00:00Z'
-        assert set(new_last_run.get('last_fetched_loggings_ids')) == {'2', '3'}
+        assert new_last_run.get('last_log').get('taskId') == '3'
+
+    @pytest.mark.parametrize("max_fetch, instance_returned", [(6000, 1), (15000, 2), (60000, 6)])
+    def test_instance_returned_request(self, mocker, max_fetch, instance_returned):
+        self.client.max_fetch = max_fetch
+        http_request = mocker.patch.object(Client, 'http_request')
+        self.client.get_activity_logging_request(from_date='2023-04-15T07:00:00Z',
+                                                 to_date='2023-04-15T08:00:00Z')
+        params_sent = http_request.call_args_list[0][1].get('params', {})
+        assert params_sent.get('instancesReturned') == instance_returned

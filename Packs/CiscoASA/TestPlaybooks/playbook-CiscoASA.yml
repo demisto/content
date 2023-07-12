@@ -5,10 +5,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 260d7667-09c2-41c0-8cbd-bdf64d41006c
+    taskid: 3dc8d612-f2a3-41e2-886f-ef1f239bb0f3
     type: start
     task:
-      id: 260d7667-09c2-41c0-8cbd-bdf64d41006c
+      id: 3dc8d612-f2a3-41e2-886f-ef1f239bb0f3
       version: -1
       name: ''
       iscommand: false
@@ -24,12 +24,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '1':
     id: '1'
-    taskid: 2ea3131c-6bb1-4539-84f8-89697089ef91
+    taskid: cd20cfd4-94b6-4a6a-826b-88abaf6c7d54
     type: regular
     task:
-      id: 2ea3131c-6bb1-4539-84f8-89697089ef91
+      id: cd20cfd4-94b6-4a6a-826b-88abaf6c7d54
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -43,10 +46,6 @@ tasks:
     scriptarguments:
       all:
         simple: yes
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
     note: false
@@ -54,12 +53,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '2':
     id: '2'
-    taskid: cd66ddb3-c624-40b6-83bd-b1c319c01926
+    taskid: b04c0637-41e8-4e2a-88a6-4aa00d213cdf
     type: regular
     task:
-      id: cd66ddb3-c624-40b6-83bd-b1c319c01926
+      id: b04c0637-41e8-4e2a-88a6-4aa00d213cdf
       version: -1
       name: Create Rule
       description: Create a rule.
@@ -71,17 +73,12 @@ tasks:
       '#none#':
       - '3'
     scriptarguments:
-      active: {}
       destination:
         simple: 2.2.2.2
-      interface_name: {}
       interface_type:
         simple: Global
-      log_level: {}
       permit:
         simple: 'False'
-      position: {}
-      remarks: {}
       source:
         simple: 1.1.1.1
     separatecontext: false
@@ -91,12 +88,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
+    taskid: bdb11b78-f843-4bcc-8b12-06a5dbc108ba
     type: regular
     task:
-      id: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
+      id: bdb11b78-f843-4bcc-8b12-06a5dbc108ba
       version: -1
       name: Get Rule Data
       description: Get a specific rule by its ID
@@ -121,18 +121,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '4':
     id: '4'
-    taskid: 6ff50b24-7176-4263-8a49-70caee06ad21
+    taskid: 37d7434f-e4ba-47c3-891e-21fb26ab1c83
     type: condition
     task:
-      id: 6ff50b24-7176-4263-8a49-70caee06ad21
+      id: 37d7434f-e4ba-47c3-891e-21fb26ab1c83
       version: -1
       name: Verify Rule
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       yes:
       - '5'
@@ -162,12 +164,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '5':
     id: '5'
-    taskid: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
+    taskid: f541b99d-106e-4375-80ca-753344aecf35
     type: regular
     task:
-      id: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
+      id: f541b99d-106e-4375-80ca-753344aecf35
       version: -1
       name: Edit Rule
       description: Edit an existing rule.
@@ -179,20 +184,14 @@ tasks:
       '#none#':
       - '6'
     scriptarguments:
-      active: {}
       destination:
         simple: 3.3.3.3
       interface_name:
         simple: ${CiscoASA.Rules.Interface}
       interface_type:
         simple: ${CiscoASA.Rules.InterfaceType}
-      log_level: {}
-      permit: {}
-      position: {}
-      remarks: {}
       rule_id:
         simple: ${CiscoASA.Rules.ID}
-      source: {}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
     note: false
@@ -200,18 +199,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '6':
     id: '6'
-    taskid: 1f711257-034b-4600-88b0-bd1d9f7f0d97
+    taskid: 52515afc-3fae-478e-88f0-1c8d75de6a82
     type: condition
     task:
-      id: 1f711257-034b-4600-88b0-bd1d9f7f0d97
+      id: 52515afc-3fae-478e-88f0-1c8d75de6a82
       version: -1
       name: Verify Rule Edited
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       yes:
       - '7'
@@ -241,12 +242,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
+    taskid: defa2da0-07d3-4e80-8a73-769c6b969433
     type: regular
     task:
-      id: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
+      id: defa2da0-07d3-4e80-8a73-769c6b969433
       version: -1
       name: Delete Rule
       description: Delete a rule.
@@ -290,12 +294,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    nexttasks:
+      '#none#':
+      - "26"
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '8':
     id: '8'
-    taskid: 54dcf0ac-3d56-4b1c-89ff-6a5ad02c05a0
+    taskid: 68293ee2-83c5-4f9b-8d9d-021699408c48
     type: regular
     task:
-      id: 54dcf0ac-3d56-4b1c-89ff-6a5ad02c05a0
+      id: 68293ee2-83c5-4f9b-8d9d-021699408c48
       version: -1
       name: List rules
       description: Gets a list all rules for the supplied interface.
@@ -307,7 +317,6 @@ tasks:
       '#none#':
       - '9'
     scriptarguments:
-      interface_name: {}
       interface_type:
         simple: Global
     separatecontext: false
@@ -317,18 +326,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '9':
     id: '9'
-    taskid: f9c6090e-a771-463a-892a-2ecf6f4cb734
+    taskid: 7137276e-19d3-45a5-86ac-2cb3bb2c0a99
     type: condition
     task:
-      id: f9c6090e-a771-463a-892a-2ecf6f4cb734
+      id: 7137276e-19d3-45a5-86ac-2cb3bb2c0a99
       version: -1
       name: Does rule exist
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#default#':
       - '11'
@@ -368,12 +379,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '10':
     id: '10'
-    taskid: 4f6561ff-5474-41f5-81db-510cc6c82879
+    taskid: f7186d3e-ead3-4ce7-8bac-112c6dc88b1b
     type: regular
     task:
-      id: 4f6561ff-5474-41f5-81db-510cc6c82879
+      id: f7186d3e-ead3-4ce7-8bac-112c6dc88b1b
       version: -1
       name: Delete Rule
       description: Deletes a rule.
@@ -385,7 +399,6 @@ tasks:
       '#none#':
       - '11'
     scriptarguments:
-      interface_name: {}
       interface_type:
         simple: Global
       rule_id:
@@ -424,12 +437,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '11':
     id: '11'
-    taskid: 34b3954c-6156-435a-8f48-e7a527d986b5
+    taskid: a208a3cc-1b36-45b4-841a-e1d5434a199d
     type: regular
     task:
-      id: 34b3954c-6156-435a-8f48-e7a527d986b5
+      id: a208a3cc-1b36-45b4-841a-e1d5434a199d
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -443,10 +459,6 @@ tasks:
     scriptarguments:
       all:
         simple: yes
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
     note: false
@@ -454,7 +466,267 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1990,\n      \"width\": 572.5,\n      \"x\": -30,\n      \"y\": 50\n    }\n  }\n}"
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bab38cfc-5ecb-407c-8cd6-8de6f15317a9
+    type: regular
+    task:
+      id: bab38cfc-5ecb-407c-8cd6-8de6f15317a9
+      version: -1
+      name: cisco-asa-write-memory
+      description: The write memory command saves the running configuration to the default location for the startup configuration.
+      script: Cisco ASA|||cisco-asa-write-memory
+      type: regular
+      iscommand: true
+      brand: Cisco ASA
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: bfeefc4a-cdab-4de1-808c-f3c6f313d593
+    type: regular
+    task:
+      id: bfeefc4a-cdab-4de1-808c-f3c6f313d593
+      version: -1
+      name: cisco-asa-list-user-object
+      script: Cisco ASA|||cisco-asa-list-user-object
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 96346056-ee8c-40ad-80f6-2a0be94473ff
+    type: regular
+    task:
+      id: 96346056-ee8c-40ad-80f6-2a0be94473ff
+      version: -1
+      name: cisco-asa-list-security-object-group
+      script: Cisco ASA|||cisco-asa-list-security-object-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7bcfdf0b-8e45-4604-889b-0105b2565279
+    type: regular
+    task:
+      id: 7bcfdf0b-8e45-4604-889b-0105b2565279
+      version: -1
+      name: cisco-asa-list-time-range
+      script: Cisco ASA|||cisco-asa-list-time-range
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4ffebd28-4569-4870-8b6d-920d6fa14fec
+    type: regular
+    task:
+      id: 4ffebd28-4569-4870-8b6d-920d6fa14fec
+      version: -1
+      name: cisco-asa-list-local-user
+      script: Cisco ASA|||cisco-asa-list-local-user
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e1d51cf3-f409-44f1-8f57-e2fedd4c8094
+    type: regular
+    task:
+      id: e1d51cf3-f409-44f1-8f57-e2fedd4c8094
+      version: -1
+      name: cisco-asa-list-local-user-group
+      script: Cisco ASA|||cisco-asa-list-local-user-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: d137b91f-84f3-4330-88b3-f5e10800e1f4
+    type: regular
+    task:
+      id: d137b91f-84f3-4330-88b3-f5e10800e1f4
+      version: -1
+      name: cisco-asa-list-network-object-group
+      script: Cisco ASA|||cisco-asa-list-network-object-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: ba0da38a-7909-432c-8894-fe3455b7a5d4
+    type: title
+    task:
+      id: ba0da38a-7909-432c-8894-fe3455b7a5d4
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3545,
+        "width": 572.5,
+        "x": -30,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
 fromversion: 5.0.0

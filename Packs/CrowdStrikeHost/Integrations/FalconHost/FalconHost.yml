@@ -24,12 +24,10 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -55,22 +53,17 @@ script:
       predefined:
       - detect
       - none
-      description: "The policy to enact when the value is detected on a host. A value\
-        \ of none is equivalent to turning the indicator off.\t"
+      description: "The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off.\t"
       defaultValue: detect
     - name: share_level
       auto: PREDEFINED
       predefined:
       - red
-      description: The level at which the indicator will be shared. Only red share
-        level (not shared) is supported, which indicates that the IOC is not shared
-        with other Falcon Host customers.
+      description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
     - name: expiration_days
-      description: 'This represents the days the indicator should be valid for. This
-        only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
+      description: 'This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
     - name: source
-      description: The source where this indicator originated. This can be used for
-        tracking where this indicator was defined. Limit 200 characters.
+      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
     - name: description
       description: A meaningful description of the indicator. Limit 200 characters.
     description: Uploads one or more indicators for CrowdStrike to monitor
@@ -113,22 +106,17 @@ script:
       predefined:
       - detect
       - none
-      description: The policy to enact when the value is detected on a host. A value
-        of none is equivalent to turning the indicator off.
+      description: The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off.
       defaultValue: detect
     - name: share_level
       auto: PREDEFINED
       predefined:
       - red
-      description: The level at which the indicator will be shared. Only red share
-        level (not shared) is supported, which indicates that the IOC is not shared
-        with other Falcon Host customers.
+      description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
     - name: expiration_days
-      description: This represents the days the indicator should be valid for. This
-        only applies to domain, ipv4, and ipv6 types. Default is 30.
+      description: This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30.
     - name: source
-      description: The source where this indicator originated. This can be used for
-        tracking where this indicator was defined. Limit 200 characters.
+      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
     - name: description
       description: A meaningful description of the indicator. Limit 200 characters.
     description: Updates one or more of the uploaded indicators
@@ -153,8 +141,7 @@ script:
   - name: cs-search-iocs
     arguments:
     - name: types
-      description: A list of indicator types. Separate multiple types by comma. Valid
-        types are sha256, sha1, md5, domain, ipv4, ipv6.
+      description: A list of indicator types. Separate multiple types by comma. Valid types are sha256, sha1, md5, domain, ipv4, ipv6.
       isArray: true
     - name: values
       description: Comma-separated list of indicator values
@@ -187,11 +174,9 @@ script:
       - expiration_timestamp.desc
       description: The order of the results. Format is field.asc or field.desc.
     - name: limit
-      description: The maximum number of records to return. The minimum is 1 and the
-        maximum is 500. Default is 100.
+      description: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     - name: offset
-      description: The offset to begin the list from. For example, start from the
-        10th record and return the list. Default is 0.
+      description: The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0.
     description: Returns a list of your uploaded IOCs that match the search criteria
   - name: cs-device-search
     arguments:
@@ -199,10 +184,7 @@ script:
       default: true
       description: Search for a value across all fields
     - name: filter
-      description: Filter devices using query syntax of "field:value+field:value"
-        where string values are enclosed in single quotes or as arrays in single quotes
-        (['x', 'y']). Numerical fields and dates also support operators like field:>value.
-        For a list of relevant fields, see the CrowdStrike documentation.
+      description: Filter devices using query syntax of "field:value+field:value" where string values are enclosed in single quotes or as arrays in single quotes (['x', 'y']). Numerical fields and dates also support operators like field:>value. For a list of relevant fields, see the CrowdStrike documentation.
     - name: limit
       description: Number of results to return
     - name: offset
@@ -211,8 +193,7 @@ script:
     - contextPath: FalconHostDevices
       description: Device IDs found by device search
       type: string
-    description: Search for devices in your environment by platform, host name, IP,
-      or various other parameters
+    description: Search for devices in your environment by platform, host name, IP, or various other parameters
   - name: cs-device-details
     arguments:
     - name: ids
@@ -221,8 +202,7 @@ script:
       description: The ID of the process. Allows multiple values separated by comma.
     outputs:
     - contextPath: FalconHostDetails
-      description: The ID to retrieve details for. Supports comma-separated list of
-        IDs.
+      description: The ID to retrieve details for. Supports comma-separated list of IDs.
       type: string
     - contextPath: Endpoint.ID
       description: Unique ID of the endpoint in FalconHost
@@ -264,8 +244,7 @@ script:
       required: true
       default: true
       description: The actual string representation of the indicator
-    description: Returns the number of devices on which an IOC ran, according to type
-      and value of an IOC
+    description: Returns the number of devices on which an IOC ran, according to type and value of an IOC
   - name: cs-device-ran-on
     arguments:
     - name: type
@@ -308,25 +287,21 @@ script:
     - contextPath: FalconHostProcesses
       description: List of processes of the searched indicators
       type: string
-    description: Returns the process ID of the indicator if it ran on given device
-      recently
+    description: Returns the process ID of the indicator if it ran on given device recently
   - name: cs-process-details
     arguments:
     - name: ids
       required: true
       default: true
       description: The ID of the process. Allows multiple values separated by comma.
-    description: Retrieves the details of a process, according to process ID, that
-      is running or that previously ran.
+    description: Retrieves the details of a process, according to process ID, that is running or that previously ran.
   - name: cs-resolve-detection
     deprecated: true
     arguments:
     - name: ids
       required: true
       default: true
-      description: "The IDs of the detections you want to resolve. Falcon Host API\
-        \ v2: detection ids are in the following format: ldt:[first field]:[second\
-        \ field],  for example, ldt:cf54bb61f92e4d3e75bf4f7c11fc8f74:4295536142.\t"
+      description: "The IDs of the detections you want to resolve. Falcon Host API v2: detection ids are in the following format: ldt:[first field]:[second field],  for example, ldt:cf54bb61f92e4d3e75bf4f7c11fc8f74:4295536142.\t"
     - name: status
       required: true
       auto: PREDEFINED
@@ -443,8 +418,7 @@ script:
     - contextPath: CrowdStrikeHost.Detections.behaviors.technique
       description: Technique of the behavior
       type: string
-    description: Deprecated. Use the cs-falcon-resolve-detection command from the
-      CrowdStrike Falcon integration instead.
+    description: Deprecated. Use the cs-falcon-resolve-detection command from the CrowdStrike Falcon integration instead.
     execution: true
   - name: cs-detection-search
     deprecated: true
@@ -457,8 +431,7 @@ script:
     - contextPath: CrowdStrikeHost.Detections.detection_id
       description: IDs of the related detections
       type: string
-    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike
-      Falcon integration instead.
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.
   - name: cs-detection-details
     deprecated: true
     arguments:
@@ -572,8 +545,7 @@ script:
     - contextPath: CrowdStrikeHost.Detections.behaviors.technique
       description: Technique of the behavior
       type: string
-    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike
-      Falcon integration instead.
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.
   - name: cs-threatgraph-summary
     arguments:
     - name: ctg_id
@@ -674,7 +646,6 @@ script:
       description: Threat graph vertex type.
       type: string
     description: Gets the child process Threat Graph Detections.
-  runonce: false
 deprecated: true
 tests:
 - No tests

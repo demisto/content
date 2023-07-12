@@ -28,10 +28,12 @@ INDICATOR_FIELDS_MAPPER = {
 class Client(BaseClient):
 
     def __init__(self, params):
-        self._client_id = params.get('client_id')
-        self._client_secret = params.get('client_secret')
+        self._client_id = params.get('credentials_client', {}).get('identifier') or params.get('client_id')
+        self._client_secret = params.get('credentials_client', {}).get('password') or params.get('client_secret')
         self._verify_certificate = not demisto.params().get('insecure', False)
         self._server_url = params.get('server_url', "https://api.crowdstrike.com/")
+        if not(self._client_id and self._client_secret):
+            raise DemistoException('API client ID and API client secret must be provided.')
         super().__init__(base_url=self._server_url, verify=self._verify_certificate,
                          ok_codes=tuple(), proxy=params.get('proxy', False))
         self._token = self._get_access_token()

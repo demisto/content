@@ -18,26 +18,21 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   defaultvalue: Gigamon ThreatINSIGHT Detection
   type: 13
-  required: false
 - display: 'Incident Filter: Account UUID (Optional)'
   name: account_uuid
   type: 0
-  required: false
 - display: Maximum incidents in each fetch each run
   name: max_fetch
   defaultvalue: '50'
   type: 0
-  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
-  required: false
 script:
   script: '-'
   type: python
@@ -892,9 +887,8 @@ script:
       description: List of event fields to check for impacted devices
     description: Create a new detection rule.
 
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 6.5.0
 defaultclassifier: Gigamon ThreatINSIGHT

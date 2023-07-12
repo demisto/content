@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 # Std imports
 from datetime import datetime, timezone
@@ -10,8 +12,6 @@ import urllib3
 from akamai.edgegrid import EdgeGridAuth
 
 # Local imports
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 """GLOBALS/PARAMS
@@ -163,47 +163,47 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
     for event in raw_response:
         events_ec.append(
             {
-                "AttackData": assign_params(**{
-                    "ConfigID": event.get('attackData', {}).get('configId'),
-                    "PolicyID": event.get('attackData', {}).get('policyId'),
-                    "ClientIP": event.get('attackData', {}).get('clientIP'),
-                    "Rules": decode_message(event.get('attackData', {}).get('rules')),
-                    "RuleMessages": decode_message(event.get('attackData', {}).get('ruleMessages')),
-                    "RuleTags": decode_message(event.get('attackData', {}).get('ruleTags')),
-                    "RuleData": decode_message(event.get('attackData', {}).get('ruleData')),
-                    "RuleSelectors": decode_message(event.get('attackData', {}).get('ruleSelectors')),
-                    "RuleActions": decode_message(event.get('attackData', {}).get('ruleActions'))
-                }),
-                "HttpMessage": assign_params(**{
-                    "RequestId": event.get('httpMessage', {}).get('requestId'),
-                    "Start": event.get('httpMessage', {}).get('start'),
-                    "Protocol": event.get('httpMessage', {}).get('protocol'),
-                    "Method": event.get('httpMessage', {}).get('method'),
-                    "Host": event.get('httpMessage', {}).get('host'),
-                    "Port": event.get('httpMessage', {}).get('port'),
-                    "Path": event.get('httpMessage', {}).get('path'),
-                    "RequestHeaders": event.get('httpMessage', {}).get('requestHeaders'),
-                    "Status": event.get('httpMessage', {}).get('status'),
-                    "Bytes": event.get('httpMessage', {}).get('bytes'),
-                    "ResponseHeaders": event.get('httpMessage', {}).get('responseHeaders')
-                }),
-                "Geo": assign_params(**{
-                    "Continent": event.get('geo', {}).get('continent'),
-                    "Country": event.get('geo', {}).get('country'),
-                    "City": event.get('geo', {}).get('city'),
-                    "RegionCode": event.get('geo', {}).get('regionCode'),
-                    "Asn": event.get('geo', {}).get('asn')
-                })
+                "AttackData": assign_params(
+                    ConfigID=event.get('attackData', {}).get('configId'),
+                    PolicyID=event.get('attackData', {}).get('policyId'),
+                    ClientIP=event.get('attackData', {}).get('clientIP'),
+                    Rules=decode_message(event.get('attackData', {}).get('rules')),
+                    RuleMessages=decode_message(event.get('attackData', {}).get('ruleMessages')),
+                    RuleTags=decode_message(event.get('attackData', {}).get('ruleTags')),
+                    RuleData=decode_message(event.get('attackData', {}).get('ruleData')),
+                    RuleSelectors=decode_message(event.get('attackData', {}).get('ruleSelectors')),
+                    RuleActions=decode_message(event.get('attackData', {}).get('ruleActions'))
+                ),
+                "HttpMessage": assign_params(
+                    RequestId=event.get('httpMessage', {}).get('requestId'),
+                    Start=event.get('httpMessage', {}).get('start'),
+                    Protocol=event.get('httpMessage', {}).get('protocol'),
+                    Method=event.get('httpMessage', {}).get('method'),
+                    Host=event.get('httpMessage', {}).get('host'),
+                    Port=event.get('httpMessage', {}).get('port'),
+                    Path=event.get('httpMessage', {}).get('path'),
+                    RequestHeaders=event.get('httpMessage', {}).get('requestHeaders'),
+                    Status=event.get('httpMessage', {}).get('status'),
+                    Bytes=event.get('httpMessage', {}).get('bytes'),
+                    ResponseHeaders=event.get('httpMessage', {}).get('responseHeaders')
+                ),
+                "Geo": assign_params(
+                    Continent=event.get('geo', {}).get('continent'),
+                    Country=event.get('geo', {}).get('country'),
+                    City=event.get('geo', {}).get('city'),
+                    RegionCode=event.get('geo', {}).get('regionCode'),
+                    Asn=event.get('geo', {}).get('asn')
+                )
             }
         )
 
-        ip_ec.append(assign_params(**{
-            "Address": event.get('attackData', {}).get('clientIP'),
-            "ASN": event.get('geo', {}).get('asn'),
-            "Geo": {
+        ip_ec.append(assign_params(
+            Address=event.get('attackData', {}).get('clientIP'),
+            ASN=event.get('geo', {}).get('asn'),
+            Geo={
                 "Country": event.get('geo', {}).get('country')
             }
-        }))
+        ))
 
         events_human_readable.append(assign_params(**{
             'Attacking IP': event.get('attackData', {}).get('clientIP'),
@@ -354,9 +354,9 @@ def main():
         verify=not params.get('insecure', False),
         proxy=params.get('proxy'),
         auth=EdgeGridAuth(
-            client_token=params.get('clientToken'),
-            access_token=params.get('accessToken'),
-            client_secret=params.get('clientSecret')
+            client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
+            access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
+            client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
         )
     )
     commands = {

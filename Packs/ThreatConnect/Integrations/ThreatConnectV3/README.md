@@ -33,7 +33,7 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | | True |
     | Incident Metadata | The metadata to collect. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Rating Threshold for Malicious Indicators (needed for reputation calculation) | Rating Threshold for Malicious Indicators, it is necessary to calculate reputation. | False |
+    | Rating Threshold for Malicious Indicators (needed for reputation calculation) | Rating Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
     | Confidence Threshold for Malicious Indicators (needed for reputation calculation) | Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
     | Indicator Reputation Freshness in days (needed for reputation calculation) | Indicator Reputation Freshness.This is necessary to calculate reputation. | False |
     | Trust any certificate (not secure) | Whether or not to trust any certificate| False |
@@ -41,17 +41,21 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Maximum number of incidents to fetch | The maximum amount of incident to fetch per run | 200 |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Searches for an indicator of type IP address.
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,7 +64,6 @@ Searches for an indicator of type IP address.
 | owners | A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners. | Optional | 
 | ratingThreshold | A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidenceThreshold | A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
-
 
 #### Context Output
 
@@ -86,13 +89,14 @@ Searches for an indicator of type IP address.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### url
+
 ***
 Searches for an indicator of type URL.
-
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -101,7 +105,6 @@ Searches for an indicator of type URL.
 | owners | A comma-separated list of a client's organizations, sources, or communities to which a client’s API user has been granted permission. For example, "owner1", "owner2", or "owner3". | Optional | 
 | ratingThreshold | A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidenceThreshold | A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
-
 
 #### Context Output
 
@@ -127,13 +130,14 @@ Searches for an indicator of type URL.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### file
+
 ***
 Searches for an indicator of type file.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -142,7 +146,6 @@ Searches for an indicator of type file.
 | owners | A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners. | Optional | 
 | ratingThreshold | A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidenceThreshold | A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
-
 
 #### Context Output
 
@@ -173,18 +176,18 @@ Searches for an indicator of type file.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-owners
+
 ***
 Retrieves all owners for the current account.
-
 
 #### Base Command
 
 `tc-owners`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -195,13 +198,14 @@ Retrieves all owners for the current account.
 | TC.Owner.Type | string | The type of the owner. | 
 
 ### tc-indicators
+
 ***
 Retrieves a list of all indicators.
-
 
 #### Base Command
 
 `tc-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -209,7 +213,7 @@ Retrieves a list of all indicators.
 | owner | A comma-separated list of results filtered by the owner of the indicator. | Optional | 
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
-
+| fields_to_return | Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes. | Optional | 
 
 #### Context Output
 
@@ -250,13 +254,14 @@ Retrieves a list of all indicators.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-get-tags
+
 ***
 Returns a list of all ThreatConnect tags.
-
 
 #### Base Command
 
 `tc-get-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -265,7 +270,6 @@ Returns a list of all ThreatConnect tags.
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
 | name | The name of the tag to get. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -273,13 +277,14 @@ Returns a list of all ThreatConnect tags.
 | TC.Tags | Unknown | A list of tags. | 
 
 ### tc-tag-indicator
+
 ***
 Adds a tag to an existing indicator.
-
 
 #### Base Command
 
 `tc-tag-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -287,18 +292,18 @@ Adds a tag to an existing indicator.
 | tag | The name of the tag. | Required | 
 | indicator | The indicator to tag. For example, for an IP indicator, "8.8.8.8". | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### tc-get-indicator
+
 ***
 Retrieves information about an indicator.
-
 
 #### Base Command
 
 `tc-get-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -351,13 +356,14 @@ Retrieves information about an indicator.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-get-indicators-by-tag
+
 ***
 Fetches all indicators that have a tag.
-
 
 #### Base Command
 
 `tc-get-indicators-by-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,13 +413,14 @@ Fetches all indicators that have a tag.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-add-indicator
+
 ***
 Adds a new indicator to ThreatConnect.
-
 
 #### Base Command
 
 `tc-add-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -425,7 +432,6 @@ Adds a new indicator to ThreatConnect.
 | confidence | The confidence rating of the indicator. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
 | description | The description of the indicator. | Optional | 
 | tags | A comma-separated list of the tags to apply to the campaign. | Optional | 
-
 
 #### Context Output
 
@@ -461,13 +467,14 @@ Adds a new indicator to ThreatConnect.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-create-incident
+
 ***
 Creates a new incident group.
-
 
 #### Base Command
 
 `tc-create-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -477,7 +484,6 @@ Creates a new incident group.
 | tag | A comma-separated list of the tags applied to the incident. | Optional | 
 | securityLabel | The security label applied to the incident. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | description | The description of the incident. | Optional | 
-
 
 #### Context Output
 
@@ -491,20 +497,20 @@ Creates a new incident group.
 | TC.Incident.ID | Unknown | The ID of the new incident. | 
 
 ### tc-incident-associate-indicator
+
 ***
 Associates an indicator with an existing incident. The indicator must exist before running this command. To add an indicator, run the tc-add-indicator command.
-
 
 #### Base Command
 
 `tc-incident-associate-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incidentId | The ID of the incident to which the indicator is associated. | Required | 
 | indicator | The ID of the indicator. | Required | 
-
 
 #### Context Output
 
@@ -540,13 +546,14 @@ Associates an indicator with an existing incident. The indicator must exist befo
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### domain
+
 ***
 Searches for an indicator of type domain.
-
 
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -555,7 +562,6 @@ Searches for an indicator of type domain.
 | owners | A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners. | Optional | 
 | ratingThreshold | A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidenceThreshold | A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
-
 
 #### Context Output
 
@@ -582,19 +588,19 @@ Searches for an indicator of type domain.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-get-incident-associate-indicators
+
 ***
 Returns indicators that are related to a specific incident.
-
 
 #### Base Command
 
 `tc-get-incident-associate-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incidentId | The ID of the incident. | Required | 
-
 
 #### Context Output
 
@@ -634,13 +640,14 @@ Returns indicators that are related to a specific incident.
 | File.Malicious.Description | string | For malicious files, the full description. | 
 
 ### tc-update-indicator
+
 ***
 Updates the indicator in ThreatConnect.
-
 
 #### Base Command
 
 `tc-update-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -651,10 +658,8 @@ Updates the indicator in ThreatConnect.
 | size | The size of the file of the updated indicator. | Optional | 
 | dnsActive | Whether the DNS indicator is active (only for hosts). Possible values are: True, False. | Optional | 
 | whoisActive | Whether the indicator is active (only for hosts). Possible values are: True, False. | Optional | 
-| falsePositive | Whether the updated indicator is a false positive. Possible values are: True, False. | Optional | 
 | securityLabel | The security label applied to the incident. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | tags | A comma-separated list of tags. | Optional | 
-
 
 #### Context Output
 
@@ -690,20 +695,20 @@ Updates the indicator in ThreatConnect.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-delete-indicator-tag
+
 ***
 Removes a tag from a specified indicator.
-
 
 #### Base Command
 
 `tc-delete-indicator-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator | The ID of the indicator from which to remove a tag. | Required | 
 | tag | The name of the tag to remove from the indicator. | Required | 
-
 
 #### Context Output
 
@@ -739,31 +744,32 @@ Removes a tag from a specified indicator.
 | TC.Indicator.WebLink | string | The web link of the indicator. | 
 
 ### tc-delete-indicator
+
 ***
 Deletes an indicator from ThreatConnect.
-
 
 #### Base Command
 
 `tc-delete-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator | The ID of the indicator to delete. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### tc-create-campaign
+
 ***
 Creates a group based on the Campaign type.
-
 
 #### Base Command
 
 `tc-create-campaign`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -773,7 +779,6 @@ Creates a group based on the Campaign type.
 | description | The description of the campaign. | Optional | 
 | tag | Comma-separated list of the tags to apply to the campaign. | Optional | 
 | securityLabel | The security label applied to the incident. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
-
 
 #### Context Output
 
@@ -787,13 +792,14 @@ Creates a group based on the Campaign type.
 | TC.Campaign.ID | string | The ID of the campaign. | 
 
 ### tc-create-event
+
 ***
 Creates a group based on the Event type.
-
 
 #### Base Command
 
 `tc-create-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -819,13 +825,14 @@ Creates a group based on the Event type.
 | TC.Event.Type | string | The type of the event. | 
 
 ### tc-create-threat
+
 ***
 Creates a group based on the "Threats" type.
-
 
 #### Base Command
 
 `tc-create-threat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -836,7 +843,6 @@ Creates a group based on the "Threats" type.
 | securityLabel | The security label applied to the threat. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | description | The description of the threat. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -845,42 +851,42 @@ Creates a group based on the "Threats" type.
 | TC.Threat.ID | string | The ID of the threat. | 
 
 ### tc-delete-group
+
 ***
 Deletes a group.
-
 
 #### Base Command
 
 `tc-delete-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | groupID | A comma-separated list of the IDs of the groups to delete. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### tc-get-events
+
 ***
 Returns a list of events.
-
 
 #### Base Command
 
 `tc-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fromDate | The date to retrieve groups from in the format yyyy-mm-dd, e.g., 1111-11-11. | Optional | 
+| fromDate | The date to retrieve groups from in the yyyy-mm-dd format, e.g., 1111-11-11. | Optional | 
 | tag | The tag to retrieve groups by. | Optional | 
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
 | id | A comma-separated list of IDs to filter the groups by. | Optional | 
-| filter | A free text TQL filter. (Refer [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql) for a basic TQL guide). | Optional | 
-
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
 
 #### Context Output
 
@@ -896,13 +902,14 @@ Returns a list of events.
 | TC.Event.Tags | String | The tags of the event. | 
 
 ### tc-list-groups
+
 ***
 Returns all groups.
-
 
 #### Base Command
 
 `tc-list-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -913,14 +920,13 @@ Returns all groups.
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
 | id | A comma-separated list of IDs to filter the groups by. | Optional | 
-| filter | A free text TQL filter. (Refer [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql) for a basic TQL guide). | Optional | 
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
 | include_tags | Add group tags metadata to the results. | Optional | 
 | include_security_labels | Add group security labels metadata to the results. | Optional | 
 | include_attributes | Add group attributes metadata to the results. | Optional | 
 | include_associated_groups | Add group associated groups metadata to the results. | Optional | 
 | include_associated_indicators | Add group associated indicators metadata to the results. | Optional | 
 | include_all_metaData | Add all group metadata to the results. | Optional | 
-
 
 #### Context Output
 
@@ -934,13 +940,14 @@ Returns all groups.
 | TC.Group.ID | Number | The ID of the group. | 
 
 ### tc-add-group-tag
+
 ***
 Adds tags to a specified group.
-
 
 #### Base Command
 
 `tc-add-group-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -948,23 +955,22 @@ Adds tags to a specified group.
 | group_id | The ID of the group to which to add the tag. To get the ID, run the tc-list-groups command. | Required | 
 | tag_name | The name of the tag to add to the group. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### tc-get-indicator-types
+
 ***
 Returns all indicator types available.
-
 
 #### Base Command
 
 `tc-get-indicator-types`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -979,13 +985,14 @@ Returns all indicator types available.
 | TC.IndicatorType.Value1Label | String | The value label of the indicator. | 
 
 ### tc-create-document-group
+
 ***
 Creates a document group.
-
 
 #### Base Command
 
 `tc-create-document-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -997,7 +1004,6 @@ Creates a document group.
 | security_label | The security label applied to the document. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | description | A description of the group. | Optional | 
 | entry_id | The ID of the entry, as displayed in the War Room. | Required | 
-
 
 #### Context Output
 
@@ -1011,19 +1017,19 @@ Creates a document group.
 | TC.Group.ID | Number | The ID of the group to which the attribute was added. | 
 
 ### tc-download-document
+
 ***
 Downloads the contents of a document.
-
 
 #### Base Command
 
 `tc-download-document`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | document_id | The ID of the document. | Required | 
-
 
 #### Context Output
 
@@ -1041,19 +1047,19 @@ Downloads the contents of a document.
 | File.Extension | String | The extension of the file. | 
 
 ### tc-get-associated-groups
+
 ***
 Returns groups associated with a specified group.
-
 
 #### Base Command
 
 `tc-get-associated-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The ID of the group. To get the ID, run the tc-list-groups command. | Required | 
-
 
 #### Context Output
 
@@ -1066,37 +1072,37 @@ Returns groups associated with a specified group.
 | TC.Group.AssociatedGroup.Type | String | The type of the group. | 
 
 ### tc-get-indicator-owners
+
 ***
 Get the owner for an indicator.
-
 
 #### Base Command
 
 `tc-get-indicator-owners`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator | Indicator ID. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### tc-download-report
+
 ***
 The group report to download in PDF format.
-
 
 #### Base Command
 
 `tc-download-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The ID of the group. | Required | 
-
 
 #### Context Output
 
@@ -1114,13 +1120,14 @@ The group report to download in PDF format.
 | File.Extension | String | The extension of the file. | 
 
 ### tc-update-group
+
 ***
 Updates a group.
-
 
 #### Base Command
 
 `tc-update-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1131,10 +1138,9 @@ Updates a group.
 | security_label | The security label applied to the threat. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | associated_group_id | An ID to associate a group by. | Optional | 
 | associated_indicator_id | An ID to associate an indicator by. | Optional | 
-| security_label | The type of update to the group metadata (associated indicators, attributes,tags, etc.). Possible values are: append, delete, replace. | Optional | 
+| mode | The type of update to the group metadata(associated indicators, attributes,tags etc.). Possible values are: append, delete, replace. | Optional | 
 | attribute_value | The value of the attribute to associate. | Optional | 
 | attribute_type | The type of the attribute to associate. | Optional | 
-
 
 #### Context Output
 

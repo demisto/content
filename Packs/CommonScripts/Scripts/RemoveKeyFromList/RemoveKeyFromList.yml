@@ -1,16 +1,10 @@
 args:
-- default: false
-  description: List name.
-  isArray: false
+- description: List name.
   name: listName
   required: true
-  secret: false
-- default: false
-  description: Key.
-  isArray: false
+- description: Key.
   name: keyName
   required: true
-  secret: false
 comment: Removes a key in key/value store backed by an XSOAR list.
 outputs: []
 commonfields:
@@ -18,7 +12,6 @@ commonfields:
   version: -1
 name: RemoveKeyFromList
 script: '-'
-system: false
 tags: []
 timeout: '0'
 type: python

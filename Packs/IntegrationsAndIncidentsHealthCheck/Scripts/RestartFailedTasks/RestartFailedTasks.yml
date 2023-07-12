@@ -1,36 +1,17 @@
 args:
-- default: false
-  defaultValue: Job
-  description: Comma Separated list of failed tasks to exclude from restart based
-    on playbook string match
-  isArray: false
+- defaultValue: Job
+  description: Comma Separated list of failed tasks to exclude from restart based on playbook string match
   name: playbook_exclusion
-  required: false
-  secret: false
-- default: false
-  defaultValue: '10'
+- defaultValue: '10'
   description: Sleep between restarting batch task (seconds)
-  isArray: false
   name: sleep_time
-  required: false
-  secret: false
-- default: false
-  defaultValue: '100'
+- defaultValue: '100'
   description: Limit of number of incidents to restart tasks on
-  isArray: false
   name: incident_limit
-  required: false
-  secret: false
-- default: false
-  defaultValue: '10'
-  description: Integer of how many tasks you want to be restarted at a time (grouping)
-    before a sleep period (as to not overwhelm the system)
-  isArray: false
+- defaultValue: '10'
+  description: Integer of how many tasks you want to be restarted at a time (grouping) before a sleep period (as to not overwhelm the system)
   name: group_size
-  required: false
-  secret: false
-comment: Use this Script to re-run failed tasks. Run in the same incident after running
-  `GetFailedTasks` for restarting all of the failed tasks or some of them.
+comment: Use this Script to re-run failed tasks. Run in the same incident after running `GetFailedTasks` for restarting all of the failed tasks or some of them.
 commonfields:
   id: RestartFailedTasks
   version: -1
@@ -54,7 +35,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 timeout: 1.2µs
 type: python
 dockerimage: demisto/python3:3.10.6.33415

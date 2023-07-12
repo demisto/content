@@ -13,8 +13,8 @@ def compare(object_a, object_b):
 
 def compare_list(list_a, list_b):
     try:
-        list_a = list(sorted(list_a))
-        list_b = list(sorted(list_b))
+        list_a = sorted(list_a)
+        list_b = sorted(list_b)
     except TypeError:
         pass
     if len(list_a) != len(list_b):
@@ -93,23 +93,15 @@ class TestHelpers:
             input_key = input_key.read()
         with open(input_public, 'r') as input_public:
             input_public = input_public.read()
-        try:
+        with pytest.raises(ValueError):
             temp_input_public = input_public.split('\n')[:-6]
             temp_input_public.extend(input_public.split('\n')[-7:])
             ssl_files_checker('\n'.join(temp_input_public), input_key)
-        except ValueError as error:
-            assert str(error).startswith('Unable to load certificate')
-        else:
-            raise Exception
 
-        try:
+        with pytest.raises(ValueError):
             temp_input_private = input_key.split('\n')[:-6]
             temp_input_private.extend(input_key.split('\n')[-7:])
             ssl_files_checker(input_public, '\n'.join(temp_input_private))
-        except ValueError as error:
-            assert str(error) == 'Could not deserialize key data. The data may be in an incorrect format or it may be encrypted with an unsupported algorithm.'     # noqa: E501
-        else:
-            raise Exception
 
 
 class TestSafeDataGet:
@@ -167,13 +159,13 @@ class TestSafeDataGet:
         output = safe_data_get(dict_data, path, prefix='TEST')
         assert output is None
 
-    data_test_get_none_existing_path_with_prefix = [
+    data_test_get_none_existing_path_with_prefix2 = [
         ({'standard_list': {'test': 'multi_level_get'}}, ['standard_list1', 'test']),
         ({'standard_list': {'test': 'multi_level_get'}}, ['standard_list', 'test1']),
         ({'without_list': 'one_level_get'}, 'without_list1'),
     ]
 
-    @pytest.mark.parametrize('dict_data, path', data_test_get_none_existing_path_with_prefix)
+    @pytest.mark.parametrize('dict_data, path', data_test_get_none_existing_path_with_prefix2)
     def test_get_none_existing_path_without_prefix(self, dict_data, path):
         output = safe_data_get(dict_data, path)
         assert output is None
@@ -293,19 +285,13 @@ class TestCommandTestModule:
     def test_command_test_module_with_invalid_credential(self, mocker):
         self.mock_data(mocker)
         self.data = {'taxii_11:Status_Message': {'@status_type': 'UNAUTHORIZED'}}
-        try:
+
+        with pytest.raises(DemistoException, match='invalid credential.'):
             command_test_module(self.client, '', '', '')
-        except DemistoException as error:
-            assert str(error) == 'invalid credential.'
-        else:
-            raise Exception
 
     def test_command_test_module_with_unknown_error(self, mocker):
         self.mock_data(mocker)
         self.data = {}
-        try:
+
+        with pytest.raises(DemistoException, match='unknown error.'):
             command_test_module(self.client, '', '', '')
-        except DemistoException as error:
-            assert str(error) == 'unknown error.'
-        else:
-            raise Exception

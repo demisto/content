@@ -1,0 +1,905 @@
+{
+    "fromVersion": "8.3.0",
+  "templates_data": [
+    {
+      "report_name": "HIPAA Compliance Report",
+      "report_description": "Monitor HIPAA controls and produce evidence for audits.",
+      "layout": [
+        {
+          "id": "Row 1",
+          "data": [
+            {
+              "key": "header",
+              "data": {
+                "name": "HIPAA Compliance Report",
+                "type": "",
+                "width": 100,
+                "height": 140,
+                "tenantId": "1004205575214",
+                "description": "Monitor HIPAA controls and produce evidence for audits."
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-6189",
+          "data": [
+            {
+              "key": "xql_1683766565790",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.observer.product contains \"XDR agent\" \n| filter xdm.observer.content_version contains \"*\"\n| fields xdm.observer.*\n| comp count () as counter by xdm.observer.content_version\n| view graph type = column subtype = grouped xaxis = xdm.observer.content_version yaxis = counter ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "column",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "grouped"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "xdm.observer.content_version"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-34",
+          "data": [
+            {
+              "key": "xql_1683766803647",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier\n| comp count () as agent_version by xdm.source.agent.version\n| view graph type = pie subtype = full xaxis = xdm.source.agent.version yaxis = agent_version ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "xdm.source.agent.version"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "agent_version"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-2527",
+          "data": [
+            {
+              "key": "xql_1683766863080",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel | filter xdm.auth.privilege_level contains \"*\" | fields xdm.auth.* | limit 500",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-9898",
+          "data": [
+            {
+              "key": "xql_1683766920238",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.host.os contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family \n| comp count () as OS_counter by xdm.source.host.os\n| view graph type = bubble subtype = packed xaxis = xdm.source.host.os yaxis = OS_counter bubblerad = OS_counter ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "bubble",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "packed"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "xdm.source.host.os"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "OS_counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "bubblerad",
+                        "value": "OS_counter"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-8808",
+          "data": [
+            {
+              "key": "xql_1683766946301",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.host.os contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1233",
+          "data": [
+            {
+              "key": "xql_1683766964741",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel | filter xdm.observer.product = \"XDR agent\"\n| filter xdm.observer.content_version contains \"*\"\n| dedup xdm.observer.name\n| fields xdm.observer.product , xdm.observer.name, xdm.observer.content_version, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version, _time ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-8471",
+          "data": [
+            {
+              "key": "xql_1683766983921",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel\n| filter xdm.network.rule contains \"*\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1194",
+          "data": [
+            {
+              "key": "xql_1683767003041",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel\n| filter xdm.network.rule contains \"*\" and xdm.network.ip_protocol = \"TCP\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n| comp count() as network_rule_counter by xdm.network.rule\n| view graph type = wordcloud xaxis = xdm.network.rule yaxis = network_rule_counter ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "wordcloud",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "xdm.network.rule"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "network_rule_counter"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-4986",
+          "data": [
+            {
+              "key": "xql_1683767022136",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel | filter xdm.auth.privilege_level contains \"*\" | fields xdm.auth.* | limit 500",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1843",
+          "data": [
+            {
+              "key": "xql_1683767040079",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.observer.product contains \"XDR\" \n| filter xdm.observer.type = \"AGENT_TYPE_REGULAR\"\n| fields xdm.observer.content_version, xdm.observer.name, xdm.observer.product, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-6738",
+          "data": [
+            {
+              "key": "xql_1683767058419",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.event.operation contains \"REGISTRY\" /*Filter for registry events*/\n| filter xdm.event.operation contains \"*\"\n| fields _time, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.host.hostname, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1464",
+          "data": [
+            {
+              "key": "xql_1683767072780",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel\n| filter xdm.network.rule contains \"*\" and xdm.network.ip_protocol = \"TCP\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-8424",
+          "data": [
+            {
+              "key": "xql_1682655061300",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.event.type contains \"*\"\n| filter xdm.source.host.hostname in (\"*\")\n| fields xdm.source.host.hostname, xdm.source.user.username, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.observer.product ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-9205",
+          "data": [
+            {
+              "key": "xql_1682654953066",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.auth.kerberos_tgt.encryption_type contains \"*\"\n| fields xdm.auth.kerberos_tgt.encryption_type , xdm.source.host.hostname, xdm.source.ipv4, xdm.source.user.username, xdm.source.port, xdm.target.host.hostname, xdm.target.ipv4, xdm.target.user.username \n| limit 500\n\n\n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": "\"stretch\""
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_template_id": 1,
+      "time_frame": {
+        "relativeTime": 2592000000
+      },
+      "global_id": "6e815c917536495daf49f3a15206a715",
+      "time_offset": -18000
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1682654953066",
+      "title": "HIPAA 164.312 (b): Audit controls",
+      "creation_time": 1687923812938,
+      "description": "Implement policies and procedures to audit system activity, Use this widget to query kerberos authentication data.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| filter xdm.auth.kerberos_tgt.encryption_type contains \"*\"\n| fields xdm.auth.kerberos_tgt.encryption_type , xdm.source.host.hostname, xdm.source.ipv4, xdm.source.user.username, xdm.source.port, xdm.target.host.hostname, xdm.target.ipv4, xdm.target.user.username \n| limit 500\n\n\n",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": "\"stretch\""
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682655061300",
+      "title": "HIPAA 164.312 (a) (2): Unique user identification",
+      "creation_time": 1687923813185,
+      "description": "Implement policies and procedures to identify users' access and modifications of ePHI. Use this widget source and event data.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.source.user.username, xdm.event.operation, xdm.event.type, xdm.event.operation_sub_type, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.observer.product \n| filter xdm.event.type contains \"*\"\n| filter xdm.source.host.hostname in (\"*\")",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683766565790",
+      "title": "HIPAA 164.306 (a) (1) : Validate confidentiality and integrity of PHI",
+      "creation_time": 1687923813483,
+      "description": "Implement policies and procedures to protect unauthorized access, alteration, or disclosure of ePHI. Use this widget to track content version.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.observer.product, xdm.observer.content_version\n| filter xdm.observer.product contains \"XDR agent\" \n| filter xdm.observer.content_version contains \"*\"\n| comp count () as counter by xdm.observer.content_version\n| view graph type = column subtype = grouped xaxis = xdm.observer.content_version yaxis = counter ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "column",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "grouped"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "xdm.observer.content_version"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683766803647",
+      "title": "HIPAA 164.306 (a) (2): Threat Protection",
+      "creation_time": 1687923814431,
+      "description": "Develop and implement security policies and procedures. Use this widget to track agent versions.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.observer.content_version, xdm.source.agent.version\n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"\n| comp count () as agent_version by xdm.source.agent.version\n| view graph type = pie subtype = full xaxis = xdm.source.agent.version yaxis = agent_version ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "xdm.source.agent.version"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "agent_version"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683766863080",
+      "title": "HIPAA 164.306 (a) (3): Protect against information disclosure",
+      "creation_time": 1687923815501,
+      "description": "Implement policies and procedures to control and monitor access, unauthorized entry, and ensure security of workstations. Use this widget to query authentication and authorization data.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.auth.* \n| filter xdm.auth.privilege_level contains \"*\" \n| limit 500",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683766920238",
+      "title": "HIPAA 164.308 (a) (1) (i) (A): Identify risks and Vulnerabilities",
+      "creation_time": 1687923816753,
+      "description": "Implement policies and procedures to assess potential risks and vulnerabilities. Use this widget to query host data.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.observer.content_version, xdm.source.host.os\n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.host.os contains \"*\"\n| comp count () as OS_counter by xdm.source.host.os\n| view graph type = bubble subtype = packed xaxis = xdm.source.host.os yaxis = OS_counter bubblerad = OS_counter ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "bubble",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "packed"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "xdm.source.host.os"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "OS_counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "bubblerad",
+                "value": "OS_counter"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683766946301",
+      "title": "HIPAA 164.308 (a) (1) (i) (B): Reduce risks and Vulnerabilities",
+      "creation_time": 1687923817723,
+      "description": "Implement policies and procedures to reduce potential risks and vulnerabilities. Use this widget to query host version data.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.observer.content_version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.host.os contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683766964741",
+      "title": "HIPAA 164.308 (a) (1) (i) (C): Apply sanction policy when members fail to comply",
+      "creation_time": 1687923818580,
+      "description": "Implement sanction policies and procedures when workforce members fail to comply with policies or procedures. Use this widget to query agent data.",
+      "data": {
+        "phrase": "datamodel\n| fields xdm.observer.product , xdm.observer.name, xdm.observer.content_version, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version, _time \n| filter xdm.observer.product = \"XDR agent\"\n| filter xdm.observer.content_version contains \"*\"\n| dedup xdm.observer.name",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683766983921",
+      "title": "HIPAA 164.308 (a) (6) (i): Identify/respond to known security incidents",
+      "creation_time": 1687923819631,
+      "description": "Implement policies and procedures to identify and respond to security incidents. Use this widget to query network rules.",
+      "data": {
+        "phrase": "datamodel\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n| filter xdm.network.rule contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683767003041",
+      "title": "HIPAA 164.308 (a) (1) (i) (D): Regularly review audit logs",
+      "creation_time": 1687923820552,
+      "description": "Implement policies and procedures to review system activity. Use this widget to query triggered network rules.",
+      "data": {
+        "phrase": "datamodel\n| fields xdm.network.rule, xdm.network.ip_protocol\n| filter xdm.network.rule contains \"*\" and xdm.network.ip_protocol = \"TCP\"\n| comp count() as network_rule_counter by xdm.network.rule\n| view graph type = wordcloud xaxis = xdm.network.rule yaxis = network_rule_counter ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "wordcloud",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "xdm.network.rule"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "network_rule_counter"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683767022136",
+      "title": "HIPAA 164.308 (a) (4) (i) (A): Isolate health care clearinghouse functions",
+      "creation_time": 1687923821669,
+      "description": "Implement policies and procedures to isolate systems that contain ePHI. Use this widget to query authentication and authorization data.",
+      "data": {
+        "phrase": "datamodel \n| filter xdm.auth.privilege_level contains \"*\" \n| fields xdm.auth.* \n| limit 500",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683767040079",
+      "title": "HIPAA 164.308 (a) (7) (i) (A): Data backup plan",
+      "creation_time": 1687923822679,
+      "description": "Implement policies and procedures to protect and restore ePHI in the event of a disaster or system failure. Use this widget to query observer product data.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.observer.content_version, xdm.observer.name, xdm.observer.product, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version \n| filter xdm.observer.product contains \"XDR\" \n| filter xdm.observer.type = \"AGENT_TYPE_REGULAR\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683767058419",
+      "title": "HIPAA 164.308 (a) (7) (i) (B): Data recovery plan",
+      "creation_time": 1687923824128,
+      "description": "Implement policies and procedures to recover ePHI in the event of a disaster or system failure. Use this widget to query registry data.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type,  xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product\n| filter xdm.event.operation contains \"REGISTRY\" /*Filter for registry events*/\n| filter xdm.event.operation contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683767072780",
+      "title": "HIPAA 164.312 (a) (1): Access control",
+      "creation_time": 1687923825274,
+      "description": "Implement policies and procedures to limit access to ePHI only to authorized individuals or entities. Use this widget to query network rules and monitor access.",
+      "data": {
+        "phrase": "datamodel\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n| filter xdm.network.rule contains \"*\" and xdm.network.ip_protocol = \"TCP\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    }
+  ]
+}

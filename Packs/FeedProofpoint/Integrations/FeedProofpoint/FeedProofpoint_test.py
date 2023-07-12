@@ -1,5 +1,5 @@
 import pytest
-from FeedProofpoint import Client, fetch_indicators_command
+from FeedProofpoint import Client, fetch_indicators_command, get_indicators_command
 from CommonServerPython import FeedIndicatorType
 
 url = "https://example.com"
@@ -55,3 +55,30 @@ def test_feed_param(tags, requests_mock):
     )
     indicators = fetch_indicators_command(client, client.IP_TYPE)
     assert tags == indicators[0]['fields']['tags']
+
+
+def test_get_indicators_command(mocker):
+    """
+    Given:
+    - tags parameters
+    When:
+    - Executing get_indicators_command
+    Then:
+    - Validate that the function returns expected markdown table,
+        empty dictionary as context, and list of fetched indicators
+        for a valid indicator type and limit value.
+    """
+    mocker.patch.object(client, "get_indicators", return_value=[
+        {"type": "domain", "value": "example.com"},
+        {"type": "ip", "value": "1.2.3.4"}
+    ])
+    args = {"indicator_type": "all", "limit": "2"}
+    expected_hr = '### Indicators from Proofpoint Feed\n|type|value|\n|---|---|\n| domain | example.com |\n| ip | 1.2.3.4 |\n'
+    expected_indicators = [
+        {"type": "domain", "value": "example.com"},
+        {"type": "ip", "value": "1.2.3.4"}
+    ]
+    hr, context, indicators = get_indicators_command(client, args)
+    assert hr == expected_hr
+    assert context == {}
+    assert indicators == expected_indicators

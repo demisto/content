@@ -6,10 +6,10 @@ from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 
 import dateparser
-import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' HELPER FUNCTIONS '''

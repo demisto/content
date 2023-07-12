@@ -1,2 +1,3 @@
 [file:Ipstack.yml]
-ignore=IN145,IN124
+ignore=IN124
+

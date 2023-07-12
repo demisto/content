@@ -14,19 +14,16 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
 - additionalinfo: ID of Trello board used both to fetch incidents and as the default for all integration commands.
   display: Default and Fetch Board ID
   name: board_id
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -38,13 +35,11 @@ configuration:
 - additionalinfo: Optional - If specified, incidents will only be fetched when cards are created in this specific list. Use trello-list-lists command to display IDs of available lists in Board.
   display: List to Fetch Incidents from
   name: list_id
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 description: Interact with the Trello task manager
@@ -52,9 +47,7 @@ display: Trello
 name: Trello
 script:
   commands:
-  - deprecated: false
-    description: List the boards available to the provided API Key
-    execution: false
+  - description: List the boards available to the provided API Key
     name: trello-list-boards
     outputs:
     - contextPath: Trello.Boards.Id
@@ -70,15 +63,9 @@ script:
       description: The last time this board was updated.
       type: Unknown
   - arguments:
-    - default: false
-      description: 'Optional - the ID of  the board to query, if not provided will use configured '
-      isArray: false
+    - description: 'Optional - the ID of  the board to query, if not provided will use configured '
       name: board_id
-      required: false
-      secret: false
-    deprecated: false
     description: List all the lists associated with the trello board.
-    execution: false
     name: trello-list-lists
     outputs:
     - contextPath: Trello.Lists.Id
@@ -94,33 +81,17 @@ script:
       description: ID Of the board this list belongs to
       type: Unknown
   - arguments:
-    - default: false
-      description: Card name
-      isArray: false
+    - description: Card name
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Card Description - Markdown Compatible
-      isArray: false
+    - description: Card Description - Markdown Compatible
       name: desc
-      required: false
-      secret: false
-    - default: false
-      description: ID of list to create card within
-      isArray: false
+    - description: ID of list to create card within
       name: list_id
       required: true
-      secret: false
-    - default: false
-      description: CSV list of Labels (by ID) to add to the card. Use trello-list-labels command to display.
-      isArray: false
+    - description: CSV list of Labels (by ID) to add to the card. Use trello-list-labels command to display.
       name: idLabels
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new card.
-    execution: false
     name: trello-create-card
     outputs:
     - contextPath: Trello.CreatedCard.Id
@@ -136,37 +107,20 @@ script:
       description: ID of list this card belongs to
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of card to be updated
-      isArray: false
+    - description: ID of card to be updated
       name: card_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If true, archives the card.
-      isArray: false
       name: closed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: CSV Of Trello Label IDs to add to card
-      isArray: false
+    - description: CSV Of Trello Label IDs to add to card
       name: idLabels
-      required: false
-      secret: false
-    - default: false
-      description: ID Of list to move card to.
-      isArray: false
+    - description: ID Of list to move card to.
       name: idList
-      required: false
-      secret: false
-    deprecated: false
     description: Update an existing card
-    execution: false
     name: trello-update-card
     outputs:
     - contextPath: Trello.UpdatedCard.Id
@@ -176,27 +130,15 @@ script:
       description: Name of updated card
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of card to delete
-      isArray: false
+    - description: ID of card to delete
       name: card_id
-      required: false
-      secret: false
-    deprecated: false
     description: Delete a card
-    execution: false
     name: trello-delete-card
   - arguments:
-    - default: false
-      description: 'Optional - the ID of  the board to query, if not provided will use configured '
-      isArray: false
+    - description: 'Optional - the ID of  the board to query, if not provided will use configured '
       name: board_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: CSV of action types used to filter response.
-      isArray: false
       name: filter
       predefined:
       - acceptEnterpriseJoinRequest
@@ -267,23 +209,11 @@ script:
       - updateMember
       - updateOrganization
       - voteOnCard
-      required: false
-      secret: false
-    - default: false
-      description: First action time
-      isArray: false
+    - description: First action time
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: Last action time
-      isArray: false
+    - description: Last action time
       name: before
-      required: false
-      secret: false
-    deprecated: false
     description: List all actions on a board, such as card updates, additions, and deletes.
-    execution: false
     name: trello-list-actions
     outputs:
     - contextPath: Trello.Actions.Id
@@ -305,15 +235,9 @@ script:
       description: Board ID
       type: Unknown
   - arguments:
-    - default: false
-      description: Optional - Board ID
-      isArray: false
+    - description: Optional - Board ID
       name: board_id
-      required: false
-      secret: false
-    deprecated: false
     description: List all the labels in a given board
-    execution: false
     name: trello-list-labels
     outputs:
     - contextPath: Trello.Labels.Id
@@ -326,22 +250,13 @@ script:
       description: Label Color
       type: Unknown
   - arguments:
-    - default: false
-      description: Optional - Board ID
-      isArray: false
+    - description: Optional - Board ID
       name: board_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of Label
-      isArray: false
+    - description: Name of Label
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Label Color
-      isArray: false
       name: color
       predefined:
       - yellow
@@ -354,11 +269,7 @@ script:
       - sky
       - pink
       - lime
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new trello label
-    execution: false
     name: trello-create-label
     outputs:
     - contextPath: Trello.CreatedLabel.Id
@@ -368,21 +279,12 @@ script:
       description: Name of created label
       type: Unknown
   - arguments:
-    - default: false
-      description: Comment to add.
-      isArray: false
+    - description: Comment to add.
       name: text
       required: true
-      secret: false
-    - default: false
-      description: Card to add comment to
-      isArray: false
+    - description: Card to add comment to
       name: card_id
-      required: false
-      secret: false
-    deprecated: false
     description: Add a comment to a Trello card
-    execution: false
     name: trello-add-comment
     outputs:
     - contextPath: Trello.AddedComment.Id
@@ -392,15 +294,9 @@ script:
       description: Date of comment
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of list containing cards
-      isArray: false
+    - description: ID of list containing cards
       name: list_id
-      required: false
-      secret: false
-    deprecated: false
     description: List all the trello cards
-    execution: false
     name: trello-list-cards
     outputs:
     - contextPath: Trello.Cards.Id
@@ -427,11 +323,8 @@ script:
     - contextPath: Trello.Cards.Labels.id
       description: Label ID
       type: Unknown
-  dockerimage: demisto/python3:3.10.8.37233
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
