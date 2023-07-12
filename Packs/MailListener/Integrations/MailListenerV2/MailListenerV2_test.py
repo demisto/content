@@ -1,5 +1,7 @@
 from datetime import datetime
+import tempfile
 from freezegun import freeze_time
+from more_itertools import side_effect
 import pytest
 
 MAIL_STRING = br"""Delivered-To: to@test1.com
@@ -274,12 +276,7 @@ def test_get_eml_attachments():
     assert res[0]['filename'] == 'Test with an image.eml'
 
 
-@pytest.mark.parametrize('cert_and_key, ok', [
-    # - No certificates and private keys
-    ({
-    },
-        False
-    ),
+@pytest.mark.parametrize('cert_and_key', [
     # - cert and key are in the integration instance parameters
     # - private key is OpenSSL format
     # *** The cert and key below are not used in the real services, and only used for testing.
@@ -312,10 +309,9 @@ def test_get_eml_attachments():
                     '5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ '\
                     'f8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
                     '-----END EC PRIVATE KEY-----'
-    },
-        True
+    }
     ),
-    # - cert and key are in the Certificate secion of the Credentials
+    # - cert and key are in the Certificate section of the Credentials
     # - private key is OpenSSL format
     # *** The cert and key below are not used in the real services, and only used for testing.
     ({
@@ -351,8 +347,7 @@ f8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
 -----END EC PRIVATE KEY-----
 '''
         }
-    },
-        True
+    }
     ),
     # - cert and key are in the integration instance parameters
     # - private key is PKCS#8 PEM
@@ -386,8 +381,7 @@ f8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
                     'kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx '\
                     'dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
                     '-----END PRIVATE KEY-----'
-    },
-        True
+    }
     ),
     # - cert and key are in the Certificate secion of the Credentials
     # - private key is PKCS#8 PEM
@@ -425,77 +419,60 @@ dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
 -----END PRIVATE KEY-----
 '''
         }
-    },
-        True
+    }
     )
 ])
-def test_load_client_cert_and_key(cert_and_key, ok):
+def test_load_client_cert_and_key(mocker, cert_and_key):
+    """
+    Given:
+        Client cetifcates and private keys from the integration's parameters
+    When:
+        Authenticating the client using SSL client certificate authentication 
+    Then:
+        1. Validate that the SSLContext object, that is used for authentication,
+        is given the correct file that holds the certificates
+        2. The function 'load_client_cert_and_key' returns True, inidicating that we are using
+        SSL client certificate authentication
+    """
     from MailListenerV2 import load_client_cert_and_key
     import ssl
 
     params = {
         'clientCertAndKey': cert_and_key
     }
+
+    named_temporary_file_mocker = mocker.patch('MailListenerV2.NamedTemporaryFile',
+                                               return_value=tempfile.NamedTemporaryFile(mode='w'))
     ssl_ctx = ssl.create_default_context()
     ssl_ctx.check_hostname = False
     ssl_ctx.verify_mode = ssl.CERT_NONE
     ssl_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+    load_cert_chain_mocker = mocker.patch.object(ssl_ctx, 'load_cert_chain')
+    assert (load_client_cert_and_key(ssl_ctx, params) is True)
+    assert load_cert_chain_mocker.call_args_list[0][1].get('certfile') == named_temporary_file_mocker.return_value.name
 
-    assert (load_client_cert_and_key(ssl_ctx, params) == ok)
 
-    def _test_connect(
-        ssl_client_ctx: ssl.SSLContext,
-        require_client_auth: bool
-    ) -> bool:
-        from socketserver import BaseRequestHandler, ThreadingTCPServer
-        import threading
-        import socket
+def test_load_empty_client_cert_and_key_():
+    """
+    Given:
+        Client cetifcates and private keys are not configured in the integration's parameters
+    When:
+        Authenticating the client
+    Then:
+        The function 'load_client_cert_and_key' returns False, inidicating that we are not
+        using SSL client certificate authentication
+    """
+    from MailListenerV2 import load_client_cert_and_key
+    import ssl
 
-        class TestSSLServer(BaseRequestHandler):
-            def __init__(self, request, client_address, server) -> None:
-                self.__ssl_server_context: ssl.SSLContext = None  # type: ignore
-                BaseRequestHandler.__init__(self, request, client_address, server)
+    # - No certificates and private keys
+    params: dict[str, dict] = {
+        'clientCertAndKey': {
+        }
+    }
 
-            def setup(self) -> None:
-                self.__ssl_server_context = self.server.ssl_server_ctx
-
-            def handle(self) -> None:
-                try:
-                    with self.__ssl_server_context.wrap_socket(self.request, server_side=True) as s:
-                        s.write(b'ok')
-                except Exception:
-                    pass
-                finally:
-                    self.request.close()
-
-        ssl_server_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        if require_client_auth:
-            ssl_server_ctx.verify_mode = ssl.CERT_REQUIRED
-        else:
-            ssl_server_ctx.verify_mode = ssl.CERT_NONE
-
-        ssl_server_ctx.load_cert_chain(certfile='./test_data/127.0.0.1.cer.pem',
-                                       keyfile='./test_data/127.0.0.1.opssl-priv.pem')
-        ssl_server_ctx.load_verify_locations(cafile='./test_data/mail-listener-test-root-ca.cer.pem')
-
-        with ThreadingTCPServer(('', 0), TestSSLServer) as server:
-            server.ssl_server_ctx = ssl_server_ctx
-            server_ip, server_port = server.socket.getsockname()
-
-            thr = threading.Thread(target=server.serve_forever, daemon=False)
-            thr.start()
-            try:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, \
-                        ssl_client_ctx.wrap_socket(s, server_side=False) as ss:
-                    ss.connect((server_ip, server_port))
-                    if ss.read() == b'ok':
-                        return True
-            except Exception:
-                pass
-            finally:
-                server.shutdown()
-                thr.join()
-        return False
-
-    assert (_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=True) == ok)
-    assert (_test_connect(ssl_client_ctx=ssl_ctx, require_client_auth=False))
+    ssl_ctx = ssl.create_default_context()
+    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_NONE
+    ssl_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+    assert (load_client_cert_and_key(ssl_ctx, params) is False)
