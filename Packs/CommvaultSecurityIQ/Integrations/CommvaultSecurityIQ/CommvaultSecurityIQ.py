@@ -204,7 +204,7 @@ def format_alert_description(msg: str) -> str:
     Format alert description
     """
     default_value = msg
-    resp = re.search("<html>(.*)</html>", msg, re.IGNORECASE)
+    resp = msg[msg.find("<html>") + 6: msg.find("</html>")]
     if resp and len(resp.groups()) > 0:
         msg = resp.group(1).strip()
         if msg:
