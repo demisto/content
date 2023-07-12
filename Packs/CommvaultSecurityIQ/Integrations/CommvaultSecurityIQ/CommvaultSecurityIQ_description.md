@@ -123,3 +123,21 @@ Disables user
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CommvaultSecurityIQ.Response | string | Response indicating whether successfully disabled user or not. | 
+### commvault-security-get-access-token-from-keyvault
+
+***
+Read the access token from KeyVault
+
+#### Base Command
+
+`commvault-security-get-access-token-from-keyvault`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CommvaultSecurityIQ.Response | string | Status returned after getting the access token from KeyVault | 
