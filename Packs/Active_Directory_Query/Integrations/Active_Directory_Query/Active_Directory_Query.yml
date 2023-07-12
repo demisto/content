@@ -256,7 +256,6 @@ script:
     - description: The username of the account to enable (sAMAccountName).
       name: username
       required: true
-      description: "The username of the account to enable (sAMAccountName)."
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     - name: restore_user
