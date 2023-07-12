@@ -20,7 +20,7 @@ configuration:
   hiddenusername: true
   required: true
 - display: Trust any certificate (not secure)
-  name: unsecure
+  name: insecure
   type: 8
 - display: Use system proxy settings
   name: proxy

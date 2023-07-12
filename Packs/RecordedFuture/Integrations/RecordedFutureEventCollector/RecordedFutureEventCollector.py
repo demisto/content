@@ -160,7 +160,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    verify_certificate = not params.get('unsecure', False)
+    verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_key = params.get('credentials', {}).get('password')
     headers = {'X-RFToken': api_key}
