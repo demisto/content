@@ -18,7 +18,6 @@ configuration:
   name: ntlm
   type: 8
   section: Connect
-  type: 8
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
   required: true
