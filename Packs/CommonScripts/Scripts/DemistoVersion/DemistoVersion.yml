@@ -16,7 +16,6 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.9.40422
 runas: DBotWeakRole
 fromversion: 5.0.0

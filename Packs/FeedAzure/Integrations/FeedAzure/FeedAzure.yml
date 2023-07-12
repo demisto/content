@@ -6,7 +6,6 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
@@ -17,7 +16,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
@@ -40,7 +38,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - defaultvalue: indicatorType
   display: ''
@@ -50,22 +47,18 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
   defaultvalue: "true"
 - defaultvalue: All
@@ -198,20 +191,16 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
-  required: false
   type: 0
 description: Azure.CloudIPs Feed Integration.
 display: Azure Feed
@@ -219,22 +208,13 @@ name: AzureFeed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of indicators to return. The default value is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the feed.
-    execution: false
     name: azure-get-indicators
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -14,12 +14,10 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: This integration allows you to manage the user configuration on FortiAuthenticator.
 display: FortiAuthenticator

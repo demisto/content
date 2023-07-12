@@ -5,7 +5,6 @@ import hashlib
 from typing import List, Dict, Optional, Any
 
 
-
 def parse_attachment_entries(entries):
     # list -> list
     """Parse the attachments entries.

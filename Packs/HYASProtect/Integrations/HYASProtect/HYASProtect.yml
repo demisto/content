@@ -9,29 +9,20 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Use the HYAS Protect integration to get the verdict information for FQDN,
-  IP Address and NameServer – either as playbook tasks or through API calls in the
-  War Room.
+description: Use the HYAS Protect integration to get the verdict information for FQDN, IP Address and NameServer – either as playbook tasks or through API calls in the War Room.
 display: HYAS Protect
 name: HYAS Protect
 script:
   commands:
   - arguments:
-    - default: false
-      description: Domain value to query
-      isArray: false
+    - description: Domain value to query
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Returns verdict information for the provided Domain.
-    execution: false
     name: hyas-get-domain-verdict
     outputs:
     - contextPath: DBotScore.Indicator
@@ -53,15 +44,10 @@ script:
       description: Verdict Reasons the provided Domain.
       type: Unknown
   - arguments:
-    - default: false
-      description: IP value to query.
-      isArray: false
+    - description: IP value to query.
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Returns verdict information for the provided IP Address.
-    execution: false
     name: hyas-get-ip-verdict
     outputs:
     - contextPath: DBotScore.Indicator
@@ -83,15 +69,10 @@ script:
       description: Verdict Reasons for the provided IP Address.
       type: Unknown
   - arguments:
-    - default: false
-      description: FQDN value to query.
-      isArray: false
+    - description: FQDN value to query.
       name: fqdn
       required: true
-      secret: false
-    deprecated: false
     description: Returns verdict information for the provided FQDN.
-    execution: false
     name: hyas-get-fqdn-verdict
     outputs:
     - contextPath: DBotScore.Indicator
@@ -113,15 +94,10 @@ script:
       description: Verdict Reasons for the provided FQDN.
       type: Unknown
   - arguments:
-    - default: false
-      description: Nameserver value to query.
-      isArray: false
+    - description: Nameserver value to query.
       name: nameserver
       required: true
-      secret: false
-    deprecated: false
     description: Returns verdict information for the provided Nameserver.
-    execution: false
     name: hyas-get-nameserver-verdict
     outputs:
     - contextPath: DBotScore.Indicator
@@ -143,10 +119,6 @@ script:
       description: Verdict Reasons for the provided Nameserver.
       type: Unknown
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

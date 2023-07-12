@@ -15,7 +15,6 @@ configuration:
   additionalinfo: You can find this under Account Settings -> Access Token
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Integrate ShiftLeft CORE code analysis platform with Cortex XSOAR.
 display: ShiftLeft CORE
@@ -67,7 +66,6 @@ script:
       description: Entropy.
     description: Return list of app secrets.
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
   runonce: false
   subtype: python3
 fromversion: 6.0.0

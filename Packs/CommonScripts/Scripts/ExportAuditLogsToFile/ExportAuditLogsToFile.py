@@ -6,7 +6,6 @@ import json
 from datetime import date, timedelta
 
 
-
 def main():   # pragma: no cover
     # get the file type
     file_type = demisto.args().get("output")

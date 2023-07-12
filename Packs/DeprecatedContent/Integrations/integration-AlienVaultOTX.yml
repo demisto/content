@@ -31,12 +31,10 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 script:
   script: >-
     function getArgName(args) {
@@ -478,7 +476,6 @@ script:
     - contextPath: URL.Data
       description: 'URL '
     description: Query url in AlienVault OTX
-  runonce: false
 fromversion: 5.0.0
 tests:
 - No tests

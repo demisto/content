@@ -551,7 +551,6 @@ def build_delivered_message(delivered_messgae: Dict, to: List):
         to: list of recipients that received the message.
 
 
-
     """
     markdown_per_recipient = '### Delivered Message Info\n'
     for to_mail in to:

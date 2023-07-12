@@ -16,11 +16,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Integration to pull assets and other ASM related information.
 display: Cortex Attack Surface Management
@@ -395,19 +393,15 @@ script:
       required: true
     - description: The interval, in seconds, to poll for scan results of an existing Remediation Confirmation Scan.
       name: interval_in_seconds
-      required: false
       defaultValue: "600"
     - description: The timeout, in seconds, for polling for scan results of an existing Remediation Confirmation Scan.
       name: timeout_in_seconds
-      required: false
       defaultValue: "11000"
     - name: hide_polling_output
       description: Whether to hide the polling result (automatically filled by polling).
     - auto: PREDEFINED
       description: Whether to poll until there is at least one result.
       name: polling
-      required: false
-      isArray: false
       defaultValue: true
       predefined:
       - "true"
@@ -423,7 +417,6 @@ script:
       description: Result of the Remediation Confirmation Scan.
       type: string
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   script: ''
   subtype: python3
   type: python

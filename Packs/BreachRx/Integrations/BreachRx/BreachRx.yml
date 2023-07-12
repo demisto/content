@@ -21,11 +21,9 @@ configuration:
   type: 9
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: 'Automate your privacy Incident Response workflow through the BreachRx platform.'
 display: BreachRx
@@ -33,15 +31,11 @@ name: BreachRx
 script:
   commands:
   - name: breachrx-incident-create
-    deprecated: false
     description: 'Create a privacy Incident on the BreachRx platform.'
-    execution: false
     arguments:
     - name: incident_name
-      required: false
       description: 'The name to use when creating the privacy Incident on the BreachRx platform.'
     - name: description
-      required: false
       description: 'A brief description to explain the privacy Incident on the BreachRx platform.'
     outputs:
     - contextPath: BreachRx.Incident.id
@@ -73,19 +67,15 @@ script:
       type: string
     arguments:
     - name: incident_name
-      required: false
       description: The name of the BreachRx incident to associate with this incident.
     - name: incident_identifier
-      required: false
       description: 'The unique identifier of the BreachRx incident to associate with this incident.'
   - name: breachrx-incident-import
     description: 'Link a BreachRx privacy Incident with an XSOAR Incident.'
     arguments:
     - name: incident_name
-      required: false
       description: The name of the BreachRx incident to associate with this incident.
     - name: incident_identifier
-      required: false
       description: 'The unique identifier of the BreachRx incident to associate with this incident.'
     outputs:
     - contextPath: BreachRx.Incident.id
@@ -101,10 +91,8 @@ script:
     description: 'Find a BreachRx privacy Incident on the connected BreachRx platform.'
     arguments:
     - name: incident_name
-      required: false
       description: The name of the BreachRx incident to associate with this incident.
     - name: incident_identifier
-      required: false
       description: 'The unique identifier of the BreachRx incident to associate with this incident.'
     outputs:
     - contextPath: BreachRx.Incident.id
@@ -116,7 +104,6 @@ script:
     - contextPath: BreachRx.Incident.identifier
       description: 'The unique identifier of the privacy Incident on the BreachRx platform.'
       type: string
-  isfetch: false
   runonce: false
   script: '-'
   type: python

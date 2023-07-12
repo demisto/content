@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 
 
-
 def get_audit_logs(timeframe: int) -> Dict:
     timefrom = datetime.now() - timedelta(hours=int(timeframe))
     timestring = timefrom.strftime('%Y-%m-%dT%H:%M:%S')

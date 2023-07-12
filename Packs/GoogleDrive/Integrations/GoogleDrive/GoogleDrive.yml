@@ -14,7 +14,6 @@ configuration:
   hidden: true
 - name: user_id
   display: User ID
-  required: false
   defaultvalue:
   type: 0
   section: Connect
@@ -23,13 +22,11 @@ configuration:
   hidden: true
 - name: user_creds
   display: User ID
-  required: false
   type: 9
   section: Connect
   displaypassword: User's Service Account JSON
 - name: action_detail_case_include
   display: Action Detail Case Include
-  required: false
   defaultvalue:
   type: 16
   section: Collect
@@ -46,7 +43,6 @@ configuration:
   - REFERENCE
 - name: drive_item_search_field
   display: Drive Item Search Field
-  required: false
   defaultvalue:
   type: 15
   section: Collect
@@ -57,7 +53,6 @@ configuration:
   - folderName
 - name: drive_item_search_value
   display: Drive Item Search Value
-  required: false
   type: 0
   section: Collect
   defaultvalue:
@@ -65,23 +60,19 @@ configuration:
   additionalinfo: itemName or folderName for fetching the incident.
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - name: incidentType
   display: Incident type
-  required: false
   type: 13
 - name: max_fetch
   display: Max Incidents
-  required: false
   defaultvalue: 50
   type: 0
   section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
 - name: first_fetch
   display: First Fetch Time Interval
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -89,14 +80,12 @@ configuration:
   defaultvalue: 10 minutes
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   section: Connect
   advanced: true
   additionalinfo:
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -105,29 +94,17 @@ description: Google Drive allows users to store files on their servers, synchron
 script:
   commands:
   - arguments:
-    - default: false
-      description: The user's primary email address.
-      isArray: false
+    - description: The user's primary email address.
       name: user_id
-      required: false
-      secret: false
-    - default: false
-      description: The name of this shared drive.
-      isArray: false
+    - description: The name of this shared drive.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
-      isArray: false
       name: hidden
       predefined:
       - "True"
       - "False"
-      required: false
-      secret: false
-    deprecated: false
     description: >-
       Creates a new Team Drive. The name argument specifies the name of the
       Team Drive. The specified user will be the first organizer.
@@ -135,7 +112,6 @@ script:
       This shared drive/team drive feature is available only with G Suite Enterprise,
       Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits
       edition.
-    execution: false
     name: google-drive-create
     outputs:
     - contextPath: GoogleDrive.Drive.kind
@@ -151,112 +127,63 @@ script:
       description: Whether the shared drive is hidden from the default view.
       type: Boolean
   - arguments:
-    - default: false
-      description: The token for continuing a previous list request on the next page.
-      isArray: false
+    - description: The token for continuing a previous list request on the next page.
       name: page_token
       required: true
-      secret: false
-    - default: false
-      description: The user's primary email address.
-      isArray: false
+    - description: The user's primary email address.
       name: user_id
-      required: false
-      secret: false
-    - default: false
-      description: The shared drive from which changes are returned. Can be retrieved using the `google-drive-drives-list` command.
-      isArray: false
+    - description: The shared drive from which changes are returned. Can be retrieved using the `google-drive-drives-list` command.
       name: drive_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file. Possible values: "true" and "false".'
-      isArray: false
       name: include_corpus_removals
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
-      isArray: false
       name: include_items_from_all_drives
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
-    - default: false
-      description: Specifies which additional view's permissions to include in the response. Only 'published' is supported.
-      isArray: false
+    - description: Specifies which additional view's permissions to include in the response. Only 'published' is supported.
       name: include_permissions_for_view
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "true"
       description: 'Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access. Possible values: "true" and "false".'
-      isArray: false
       name: include_removed
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 100
+    - defaultValue: 100
       description: The maximum number of changes to return per page. Acceptable values are 1 to 1000, inclusive.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive. Possible values: "true" and "false".'
-      isArray: false
       name: restrict_to_my_drive
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of spaces to query within the user corpus. Possible values are 'drive', 'appDataFolder', and 'photos'.
-      isArray: false
+    - description: A comma-separated list of spaces to query within the user corpus. Possible values are 'drive', 'appDataFolder', and 'photos'.
       name: spaces
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
-      isArray: false
       name: supports_all_drives
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: basic
       description: 'The paths of the fields you want to include in the response. Possible values are: "basic" (the response will include a default set of fields specific to this method) and "advance" (you can use the value * to return all the fields).'
-      isArray: false
       name: fields
       predefined:
       - basic
       - advance
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the changes for a user or shared drive.
-    execution: false
     name: google-drive-changes-list
     outputs:
     - contextPath: GoogleDrive.PageToken.DriveChange.nextPageToken
@@ -848,26 +775,13 @@ script:
       description: Whether access to items inside this shared drive is restricted to its members.
       type: Boolean
   - arguments:
-    - default: false
-      description: The user's primary email address.
-      isArray: false
+    - description: The user's primary email address.
       name: user_id
-      required: false
-      secret: false
-    - default: false
-      description: Return activities for this drive folder and all children and descendants. The format is "items/ITEM_ID".
-      isArray: false
+    - description: Return activities for this drive folder and all children and descendants. The format is "items/ITEM_ID".
       name: folder_name
-      required: false
-      secret: false
-    - default: false
-      description: Return activities for this drive item. The format is "items/ITEM_ID".
-      isArray: false
+    - description: Return activities for this drive item. The format is "items/ITEM_ID".
       name: item_name
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         The filtering for items returned from this query request. The format
         of the filter string is a sequence of expressions, joined by an
         optional "AND", where each expression is of the form "field operator
@@ -896,23 +810,15 @@ script:
         detail.action_detail_case:(CREATE EDIT)
 
         -detail.action_detail_case:MOVE"
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         The time range to consider for getting drive activity. Use the
         format "<number> <time unit>". 
 
         Example: 12 hours, 7 days, 3 months, 1 year. This argument will override if
         the filter argument is given.
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         A singular value or a list of allowed action types enclosed in
         parentheses. The filters are based on given actions. For example: 
 
@@ -921,12 +827,8 @@ script:
         (CREATE EDIT)
 
         This argument will override if the filter argument is given.
-      isArray: false
       name: action_detail_case_include
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         A singular value or a list of allowed action types enclosed in
         parentheses. The filters are based on given actions. For example:
 
@@ -935,19 +837,10 @@ script:
         (CREATE EDIT)
 
         This argument will override if the filter argument is given.
-      isArray: false
       name: action_detail_case_remove
-      required: false
-      secret: false
-    - default: false
-      description: The token identifying which page of results to return. Set this to the nextPageToken value returned from a previous query to obtain the following page of results. If not set, the first page of results will be returned.
-      isArray: false
+    - description: The token identifying which page of results to return. Set this to the nextPageToken value returned from a previous query to obtain the following page of results. If not set, the first page of results will be returned.
       name: page_token
-      required: false
-      secret: false
-    deprecated: false
     description: Query past activity in Google Drive.
-    execution: false
     name: google-drive-activity-list
     outputs:
     - contextPath: GoogleDrive.PageToken.DriveActivity.nextPageToken
@@ -1675,30 +1568,19 @@ script:
       type: String
   - name: google-drive-drives-list
     description: Lists the user's shared drives.
-    deprecated: false
     arguments:
     - name: page_size
       description: "Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive."
-      required: false
-      isArray: false
       defaultValue: "100"
     - name: page_token
       description: Page token for shared drives.
-      required: false
-      isArray: false
     - name: query
       description: Query string for searching shared drives.
-      required: false
-      isArray: false
     - name: use_domain_admin_access
       description: "Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned."
-      required: false
-      isArray: false
       defaultValue: "false"
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GoogleDrive.Drive.Drive.id
       description: The ID of this shared drive which is also the ID of the top level folder of this shared drive.
@@ -1783,25 +1665,16 @@ script:
       type: Boolean
   - name: google-drive-drive-get
     description: Gets a user shared drives.
-    deprecated: false
     arguments:
     - name: use_domain_admin_access
       description: "Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned."
-      required: false
-      isArray: false
       defaultValue: "false"
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - name: drive_id
       description: ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command.
-      required: false
-      isArray: false
     - name: fields
       description: The fields you want included in the response.
-      required: false
-      isArray: false
       defaultValue: kind, id, name, themeId, capabilities, createdTime, hidden, restrictions
     outputs:
     - contextPath: GoogleDrive.Drive.Drive.id
@@ -1887,52 +1760,33 @@ script:
       type: Boolean
   - name: google-drive-files-list
     description: Lists the user's shared drives.
-    deprecated: false
     arguments:
     - name: page_size
       description: "Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive."
-      required: false
-      isArray: false
       defaultValue: "100"
     - name: page_token
       description: Page token for shared drives.
-      required: false
-      isArray: false
     - name: query
       description: Query string for searching shared drives.
-      required: false
-      isArray: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
-      isArray: false
       name: include_items_from_all_drives
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - name: fields
       description: The fields you want included in the response.
-      required: false
-      isArray: false
       defaultValue: kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata
     - auto: PREDEFINED
-      default: false
       description: Whether the requesting application supports both My Drives and shared drives.
-      isArray: false
       name: supports_all_drives
       defaultValue: "False"
       predefined:
       - "True"
       - "False"
-      required: false
-      secret: false
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
@@ -1948,31 +1802,20 @@ script:
       type: String
   - name: google-drive-file-get
     description: Get a single file.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
-      isArray: false
       name: include_items_from_all_drives
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     - name: fields
       description: The fields you want included in the response.
-      required: false
-      isArray: false
       defaultValue: kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata
     outputs:
     - contextPath: GoogleDrive.File.File.capabilities.canAddChildren
@@ -2181,20 +2024,13 @@ script:
       type: Boolean
   - name: google-drive-file-upload
     description: Creates a new file.
-    deprecated: false
     arguments:
     - name: file_name
       description: The name of the file to upload.
-      required: false
-      isArray: false
     - name: entry_id
       description: The file's Entry ID.
-      required: false
-      isArray: false
     - name: parent
       description: The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
@@ -2405,21 +2241,14 @@ script:
       type: String
   - name: google-drive-file-download
     description: Download a single file.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: file_name
       description: Name of the downloaded file.
-      required: false
-      isArray: false
       defaultValue: "untitled"
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -2453,16 +2282,11 @@ script:
       type: String
   - name: google-drive-file-replace-existing
     description: Updates a file's content.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the file to replace. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: entry_id
       description: The file's entry ID.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
@@ -2673,63 +2497,41 @@ script:
       type: String
   - name: google-drive-file-delete
     description: Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive the user must be an organizer on the parent. If the target is a folder, all descendants owned by the user are also deleted.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
-      isArray: false
       name: supports_all_drives
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: ID of the deleted file.
       type: String
   - name: google-drive-file-permissions-list
     description: Lists a file's or shared drive's permissions.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - name: page_size
       description: "Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive."
-      required: false
-      isArray: false
       defaultValue: "100"
     - name: page_token
       description: Page token for shared drives.
-      required: false
-      isArray: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
-      isArray: false
       name: supports_all_drives
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     outputs:
     - contextPath: GoogleDrive.FilePermission.FilePermission.deleted
       description: Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions.
@@ -2754,32 +2556,21 @@ script:
       type: String
   - name: google-drive-file-permission-create
     description: Creates a permission for a file or shared drive.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether a confirmation email will be sent. Possible values: "true" and "false".'
-      isArray: false
       name: send_notification_email
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "reader"
       description: 'The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
-      isArray: false
       name: role
       predefined:
       - "owner"
@@ -2788,29 +2579,19 @@ script:
       - "writer"
       - "commenter"
       - "reader"
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "anyone"
       description: 'The type of the grantee. When creating a permission, if type is user or group, you must provide an emailAddress for the user or group. When type is domain, you must provide a domain. No extra information is required for an anyone type. Possible values: "user", "group", "domain", and "anyone".'
-      isArray: false
       name: type
       predefined:
       - "user"
       - "group"
       - "domain"
       - "anyone"
-      required: false
-      secret: false
     - name: domain
       description: The domain to which this permission refers.
-      required: false
-      isArray: false
     - name: email_address
       description: The email address of the user or group to which this permission refers.
-      required: false
-      isArray: false
     outputs:
     - contextPath: GoogleDrive.FilePermission.FilePermission.deleted
       description: Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions.
@@ -2835,29 +2616,18 @@ script:
       type: String
   - name: google-drive-file-permission-update
     description: Updates a permission with patch semantics.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - name: expiration_time
       description: The time at which this permission will expire (RFC 3339 date-time).
-      required: false
-      isArray: false
     - name: permission_id
       description: The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command.
-      required: false
-      isArray: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "reader"
       description: 'The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
-      isArray: false
       name: role
       predefined:
       - "owner"
@@ -2866,8 +2636,6 @@ script:
       - "writer"
       - "commenter"
       - "reader"
-      required: false
-      secret: false
     outputs:
     - contextPath: GoogleDrive.FilePermission.FilePermission.deleted
       description: Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions.
@@ -2892,36 +2660,22 @@ script:
       type: String
   - name: google-drive-file-permission-delete
     description: Delete a permission.
-    deprecated: false
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      required: false
-      isArray: false
     - name: user_id
       description: The user's primary email address.
-      required: false
-      isArray: false
     - name: permission_id
       description: The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command.
-      required: false
-      isArray: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
-      isArray: false
       name: supports_all_drives
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
   dockerimage: demisto/googleapi-python3:1.0.0.64222
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3

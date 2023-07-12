@@ -13,11 +13,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: By enriching CVEs with the DVE Score, Cortex XSOAR customers gain deeper visibility with relevant threat intel from the deep and dark web with dynamic attributes such as where they are trending, POC exploit details, and more. Loaded with extra-context, this allows users to accurately understand the real impact of CVEs to effectively prioritize critical vulnerabilities.
 display: Cybersixgill DVE Enrichment
@@ -30,9 +28,6 @@ script:
       name: cve_id
       description: 'cves id list'
       required: true
-      secret: false
-    deprecated: false
-    execution: false
     description: Returns information for each CVE in the input list
     name: cybersixgill-cve-enrich
     outputs:
@@ -95,10 +90,6 @@ script:
       description: The raw JSON of the CVE entich information.
 
   dockerimage: demisto/sixgill:1.0.0.20925
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -9,121 +9,100 @@ configuration:
 - defaultvalue: https://manage.office.com/api/v1.0/
   display: Base URL
   name: base_url
-  required: false
   type: 0
   section: Connect
 - display: Application ID or Client ID
   additionalinfo: See the Help tab.
   name: auth_id
-  required: false
   type: 4
   section: Connect
   hidden: true
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
-  name:  credentials_auth_id
-  required: false
+  name: credentials_auth_id
   hiddenusername: true
   section: Connect
   type: 9
 - display: Token or Tenant ID
   additionalinfo: See the Help tab.
   name: refresh_token
-  required: false
   type: 4
   section: Connect
   hidden: true
 - displaypassword: Token or Tenant ID
   additionalinfo: See the Help tab.
-  name:  credentials_refresh_token
-  required: false
+  name: credentials_refresh_token
   hiddenusername: true
   type: 9
   section: Connect
 - display: Key or Client Secret
   additionalinfo: See the Help tab.
   name: enc_key
-  required: false
   type: 4
   section: Connect
   hidden: true
 - displaypassword: Key or Client Secret
   additionalinfo: See the Help tab.
-  name:  credentials_enc_key
-  required: false
+  name: credentials_enc_key
   hiddenusername: true
   type: 9
   section: Connect
 - additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
   hidden: true
   section: Connect
 - displaypassword: Certificate Thumbprint
   additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
-  name:  credentials_certificate_thumbprint
-  required: false
+  name: credentials_certificate_thumbprint
   hiddenusername: true
   type: 9
   section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  required: false
   type: 14
   section: Connect
 - display: Use a self-deployed Azure application
   name: self_deployed
-  required: false
   type: 8
   section: Connect
   advanced: false
 - display: Application redirect URI (for self-deployed mode)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: The authentication code you got for the service
-  additionalinfo: For instructions on how to receive it, see the Help tab.  
+  additionalinfo: For instructions on how to receive it, see the Help tab.
   name: auth_code
-  required: false
   type: 4
   section: Connect
   hidden: true
 - displaypassword: The authentication code you got for the service
-  additionalinfo: For instructions on how to receive it, see the Help tab. 
-  name:  credentials_auth_code
-  required: false
+  additionalinfo: For instructions on how to receive it, see the Help tab.
+  name: credentials_auth_code
   hiddenusername: true
   type: 9
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -131,14 +110,12 @@ configuration:
   display: First fetch time range
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   name: first_fetch_delta
-  required: false
   type: 0
   section: Collect
 - additionalinfo: The default timeout (in seconds) for API calls. Default is 15 seconds.
   defaultvalue: 15
   display: Timeout
   name: timeout
-  required: false
   type: 0
   section: Connect
   advanced: true
@@ -151,57 +128,41 @@ configuration:
   - Audit.General
   - DLP.All
   section: Collect
-  required: false
   type: 16
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - display: Record types to fetch
-  additionalinfo: A comma-separated list of the record types you want
-    to fetch. Content records with a record type that is not specified will not be
-    fetched. If this field is left empty, all record types will be fetched.
+  additionalinfo: A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched.
   name: record_types_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Workloads to fetch
-  additionalinfo: A comma-separated list of the workloads you want to fetch.
-    Content records with a workload that is not specified will not be fetched. If this
-    field is left empty, all workloads will be fetched.
+  additionalinfo: A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched.
   name: workloads_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Operations to fetch
-  additionalinfo: A comma-separated list of the operations you want to fetch.
-    Content records with an operation that is not specified will not be fetched. If
-    this field is left empty, all operations will be fetched.
+  additionalinfo: A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched.
   name: operations_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
-description: The Microsoft Management Activity API integration enables you to subscribe
-  or unsubscribe to different audits, receive their content, and fetch new content
-  as incidents.
+description: The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents.
 display: Microsoft Management Activity API (O365 Azure Events)
 name: Microsoft Management Activity API (O365 Azure Events)
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The content type to subscribe to.
-      isArray: false
       name: content_type
       predefined:
       - Audit.AzureActiveDirectory
@@ -210,16 +171,11 @@ script:
       - Audit.General
       - DLP.All
       required: true
-      secret: false
-    deprecated: false
     description: Starts a subscription to a given content type.
-    execution: false
     name: ms-management-activity-start-subscription
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The content type to unsubscribe from.
-      isArray: false
       name: content_type
       predefined:
       - Audit.AzureActiveDirectory
@@ -228,14 +184,9 @@ script:
       - Audit.General
       - DLP.All
       required: true
-      secret: false
-    deprecated: false
     description: Stops a subscription to a given content type.
-    execution: false
     name: ms-management-activity-stop-subscription
-  - deprecated: false
-    description: List the content types you are currently subscribed to.
-    execution: false
+  - description: List the content types you are currently subscribed to.
     name: ms-management-activity-list-subscriptions
     outputs:
     - contextPath: MicrosoftManagement.Subscription
@@ -243,9 +194,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The content type for which to receive content.
-      isArray: false
       name: content_type
       predefined:
       - Audit.AzureActiveDirectory
@@ -254,59 +203,19 @@ script:
       - Audit.General
       - DLP.All
       required: true
-      secret: false
-    - default: false
-      description: 'The earliest time to get content from. If start_time is specified,
-        end_time must also be specified. The start_time must be before the end_time,
-        can be at most 7 days ago, and has to be within 24 hours from end_time. Required
-        format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours
-        ago.'
-      isArray: false
+    - description: 'The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours ago.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The latest time to get content from. If end_time is specified,
-        start_time must be also specified. The start_time must be before the end_time
-        and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS.
-        If not specified, end_time will be now.'
-      isArray: false
+    - description: 'The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, end_time will be now.'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the record types to fetch. Content records
-        with a record type that isn't specified will not be fetched. If this field
-        is left empty, all record types will be fetched.
-      isArray: false
+    - description: A comma-separated list of the record types to fetch. Content records with a record type that isn't specified will not be fetched. If this field is left empty, all record types will be fetched.
       name: record_types_filter
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the workloads to fetch. Content records
-        with a workload that isn't specified will not be fetched. If this field is
-        left empty, all workloads will be fetched.
-      isArray: false
+    - description: A comma-separated list of the workloads to fetch. Content records with a workload that isn't specified will not be fetched. If this field is left empty, all workloads will be fetched.
       name: workloads_filter
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the operations to fetch. Content records
-        with an operation that isn't specified will not be fetched. If this field
-        is left empty, all operations will be fetched.
-      isArray: false
+    - description: A comma-separated list of the operations to fetch. Content records with an operation that isn't specified will not be fetched. If this field is left empty, all operations will be fetched.
       name: operations_filter
-      required: false
-      secret: false
-    - default: false
-      description: The timeout (in seconds) for the content requesting HTTP call. Default is the value provided as an integration parameter.
-      isArray: false
+    - description: The timeout (in seconds) for the content requesting HTTP call. Default is the value provided as an integration parameter.
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all content of a specific content type.
-    execution: false
     name: ms-management-activity-list-content
     outputs:
     - contextPath: MicrosoftManagement.ContentRecord.ID
@@ -349,14 +258,10 @@ script:
       description: The ID of the record's user.
       type: string
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: ms-management-activity-generate-login-url
     arguments: []
-  dockerimage: demisto/pyjwt3:1.0.0.63826
-  feed: false
+  dockerimage: demisto/pyjwt3:1.0.0.65022
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
