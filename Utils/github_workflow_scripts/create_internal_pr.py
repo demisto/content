@@ -57,7 +57,7 @@ def main():
     print(f'{t.cyan}Internal PR Created - {pr.html_url}{t.normal}')
 
     # labels should already contain the contribution label from the external PR.
-    # We want to replace the 'Externa PRl' with 'Internal PR' label
+    # We want to replace the 'External PR' with 'Internal PR' label
     labels = [label.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for label in merged_pr.labels]
     for label in labels:
         pr.add_to_labels(label)
