@@ -382,7 +382,7 @@ def storage_account_list(client: ASClient, params: Dict, args: Dict) -> CommandR
     response = client.storage_account_list_request(account_name=account_name,
                                                    resource_group_name=resource_group_name,
                                                    subscription_id=subscription_id)
-    accounts = response.get('value', [])
+    accounts = response.get('value', [response])
 
     readable_output = []
     for account in accounts:
@@ -704,7 +704,7 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
     response = client.storage_blob_containers_list_request(subscription_id=subscription_id,
                                                            resource_group_name=resource_group_name,
                                                            args=args)
-    containers = response.get('value', [])
+    containers = response.get('value', [response])
 
     readable_output = []
     for container in containers:
