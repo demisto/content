@@ -154,8 +154,8 @@ class DictFileBased(DictBased):
                     raise NonDictException(path)
         try:
             super().__init__(body)
-        except NonDictException:
-            raise NonDictException(path)
+        except NonDictException as e:
+            raise NonDictException(path) from e
 
 
 class ContentItem(DictFileBased):
@@ -280,8 +280,8 @@ class PackManager:
     def relative_to_packs(self, path: Path | str):
         try:
             return Path(path).absolute().relative_to(self.packs_path.absolute())
-        except ValueError:
-            raise NotUnderPackException(path)
+        except ValueError as e:
+            raise NotUnderPackException(path) from e
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""

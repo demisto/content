@@ -31,9 +31,7 @@ ENTRY_TYPE_ERROR = 4
 
 # get integration configuration
 def __get_integration_config(client, integration_name, logging_module=logging):
-    body = {
-        'page': 0, 'size': 100, 'query': 'name:' + integration_name
-    }
+    body = {'page': 0, 'size': 100, 'query': f'name:{integration_name}'}
     try:
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
@@ -56,7 +54,7 @@ def __get_integration_config(client, integration_name, logging_module=logging):
     all_configurations = res['configurations']
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
-    if not match_configurations or len(match_configurations) == 0:
+    if not match_configurations:
         logging_module.error('integration was not found')
         return None
 
@@ -319,7 +317,7 @@ def __create_incident_with_playbook(client: DefaultApi,
     # get incident
     search_filter = demisto_client.demisto_api.SearchIncidentsData()
     inc_filter = demisto_client.demisto_api.IncidentFilter()
-    inc_filter.query = 'id:' + str(inc_id)
+    inc_filter.query = f'id:{str(inc_id)}'
     # inc_filter.query
     search_filter.filter = inc_filter
 
@@ -348,8 +346,9 @@ def __create_incident_with_playbook(client: DefaultApi,
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
 def __get_investigation_playbook_state(client, inv_id, logging_manager):
     try:
-        investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
-                                                                         path='/inv-playbook/' + inv_id)
+        investigation_playbook_raw = demisto_client.generic_request_func(
+            self=client, method='GET', path=f'/inv-playbook/{inv_id}'
+        )
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except ApiException:
         logging_manager.exception(
@@ -385,9 +384,11 @@ def __delete_incident(client: DefaultApi, incident: Incident, logging_manager):
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id, logging_manager=logging):
     try:
-        res = demisto_client.generic_request_func(self=client, method='DELETE',
-                                                  path='/settings/integration/' + urllib.parse.quote(
-                                                      instance_id))
+        res = demisto_client.generic_request_func(
+            self=client,
+            method='DELETE',
+            path=f'/settings/integration/{urllib.parse.quote(instance_id)}',
+        )
     except ApiException:
         logging_manager.exception('Failed to delete integration instance, error trying to communicate with demisto.')
         return False
@@ -409,9 +410,12 @@ def __delete_integrations_instances(client, module_instances, logging_manager=lo
 def __print_investigation_error(client, playbook_id, investigation_id, logging_manager):
     try:
         empty_json = {"pageSize": 1000}
-        res = demisto_client.generic_request_func(self=client, method='POST',
-                                                  path='/investigation/' + urllib.parse.quote(
-                                                      investigation_id), body=empty_json)
+        res = demisto_client.generic_request_func(
+            self=client,
+            method='POST',
+            path=f'/investigation/{urllib.parse.quote(investigation_id)}',
+            body=empty_json,
+        )
         if res and int(res[1]) == 200:
             resp_json = ast.literal_eval(res[0])
             entries = resp_json['entries']
@@ -574,5 +578,5 @@ def disable_all_integrations(dem_client, logging_manager=logging):
             logging_manager.debug(
                 f'Adding to disable list. Name: {instance.get("name")}. Brand: {instance.get("brand")}')
             to_disable.append(instance)
-    if len(to_disable) > 0:
+    if to_disable:
         __disable_integrations_instances(dem_client, to_disable, logging_manager)

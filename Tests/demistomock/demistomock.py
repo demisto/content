@@ -750,7 +750,7 @@ def setIntegrationContextVersioned(context, version=-1, sync=False):
 
     Args:
       context (dict): The object to store
-      version (int): The context version to set. If the version is older than the current, an error will be thrown. (Default value = -1)  # noqa
+      version (int): The context version to set. If the version is older than the current, an error will be thrown. (Default = -1)
       sync (bool): Whether to save the context to the DB right away.
     If false, the context will be saved at the end of the command. (Default value = False)
 

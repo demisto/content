@@ -174,8 +174,9 @@ def update_test_msg(integrations, test_message):
     if integrations:
         integrations_names = [integration['name'] for integration in
                               integrations]
-        test_message = test_message + ' with integration(s): ' + ','.join(
-            integrations_names)
+        test_message = f'{test_message} with integration(s): ' + ','.join(
+            integrations_names
+        )
 
     return test_message
 
@@ -349,8 +350,8 @@ def extract_server_numeric_version(instances_ami_name, default_version):
     try:
         server_numeric_version = re.match(
             r'server-image-(?:ga-)?(?P<version>[a-z0-9\-]+)-(?P<build_number>\d+)-(?P<creation_date>\d{4}-\d{2}-\d{2})',
-            instances_ami_name
-        ).group('version')
+            instances_ami_name,
+        )['version']
     except (AttributeError, IndexError):
         return default_version
 
@@ -433,7 +434,7 @@ def add_pr_comment(comment):
 
     query = f'?q={sha1}+repo:demisto/content+org:demisto+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
-    headers = {'Authorization': 'Bearer ' + token}
+    headers = {'Authorization': f'Bearer {token}'}
     try:
         res = requests.get(url + query, headers=headers, verify=False)
         res_dict = handle_github_response(res)
@@ -546,19 +547,17 @@ def workflow_still_running(workflow_id: str) -> bool:
     Returns:
         True if the workflow is running, else False
     """
-    # If this is the current workflow_id
     if workflow_id == WORKFLOW_ID:
         return True
-    else:
-        try:
-            workflow_details_response = requests.get(f'https://circleci.com/api/v2/workflow/{workflow_id}',
-                                                     headers={'Accept': 'application/json'},
-                                                     auth=(CIRCLE_STATUS_TOKEN, ''))  # type: ignore[arg-type]
-            workflow_details_response.raise_for_status()
-        except Exception:
-            logging_manager.exception(f'Failed to get circleci response about workflow with id {workflow_id}.')
-            return True
-        return workflow_details_response.json().get('status') not in ('canceled', 'success', 'failed')
+    try:
+        workflow_details_response = requests.get(f'https://circleci.com/api/v2/workflow/{workflow_id}',
+                                                 headers={'Accept': 'application/json'},
+                                                 auth=(CIRCLE_STATUS_TOKEN, ''))  # type: ignore[arg-type]
+        workflow_details_response.raise_for_status()
+    except Exception:
+        logging_manager.exception(f'Failed to get circleci response about workflow with id {workflow_id}.')
+        return True
+    return workflow_details_response.json().get('status') not in ('canceled', 'success', 'failed')
 
 
 def lock_integrations(integrations_details: list,
@@ -688,11 +687,14 @@ def get_locked_integrations(integrations: list, storage_client: storage.Client) 
     # Listing all files in lock folder
     # Wrapping in 'list' operator because list_blobs return a generator which can only be iterated once
     lock_files_ls = list(storage_client.list_blobs(BUCKET_NAME, prefix=f'{LOCKS_PATH}'))
-    current_integrations_lock_files = {}
-    # Getting all existing files details for integrations that we want to lock
-    for integration in integrations:
-        current_integrations_lock_files.update({integration: [lock_file_blob for lock_file_blob in lock_files_ls if
-                                                              lock_file_blob.name == f'{LOCKS_PATH}/{integration}']})
+    current_integrations_lock_files = {
+        integration: [
+            lock_file_blob
+            for lock_file_blob in lock_files_ls
+            if lock_file_blob.name == f'{LOCKS_PATH}/{integration}'
+        ]
+        for integration in integrations
+    }
     # Filtering 'current_integrations_lock_files' from integrations with no files
     current_integrations_lock_files = {integration: blob_files[0] for integration, blob_files in
                                        current_integrations_lock_files.items() if blob_files}

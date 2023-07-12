@@ -120,8 +120,8 @@ def check_dockerimage45(yml_content, new_from_version):
             del yml_content['dockerimage45']
 
     # check in integrations
-    elif 'dockerimage45' in yml_content.get('script', {}):
-        if parse_version(new_from_version) > parse_version(DOCKERIMAGE_45_TOP_VERSION):
+    elif 'dockerimage45' in yml_content.get('script', {}) and \
+        parse_version(new_from_version) > parse_version(DOCKERIMAGE_45_TOP_VERSION):
             del yml_content['script']['dockerimage45']
 
 

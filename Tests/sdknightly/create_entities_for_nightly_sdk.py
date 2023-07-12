@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -34,8 +33,8 @@ def create_incident_field(path: Path, incident_to_associate: str) -> str:
     })
     dest_incident = path / 'IncidentFields'
 
-    if not os.path.isdir(dest_incident):
-        os.mkdir(dest_incident)
+    if not dest_incident.is_dir():
+        dest_incident.mkdir(parents=True)
 
     field_path = dest_incident / f'incidentfield-{name.replace(" ", "_")}.json'
     with open(field_path, 'w+') as stream:
@@ -58,8 +57,10 @@ def create_layout(path: Path, layout_name: str) -> str:
     with open(layout_path_sample) as stream:
         layout = json.load(stream)
     dest_layout = path / 'Layouts'
-    if not os.path.isdir(dest_layout):
-        os.mkdir(dest_layout)
+    
+    if not dest_layout.is_dir():
+        dest_layout.mkdir(parents=True)
+        
     layout.update({
         'id': layout_name,
         'name': layout_name
@@ -92,8 +93,8 @@ def create_incident_type(path: Path, layout_name: str) -> str:
     })
     dest_incident_path = path / 'IncidentTypes'
 
-    if not os.path.isdir(dest_incident_path):
-        os.mkdir(dest_incident_path)
+    if not dest_incident_path.is_dir():
+        dest_incident_path.mkdir(parents=True)
 
     incident_path = dest_incident_path / f'incidenttype-{name.replace(" ", "_")}.json'
     with open(incident_path, 'w+') as stream:
@@ -122,8 +123,8 @@ def create_mapper(path: Path) -> str:
     })
     dest_mapper_path = path / 'Classifiers'
 
-    if not os.path.isdir(dest_mapper_path):
-        os.mkdir(dest_mapper_path)
+    if not dest_mapper_path.is_dir():
+        dest_mapper_path.mkdir(parents=True)
 
     mapper_path = dest_mapper_path / 'classifier-mapper-incoming-HelloWorldTest.json'
     with open(mapper_path, 'w+') as stream:
@@ -149,8 +150,8 @@ def main():
     print("\t" + "\n\t".join(uploaded_entities))
     if args.artifacts_folder:
         entities_folder = Path(args.artifacts_folder) / 'UploadedEntities'
-        if not os.path.isdir(entities_folder):
-            os.mkdir(entities_folder)
+        if not entities_folder.is_dir():
+            entities_folder.mkdir(parents=True)
         print(f"Storing files to {entities_folder}")
         for file in uploaded_entities:
             file_name = file.split('/')[-1]

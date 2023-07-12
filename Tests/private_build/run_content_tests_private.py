@@ -91,8 +91,7 @@ def run_test_logic(tests_settings: Any, c: Any, failed_playbooks: list,
 
     else:
         logging.error(f'Failed: {test_message} failed')
-        playbook_id_with_mock = playbook_id
-        playbook_id_with_mock += " (Mock Disabled)"
+        playbook_id_with_mock = f"{playbook_id} (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
 
     succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
@@ -174,7 +173,7 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     integrations_conf = t.get('integrations', [])
     instance_names_conf = t.get('instance_names', [])
 
-    test_message = 'playbook: ' + playbook_id
+    test_message = f'playbook: {playbook_id}'
 
     test_options = {
         'timeout': t.get('timeout', default_test_timeout)

@@ -166,10 +166,12 @@ def verify_outer_contains_inner(inner_packs: list, outer_packs: list, inner_pack
         if not pack_inside:
             missing_packs.append({"id": inner_pack["id"], "price": inner_pack["price"]})
 
-    return log_message_if_statement(statement=(len(missing_packs) == 0),
-                                    error_message=f"The following {inner_packs_name} were"
-                                    f" not found exactly the same as in the {outer_packs_name}:"
-                                    f" \n{pformat(missing_packs)}")
+    return log_message_if_statement(
+        statement=not missing_packs,
+        error_message=f"The following {inner_packs_name} were"
+        f" not found exactly the same as in the {outer_packs_name}:"
+        f" \n{pformat(missing_packs)}",
+    )
 
 
 def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs: list) -> bool:

@@ -156,7 +156,7 @@ class IdSet(DictFileBased):
                             logger.debug(f'skipping {id_=} as the {item.pack_id} pack is skipped')
                             continue
 
-                        if existing := result.get(id_):
+                        if existing := result.get(id_): # noqa:SIM102
                             # Some content items have multiple copies, each supporting different versions.
                             # We use the newer.
                             if item.to_version <= existing.to_version and item.from_version <= existing.from_version:

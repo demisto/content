@@ -19,10 +19,9 @@ def get_full_docker_image(base_docker_image: str):
 
     if latest_tag:
         return f"{base_docker_image}:{latest_tag}"
-    else:  # latest tag not found
-        err_msg = f"Error: Failed getting the latest tag of {base_docker_image} from Docker Hub."
-        logging.error(err_msg)
-        raise RuntimeError(err_msg)
+    err_msg = f"Error: Failed getting the latest tag of {base_docker_image} from Docker Hub."
+    logging.error(err_msg)
+    raise RuntimeError(err_msg)
 
 
 def main():

@@ -157,15 +157,15 @@ def test_write_test_pack_zip(tmpdir):
     private_content_test_zip = write_test_pack_zip(path_to_content='.', zip_destination_dir=tmpdir,
                                                    tests_file_paths=set_of_test_paths)
     #  Opening created pack
-    with tempfile.TemporaryDirectory() as extract_dir, zipfile.ZipFile(private_content_test_zip, "r") as zip_ref:
+    with (tempfile.TemporaryDirectory() as extract_dir, zipfile.ZipFile(private_content_test_zip, "r") as zip_ref):
         zip_ref.extractall(extract_dir)
         #  Check that metadata is present
-        dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
-        expected_metadata_file_path = extract_dir + '/test_pack/metadata.json'
+        dir_containing_metadata = glob.glob(f'{extract_dir}/test_pack/*')
+        expected_metadata_file_path = f'{extract_dir}/test_pack/metadata.json'
         assert expected_metadata_file_path in dir_containing_metadata
 
         #  Check that file from DeveloperTools is present
-        dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
+        dir_containing_test_script = glob.glob(f'{extract_dir}/test_pack/*/*')
         expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
             'TestCreateIncidentsFile.yml'
         assert expected_test_script_file_path in dir_containing_test_script

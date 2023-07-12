@@ -158,9 +158,7 @@ class Pack:
         """
         if not self._latest_version:
             self._latest_version = self._get_latest_version()
-            return self._latest_version
-        else:
-            return self._latest_version
+        return self._latest_version
 
     @latest_version.setter
     def latest_version(self, latest_version):
@@ -656,13 +654,13 @@ class Pack:
 
         """
 
-        tags = set()
         sections = landing_page_sections.get('sections', []) if landing_page_sections else []
 
-        for section in sections:
-            if self._pack_name in landing_page_sections.get(section, []):
-                tags.add(section)
-
+        tags = {
+            section
+            for section in sections
+            if self._pack_name in landing_page_sections.get(section, [])
+        }
         return tags
 
     def _parse_pack_metadata(self, build_number, commit_hash):
@@ -711,7 +709,7 @@ class Pack:
         }
 
         if self._is_private_pack:
-            pack_metadata.update({
+            pack_metadata |= {
                 Metadata.PREMIUM: self._is_premium,
                 Metadata.VENDOR_ID: self._vendor_id,
                 Metadata.PARTNER_ID: self._partner_id,
@@ -719,7 +717,7 @@ class Pack:
                 Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
                 Metadata.PREVIEW_ONLY: self._preview_only,
                 Metadata.DISABLE_MONTHLY: self._disable_monthly,
-            })
+            }
 
         return pack_metadata
 
@@ -1127,7 +1125,10 @@ class Pack:
             task_status = True
             if pack_was_modified:
                 # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
+                pack_was_modified = any(
+                    self.RELEASE_NOTES not in path
+                    for path in modified_rn_files_paths
+                )
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
             return None
@@ -1436,11 +1437,9 @@ class Pack:
             # and the value is not an aggregated release note
             if is_the_only_rn_in_block(release_notes_dir, version, changelog):
                 logging.info("The version is a key in the changelog file and by itself in the changelog block")
-                with open(os.path.join(release_notes_dir, rn_filename)) as rn_file:
-                    rn_lines = rn_file.read()
+                rn_lines = Path(os.path.join(release_notes_dir, rn_filename)).read_text()
                 modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
                 logging.debug(f"Cleaned release notes from: {rn_lines} to: {modified_versions_dict[version]}")
-            # The case where the version is not a key in the changelog file or it is a key of aggregated content
             else:
                 logging.debug(f'The "{version}" version is not a key in the changelog file or it is a key of'
                               f' aggregated content')
@@ -1473,14 +1472,13 @@ class Pack:
         for item in changelog:  # divide the versions into lists of lower and higher than given version
             (lower_versions if Version(item) < Version(version) else higher_versions).append(Version(item))
         higher_nearest_version = min(higher_versions)
-        lower_versions = lower_versions + lowest_version  # if the version is 1.0.0, ensure lower_versions is not empty
+        lower_versions += lowest_version
         lower_nearest_version = max(lower_versions)
         for rn_filename in filter_dir_files_by_extension(release_notes_dir, '.md'):
             current_version = underscore_file_name_to_dotted_version(rn_filename)
             # Catch all versions that are in the same block
             if lower_nearest_version < Version(current_version) <= higher_nearest_version:
-                with open(os.path.join(release_notes_dir, rn_filename)) as rn_file:
-                    rn_lines = rn_file.read()
+                rn_lines = Path(os.path.join(release_notes_dir, rn_filename)).read_text()
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
         return same_block_versions_dict, str(higher_nearest_version)
 
@@ -1504,8 +1502,7 @@ class Pack:
 
             # Aggregate all rn files that are bigger than what we have in the changelog file
             if Version(version) > changelog_latest_rn_version:
-                with open(os.path.join(release_notes_dir, filename)) as rn_file:
-                    rn_lines = rn_file.read()
+                rn_lines = Path(os.path.join(release_notes_dir, filename)).read_text()
                 pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
 
             found_versions.append(Version(version))
@@ -1518,7 +1515,7 @@ class Pack:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
             aggregation_str = f"[{', '.join(str(lv) for lv in found_versions if lv > changelog_latest_rn_version)}]" \
-                              f" => {latest_release_notes_version_str}"
+                                  f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
@@ -1606,12 +1603,12 @@ class Pack:
             changelog: dict = {}
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version, changelog_latest_rn = \
-                    self.get_changelog_latest_rn(changelog_index_path)
+                        self.get_changelog_latest_rn(changelog_index_path)
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
                     release_notes_lines, latest_release_notes, new_release_notes_versions = \
-                        self.get_release_notes_lines(
+                            self.get_release_notes_lines(
                             release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
@@ -1714,8 +1711,7 @@ class Pack:
 
                 # If an 1_0_0.md release notes file exist then add it to the changelog, otherwise take the pack description
                 if os.path.exists(first_release_notes_path):
-                    with open(first_release_notes_path) as rn_file:
-                        first_pack_release_notes = rn_file.read()
+                    first_pack_release_notes = Path(first_release_notes_path).read_text()
                 else:
                     first_pack_release_notes = self.description
 
@@ -2080,7 +2076,7 @@ class Pack:
 
                     # reputation in old format aren't supported in 6.0.0 server version
                     if current_directory == PackFolders.INDICATOR_TYPES.value \
-                            and not fnmatch.fnmatch(pack_file_name, 'reputation-*.json'):
+                                and not fnmatch.fnmatch(pack_file_name, 'reputation-*.json'):
                         os.remove(pack_file_path)
                         logging.info(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
                         continue
@@ -2379,7 +2375,7 @@ class Pack:
                         }
 
                         if preview:
-                            metadata_output.update({"preview": preview})
+                            metadata_output["preview"] = preview
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
@@ -2393,7 +2389,7 @@ class Pack:
                         }
 
                         if preview:
-                            metadata_output.update({"preview": preview})
+                            metadata_output["preview"] = preview
 
                     elif current_directory == PackFolders.WIZARDS.value:
                         metadata_output = {
@@ -2457,7 +2453,7 @@ class Pack:
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
 
                     content_items_result[content_item_key] = \
-                        content_items_result.get(content_item_key, []) + folder_collected_items
+                            content_items_result.get(content_item_key, []) + folder_collected_items
 
             logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
@@ -3686,7 +3682,7 @@ class Pack:
         file_name = file_name.replace('external-', '')
         for prefix in prefixes:
             file_name = file_name.replace(f'{prefix}-', '')
-        image_file_name = os.path.splitext(file_name)[0] + '_image.png'
+        image_file_name = f'{os.path.splitext(file_name)[0]}_image.png'
         return image_file_name
 
 
@@ -3873,7 +3869,6 @@ def init_storage_client(service_account=None):
         storage_client = storage.Client.from_service_account_json(service_account)
         logging.info("Created gcp service account")
 
-        return storage_client
     else:
         # in case of local dev use, ignored the warning of non use of service account.
         warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
@@ -3881,7 +3876,8 @@ def init_storage_client(service_account=None):
         storage_client = storage.Client(credentials=credentials, project=project)
         logging.info("Created gcp private account")
 
-        return storage_client
+
+    return storage_client
 
 
 def input_to_list(input_data, capitalize_input=False):
@@ -4289,7 +4285,7 @@ def remove_old_versions_from_changelog(changelog: dict):
 
     year_ago_datetime_obj = datetime.utcnow() - timedelta(days=365)
     last_version = Version(list(changelog.keys())[-1])
-    save_last_minor_versions = not (last_version.minor == 0 and last_version.major == 1)
+    save_last_minor_versions = last_version.minor != 0 or last_version.major != 1
 
     prev_version = None
     for version, info in changelog.items():

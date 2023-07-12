@@ -211,9 +211,7 @@ class CollectionResult:
             except NonXsoarSupportedPackException:
                 if skip_support_level_compatibility:
                     logger.info(f'overriding pack support level compatibility check for {pack} - it IS collected')
-                elif is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
-                    pass
-                else:
+                elif not is_sanity or pack != 'HelloWorld':
                     raise
 
         if test:
@@ -522,20 +520,21 @@ class TestCollector(ABC):
                         f'collecting to make sure it is installed properly.')
         except IncompatibleMarketplaceException:
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
-                MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
+                    MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
 
             # collect only to upload if:
             # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
             # 2. allow_incompatible_marketplace=False, if True, then should be also to install
             if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
-                    not allow_incompatible_marketplace:
+                        not allow_incompatible_marketplace:
                 collect_only_to_upload = True
 
             # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
             # because they have content that IS compatible.
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
-            if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
-                    and not collect_only_to_upload:
+            if (
+                not allow_incompatible_marketplace or not is_xsoar_and_xsiam_pack
+            ) and not collect_only_to_upload:
                 raise
 
         # If changes are done to README files. Upload only.
@@ -543,8 +542,8 @@ class TestCollector(ABC):
             collect_only_to_upload = True
 
         version_range = content_item_range \
-            if pack_metadata.version_range.is_default \
-            else (pack_metadata.version_range | content_item_range)
+                if pack_metadata.version_range.is_default \
+                else (pack_metadata.version_range | content_item_range)
 
         return CollectionResult(
             test=None,

@@ -79,8 +79,9 @@ def test_instances(secret_conf_path, server, username, password):
             if not instance_id:
                 logging.error(
                     f'Failed to create instance of {integration_name} with message: {failure_message}')
-                failed_integrations.append("{} {} - devops comments: {}".format(
-                    integration_name, product_description, devops_comments))
+                failed_integrations.append(
+                    f"{integration_name} {product_description} - devops comments: {devops_comments}"
+                )
             else:
                 instance_ids.append(instance_id)
                 logging.success(f'Create integration {integration_name} succeed')
@@ -146,10 +147,8 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
             'channel': 'dmst-content-lab',
             'username': 'Instances nightly report',
             'as_user': 'False',
-            'text': "Detailed list of failing instances could be found in the following link:\n"
-                    "https://{}-60525392-gh.circle-artifacts.com/0/artifacts/failed_instances.txt".format(build_number)
-
-        }
+            'text': f"Detailed list of failing instances could be found in the following link:\nhttps://{build_number}-60525392-gh.circle-artifacts.com/0/artifacts/failed_instances.txt",
+        },
     )
 
 
@@ -165,7 +164,7 @@ if __name__ == "__main__":
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl,
                        options.buildNumber)
         # create this file for destroy_instances script
-        with open("./Tests/is_build_passed_{}.txt".format(env_results[0]["Role"].replace(' ', '')), 'a'):
+        with open(f"""./Tests/is_build_passed_{env_results[0]["Role"].replace(' ', '')}.txt""", 'a'):
             pass
     else:
         logging.error("Not instance tests build, stopping Slack Notifications about instances")

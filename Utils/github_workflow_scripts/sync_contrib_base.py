@@ -73,7 +73,7 @@ def main():
     content_repo = gh.get_repo(f'{organization}/{repo}')
 
     master_sha = get_master_commit_sha(content_repo)
-    if ref_branch:
+    if ref_branch: # noqa:SIM108
         # Case this flow was triggered on a specific branch
         contrib_base_branches = [ref_branch]
     else:

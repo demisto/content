@@ -367,7 +367,6 @@ class Build(ABC):
         Returns:
             Test configurations from conf.json that should be run in this execution
         """
-        server_numeric_version: str = self.server_numeric_version
         tests: dict = self.tests
         tests_for_iteration: list[dict]
         if Build.run_environment == Running.CI_RUN:
@@ -382,6 +381,7 @@ class Build(ABC):
                     tests_for_iteration = []
                 else:
                     tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
+            server_numeric_version: str = self.server_numeric_version
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 
@@ -599,18 +599,16 @@ class XSOARBuild(Build):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
             configurations = {}
-            configure_types = []
             if is_redhat_instance(server.internal_ip):
-                configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+                configurations |= DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN
                 configurations.update(NO_PROXY_CONFIG)
                 configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types.append('docker hardening')
-            configure_types.append('marketplace')
+            configure_types = ['docker hardening', 'marketplace']
             configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
         if manual_restart:
@@ -1236,7 +1234,7 @@ def set_module_params(param_conf, integration_params):
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials' or key == "creds_apikey":
+        if key in ['credentials', "creds_apikey"]:
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1322,7 +1320,7 @@ def set_integration_instance_parameters(integration_configuration,
     if 'integrationInstanceName' in integration_params:
         instance_name = integration_params['integrationInstanceName']
     else:
-        instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+        instance_name = f"{integration_instance_name.replace(' ', '_')}_test_{str(uuid.uuid4())}"
 
     # define module instance
     module_instance = {
@@ -1526,7 +1524,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         # creating this file to indicates that this instance passed post update tests,
         # uses this file in XSOAR destroy instances
         if build and build.__class__ == XSOARBuild:
-            with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
+            with open(f"./Tests/is_post_update_passed_{build.ami_env.replace(' ', '')}.txt", 'a'):
                 pass
 
     return testing_status
@@ -1691,7 +1689,9 @@ def run_git_diff(pack_name: str, build: Build) -> str:
     Returns:
         (str): The git diff output.
     """
-    compare_against = 'origin/master{}'.format('' if build.branch_name != 'master' else '~1')
+    compare_against = (
+        f"origin/master{'' if build.branch_name != 'master' else '~1'}"
+    )
     return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
@@ -1717,11 +1717,11 @@ def get_turned_non_hidden_packs(modified_packs_names: set[str], build: Build) ->
     Returns:
         (Set[str]): The set of packs names which are turned non-hidden.
     """
-    hidden_packs = set()
-    for pack_name in modified_packs_names:
-        # check if the pack turned from hidden to non-hidden.
-        if check_hidden_field_changed(pack_name, build):
-            hidden_packs.add(pack_name)
+    hidden_packs = {
+        pack_name
+        for pack_name in modified_packs_names
+        if check_hidden_field_changed(pack_name, build)
+    }
     return hidden_packs
 
 
@@ -1750,8 +1750,10 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: set[str]) -
     for hidden_integrations_path in hidden_integrations_paths:
         if os.path.exists(hidden_integrations_path):
             pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
-            for integration_path in pack_integrations_paths:
-                hidden_integrations.append(integration_path.split("/")[-1])
+            hidden_integrations.extend(
+                integration_path.split("/")[-1]
+                for integration_path in pack_integrations_paths
+            )
     hidden_integrations_names = [integration for integration in hidden_integrations if
                                  not str(integration).startswith('.')]
     return hidden_integrations_names

@@ -112,7 +112,6 @@ def remove_file(storage_bucket: Any, file_path: str):
         blob.delete()
     except Exception as err:
         logging.debug(f'when we try to delete a build_from_queue = {file_path}, we get an error: {str(err)}')
-        pass
 
 
 def lock_machine(storage_bucket: Any, lock_repository_name: str, machine_name: str, job_id: str):

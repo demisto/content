@@ -113,11 +113,13 @@ def unit_tests_results():
     slack_results = []
     if failing_tests:
         failing_test_list = failing_tests.split('\n')
-        slack_results.append({
-            "title": f'{"Failed Unit Tests"} - ({len(failing_test_list)})',
-            "value": ', '.join(failing_test_list),
-            "short": False
-        })
+        slack_results.append(
+            {
+                "title": f'Failed Unit Tests - ({len(failing_test_list)})',
+                "value": ', '.join(failing_test_list),
+                "short": False,
+            }
+        )
     return slack_results
 
 

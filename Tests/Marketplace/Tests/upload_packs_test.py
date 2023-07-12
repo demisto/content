@@ -734,14 +734,11 @@ class TestUpdatedPrivatePacks:
          """
 
         index_folder_path = self.get_index_folder_path()
-        private_packs = []
-
         # index json has no contentCommitHash for this pack
         metadata_no_commit_hash = self.get_pack_metadata()
         metadata_no_commit_hash.update({"contentCommitHash": ""})
         metadata_no_commit_hash.update({"id": "first_non_updated_pack"})
-        private_packs.append(metadata_no_commit_hash)
-
+        private_packs = [metadata_no_commit_hash]
         # index json has the same contentCommitHash for this pack (nothing was updated)
         metadata_not_updated_commit_hash = self.get_pack_metadata()
         metadata_not_updated_commit_hash.update({"contentCommitHash": "111"})

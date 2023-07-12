@@ -1614,10 +1614,9 @@ This is visible
     def mock_os_path_join(path, *paths):
         if not str(path).startswith('changelog') and not str(path).startswith('metadata'):
             if paths:
-                return path + '/' + '/'.join(paths)
+                return f'{path}/' + '/'.join(paths)
             return path
 
-        path_to_non_existing_changelog = 'dummy_path'
         if path == 'metadata':
             return TestChangelogCreation.dummy_pack_metadata(TEST_METADATA)
         if path == 'changelog_init_exist':
@@ -1625,6 +1624,7 @@ This is visible
         if path == 'changelog_new_exist':
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_MULTIPLE_VERSIONS)
         if path in ['changelog_not_exist', 'metadata_not_exist']:
+            path_to_non_existing_changelog = 'dummy_path'
             return path_to_non_existing_changelog
         return None
 

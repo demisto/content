@@ -164,10 +164,13 @@ class StatisticsHandler:
         three_months_delta = timedelta(days=90)
         filtered_packs_list = []
 
-        for pack_name in pack_list_to_filter:
-            if mp_services.Pack.pack_created_in_time_delta(pack_name, three_months_delta, self._index_folder_path):
-                filtered_packs_list.append(pack_name)
-
+        filtered_packs_list.extend(
+            pack_name
+            for pack_name in pack_list_to_filter
+            if mp_services.Pack.pack_created_in_time_delta(
+                pack_name, three_months_delta, self._index_folder_path
+            )
+        )
         logging.debug(f'packs with less than 3 months creation time: {pformat(filtered_packs_list)}')
         return filtered_packs_list
 

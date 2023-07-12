@@ -183,7 +183,7 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
     """
     logging.debug('Starting readme images copy.')
     readme_images = {}
-    if readme_images := images_data.get(BucketUploadFlow.README_IMAGES, None):
+    if readme_images := images_data.get(BucketUploadFlow.README_IMAGES):
         for pack_name, pack_readme_images_list in readme_images.items():
             task_status = True
             err_msg = f"Failed copying {pack_name} pack readme images."

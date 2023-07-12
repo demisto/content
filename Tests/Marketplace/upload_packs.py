@@ -145,10 +145,8 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         metadata_files_in_index = glob.glob(f"{index_pack_path}/metadata-*.json")
         new_metadata_path = os.path.join(index_pack_path, f"metadata-{pack_version}.json")
 
-        if pack_version:
-            # Update the latest metadata
-            if new_metadata_path in metadata_files_in_index:
-                metadata_files_in_index.remove(new_metadata_path)
+        if pack_version and new_metadata_path in metadata_files_in_index:
+            metadata_files_in_index.remove(new_metadata_path)
 
         # Remove old files but keep metadata files
         if pack_name in index_folder_subdirectories:
@@ -213,14 +211,9 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     if marketplace == 'xsoar':
         private_packs_names = {p.get('id', '') for p in private_packs}
         valid_pack_names.update(private_packs_names)
-        # search for invalid packs folder inside index
-        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_pack_names and entry.is_dir()}
-    else:
-        # search for invalid packs folder inside index
-        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_pack_names and entry.is_dir()}
-
+    # search for invalid packs folder inside index
+    invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                           entry.name not in valid_pack_names and entry.is_dir()}
     if invalid_packs_names:
         try:
             logging.warning(f"Found the following invalid packs: {invalid_packs_names}")
@@ -490,10 +483,10 @@ def _build_summary_table(packs_input_list: list, include_pack_status: bool = Fal
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
-        pack_status_message = PackStatus[pack.status].value
         row = [index, pack.name, pack.display_name, pack.latest_version,
                pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"]
         if include_pack_status:
+            pack_status_message = PackStatus[pack.status].value
             row.append(pack_status_message)
         table.add_row(row)
 
@@ -836,7 +829,7 @@ def add_pr_comment(comment: str):
 
     query = f'?q={sha1}+repo:demisto/content+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
-    headers = {'Authorization': 'Bearer ' + token}
+    headers = {'Authorization': f'Bearer {token}'}
     try:
         res = requests.get(url + query, headers=headers, verify=False)
         res_json = handle_github_response(res)
@@ -954,7 +947,7 @@ def get_images_data(packs_list: list, readme_images_dict: dict):
         if pack.uploaded_preview_images:
             pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
         if pack_image_data[pack.name]:
-            images_data.update(pack_image_data)
+            images_data |= pack_image_data
 
     pack_image_data[BucketUploadFlow.README_IMAGES] = readme_images_dict
     return images_data
@@ -1022,7 +1015,9 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                         continue
                     logging.debug(f"Starting to collect zip of pack {current_pack.name}")
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
-                    if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
+                    if not current_pack.zip_path or not os.path.isfile(
+                        current_pack.zip_path
+                    ):
                         # the zip does not exist yet, zip the current pack
                         task_status = sign_and_zip_pack(current_pack, signature_key)
                         if not task_status:
@@ -1030,18 +1025,22 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                             pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
                             logging.debug(f"Skipping uploading {pack.name} since failed zipping {current_pack.name}.")
                             break
-                    shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
+                    shutil.copy(
+                        current_pack.zip_path,
+                        os.path.join(
+                            pack_with_dep_path, f"{current_pack.name}.zip"
+                        ),
+                    )
                 if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
                     break
-                else:
-                    logging.info(f"Zipping {pack_name} with its dependencies")
-                    Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
-                    shutil.rmtree(pack_with_dep_path)
-                    logging.info(f"Uploading {pack_name} with its dependencies")
-                    task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
-                                                               storage_base_path, overridden_upload_path=upload_path)
-                    logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
-                                 f"uploaded successfully")
+                logging.info(f"Zipping {pack_name} with its dependencies")
+                Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
+                shutil.rmtree(pack_with_dep_path)
+                logging.info(f"Uploading {pack_name} with its dependencies")
+                task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
+                                                           storage_base_path, overridden_upload_path=upload_path)
+                logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
+                             f"uploaded successfully")
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()

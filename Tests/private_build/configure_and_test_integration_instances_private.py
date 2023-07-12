@@ -67,10 +67,15 @@ def find_needed_test_playbook_paths(test_playbooks: list[dict], tests_to_run: li
         if any(test_to_run in d for d in test_playbooks):
             for test_pb in test_playbooks:
                 if test_to_run in test_pb:
-                    tests_file_paths.add(path_to_content + '/' + test_pb[test_to_run].get("file_path"))
+                    tests_file_paths.add(
+                        f'{path_to_content}/'
+                        + test_pb[test_to_run].get("file_path")
+                    )
     #  Adding contents of DeveloperPack for testing.
     #  TODO: Remove this when we have migrated test content out of this pack.
-    developer_pack_items = glob.glob(path_to_content + "/Packs/DeveloperTools/*/*.yml")
+    developer_pack_items = glob.glob(
+        f"{path_to_content}/Packs/DeveloperTools/*/*.yml"
+    )
     for dev_pack_item in developer_pack_items:
         tests_file_paths.add(dev_pack_item)
     return tests_file_paths
@@ -86,7 +91,7 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
     :param zip_destination_dir: Directory to create the test pack in.
     :return: Path to where the private content test pack is located.
     """
-    private_content_test_zip = zip_destination_dir + '/test_pack.zip'
+    private_content_test_zip = f'{zip_destination_dir}/test_pack.zip'
     with zipfile.ZipFile(private_content_test_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(path_to_content):

@@ -169,8 +169,7 @@ def get_tests_allocation_for_threads(number_of_instances, tests_file_path):
         if allocations_left == 1:
             for tests_cluster in dependent_tests_clusters:
                 current_allocation.extend(tests_cluster)
-            for test_name in independent_tests:
-                current_allocation.append(test_name)
+            current_allocation.extend(iter(independent_tests))
             tests_allocation.append(current_allocation)
             break
 

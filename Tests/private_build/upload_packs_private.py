@@ -1,6 +1,7 @@
 import json
 import os
 import argparse
+from pathlib import Path
 import shutil
 import uuid
 import glob
@@ -171,7 +172,7 @@ def get_private_packs(private_index_path: str, pack_names: set = None,
 
     private_metadata_paths = get_existing_private_packs_metadata_paths(private_index_path)
     # In the private build, there is always exactly one modified pack
-    changed_pack_id = list(pack_names)[0] if pack_names and len(pack_names) > 0 else ''
+    changed_pack_id = list(pack_names)[0] if pack_names and pack_names else ''
     logging.info(f'searching for {changed_pack_id} (extracted from {pack_names})')
     private_packs = add_existing_private_packs_from_index(private_metadata_paths, changed_pack_id)
     private_packs = add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id)
@@ -188,7 +189,7 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
 
     """
     for d in os.scandir(private_index_path):
-        if os.path.isdir(d.path):
+        if Path(d.path).is_dir():
             update_index_folder(index_folder_path, d.name, d.path)
 
 
@@ -454,14 +455,14 @@ def prepare_test_directories(pack_artifacts_path):
     :return: None
     """
 
-    packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
-    zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
-    if not os.path.exists(packs_dir):
+    packs_dir = Path('/home/runner/work/content-private/content-private/content/artifacts/packs')
+    zip_path = Path('/home/runner/work/content-private/content-private/content/temp-dir')
+    if not packs_dir.exists():
         logging.info("Packs dir not found. Creating.")
-        os.mkdir(packs_dir)
-    if not os.path.exists(zip_path):
+        packs_dir.mkdir(parents=True)
+    if not zip_path.exists():
         logging.info("Temp dir not found. Creating.")
-        os.mkdir(zip_path)
+        zip_path.mkdir(parents=True)
 
 
 def main():

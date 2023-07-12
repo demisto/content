@@ -151,7 +151,7 @@ def get_pack_entities(pack_path):
             continue
 
         match = re.match(f'{pack_path}/([^/]*)/.*', entity_path)
-        if match:
+        if match: # noqa:SIM108, due to the comment
             entity_type = match.group(1)
         else:
             # should not get here
