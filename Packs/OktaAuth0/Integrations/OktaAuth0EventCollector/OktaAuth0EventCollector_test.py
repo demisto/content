@@ -60,7 +60,8 @@ def test_test_module(mocker):
     mocker.patch.object(Client, 'get_access_token', return_value='token')
     mocker.patch.object(Client, '_http_request', return_value=[])
 
-    assert test_module_command(Client(base_url=CORE_URL, client_id='', client_secret='', verify=False, proxy=False), {}) == 'ok'
+    assert test_module_command(Client(base_url=CORE_URL, client_id='', client_secret='', verify=False,
+                                      proxy=False), {}, {}) == 'ok'
 
 
 def test_fetch_events(requests_mock):
@@ -111,8 +112,8 @@ def test_fetch_events_with_iterations(mocker):
 
 @pytest.mark.parametrize('int_context, expected_token', [
     ({}, 'new_token'),
-    ({'access_token': 'token', 'expired_token_time': 1688852440}, 'token'),
-    ({'access_token': 'token', 'expired_token_time': 1688852439}, 'new_token')
+    ({'access_token': 'token', 'token_creation_time': 1688852440}, 'token'),
+    ({'access_token': 'token', 'token_creation_time': 1688852439}, 'new_token')
 ])
 def test_get_access_token(mocker, requests_mock, int_context, expected_token):
     """
@@ -136,6 +137,28 @@ def test_get_access_token(mocker, requests_mock, int_context, expected_token):
     requests_mock.post(f'{CORE_URL}/oauth/token', json={"access_token": "new_token"})
 
     client = Client(base_url=CORE_URL, client_id='', client_secret='', verify=False, proxy=False)
-    access_token = client.get_access_token()
+    # access_token = client.get_access_token()
 
-    assert access_token == expected_token
+    assert client.access_token == expected_token
+
+
+def test_get_events(mocker, requests_mock):
+    """
+    Given:
+        - okta-auth0-get-events call
+    When:
+        - Four events with ids 1, 2, 3 and 4 are retrieved from the API.
+    Then:
+        - Make sure all of the events are returned as part of the CommandResult.
+    """
+    from OktaAuth0EventCollector import get_events_command
+
+    response = MOCK_EVENTS[:-1]
+    requests_mock.get(f'{CORE_URL}/api/v2/logs', json=MOCK_EVENTS)
+    mocker.patch.object(Client, 'get_access_token', return_value='token')
+
+    _, results = get_events_command(Client(base_url=CORE_URL, client_id='', client_secret='', verify=False, proxy=False),
+                                    args={'limit': 4})
+
+    assert len(results.raw_response) == 4  # type: ignore[arg-type]
+    assert results.raw_response == response

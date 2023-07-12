@@ -31,7 +31,7 @@ def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
     if not last_run:  # requesting by time query
         since = arg_to_strtime(params.get('since'))
         query_params = {
-            "q": last_run.get('query') or f"date:[{since} TO *]",
+            "q": f"date:[{since} TO *]",
             "sort": "date:1",
             "per_page": 100
         }
@@ -68,8 +68,8 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
 
-        access_token = self.get_access_token()
-        self._headers.update({'Authorization': f'Bearer {access_token}'})
+        self.access_token = self.get_access_token()
+        self._headers.update({'Authorization': f'Bearer {self.access_token}'})
 
     def get_access_token_request(self):
         """
