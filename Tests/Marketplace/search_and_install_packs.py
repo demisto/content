@@ -175,7 +175,10 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
 def search_pack(client: demisto_client,
                 pack_display_name: str,
                 pack_id: str,
-                lock: Lock) -> dict:
+                lock: Lock,
+                attempts_count: int = 5,
+                sleep_interval: int = 60,
+                ) -> dict:
     """ Make a pack search request.
 
     Args:
@@ -183,34 +186,48 @@ def search_pack(client: demisto_client,
         pack_display_name (string): The pack display name.
         pack_id (string): The pack ID.
         lock (Lock): A lock object.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
     Returns:
         (dict): Returns the pack data if found, or empty dict otherwise.
     """
-
     try:
-        response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path=f'/contentpacks/marketplace/{pack_id}',
-                                                                            method='GET',
-                                                                            accept='application/json',
-                                                                            _request_timeout=None,
-                                                                            response_type='object')
-        if 200 <= status_code < 300:
-            if response_data and response_data.get('currentVersion'):
-                logging.debug(f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!')
-                return {
-                    'id': response_data.get('id'),
-                    'version': response_data.get('currentVersion'),
-                }
-            else:
-                raise Exception(f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.')
-        else:
-            err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
-                      f'{status_code}\n{response_data.get("message", "")}'
-            raise Exception(err_msg)
+        for attempt in range(attempts_count, -1, -1):
+            try:
 
-    except ApiException as ex:
-        logging.exception(f'API Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
-                          f' Exception: {ex.status}, {ex.body}')
+                response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                    path=f'/contentpacks/marketplace/{pack_id}',
+                                                                                    method='GET',
+                                                                                    accept='application/json',
+                                                                                    _request_timeout=None,
+                                                                                    response_type='object')
+                if 200 <= status_code < 300:
+                    if response_data and response_data.get('currentVersion'):
+                        logging.debug(f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!')
+                        return {
+                            'id': response_data.get('id'),
+                            'version': response_data.get('currentVersion'),
+                        }
+                    else:
+                        err_msg = f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.'
+                        if not attempt:
+                            raise Exception(err_msg)
+                        logging.error(f"{err_msg}. Sleeping for {sleep_interval} seconds and retrying.")
+                else:
+                    err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
+                              f'{status_code}\n{response_data.get("message", "")}.'
+                    if not attempt:
+                        raise Exception(err_msg)
+                    logging.error(f"{err_msg}. Sleeping for {sleep_interval} seconds and retrying.")
+
+            except ApiException as ex:
+                logging.exception(f'API Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
+                                  f' Exception: {ex.status}, {ex.body}')
+
+            # There are more attempts available, sleep and retry.
+            logging.debug(f"failed to search pack: {pack_display_name}, sleeping for {sleep_interval} seconds.")
+            sleep(sleep_interval)
+
     except Exception as ex:
         logging.exception(f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. '
                           f'Exception: {str(ex)}')

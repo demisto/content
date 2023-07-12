@@ -192,6 +192,12 @@ def test_search_pack_with_id(mocker):
     }
     assert expected_response == script.search_pack(client, "New Hello World", 'HelloWorld', None)
 
+    # Response fist fail and the suceed
+    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=[({}, 500, None),
+                                                                             ({'id': 'HelloWorld', 'currentVersion': '1.1.10'}, 200, None)])
+
+    assert expected_response == script.search_pack(client, "New Hello World", 'HelloWorld', None, sleep_interval=0)
+
 
 def test_search_pack_with_failure(mocker):
     """
@@ -207,8 +213,8 @@ def test_search_pack_with_failure(mocker):
     lock = MockLock()
 
     # Error when searching for pack
-    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
-    script.search_pack(client, "New Hello World", 'HelloWorld', lock)
+    mocker.patch.object(demisto_client, 'generic_request_func', return_value=({}, 500, None))
+    script.search_pack(client, "New Hello World", 'HelloWorld', lock, sleep_interval=0)
     assert not script.SUCCESS_FLAG
 
     # Response with missing data
