@@ -1,8 +1,7 @@
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-
-# from CommonServerUserPython import *  # noqa
+from CommonServerUserPython import *  # noqa
 import base64
 
 # Disable insecure warnings
@@ -47,8 +46,8 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def generate_authorization_encoded(self, username: str, api_key: str) -> str:
-        auto_bytes = f"{username}:{api_key}".encode()
-        return base64.b64encode(auto_bytes).decode()
+        authorization_bytes = f"{username}:{api_key}".encode()
+        return base64.b64encode(authorization_bytes).decode()
 
     def get_logs_request(self, event_type: str, params: dict):
         return self._http_request(
