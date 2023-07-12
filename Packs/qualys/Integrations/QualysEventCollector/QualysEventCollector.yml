@@ -60,7 +60,7 @@ configuration:
   section: Collect
   display: Host Detections Fetch Limit
   name: max_fetch_hosts_detections
-  additionalinfo: Maximum number of hosts to return in a single fetch iteration.
+  additionalinfo: Maximum number of hosts to return in a single fetch iteration of host detections. Since each host may have multiple detections, it is likely that more events than the specified number will be fetched.
   required: true
   type: 0
 description: Qualys Event Collector fetches Activity Logs (Audit Logs) and Host Vulnerabilities.
