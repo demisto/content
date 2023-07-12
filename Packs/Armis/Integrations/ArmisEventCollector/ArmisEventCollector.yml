@@ -1,0 +1,60 @@
+category: Analytics & SIEM
+commonfields:
+  id: ArmisEventCollector
+  version: -1
+configuration:
+- defaultvalue: https://acme.armis.com/api/v1
+  display: Server URL
+  name: server_url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: First fetch time
+  defaultvalue: 3 days
+  name: first_fetch
+  type: 0
+  section: Collect
+- display: Number of events to fetch per fetch.
+  name: max_fetch
+  type: 0
+  defaultvalue: 1000
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+description: 'Collects alerts & threat activities from Armis resources.'
+display: Armis Event Collector
+name: ArmisEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to true in order to create events, otherwise the command will only display them. Default is false.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    description: Manual command to fetch and display events.
+    name: armis-get-events
+  runonce: false
+  isfetchevents: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+marketplaces:
+- marketplacev2
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
