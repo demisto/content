@@ -6,6 +6,10 @@ import copy
 from requests import Response
 from typing import Callable
 
+PARAMETERS_ERROR_MSG_PRS_REVIEWER = "One or more arguments are missing." \
+      "Please pass with the command: organization name, repository id and project." \
+      "You can also re-configure the instance and set them as parameters."
+
 INCIDENT_TYPE_NAME = "Azure DevOps"
 OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
                             'title': 'The title of the pull request.',
@@ -16,6 +20,11 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
 
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
+
+
+class ValidationError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
 
 
 class Client:
@@ -423,6 +432,63 @@ class Client:
                                                resp_type='response')
 
         return response
+
+    def pull_requests_reviewer_list_request(self, organization: str, repository_id: str, project: str, pull_request_id: int):
+
+        params = {"api-version": 7.0}
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/' \
+                   f'pullRequests/{pull_request_id}/reviewers'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='json')
+
+    def pull_requests_reviewer_create_request(self, organization: str, repository_id: str, project: str, pull_request_id: int,
+                                              reviewer_user_id: str, is_required: bool):
+        params = {"api-version": 7.0}
+        data = {"id": reviewer_user_id, "isRequired": is_required, "vote": 0}
+
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/' \
+                   f'pullRequests/{pull_request_id}/reviewers/{reviewer_user_id}'
+
+        return self.ms_client.http_request(method='PUT',
+                                           full_url=full_url,
+                                           json_data=data,
+                                           params=params,
+                                           resp_type='json')
+
+    def pull_requests_commit_list_request(self, organization: str, repository_id: str, project: str, pull_request_id: int,
+                                          limit: int):
+
+        params = {"api-version": 7.0, "$top": limit}
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/' \
+                   f'pullRequests/{pull_request_id}/commits'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='json')
+
+    def commit_list_request(self, organization: str, repository_id: str, project: str, limit: int, offset: int):
+
+        params = {"api-version": 7.0, "searchCriteria.$skip": offset, "searchCriteria.$top": limit}
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/commits'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='json')
+
+    def commit_get_request(self, organization: str, repository_id: str, project: str, commit_id: str):
+
+        params = {"api-version": 7.0}
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/commits/{commit_id}'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='json')
 
 
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
@@ -1512,6 +1578,185 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
     return True
 
 
+def pagination_preprocess_and_validation(args: Dict[str, Any]) -> Tuple[int, int]:
+    """
+    Ensure the pagination values are valid.
+    """
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '1')
+
+    if page < 1 or limit < 1:
+        raise ValueError('Page and limit arguments must be greater than 1.')
+
+    return limit, (page - 1) * limit
+
+
+def pull_request_id_validation(client: Client, project: str, repository_id: str, pull_request_id: Optional[int]):
+    """
+    Ensure that the pull_request_id provided by the user exists in the given repository and in the given project.
+    """
+    response = client.pull_requests_list_request(project, repository_id)
+    pull_request_id_set = {pull_request.get('pullRequestId') for pull_request in response.get('value', [])}
+    if pull_request_id not in pull_request_id_set:
+        raise ValueError(f'Pull Request Id {pull_request_id} does not exist in repository={repository_id}, project={project}.\n'
+                         f'Here are the existing Pull Request IDs={pull_request_id_set}')
+
+
+def pull_request_id_preprocess(client: Client, args: Dict[str, Any], repository_id: str, project: str) -> int:
+    """
+    The pull_request_id is preprocessed by this function.
+    """
+
+    # validation required argument pull_request_id (check if exists in the given repo and in the given project)
+    pull_request_id = arg_to_number(args.get('pull_request_id'))
+    pull_request_id_validation(client, project, repository_id, pull_request_id)
+
+    return pull_request_id
+
+
+def organization_repository_project_preprocess(args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                                               project: Optional[str]) -> Tuple[str, str, str]:
+    """
+    The organization, repository and project are preprocessed by this function.
+    """
+
+    # Those arguments are already set as parameters, but the user can override them.
+    organization = args.get('organization_name') or organization
+    repository_id = args.get('repository_id') or repository_id
+    project = args.get('project_name') or project
+    # validate those arguments exist
+    if not (organization and repository_id and project):
+        raise ValidationError(PARAMETERS_ERROR_MSG_PRS_REVIEWER)
+
+    return organization, repository_id, project
+
+
+def pull_requests_reviewer_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                        repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+    """
+    Retrieve the reviewers for a pull request.
+    """
+
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+    pull_request_id = pull_request_id_preprocess(client, args, repository_id, project)
+
+    response = client.pull_requests_reviewer_list_request(organization, repository_id, project, pull_request_id)
+    mapping = {'displayName': 'Reviewer(s)'}
+    readable_output = tableToMarkdown('Reviewers List', response.get('value'), headers=['displayName'],
+                                      headerTransform=lambda header: mapping.get(header, header))
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.PullRequestReviewer',
+        outputs_key_field='displayName',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def pull_requests_reviewer_create_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                          repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+    """
+    Add a reviewer to a pull request.
+    """
+
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+    pull_request_id = pull_request_id_preprocess(client, args, repository_id, project)
+
+    reviewer_user_id = args.get('reviewer_user_id')  # reviewer_user_id is required
+    is_required = args.get('is_required', False)
+
+    response = client.pull_requests_reviewer_create_request(organization, repository_id, project, pull_request_id,
+                                                            reviewer_user_id, is_required)
+
+    readable_output = f'{response.get("displayName")} ({response.get("id")}) was created successfully as a reviewer for' \
+                      f' Pull Request ID {pull_request_id}.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.PullRequestReviewer',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def pull_requests_commit_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                      repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+    """
+    Get the commits for the specified pull request.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+    pull_request_id = pull_request_id_preprocess(client, args, repository_id, project)
+
+    # pagination
+    limit, offset = pagination_preprocess_and_validation(args)
+
+    response = client.pull_requests_commit_list_request(organization, repository_id, project, pull_request_id, limit)
+
+    mapping = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
+    readable_output = tableToMarkdown('Commits List', response.get('value'), headers=['comment', 'commitId', 'committer'],
+                                      headerTransform=lambda header: mapping.get(header, header))
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.Commit',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def commit_list_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                        project: Optional[str]) -> CommandResults:
+    """
+    Get the commits for the specified pull request.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    # pagination
+    limit, offset = pagination_preprocess_and_validation(args)
+
+    response = client.commit_list_request(organization, repository_id, project, limit, offset)
+
+    mapping = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
+    readable_output = tableToMarkdown('Commits List', response.get('value'), headers=['comment', 'commitId', 'committer'],
+                                      headerTransform=lambda header: mapping.get(header, header))
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.Commit',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def commit_get_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                       project: Optional[str]) -> CommandResults:
+    """
+    Retrieve a particular commit.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+    # a required argument
+    commit_id = args.get('commit_id')
+
+    response = client.commit_get_request(organization, repository_id, project, commit_id)
+
+    mapping = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
+    readable_output = tableToMarkdown('Commit Details', response, headers=['comment', 'commitId', 'committer'],
+                                      headerTransform=lambda header: mapping.get(header, header))
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.Commit',
+        outputs=response,
+        raw_response=response
+    )
+
+
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
     """
@@ -1691,6 +1936,26 @@ def main() -> None:
         elif command == 'update-remote-system':
             if is_mirroring:
                 return_results(update_remote_system_command(client, args))
+
+        elif command == 'azure-devops-pull-request-reviewer-list':
+            return_results(pull_requests_reviewer_list_command(client, args, params.get('organization'),
+                                                               params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-pull-request-reviewer-create':
+            return_results(pull_requests_reviewer_create_command(client, args, params.get('organization'),
+                                                                 params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-pull-request-commit-list':
+            return_results(pull_requests_commit_list_command(client, args, params.get('organization'),
+                                                             params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-commit-list':
+            return_results(commit_list_command(client, args, params.get('organization'),
+                                               params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-commit-get':
+            return_results(commit_get_command(client, args, params.get('organization'),
+                                               params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

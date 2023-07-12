@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: AzureDevOps
+  id: AzureDevOps - dev
   version: -1
 configuration:
 - additionalinfo: App Registration Client ID
@@ -92,8 +92,8 @@ description: >-
   Manage Git repositories in Azure DevOps Services. Integration capabilities
   include retrieving, creating, and updating pull requests. Run pipelines and
   retrieve Git information.
-display: AzureDevOps
-name: AzureDevOps
+display: AzureDevOps - dev
+name: AzureDevOps - dev
 defaultmapperin: Azure DevOps Incoming Mapper
 defaultmapperout: Azure DevOps Outgoing Mapper
 script:
@@ -760,6 +760,337 @@ script:
     - contextPath: AzureDevOps.Branch.name
       description: The name of the branch.
       type: String
+  - name: azure-devops-pull-request-reviewer-list
+    description: Retrieve the reviewers for a pull request.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: pull_request_id
+        description: ID of the pull request. By using the azure-devops-pull-request-list command, you can obtain the ID.
+        required: true
+        isArray: false
+    outputs:
+      - type: Number
+        contextPath: AzureDevOps.PullRequestReviewer.count
+        description: Count of reviewers.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.value.reviewerUrl
+        description: URL to retrieve information about this identity.
+      - type: Number
+        contextPath: AzureDevOps.PullRequestReviewer.value.vote
+        description: Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected.
+      - type: Boolean
+        contextPath: AzureDevOps.PullRequestReviewer.value.hasDeclined
+        description: Whether the pull request has been declined.
+      - type: Boolean
+        contextPath: AzureDevOps.PullRequestReviewer.value.isRequired
+        description: Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests.
+      - type: Boolean
+        contextPath: AzureDevOps.PullRequestReviewer.value.isFlagged
+        description: A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.value.displayName
+        description: This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.value.url
+        description: REST URL for this resource.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.value._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.value.id
+        description: Pull-request reviewers IDs.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.value.uniqueName
+        description: The reviewers user name.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.value.imageUrl
+        description: Link to the reviewers user image.
+  - name: azure-devops-pull-request-reviewer-create
+    description: Add a reviewer to a pull request.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request's target branch.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name.
+        required: false
+        isArray: false
+      - name: reviewer_user_id
+        description: ID of the reviewer. By using the azure-devops-user-list command, you can obtain the user ID.
+        required: true
+        isArray: false
+      - name: is_required
+        description: Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests.
+        required: false
+        isArray: false
+        defaultValue: false
+        auto: PREDEFINED
+        predefined:
+          - 'True'
+          - 'False'
+      - name: pull_request_id
+        description: ID of the pull request.
+        required: true
+        isArray: false
+    outputs:
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.reviewerUrl
+        description: URL to retrieve information about this identity.
+      - type: Number
+        contextPath: AzureDevOps.PullRequestReviewer.vote
+        description: Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected.
+      - type: Boolean
+        contextPath: AzureDevOps.PullRequestReviewer.hasDeclined
+        description: Whether the pull request has been declined.
+      - type: Boolean
+        contextPath: AzureDevOps.PullRequestReviewer.isFlagged
+        description: A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.id
+        description: Pull-request reviewers IDs.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.displayName
+        description: This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.uniqueName
+        description: The reviewers user name.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.url
+        description: REST URL for this resource.
+      - type: String
+        contextPath: AzureDevOps.PullRequestReviewer.imageUrl
+        description: Link to the reviewers user image.
+  - name: azure-devops-pull-request-commit-list
+    description: Get the commits for the specified pull request.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: pull_request_id
+        description: ID of the pull request. By using the azure-devops-pull-request-list command, you can obtain the ID.
+        required: true
+        isArray: false
+      - defaultValue: '50'
+        description: The number of results to retrieve. Minimum value is 1.
+        name: limit
+    outputs:
+      - type: Number
+        contextPath: AzureDevOps.Commit.count
+        description: Count of commits.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.commitId
+        description: ID (SHA-1) of the commit.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.author.name
+        description: Name of the commit author.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.author.email
+        description: Email address of the commit author.
+      - type: Date
+        contextPath: AzureDevOps.Commit.value.author.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.committer.name
+        description: Name of the commit committer.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.committer.email
+        description: Email address of the commit committer.
+      - type: Date
+        contextPath: AzureDevOps.Commit.value.committer.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.comment
+        description: Comment or message of the commit.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.url
+        description: REST URL for this resource.
+  - name: azure-devops-commit-list
+    description: Retrieve git commits for a project.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - defaultValue: '50'
+        description: The number of results to retrieve. Minimum value is 1.
+        name: limit
+      - defaultValue: '1'
+        description: The page number of the results to retrieve. Minimum value is 1.
+        name: page
+    outputs:
+      - type: Number
+        contextPath: AzureDevOps.Commit.count
+        description: Count of commits.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.commitId
+        description: ID (SHA-1) of the commit.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.author.name
+        description: Name of the commit author.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.author.email
+        description: Email address of the commit author.
+      - type: Date
+        contextPath: AzureDevOps.Commit.value.author.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.committer.name
+        description: Name of the commit committer.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.committer.email
+        description: Email address of the commit committer.
+      - type: Date
+        contextPath: AzureDevOps.Commit.value.committer.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.comment
+        description: Comment or message of the commit.
+      - type: Number
+        contextPath: AzureDevOps.Commit.value.changeCounts
+        description: Counts of the types of changes (edits, deletes, etc.) included with the commit.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.url
+        description: REST URL for this resource.
+      - type: String
+        contextPath: AzureDevOps.Commit.value.remoteUrl
+        description: Remote URL path to the commit.
+  - name: azure-devops-commit-get
+    description: Retrieve a particular commit.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: commit_id
+        description: The id of the commit.
+        required: true
+        isArray: false
+    outputs:
+    - type: String
+      contextPath: AzureDevOps.Commit.treeId
+      description: Tree ID of the commit.
+    - type: String
+      contextPath: AzureDevOps.Commit.commitId
+      description: ID (SHA-1) of the commit.
+    - type: String
+      contextPath: AzureDevOps.Commit.author.name
+      description: Name of the commit author.
+    - type: String
+      contextPath: AzureDevOps.Commit.author.email
+      description: Email address of the commit author.
+    - type: Date
+      contextPath: AzureDevOps.Commit.author.date
+      description: Date of the commit operation.
+    - type: String
+      contextPath: AzureDevOps.Commit.author.imageUrl
+      description: Link to the author user image.
+    - type: String
+      contextPath: AzureDevOps.Commit.committer.name
+      description: Name of the commit committer.
+    - type: String
+      contextPath: AzureDevOps.Commit.committer.email
+      description: Email address of the commit committer.
+    - type: Date
+      contextPath: AzureDevOps.Commit.committer.date
+      description: Date of the commit operation.
+    - type: String
+      contextPath: AzureDevOps.Commit.committer.imageUrl
+      description: Link to the committer user image.
+    - type: String
+      contextPath: AzureDevOps.Commit.comment
+      description: Comment or message of the commit.
+    - type: String
+      contextPath: AzureDevOps.Commit.parents
+      description: An enumeration of the parent commit IDs for this commit.
+    - type: String
+      contextPath: AzureDevOps.Commit.url
+      description: REST URL for this resource.
+    - type: String
+      contextPath: AzureDevOps.Commit.remoteUrl
+      description: Remote URL path to the commit.
+    - type: String
+      contextPath: AzureDevOps.Commit._links.self.href
+      description: A collection of related REST reference links.
+    - type: String
+      contextPath: AzureDevOps.Commit._links.repository.href
+      description: Link to the repository where the commit is.
+    - type: String
+      contextPath: AzureDevOps.Commit._links.web.href
+      description: Link to the commit.
+    - type: String
+      contextPath: AzureDevOps.Commit._links.changes.href
+      description: Link to the commit changes.
+    - type: String
+      contextPath: AzureDevOps.Commit.push.pushedBy.displayName
+      description: Display name of the user who pushed the commit.
+    - type: String
+      contextPath: AzureDevOps.Commit.push.pushedBy.url
+      description: Identity Reference.
+    - type: String
+      contextPath: AzureDevOps.Commit.push.pushedBy._links.avatar.href
+      description: Url for the user's avatar.
+    - type: String
+      contextPath: AzureDevOps.Commit.push.pushedBy.id
+      description: ID of the user who pushed the commit.
+    - type: String
+      contextPath: AzureDevOps.Commit.push.pushedBy.uniqueName
+      description: Domain and principal name.
+    - type: String
+      contextPath: AzureDevOps.Commit.push.pushedBy.imageUrl
+      description: Identity Image.
+    - type: String
+      contextPath: AzureDevOps.Commit.push.pushedBy.descriptor
+      description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+    - type: Number
+      contextPath: AzureDevOps.Commit.push.pushId
+      description: Unique ID of the push operation.
+    - type: Date
+      contextPath: AzureDevOps.Commit.push.date
+      description: Date of the push operation.
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
