@@ -116,7 +116,7 @@ script:
       required: true
     description: Update the resource entity risk.
     name: silverfort-update-resource-risk
-  dockerimage: demisto/pyjwt3:1.0.0.63826
+  dockerimage: demisto/pyjwt3:1.0.0.65022
   runonce: false
   script: '-'
   subtype: python3
