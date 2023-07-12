@@ -7191,10 +7191,6 @@ class WhoisException(Exception):
     pass
 
 
-class WhoisWarningException(Exception):
-    pass
-
-
 # whois domain exception to execution metrics attribute mapping
 whois_exception_mapping: Dict[Type, str] = {
     socket.error: "connection_error",
