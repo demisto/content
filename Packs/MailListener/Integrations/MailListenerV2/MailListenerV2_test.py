@@ -1,7 +1,6 @@
 from datetime import datetime
 import tempfile
 from freezegun import freeze_time
-from more_itertools import side_effect
 import pytest
 
 MAIL_STRING = br"""Delivered-To: to@test1.com
