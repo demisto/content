@@ -10,7 +10,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = "okta"
 PRODUCT = "auth0"
 DEFAULT_LIMIT = 1000
-EXPIRED_TOKEN_RANGE = 23 * 60 * 60  # https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#renew-access-tokens
+TOKEN_TIME_TO_EXPIRE = 23 * 60 * 60  # https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#renew-access-tokens
 
 
 ''' HELPER FUNCTIONS '''
@@ -46,17 +46,16 @@ def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
     return query_params
 
 
-def should_refresh_access_token() -> bool:
-    """Check whether the access token in the integration context has expired.
-
+def get_access_token_from_context() -> Optional[str]:
+    """Returns an access token if exists in the integration context and is not expired. Otherwise, returns None.
     Returns:
-        bool: Whether the token has expired and should refresh the token.
+        Optional[str]: A valid access token, or `None`.
     """
     int_context = get_integration_context()
-    if 'expired_token_time' not in int_context or \
-            int(time.time()) - int_context.get('expired_token_time', 1) > EXPIRED_TOKEN_RANGE:
-        return True
-    return False
+    if 'token_creation_time' not in int_context or \
+            int(time.time()) - int_context.get('token_creation_time', 1) > TOKEN_TIME_TO_EXPIRE:
+        return None
+    return int_context["access_token"]
 
 
 ''' CLIENT CLASS '''
@@ -68,6 +67,9 @@ class Client(BaseClient):
         super().__init__(base_url, verify, proxy, headers={})
         self.client_id = client_id
         self.client_secret = client_secret
+
+        access_token = self.get_access_token()
+        self._headers.update({'Authorization': f'Bearer {access_token}'})
 
     def get_access_token_request(self):
         """
@@ -86,7 +88,7 @@ class Client(BaseClient):
             data=body
         )
 
-        demisto.info('Successfully got access token.')
+        demisto.debug('Successfully got access token.')
         return raw_response
 
     def get_access_token(self):
@@ -95,21 +97,19 @@ class Client(BaseClient):
         Returns:
             str: The access token.
         """
-        if should_refresh_access_token():
-            raw_response = self.get_access_token_request()
+        if not (access_token := get_access_token_from_context()):
+            access_token = self.get_access_token_request()["access_token"]
             set_integration_context({
-                "access_token": raw_response.get("access_token"),
-                "expired_token_time": int(time.time())
+                "access_token": access_token,
+                "token_creation_time": int(time.time())
             })
 
-        return get_integration_context()["access_token"]
+        return access_token
 
     def get_events_request(self, query_params: dict) -> list:
         """
         Send request to get events from Okta Auth0.
         """
-        access_token = self.get_access_token()
-        self._headers.update({'Authorization': f'Bearer {access_token}'})
         raw_response = self._http_request(method='GET', url_suffix='/api/v2/logs', params=query_params)
 
         demisto.info(f'Succesfully got {len(raw_response)} events.')
@@ -117,7 +117,7 @@ class Client(BaseClient):
 
     def fetch_events(self, query_params: dict, last_run: dict, fetch_events_limit: Optional[int] = 1000) -> List[dict]:
         """
-        Aggregates logs from Okta Auth0.
+        Aggregates logs from Okta Auth0 and updates the last run object with the ID of the latest fetched log.
 
         Args:
             query_params (dict): The query params to fetch the events.
@@ -163,18 +163,19 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command(client: Client, params: dict) -> str:
+def test_module_command(client: Client, params: dict, last_run: dict) -> str:
     """
     Tests connection with Okta Auth0.
     Args:
         client (Client): The client implementing the API to Okta Auth0.
         params (dict): The configuration parameters.
+        last_run (dict): the lastRun object, holding information from the previous fetch run.
 
     Returns:
         (str) 'ok' if success.
     """
     params = prepare_query_params(params)
-    client.get_events_request(params)
+    fetch_events_command(client, params, last_run)
     return 'ok'
 
 
@@ -255,9 +256,10 @@ def main() -> None:
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
         )
+        last_run = demisto.getLastRun()
 
         if command == 'test-module':
-            return_results(test_module_command(client, params))
+            return_results(test_module_command(client, params, last_run))
 
         elif command == 'okta-auth0-get-events':
             events, results = get_events_command(client, args)
@@ -271,7 +273,6 @@ def main() -> None:
                 )
 
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
             events, last_run = fetch_events_command(client, params, last_run)
             add_time_to_events(events)
             send_events_to_xsiam(

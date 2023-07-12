@@ -1,4 +1,4 @@
-category: Identity and Access Management
+category: Analytics & SIEM
 commonfields:
   id: OktaAuth0EventCollector
   version: -1
@@ -73,6 +73,6 @@ script:
   dockerimage: demisto/python3:3.10.12.63474
 marketplaces:
 - marketplacev2
-fromversion: 6.8.0
+fromversion: 8.2.0
 tests:
 - No tests (auto formatted)

@@ -1,4 +1,5 @@
 Okta Auth0 logs event collector integration for XSIAM.
+This integration was integrated and tested with version 2.0 of Okta Auth0
 Please see the [Okta Auth0 rate limit policy](https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy).
 
 ## Configure Okta Auth0 Event Collector on Cortex XSIAM
