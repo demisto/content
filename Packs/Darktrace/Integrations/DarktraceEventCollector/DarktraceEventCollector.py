@@ -118,7 +118,8 @@ class Client(BaseClient):
         Get events from Darktrace API using the modelbreaches endpoint and the start and end time.
         """
         query_uri = MODEL_BREACH_ENDPOINT
-        params = {'starttime': start_time, 'endtime': end_time, 'expandenums': True, 'includeacknowledged': True}
+        params = {'starttime': start_time, 'endtime': end_time, 'expandenums': "true", 'includeacknowledged': "true",
+                  'minimal': "false", 'includebreachurl': "true"}
         return self.get(query_uri, params)
 
 
