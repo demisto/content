@@ -58,6 +58,14 @@ sample_span_result = """{
   }
 }"""
 
+empty_domain_event = """{
+  "data": {
+    "explore": {
+      "results": []
+    }
+  }
+}"""
+
 sample_domain_event = """{
   "data": {
     "explore": {
@@ -174,6 +182,19 @@ class Response:
     text = None  # type: str
 
 
+def empty_response_handler(*args, **kwargs):
+    data: str = kwargs["json"]["query"]
+
+    r = Response()
+    if "DOMAIN_EVENT" in data:
+        r.text = empty_domain_event
+        return r
+    elif "spans(" in data:
+        r.text = sample_span_result
+        return r
+    return None
+
+
 def response_handler(*args, **kwargs):
     data: str = kwargs["json"]["query"]
 
@@ -233,6 +254,30 @@ def test_fetch_incidents_last_fetch_not_none(mocker):
         client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days"
     )
     assert len(incidents) == 1
+
+
+def test_fetch_incidents_no_events(mocker):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = empty_response_handler
+
+    next_run, incidents = fetch_incidents(
+        client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days"
+    )
+    assert len(incidents) == 0
 
 
 def test_construct_filterby_expression():
