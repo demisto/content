@@ -73,10 +73,9 @@ configuration:
   - WHITE
   required: false
   type: 15
-- name: feedReliability
+- additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
-  type: 15
-  required: true
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -84,11 +83,13 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
-- name: feedTags
+  required: true
+  type: 15
+- additionalinfo: Supports CSV values.
   display: Tags
+  name: feedTags
+  required: false
   type: 0
-  additionalinfo: Supports CSV values.
 description: Searches for CVE information using OpenCVE.
 display: OpenCVE (Community Contribution)
 name: OpenCVE
@@ -212,6 +213,7 @@ script:
     name: ocve-get-vendor-cves
     outputs:
     - contextPath: vendor_cves
+      description: CVEs for the vendor
   - arguments:
     - description: Vendor name
       name: vendor_name
@@ -255,14 +257,17 @@ script:
     outputs:
     - contextPath: reports
   - arguments:
-    - name: report_id
+    - description: The report ID
+      name: report_id
       required: true
     description: Get a specific report
     name: ocve-get-report
     outputs:
     - contextPath: report
+      description: The report
   - arguments:
-    - name: report_id
+    - description: The report ID
+      name: report_id
       required: true
     - defaultValue: "1"
       description: the page to start
@@ -271,30 +276,44 @@ script:
     name: ocve-get-alerts
     outputs:
     - contextPath: alerts
+      description: The Alerts from the provided Report ID
   - arguments:
-    - name: report_id
+    - description: The Report ID
+      name: report_id
       required: true
-    - name: alert_id
+    - description: The Alert ID
+      name: alert_id
       required: true
     description: Get a specific alert
     name: ocve-get-alert
     outputs:
     - contextPath: alert
+      description: The Alert requested
   - arguments:
-    - name: cve_id
+    - description: The CVE ID
+      name: cve_id
       required: true
     description: Get the details of a specific CVE.
     name: ocve-get-cve
     outputs:
     - contextPath: CVE.ID
+      description: The ID of the CVE.
     - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
     - contextPath: CVE.Published
+      description: The date the CVE was published.
     - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
     - contextPath: CVE.Description
+      description: The description of the CVE.
     - contextPath: DBotScore.Indicator
+      description: The indicator value.
     - contextPath: DBotScore.Score
+      description: The indicator score.
     - contextPath: DBotScore.Type
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
   - arguments:
     - description: filter by keyword
       name: search
