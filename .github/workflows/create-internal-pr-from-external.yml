@@ -3,7 +3,7 @@ on:
   pull_request_target:
     types: [closed]
     branches:
-      - CIAC-4682-**
+      - contrib/**
 
 jobs:
   create_internal_pr:
