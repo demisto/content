@@ -10,6 +10,4 @@ ignore=BA101
 [file:classifier-TrendMicroCAS.json]
 ignore=BA101
 
-[file:TrendMicroCAS.yml]
-ignore=IN145
 
