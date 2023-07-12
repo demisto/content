@@ -352,7 +352,7 @@ def get_host_list_detections_events(client, last_time, max_fetch, next_page=None
 
     if newest_event_time == last_time:
         edited_host_detections = []
-        # pass
+        new_next_page = None
     else:
         edited_host_detections = get_detections_from_hosts(host_list_events)
         demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} events.')
@@ -414,6 +414,7 @@ def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_even
     if last_fetch_time := new_next_run.get(HOST_LAST_FETCH):
         updated_next_run[HOST_LAST_FETCH] = last_fetch_time
 
+    demisto.info(f"Sending len{len(events)} to XSIAM. updated_next_run={updated_next_run}.")
     return updated_next_run, events
 
 
@@ -555,11 +556,12 @@ def main():  # pragma: no cover
         arg_name='First fetch time',
         required=True
     )
-    host_detections_fetch_interval: timedelta = (datetime.now() - dateparser.parse(  # type: ignore[operator]
-        params.get('host_detections_fetch_interval', '12 hours')))
+
+    parsed_interval = dateparser.parse(params.get('host_detections_fetch_interval', '12 hours')) or dateparser.parse('12 hours')
+    host_detections_fetch_interval: timedelta = (datetime.now() - parsed_interval)  # type: ignore[operator]
     first_fetch_str = first_fetch_datetime.strftime(DATE_FORMAT)
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
 
     try:
         headers: dict = {"X-Requested-With": "Cortex XSIAM"}
