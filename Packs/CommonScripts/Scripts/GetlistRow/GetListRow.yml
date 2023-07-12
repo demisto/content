@@ -14,7 +14,7 @@ args:
   - 'True'
   - 'False'
 - defaultValue: ','
-  description: Separator to split the list by.
+  description: Separator to split the list by (use \\t in case of tab separated list).
   name: list_separator
 comment: Parses a list by header and value.
 commonfields:
