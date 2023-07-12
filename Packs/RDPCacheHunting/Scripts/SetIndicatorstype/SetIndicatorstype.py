@@ -1,5 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import collections
 import random
 from collections import Counter
@@ -10,7 +8,7 @@ def parse_data(list_content):
 
     list_collections: Counter = collections.Counter(list_content)
     top_lists = list_collections.most_common(10)
-    
+
     for list_element in top_lists:
         random_number = random.randint(0, 16777215)
         hex_number = str(hex(random_number))  # convert to hexadecimal
@@ -24,8 +22,8 @@ def parse_data(list_content):
             "label": str(list_element[0]),
             "color": color
         }
-
         lists_data.append(list_widget_data)
+
 
     return {
         "Type": 17,
@@ -39,14 +37,17 @@ def parse_data(list_content):
         }
     }
 
-
 def main():
-    demisto.incidents()
-    Indicator_type = demisto.executeCommand("getList", {"listName": "indicatorsTypes"})
-    list_content = Indicator_type[0].get('Contents', '').split(",")
+    data = demisto.context().get('ExtractedIndicators')
+    data = argToList(data)
+    if data:
+        list_content = []
+        for item in data:
+            for key, values in item.items():
+                list_content.extend([key] * len(values))
 
-    if list_content:
-        data = parse_data(list_content)
+        if list_content:
+            data = parse_data(list_content)
 
     else:
         data = {

@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -1625
+          "y": -1365
         }
       }
     note: false
@@ -74,7 +74,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 390
+          "y": 650
         }
       }
     note: false
@@ -125,7 +125,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -590
+          "y": -330
         }
       }
     note: false
@@ -137,10 +137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b569bf58-99a2-4238-86df-539977f711cd
+    taskid: a36995f7-84b8-4dc9-8e6f-7f9bf7796ddf
     type: regular
     task:
-      id: b569bf58-99a2-4238-86df-539977f711cd
+      id: a36995f7-84b8-4dc9-8e6f-7f9bf7796ddf
       version: -1
       name: Suspicious tools hunting
       description: This automation calculates the similarity ratio between a Text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
@@ -271,7 +271,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -720
+          "y": -460
         }
       }
     note: false
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 620
+          "y": 880
         }
       }
     note: false
@@ -327,7 +327,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "43"
+      - "13"
     scriptarguments:
       text:
         complex:
@@ -340,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 800
+          "y": 1060
         }
       }
     note: false
@@ -833,7 +833,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -900
+          "y": -640
         }
       }
     note: false
@@ -910,7 +910,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -1420
+          "y": -1160
         }
       }
     note: false
@@ -959,7 +959,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": -1080
+          "y": -820
         }
       }
     note: false
@@ -992,7 +992,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -1220
+          "y": -960
         }
       }
     note: false
@@ -1031,7 +1031,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": -1080
+          "y": -820
         }
       }
     note: false
@@ -1062,7 +1062,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -430
+          "y": -170
         }
       }
     note: false
@@ -1119,7 +1119,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -280
+          "y": -20
         }
       }
     note: false
@@ -1174,7 +1174,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -100
+          "y": 160
         }
       }
     note: false
@@ -1226,7 +1226,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 70
+          "y": 330
         }
       }
     note: false
@@ -1257,67 +1257,13 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 240
+          "y": 500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: be0b1b9a-6ed6-4844-8966-e2f1e9c5bce5
-    type: playbook
-    task:
-      id: be0b1b9a-6ed6-4844-8966-e2f1e9c5bce5
-      version: -1
-      name: Set list of indicator types
-      description: This playbook takes IOCs as input and adds the type into a list to be able to calculate stats about the types of the extracted indicators
-      playbookName: Set list of indicator types
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      Domain:
-        complex:
-          root: ExtractedIndicators
-          accessor: Domain
-      EmailAddresses:
-        complex:
-          root: ExtractedIndicators
-          accessor: Email
-      IP:
-        complex:
-          root: ExtractedIndicators
-          accessor: IP
-      URL:
-        complex:
-          root: ExtractedIndicators
-          accessor: URL
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1342,7 +1288,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 240
+          "y": 500
         }
       }
     note: false
@@ -1402,7 +1348,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 390
+          "y": 650
         }
       }
     note: false
@@ -1429,7 +1375,7 @@ tasks:
       brand: Rasterize
     nexttasks:
       '#none#':
-      - "43"
+      - "13"
     scriptarguments:
       EntryID:
         complex:
@@ -1462,7 +1408,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 810
+          "y": 1070
         }
       }
     note: false
@@ -1520,7 +1466,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 620
+          "y": 880
         }
       }
     note: false
@@ -1540,10 +1486,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3720,
+        "height": 3460,
         "width": 2530,
         "x": -840,
-        "y": -1625
+        "y": -1365
       }
     }
   }
