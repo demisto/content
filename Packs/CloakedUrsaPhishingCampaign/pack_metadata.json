@@ -1,6 +1,6 @@
 {
     "name": "Cloaked Ursa Diplomatic Phishing Campaign",
-    "description": "This pack detect and respond to the Cloaked Ursa Diplomatic Phishing Campaign",
+    "description": "This pack detects and responds to the Cloaked Ursa Diplomatic Phishing Campaign",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
