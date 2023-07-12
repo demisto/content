@@ -873,6 +873,28 @@ Updates attributes of an existing Active Directory group.
 
 There is no context output for this command.
 
+### ad-test-credentials
+***
+Test if credentials are valid.
+
+
+#### Base Command
+
+`ad-test-credentials`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Username to test. By itself or formatted like SERVER_IP\\USERNAME | Required | 
+| password | Password to test. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ActiveDirectory.ValidCredentials | Unknown | List of usernames that successfully logged in. | 
+
 ### iam-create-user
 ***
 Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
