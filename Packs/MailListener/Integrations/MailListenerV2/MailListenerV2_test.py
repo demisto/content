@@ -1,5 +1,4 @@
 from datetime import datetime
-import tempfile
 from freezegun import freeze_time
 import pytest
 
@@ -435,6 +434,7 @@ def test_load_client_cert_and_key(mocker, cert_and_key):
     """
     from MailListenerV2 import load_client_cert_and_key
     import ssl
+    import tempfile
 
     params = {
         'clientCertAndKey': cert_and_key
