@@ -86,7 +86,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: snort-get-ip-blocklist-indicators
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   script: ''
   subtype: python3

@@ -12,16 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "MicrosoftCore": {
-            "mandatory": true,
-            "display_name": "Microsoft Logs Base"
-        },
-        "MicrosoftWindowsEvents": {
-            "mandatory": false,
-            "display_name": "Microsoft Windows Event Logs"
-        }
-    },
     "marketplaces": [
         "marketplacev2"
     ]

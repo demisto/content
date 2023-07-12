@@ -18,6 +18,13 @@ which utilizes the [EXO v3 module](https://docs.microsoft.com/en-us/powershell/e
     | The application ID from the Azure portal |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+### Important Notes
+---
+* It is strongly recommended to follow the [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
+* If your instance does experience memory management issues, please configure your playbooks to use *Retry on error*.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
