@@ -1,3 +1,5 @@
-import time
+from DateTimeNowToEpoch import retrieve_epoch
 
-assert type(time.time()) == float
+
+def test_retrieve_epoch():
+    assert type(retrieve_epoch) == int
