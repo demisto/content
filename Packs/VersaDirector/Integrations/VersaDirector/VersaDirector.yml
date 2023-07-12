@@ -27,14 +27,29 @@ configuration:
   additionalinfo: The Client ID parameter is used for Auth authentication. Used together with the Client Secret parameter.
   name: client_id
   type: 0
+  hidden: true
 - display: Client Secret
   additionalinfo: The Client Secret parameter is used for Auth authentication. Used together with the Client ID parameter.
   name: client_secret
   type: 4
+  hidden: true
+- display: Client ID
+  name: credentials_client
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
 - display: Auth Token
   additionalinfo: The Auth Token parameter is used for Auth authentication.\nBy default, an Auth Token passed as a parameter takes priority over an Auth Token saved in the integration context.\nIf a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context.
   name: access_token
   type: 4
+  hidden: true
+- displaypassword: Auth Token
+  additionalinfo: The Auth Token parameter is used for Auth authentication.\nBy default, an Auth Token passed as a parameter takes priority over an Auth Token saved in the integration context.\nIf a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context.
+  name:  credentials_access_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
