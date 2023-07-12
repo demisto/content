@@ -269,6 +269,6 @@ outputs:
   description: The size of the report file.
 - contextPath: InfoFile.Type
   description: The type of the report file.
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
  -  No tests
