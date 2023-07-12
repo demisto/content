@@ -639,7 +639,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
         branch_pack_metadata_version = Version(
             self.branch_metadata.get(Metadata.CURRENT_VERSION, self.DEFAULT_VERSION)
         )
-        assert (
+        assert (  # noqa:PT018
             previous_result and previous_result.pack_new_rn_file
         ), "No previous result was supplied to the SameRNMetadataVersionCondition object."
         rn_version_file_name = previous_result.pack_new_rn_file.stem
