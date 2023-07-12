@@ -1017,6 +1017,8 @@ def search_attributes(demisto_args: dict) -> CommandResults:
 
     response = PYMISP.search(**args)
     if response:
+        response_for_context_list = []
+        response_for_context_dict = {}
         if outputs_should_include_only_values:
             response_for_context_list = build_attributes_search_response_return_only_values(response)
             number_of_results = len(response_for_context_list)
