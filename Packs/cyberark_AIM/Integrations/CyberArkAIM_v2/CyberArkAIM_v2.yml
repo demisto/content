@@ -34,10 +34,15 @@ configuration:
   display: Key File as Text
   name: key_text
   type: 4
-- defaultvalue: 'true'
-  display: Fetch credentials
+  hidden: true
+- name: key_text_creds
+  type: 9
+  displaypassword: Key File as Text
+  hiddenusername: true
+- display: Fetch credentials
   name: isFetchCredentials
   type: 8
+  defaultvalue: 'true'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -67,7 +72,7 @@ script:
     - contextPath: CyberArkAIM.Name
       description: The credential name of the account.
       type: String
-  dockerimage: demisto/ntlm:1.0.0.48903
+  dockerimage: demisto/ntlm:1.0.0.64630
   runonce: false
   script: '-'
   subtype: python3
