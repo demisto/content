@@ -52,4 +52,3 @@ class GoogleSecreteManagerModule:
             return client
         except Exception as e:
             logging.error(f'Could not create GSM client, error: {e}')
-            raise
