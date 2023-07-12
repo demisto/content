@@ -99,40 +99,65 @@ def get_events(client, alert_status):
     return events, CommandResults(readable_output=hr)
 
 
-def calc_last_fetch_time(alerts_last_event_time, threats_last_event_time):
-    if alerts_last_event_time and not threats_last_event_time:
-        return alerts_last_event_time
-    if threats_last_event_time and not alerts_last_event_time:
-        return threats_last_event_time
-    return min(alerts_last_event_time, threats_last_event_time)
+def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param):
+    if last_fetch_time and fetch_start_time_param:
+        last_fetch_time = arg_to_datetime(last_fetch_time)
+        if not isinstance(last_fetch_time, datetime):
+            raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
+        return min(last_fetch_time, fetch_start_time_param)
+    else:
+        return fetch_start_time_param
 
 
-def dedup_alerts(alerts, last_fetch_ids):
-    return [alert for alert in alerts if alert.get('alertId') not in last_fetch_ids]
+def dedup_alerts(alerts, alerts_last_fetch_ids):
+    return [alert for alert in alerts if alert.get('alertId') not in alerts_last_fetch_ids]
 
 
-def dedup_threats(threats, last_fetch_ids):
-    return [threat for threat in threats if threat.get('activityUUID') not in last_fetch_ids]
+def dedup_threats(threats, threats_last_fetch_ids):
+    return [threat for threat in threats if threat.get('activityUUID') not in threats_last_fetch_ids]
 
 
-def fetch_events(client: Client, fetch_start_time_in_seconds, max_fetch, last_fetch_ids):
+def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param):
     events = []
-    alerts_response = client.fetch_alerts(max_fetch=max_fetch, time_frame=fetch_start_time_in_seconds)
-    threats_response = client.fetch_threats(
-        max_fetch=max_fetch - int(alerts_response.get('data', {}).get('count', 0)), time_frame=fetch_start_time_in_seconds)
 
-    alerts = dedup_alerts(alerts_response.get('data', {}).get('results', []), last_fetch_ids)
-    threats = dedup_threats(threats_response.get('data', {}).get('results', []), last_fetch_ids)
+    # calculate fetch start time for each event type
+    alerts_first_fetch_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
+    threats_first_fetch_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
+
+    # calculate time_frame query parameter in seconds for each event type
+    now = datetime.now()
+    alerts_fetch_start_time_in_seconds = int((now - alerts_first_fetch_time).total_seconds() + 1)
+    threats_fetch_start_time_in_seconds = int((now - threats_first_fetch_time).total_seconds() + 1)
+
+    alerts_response = client.fetch_alerts(max_fetch=max_fetch, time_frame=alerts_fetch_start_time_in_seconds)
+    threats_response = client.fetch_threats(
+        max_fetch=max_fetch - int(alerts_response.get('data', {}).get('count', 0)),
+        time_frame=threats_fetch_start_time_in_seconds)
+
+    # dedup events from last fetch
+    alerts = dedup_alerts(alerts_response.get('data', {}).get('results', []), last_run.get('alerts_last_fetch_ids', []))
+    threats = dedup_threats(threats_response.get('data', {}).get('results', []), last_run.get('threats_last_fetch_ids', []))
 
     events.extend(alerts)
     events.extend(threats)
 
-    last_fetch_time = calc_last_fetch_time(alerts[-1].get('time'), threats[-1].get('time'))
+    # determine last fetch time of each event type
+    alerts_last_fetch_time = alerts[-1].get('time') if alerts[-1].get('time') else last_run.get('alerts_last_fetch_time')
+    threats_last_fetch_time = threats[-1].get('time') if threats[-1].get('time') else last_run.get('threats_last_fetch_time')
 
     alerts_last_fetch_ids = [alert.get('alertId') for alert in alerts]
     threats_last_fetch_ids = [threat.get('activityUUID') for threat in threats]
 
-    return last_fetch_time, events, alerts_last_fetch_ids + threats_last_fetch_ids
+    # set values for next fetch events
+    next_run = {
+        'alerts_last_fetch_ids': alerts_last_fetch_ids,
+        'threats_last_fetch_ids': threats_last_fetch_ids,
+        'alerts_last_fetch_time': alerts_last_fetch_time,
+        'threats_last_fetch_time': threats_last_fetch_time,
+        'access_token': client._access_token
+    }
+
+    return events, next_run
 
 
 ''' MAIN FUNCTION '''
@@ -168,27 +193,7 @@ def main() -> None:
     max_fetch = params.get('max_fetch', 1000)
     first_fetch = params.get('first_fetch', '3 days')
     fetch_start_time_param = arg_to_datetime(first_fetch)
-    last_fetch_time = last_run.get('last_fetch_time')
-    last_fetch_ids = last_run.get('last_fetch_ids', [])
-
-    if not isinstance(fetch_start_time_param, datetime):
-        raise DemistoException('First fetch time must be a valid date string, e.g. 3 days, 1 month, 1 year, etc.')
-
-    if last_fetch_time and fetch_start_time_param:
-        fetch_start_time = min(last_fetch_time, fetch_start_time_param)
-    else:
-        fetch_start_time = fetch_start_time_param
-
-    # How much time before the first fetch to retrieve events
-    # fetch_start_time = arg_to_datetime(
-    #     arg=params.get('first_fetch', '3 days'),
-    #     arg_name='First fetch time',
-    #     required=True
-    # )
-    # fetch_start_timestamp = int(fetch_start_time.timestamp()) if fetch_start_time else None
-    # assert isinstance(fetch_start_timestamp, int)
     proxy = params.get('proxy', False)
-    # alert_status = params.get('alert_status', None)
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -222,17 +227,11 @@ def main() -> None:
             # )
 
         elif command in ('fetch-events', 'armis-get-events'):
-            if not isinstance(fetch_start_time, datetime):
-                raise DemistoException('First fetch time must be a valid date string, e.g. 3 days, 1 month, 1 year, etc.')
-
-            # fetch_start_time_in_seconds = (datetime.now(timezone.utc) - fetch_start_time).seconds
-            fetch_start_time_in_seconds = int((datetime.now() - fetch_start_time).total_seconds() + 1)
-
-            last_fetch_time, events, last_fetch_ids = fetch_events(
+            events, next_run = fetch_events(
                 client=client,
-                fetch_start_time_in_seconds=fetch_start_time_in_seconds,
                 max_fetch=max_fetch,
-                last_fetch_ids=last_fetch_ids
+                last_run=last_run,
+                fetch_start_time_param=fetch_start_time_param
             )
 
             add_time_to_events(events)
@@ -242,11 +241,6 @@ def main() -> None:
                 product=PRODUCT
             )
 
-            next_run = {
-                'access_token': client._access_token,
-                'last_fetch_time': last_fetch_time,
-                'last_fetch_ids': last_fetch_ids
-            }
             demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
