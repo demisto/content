@@ -846,7 +846,7 @@ script:
       Sends chat messages on Zoom to either an individual user who is in your contact list or to a channel of which you are a member.  Use the command zoom-list-users to get the user id by the user email (for to_contact).
       Use the command zoom-list-user-channels in order to fetch the channel ID by the channel name (for to_channel).
       In order to send a message, you need to provide at least a message (message text) and to_contact (contact to send) or to_channel (channel to send to), but not both of them.
-      In order to send a style message you need to provide is-markdown=true and not provide any format_type or format_attr.
+      In order to send a style message you need to provide is-markdown=true and the message can contain a markdown format
       If you are using mention markdown in a message, provide the email address in the at_contact argument.
     arguments:
     - name: user_id
@@ -855,19 +855,8 @@ script:
       required: true
     - name: at_contact
       description: >
-        This field is required if the value of at_type field is set to 1.
-        Email address of the contact.
+        Email address of the mention contact.
       type: string
-    - name: at_type
-      description: >
-        The type of mention. You can use one of the following values:
-        1: Mention a contact.
-        2: Mention "all" to notify everyone in the channel.
-      type: string
-      auto: PREDEFINED
-      predefined:
-      - Mention a contact
-      - Mention "all" to notify everyone in the channel
     - name: is_markdown
       auto: PREDEFINED
       predefined:
@@ -875,7 +864,7 @@ script:
       - "false"
       defaultValue: false
       description: |-
-        You can provide a markdown message without any other arguments like  format type,format attr,start and end position and rt start and end_position
+        You can provide a markdown message in the message argument.
         | Element   | Markdown Syntax |
         |------------|-------------------|
         | Paragraph | # H1 , ## H2 ,### H3|
@@ -885,43 +874,10 @@ script:
         | FontSize  | [s|m|l](text)|
         | BackgroundColor| [#<rgb>bg](text)|
         | Mention | @<text>  if mention is not @all please provide argument at_contact= email|
-
-    - name: end_position
-      description: The end position of the mention.
-      type: string
-    - name: start_position
-      description: The start position of the mention ("@") in the message string.
-      type: string
-    - name: rt_start_position
-      description: The start position of the rich text in the message string.
-      type: string
-    - name: rt_end_position
-      description: The end position of the rich text.
-      type: string
-    - name: format_type
-      description: The type of rich text. There is some special logic which is the same as on the Zoom client. 1. AddLink's position can not cross multi lines. 2. A BulletedList will clear the formatting of a NumberedList, Quote, or LeftIndent after it. 3. Likewise, a NumberedList will clear the formatting of a BulletedList, Quote, or LeftIndent after it. 4. Only AddLink, NumberedList and BulletedList can apply to a message which already applied a Quote. 5. A Quote will clear the formatting of all styles after it except AddLink, NumberedList, BulletedList, or Italic. 6. An AddLink will clear the formatting of BackgroundColor, FontColor, or Underline after it. 7. BackgroundColor, FontColor and Underline can not apply to a message which already applied AddLink. 8. BulletedList, NumberedList, LeftIndent, Paragraph, and Quote will automatically expand to apply to the whole line.
-      type: string
-      auto: PREDEFINED
-      predefined:
-      - FontSize
-      - FontColor
-      - BackgroundColor
-      - LeftIndent
-      - Paragraph
-      - AddLink
-    - name: format_attr
-      description: >
-        This field is required if the value of the format_type field is listed below:
-        1.FontSize value: s for small, m for medium, or l for large font size.
-        2.FontColor and BackgroundColor value: only supports RGB value. For example: FFC0CB
-        3.LeftIndent value: a positive pixel length.
-        4.Paragraph value: h1 for Heading 1, h2 for Heading 2, or h3 for Heading 3.
-        5.AddLink value: must be a valid URL, with an http or https prefix. For example: https://example.com
-      type: string
     - name: message
       description: |-
         The message to be sent. Maximum of 1024 characters.
-         You can provide a markdown message without any other arguments like  format type,format attr,start and end position and rt start and end_position
+        You can provide a markdown format 
         | Element   | Markdown Syntax |
         |------------|-------------------|
         | Paragraph | # H1 , ## H2 ,### H3|
@@ -931,7 +887,6 @@ script:
         | FontSize  | [s|m|l](text)|
         | BackgroundColor| [#<rgb>bg](text)|
         | Mention | @<text>  if mention is not @all please provide argument at_contact= email|
-
       required: true
       type: string
     - name: entry_ids

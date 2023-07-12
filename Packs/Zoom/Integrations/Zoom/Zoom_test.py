@@ -1289,7 +1289,7 @@ def test_zoom_send_file_command(mocker):
     zoom_send_file_mock.assert_called_with(expected_upload_url, expected_file_info, expected_json_data)
 
     # Assert results
-    assert results.readable_output == 'Message with  id file_id was  successfully sent'
+    assert results.readable_output == 'Message with id file_id was successfully sent'
 
 
 def test_zoom_list_account_public_channels_command(mocker):
@@ -1400,10 +1400,6 @@ def test_zoom_send_message_command_with_file(mocker):
 
     zoom_send_message_command(client,
                               user_id=user_id,
-                              at_contact='user2@example.com',
-                              at_type='Mention a contact',
-                              start_position=11,
-                              end_position=16,
                               message='Hello from @dima!',
                               to_channel='channel1',
                               entry_ids='entry_id'
@@ -1429,21 +1425,6 @@ def test_zoom_send_message_command(mocker):
     expected_request_payload = {
         'message': 'Hello from @dima!',
         'to_channel': 'channel1',
-        'at_items': [
-            {
-                'at_contact': 'user2@example.com',
-                'at_type': 1,
-                'start_position': 11,
-                'end_position': 16
-            }
-        ],
-        'rich_text': [
-            {'start_position': None,
-             'end_position': None,
-             'format_type': None,
-             'format_attr': None
-             }
-        ],
         'file_ids': []
     }
 
@@ -1459,10 +1440,6 @@ def test_zoom_send_message_command(mocker):
 
     result = zoom_send_message_command(client,
                                        user_id='user1',
-                                       at_contact='user2@example.com',
-                                       at_type='Mention a contact',
-                                       start_position=11,
-                                       end_position=16,
                                        message='Hello from @dima!',
                                        to_channel='channel1',
 
@@ -1549,38 +1526,6 @@ def test_zoom_send_message_markdown_command_error_mentions(mocker):
     assert str(e.value) == "Too many mentions in text. you can provide only one mention in each message"
 
 
-def test_zoom_send_message_markdown_command_error_too_many_arguments(mocker):
-    """
-    Given -
-        client
-    When -
-        send message to channel with invalid markdown
-    Then -
-        Validate that an exception is raised
-    """
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-
-    from Zoom import zoom_send_message_command
-
-    with pytest.raises(Exception) as e:
-        zoom_send_message_command(client,
-                                  user_id='user1',
-                                  at_contact='user2@example.com',
-                                  is_markdown=True,
-                                  message="@user This is an markdown",
-                                  to_channel='channel1',
-                                  start_position=0,
-                                  end_position=4,
-                                  at_type='Mention a contact',
-
-                                  )
-
-    assert str(e.value) == """Too many arguments. If you choose is_markdown,
-                    don't provide one of the following arguments: start_position, end_position, format_type, at_type,
-                    rt_start_position, rt_end_position or format_attr"""
-
-
 def test_zoom_list_messages_command(mocker):
     """
     Given -
@@ -1592,11 +1537,9 @@ def test_zoom_list_messages_command(mocker):
         Validate the command results including outputs and readable output
     """
     client = Client(base_url='https://test.com', account_id="mockaccount", client_id="mockclient", client_secret="mocksecret")
-    page_size = 50
     channel_id = "channel_id"
     user_id = "user_id"
     limit = 100
-    page_number = 2
     to_contact = "contact@example.com"
     to_channel = "channel_id"
     date_arg = "2023-03-07T00:49:01Z"
@@ -1628,12 +1571,10 @@ def test_zoom_list_messages_command(mocker):
 
     result = zoom_list_messages_command(
         client,
-        page_size=page_size,
         channel_id=channel_id,
         user_id=user_id,
         next_page_token='next_page_token',
         limit=limit,
-        page_number=page_number,
         to_contact=to_contact,
         to_channel=to_channel,
         date=date_arg,

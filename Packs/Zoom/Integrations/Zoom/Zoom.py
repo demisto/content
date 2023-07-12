@@ -1130,7 +1130,7 @@ def zoom_send_file_command(client, **args) -> CommandResults:
 
     message_id = upload_response.get('id')
     return CommandResults(
-        readable_output=f'Message with  id {message_id} was  successfully sent'
+        readable_output=f'Message with id {message_id} was successfully sent'
     )
 
 
@@ -1367,14 +1367,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     """
     client = client
     at_contact = args.get('at_contact')
-    at_type = AT_TYPE.get(args.get('at_type', None))
     user_id = args.get('user_id')
-    end_position = arg_to_number(args.get('end_position'))
-    start_position = arg_to_number(args.get('start_position'))
-    rt_start_position = arg_to_number(args.get('rt_start_position'))
-    rt_end_position = arg_to_number(args.get('rt_end_position'))
-    format_type = args.get('format_type')
-    format_attr = args.get('format_attr')
     message = args.get('message', '')
     entry_ids = argToList(args.get('entry_ids', []))
     reply_main_message_id = args.get('reply_main_message_id')
@@ -1394,10 +1387,6 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         zoom_file_id.append(res.get('id'))
 
     # check if the text contain markdown to parse and also provide text style arguments
-    if is_markdown and (start_position or end_position
-                        or format_attr or format_type or rt_end_position or rt_start_position or at_type):
-        raise DemistoException(MARKDOWN_AND_EXTRA_ARGUMENTS)
-
     if is_markdown:
         # check if text have more then 1 mention
         if message.count('@') > 1 and at_contact:
@@ -1407,18 +1396,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         json_data_all.update({"file_ids": zoom_file_id, "reply_main_message_id": reply_main_message_id, "to_channel": to_channel,
                               "to_contact": to_contact})
     else:
-        json_data_all = {"at_items": [
-            {
-                "at_contact": at_contact,
-                "at_type": at_type,
-                "end_position": end_position,
-                "start_position": start_position
-            }],
-            "rich_text":
-            [{"start_position": rt_start_position,
-              "end_position": rt_end_position,
-              "format_type": format_type,
-              "format_attr": format_attr}],
+        json_data_all = {
             "message": message,
             "file_ids": zoom_file_id,
             "reply_main_message_id": reply_main_message_id,
@@ -1548,7 +1526,12 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     search_key = args.get('search_key')
     exclude_child_message = args.get('exclude_child_message', False)
     limit = arg_to_number(args.get('limit', 50))
-    page_size = limit if limit and limit <= 50 else 50
+    page_size = arg_to_number(args.get('page_size'))
+
+    if limit and page_size and limit != 50:
+        raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
+    else:
+        limit = page_size if page_size else limit
 
     if not to_contact and not to_channel:
         raise DemistoException(MISSING_ARGUMENT)
@@ -1572,8 +1555,9 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
                                                   search_key=search_key,
                                                   exclude_child_message=exclude_child_message,
                                                   next_page_token=next_page_token,
-                                                  page_size=page_size)
+                                                  page_size=limit)
         data = raw_data.get('messages', [])
+
         if limit and len(all_messages) + len(data) > limit:
             remaining_limit = limit - len(all_messages)
             data = data[:remaining_limit]
