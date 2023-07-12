@@ -1181,4 +1181,4 @@ LIST_INCIDENTS_RESULTS = [{
 
 INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
 
-ALERT_UPDATE_RESULTS = [602]
+ALERT_UPDATE_RESULTS = "Updated alerts: [602]"
