@@ -74,7 +74,3 @@ repos:
 
       - id: secrets
         args: ["--ignore-entropy"]
-
-      - id: no-implicit-optional
-        # remove this argument when this hook is ready to use
-        skip: true
