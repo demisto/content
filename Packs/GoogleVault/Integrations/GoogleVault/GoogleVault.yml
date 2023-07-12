@@ -9,8 +9,12 @@ configuration:
   type: 9
 - display: Authentication file contents
   name: auth_json
-  required: true
   type: 4
+  hidden: true
+- name: auth_json_creds
+  type: 9
+  displaypassword: Authentication file contents
+  hiddenusername: true
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -532,7 +536,7 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.50620
+  dockerimage: demisto/googleapi-python3:1.0.0.64742
   runonce: false
   script: '-'
   subtype: python3
