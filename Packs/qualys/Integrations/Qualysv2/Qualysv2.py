@@ -37,6 +37,12 @@ DATE_ARGUMENTS = {
 
 # Data for parsing and creating output
 COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
+    "qualys-purge-scan-host-data": {
+        "table_name": "Deleted report",
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+        "table_headers": ["ID"],
+        "collection_name": "ITEM_LIST"
+    },
     "qualys-report-list": {
         "collection_name": "REPORT_LIST",
         "table_name": "Report List",
@@ -321,6 +327,10 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
 
 # Context prefix and key for each command
 COMMANDS_CONTEXT_DATA = {
+    "qualys-purge-scan-host-data": {
+        "context_prefix": "Qualys.Purge",
+        "context_key": "ID"
+    },
     "qualys-report-list": {
         "context_prefix": "Qualys.Report",
         "context_key": "ID",
@@ -519,6 +529,11 @@ COMMANDS_CONTEXT_DATA = {
 
 # Information about the API request of the commands
 COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
+    "qualys-purge-scan-host-data": {
+        "api_route": API_SUFFIX + "asset/host/?action=purge",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
     "qualys-report-list": {
         "api_route": API_SUFFIX + "/report/?action=list",
         "call_method": "GET",
@@ -793,6 +808,22 @@ TAG_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
 
 # Arguments' names of each command
 COMMANDS_ARGS_DATA: Dict[str, Any] = {
+    "qualys-purge-scan-host-data": {
+        "args": [
+            "action",
+            "echo_request",
+            "ids",
+            "ips",
+            "ag_ids",
+            "ag_titles",
+            "network_ids",
+            "no_vm_scan_since",
+            "no_compliance_scan_since",
+            "data_scope",
+            "compliance_enabled",
+            "os_pattern",
+        ]
+    },
     "qualys-report-list": {
         "args": ["id", "state", "user_login", "expires_before_datetime", "client_id", "client_name"],
         "inner_args": ["limit"],
@@ -1303,14 +1334,20 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "end_after",
             "target_from",
             "tag_include_selector", "tag_exclude_selector", "tag_set_by", "tag_set_include", "tag_set_exclude",
-            "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude"
-
+            "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude",
+            "active",
+            "scanners_in_network",
+            "recurrence",
+            "end_after_mins",
+            "iscanner_id",
+            "iscanner_name"
         ],
         "required_groups": [
             [
                 "asset_group_ids",
                 "asset_groups",
                 "ip",
+                "fqdn",
             ],
             [
                 "frequency_days",
@@ -2551,6 +2588,10 @@ def main():  # pragma: no cover
 
     commands_methods: Dict[str, Dict[str, Callable]] = {
         # *** Commands with unparsed response as output ***
+        "qualys-purge-scan-host-data": {
+            "result_handler": handle_general_result,
+            "output_builder": build_unparsed_output,
+        },
         "qualys-pc-scan-launch": {
             "result_handler": handle_general_result,
             "output_builder": build_multiple_values_parsed_output,

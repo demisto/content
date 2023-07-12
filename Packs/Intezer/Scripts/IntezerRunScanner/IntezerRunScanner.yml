@@ -18,7 +18,6 @@ args:
   required: true
   description: The endpoint analysis id
 scripttarget: 1
-runonce: false
 runas: Administrator
 tests:
 - no test

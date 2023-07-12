@@ -11,11 +11,9 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
 display: 'Infoblox BloxOne Threat Defense'
@@ -23,12 +21,9 @@ name: InfobloxBloxOneThreatDefense
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'The type of indcator to search by. Available values: host, ip, url, hash, email.'
-      isArray: false
+    - description: 'The type of indcator to search by. Available values: host, ip, url, hash, email.'
       name: indicator_type
       required: true
-      secret: false
       auto: PREDEFINED
       predefined:
       - host
@@ -36,37 +31,21 @@ script:
       - url
       - hash
       - email
-    - default: false
-      description: 'The indicator to search on.'
-      isArray: false
+    - description: 'The indicator to search on.'
       name: value
       required: true
-      secret: false
-    - default: false
-      description: 'The sources to query. Multiple sources can be specified. If no source is specified, the call will search on all available sources. (You can see the list of the available sources by running bloxone-td-dossier-source-list).'
+    - description: 'The sources to query. Multiple sources can be specified. If no source is specified, the call will search on all available sources. (You can see the list of the available sources by running bloxone-td-dossier-source-list).'
       isArray: true
       name: sources
-      required: false
-      secret: false
-    - default: false
-      description: 'The interval in seconds between each poll.'
-      isArray: false
+    - description: 'The interval in seconds between each poll.'
       name: interval_in_seconds
-      required: false
-      secret: false
       defaultValue: 10
-    - default: false
-      description: 'The timeout in seconds until polling ends.'
-      isArray: false
+    - description: 'The timeout in seconds until polling ends.'
       name: timeout
-      required: false
-      secret: false
       defaultValue: 600
     - description: 'used for polling.'
       name: job_id
-    deprecated: false
     description: 'The Dossier Lookup API returns detailed information on the specified indicator from the requested sources.'
-    execution: false
     polling: true
     name: bloxone-td-dossier-lookup-get
     outputs:
@@ -89,40 +68,18 @@ script:
       description: Available Dossier sources.
       type: String
   - arguments:
-    - default: false
-      description: The free query filter argument.
-      isArray: false
+    - description: The free query filter argument.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: Filter by target domain.
-      isArray: false
+    - description: Filter by target domain.
       name: target_domain
-      required: false
-      secret: false
-    - default: false
-      description: Filter by values that are greater than or equal to the given value. You can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days").
-      isArray: false
+    - description: Filter by values that are greater than or equal to the given value. You can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days").
       name: detected_at
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return from the query. 
-      isArray: false
+    - description: Maximum number of results to return from the query.
       name: limit
-      required: false
-      secret: false
       defaultValue: 50
-    - default: false
-      description: Return results starting at this offset. Should be an integer. Default is 0.
-      isArray: false
+    - description: Return results starting at this offset. Should be an integer. Default is 0.
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Get lookalike domain lists.
-    execution: false
     polling: true
     name: bloxone-td-lookalike-domain-list
     outputs:
@@ -141,12 +98,11 @@ script:
     - contextPath: BloxOneTD.LookalikeDomain.target_domain
       description: The domain that was targeted by the lookalike domain.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

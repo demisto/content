@@ -284,7 +284,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1060,
+          "x": -1050,
           "y": 1150
         }
       }
@@ -642,6 +642,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Related Campaign
+      output:
+        complex:
+          root: RelatedCampaign
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -878,6 +883,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: MITRE Technique Name
+      output:
+        complex:
+          root: RelatedAttackPatterns
     skipunavailable: false
     quietmode: 0
     isoversize: false

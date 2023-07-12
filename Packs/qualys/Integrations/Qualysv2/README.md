@@ -37,6 +37,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 33. qualys-report-template-list - Added new parameters, changed outputs.
 34. qualys-report-launch-map - changed existing parameters
 35. qualys-ip-restricted-manage - New command.
+36. qualys-purge-scan-host-data - New command.
 
 # Playbooks
 1. Vulnerability Management - Qualys (Job) - migrated to work with this new version

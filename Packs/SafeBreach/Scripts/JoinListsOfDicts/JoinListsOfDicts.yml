@@ -4,29 +4,17 @@ args:
   isArray: true
   name: value
   required: true
-  secret: false
-- default: false
-  description: Second list.
+- description: Second list.
   isArray: true
   name: right
   required: true
-  secret: false
-- default: false
-  description: The key to match (only for left list if rightkey is specified). Support
-    "CustomFields" if used explicitly.
-  isArray: false
+- description: The key to match (only for left list if rightkey is specified). Support "CustomFields" if used explicitly.
   name: key
   required: true
-  secret: false
-- default: false
-  description: The key to match in the right list (optional). Support "CustomFields"
-    if used explicitly.
-  isArray: false
+- description: The key to match in the right list (optional). Support "CustomFields" if used explicitly.
   name: rightkey
   required: true
-  secret: false
-comment: Join two list of dictionaries by a key. If the key name differs between the
-  two lists, specify both key (for left list) and rightkey (for right list).
+comment: Join two list of dictionaries by a key. If the key name differs between the two lists, specify both key (for left list) and rightkey (for right list).
 commonfields:
   id: JoinListsOfDicts
   version: -1
@@ -34,16 +22,14 @@ enabled: true
 name: JoinListsOfDicts
 script: '-'
 subtype: python3
-system: false
 tags:
 - transformer
 - general
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

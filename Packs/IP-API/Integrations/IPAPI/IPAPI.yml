@@ -7,12 +7,10 @@ configuration:
   defaultvalue: "false"
   display: Use HTTPS to communicate with the API
   name: https
-  required: false
   type: 8
 - additionalinfo: Only required to bypass rate limits and/or use HTTPS
   display: API Key
   name: apikey
-  required: false
   type: 4
 - additionalinfo: See https://members.ip-api.com/docs/json for details
   defaultvalue: "536608767"
@@ -23,12 +21,10 @@ configuration:
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -42,7 +38,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -52,12 +47,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 description: |
   This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
@@ -173,7 +166,7 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
 
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

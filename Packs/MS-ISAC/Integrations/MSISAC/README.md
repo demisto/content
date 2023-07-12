@@ -10,7 +10,7 @@ This integration was integrated and tested with version 1.1 of MS-ISAC
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | API Key | Key provided by MS-ISAC according to the detailed Instructions | True |
-    |  | This is the URL provided by MS-ISAC for the base of all endpoints | True |
+    | Server URL | This is the URL provided by MS-ISAC for the base of all endpoints | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 

@@ -24,7 +24,6 @@ outputs:
   type: string
 script: '-'
 scripttarget: 0
-system: false
 tags:
 - Utility
 timeout: '0'

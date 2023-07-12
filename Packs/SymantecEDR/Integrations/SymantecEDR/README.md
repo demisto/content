@@ -22,6 +22,7 @@ This integration was integrated and tested with version 4.6 of SymantecEDR
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Incident type |  | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -1444,6 +1445,7 @@ Issue a sandbox command of a specific SHA2.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | File.MD5 | String | MD5 hash of the file submitted for analysis. | 
 | File.SHA1 | String | SHA1 hash of the file submitted for analysis. | 
 | File.SHA256 | String | SHA256 hash of the file submitted for analysis. | 

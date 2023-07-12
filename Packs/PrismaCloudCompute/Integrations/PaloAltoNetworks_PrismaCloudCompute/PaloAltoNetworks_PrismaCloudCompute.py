@@ -1,9 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib.parse
 from collections import defaultdict
 
-
-import demistomock as demisto
-from CommonServerPython import *
 
 ''' IMPORTS '''
 import urllib3
@@ -1215,7 +1214,11 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
     Returns:
         CommandResults: command-results object.
     """
-    cve_ids = argToList(arg=args.get("cve_id", []))
+    cve_ids = argToList(arg=args.get("cve", [])) or argToList(arg=args.get("cve_id", []))
+
+    if not cve_ids:
+        raise DemistoException("You must provide a value to the `cve` argument")
+
     all_cves_information, results, unique_cve_ids = [], [], set()
 
     for _id in cve_ids:
