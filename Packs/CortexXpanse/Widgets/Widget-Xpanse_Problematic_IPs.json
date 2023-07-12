@@ -1,0 +1,33 @@
+{
+    "size": 5,
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "xpanseip",
+            "severity"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:\"Xpanse Alert\" ",
+    "modified": "2023-03-21T19:50:35.405088274Z",
+    "name": "Xpanse Problematic IPs",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 30,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "debfa1a5-e0d7-4128-8004-31a2407322ff",
+    "widgetType": "column",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

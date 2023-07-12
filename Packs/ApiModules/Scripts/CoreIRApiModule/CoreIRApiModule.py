@@ -1,5 +1,5 @@
-from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 import copy
 import re
@@ -2990,7 +2990,8 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
 @polling_function(
     name=demisto.command(),
     interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
-    timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
+    # Check for both 'polling_timeout_in_seconds' and 'polling_timeout' to avoid breaking BC:
+    timeout=arg_to_number(demisto.args().get('polling_timeout_in_seconds', demisto.args().get('polling_timeout', 600))),
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
 def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:

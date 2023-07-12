@@ -23,20 +23,16 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Fetch "Suspicious" indicators
   name: fetchsuspicious
   defaultvalue: ""
   type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 script:
   script: >-
     var fixUrl = function(base) {

@@ -12,7 +12,6 @@ script: '-'
 tags:
 - Threat Intel Management
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.10.48392

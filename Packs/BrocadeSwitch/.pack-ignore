@@ -1,0 +1,6 @@
+[file:BrocadeSwitch.yml]
+ignore=MR108,PR101
+
+[file:BrocadeSwitch_1_3.yml]
+ignore=MR108
+

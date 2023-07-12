@@ -1,9 +1,10 @@
 {
-    "name": "Cyble Events",
-    "description": "Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.",
+    "name": "Cyble Events (Deprecated)",
+    "description": "Deprecated. Use Cyble Events V2 instead.",
     "support": "partner",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.11",
     "author": "Cyble Infosec",
+    "hidden": true,
     "url": "https://cyble.com/",
     "email": "",
     "created": "2022-03-22T17:37:18Z",

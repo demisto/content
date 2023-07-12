@@ -1,0 +1,37 @@
+{
+    "Type": 1,
+    "Contents": {
+        "ID": 2000359, 
+        "Name": "Test99", 
+        "Type": "DSTN_IP", 
+        "Addresses": [
+          "127.0.0.2", 
+          "127.0.0.1"
+        ], 
+        "Description": "Localhost",
+        "IpCategories": [], 
+        "Countries": [], 
+        "IsNonEditable": false
+    },
+    "ContentsFormat": "json",
+    "HumanReadable": "### IPv4 Destination group created\n|ID|Name|Type|Description|Addresses|IsNonEditable|\n|---|---|---|---|---|---|\n| 2000359 | Test99 | DSTN_IP | Localhost | 127.0.0.2,<br>127.0.0.1 | false |\n",
+    "EntryContext": {
+      "Zscaler.IPDestinationGroup(val.ID && val.ID == obj.ID)": {
+        "ID": 2000359, 
+        "Name": "Test99", 
+        "Type": "DSTN_IP", 
+        "Addresses": [
+          "127.0.0.2", 
+          "127.0.0.1"
+        ], 
+        "Description": "Localhost",
+        "IpCategories": [], 
+        "Countries": [], 
+        "IsNonEditable": false
+      }
+    },
+    "IgnoreAutoExtract": false,
+    "IndicatorTimeline": [],
+    "Note": false,
+    "Relationships": []
+}

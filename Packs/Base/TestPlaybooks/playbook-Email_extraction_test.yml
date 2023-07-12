@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0fbcdbc1-f7c8-43e6-8b28-d61bb172bb5a
+    taskid: 442a687b-4856-4128-8520-0aeb84df2cb0
     type: start
     task:
-      id: 0fbcdbc1-f7c8-43e6-8b28-d61bb172bb5a
+      id: 442a687b-4856-4128-8520-0aeb84df2cb0
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 30befe0f-cd08-4ccc-89db-53db6b5189c9
+    taskid: ded72eeb-00a4-465c-86bb-8cdfea92672d
     type: regular
     task:
-      id: 30befe0f-cd08-4ccc-89db-53db6b5189c9
+      id: ded72eeb-00a4-465c-86bb-8cdfea92672d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e5cfb2ea-7484-433a-8064-d184f65d7c82
+    taskid: e13fd58a-d4f4-44c5-8bf4-6e515aff0e9c
     type: regular
     task:
-      id: e5cfb2ea-7484-433a-8064-d184f65d7c82
+      id: e13fd58a-d4f4-44c5-8bf4-6e515aff0e9c
       version: -1
       name: Set valid emails
       description: Sets a value into the context with the given context key
@@ -89,7 +89,7 @@ tasks:
       key:
         simple: valid_emails
       value:
-        simple: '"normal@test.com", "separating.dot@test.com", "fanged[@]test[.]com","double.tld@test.co.jp,お@example.com"'
+        simple: '"normal@test.com", "separating.dot@test.com", "fanged[@]test[.]com","double.tld@test.co.jp,お@example.com","no-reply@alert.test-test.com"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0f4a1ab3-b800-4cfa-87f0-aa3f80d11b96
+    taskid: ba070068-9328-4240-80bd-36443aa94ef1
     type: regular
     task:
-      id: 0f4a1ab3-b800-4cfa-87f0-aa3f80d11b96
+      id: ba070068-9328-4240-80bd-36443aa94ef1
       version: -1
       name: Print valid emails
       description: Prints text to war room (Markdown supported)
@@ -126,6 +126,7 @@ tasks:
       - "77"
       - "84"
       - "79"
+      - "85"
     scriptarguments:
       value:
         simple: ${valid_emails}
@@ -148,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 652ad1a8-c07d-40cb-87e7-ae79e48d9e6c
+    taskid: 0722a1ec-600e-4082-8d9b-f9aff3636d27
     type: condition
     task:
-      id: 652ad1a8-c07d-40cb-87e7-ae79e48d9e6c
+      id: 0722a1ec-600e-4082-8d9b-f9aff3636d27
       version: -1
       name: check auto extract emails - normal@test.com
       type: condition
@@ -189,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8ba40ae6-f8dc-439c-8aff-8beb16b12ac6
+    taskid: c839578f-bc98-4c21-86df-fa9757246975
     type: regular
     task:
-      id: 8ba40ae6-f8dc-439c-8aff-8beb16b12ac6
+      id: c839578f-bc98-4c21-86df-fa9757246975
       version: -1
       name: set invalid emails
       description: Sets a value into the context with the given context key
@@ -226,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: bd21151e-684f-4922-86c2-3208c11984f7
+    taskid: cc8dec4c-9192-4832-8bf5-29c2958cd073
     type: regular
     task:
-      id: bd21151e-684f-4922-86c2-3208c11984f7
+      id: cc8dec4c-9192-4832-8bf5-29c2958cd073
       version: -1
       name: Print invalid emails
       description: Prints text to war room (Markdown supported)
@@ -264,10 +265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: dda10e6e-a335-4d94-89a0-de44c327703b
+    taskid: d34dc7e0-3cac-4ceb-8f22-e286dc3881fa
     type: condition
     task:
-      id: dda10e6e-a335-4d94-89a0-de44c327703b
+      id: d34dc7e0-3cac-4ceb-8f22-e286dc3881fa
       version: -1
       name: non extraction - invalid__consecutive__chars@test.com
       type: condition
@@ -302,10 +303,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 507323f4-1aeb-4d32-8a5b-091008a8ebdf
+    taskid: 136719ed-1295-4017-8deb-a28717302e5f
     type: title
     task:
-      id: 507323f4-1aeb-4d32-8a5b-091008a8ebdf
+      id: 136719ed-1295-4017-8deb-a28717302e5f
       version: -1
       name: Email
       type: title
@@ -333,10 +334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: ba792381-6df8-4bf7-837f-6c4137779c00
+    taskid: 3e0f45bf-c766-4ba0-8177-0616ec6daf5b
     type: regular
     task:
-      id: ba792381-6df8-4bf7-837f-6c4137779c00
+      id: 3e0f45bf-c766-4ba0-8177-0616ec6daf5b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -365,10 +366,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 51bb7271-009b-4876-8a53-36a58e008072
+    taskid: 8d1aa829-b2e5-4fdc-8d9e-dfb2effd7667
     type: condition
     task:
-      id: 51bb7271-009b-4876-8a53-36a58e008072
+      id: 8d1aa829-b2e5-4fdc-8d9e-dfb2effd7667
       version: -1
       name: check auto extract emails - fanged@test.com
       type: condition
@@ -406,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: fd193b84-fd31-4a8e-800a-d362463808b5
+    taskid: 36eb5ed8-8930-47a6-8a96-326565df33f5
     type: condition
     task:
-      id: fd193b84-fd31-4a8e-800a-d362463808b5
+      id: 36eb5ed8-8930-47a6-8a96-326565df33f5
       version: -1
       name: check auto extract emails - separating.dot@test.com
       type: condition
@@ -447,10 +448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 4adf005c-e997-442f-8cf2-7f7d03833c5b
+    taskid: 92c172e4-0fab-47d6-8df4-3fde482a1b35
     type: condition
     task:
-      id: 4adf005c-e997-442f-8cf2-7f7d03833c5b
+      id: 92c172e4-0fab-47d6-8df4-3fde482a1b35
       version: -1
       name: non ascii - お@example.com
       type: condition
@@ -488,10 +489,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: caec119f-23c0-4074-8150-902bb0399c17
+    taskid: 7c26b6ab-6a21-4c5d-8d79-0851980ee119
     type: condition
     task:
-      id: caec119f-23c0-4074-8150-902bb0399c17
+      id: 7c26b6ab-6a21-4c5d-8d79-0851980ee119
       version: -1
       name: non extraction - invalid_ending_char_@test.com
       type: condition
@@ -526,10 +527,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: d8c107a4-4455-4a9b-8705-51539e6a7384
+    taskid: f258e15d-459f-440f-8b51-5c4c63a804af
     type: condition
     task:
-      id: d8c107a4-4455-4a9b-8705-51539e6a7384
+      id: f258e15d-459f-440f-8b51-5c4c63a804af
       version: -1
       name: non extraction - invalid_ending_char_@test.com
       type: condition
@@ -567,10 +568,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 16c47d08-1f29-49f2-853c-af84cf4b53c3
+    taskid: e0572afb-7ad2-423b-8c43-87f8572a03d9
     type: condition
     task:
-      id: 16c47d08-1f29-49f2-853c-af84cf4b53c3
+      id: e0572afb-7ad2-423b-8c43-87f8572a03d9
       version: -1
       name: non extraction - .startingdot@test.com
       type: condition
@@ -608,10 +609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: e1c86592-ca93-405c-8a83-8322f2932a44
+    taskid: dda0cfbf-c87d-412f-801e-0ef5afdd522f
     type: condition
     task:
-      id: e1c86592-ca93-405c-8a83-8322f2932a44
+      id: dda0cfbf-c87d-412f-801e-0ef5afdd522f
       version: -1
       name: non extraction - quoted\"not\"dotted@test.com
       type: condition
@@ -649,10 +650,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 34611c6d-db6c-441c-843e-65fb9d10dcdd
+    taskid: 398598c1-7b84-492c-8eda-ba94e4173aa1
     type: condition
     task:
-      id: 34611c6d-db6c-441c-843e-65fb9d10dcdd
+      id: 398598c1-7b84-492c-8eda-ba94e4173aa1
       version: -1
       name: check auto extract emails - double.tld@test.co.jp
       type: condition
@@ -688,13 +689,54 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: a10a8fdc-fc59-4db1-8762-9e9d96e7713a
+    type: condition
+    task:
+      id: a10a8fdc-fc59-4db1-8762-9e9d96e7713a
+      version: -1
+      name: check auto extract emails - no-reply@alert.test-test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: no-reply@alert.test-test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1640,
-        "width": 2100,
+        "width": 2530,
         "x": 50,
         "y": 50
       }

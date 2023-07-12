@@ -20,7 +20,6 @@ outputs:
 - contextPath: AvailableAzureNSGPriorities
   description: List of numbers that represent available Azure NSG priorities
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import itertools
 from collections import Counter
 
 import dateutil
 from nltk import sent_tokenize, word_tokenize
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 import pandas as pd
 import numpy as np

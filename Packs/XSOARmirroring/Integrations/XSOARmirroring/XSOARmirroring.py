@@ -757,7 +757,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
 
 
 def main() -> None:
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('apikey')
+    if not api_key:
+        raise DemistoException('API Key must be provided.')
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
 
