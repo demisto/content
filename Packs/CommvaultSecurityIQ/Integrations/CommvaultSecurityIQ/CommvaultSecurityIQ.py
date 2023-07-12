@@ -25,6 +25,7 @@ from uvicorn.logging import AccessFormatter
 from urllib.parse import urlparse
 
 
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -1338,7 +1339,6 @@ def get_secret_from_key_vault(client):
         outputs={"Response": resp}
     )
 
-
 def main() -> None:
     """
     Main function
@@ -1476,8 +1476,7 @@ def main() -> None:
             user_email = demisto.args().get("user_email")
             return_results(disable_user(client, user_email))
         elif command == "commvault-security-get-access-token-from-keyvault":
-            client.set_secret_in_key_vault("")
-            return_results(client.get_secret_from_key_vault())
+            return_results(get_secret_from_key_vault(client))
         elif command == "commvault-security-get-copy-files-list-to-war-room":
             return_results(copy_files_to_war_room())
         else:
