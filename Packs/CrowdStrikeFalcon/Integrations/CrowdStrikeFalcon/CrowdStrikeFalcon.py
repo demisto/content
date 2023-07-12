@@ -2509,13 +2509,8 @@ def fetch_incidents():
         last_run = [{}, {}, {}]
     last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
-    current_fetch_info_detections.pop("offset", None)
-
     current_fetch_info_incidents: dict = last_run[1]
-    current_fetch_info_incidents.pop("offset", None)
-
     current_fetch_info_idp_detections: dict = {} if len(last_run) < 3 else last_run[2]
-    current_fetch_info_idp_detections.pop("offset", None)
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', "")
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
@@ -2605,7 +2600,6 @@ def fetch_incidents():
                                                   look_back=look_back,
                                                   created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
         current_fetch_info_incidents = updated_last_run
-        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
     if "IDP Detection" in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_idp_detections,
