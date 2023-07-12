@@ -8,8 +8,6 @@ configuration:
   required: true
   section: Connect
   type: 0
-  section: Connect
-  type: 0
 - display: Credentials
   name: credentials
   required: true
