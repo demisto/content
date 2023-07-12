@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import json
-import uuid
 
 import urllib3
 from blessings import Terminal
