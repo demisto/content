@@ -259,6 +259,7 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     - name: restore_user
+      description: If true, the command will enable the user with his restored options
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -516,6 +517,8 @@ script:
       description: The page size to query. The limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
+    name: ad-get-group-members
+    description: Retrieves the list of users or computers that are members of the specified group.
     outputs:
     - contextPath: ActiveDirectory.Groups.dn
       description: The group DN.
