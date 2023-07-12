@@ -38,8 +38,6 @@ def common_elements(left_list: list[str], right_list: list[str]) -> list[str]:
         Note: The comparing is not case sensitive.
         if no values are equal or contain values from the right, returns an empty list.
     """
-    a = type(left_list)
-    demisto.setContext("a", str(a))
     left_list = argToList(left_list)
     right_list = argToList(right_list)
     all_results: list = []
@@ -61,13 +59,9 @@ def main():
 
     # remove duplicates
     res = [*set(res)]
-    str1 = ""
-    for i in range(len(res)):
-        if i == len(res) - 1:
-            str1 += res[i]
-        else:
-            str1 += res[i] + ", "
-    return_results(str1)
+    for i in res:
+        demisto.results(i)
+    # return_results(str1)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
