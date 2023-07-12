@@ -1,0 +1,14 @@
+{
+    "results": {
+        "q_type": 0,
+        "id": "3",
+        "interface": "port2",
+        "interface_val": "1084",
+        "status": "enable",
+        "status_val": "1",
+        "use-interface-ip": "enable",
+        "use-interface-ip_val": "1",
+        "vip": "",
+        "vip_val": "0"
+    }
+}

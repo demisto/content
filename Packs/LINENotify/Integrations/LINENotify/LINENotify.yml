@@ -13,21 +13,12 @@ name: LINENotify
 script:
   commands:
   - arguments:
-    - default: false
-      description: Message to be sent.
-      isArray: false
+    - description: Message to be sent.
       name: message
       required: true
-      secret: false
-    deprecated: false
     description: Send message/notification to LINE Group
-    execution: false
     name: line-send-message
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

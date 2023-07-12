@@ -7,7 +7,6 @@ configuration:
   name: integrationReliability
   defaultvalue: B - Usually reliable
   type: 15
-  required: false
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -24,33 +23,25 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 - display: API Key
   name: apikey
   required: true
   type: 4
-- additionalinfo: Whether to allow connections without verifying SSL certificates
-    validity.
+- additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 defaultclassifier: 'null'
-description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide
-  scan and attack traffic. With this integration, users can contextualize existing
-  alerts, filter false-positives, identify compromised devices, and track emerging
-  threats.
+description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats.
 display: GreyNoise
 name: GreyNoise
 script:
@@ -61,10 +52,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Runs reputation on IPs.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -106,12 +94,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
-    description: 'Check whether a given IP address is "Internet background noise",
-      or has been observed scanning or attacking devices across the Internet. Note:
-      It checks against the last 60 days of Internet scanner data.'
-    execution: false
+    description: 'Check whether a given IP address is "Internet background noise", or has been observed scanning or attacking devices across the Internet. Note: It checks against the last 60 days of Internet scanner data.'
     name: greynoise-ip-quick-check
     outputs:
     - contextPath: GreyNoise.IP.address
@@ -130,90 +113,49 @@ script:
       description: Message which correlates to why GreyNoise labeled the IP as noise.
       type: string
   - arguments:
-    - default: false
-      description: 'The date the device was most recently observed by GreyNoise. Example:
-        1d, 2d, 12h, or 1m.'
-      isArray: false
+    - description: 'The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m.'
       name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: The organization that owns the network the IP address belongs to.
-      isArray: false
+    - description: The organization that owns the network the IP address belongs to.
       name: organization
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Classification of the device. Possible values: unknown, benign,
-        malicious.'
-      isArray: false
+      description: 'Classification of the device. Possible values: unknown, benign, malicious.'
       name: classification
       predefined:
       - unknown
       - benign
       - malicious
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether the IP is spoofable or not.
-      isArray: false
       name: spoofable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The actor the device has been associated with.
-      isArray: false
+    - description: The actor the device has been associated with.
       name: actor
-      required: false
-      secret: false
-    - default: false
-      description: A CVE to get scanning data about, example CVE-2021-12345
-      isArray: false
+    - description: A CVE to get scanning data about, example CVE-2021-12345
       name: cve
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Maximum amount of results to grab.
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         GNQL query to filter records.
          Note: It merges other arguments and takes higher precedence over the same argument if supplied.
          Example:
          malicious,
          spoofable:false SSH Scanner,
          spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103
-      isArray: false
       name: advanced_query
-      required: false
-      secret: false
-    - default: false
-      description: Scroll token to paginate through results.
-      isArray: false
+    - description: Scroll token to paginate through results.
       name: next_token
-      required: false
-      secret: false
-    deprecated: false
     description: Get the information of IP based on the providence filters.
-    execution: false
     name: greynoise-query
     outputs:
     - contextPath: GreyNoise.IP.address
       description: The IP address of the scanning device IP.
       type: string
     - contextPath: GreyNoise.IP.first_seen
-      description: The date the device was first observed by GreyNoise. Format is
-        ISO8601.
+      description: The date the device was first observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.last_seen
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
@@ -222,8 +164,7 @@ script:
       description: IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
-      description: A list of the tags the device has been assigned over the past 90
-        days.
+      description: A list of the tags the device has been assigned over the past 90 days.
       type: array
     - contextPath: GreyNoise.IP.actor
       description: The overt actor the device has been associated with.
@@ -232,8 +173,7 @@ script:
       description: Boolean indicates if IP is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
-      description: Whether the device has been categorized as unknown, benign, or
-        malicious.
+      description: Whether the device has been categorized as unknown, benign, or malicious.
       type: string
     - contextPath: GreyNoise.IP.cve
       description: CVEs associated with IP.
@@ -245,8 +185,7 @@ script:
       description: The city the device is geographically located in.
       type: string
     - contextPath: GreyNoise.IP.metadata.region
-      description: The full name of the region the device is geographically located
-        in.
+      description: The full name of the region the device is geographically located in.
       type: string
     - contextPath: GreyNoise.IP.metadata.country
       description: The full name of the country.
@@ -255,12 +194,10 @@ script:
       description: The two-character country code of the country.
       type: string
     - contextPath: GreyNoise.IP.metadata.organization
-      description: The organization that owns the network that the IP address belongs
-        to.
+      description: The organization that owns the network that the IP address belongs to.
       type: string
     - contextPath: GreyNoise.IP.metadata.category
-      description: Whether the device belongs to a business, isp, hosting, education,
-        or mobile network.
+      description: Whether the device belongs to a business, isp, hosting, education, or mobile network.
       type: string
     - contextPath: GreyNoise.IP.metadata.tor
       description: Whether or not the device is a known Tor exit node.
@@ -284,12 +221,10 @@ script:
       description: The protocol of the port the device has been observed scanning.
       type: string
     - contextPath: GreyNoise.IP.raw_data.web.paths
-      description: Any HTTP paths the device has been observed crawling the Internet
-        for.
+      description: Any HTTP paths the device has been observed crawling the Internet for.
       type: array
     - contextPath: GreyNoise.IP.raw_data.web.useragents
-      description: Any HTTP user-agents the device has been observed using while crawling
-        the Internet.
+      description: Any HTTP user-agents the device has been observed using while crawling the Internet.
       type: array
     - contextPath: GreyNoise.IP.raw_data.ja3.fingerprint
       description: The JA3 TLS/SSL fingerprint.
@@ -322,78 +257,40 @@ script:
       description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
   - arguments:
-    - default: false
-      description: 'The date the device was most recently observed by GreyNoise. Example:
-        1d, 2d, 12h, or 1m.'
-      isArray: false
+    - description: 'The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m.'
       name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: The organization that owns the network that the IP address belongs
-        to.
-      isArray: false
+    - description: The organization that owns the network that the IP address belongs to.
       name: organization
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Classification of the device like unknown, benign, malicious.
-      isArray: false
       name: classification
       predefined:
       - unknown
       - benign
       - malicious
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether the IP is spoofable or not.
-      isArray: false
       name: spoofable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The actor the device has been associated with.
-      isArray: false
+    - description: The actor the device has been associated with.
       name: actor
-      required: false
-      secret: false
-    - default: false
-      description: A CVE to get scanning data about, example CVE-2021-12345
-      isArray: false
+    - description: A CVE to get scanning data about, example CVE-2021-12345
       name: cve
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Maximum amount of results to grab.
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         GNQL query to filter records.
          Note: It merges other arguments and takes higher precedence over the same argument if supplied.
          Example:
          malicious,
          spoofable:false SSH Scanner,
          spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103
-      isArray: false
       name: advanced_query
-      required: false
-      secret: false
-    deprecated: false
-    description: Get aggregate statistics for the top organizations, actors, tags,
-      ASNs, countries, classifications, and operating systems of all the results of
-      a given GNQL query.
-    execution: false
+    description: Get aggregate statistics for the top organizations, actors, tags, ASNs, countries, classifications, and operating systems of all the results of a given GNQL query.
     name: greynoise-stats
     outputs:
     - contextPath: GreyNoise.Stats.query
@@ -471,17 +368,9 @@ script:
   - arguments:
     - default: true
       description: The IP address to be checked if it is potentially harmful or not
-      isArray: false
       name: ip
       required: true
-      secret: false
-    deprecated: false
-    description: Identifies IPs from known benign services and organizations that
-      commonly cause false positives in network security and threat intelligence products.
-      The collection of IPs in RIOT is continually curated and verified to provide
-      accurate results. These IPs are extremely unlikely to pose a threat to your
-      network.
-    execution: false
+    description: Identifies IPs from known benign services and organizations that commonly cause false positives in network security and threat intelligence products. The collection of IPs in RIOT is continually curated and verified to provide accurate results. These IPs are extremely unlikely to pose a threat to your network.
     name: greynoise-riot
     outputs:
     - contextPath: GreyNoise.Riot.ip
@@ -509,23 +398,18 @@ script:
       description: The reference of the IP if riot is "True".
       type: String
   - arguments:
-      - default: true
-        description: The IP address to query in GreyNoise Context Command
-        isArray: false
-        name: ip
-        required: true
-        secret: false
-    deprecated: false
+    - default: true
+      description: The IP address to query in GreyNoise Context Command
+      name: ip
+      required: true
     description: Identifies IPs that have been observed mass-scanning the internet.
-    execution: false
     name: greynoise-context
     outputs:
     - contextPath: GreyNoise.IP.address
       description: The IP address of the scanning device IP.
       type: string
     - contextPath: GreyNoise.IP.first_seen
-      description: The date the device was first observed by GreyNoise. Format is
-        ISO8601.
+      description: The date the device was first observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.last_seen
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
@@ -534,8 +418,7 @@ script:
       description: IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
-      description: A list of the tags the device has been assigned over the past 90
-        days.
+      description: A list of the tags the device has been assigned over the past 90 days.
       type: array
     - contextPath: GreyNoise.IP.actor
       description: The overt actor the device has been associated with.
@@ -544,8 +427,7 @@ script:
       description: Boolean indicates if IP is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
-      description: Whether the device has been categorized as unknown, benign, or
-        malicious.
+      description: Whether the device has been categorized as unknown, benign, or malicious.
       type: string
     - contextPath: GreyNoise.IP.cve
       description: CVEs associated with IP.
@@ -557,8 +439,7 @@ script:
       description: The city the device is geographically located in.
       type: string
     - contextPath: GreyNoise.IP.metadata.region
-      description: The full name of the region the device is geographically located
-        in.
+      description: The full name of the region the device is geographically located in.
       type: string
     - contextPath: GreyNoise.IP.metadata.country
       description: The full name of the country.
@@ -567,12 +448,10 @@ script:
       description: The two-character country code of the country.
       type: string
     - contextPath: GreyNoise.IP.metadata.organization
-      description: The organization that owns the network that the IP address belongs
-        to.
+      description: The organization that owns the network that the IP address belongs to.
       type: string
     - contextPath: GreyNoise.IP.metadata.category
-      description: Whether the device belongs to a business, isp, hosting, education,
-        or mobile network.
+      description: Whether the device belongs to a business, isp, hosting, education, or mobile network.
       type: string
     - contextPath: GreyNoise.IP.metadata.tor
       description: Whether or not the device is a known Tor exit node.
@@ -596,12 +475,10 @@ script:
       description: The protocol of the port the device has been observed scanning.
       type: string
     - contextPath: GreyNoise.IP.raw_data.web.paths
-      description: Any HTTP paths the device has been observed crawling the Internet
-        for.
+      description: Any HTTP paths the device has been observed crawling the Internet for.
       type: array
     - contextPath: GreyNoise.IP.raw_data.web.useragents
-      description: Any HTTP user-agents the device has been observed using while crawling
-        the Internet.
+      description: Any HTTP user-agents the device has been observed using while crawling the Internet.
       type: array
     - contextPath: GreyNoise.IP.raw_data.ja3.fingerprint
       description: The JA3 TLS/SSL fingerprint.
@@ -619,75 +496,47 @@ script:
       description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
   - name: greynoise-similarity
-    deprecated: false
     description: >-
       Search for similar internet scanner IPs found in the GreyNoise Noise
       (internet scanner) dataset.
-    execution: false
     arguments:
-      - name: ip
-        default: true
-        description: IP address to find similar IPs to
-        isArray: false
-        required: true
-        secret: false
-      - name: minimum_score
-        default: false
-        description: >-
-          The minimum similarity score to match to.  Value between 80 and 100.
-          Default value is 90.
-        isArray: false
-        required: false
-        secret: false
-        defaultValue: '90'
-      - name: maximum_results
-        default: false
-        description: The maximum number of results to return. Default value is 50.
-        isArray: false
-        required: false
-        secret: false
-        defaultValue: '50'
+    - name: ip
+      default: true
+      description: IP address to find similar IPs to
+      required: true
+    - name: minimum_score
+      description: >-
+        The minimum similarity score to match to.  Value between 80 and 100.
+        Default value is 90.
+      defaultValue: '90'
+    - name: maximum_results
+      description: The maximum number of results to return. Default value is 50.
+      defaultValue: '50'
     outputs:
-      - contextPath: GreyNoise.Similar.ip_address
-        description: Similar IP address.
-        type: string
+    - contextPath: GreyNoise.Similar.ip_address
+      description: Similar IP address.
+      type: string
   - name: greynoise-timeline
-    deprecated: false
     description: >-
       Retrieve daily scanner timeline information for an Internet Scanner.
-    execution: false
     arguments:
-      - name: ip
-        default: true
-        description: IP address to find similar IPs to
-        isArray: false
-        required: true
-        secret: false
-      - name: days
-        default: false
-        description: >-
-          The number of days to retrieve daily summaries for.  Value between 1 and 90.
-          Default value is 30.
-        isArray: false
-        required: false
-        secret: false
-        defaultValue: '30'
-      - name: maximum_results
-        default: false
-        description: The maximum number of results to return. Default value is 50.
-        isArray: false
-        required: false
-        secret: false
-        defaultValue: '50'
+    - name: ip
+      default: true
+      description: IP address to find similar IPs to
+      required: true
+    - name: days
+      description: >-
+        The number of days to retrieve daily summaries for.  Value between 1 and 90.
+        Default value is 30.
+      defaultValue: '30'
+    - name: maximum_results
+      description: The maximum number of results to return. Default value is 50.
+      defaultValue: '50'
     outputs:
-      - contextPath: GreyNoise.Timeline.ip_address
-        description: Timeline IP address.
-        type: string
+    - contextPath: GreyNoise.Timeline.ip_address
+      description: Timeline IP address.
+      type: string
   dockerimage: demisto/greynoise:1.0.0.61972
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

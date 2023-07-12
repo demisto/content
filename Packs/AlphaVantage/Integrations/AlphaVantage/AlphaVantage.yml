@@ -9,11 +9,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: This is an API to get stock prices etc
 display: AlphaVantage
@@ -21,15 +19,11 @@ name: AlphaVantage
 script:
   commands:
   - arguments:
-    - default: false
-      description: Symbol or Ticker of stock
+    - description: Symbol or Ticker of stock
       isArray: true
       name: symbol
       required: true
-      secret: false
-    deprecated: false
     description: Gets data for a stock
-    execution: false
     name: alphavantage-stock-data-get
     outputs:
     - contextPath: AlphaVantage.StockData.symbol
@@ -63,17 +57,13 @@ script:
       description: 'Change since last close in %'
       type: String
   - arguments:
-    - default: false
-      description: Symbols of stocksto fetch
+    - description: Symbols of stocksto fetch
       isArray: true
       name: symbol
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: '60min'
       description: Time interval between two data points
-      isArray: false
       name: interval
       predefined:
       - '1min'
@@ -81,22 +71,14 @@ script:
       - '15min'
       - '30min'
       - '60min'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: compact
       description: Amount of data return
-      isArray: false
       name: output_size
       predefined:
       - 'compact'
       - 'full'
-      required: false
-      secret: false
-    deprecated: false
     description: Gets historical data for a stock
-    execution: false
     name: alphavantage-stock-history-get
     outputs:
     - contextPath: AlphaVantage.StockHistory.Information
@@ -117,11 +99,7 @@ script:
     - contextPath: AlphaVantage.StockHistory.Time Series
       description: 'List of all stock data samples'
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

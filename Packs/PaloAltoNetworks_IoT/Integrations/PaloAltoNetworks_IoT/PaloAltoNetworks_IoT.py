@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import dateparser
 from datetime import datetime, timezone
 import json
 import time
 from typing import Any, Optional
 
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS

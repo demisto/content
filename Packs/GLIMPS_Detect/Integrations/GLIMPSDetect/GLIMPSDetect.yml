@@ -19,19 +19,13 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: 'false' 
+  defaultvalue: 'false'
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
-  required: false
 script:
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
@@ -42,8 +36,6 @@ script:
     arguments:
     - name: entryID
       required: true
-      isArray: false
-      secret: false
       description: EntryID of the file to send
     outputs:
     - contextPath: GLIMPS.Gdetect.Send.UUID
@@ -57,8 +49,6 @@ script:
     arguments:
     - name: uuid
       required: true
-      isArray: false
-      secret: false
       description: GLIMPS Detect Binary UUID.
     outputs:
     - contextPath: GLIMPS.GDetect.All.uuid
@@ -192,8 +182,6 @@ script:
     arguments:
     - name: uuid
       required: true
-      isArray: false
-      secret: false
       description: GLIMPS Detect Binary UUID.
     outputs:
     - contextPath: GLIMPS.GDetect.Threats.filenames

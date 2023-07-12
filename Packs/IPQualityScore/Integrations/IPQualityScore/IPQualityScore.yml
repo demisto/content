@@ -10,47 +10,39 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Threshold for fraud score from IP lookup to be marked as suspicious
   defaultvalue: '75'
   display: IP Suspicious Score Threshold
   name: ip_suspicious_score_threshold
-  required: false
   type: 0
 - additionalinfo: Threshold for fraud score from IP lookup to be marked as malicious
   defaultvalue: '90'
   display: IP Malicious Score Threshold
   name: ip_malicious_score_threshold
-  required: false
   type: 0
 - additionalinfo: Threshold for fraud score from Email lookup to be marked as suspicious
   defaultvalue: '75'
   display: Email Suspicious Score Threshold
   name: email_suspicious_score_threshold
-  required: false
   type: 0
 - additionalinfo: Threshold for fraud score from Email lookup to be marked as malicious
   defaultvalue: '90'
   display: Email Malicious Score Threshold
   name: email_malicious_score_threshold
-  required: false
   type: 0
 - additionalinfo: Threshold for fraud score from Url lookup to be marked as suspicious
   defaultvalue: '75'
   display: Url Suspicious Score Threshold
   name: url_suspicious_score_threshold
-  required: false
   type: 0
 - additionalinfo: Threshold for fraud score from Url lookup to be marked as malicious
   defaultvalue: '90'
   display: Url Malicious Score Threshold
   name: url_malicious_score_threshold
-  required: false
   type: 0
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
@@ -76,10 +68,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Runs reputation on IPs.
-    execution: false
     name: ip
     outputs:
     - contextPath: IPQualityScore.IP.success
@@ -199,10 +188,7 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Runs reputation on email addresses.
-    execution: false
     name: email
     outputs:
     - contextPath: IPQualityScore.Email.message
@@ -313,10 +299,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Runs reputation on URLs.
-    execution: false
     name: url
     outputs:
     - contextPath: IPQualityScore.Url.message
@@ -406,11 +389,7 @@ script:
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

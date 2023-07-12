@@ -20,12 +20,10 @@ configuration:
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -220,7 +218,6 @@ script:
       description: Content version.
       type: String
     description: 'Fetches a list of content using the Confluence Query Language (CQL). For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
-  runonce: false
   dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No test - the test requires personal credentials to the confluence account

@@ -29,7 +29,6 @@ dockerimage: demisto/pcap-miner:1.0.0.32154
 enabled: true
 name: PcapConvert
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

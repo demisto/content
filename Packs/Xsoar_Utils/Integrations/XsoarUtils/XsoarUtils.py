@@ -1,7 +1,7 @@
-import json
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
+import json
+import requests
 
 from typing import Callable
 

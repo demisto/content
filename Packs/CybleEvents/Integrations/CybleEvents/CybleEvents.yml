@@ -16,20 +16,16 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
 - additionalinfo: Maximum incidents to be fetched every time. Upper limit is 50 incidents.
   defaultvalue: '1'
@@ -39,7 +35,6 @@ configuration:
   type: 0
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - additionalinfo: Fetch the events based on chosen priority. If not chosen all priority events will be fetched.
   display: Priority
@@ -49,7 +44,6 @@ configuration:
   - medium
   - low
   - informational
-  required: false
   type: 15
 description: Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
 display: Cyble Events
@@ -57,105 +51,58 @@ name: CybleEvents
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Returns records started with given value
-      isArray: false
       name: from
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of records to return (max 1000). Using a smaller limit will get faster responses.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Timeline start date in the format "YYYY-MM-DD". Need to used with end_date as timeline range.
-      isArray: false
+    - description: Timeline start date in the format "YYYY-MM-DD". Need to used with end_date as timeline range.
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: Timeline end date in the format "YYYY-MM-DD". Need to used with start_date as timeline range.
-      isArray: false
+    - description: Timeline end date in the format "YYYY-MM-DD". Need to used with start_date as timeline range.
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      description: Returns record by type like (CIDR, CVE, domain, email, FileHash-IMPHASH, FileHash-MD5, FileHash-PEHASH, FileHash-SHA1, FileHash-SHA256, FilePath, hostname, IPv4, IPv6, Mutex, NIDS, URI, URL, YARA, osquery, Ja3, Bitcoinaddress, Sslcertfingerprint).
-      isArray: false
+    - description: Returns record by type like (CIDR, CVE, domain, email, FileHash-IMPHASH, FileHash-MD5, FileHash-PEHASH, FileHash-SHA1, FileHash-SHA256, FilePath, hostname, IPv4, IPv6, Mutex, NIDS, URI, URL, YARA, osquery, Ja3, Bitcoinaddress, Sslcertfingerprint).
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Returns records for the specified keyword
-      isArray: false
+    - description: Returns records for the specified keyword
       name: keyword
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch the indicators for the given timeline
-    execution: false
     name: cyble-vision-fetch-iocs
     outputs:
     - contextPath: CybleEvents.IoCs.data
       description: Returns indicator inital creation date
       type: String
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Returns records for the timeline starting from given indice
-      isArray: false
       name: from
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: Number of records to return (max 50). Using a smaller limit will get faster responses.
-      isArray: false
       name: limit
       required: true
-      secret: false
-    - default: false
-      description: Timeline start date in the format "YYYY/MM/DD"
-      isArray: false
+    - description: Timeline start date in the format "YYYY/MM/DD"
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: Timeline end date in the format "YYYY/MM/DD"
-      isArray: false
+    - description: Timeline end date in the format "YYYY/MM/DD"
       name: end_date
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Ascending
       description: Sorting order for alert fetch either Ascending or Descending
-      isArray: false
       name: order_by
       predefined:
       - Ascending
       - Descending
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Fetch the events based on priority. All priorities will be considered by default.
-      isArray: false
       name: priority
       predefined:
       - high
       - medium
       - low
       - informational
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch Incident event alerts based on the given parameters. Alerts would have multiple events grouped into one based on specific service type. So user would see in few cases more events than the limit provided.
-    execution: false
     name: cyble-vision-fetch-alerts
     outputs:
     - contextPath: CybleEvents.Events.eventid
@@ -186,45 +133,28 @@ script:
       description: Returns the event type alias name
       type: String
   - arguments:
-    - default: false
-      description: Event Type of the Incident
-      isArray: false
+    - description: Event Type of the Incident
       name: event_type
       required: true
-      secret: false
-    - default: false
-      description: Event ID of the incident
-      isArray: false
+    - description: Event ID of the incident
       name: event_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The value in the field represents the position of records that are retrieved
-      isArray: false
       name: from
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The value in the field represents the number of events that can be returned, maximum allowed is 1000
-      isArray: false
       name: limit
       required: true
-      secret: false
-    deprecated: false
     description: Fetch Incident detail based on event type and event ID
-    execution: false
     name: cyble-vision-fetch-event-detail
     outputs:
     - contextPath: CybleEvents.Events.Details
       description: Returns details for given event of specific type
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

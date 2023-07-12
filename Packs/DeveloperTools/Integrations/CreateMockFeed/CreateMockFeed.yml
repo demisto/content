@@ -20,68 +20,54 @@ configuration:
   name: amount_indicators
   defaultvalue: "100000"
   type: 0
-  required: false
 - display: Incremental Feed
   defaultvalue: 'true'
   hidden: true
   name: feedIncremental
-  required: false
   type: 8
 - display: Indicators custom field length
   name: indicators_custom_field_length
   defaultvalue: "200"
   type: 0
-  required: false
 - display: Amount of relationships per indicator
   name: amount_relationships
   defaultvalue: "1"
   type: 0
-  required: false
 - display: Relationship description length
   name: relationship_description_length
   defaultvalue: "1"
   type: 0
-  required: false
 - display: Size of batches
   name: batch_size
   defaultvalue: "30000"
   type: 0
-  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
-  required: false
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
   type: 8
-  required: false
 - display: Incidents name
   name: incidents_name
   type: 0
-  required: false
 - display: Fieldnames (CSV)
   name: fieldnames
   defaultvalue: indicator,description,date
   type: 0
-  required: false
-  additionalinfo: Make sure to have the key "indicator" in the appropriate CSV column
-    where the value of the indicator is expected to be
+  additionalinfo: Make sure to have the key "indicator" in the appropriate CSV column where the value of the indicator is expected to be
 - display: ""
   name: feedExpirationInterval
   type: 1
-  required: false
 - display: Indicator Reputation
   name: feedReputation
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - display: Source Reliability
   name: feedReliability
   type: 15
@@ -97,7 +83,6 @@ configuration:
 - display: ""
   name: feedExpirationPolicy
   type: 17
-  required: false
   options:
   - never
   - interval
@@ -106,32 +91,25 @@ configuration:
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Tags
   name: feedTags
   type: 0
-  required: false
   additionalinfo: Supports CSV values.
 - display: Traffic Light Protocol Color
   name: tlp_color
   type: 15
-  required: false
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 script:
   script: ''
   type: python
   dockerimage: demisto/feed-performance-test:1.0.46565
   feed: true
-  runonce: false
   subtype: python3
 tests:
 - No test
