@@ -2192,6 +2192,25 @@ script:
       required: true
       description: A comma-separated list of agent IDs on which the script should run.
       isArray: true
+    - name: singularity_xdr_Keyword
+      description: Singularityxdr keyword.
+    - name: singularity_xdr_Url
+      description: Singularityxdr url.
+    - name: api_key
+      description: Api key.
+    - name: input_params
+      description: Input params.
+    - name: password
+      description: Password.
+    - name: script_runtime_timeout_seconds
+      description: Script runtime timout in seconds for current execution.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: If set to true, execution will require approval.
+      name: requires_approval
+      predefined:
+      - "false"
+      - "true"
     outputs:
     - contextPath: SentinelOne.RunRemoteScript.pendingExecutionId
       description: ID of the created pending execution. Present only if pending flag is true.
