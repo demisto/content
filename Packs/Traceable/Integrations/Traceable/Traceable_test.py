@@ -267,7 +267,6 @@ def test_fetch_incidents_no_events(mocker):
 
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
-    # client.set_threat_category_list(threatCategoryList)
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
