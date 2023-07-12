@@ -200,12 +200,15 @@ def main() -> None:
             access_token=access_token)
 
         if command == 'test-module':
-            ...
-            # This is the call made when pressing the integration Test button.
-            # result = test_module(client, params)
-            # return_results(result)
+            try:
+                client.fetch_alerts(1, 1)
 
-        elif command in 'hello-world-get-events':
+            except Exception as e:
+                raise DemistoException(f'Error while testing: {e}') from e
+
+            return_results('ok')
+
+        elif command in 'armis-get-events':
             ...
             # should_push_events = argToBoolean(args.pop('should_push_events'))
             # events, results = get_events(client)
@@ -218,7 +221,7 @@ def main() -> None:
             #         product=PRODUCT
             # )
 
-        elif command == 'fetch-events':
+        elif command in ('fetch-events', 'armis-get-events'):
             if not isinstance(fetch_start_time, datetime):
                 raise DemistoException('First fetch time must be a valid date string, e.g. 3 days, 1 month, 1 year, etc.')
 
