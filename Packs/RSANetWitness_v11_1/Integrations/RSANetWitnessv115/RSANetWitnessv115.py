@@ -811,7 +811,7 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
                 page_size=None
             )
         except Exception:
-            demisto.error("Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
+            demisto.error(f"Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
             raise
 
         items = response_body.get('items', [])
@@ -832,7 +832,7 @@ def fetch_incidents(client: Client, params: dict) -> list:
         item['incident_url'] = client.get_incident_url(inc_id)
 
         # add to incident object an array of all related alerts
-        if params.get('import_alerts'):
+        if params['import_alerts']:
             max_alerts = arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS
             alerts = fetch_alerts_related_incident(client, inc_id, max_alerts)
             item['alerts'] = alerts
