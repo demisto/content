@@ -33,7 +33,7 @@
         },
         "CaseManagement-Generic": {
             "mandatory": true,
-            "display_name": "CaseManagement-Generic"
+            "display_name": "Case Management"
         },
         "CoreAlertFields": {
             "mandatory": true,
