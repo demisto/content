@@ -56,7 +56,7 @@
   - section_start "Download content-test-conf" --collapsed
   - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
   - SECRET_CONF_PATH=$(cat secret_conf_path)
-  - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID"
+  - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
   - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_conf_repos.log
   - section_end "Download content-test-conf"
 
