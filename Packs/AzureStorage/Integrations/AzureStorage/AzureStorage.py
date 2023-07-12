@@ -881,7 +881,7 @@ def test_module(client: ASClient) -> str:
                         "Please enable the integration and run the !azure-storage-auth-test command in order to test it")
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()

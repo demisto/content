@@ -300,7 +300,7 @@ def test_module(client):
         return 'ok'
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
