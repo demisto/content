@@ -330,25 +330,29 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids: list | None = None, multithreading=True) -> bool:
+    def install_packs(self, pack_ids: list | None = None, multithreading=True, is_post_update: bool = False) -> bool:
         """
-        Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and their dependencies.
         Args:
             pack_ids (list | None, optional): Packs to install on the server.
                 If no packs provided, installs packs that were provided by the previous step of the build.
             multithreading (bool): Whether to install packs in parallel or not.
+            is_post_update (bool): Whether the installation is in post update mode. Defaults to False.
 
         Returns:
             bool: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
-        logging.info(f"Packs ids to install: {pack_ids}")
+        logging.info("Packs ids to install: " + ", ".join(pack_ids))
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
-                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                          multithreading)
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
+                                                                          client=server.client,
+                                                                          hostname=hostname,
+                                                                          multithreading=multithreading,
+                                                                          is_post_update=is_post_update)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -547,7 +551,7 @@ class Build(ABC):
         """
         self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
                                  self.artifacts_folder, self.marketplace_buckets)
-        installed_content_packs_successfully = self.install_packs()
+        installed_content_packs_successfully = self.install_packs(is_post_update=True)
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -798,7 +802,7 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        success = self.install_packs(multithreading=False)
+        success = self.install_packs(multithreading=False, is_post_update=False)
         if not success:
             logging.error('Failed to install content packs, aborting.')
             sys.exit(1)
@@ -1897,7 +1901,7 @@ def main():
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
-        build.install_packs(pack_ids=list(packs_to_install_in_pre_update))
+        build.install_packs(pack_ids=list(packs_to_install_in_pre_update), is_post_update=False)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,

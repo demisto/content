@@ -37,6 +37,7 @@ def options_handler():
 def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketplace_tag_name, hostname=''):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+    This method is called during the post-update phase of the build (with branch changed applied).
 
     Args:
         pack_ids: the pack IDs to install.
@@ -46,8 +47,11 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
 
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                     use_multithreading)
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
+                                                                     client=server.client,
+                                                                     hostname=hostname,
+                                                                     multithreading=use_multithreading,
+                                                                     is_post_update=True)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 
@@ -81,27 +85,28 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     if not content_path:
         raise Exception('Could not find content path')
 
-    # all packs that should be installed
+    # Create a list of all packs that should be installed
     packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
-    logging.info(f'packs to install before filtering by minServerVersion {packs_to_install}')
+    logging.info('Packs to install before filtering by minServerVersion:' + ', '.join(packs_to_install))
 
-    # get packs that their minServerVersion is higher than the server version
+    # Get packs with 'minServerVersion' that's higher than server's version
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_to_install,
         server_numeric_version=server_version
     )
-    logging.info(f'packs with minServerVersion that is higher than server version {packs_with_higher_server_version}')
+    logging.info('Packs with minServerVersion that is higher than server version: '
+                 + ', '.join(packs_with_higher_server_version))
 
-    # remove all the packs that that their minServerVersion is higher than the server version.
+    # Remove packs that 'minServerVersion' that's higher than server's version.
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
-    logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
+    logging.info('Installing content packs: ' + ', '.join(pack_ids_with_valid_min_server_version))
 
     install_packs_from_content_packs_to_install_path(servers=servers,
                                                      pack_ids=list(pack_ids_with_valid_min_server_version),
                                                      marketplace_tag_name=XSOAR_MP)
     logging.success(
-        f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
-        f'in {[server.internal_ip for server in servers]}'
+        'Finished content packs: ' + ', '.join(pack_ids_with_valid_min_server_version)
+        + 'in ' + ', '.join([server.internal_ip for server in servers])
     )
 
 

@@ -389,8 +389,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
         # On post-update, we want to check for deprecation status locally before making the API call,
         # because if the pack has been deprecated, the test upload flow won't upload the pack to the bucket,
         # and the API call will fail.
-        logging.info(f"Detected post-update run mode ('BUCKET_UPLOAD'='{is_post_update}'. "
-                     f"Pack deprecation status will be checked using local pack metadata.")
+        logging.info("Detected post-update run mode. "
+                     "Pack deprecation status will be checked using local pack metadata.")
 
         if is_pack_deprecated(pack_id=pack_id, check_locally=True):
             logging.warning(f"Pack '{pack_id}' is deprecated (hidden) and will not be installed.")
@@ -399,8 +399,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
     else:
         # On pre-update, we use current prod data, so deprecated packs are not supposed to be passed to this function.
         # If they are - the API call will fail with a 400 status "item not found" error.
-        logging.info(f"Detected pre-update run mode ('BUCKET_UPLOAD'='{is_post_update}'. "
-                     f"Packs deprecation status will be checked using Marketplace API.")
+        logging.info("Detected pre-update run mode. "
+                     "Packs deprecation status will be checked using Marketplace API.")
 
     api_data = get_pack_dependencies(client, pack_id, lock)
 
@@ -643,7 +643,8 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
                                                     client: demisto_client, hostname: str | None = None,
-                                                    multithreading=True):
+                                                    multithreading: bool = True,
+                                                    is_post_update: bool = False):
     """
     Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
@@ -654,6 +655,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         hostname (str): Hostname of instance. Using for logs.
         multithreading (bool): Whether to use multithreading to install packs in parallel.
             If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
+        is_post_update (bool): Whether the installation is in post update mode. Defaults to False.
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
@@ -667,7 +669,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     batch_packs_install_request_body: list = []  # List of lists of packs to install if not using multithreading .
     # Each list contain one pack and its dependencies.
     collected_dependencies: list = []  # List of packs that are already in the list to install.
-    is_post_update = os.getenv('BUCKET_UPLOAD', 'false').casefold() == 'true'
 
     lock = Lock()
 

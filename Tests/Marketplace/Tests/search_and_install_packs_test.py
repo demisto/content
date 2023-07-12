@@ -120,7 +120,8 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
                                                                                       client=client,
-                                                                                      multithreading=use_multithreading)
+                                                                                      multithreading=use_multithreading,
+                                                                                      is_post_update=False)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
@@ -128,7 +129,8 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
 
     installed_packs, _ = script.search_and_install_packs_and_their_dependencies(pack_ids=bad_pack_ids,
                                                                                 client=client,
-                                                                                multithreading=use_multithreading)
+                                                                                multithreading=use_multithreading,
+                                                                                is_post_update=False)
     assert bad_pack_ids[0] not in installed_packs
 
 
@@ -156,7 +158,8 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker, erro
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
                                                                                       client=client,
-                                                                                      multithreading=use_multithreading)
+                                                                                      multithreading=use_multithreading,
+                                                                                      is_post_update=False)
     assert success is False
 
 
