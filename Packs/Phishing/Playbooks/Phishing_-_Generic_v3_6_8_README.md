@@ -11,20 +11,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * TIM - Indicator Relationships Analysis
-* Process Microsoft's Anti-Spam Headers
-* Search And Delete Emails - Generic v2
-* Calculate Severity - Generic v2
-* Phishing - Machine Learning Analysis
-* Phishing - Indicators Hunting
-* Detonate File - Generic
-* Entity Enrichment - Phishing v2
 * Extract Indicators From File - Generic v2
+* Process Email - Generic v2
+* Detonate File - Generic
+* Process Microsoft's Anti-Spam Headers
 * Detect & Manage Phishing Campaigns
 * Email Address Enrichment - Generic v2.1
-* Process Email - Generic v2
-* Spear Phishing Investigation
+* Calculate Severity - Generic v2
+* Entity Enrichment - Phishing v2
+* Phishing - Indicators Hunting
 * Block Indicators - Generic v3
-* Detonate URL - Generic
+* Spear Phishing Investigation
+* Detonate URL - Generic v1.5
+* Search And Delete Emails - Generic v2
+* Phishing - Machine Learning Analysis
 
 ### Integrations
 
@@ -34,14 +34,14 @@ This playbook does not use any integrations.
 
 * SetAndHandleEmpty
 * CheckEmailAuthenticity
-* Set
 * AssignAnalystToIncident
+* Set
 
 ### Commands
 
-* setIndicator
 * closeInvestigation
 * setIncident
+* setIndicator
 * send-mail
 
 ## Playbook Inputs

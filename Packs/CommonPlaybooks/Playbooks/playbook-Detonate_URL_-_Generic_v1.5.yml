@@ -25,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3720,
+          "x": 3500,
           "y": 40
         }
       }
@@ -53,50 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3720,
-          "y": 800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: e653783d-5abe-4454-8579-7216516bb9b1
-    type: playbook
-    task:
-      id: e653783d-5abe-4454-8579-7216516bb9b1
-      version: -1
-      name: Detonate URL - ThreatGrid
-      description: Detonates one or more URLs using the Threat Grid integration. This playbook returns relevant reports to the War Room and URL reputations to the context data.
-      playbookName: Detonate URL - ThreatGrid
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      URL:
-        complex:
-          root: inputs.URL
-          accessor: Data
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "x": 3500,
+          "y": 720
         }
       }
     note: false
@@ -542,38 +500,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 603951c3-55ad-4f3a-8b9d-a1fab46fafbc
-    type: playbook
-    task:
-      id: 603951c3-55ad-4f3a-8b9d-a1fab46fafbc
-      version: -1
-      name: Detonate URL - Hybrid Analysis
-      playbookName: Detonate URL - Hybrid Analysis
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 5210,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: 8c874e73-6f3c-48e4-8f9f-1182c1f56e12
@@ -595,7 +521,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5640,
+          "x": 5210,
           "y": 545
         }
       }
@@ -627,7 +553,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6070,
+          "x": 5640,
           "y": 545
         }
       }
@@ -680,7 +606,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6500,
+          "x": 6070,
           "y": 545
         }
       }
@@ -726,7 +652,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6930,
+          "x": 6500,
           "y": 545
         }
       }
@@ -767,7 +693,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3720,
+          "x": 3500,
           "y": 195
         }
       }
@@ -802,7 +728,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7350,
+          "x": 6920,
           "y": 545
         }
       }
@@ -875,23 +801,54 @@ tasks:
       - "15"
       - "13"
       - "12"
-      - "11"
       - "21"
       - "23"
       - "24"
-      - "25"
       - "26"
       - "27"
       - "29"
       - "28"
       - "32"
+      - "35"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 3720,
+          "x": 3500,
           "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 0ef30bf8-cac7-4ea4-817b-02976e3484f2
+    type: playbook
+    task:
+      id: 0ef30bf8-cac7-4ea4-817b-02976e3484f2
+      version: -1
+      name: Detonate File - ThreatGrid v2
+      playbookName: Detonate File - ThreatGrid v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 545
         }
       }
     note: false
@@ -908,9 +865,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 825,
-        "width": 7680,
-        "x": 50,
+        "height": 745,
+        "width": 7260,
+        "x": 40,
         "y": 40
       }
     }

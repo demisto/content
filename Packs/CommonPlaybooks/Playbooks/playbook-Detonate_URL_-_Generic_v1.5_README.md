@@ -6,21 +6,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Detonate URL - Hybrid Analysis
-* Detonate URL - Cuckoo
 * Detonate URL - FireEye AX
-* Detonate URL - McAfee ATD
-* Detonate URL - ThreatGrid
-* Detonate URL - Group-IB TDS Polygon
-* Detonate URL - SecneurX Analysis
 * Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+* Detonate URL - VirusTotal (API v3)
+* Detonate URL - ThreatStream
+* Detonate URL - SecneurX Analysis
+* Detonate File - ThreatGrid v2
 * Detonate URL - JoeSecurity
+* Detonate URL - Hatching Triage
+* Detonate URL - Cuckoo
+* Detonate URL - Group-IB TDS Polygon
+* Detonate URL - McAfee ATD
 * Detonate URL - ANYRUN
 * Detonate URL - Lastline v2
-* Detonate URL - Hatching Triage
-* Detonate URL - VirusTotal (API v3)
 * Detonate URL - VMRay
-* Detonate URL - ThreatStream
 
 ### Integrations
 
@@ -33,8 +32,8 @@ This playbook does not use any scripts.
 ### Commands
 
 * cs-falcon-sandbox-submit-url
-* opswat-filescan-scan-url
 * wildfire-upload-url
+* opswat-filescan-scan-url
 
 ## Playbook Inputs
 
