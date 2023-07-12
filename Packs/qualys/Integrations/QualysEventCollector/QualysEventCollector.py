@@ -300,6 +300,9 @@ def get_detections_from_hosts(hosts):
 
 def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
     """ Get logs activity from qualys
+    API response returns events sorted in descending order. We are saving the next_page param and
+    sending next request with next_page arg if needed. Saving the newest event fetched.
+    We are deleting the newest event each time to avoid duplication.
     Args:
         client: Qualys client
         since_datetime: datetime to get events from
@@ -334,6 +337,8 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
 
 def get_host_list_detections_events(client, last_time, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
     """ Get host list detections from qualys
+    We are saving the next_page param and sending next request with next_page arg if needed. Saving the newest event fetched.
+    We are deleting the newest event each time to avoid duplications.
     Args:
         client: Qualys client
         last_time: datetime to get events from
