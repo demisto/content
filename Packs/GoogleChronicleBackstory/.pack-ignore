@@ -55,6 +55,9 @@ ignore=IF100
 [file:incidentfield-Chronicle_Events.json]
 ignore=IF100
 
+[file:incidentfield-Chronicle_Curated_Events.json]
+ignore=IF115
+
 [file:playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle.yml]
 ignore=PB114
 
