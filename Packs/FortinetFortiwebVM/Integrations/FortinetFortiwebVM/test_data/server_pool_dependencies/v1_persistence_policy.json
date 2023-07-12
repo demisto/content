@@ -1,0 +1,13 @@
+[
+    {
+        "id": 1,
+        "_id": "test",
+        "name": "test",
+        "type": 1,
+        "timeout": 300,
+        "ipv4Netmask": "test",
+        "ipv6MaskLength": 128,
+        "can_delete": true,
+        "dispType": "Source IP"
+    }
+]

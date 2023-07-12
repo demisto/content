@@ -1077,7 +1077,544 @@ script:
     - contextPath: Uptycs.PostedQuery.name
       description: name of query
       type: string
-  dockerimage: demisto/uptycs:1.0.0.23423
+  - arguments:
+    - default: false
+      description: Retrieve carves from a specific path
+      isArray: false
+      name: path
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of carves file from a specific path.
+    execution: false
+    name: uptycs-get-carves
+    outputs:
+    - contextPath: Uptycs.Carves.id
+      description: Uptycs id of the carved file.
+      type: string
+    - contextPath: Uptycs.Carves.assetId
+      description: Uptycs id of the asset.
+      type: string
+    - contextPath: Uptycs.Carves.path
+      description: File path to the carved file.
+      type: string
+    - contextPath: Uptycs.Carves.createdAt
+      description: Time at which the file was carved.
+      type: date
+    - contextPath: Uptycs.Carves.updatedAt
+      description: Time at which the carve was updated.
+      type: date
+    - contextPath: Uptycs.Carves.status
+      description: Status of carve in Uptycs database.
+      type: string
+    - contextPath: Uptycs.Carves.assetHostName
+      description: Hostname in the Uptycs database.
+      type: string
+    - contextPath: Uptycs.Carves.offset
+      description: Carved file size offset.
+      type: number
+    - contextPath: Uptycs.Carves.length
+      description: Carved file size length.
+      type: number
+    - contextPath: Uptycs.Carves.deletedUserName
+      description: Deleted user name.
+      type: string
+    - contextPath: Uptycs.Carves.deleted_at
+      description: Time at which the carve was deleted.
+      type: date
+  - arguments:
+    - default: false
+      description: uuid of a specific carved file. Get the id from the list of carves with the command uptycs-get-carves.
+      isArray: false
+      name: carve_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the url of a carved file using uuid.
+    execution: false
+    name: uptycs-get-carves-link
+    outputs:
+    - contextPath: Uptycs.CarvesLink.url
+      description: Url of the carved file
+      type: string
+  - arguments:
+    - default: false
+      description: uuid of a specific carved file to download. Get the id from the list of carves with the command uptycs-get-carves.
+      isArray: false
+      name: carve_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download a carved file using uuid.
+    execution: false
+    name: uptycs-get-carves-download-file
+  - name: uptycs-get-asset-with-id
+    deprecated: false
+    description: Get an Uptycs asset details.
+    execution: false
+    arguments:
+    - name: asset_id
+      required: true
+      description: Uptycs asset id. Get the id from the list of assets with the command uptycs-get-assets.
+      isArray: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: Uptycs.Asset.hostName
+      description: Hostname in Uptycs DB
+      type: string
+    - contextPath: Uptycs.Asset.location
+      description: Host location
+      type: string
+    - contextPath: Uptycs.Asset.gateway
+      description: Gateway ip
+      type: string
+    - contextPath: Uptycs.Asset.cpuBrand
+      description: Cpu brand
+      type: string
+    - contextPath: Uptycs.Asset.hardwareModel
+      description: Hardware model
+      type: string
+    - contextPath: Uptycs.Asset.hardwareVendor
+      description: Hardware vendor
+      type: string
+    - contextPath: Uptycs.Asset.cores
+      description: Number of cores
+      type: number
+    - contextPath: Uptycs.Asset.logicalCores
+      description: Number of logical cores
+      type: number
+    - contextPath: Uptycs.Asset.memoryMb
+      description: Memory in Mb
+      type: number
+    - contextPath: Uptycs.Asset.os
+      description: os installed on asset (Windows, Linux, Mac OS X)
+      type: string
+    - contextPath: Uptycs.Asset.osVersion
+      description: os version
+      type: string
+    - contextPath: Uptycs.Asset.osFlavor
+      description: os flavor
+      type: string
+    - contextPath: Uptycs.Asset.osKey
+      description: os key
+      type: string
+    - contextPath: Uptycs.Asset.osqueryVersion
+      description: Uptycs osquery version
+      type: string
+    - contextPath: Uptycs.Asset.status
+      description: status of host
+      type: string
+    - contextPath: Uptycs.Asset.arch
+      description: Host cpu architecture
+      type: string
+    - contextPath: Uptycs.Asset.agentVersion
+      description: Uptycs agent version
+      type: string
+    - contextPath: Uptycs.Asset.quarantinedStatus
+      description: Uptycs agent quarantine status
+      type: string
+    - contextPath: Uptycs.Asset.osDisplay
+      description: os version detailed info
+      type: string
+    - contextPath: Uptycs.Asset.tags
+      description: Uptycs asset tags
+      type: string
+    - contextPath: Uptycs.Asset.disabled
+      description: Asset disabled status
+      type: boolean
+    - contextPath: Uptycs.Asset.objectGroupId
+      description: Uptycs object group id
+      type: string
+    - contextPath: Uptycs.Asset.lastEnrolledAt
+      description: Last enrolled at time
+      type: date
+    - contextPath: Uptycs.Asset.live
+      description: Asset live status
+      type: boolean
+  - name: uptycs-get-tag
+    description: Return Uptycs asset tag details.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: tag_id
+      required: true
+      description: Uptycs tag id. Get the id from the list of tags with the command uptycs-get-tags.
+      isArray: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: Uptycs.tag.tag
+      description: Tag name in Uptycs DB
+      type: string
+    - contextPath: Uptycs.tag.resourceType
+      description: Tag resource type
+      type: string
+    - contextPath: Uptycs.tag.seedId
+      description: Uptycs seed id
+      type: string
+    - contextPath: Uptycs.tag.key
+      description: Tag key
+      type: string
+    - contextPath: Uptycs.tag.value
+      description: Tag value
+      type: string
+    - contextPath: Uptycs.tag.flagProfileId
+      description: Uptycs flag profile id
+      type: string
+    - contextPath: Uptycs.tag.customProfileId
+      description: Uptycs custom profile id
+      type: string
+    - contextPath: Uptycs.tag.complianceProfileId
+      description: Uptycs compliance profile id
+      type: string
+    - contextPath: Uptycs.tag.processBlockRuleId
+      description: Uptycs process block rule id
+      type: string
+    - contextPath: Uptycs.tag.dnsBlockRuleId
+      description: Uptycs dns block rule id
+      type: string
+    - contextPath: Uptycs.tag.windowsDefenderPreferenceId
+      description: Windows Defender Preference Id
+      type: string
+    - contextPath: Uptycs.tag.createdBy
+      description: Id of creator
+      type: string
+    - contextPath: Uptycs.tag.updatedBy
+      description: Id of last modifier
+      type: string
+    - contextPath: Uptycs.tag.createdAt
+      description: Created at time
+      type: date
+    - contextPath: Uptycs.tag.updatedAt
+      description: Updated at time
+      type: date
+    - contextPath: Uptycs.tag.status
+      description: Status of tag
+      type: string
+    - contextPath: Uptycs.tag.source
+      description: Source of tag
+      type: string
+    - contextPath: Uptycs.tag.system
+      description: Status of system
+      type: boolean
+    - contextPath: Uptycs.tag.custom
+      description: Status of custom
+      type: boolean
+    - contextPath: Uptycs.tag.tagRuleId
+      description: Uptycs tag rule id
+      type: string
+  - name: uptycs-get-tags
+    description: Return a list of Uptycs asset tags with details.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: key
+      description: Uptycs tag key
+      required: false
+      isArray: false
+      secret: false
+      default: false
+    - name: value
+      description: Uptycs tag value
+      required: false
+      isArray: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: Uptycs.tags.id
+      description: Tag id in Uptycs DB
+      type: string
+    - contextPath: Uptycs.tags.tag
+      description: Tag name in Uptycs DB
+      type: string
+    - contextPath: Uptycs.tags.resourceType
+      description: Tag resource type
+      type: string
+    - contextPath: Uptycs.tags.seedId
+      description: Uptycs seed id
+      type: string
+    - contextPath: Uptycs.tags.key
+      description: Uptycs tag key
+      type: string
+    - contextPath: Uptycs.tags.value
+      description: Uptycs tag value
+      type: string
+    - contextPath: Uptycs.tags.flagProfileId
+      description: Uptycs flag profile id
+      type: string
+    - contextPath: Uptycs.tags.customProfileId
+      description: Uptycs custom profile id
+      type: string
+    - contextPath: Uptycs.tags.complianceProfileId
+      description: Uptycs compliance profile id
+      type: string
+    - contextPath: Uptycs.tags.processBlockRuleId
+      description: Uptycs process block rule id
+      type: string
+    - contextPath: Uptycs.tags.dnsBlockRuleId
+      description: Uptycs dns block rule id
+      type: string
+    - contextPath: Uptycs.tags.windowsDefenderPreferenceId
+      description: Windows Defender Preference Id
+      type: string
+    - contextPath: Uptycs.tags.createdBy
+      description: Id of tag creator
+      type: string
+    - contextPath: Uptycs.tags.updatedBy
+      description: Id of last modifier
+      type: string
+    - contextPath: Uptycs.tags.createdAt
+      description: Created at time
+      type: date
+    - contextPath: Uptycs.tags.updatedAt
+      description: Updated at time
+      type: date
+    - contextPath: Uptycs.tags.status
+      description: status of tag
+      type: string
+    - contextPath: Uptycs.tags.source
+      description: source of tag
+      type: string
+    - contextPath: Uptycs.tags.system
+      description: system status
+      type: boolean
+    - contextPath: Uptycs.tags.custom
+      description: custom status
+      type: boolean
+    - contextPath: Uptycs.tags.tagRuleId
+      description: Uptycs tag rule id
+      type: string
+  - name: uptycs-delete-tag
+    description: Delete an Uptycs asset tag.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: tag_id
+      required: true
+      description: Delete the tag matching this id. Get the id from the list of tags with the command uptycs-get-tags.
+      isArray: false
+      secret: false
+      default: false
+  - name: uptycs-get-lookuptables
+    description: get list of uptycs look up tables
+    deprecated: false
+    execution: false
+    arguments: []
+    outputs:
+    - contextPath: Uptycs.lookuptables.id
+      description: Uptycs id of look up table
+      type: string
+    - contextPath: Uptycs.lookuptables.seedId
+      description: Uptycs seed id
+      type: string
+    - contextPath: Uptycs.lookuptables.name
+      description: Look up table name
+      type: string
+    - contextPath: Uptycs.lookuptables.description
+      description: Description of the table
+      type: string
+    - contextPath: Uptycs.lookuptables.active
+      description: Active status of the table
+      type: boolean
+    - contextPath: Uptycs.lookuptables.idField
+      description: Uptycs id field
+      type: string
+    - contextPath: Uptycs.lookuptables.rowCount
+      description: Row count of table
+      type: number
+    - contextPath: Uptycs.lookuptables.forRuleEngine
+      description: Status of flag forRuleEngine
+      type: boolean
+    - contextPath: Uptycs.lookuptables.createdBy
+      description: Id of creator
+      type: string
+    - contextPath: Uptycs.lookuptables.updatedBy
+      description: Id of last modifier
+      type: string
+    - contextPath: Uptycs.lookuptables.createdAt
+      description: Created at time
+      type: date
+    - contextPath: Uptycs.lookuptables.updatedAt
+      description: Updated at time
+      type: date
+    - contextPath: Uptycs.lookuptables.dataLookupTable
+      description: Data look up table name
+      type: string
+    - contextPath: Uptycs.lookuptables.fetchRowsquery
+      description: Query used to fetch rows
+      type: string
+  - name: uptycs-get-lookuptable
+    description: Get an Uptycs lookup table details.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: table_id
+      required: true
+      description: Id of table in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
+      isArray: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: Uptycs.lookuptable.seedId
+      description: Uptycs seed id
+      type: string
+    - contextPath: Uptycs.lookuptable.name
+      description: Look up table name
+      type: string
+    - contextPath: Uptycs.lookuptable.description
+      description: Description of the table
+      type: string
+    - contextPath: Uptycs.lookuptable.active
+      description: Active status of the table
+      type: boolean
+    - contextPath: Uptycs.lookuptable.idField
+      description: Uptycs id field
+      type: string
+    - contextPath: Uptycs.lookuptable.rowCount
+      description: Row count of table
+      type: number
+    - contextPath: Uptycs.lookuptable.forRuleEngine
+      description: Status of flag forRuleEngine
+      type: boolean
+    - contextPath: Uptycs.lookuptable.createdBy
+      description: Id of creator
+      type: string
+    - contextPath: Uptycs.lookuptable.updatedBy
+      description: Id of last modifier
+      type: string
+    - contextPath: Uptycs.lookuptable.createdAt
+      description: Created at time
+      type: date
+    - contextPath: Uptycs.lookuptable.updatedAt
+      description: Updated at time
+      type: date
+    - contextPath: Uptycs.lookuptable.dataLookupTable
+      description: Data look up table name
+      type: string
+    - contextPath: Uptycs.lookuptable.fetchRowsquery
+      description: Query used to fetch rows
+      type: string
+  - name: uptycs-create-lookuptable
+    description: Create a new Uptycs lookup table.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: name
+      required: true
+      description: Name of a lookup table.
+      isArray: false
+      secret: false
+      default: false
+    - name: id_field
+      required: true
+      description: Id field for the table. An identifier (ID) from the JSON/CSV file you want to upload. Select an ID based on the context of lookup data. For example, a domain lookup ID can be domain, or a port lookup ID can be port. This ID must be the same as defined in the JSON file to be uploaded, otherwise Uptycs does not capture the JSON data. This field is case sensitive and cannot be edited after a lookup table is saved.
+      isArray: false
+      secret: false
+      default: false
+    - name: description
+      required: false
+      description: Description of a lookup table
+      isArray: false
+      secret: false
+      default: false
+    - name: filename
+      required: true
+      description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
+      isArray: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: Uptycs.lookuptable.id
+      description: Id of lookup table in Uptycs DB
+      type: string
+    - contextPath: Uptycs.lookuptable.name
+      description: Name of the created lookup table
+      type: string
+  - name: uptycs-edit-lookuptable
+    description: Edit an Uptycs lookup table.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: table_id
+      required: true
+      description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
+      isArray: false
+      secret: false
+      default: false
+    - name: name
+      required: false
+      description: Name of a lookup table.
+      isArray: false
+      secret: false
+      default: false
+    - name: description
+      required: false
+      description: A lookup table description.
+      isArray: false
+      secret: false
+      default: false
+    - name: active
+      auto: PREDEFINED
+      defaultValue: true
+      required: false
+      description: Enable or disable the table with a boolean flag of true or false.
+      isArray: false
+      secret: false
+      default: false
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: Uptycs.lookuptable
+      description: response
+      type: string
+  - name: uptycs-delete-lookuptable
+    description: Delete an Uptycs lookup table.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: table_id
+      required: true
+      description: Table id in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
+      isArray: false
+      secret: false
+      default: false
+  - name: uptycs-delete-assets-tag
+    description: Disassociate an asset with a tag.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: asset_id
+      required: true
+      description: Disassociate the asset matching this asset id with the given tag_id. Get the id from the list of asset with the command uptycs-get-assets.
+      isArray: false
+      secret: false
+      default: false
+    - name: tag_id
+      required: true
+      description: Disassociate the tag matching this id with the given asset_id. Get the id from the list of tags with the command uptycs-get-tags.
+      isArray: false
+      secret: false
+      default: false
+  - name: uptycs-post-lookuptable-data
+    description: Update csv data for a look up table.
+    deprecated: false
+    execution: false
+    arguments:
+    - name: table_id
+      required: true
+      description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
+      isArray: false
+      secret: false
+      default: false
+    - name: filename
+      required: true
+      description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
+      isArray: false
+      secret: false
+      default: false
+  dockerimage: demisto/uptycs:1.0.0.63766
   isfetch: true
   runonce: true
   script: '-'

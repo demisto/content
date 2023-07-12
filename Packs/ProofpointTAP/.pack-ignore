@@ -6,6 +6,8 @@ campaignid
 threatid
 setcontext
 setandhandleempty
+ccAddresses
+messageTime
 
 [file:ProofpointTapTopClickers.yml]
 ignore=BA124
@@ -21,4 +23,3 @@ ignore=MR108
 
 [file:ProofpointTAPModelingRules_1_3.yml]
 ignore=MR108
-
