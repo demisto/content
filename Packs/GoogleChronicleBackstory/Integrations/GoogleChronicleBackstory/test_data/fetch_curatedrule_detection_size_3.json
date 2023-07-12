@@ -1,0 +1,646 @@
+{
+    "curatedRuleDetections": [
+        {
+            "type": "GCTI_FINDING",
+            "detection": [
+                {
+                    "ruleName": "GCP Secret Manager Mass Deletion",
+                    "summary": "Rule Detection",
+                    "description": "Identifies mass deletion of secrets in GCP Secret Manager.",
+                    "severity": "LOW",
+                    "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline&ruleSource=ruleSet&selectedDetectionId=de_50fd0957-0959-6410-0000-c6f8400006b1&selectedTimestamp=2023-06-14T17:28:00Z",
+                    "ruleId": "ur_ttp_GCP__MassSecretDeletion",
+                    "alertState": "ALERTING",
+                    "ruleType": "MULTI_EVENT",
+                    "detectionFields": [
+                        {
+                            "key": "resource",
+                            "value": "secretmanager.googleapis.com"
+                        },
+                        {
+                            "key": "principaluser",
+                            "value": "secret@google.com",
+                            "source": "udm.principal.user.email_addresses"
+                        }
+                    ],
+                    "ruleLabels": [
+                        {
+                            "key": "rule_name",
+                            "value": "GCP Secret Manager Mass Deletion"
+                        },
+                        {
+                            "key": "false_positives",
+                            "value": "This may be common behavior in dev, testing, or deprecated projects."
+                        }
+                    ],
+                    "outcomes": [
+                        {
+                            "key": "risk_score",
+                            "value": "35"
+                        },
+                        {
+                            "key": "resource_name",
+                            "value": "gsm_secret_1, gsm_secret_10",
+                            "source": "udm.target.resource.name"
+                        },
+                        {
+                            "key": "ip",
+                            "value": "0.0.0.1",
+                            "source": "udm.principal.ip"
+                        }
+                    ],
+                    "ruleSet": "9d7537ae-0ae2-0000-b5e2-507c00008ae9",
+                    "ruleSetDisplayName": "Service Disruption",
+                    "riskScore": 35
+                }
+            ],
+            "createdTime": "2023-06-14T18:38:30.569526Z",
+            "lastUpdatedTime": "2023-06-14T18:38:30.569526Z",
+            "id": "de_50fd0957-0959-0000-d556-c6f8000016b1",
+            "timeWindow": {
+                "startTime": "2023-06-14T17:18:00Z",
+                "endTime": "2023-06-14T17:28:00Z"
+            },
+            "collectionElements": [
+                {
+                    "references": [
+                        {
+                            "event": {
+                                "metadata": {
+                                    "eventTimestamp": "2023-06-14T17:27:39.239875241Z",
+                                    "collectedTimestamp": "2023-06-14T17:27:42.956025244Z",
+                                    "eventType": "RESOURCE_DELETION",
+                                    "vendorName": "Google Cloud Platform",
+                                    "productName": "Google Cloud Platform",
+                                    "productEventType": "google.cloud.secretmanager.v1.SecretManagerService.DeleteSecret",
+                                    "urlBackToProduct": "url_0000",
+                                    "ingestedTimestamp": "2023-06-14T17:27:44.382729Z",
+                                    "id": "000000000000000000000001",
+                                    "logType": "GCP_CLOUD_AUDIT"
+                                },
+                                "principal": {
+                                    "user": {
+                                        "emailAddresses": [
+                                            "secret-migration@test-is-00001.iam.gserviceaccount.com"
+                                        ],
+                                        "productObjectId": "000000000000000000000001",
+                                        "attribute": {
+                                            "roles": [
+                                                {
+                                                    "name": "roles/secretmanager.admin",
+                                                    "type": "SERVICE_ACCOUNT"
+                                                }
+                                            ],
+                                            "permissions": [
+                                                {
+                                                    "name": "secretmanager.secrets.delete",
+                                                    "type": "ADMIN_WRITE"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "ip": [
+                                        "0.0.0.1"
+                                    ],
+                                    "location": {
+                                        "state": "State",
+                                        "countryOrRegion": "Country",
+                                        "regionLatitude": 10.000000,
+                                        "regionLongitude": 10.000000,
+                                        "regionCoordinates": {
+                                            "latitude": 10.000000000000000,
+                                            "longitude": 10.0000000
+                                        }
+                                    },
+                                    "resource": {
+                                        "attribute": {
+                                            "cloud": {
+                                                "project": {
+                                                    "name": "projects/0000000/secrets/gsm_secret_1",
+                                                    "resourceSubtype": "secretmanager.googleapis.com/Secret"
+                                                }
+                                            },
+                                            "labels": [
+                                                {
+                                                    "key": "request_type",
+                                                    "value": "type.googleapis.com/google.cloud.secretmanager.v1.DeleteSecretRequest"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "labels": [
+                                        {
+                                            "key": "request_attributes_time",
+                                            "value": "2023-06-14T17:27:39.245079752Z"
+                                        }
+                                    ],
+                                    "ipGeoArtifact": [
+                                        {
+                                            "ip": "0.0.0.1",
+                                            "location": {
+                                                "state": "Gujarat",
+                                                "countryOrRegion": "India",
+                                                "regionLatitude": 10.000000,
+                                                "regionLongitude": 10.000000,
+                                                "regionCoordinates": {
+                                                    "latitude": 10.000000000000000,
+                                                    "longitude": 10.0000000
+                                                }
+                                            },
+                                            "network": {
+                                                "asn": "00001",
+                                                "dnsDomain": "broad_band.in",
+                                                "carrierName": "broad band ltd.",
+                                                "organizationName": "broad band services limited"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "target": {
+                                    "application": "secretmanager.googleapis.com",
+                                    "resource": {
+                                        "name": "gsm_secret_1",
+                                        "attribute": {
+                                            "labels": [
+                                                {
+                                                    "key": "request_name",
+                                                    "value": "projects/test-is-00001/secrets/gsm_secret_1"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "cloud": {
+                                        "environment": "GOOGLE_CLOUD_PLATFORM",
+                                        "project": {
+                                            "name": "test-is-00001"
+                                        }
+                                    }
+                                },
+                                "securityResult": [
+                                    {
+                                        "categoryDetails": [
+                                            "projects/test-is-00001/logs/cloudaudit.googleapis.com"
+                                        ],
+                                        "action": [
+                                            "ALLOW"
+                                        ],
+                                        "severity": "INFORMATIONAL",
+                                        "detectionFields": [
+                                            {
+                                                "key": "resource_name",
+                                                "value": "projects/0000001/secrets/gsm_secret_1"
+                                            },
+                                            {
+                                                "key": "key_id",
+                                                "value": "000000000000000000000001"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "network": {
+                                    "http": {
+                                        "userAgent": "grpc-python-asyncio/1.51.3 grpc-c/29.0.0 (windows; chttp2),gzip(gfe)"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "label": "e"
+                }
+            ],
+            "detectionTime": "2023-06-14T17:28:00Z",
+            "tags": [
+                "TA0040",
+                "T1485"
+            ]
+        },
+        {
+            "type": "GCTI_FINDING",
+            "detection": [
+                {
+                    "ruleName": "GCP Secret Manager Mass Deletion",
+                    "summary": "Rule Detection",
+                    "description": "Identifies mass deletion of secrets in GCP Secret Manager.",
+                    "severity": "LOW",
+                    "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline&ruleSource=ruleSet&selectedDetectionId=de_50fd0957-0959-6410-0000-c6f8400006b1&selectedTimestamp=2023-06-14T17:28:00Z",
+                    "ruleId": "ur_ttp_GCP__MassSecretDeletion",
+                    "alertState": "ALERTING",
+                    "ruleType": "MULTI_EVENT",
+                    "detectionFields": [
+                        {
+                            "key": "resource",
+                            "value": "secretmanager.googleapis.com"
+                        },
+                        {
+                            "key": "principaluser",
+                            "value": "secret@google.com",
+                            "source": "udm.principal.user.email_addresses"
+                        }
+                    ],
+                    "ruleLabels": [
+                        {
+                            "key": "rule_name",
+                            "value": "GCP Secret Manager Mass Deletion"
+                        },
+                        {
+                            "key": "false_positives",
+                            "value": "This may be common behavior in dev, testing, or deprecated projects."
+                        }
+                    ],
+                    "outcomes": [
+                        {
+                            "key": "risk_score",
+                            "value": "35"
+                        },
+                        {
+                            "key": "resource_name",
+                            "value": "gsm_secret_1, gsm_secret_10",
+                            "source": "udm.target.resource.name"
+                        },
+                        {
+                            "key": "ip",
+                            "value": "0.0.0.1",
+                            "source": "udm.principal.ip"
+                        }
+                    ],
+                    "ruleSet": "9d7537ae-0ae2-0000-b5e2-507c00008ae9",
+                    "ruleSetDisplayName": "Service Disruption",
+                    "riskScore": 35
+                }
+            ],
+            "createdTime": "2023-06-14T18:38:30.569526Z",
+            "lastUpdatedTime": "2023-06-14T18:38:30.569526Z",
+            "id": "de_662d8ff5-8eea-deb8-274e-f3410c7b935a",
+            "timeWindow": {
+                "startTime": "2023-06-14T17:18:00Z",
+                "endTime": "2023-06-14T17:28:00Z"
+            },
+            "collectionElements": [
+                {
+                    "references": [
+                        {
+                            "event": {
+                                "metadata": {
+                                    "eventTimestamp": "2023-06-14T17:27:39.239875241Z",
+                                    "collectedTimestamp": "2023-06-14T17:27:42.956025244Z",
+                                    "eventType": "RESOURCE_DELETION",
+                                    "vendorName": "Google Cloud Platform",
+                                    "productName": "Google Cloud Platform",
+                                    "productEventType": "google.cloud.secretmanager.v1.SecretManagerService.DeleteSecret",
+                                    "urlBackToProduct": "url_0000",
+                                    "ingestedTimestamp": "2023-06-14T17:27:44.382729Z",
+                                    "id": "000000000000000000000001",
+                                    "logType": "GCP_CLOUD_AUDIT"
+                                },
+                                "principal": {
+                                    "user": {
+                                        "emailAddresses": [
+                                            "secret-migration@test-is-00001.iam.gserviceaccount.com"
+                                        ],
+                                        "productObjectId": "000000000000000000000001",
+                                        "attribute": {
+                                            "roles": [
+                                                {
+                                                    "name": "roles/secretmanager.admin",
+                                                    "type": "SERVICE_ACCOUNT"
+                                                }
+                                            ],
+                                            "permissions": [
+                                                {
+                                                    "name": "secretmanager.secrets.delete",
+                                                    "type": "ADMIN_WRITE"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "ip": [
+                                        "0.0.0.1"
+                                    ],
+                                    "location": {
+                                        "state": "State",
+                                        "countryOrRegion": "Country",
+                                        "regionLatitude": 10.000000,
+                                        "regionLongitude": 10.000000,
+                                        "regionCoordinates": {
+                                            "latitude": 10.000000000000000,
+                                            "longitude": 10.0000000
+                                        }
+                                    },
+                                    "resource": {
+                                        "attribute": {
+                                            "cloud": {
+                                                "project": {
+                                                    "name": "projects/0000000/secrets/gsm_secret_1",
+                                                    "resourceSubtype": "secretmanager.googleapis.com/Secret"
+                                                }
+                                            },
+                                            "labels": [
+                                                {
+                                                    "key": "request_type",
+                                                    "value": "type.googleapis.com/google.cloud.secretmanager.v1.DeleteSecretRequest"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "labels": [
+                                        {
+                                            "key": "request_attributes_time",
+                                            "value": "2023-06-14T17:27:39.245079752Z"
+                                        }
+                                    ],
+                                    "ipGeoArtifact": [
+                                        {
+                                            "ip": "0.0.0.1",
+                                            "location": {
+                                                "state": "Gujarat",
+                                                "countryOrRegion": "India",
+                                                "regionLatitude": 10.000000,
+                                                "regionLongitude": 10.000000,
+                                                "regionCoordinates": {
+                                                    "latitude": 10.000000000000000,
+                                                    "longitude": 10.0000000
+                                                }
+                                            },
+                                            "network": {
+                                                "asn": "00001",
+                                                "dnsDomain": "broad_band.in",
+                                                "carrierName": "broad band ltd.",
+                                                "organizationName": "broad band services limited"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "target": {
+                                    "application": "secretmanager.googleapis.com",
+                                    "resource": {
+                                        "name": "gsm_secret_1",
+                                        "attribute": {
+                                            "labels": [
+                                                {
+                                                    "key": "request_name",
+                                                    "value": "projects/test-is-00001/secrets/gsm_secret_1"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "cloud": {
+                                        "environment": "GOOGLE_CLOUD_PLATFORM",
+                                        "project": {
+                                            "name": "test-is-00001"
+                                        }
+                                    }
+                                },
+                                "securityResult": [
+                                    {
+                                        "categoryDetails": [
+                                            "projects/test-is-00001/logs/cloudaudit.googleapis.com"
+                                        ],
+                                        "action": [
+                                            "ALLOW"
+                                        ],
+                                        "severity": "INFORMATIONAL",
+                                        "detectionFields": [
+                                            {
+                                                "key": "resource_name",
+                                                "value": "projects/0000001/secrets/gsm_secret_1"
+                                            },
+                                            {
+                                                "key": "key_id",
+                                                "value": "000000000000000000000001"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "network": {
+                                    "http": {
+                                        "userAgent": "grpc-python-asyncio/1.51.3 grpc-c/29.0.0 (windows; chttp2),gzip(gfe)"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "label": "e"
+                }
+            ],
+            "detectionTime": "2023-06-14T17:28:00Z",
+            "tags": [
+                "TA0040",
+                "T1485"
+            ]
+        },
+        {
+            "type": "GCTI_FINDING",
+            "detection": [
+                {
+                    "ruleName": "GCP Secret Manager Mass Deletion",
+                    "summary": "Rule Detection",
+                    "description": "Identifies mass deletion of secrets in GCP Secret Manager.",
+                    "severity": "LOW",
+                    "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline&ruleSource=ruleSet&selectedDetectionId=de_50fd0957-0959-6410-0000-c6f8400006b1&selectedTimestamp=2023-06-14T17:28:00Z",
+                    "ruleId": "ur_ttp_GCP__MassSecretDeletion",
+                    "alertState": "ALERTING",
+                    "ruleType": "MULTI_EVENT",
+                    "detectionFields": [
+                        {
+                            "key": "resource",
+                            "value": "secretmanager.googleapis.com"
+                        },
+                        {
+                            "key": "principaluser",
+                            "value": "secret@google.com",
+                            "source": "udm.principal.user.email_addresses"
+                        }
+                    ],
+                    "ruleLabels": [
+                        {
+                            "key": "rule_name",
+                            "value": "GCP Secret Manager Mass Deletion"
+                        },
+                        {
+                            "key": "false_positives",
+                            "value": "This may be common behavior in dev, testing, or deprecated projects."
+                        }
+                    ],
+                    "outcomes": [
+                        {
+                            "key": "risk_score",
+                            "value": "35"
+                        },
+                        {
+                            "key": "resource_name",
+                            "value": "gsm_secret_1, gsm_secret_10",
+                            "source": "udm.target.resource.name"
+                        },
+                        {
+                            "key": "ip",
+                            "value": "0.0.0.1",
+                            "source": "udm.principal.ip"
+                        }
+                    ],
+                    "ruleSet": "9d7537ae-0ae2-0000-b5e2-507c00008ae9",
+                    "ruleSetDisplayName": "Service Disruption",
+                    "riskScore": 35
+                }
+            ],
+            "createdTime": "2023-06-14T18:38:30.569526Z",
+            "lastUpdatedTime": "2023-06-14T18:38:30.569526Z",
+            "id": "de_7a9d256b-222a-2c88-799c-bd24d600f6fb",
+            "timeWindow": {
+                "startTime": "2023-06-14T17:18:00Z",
+                "endTime": "2023-06-14T17:28:00Z"
+            },
+            "collectionElements": [
+                {
+                    "references": [
+                        {
+                            "event": {
+                                "metadata": {
+                                    "eventTimestamp": "2023-06-14T17:27:39.239875241Z",
+                                    "collectedTimestamp": "2023-06-14T17:27:42.956025244Z",
+                                    "eventType": "RESOURCE_DELETION",
+                                    "vendorName": "Google Cloud Platform",
+                                    "productName": "Google Cloud Platform",
+                                    "productEventType": "google.cloud.secretmanager.v1.SecretManagerService.DeleteSecret",
+                                    "urlBackToProduct": "url_0000",
+                                    "ingestedTimestamp": "2023-06-14T17:27:44.382729Z",
+                                    "id": "000000000000000000000001",
+                                    "logType": "GCP_CLOUD_AUDIT"
+                                },
+                                "principal": {
+                                    "user": {
+                                        "emailAddresses": [
+                                            "secret-migration@test-is-00001.iam.gserviceaccount.com"
+                                        ],
+                                        "productObjectId": "000000000000000000000001",
+                                        "attribute": {
+                                            "roles": [
+                                                {
+                                                    "name": "roles/secretmanager.admin",
+                                                    "type": "SERVICE_ACCOUNT"
+                                                }
+                                            ],
+                                            "permissions": [
+                                                {
+                                                    "name": "secretmanager.secrets.delete",
+                                                    "type": "ADMIN_WRITE"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "ip": [
+                                        "0.0.0.1"
+                                    ],
+                                    "location": {
+                                        "state": "State",
+                                        "countryOrRegion": "Country",
+                                        "regionLatitude": 10.000000,
+                                        "regionLongitude": 10.000000,
+                                        "regionCoordinates": {
+                                            "latitude": 10.000000000000000,
+                                            "longitude": 10.0000000
+                                        }
+                                    },
+                                    "resource": {
+                                        "attribute": {
+                                            "cloud": {
+                                                "project": {
+                                                    "name": "projects/0000000/secrets/gsm_secret_1",
+                                                    "resourceSubtype": "secretmanager.googleapis.com/Secret"
+                                                }
+                                            },
+                                            "labels": [
+                                                {
+                                                    "key": "request_type",
+                                                    "value": "type.googleapis.com/google.cloud.secretmanager.v1.DeleteSecretRequest"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "labels": [
+                                        {
+                                            "key": "request_attributes_time",
+                                            "value": "2023-06-14T17:27:39.245079752Z"
+                                        }
+                                    ],
+                                    "ipGeoArtifact": [
+                                        {
+                                            "ip": "0.0.0.1",
+                                            "location": {
+                                                "state": "Gujarat",
+                                                "countryOrRegion": "India",
+                                                "regionLatitude": 10.000000,
+                                                "regionLongitude": 10.000000,
+                                                "regionCoordinates": {
+                                                    "latitude": 10.000000000000000,
+                                                    "longitude": 10.0000000
+                                                }
+                                            },
+                                            "network": {
+                                                "asn": "00001",
+                                                "dnsDomain": "broad_band.in",
+                                                "carrierName": "broad band ltd.",
+                                                "organizationName": "broad band services limited"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "target": {
+                                    "application": "secretmanager.googleapis.com",
+                                    "resource": {
+                                        "name": "gsm_secret_1",
+                                        "attribute": {
+                                            "labels": [
+                                                {
+                                                    "key": "request_name",
+                                                    "value": "projects/test-is-00001/secrets/gsm_secret_1"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "cloud": {
+                                        "environment": "GOOGLE_CLOUD_PLATFORM",
+                                        "project": {
+                                            "name": "test-is-00001"
+                                        }
+                                    }
+                                },
+                                "securityResult": [
+                                    {
+                                        "categoryDetails": [
+                                            "projects/test-is-00001/logs/cloudaudit.googleapis.com"
+                                        ],
+                                        "action": [
+                                            "ALLOW"
+                                        ],
+                                        "severity": "INFORMATIONAL",
+                                        "detectionFields": [
+                                            {
+                                                "key": "resource_name",
+                                                "value": "projects/0000001/secrets/gsm_secret_1"
+                                            },
+                                            {
+                                                "key": "key_id",
+                                                "value": "000000000000000000000001"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "network": {
+                                    "http": {
+                                        "userAgent": "grpc-python-asyncio/1.51.3 grpc-c/29.0.0 (windows; chttp2),gzip(gfe)"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "label": "e"
+                }
+            ],
+            "detectionTime": "2023-06-14T17:28:00Z",
+            "tags": [
+                "TA0040",
+                "T1485"
+            ]
+        }
+    ]
+}
