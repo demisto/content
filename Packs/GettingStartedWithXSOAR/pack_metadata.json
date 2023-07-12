@@ -12,9 +12,8 @@
     "categories": [
         "Utilities"
     ],
-    "tags": ["Getting Started with XSOAR",
-        "Use Case"],
-    "useCases": ["Getting Started with XSOAR"],
+    "tags": ["Getting Started", "Simulation", "New", "Trending","Plug & Enrich"],
+    "useCases": ["Case Management"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
@@ -32,7 +31,7 @@
             "mandatory": true,
             "display_name": "Sample Incident Generator"
         },
-        "Case Management": {
+        "CaseManagement-Generic": {
             "mandatory": true,
             "display_name": "CaseManagement-Generic"
         },
