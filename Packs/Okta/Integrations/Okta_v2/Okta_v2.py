@@ -298,12 +298,15 @@ class Client(BaseClient):
         response['factorResult'] = "TIMEOUT"
         return response
 
-    def search(self, term, limit):
+    def search(self, term, limit, advanced_search):
         uri = "users"
-        query_params = {
-            'search': encode_string_results(term),
-            'limit': limit
-        }
+        query_params = assign_params(
+            limit=limit,
+            q=encode_string_results(term) if not advanced_search else None,
+            search=urllib.parse.quote(advanced_search)
+            # search='profile.department%20eq%20%22Engineering%22'
+        )
+        demisto.log(f'{query_params}')
         return self._http_request(
             method='GET',
             url_suffix=uri,
@@ -891,7 +894,8 @@ def search_command(client, args):
     term = args.get('term')
     limit = args.get('limit') or SEARCH_LIMIT
     verbose = args.get('verbose')
-    raw_response = client.search(term, limit)
+    advanced_search = args.get('advanced_search', '')
+    raw_response = client.search(term, limit, advanced_search)
 
     if raw_response and len(raw_response) > 0:
         users_context = client.get_users_context(raw_response)
