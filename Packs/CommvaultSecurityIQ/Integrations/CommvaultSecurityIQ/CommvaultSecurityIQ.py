@@ -10,6 +10,7 @@ from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from typing import Any, Dict, List, Optional, Tuple
 
+import logging
 import dateparser
 import requests
 import syslogmp
@@ -889,7 +890,7 @@ class Client(BaseClient):
         :param job_id: Job Id
         :return: list
         """
-        self.job_details_body.get("advOptions") = {
+        self.job_details_body["advOptions"] = {
             "advConfig": {
                 "browseAdvancedConfigBrowseByJob": {"jobId": int(job_id)}
             }
