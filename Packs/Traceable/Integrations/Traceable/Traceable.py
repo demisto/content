@@ -588,7 +588,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     incidents = []
     items = client.get_threat_events(_last_fetch, datetime.now())
     demisto.info(f"Retrieved {len(items)} records.")
-    demisto.debug(f"First Incident: {json.dumps(items[0], indent=3)}")
+    if len(items) > 0:
+        demisto.debug(f"First Incident: {json.dumps(items[0], indent=3)}")
     for item in items:
         incident_created_time: datetime = datetime.fromtimestamp(
             item["timestamp"]["value"] / 1000
