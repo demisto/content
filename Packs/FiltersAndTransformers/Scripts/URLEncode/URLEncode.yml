@@ -25,7 +25,7 @@ tags:
 - transformer
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.11.59581
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - URLEncode-Test
 fromversion: 5.0.0
