@@ -794,7 +794,7 @@ script:
     - description: Password to test.
       name: password
       required: true
-    description: Test credentials to see if valid
+    description: Test if credentials are valid.
     name: ad-test-credentials
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
