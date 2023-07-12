@@ -354,7 +354,7 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
             full_url=f'https://management.azure.com/subscriptions?api-version={API_VERSION}')
 
     def list_resource_groups_request(self, subscription_id: str | None,
-                                     filter_by_tag: str | None, limit: int) -> Dict:
+                                     filter_by_tag: str | None, limit: int | None) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourcegroups?'
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
@@ -382,7 +382,7 @@ def storage_account_list(client: ASClient, params: Dict, args: Dict) -> CommandR
     response = client.storage_account_list_request(account_name=account_name,
                                                    resource_group_name=resource_group_name,
                                                    subscription_id=subscription_id)
-    accounts = response.get('value', [response])
+    accounts = response.get('value', [])
 
     readable_output = []
     for account in accounts:
@@ -704,7 +704,7 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
     response = client.storage_blob_containers_list_request(subscription_id=subscription_id,
                                                            resource_group_name=resource_group_name,
                                                            args=args)
-    containers = response.get('value', [response])
+    containers = response.get('value', [])
 
     readable_output = []
     for container in containers:
@@ -781,7 +781,7 @@ def storage_subscriptions_list(client: ASClient) -> CommandResults:
         CommandResults: The command results in MD table and context data.
     """
     res = client.list_subscriptions_request()
-    subscriptions = res.get('value', [res])
+    subscriptions = res.get('value', [])
 
     return CommandResults(
         outputs_prefix='AzureStorage.Subscription',
@@ -815,7 +815,7 @@ def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> C
 
     response = client.list_resource_groups_request(subscription_id=subscription_id,
                                                    filter_by_tag=filter_by_tag, limit=limit)
-    data_from_response = response.get('value', [response])
+    data_from_response = response.get('value', [])
 
     readable_output = tableToMarkdown('Resource Groups List',
                                       data_from_response,

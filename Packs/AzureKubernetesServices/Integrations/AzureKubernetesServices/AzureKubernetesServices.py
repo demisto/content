@@ -209,7 +209,7 @@ def ks_subscriptions_list(client: AKSClient) -> CommandResults:
         CommandResults: The command results in MD table and context data.
     """
     res = client.list_subscriptions_request()
-    subscriptions = res.get('value', '[res]')
+    subscriptions = res.get('value', [])
 
     return CommandResults(
         outputs_prefix='AzureKS.Subscription',
@@ -243,7 +243,7 @@ def ks_resource_group_list(client: AKSClient, params: Dict, args: Dict) -> Comma
 
     response = client.list_resource_groups_request(subscription_id=subscription_id,
                                                    filter_by_tag=filter_by_tag, limit=limit)
-    data_from_response = response.get('value', [response])
+    data_from_response = response.get('value', [])
 
     readable_output = tableToMarkdown('Resource Groups List',
                                       data_from_response,

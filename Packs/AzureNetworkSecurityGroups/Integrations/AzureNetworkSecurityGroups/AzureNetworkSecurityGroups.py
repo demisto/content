@@ -124,7 +124,7 @@ and resource group "{resource_group_name}" was not found.')
 
     @logger
     def list_resource_groups_request(self, subscription_id: str | None,
-                                     filter_by_tag: str | None, limit: str | int | None) -> Dict:
+                                     filter_by_tag: str | None, limit: int | None) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourcegroups?'
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
@@ -213,7 +213,7 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
     security_group_name = args.get('security_group_name')
     security_groups = argToList(security_group_name)
     rules_limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    rules_offset = int(args.get('offset', '1')) - 1  # As offset will start at 1
+    rules_offset = (arg_to_number(args.get('offset', '1')) or 1) - 1  # As offset will start at 1
     rules: List = []
 
     for group in security_groups:
@@ -441,7 +441,7 @@ def nsg_subscriptions_list_command(client: AzureNSGClient) -> CommandResults:
         CommandResults: The command results in MD table and context data.
     """
     res = client.list_subscriptions_request()
-    subscriptions = res.get('value', [res])
+    subscriptions = res.get('value', [])
 
     return CommandResults(
         outputs_prefix='AzureNSG.Subscription',
@@ -476,7 +476,7 @@ def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: 
 
     response = client.list_resource_groups_request(subscription_id=subscription_id,
                                                    filter_by_tag=filter_by_tag, limit=limit)
-    data_from_response = response.get('value', [response])
+    data_from_response = response.get('value', [])
 
     readable_output = tableToMarkdown('Resource Groups List',
                                       data_from_response,
