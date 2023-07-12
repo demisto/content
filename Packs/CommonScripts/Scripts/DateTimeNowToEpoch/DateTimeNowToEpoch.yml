@@ -5,7 +5,7 @@ name: DateTimeNowToEpoch
 script: ''
 type: python
 tags: []
-comment: Returns the current datetime as an epoch value for timestamp comparisons
+comment: Returns the current datetime as an epoch value for use in timestamp comparisons
 enabled: true
 scripttarget: 0
 subtype: python3
