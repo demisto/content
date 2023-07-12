@@ -3572,7 +3572,7 @@ script:
       secret: false
     - default: false
       description: The GitHub repository name.
-      isArray: true
+      isArray: false
       name: repository
       required: false
       secret: false
@@ -3584,9 +3584,14 @@ script:
       secret: false
     - default: false
       description: The name of your workflow file.
-      isArray: true
+      isArray: false
       name: workflow
       required: true
+      secret: false
+    - default: false
+      description: The inputs for the workflow.
+      name: inputs
+      required: false
       secret: false
     deprecated: false
     description: Triggers a GitHub workflow on a given repository and workflow.
