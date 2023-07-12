@@ -59,9 +59,16 @@ def main():
 
     # remove duplicates
     res = [*set(res)]
-    for i in res:
-        demisto.results(i)
-    # return_results(str1)
+    my_dict = {
+        'CommonElements': res
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': json.dumps(my_dict),
+        'HumanReadable': 'Set comparisons in Context.',
+        'EntryContext': my_dict
+    })
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
