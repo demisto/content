@@ -145,10 +145,10 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
+    api_key = params.get('api_key', {}).get('password')
     base_url = urljoin(params.get('url'), '/api/v1')
     verify_certificate = not params.get('insecure', False)
-    next_run = None
+    max_fetch = params.get('max_fetch', 1000)
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
