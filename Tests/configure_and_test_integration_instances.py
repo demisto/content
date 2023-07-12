@@ -137,7 +137,7 @@ class XSOARServer(Server):
     def __init__(self, internal_ip, user_name, password, build_number=''):
         super().__init__()
         self.__client = None
-        self.internal_ip = internal_ip
+        self.internal_ip: str = internal_ip
         self.user_name = user_name
         self.password = password
         self.build_number = build_number
@@ -158,7 +158,7 @@ class XSOARServer(Server):
                                                  username=self.user_name,
                                                  password=self.password)
         custom_user_agent = self.get_custom_user_agent()
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        logging.debug(f"Setting user agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
