@@ -140,7 +140,7 @@ script:
     - contextPath: CommvaultSecurityIQ.Response
       description: Response indicating whether successfully disabled user or not.
       type: string
-  dockerimage: devtesting/commvault:1.0.0.1685633254
+  dockerimage: devdemisto/commvault:1.0.0.65041
   feed: false
   isfetch: true
   longRunning: true
