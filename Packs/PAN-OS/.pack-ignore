@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:Panorama.yml]
-ignore=IN136,IN145,IN124
+ignore=IN136,IN124
 
 [file:README.md]
 ignore=RM102,RM106
@@ -40,17 +40,17 @@ finanical
 ransomeware
 pbf
 ampersand
-CustomUrlCategory
-SourceDevice
-SecurityProfileGroup
-SecurityProfile
-DestinationDevice
-LogForwardingProfile
-NegateSource
-ICMPUnreachable
-NegateDestination
-GroupTag
-SourceUser
+customurlcategory
+sourcedevice
+securityprofilegroup
+securityprofile
+destinationdevice
+logforwardingprofile
+negatesource
+icmpunreachable
+negatedestination
+grouptag
+sourceuser
 
 [file:PanoramaCVECoverage.yml]
 ignore=BA124

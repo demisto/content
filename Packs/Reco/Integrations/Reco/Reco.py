@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import json
 from datetime import datetime
 import dateutil.parser
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional, Tuple, List
 

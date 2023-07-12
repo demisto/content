@@ -10,11 +10,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
 display: Censys v2
@@ -22,25 +20,17 @@ name: CensysV2
 script:
   commands:
   - arguments:
-    - default: false
-      description: The IP address of the requested host.
-      isArray: false
+    - description: The IP address of the requested host.
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The index from which to retrieve data.
-      isArray: false
       name: index
       predefined:
       - ipv4
       - certificates
       required: true
-      secret: false
-    deprecated: false
     description: Returns detailed information for an IP address or SHA256 within the specified index.
-    execution: false
     name: cen-view
     outputs:
     - contextPath: Censys.View.autonomous_system.asn
@@ -296,52 +286,28 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - default: false
-      description: Query used to search for hosts with matching attributes. Uses the Censys Search Language.
-      isArray: false
+    - description: Query used to search for hosts with matching attributes. Uses the Censys Search Language.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of hits to return in each response (minimum of 0, maximum of 100). (Applies for the host search.)
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The index from which to retrieve data.
-      isArray: false
       name: index
       predefined:
       - ipv4
       - certificates
       required: true
-      secret: false
-    - default: false
-      description: The fields to return. (Applies for the certificates search.)
-      isArray: false
+    - description: The fields to return. (Applies for the certificates search.)
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page to return. (Applies for the certificates search.)
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Return previews of hosts matching a specified search query or a list of certificates that match the given query.
-    execution: false
     name: cen-search
     outputs:
     - contextPath: Censys.Search.autonomous_system.asn
@@ -414,10 +380,6 @@ script:
       description: Distinguished name of the entity that has signed and issued the certificate.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

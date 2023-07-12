@@ -6,6 +6,7 @@ import traceback
 import requests
 import re
 import dateparser
+import urllib3
 
 EMAIL_ADDRESS_FIELD = 'email'
 EMPLOYEE_ID_FIELD = 'employeeid'
@@ -40,7 +41,7 @@ DEACTIVATE_AD_EVENT_TYPE = 'IAM - AD User Deactivation'
 DEFAULT_INCIDENT_TYPE = 'IAM - Sync User'
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):

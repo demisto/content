@@ -19,12 +19,10 @@ configuration:
   name: insecure
   defaultvalue: 'false'
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
-  required: false
 script:
   commands:
   - name: pam360-create-resource
@@ -354,7 +352,6 @@ script:
     - contextPath: PAM360.Account.operation.result.status
       description: Status of the operation.
       type: string
-  isfetch: false
   runonce: false
   script: "-"
   type: python

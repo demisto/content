@@ -12,14 +12,12 @@ configuration:
   required: true
   type: 0
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
   section: Connect
 - display: API Key
   name: token
-  required: false
   type: 4
   fromlicense: encrypted
   hidden: true
@@ -27,13 +25,11 @@ configuration:
 
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -44,17 +40,11 @@ defaultEnabled: true
 script:
   commands:
   - arguments:
-    - default: false
-      description: SHA256 hash to check
-      isArray: false
+    - description: SHA256 hash to check
       name: sha256
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves results for a file hash using WildFire.
-    execution: false
     name: internal-wildfire-get-report
-  isfetch: false
   runonce: false
   script: '-'
   type: python

@@ -414,6 +414,7 @@ Required permissions: Agents.
 | brand_id               | Enterprise only. The ID of the brand this ticket is associated with. | Optional | 
 | comment                | A comment to add to the ticket. | Optional | 
 | html_comment           | An HTML comment to add to the ticket. | Optional | 
+| public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
@@ -480,6 +481,7 @@ Required permissions: Agents.
 | collaborators | Users to add as CCs when creating a ticket. | Optional | 
 | comment | A comment to add to the ticket. | Optional | 
 | html_comment | An HTML comment to add to the ticket. | Optional | 
+| public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional | 
 | recipient | The original recipient email address of the ticket. | Optional | 
 | status | The state of the ticket. Possible values are: open, pending, hold, solved, closed. | Optional | 
 | priority | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. | Optional | 

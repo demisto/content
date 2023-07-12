@@ -25,11 +25,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -85,7 +83,7 @@ script:
       description: dmarc authentication result
       type: String
     - contextPath: GreatHorn.Message.spf
-      description: spf authentication result 
+      description: spf authentication result
       type: String
     - contextPath: GreatHorn.Message.contentHash
       description: Hash of email body conten
@@ -203,17 +201,14 @@ script:
     arguments:
     - name: fields
       isArray: true
-      description: The fields to include in the response. By default, all fields are
-        returned.
+      description: The fields to include in the response. By default, all fields are returned.
     - name: filters
       description: The criteria to use in filtering search results.  This should be input as a dictionary.
     - name: limit
-      description: The maximum number of entries to return per page of results. Default
-        is 10; max is 200.
+      description: The maximum number of entries to return per page of results. Default is 10; max is 200.
       defaultValue: "10"
     - name: offset
-      description: The zero-based offset of the first item in the collection. Default
-        is 0; max is 10000.
+      description: The zero-based offset of the first item in the collection. Default is 0; max is 10000.
     - name: sort
       description: The field to use in sorting results. Default is eventId
       defaultValue: eventId
@@ -222,8 +217,7 @@ script:
       predefined:
       - desc
       - asc
-      description: Indicates if the sort direction is ascending or descending. Default
-        is descending.
+      description: Indicates if the sort direction is ascending or descending. Default is descending.
       defaultValue: desc
     outputs:
     - contextPath: GreatHorn.Message.eventId
@@ -254,7 +248,7 @@ script:
       description: dmarc authentication result
       type: String
     - contextPath: GreatHorn.Message.spf
-      description: spf authentication result 
+      description: spf authentication result
       type: String
     - contextPath: GreatHorn.Message.contentHash
       description: Hash of email body conten
@@ -393,17 +387,14 @@ script:
       predefined:
       - "True"
       - "False"
-      description: If true, the banner will include a button enabling the end-user
-        to remove the banner. Default is True.
+      description: If true, the banner will include a button enabling the end-user to remove the banner. Default is True.
       defaultValue: "True"
     - name: message
       description: The text to display in the email's banner.
     - name: label
-      description: The name of the label to add. If the label name does not exist,
-        it will be created.
+      description: The name of the label to add. If the label name does not exist, it will be created.
     - name: location
-      description: The target location in the user's mailbox. If the location does
-        not exist, it will be created.
+      description: The target location in the user's mailbox. If the location does not exist, it will be created.
     outputs:
     - contextPath: GreatHorn.Remediation.action
       description: Remediation action requested to be taken on the event
@@ -412,10 +403,10 @@ script:
       description: The Greathorn event ID
       type: String
     - contextPath: GreatHorn.Remediation.reason
-      description: Details of error seen if any  
+      description: Details of error seen if any
       type: String
     - contextPath: GreatHorn.Remediation.success
-      description: Indication if the request was successful 
+      description: Indication if the request was successful
       type: Number
   - name: gh-revert-remediate-message
     description: Revert the specified remediation action on the given message

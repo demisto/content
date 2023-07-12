@@ -8,21 +8,18 @@ commonfields:
 configuration:
 - display: Return Errors
   name: with_error
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
   name: proxy_url
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -45,7 +42,6 @@ configuration:
   defaultvalue: '3'
   display: Rate Limit Retry Count
   name: rate_limit_retry_count
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -53,7 +49,6 @@ configuration:
   defaultvalue: '120'
   display: Rate Limit Wait Seconds
   name: rate_limit_wait_seconds
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -61,7 +56,6 @@ configuration:
   additionalinfo: "Whether Rate Limit errors should be supressed or not."
   defaultvalue: "false"
   name: rate_limit_errors_suppressed
-  required: false
   type: 8
   section: Collect
   advanced: true
@@ -71,26 +65,21 @@ name: Whois
 script:
   commands:
   - arguments:
-    - default: false
-      description: The domain to enrich.
+    - description: The domain to enrich.
       isArray: true
       name: query
       required: true
-      secret: false
     - name: recursive
       description: Whether to get the raw response from the whois servers recursively. Default value is True.
       defaultValue: true
     - name: verbose
       description: Whether to add the raw response as a dictionary to the context. Default value is False.
-      required: false
       defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Provides data enrichment for domains.
-    execution: false
     name: whois
     outputs:
     - contextPath: DBotScore.Score
@@ -240,13 +229,10 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
     - name: recursive
       description: Whether to get the raw response from the whois servers recursively. Default value is True.
       defaultValue: true
-    deprecated: false
     description: Provides data enrichment for domains.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Score
@@ -465,31 +451,16 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: 'The number of times to try when getting a Rate Limit response.'
-      isArray: false
+    - description: 'The number of times to try when getting a Rate Limit response.'
       defaultValue: 3
       name: rate_limit_retry_count
-      required: false
-      secret: false
-    - default: false
-      description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
-      isArray: false
+    - description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
       defaultValue: 120
       name: rate_limit_wait_seconds
-      required: false
-      secret: false
-    - default: false
-      description: 'Whether Rate Limit errors should be supressed or not.'
-      isArray: false
+    - description: 'Whether Rate Limit errors should be supressed or not.'
       defaultValue: 'false'
       name: rate_limit_errors_suppressed
-      required: false
-      secret: false
-    deprecated: false
     description: Provides data enrichment for ips.
-    execution: false
     name: ip
     outputs:
     - contextPath: Whois.IP.asn
@@ -604,10 +575,6 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
   dockerimage: demisto/ippysocks-py3:1.0.0.63627
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
