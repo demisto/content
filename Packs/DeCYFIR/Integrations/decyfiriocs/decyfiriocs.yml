@@ -102,7 +102,10 @@ script:
   subtype: python3
   type: python
   script: '-'
-  commands: []
+  commands:
+  - arguments: []
+    description: Gets indicators from the feed.
+    name: decyfir-get-indicators
 description: DeCYFIR API's provides External Threat Landscape Management insights.
 display: DeCYFIR Indicators & Threat Intelligence
 name: decyfiriocs
