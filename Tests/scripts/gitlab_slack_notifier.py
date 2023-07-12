@@ -183,7 +183,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     failed_jobs_or_workflow_title = {job_name.lower() for job_name in failed_jobs_names}
     failed_jobs_or_workflow_title.add(triggering_workflow_lower)
     for means_include_unittests_results in failed_jobs_or_workflow_title:
-        if any({substr in means_include_unittests_results for substr in check_unittests_substrings}):
+        if any(substr in means_include_unittests_results for substr in check_unittests_substrings):
             content_fields += unit_tests_results()
             break
 

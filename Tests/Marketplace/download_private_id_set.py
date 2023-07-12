@@ -1,6 +1,6 @@
-import os
 import json
 import argparse
+from pathlib import Path
 from Tests.Marketplace.marketplace_services import init_storage_client
 
 
@@ -41,24 +41,23 @@ def download_private_id_set_from_gcp(public_storage_bucket, storage_base_path):
         str: private ID set file full path.
     """
 
-    storage_id_set_path = os.path.join(storage_base_path, 'content/private_id_set.json') if storage_base_path else \
-        'content/private_id_set.json'
-    private_artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
-    private_id_set_path = f'{private_artifacts_path}/private_id_set.json'
+    storage_id_set_path = Path(storage_base_path or 'content', 'content/private_id_set.json')
+    private_artifacts_path = Path('/home/runner/work/content-private/content-private/content/artifacts')
+    private_id_set_path = private_artifacts_path / 'private_id_set.json'
 
-    if not os.path.exists(private_artifacts_path):
-        os.mkdir(private_artifacts_path)
+    if not private_artifacts_path.exists():
+        private_artifacts_path.mkdir(parents=True)
 
-    is_private_id_set_file_exist = id_set_file_exists_in_bucket(public_storage_bucket, storage_id_set_path)
+    is_private_id_set_file_exist = id_set_file_exists_in_bucket(public_storage_bucket, str(storage_id_set_path))
 
     if is_private_id_set_file_exist:
-        index_blob = public_storage_bucket.blob(storage_id_set_path)
-        index_blob.download_to_filename(private_id_set_path)
+        index_blob = public_storage_bucket.blob(str(storage_id_set_path))
+        index_blob.download_to_filename(str(private_id_set_path))
 
     else:
-        create_empty_id_set_in_artifacts(private_id_set_path)
+        create_empty_id_set_in_artifacts(str(private_id_set_path))
 
-    return private_id_set_path if os.path.exists(private_id_set_path) else ''
+    return private_id_set_path if private_id_set_path.exists() else ''
 
 
 def option_handler():

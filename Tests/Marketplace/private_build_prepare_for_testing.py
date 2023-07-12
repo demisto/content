@@ -1,5 +1,6 @@
 import argparse
 import os
+from pathlib import Path
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.private_build.upload_packs_private import extract_packs_artifacts
@@ -60,12 +61,12 @@ def upload_premium_pack_to_private_testing_bucket(premium_pack, private_testing_
 
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log')
-    packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
-    temp_dir = '/home/runner/work/content-private/content-private/content/temp-dir'
-    if not os.path.exists(packs_dir):
-        os.mkdir(packs_dir)
-    if not os.path.exists(temp_dir):
-        os.mkdir(temp_dir)
+    for path in (
+        Path('/home/runner/work/content-private/content-private/content/artifacts/packs'),
+        Path('/home/runner/work/content-private/content-private/content/temp-dir')
+    ):
+        path.mkdir(exist_ok=True)
+
     upload_config = option_handler()
     path_to_artifacts = upload_config.artifacts_path
     extract_destination_path = upload_config.extract_path

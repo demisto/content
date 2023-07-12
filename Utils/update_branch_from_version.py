@@ -121,8 +121,8 @@ def check_dockerimage45(yml_content, new_from_version):
 
     # check in integrations
     elif 'dockerimage45' in yml_content.get('script', {}) and \
-        parse_version(new_from_version) > parse_version(DOCKERIMAGE_45_TOP_VERSION):
-            del yml_content['script']['dockerimage45']
+            parse_version(new_from_version) > parse_version(DOCKERIMAGE_45_TOP_VERSION):
+        del yml_content['script']['dockerimage45']
 
 
 def edit_json_content_entity_directory(new_from_version, dir_path):

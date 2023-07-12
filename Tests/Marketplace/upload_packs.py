@@ -89,11 +89,11 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
     index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of the blob
 
-    if not os.path.exists(extract_destination_path):
-        os.mkdir(extract_destination_path)
+    if not Path(extract_destination_path).exists():
+        Path(extract_destination_path).mkdir(parents=True)
 
     if not index_blob.exists():
-        os.mkdir(index_folder_path)
+        Path(index_folder_path).mkdir(parents=True)
         logging.error(f"{storage_bucket.name} index blob does not exists")
         return index_folder_path, index_blob, index_generation
 
@@ -168,7 +168,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         # Copy new files and add metadata for latest version
         for d in os.scandir(pack_path):
             if not os.path.exists(index_pack_path):
-                os.mkdir(index_pack_path)
+                Path(index_pack_path).mkdir()
                 logging.info(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
 
             shutil.copy(d.path, index_pack_path)

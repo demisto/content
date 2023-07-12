@@ -1515,7 +1515,7 @@ class Pack:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
             aggregation_str = f"[{', '.join(str(lv) for lv in found_versions if lv > changelog_latest_rn_version)}]" \
-                                  f" => {latest_release_notes_version_str}"
+                f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
@@ -1603,12 +1603,12 @@ class Pack:
             changelog: dict = {}
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version, changelog_latest_rn = \
-                        self.get_changelog_latest_rn(changelog_index_path)
+                    self.get_changelog_latest_rn(changelog_index_path)
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
                     release_notes_lines, latest_release_notes, new_release_notes_versions = \
-                            self.get_release_notes_lines(
+                        self.get_release_notes_lines(
                             release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
@@ -2076,7 +2076,7 @@ class Pack:
 
                     # reputation in old format aren't supported in 6.0.0 server version
                     if current_directory == PackFolders.INDICATOR_TYPES.value \
-                                and not fnmatch.fnmatch(pack_file_name, 'reputation-*.json'):
+                            and not fnmatch.fnmatch(pack_file_name, 'reputation-*.json'):
                         os.remove(pack_file_path)
                         logging.info(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
                         continue
@@ -2453,7 +2453,7 @@ class Pack:
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
 
                     content_items_result[content_item_key] = \
-                            content_items_result.get(content_item_key, []) + folder_collected_items
+                        content_items_result.get(content_item_key, []) + folder_collected_items
 
             logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
@@ -3875,7 +3875,6 @@ def init_storage_client(service_account=None):
         credentials, project = google.auth.default()
         storage_client = storage.Client(credentials=credentials, project=project)
         logging.info("Created gcp private account")
-
 
     return storage_client
 

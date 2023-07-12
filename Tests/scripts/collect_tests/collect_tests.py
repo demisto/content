@@ -520,13 +520,13 @@ class TestCollector(ABC):
                         f'collecting to make sure it is installed properly.')
         except IncompatibleMarketplaceException:
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
-                    MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
+                MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
 
             # collect only to upload if:
             # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
             # 2. allow_incompatible_marketplace=False, if True, then should be also to install
             if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
-                        not allow_incompatible_marketplace:
+                    not allow_incompatible_marketplace:
                 collect_only_to_upload = True
 
             # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
@@ -542,8 +542,8 @@ class TestCollector(ABC):
             collect_only_to_upload = True
 
         version_range = content_item_range \
-                if pack_metadata.version_range.is_default \
-                else (pack_metadata.version_range | content_item_range)
+            if pack_metadata.version_range.is_default \
+            else (pack_metadata.version_range | content_item_range)
 
         return CollectionResult(
             test=None,
@@ -1374,7 +1374,7 @@ if __name__ == '__main__':
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
     else:
-        match (nightly, marketplace):
+        match(nightly, marketplace):
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
             case True, MarketplaceVersions.XSOAR:

@@ -1,3 +1,4 @@
+from pathlib import Path
 import time
 import os
 import sys
@@ -169,7 +170,8 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     extracted_dummy_index_path = 'dummy_index'
     dummy_index_json_path = os.path.join(extracted_dummy_index_path, 'index', 'index.json')
     dummy_index_blob.download_to_filename(downloaded_dummy_index_path)
-    os.mkdir(extracted_dummy_index_path)
+    Path(extracted_dummy_index_path).mkdir()
+
     if os.path.exists(downloaded_dummy_index_path):
         with ZipFile(downloaded_dummy_index_path, 'r') as index_zip:
             index_zip.extractall(extracted_dummy_index_path)

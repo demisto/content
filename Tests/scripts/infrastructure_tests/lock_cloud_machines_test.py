@@ -46,7 +46,6 @@ class MockResponse:
 
 
 def test_get_my_place_in_the_queue(mocker):
-
     """
     given:  The job id .
     when:   checking the place in teh queue.
@@ -65,7 +64,6 @@ def test_get_my_place_in_the_queue(mocker):
 
 
 def test_get_my_place_in_the_queue_exception(mocker):
-
     """
     given:  The job id.
     when:   checking the place in teh queue and its not existing in the queue.

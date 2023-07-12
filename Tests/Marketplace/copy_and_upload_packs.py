@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import sys
 import argparse
 import shutil
@@ -251,7 +252,7 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
     build_index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
 
     if not os.path.exists(extract_destination_path):
-        os.mkdir(extract_destination_path)
+        Path(extract_destination_path).mkdir()
 
     if not build_index_blob.exists():
         logging.error(f"No build index was found in path: {build_index_storage_path}")
@@ -326,7 +327,8 @@ def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
     error_str = "Mismatch in Prepare Content successful packs and Upload successful packs\n"
     error_str += f"Packs not copied: {', '.join(not_uploaded)}\n" if not_uploaded else ""
     error_str += f"Packs mistakenly copied: {', '.join(mistakenly_uploaded)}\n" if mistakenly_uploaded else ""
-    assert not not_uploaded and not mistakenly_uploaded, error_str
+    assert not not_uploaded, error_str
+    assert not mistakenly_uploaded, error_str
 
 
 def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict,

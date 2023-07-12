@@ -235,11 +235,7 @@ def find_malformed_pack_id(body: str) -> list:
     if body:
         with contextlib.suppress(json.JSONDecodeError):
             response_info = json.loads(body)
-            if error_info := response_info.get('error'):
-                errors_info = [error_info]
-            else:
-                # the errors are returned as a list of error
-                errors_info = response_info.get('errors', [])
+            errors_info = [error_info] if (error_info := response_info.get("error")) else response_info.get("errors", [])
             malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
             for error in errors_info:
                 if 'pack id: ' in error:

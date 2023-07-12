@@ -2,6 +2,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 from os import getenv
 from Tests.scripts.utils import logging_wrapper as logging
+import sys
 
 
 NIGHTLY_JOBS = [
@@ -96,7 +97,7 @@ def main():
             should_fail = True
 
     if should_fail:
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == '__main__':

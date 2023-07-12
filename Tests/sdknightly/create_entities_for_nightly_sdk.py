@@ -57,10 +57,10 @@ def create_layout(path: Path, layout_name: str) -> str:
     with open(layout_path_sample) as stream:
         layout = json.load(stream)
     dest_layout = path / 'Layouts'
-    
+
     if not dest_layout.is_dir():
         dest_layout.mkdir(parents=True)
-        
+
     layout.update({
         'id': layout_name,
         'name': layout_name

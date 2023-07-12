@@ -758,10 +758,10 @@ class TestHelperFunctions:
                - Assert `Integrations` directory was not deleted from pack.
 
        """
-        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test')
-        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
-        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
-        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks/NonCircleTests')
+        Path('Tests/Marketplace/Tests/test_data/pack_to_test').mkdir()
+        Path('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks').mkdir()
+        Path('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations').mkdir()
+        Path('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks/NonCircleTests').mkdir()
         test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test')
         test_pack.remove_unwanted_files()
         assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
@@ -2528,7 +2528,7 @@ class TestReleaseNotes:
 
         """
         rn_dir = f'{tmpdir}/ReleaseNotes'
-        os.mkdir(rn_dir)
+        Path(rn_dir).mkdir()
         create_rn_file(rn_dir, '1_0_1', 'some RN to see it is filtered by its extension')
         create_rn_config_file(rn_dir, '1_0_2', {'breakingChanges': True})
         create_rn_config_file(rn_dir, '1_0_3', {'breakingChanges': True, 'breakingChangesNotes': 'this is BC'})
@@ -2573,7 +2573,7 @@ class TestReleaseNotes:
         - Ensure expected results are returned.
         """
         rn_dir: str = f'{tmpdir}/ReleaseNotes'
-        os.mkdir(rn_dir)
+        Path(rn_dir).mkdir()
         create_rn_file(rn_dir, '1_0_1', 'txt1')
         create_rn_file(rn_dir, '1_0_2', 'txt2')
         assert Pack._get_release_notes_concat_str(rn_dir, ['1_0_1.md', '1_0_2.md']) == '\ntxt1\ntxt2'
@@ -2604,7 +2604,7 @@ class TestReleaseNotes:
         - Ensure expected test is returned
         """
         rn_dir: str = f'{tmpdir}/ReleaseNotes'
-        os.mkdir(rn_dir)
+        Path(rn_dir).mkdir()
         create_rn_file(rn_dir, '1_0_2', 'no bc1')
         create_rn_file(rn_dir, '1_0_6', 'no bc2')
         text_of_bc_versions: list[str] = ['txt1', 'txt2']
@@ -2647,7 +2647,7 @@ class TestReleaseNotes:
         - Ensure expected text is returned
         """
         rn_dir: str = f'{tmpdir}/ReleaseNotes'
-        os.mkdir(rn_dir)
+        Path(rn_dir).mkdir()
         create_rn_file(rn_dir, '1_0_2', 'bc notes without bc text')
         create_rn_file(rn_dir, '1_0_6', 'RN for 1_0_6')
         create_rn_config_file(rn_dir, '1_0_2', {'breakingChanges': True})
@@ -2675,7 +2675,7 @@ class TestReleaseNotes:
           f) Entry with breaking changes, changes to entry without BC text.
        """
         rn_dir = f'{tmpdir}/ReleaseNotes'
-        os.mkdir(rn_dir)
+        Path(rn_dir).mkdir()
         for i in range(17, 26):
             create_rn_file(rn_dir, f'1.12.{i}', f'RN of 1.12.{i}')
         create_rn_config_file(rn_dir, '1_12_20', {'breakingChanges': True})
