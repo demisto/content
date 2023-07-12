@@ -495,7 +495,6 @@ script:
       - person
       - computer
       - group
-      defaultValue: person
     - name: attributes
       description: CSV list of attributes to include in the results, in addition to the default attributes.
     - defaultValue: '180'
