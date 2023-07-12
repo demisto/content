@@ -625,7 +625,7 @@ def get_private_packs(private_index_path: str, pack_names: set = None,
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
-                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json")) as metadata_file:
+                with Path(extract_destination_path, pack_id, "pack_metadata.json").open() as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
                 private_packs.append({

@@ -41,7 +41,7 @@ def download_private_id_set_from_gcp(public_storage_bucket, storage_base_path):
         str: private ID set file full path.
     """
 
-    storage_id_set_path = Path(storage_base_path or 'content', 'content/private_id_set.json')
+    storage_id_set_path = Path(storage_base_path or 'content', 'private_id_set.json')
     private_artifacts_path = Path('/home/runner/work/content-private/content-private/content/artifacts')
     private_id_set_path = private_artifacts_path / 'private_id_set.json'
 

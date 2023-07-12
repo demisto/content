@@ -754,8 +754,6 @@ class TestUpdatedPrivatePacks:
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
         assert updated_private_packs[0] == "updated_pack"
-        assert updated_private_packs[0] != "first_non_updated_pack"
-        assert updated_private_packs[0] != "second_non_updated_pack"
 
     def test_is_private_packs_updated(self, mocker):
         """

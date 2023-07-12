@@ -1437,7 +1437,7 @@ class Pack:
             # and the value is not an aggregated release note
             if is_the_only_rn_in_block(release_notes_dir, version, changelog):
                 logging.info("The version is a key in the changelog file and by itself in the changelog block")
-                rn_lines = Path(os.path.join(release_notes_dir, rn_filename)).read_text()
+                rn_lines = Path(release_notes_dir, rn_filename).read_text()
                 modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
                 logging.debug(f"Cleaned release notes from: {rn_lines} to: {modified_versions_dict[version]}")
             else:
@@ -1478,7 +1478,7 @@ class Pack:
             current_version = underscore_file_name_to_dotted_version(rn_filename)
             # Catch all versions that are in the same block
             if lower_nearest_version < Version(current_version) <= higher_nearest_version:
-                rn_lines = Path(os.path.join(release_notes_dir, rn_filename)).read_text()
+                rn_lines = Path(release_notes_dir, rn_filename).read_text()
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
         return same_block_versions_dict, str(higher_nearest_version)
 
@@ -1502,7 +1502,7 @@ class Pack:
 
             # Aggregate all rn files that are bigger than what we have in the changelog file
             if Version(version) > changelog_latest_rn_version:
-                rn_lines = Path(os.path.join(release_notes_dir, filename)).read_text()
+                rn_lines = Path(release_notes_dir, filename).read_text()
                 pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
 
             found_versions.append(Version(version))
