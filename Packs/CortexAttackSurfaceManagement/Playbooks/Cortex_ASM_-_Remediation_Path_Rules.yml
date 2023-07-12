@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex ASM - Remediation Path Rules
-description: This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.
+description: This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ASM - Decision" sub-playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -73,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 405
+          "y": 505
         }
       }
     note: false
@@ -116,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 575
+          "y": 675
         }
       }
     note: false
@@ -180,7 +180,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 750
+          "y": 850
         }
       }
     note: false
@@ -208,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1855
+          "y": 1955
         }
       }
     note: false
@@ -398,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 230
+          "y": 330
         }
       }
     note: false
@@ -558,7 +558,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "34"
     scriptarguments:
       key:
         simple: AutoRemediationRequirements
@@ -569,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 45
+          "x": -520,
+          "y": 0
         }
       }
     note: false
@@ -606,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": -140
+          "x": -60,
+          "y": 0
         }
       }
     note: false
@@ -651,7 +651,7 @@ tasks:
       {
         "position": {
           "x": -410,
-          "y": 1350
+          "y": 1450
         }
       }
     note: false
@@ -696,7 +696,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 910
+          "y": 1010
         }
       }
     note: false
@@ -800,7 +800,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 1120
+          "y": 1220
         }
       }
     note: false
@@ -837,7 +837,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 1350
+          "y": 1450
         }
       }
     note: false
@@ -874,7 +874,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1350
+          "y": 1450
         }
       }
     note: false
@@ -911,7 +911,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 1350
+          "y": 1450
         }
       }
     note: false
@@ -948,7 +948,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 1350
+          "y": 1450
         }
       }
     note: false
@@ -981,7 +981,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1530
+          "y": 1630
         }
       }
     note: false
@@ -1021,7 +1021,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1670
+          "y": 1770
         }
       }
     note: false
@@ -1051,8 +1051,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": -520,
           "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d8b2e7ac-30c2-48da-8760-7af04e1b19ee
+    type: playbook
+    task:
+      id: d8b2e7ac-30c2-48da-8760-7af04e1b19ee
+      version: -1
+      name: Cortex ASM - Remediation Objectives
+      playbookName: Cortex ASM - Remediation Objectives
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      RemotePort:
+        complex:
+          root: alert
+          accessor: remoteport
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -520,
+          "y": 160
         }
       }
     note: false
@@ -1070,9 +1112,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2390,
-        "width": 2110,
-        "x": -410,
+        "height": 2490,
+        "width": 2220,
+        "x": -520,
         "y": -470
       }
     }
