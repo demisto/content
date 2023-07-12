@@ -16,35 +16,28 @@ configuration:
   name: api_key
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - displaypassword: API Key
-  name:  credentials_api_key
-  required: false
+  name: credentials_api_key
   hiddenusername: true
-  type: 9 
+  type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Alerts statuses to import
   additionalinfo: All alerts with a status specified here will be imported as incidents.
   name: message_status
   defaultvalue: delivered (retroactive)
   type: 16
-  required: false
   options:
   - accepted
   - deleted
@@ -301,9 +294,8 @@ script:
       description: The alert unique ID
     description: Detailed information from any particular alert. Alerts more than 90 days old are not available.
   isfetch: true
-  runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No Test
 

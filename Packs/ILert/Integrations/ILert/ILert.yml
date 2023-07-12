@@ -14,11 +14,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Alert and notify users using iLert
 display: iLert
@@ -57,7 +55,7 @@ script:
       name: summary
     description: Resolves an existing event in iLert
     name: ilert-resolve-event
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

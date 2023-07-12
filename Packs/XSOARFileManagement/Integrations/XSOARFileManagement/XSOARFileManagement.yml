@@ -6,21 +6,17 @@ configuration:
 - additionalinfo: Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work.
   display: Server URL (e.g. https://example.net)
   name: url
-  required: false
   type: 0
 - display: ""
   displaypassword: XSOAR Server API Key
   hiddenusername: true
   name: creds_apikey
-  required: false
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: This integration uses the XSOAR API to perform basic but essentials actions on files.
 display: XSOAR File Management
@@ -83,7 +79,7 @@ script:
       required: true
     description: 'Rename a file. Warning: use this only if necessary, it''s HEAVY to run, this will delete and recreate the file with another name !'
     name: file-management-rename-file
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

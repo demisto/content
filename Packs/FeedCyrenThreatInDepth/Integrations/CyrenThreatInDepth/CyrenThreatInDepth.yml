@@ -11,7 +11,6 @@ configuration:
 - display: Indicator Reputation
   name: feedReputation
   type: 18
-  required: false
   options:
   - None
   - Good
@@ -35,7 +34,6 @@ configuration:
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
-  required: false
   options:
   - never
   - interval
@@ -45,22 +43,18 @@ configuration:
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
-  required: false
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: "true"
   display: Incremental Feed
   name: feedIncremental
-  required: false
   type: 8
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "240"
   type: 19
-  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
@@ -70,17 +64,14 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - defaultvalue: "true"
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - display: API Token
   name: apikey
@@ -101,15 +92,12 @@ configuration:
   name: max_indicators
   defaultvalue: "100000"
   type: 0
-  required: false
   additionalinfo: Maximum number of indicators to be fetched each time. The value cannot be higher than 100.000. If you provide a value higher than that it will be capped at 100.000.
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 script:
   script: "-"
@@ -119,32 +107,20 @@ script:
     - default: true
       defaultValue: "50"
       description: The maximum number of results to return.
-      isArray: false
       name: max_indicators
-      required: false
-      secret: false
-    deprecated: false
     description: Fetching Cyren Threat InDepth indicators
     execution: true
     name: cyren-threat-indepth-get-indicators
   - arguments:
     - description: The new offset from the feed (if not provided, the latest offset is taken).
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Resets the max client offset stored in the integration context.
     execution: true
     name: cyren-threat-indepth-reset-client-offset
-  - deprecated: false
-    description: Prints the max client offset stored in the integration context.
+  - description: Prints the max client offset stored in the integration context.
     execution: true
     name: cyren-threat-indepth-get-client-offset
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   subtype: python3

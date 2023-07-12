@@ -14,11 +14,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: An Integration with LGTM API
 display: LGTM
@@ -26,87 +24,32 @@ name: LGTM
 script:
   commands:
   - arguments:
-    - default: false
-      description: The URL of the repository to analyze. LGTM tests this against the
-        [repository providers](https://lgtm.com/admin/help/adding-repository-providers)
-        defined for the system. If it doesn't match any of them, the request fails.
-      isArray: false
+    - description: The URL of the repository to analyze. LGTM tests this against the [repository providers](https://lgtm.com/admin/help/adding-repository-providers) defined for the system. If it doesn't match any of them, the request fails.
       name: repository
       required: true
-      secret: false
-    - default: false
-      description: 'Optional, a [language code](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported)
-        to specify which language to analyze. To request the analysis of more than
-        one language, specify a query  meter for each language. By default, LGTM tries
-        to analyze all supported languages.'
+    - description: 'Optional, a [language code](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported) to specify which language to analyze. To request the analysis of more than one language, specify a query  meter for each language. By default, LGTM tries to analyze all supported languages.'
       isArray: true
       name: language
-      required: false
-      secret: false
-    - default: false
-      description: 'The analysis mode of the new project. When set to `full` all commits
-        of the project are analyzed; when set to `sparse` the latest commit of the
-        project is analyzed periodically; when set to `upload`, no automatic analysis
-        is performed, instead externally-generated databases should be uploaded. For
-        new projects the default value is `full`. The `mode` meter cannot be used
-        to change the analysis mode of existing projects. Therefore, for existing
-        projects, it should either be left blank or set to match the analysis mode
-        of the project.'
-      isArray: false
+    - description: 'The analysis mode of the new project. When set to `full` all commits of the project are analyzed; when set to `sparse` the latest commit of the project is analyzed periodically; when set to `upload`, no automatic analysis is performed, instead externally-generated databases should be uploaded. For new projects the default value is `full`. The `mode` meter cannot be used to change the analysis mode of existing projects. Therefore, for existing projects, it should either be left blank or set to match the analysis mode of the project.'
       name: mode
-      required: false
-      secret: false
-    - default: false
-      description: Required when `mode=upload`, specify the identifier of the commit
-        used to generate the database.
-      isArray: false
+    - description: Required when `mode=upload`, specify the identifier of the commit used to generate the database.
       name: commit
-      required: false
-      secret: false
-    - default: false
-      description: Optional when `mode=upload`, specify the date and time of the commit
-        used to generate the database; defaults to the current time.
-      isArray: false
+    - description: Optional when `mode=upload`, specify the date and time of the commit used to generate the database; defaults to the current time.
       name: date
-      required: false
-      secret: false
-    - default: false
-      description: 'Optional, any [labels](https://lgtm.com/admin/help/defining-worker-labels)
-        required by workers to analyze this project. To specify more than one label,
-        repeat the query  meter. '
+    - description: 'Optional, any [labels](https://lgtm.com/admin/help/defining-worker-labels) required by workers to analyze this project. To specify more than one label, repeat the query  meter. '
       isArray: true
       name: worker-label
-      required: false
-      secret: false
-    deprecated: false
     description: Add a project to LGTM
-    execution: false
     name: lgtm-add-project
   - arguments:
-    - default: false
-      description: The analysis identifier.
-      isArray: false
+    - description: The analysis identifier.
       name: analysis-id
       required: true
-      secret: false
-    - default: false
-      description: The desired version of the SARIF format. Currently supported versions
-        are `1.0.0`, `2.0.0`, and `2.1.0`.
-      isArray: false
+    - description: The desired version of the SARIF format. Currently supported versions are `1.0.0`, `2.0.0`, and `2.1.0`.
       name: sarif-version
-      required: false
-      secret: false
-    - default: false
-      description: Set `true` to include results in files that are excluded from the
-        output by default. This includes results in test code and generated files.
-        For more information, see [File classification](https://lgtm.com/help/lgtm/file-classification).
-      isArray: false
+    - description: Set `true` to include results in files that are excluded from the output by default. This includes results in test code and generated files. For more information, see [File classification](https://lgtm.com/help/lgtm/file-classification).
       name: excluded-files
-      required: false
-      secret: false
-    deprecated: false
     description: Get detailed alert information
-    execution: false
     name: lgtm-get-alerts
     outputs:
     - contextPath: LGTM.alerts.runs.results.ruleId
@@ -116,25 +59,17 @@ script:
       description: LGTM Alert location by line hash
       type: Unknown
   - arguments:
-    - default: false
-      description: The analysis identifier.
-      isArray: false
+    - description: The analysis identifier.
       name: analysis-id
       required: true
-      secret: false
-    deprecated: false
     description: Get analysis summary
-    execution: false
     name: lgtm-get-analysis
     outputs:
     - contextPath: LGTM.analysis_summary.id
       description: The analysis identifier.
       type: String
     - contextPath: LGTM.analysis_summary.commit-id
-      description: 'The commit identifier. The commit identifier is included only
-        if the same commit was successfully analyzed for all languages. A detailed  eakdown
-        of which commit was analyzed for each language is provided in the `languages`
-        property.'
+      description: 'The commit identifier. The commit identifier is included only if the same commit was successfully analyzed for all languages. A detailed  eakdown of which commit was analyzed for each language is provided in the `languages` property.'
       type: String
     - contextPath: LGTM.analysis_summary.languages.language
       description: The short name for the language.
@@ -149,8 +84,7 @@ script:
       description: The number of lines of code for this language.
       type: Number
     - contextPath: LGTM.analysis_summary.languages.commit-id
-      description: The latest successfully analyzed commit for the language. All statistics
-        refer to this commit.
+      description: The latest successfully analyzed commit for the language. All statistics refer to this commit.
       type: String
     - contextPath: LGTM.analysis_summary.languages.commit-date
       description: The time of the commit.
@@ -165,32 +99,20 @@ script:
       description: A page on LGTM to view the results of this analysis.
       type: String
   - arguments:
-    - default: false
-      description: The numeric project identifier.
-      isArray: false
+    - description: The numeric project identifier.
       name: project-id
       required: true
-      secret: false
-    - default: false
-      description: The identifier of a specific commit. Alternatively, use `latest`
-        for the most recent analyzed commit.
-      isArray: false
+    - description: The identifier of a specific commit. Alternatively, use `latest` for the most recent analyzed commit.
       name: commit-id
       required: true
-      secret: false
-    deprecated: false
     description: Get analysis summary for a specific commit
-    execution: false
     name: lgtm-get-analysis-for-commit
     outputs:
     - contextPath: LGTM.analysis_summary.id
       description: The analysis identifier.
       type: String
     - contextPath: LGTM.analysis_summary.commit-id
-      description: 'The commit identifier. The commit identifier is included only
-        if the same commit was successfully analyzed for all languages. A detailed  eakdown
-        of which commit was analyzed for each language is provided in the `languages`
-        property.'
+      description: 'The commit identifier. The commit identifier is included only if the same commit was successfully analyzed for all languages. A detailed  eakdown of which commit was analyzed for each language is provided in the `languages` property.'
       type: String
     - contextPath: LGTM.analysis_summary.languages.language
       description: The short name for the language.
@@ -205,8 +127,7 @@ script:
       description: The number of lines of code for this language.
       type: Number
     - contextPath: LGTM.analysis_summary.languages.commit-id
-      description: The latest successfully analyzed commit for the language. All statistics
-        refer to this commit.
+      description: The latest successfully analyzed commit for the language. All statistics refer to this commit.
       type: String
     - contextPath: LGTM.analysis_summary.languages.commit-date
       description: The time of the commit.
@@ -221,15 +142,10 @@ script:
       description: A page on LGTM to view the results of this analysis.
       type: String
   - arguments:
-    - default: false
-      description: The identifier for the review (from the `task-result-url`).
-      isArray: false
+    - description: The identifier for the review (from the `task-result-url`).
       name: review-id
       required: true
-      secret: false
-    deprecated: false
     description: Get results of code review
-    execution: false
     name: lgtm-get-code-review
     outputs:
     - contextPath: LGTM.code_review_result.id
@@ -251,8 +167,7 @@ script:
       description: The status for analysis of this language.
       type: String
     - contextPath: LGTM.code_review_result.languages.status-message
-      description: The current state of analysis of this langauge. When available,
-        a summary of analysis results.
+      description: The current state of analysis of this langauge. When available, a summary of analysis results.
       type: String
     - contextPath: LGTM.code_review_result.languages.new
       description: The total number of alerts introduced by the patch for this language.
@@ -267,15 +182,10 @@ script:
       description: The number of alerts fixed by the patch for this query.
       type: Number
   - arguments:
-    - default: false
-      description: The numeric project identifier
-      isArray: false
+    - description: The numeric project identifier
       name: project-id
       required: true
-      secret: false
-    deprecated: false
     description: Get project by numeric identifier
-    execution: false
     name: lgtm-get-project
     outputs:
     - contextPath: LGTM.project_details.languages.grade
@@ -288,29 +198,16 @@ script:
       description: LGTM Project name
       type: Unknown
   - arguments:
-    - default: false
-      description: The first part of the URL identifier of a project, which represents
-        the repository host.
-      isArray: false
+    - description: The first part of the URL identifier of a project, which represents the repository host.
       name: provider
       required: true
-      secret: false
-    - default: false
-      description: The second part of the URL identifier of a project, the organization.
-      isArray: false
+    - description: The second part of the URL identifier of a project, the organization.
       name: org
       required: true
-      secret: false
-    - default: false
-      description: The third part of the URL identifier of a project, the repository
-        name.
-      isArray: false
+    - description: The third part of the URL identifier of a project, the repository name.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Get project by URL identifier
-    execution: false
     name: lgtm-get-project-by-url-identifier
     outputs:
     - contextPath: LGTM.project_details.languages.grade
@@ -323,46 +220,19 @@ script:
       description: LGTM Project name
       type: Unknown
   - arguments:
-    - default: false
-      description: The numeric project identifier
-      isArray: false
+    - description: The numeric project identifier
       name: project-id
       required: true
-      secret: false
-    - default: false
-      description: 'The type of project configuration to retrieve. If this  meter
-        isn''t specified, the request retrieves the effective configuration. That
-        is, the configuration that is actually applied to the project, which may be
-        from: the repository the administrator-set, project configuration the
-        global configuration. If you do specify this value, it must be one of: `repository`
-        to retrieve the configuration specified by a YAML file in the repository.
-        A 404 status is returned if there is no repository configuration. `administrator`
-        to retrieve the administrator-set, project configuration. A 404 status is
-        returned if there is no administrator configuration.'
-      isArray: false
+    - description: 'The type of project configuration to retrieve. If this  meter isn''t specified, the request retrieves the effective configuration. That is, the configuration that is actually applied to the project, which may be from: the repository the administrator-set, project configuration the global configuration. If you do specify this value, it must be one of: `repository` to retrieve the configuration specified by a YAML file in the repository. A 404 status is returned if there is no repository configuration. `administrator` to retrieve the administrator-set, project configuration. A 404 status is returned if there is no administrator configuration.'
       name: source
-      required: false
-      secret: false
-    deprecated: false
     description: Get configuration for a project identified by numeric identifier
-    execution: false
     name: lgtm-get-project-config
   - arguments:
-    - default: false
-      description: The maximum number of projects to return in each response (1-100).
-      isArray: false
+    - description: The maximum number of projects to return in each response (1-100).
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: An opaque identifier generated by the API.
-      isArray: false
+    - description: An opaque identifier generated by the API.
       name: start
-      required: false
-      secret: false
-    deprecated: false
     description: List projects
-    execution: false
     name: lgtm-get-projects
     outputs:
     - contextPath: LGTM.project-list.data.id
@@ -378,42 +248,25 @@ script:
       description: The full URL of the project on LGTM.
       type: String
     - contextPath: LGTM.project-list.nextPageUrl
-      description: The URL to retrieve the next page of projects. Omitted if there
-        is no next page.
+      description: The URL to retrieve the next page of projects. Omitted if there is no next page.
       type: String
-  - deprecated: false
-    description: Version information
-    execution: false
+  - description: Version information
     name: lgtm-get-version
     outputs:
     - contextPath: LGTM.version.apiVersion
       description: The version number of the API.
       type: String
   - arguments:
-    - default: false
-      description: The numeric project identifier.
-      isArray: false
+    - description: The numeric project identifier.
       name: project-id
       required: true
-      secret: false
-    - default: false
-      description: The identifier of the commit to analyze.
-      isArray: false
+    - description: The identifier of the commit to analyze.
       name: commit
       required: true
-      secret: false
-    - default: false
-      description: 'The language codes of the languages to analyze. For a list of
-        available languages, see [Supported languages](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported).
-        To specify more than one language, this  meter can be repeated. If no language
-        is specified, all the project''s languages will be analyzed.'
+    - description: 'The language codes of the languages to analyze. For a list of available languages, see [Supported languages](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported). To specify more than one language, this  meter can be repeated. If no language is specified, all the project''s languages will be analyzed.'
       isArray: true
       name: language
-      required: false
-      secret: false
-    deprecated: false
     description: Run analysis of a specific commit
-    execution: false
     name: lgtm-request-analysis
     outputs:
     - contextPath: LGTM.analysis.id
@@ -429,60 +282,23 @@ script:
       description: LGTM analysis commit id
       type: Unknown
   - arguments:
-    - default: false
-      description: The numeric project identifier.
-      isArray: false
+    - description: The numeric project identifier.
       name: project-id
       required: true
-      secret: false
-    - default: false
-      description: The identifier for the base commit.
-      isArray: false
+    - description: The identifier for the base commit.
       name: base
       required: true
-      secret: false
-    - default: false
-      description: Your reference number for the code review.
-      isArray: false
+    - description: Your reference number for the code review.
       name: external-id
       required: true
-      secret: false
-    - default: false
-      description: 'The callback URL for LGTM to post to on completion of the review.
-        When the code review is complete, the API sends an HTTP POST request to the
-        callback URL with the result of the code review in the request body. The code
-        review results in the request body are identical to the results accessed through
-        the [`/codereviews/{review-id}`](https://lgtm.com/help/lgtm/api/api-v1#opIdgetCodeReview)
-        end-point. If you specify a `callback-secret`, the request also includes an
-        `x-lgtm-signature` header with a digital signature of the request''s contents.'
-      isArray: false
+    - description: 'The callback URL for LGTM to post to on completion of the review. When the code review is complete, the API sends an HTTP POST request to the callback URL with the result of the code review in the request body. The code review results in the request body are identical to the results accessed through the [`/codereviews/{review-id}`](https://lgtm.com/help/lgtm/api/api-v1#opIdgetCodeReview) end-point. If you specify a `callback-secret`, the request also includes an `x-lgtm-signature` header with a digital signature of the request''s contents.'
       name: callback-url
-      required: false
-      secret: false
-    - default: false
-      description: 'The `callback-secret` is used to compute a signature which is
-        included in the `x-lgtm-signature` header of the callback response. The receiver
-        of the callback can check the validity of the response by computing the signature
-        using HMAC-SHA1 and verifying that it matches the `x-lgtm-signature` header
-        value. The HMAC algorithm requires byte sequences as inputs for both the secret
-        and the message. The callback secret string must be converted to bytes using
-        UTF-8 encoding. The response body should ideally be read as a plain byte sequence.
-        Conversion to, for example a JSON object, and back to a byte sequence might
-        change the formatting, and would invalidate the signature.'
-      isArray: false
+    - description: 'The `callback-secret` is used to compute a signature which is included in the `x-lgtm-signature` header of the callback response. The receiver of the callback can check the validity of the response by computing the signature using HMAC-SHA1 and verifying that it matches the `x-lgtm-signature` header value. The HMAC algorithm requires byte sequences as inputs for both the secret and the message. The callback secret string must be converted to bytes using UTF-8 encoding. The response body should ideally be read as a plain byte sequence. Conversion to, for example a JSON object, and back to a byte sequence might change the formatting, and would invalidate the signature.'
       name: callback-secret
-      required: false
-      secret: false
-    - default: false
-      description: Entry ID of the Patch File , you can use git diff --binary to generate
-        patch file
-      isArray: false
+    - description: Entry ID of the Patch File , you can use git diff --binary to generate patch file
       name: patch-entry-id
       required: true
-      secret: false
-    deprecated: false
     description: Run code review for a patch
-    execution: false
     name: lgtm-request-review
     outputs:
     - contextPath: LGTM.code_review_request.id
@@ -495,86 +311,46 @@ script:
       description: LGTM Code Review request task id
       type: Unknown
   - arguments:
-    - default: false
-      description: 'The [language](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported)
-        you want to analyze.'
-      isArray: false
+    - description: 'The [language](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported) you want to analyze.'
       name: language
       required: true
-      secret: false
-    - default: false
-      description: The identifier of the project to analyze. Either `project-id` or
-        `projects-list` must be specified.
+    - description: The identifier of the project to analyze. Either `project-id` or `projects-list` must be specified.
       isArray: true
       name: project-id
       required: true
-      secret: false
-    - default: false
-      description: The CodeQL query stored in an XSOAR list
-      isArray: false
+    - description: The CodeQL query stored in an XSOAR list
       name: query-list
       required: true
-      secret: false
-    deprecated: false
     description: Run a CodeQL query on one or more projects
-    execution: false
     name: lgtm-create-query-job
     outputs:
     - contextPath: LGTM.Queries.task-result.id
       description: Query ID
       type: Unknown
   - arguments:
-    - default: false
-      description: The identifier of the query job, from the `task-result` given in
-        the response to the initial `POST /queryjobs` request.
-      isArray: false
+    - description: The identifier of the query job, from the `task-result` given in the response to the initial `POST /queryjobs` request.
       name: queryjob-id
       required: true
-      secret: false
-    deprecated: false
     description: Get the status of a query job
-    execution: false
     name: lgtm-get-query-job
     outputs:
     - contextPath: LGTM.queryjob.id
       description: The identifier for the QueryJob.
       type: String
   - arguments:
-    - default: false
-      description: The identifier of the query job, from the `task-result` given in
-        the response to the initial `POST /queryjobs` request.
-      isArray: false
+    - description: The identifier of the query job, from the `task-result` given in the response to the initial `POST /queryjobs` request.
       name: queryjob-id
       required: true
-      secret: false
-    - default: false
-      description: The identifier for the project.
-      isArray: false
+    - description: The identifier for the project.
       name: project-id
       required: true
-      secret: false
-    - default: false
-      description: Start point for the page of results.
-      isArray: false
+    - description: Start point for the page of results.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results to display (less than 100).
-      isArray: false
+    - description: The maximum number of results to display (less than 100).
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Include results that are not part of the source tree. These results
-        are filtered out by default.
-      isArray: false
+    - description: Include results that are not part of the source tree. These results are filtered out by default.
       name: nofilter
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch the results of a query job for a specific project
-    execution: false
     name: lgtm-get-query-job-results-for-project
     outputs:
     - contextPath: LGTM.queryjob-project-results.data.line
@@ -596,33 +372,23 @@ script:
       description: Project ID
       type: Unknown
   - arguments:
-    - default: false
-      description: The identifier of the query job, from the `task-result` given in
-        the response to the initial `POST /queryjobs` request.
-      isArray: false
+    - description: The identifier of the query job, from the `task-result` given in the response to the initial `POST /queryjobs` request.
       name: queryjob-id
       required: true
-      secret: false
-    deprecated: false
     description: Provide a summary of results for the projects in the query job
-    execution: false
     name: lgtm-get-query-job-results-overview
     outputs:
     - contextPath: LGTM.queryjob-results-overview.data.status
-      description: Describes whether the query was sucessfully executed against the
-        project.
+      description: Describes whether the query was sucessfully executed against the project.
       type: String
     - contextPath: LGTM.queryjob-results-overview.data.total
-      description: 'Number of results returned by the query. This is  oken down further
-        into `internal` and `external` results. Only applies if `status` is `success`.'
+      description: 'Number of results returned by the query. This is  oken down further into `internal` and `external` results. Only applies if `status` is `success`.'
       type: Number
     - contextPath: LGTM.queryjob-results-overview.data.internal
-      description: Number of results that refer to elements within the source tree.
-        Only applies if `status` is `success`.
+      description: Number of results that refer to elements within the source tree. Only applies if `status` is `success`.
       type: Number
     - contextPath: LGTM.queryjob-results-overview.data.external
-      description: Number of results that refer to elements outside the source tree
-        (e.g., li aries). Only applies if `status` is `success`.
+      description: Number of results that refer to elements outside the source tree (e.g., li aries). Only applies if `status` is `success`.
       type: Number
     - contextPath: LGTM.queryjob-results-overview.data.error
       description: Error message. Only applies if `status` is `error`.
@@ -630,11 +396,7 @@ script:
     - contextPath: LGTM.queryjob-results-overview.next
       description: LGTM Query Job Results Overview Next
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

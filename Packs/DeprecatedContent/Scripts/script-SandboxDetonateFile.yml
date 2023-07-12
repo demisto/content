@@ -219,7 +219,6 @@ dependson:
 system: true
 deprecated: true
 timeout: 86.4µs
-runonce: false
 tests:
 - No test
 fromversion: 5.0.0

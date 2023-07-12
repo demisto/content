@@ -11,56 +11,46 @@ configuration:
 - display: Role ARN
   additionalinfo: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
   name: roleArn
-  required: false
   type: 0
 - display: Role Session Name
   additionalinfo: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION
   name: roleSessionName
-  required: false
   type: 0
 - display: Role Session Duration
   additionalinfo: 'The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.'
   name: sessionDuration
-  required: false
   type: 0
 - display: Access Key
   additionalinfo: The access key ID and secret key used for authentication that was configured during IAM user configuration. If this is used, Role ARN is not required.
   name: credentials
   displaypassword: Secret Key
-  required: false
   type: 9
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout preceded by a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
   defaultvalue: 60,10
-  required: false
   type: 0
 - display: Retries
   name: retries
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  required: false
   type: 0
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
-  required: false
   section: Connect
   advanced: true
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
   type: 0
-  required: false
   section: Connect
   advanced: true
 - display: First fetch time
   name: first_fetch
-  required: false
   defaultvalue: '3 days ago'
   type: 0
 - display: Number of events to fetch per fetch.
   name: limit
-  required: false
   type: 0
   defaultvalue: 1000
 - display: Guard Duty Severity level
@@ -75,11 +65,9 @@ configuration:
   defaultvalue: 'Low'
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Amazon Web Services Guard Duty Service (gd) event collector integration for Cortex XSIAM.
 display: AWS - GuardDuty Event Collector
@@ -92,7 +80,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
@@ -101,30 +88,20 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Low'
       description: The minimum severity of the events to fetch (inclusive).
-      isArray: false
       name: severity
       predefined:
       - 'Low'
       - 'Medium'
       - 'High'
       required: true
-    - default: false
-      description: The date to start collecting the events from.
-      isArray: false
+    - description: The date to start collecting the events from.
       name: collect_from
-      required: false
-    - default: false
-      description: The maximum amount of events to return.
-      isArray: false
+    - description: The maximum amount of events to return.
       name: limit
-      required: false
-    deprecated: false
     description: Manual command used to fetch events and display them.
-    execution: false
     name: aws-gd-get-events
-  dockerimage: demisto/boto3py3:1.0.0.63019
+  dockerimage: demisto/boto3py3:1.0.0.64480
   isfetchevents: true
-  runonce: false
   subtype: python3
 marketplaces:
 - marketplacev2

@@ -13,11 +13,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Manages endpoints and groups through the Kaspersky Security Center.
 display: Kaspersky Security Center (Beta)
@@ -25,24 +23,12 @@ name: Kaspersky Security Center
 script:
   commands:
   - arguments:
-    - default: false
-      description: Filter which contains a condition over host attributes, e.g., KLHST_WKS_OS_NAME
-        = "Microsoft Windows Server 2016". See the integration documentation for the
-        search filter syntax.
-      isArray: false
+    - description: Filter which contains a condition over host attributes, e.g., KLHST_WKS_OS_NAME = "Microsoft Windows Server 2016". See the integration documentation for the search filter syntax.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of hosts to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of hosts.
-    execution: false
     name: ksc-hosts-list
     outputs:
     - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_DN
@@ -67,16 +53,10 @@ script:
       description: Operating system name.
       type: String
   - arguments:
-    - default: false
-      description: The unique hostname GUID to retrieve the details of. Can be retrieved
-        using the ksc-hosts-list command.
-      isArray: false
+    - description: The unique hostname GUID to retrieve the details of. Can be retrieved using the ksc-hosts-list command.
       name: hostname
       required: true
-      secret: false
-    deprecated: false
     description: Returns details of a host.
-    execution: false
     name: ksc-host-get
     outputs:
     - contextPath: Endpoint.ID
@@ -122,8 +102,7 @@ script:
       description: Collaboration servers protection status.
       type: Number
     - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_CPU_ARCH
-      description: CPU architecture from the operating system point of view (since
-        KSC 10 SP1).
+      description: CPU architecture from the operating system point of view (since KSC 10 SP1).
       type: Number
     - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_CREATED.value
       description: Time of host record creation.
@@ -180,24 +159,12 @@ script:
       description: Host status.
       type: Number
   - arguments:
-    - default: false
-      description: Filter which contains a condition over group attributes, e.g.,
-        name = "Managed devices". See the integration documentation for the search
-        filter syntax.
-      isArray: false
+    - description: Filter which contains a condition over group attributes, e.g., name = "Managed devices". See the integration documentation for the search filter syntax.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of groups to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of groups.
-    execution: false
     name: ksc-groups-list
     outputs:
     - contextPath: KasperskySecurityCenter.Group.id
@@ -207,22 +174,13 @@ script:
       description: Group name.
       type: String
   - arguments:
-    - default: false
-      description: The name of the group to add.
-      isArray: false
+    - description: The name of the group to add.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: ID of group under which to create the group. Can be retrieved using
-        the ksc-groups-list command.
-      isArray: false
+    - description: ID of group under which to create the group. Can be retrieved using the ksc-groups-list command.
       name: parent_id
       required: true
-      secret: false
-    deprecated: false
     description: Create new administration group.
-    execution: false
     name: ksc-group-add
     outputs:
     - contextPath: KasperskySecurityCenter.Group.id
@@ -232,38 +190,25 @@ script:
       description: Group name.
       type: String
   - arguments:
-    - default: false
-      description: ID of group to delete. Can be retrieved using the ksc-groups-list
-        command.
-      isArray: false
+    - description: ID of group to delete. Can be retrieved using the ksc-groups-list command.
       name: group_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: '1'
-      description: 1 = Delete group only if it is empty, 2 = delete group with subgroups,
-        policies and tasks 3 = delete group with subgroups, hosts, policies and tasks.
-      isArray: false
+      description: 1 = Delete group only if it is empty, 2 = delete group with subgroups, policies and tasks 3 = delete group with subgroups, hosts, policies and tasks.
       name: flags
       predefined:
       - '1'
       - '2'
       - '3'
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes an administrative group.
     execution: true
     name: ksc-group-delete
-  - deprecated: false
-    description: Returns limited attributes for all software applications.
-    execution: false
+  - description: Returns limited attributes for all software applications.
     name: ksc-software-applications-list
     outputs:
     - contextPath: KasperskySecurityCenter.Inventory.Software.ARPRegKey
-      description: Subkey for application under registry key for list of add-remove
-        progamms.
+      description: Subkey for application under registry key for list of add-remove progamms.
       type: String
     - contextPath: KasperskySecurityCenter.Inventory.Software.Comments
       description: Software application comments.
@@ -280,9 +225,7 @@ script:
     - contextPath: KasperskySecurityCenter.Inventory.Software.Publisher
       description: Software application publisher.
       type: String
-  - deprecated: false
-    description: Returns limited attributes for all software application updates.
-    execution: false
+  - description: Returns limited attributes for all software application updates.
     name: ksc-software-patches-list
     outputs:
     - contextPath: KasperskySecurityCenter.Inventory.Patch.Classification
@@ -304,21 +247,14 @@ script:
       description: Software application patch publisher.
       type: String
   - arguments:
-    - default: false
-      description: The unique hostname GUID to retrieve the software applications
-        of. Can be retrieved using the ksc-hosts-list command.
-      isArray: false
+    - description: The unique hostname GUID to retrieve the software applications of. Can be retrieved using the ksc-hosts-list command.
       name: hostname
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve software applications for a host.
-    execution: false
     name: ksc-host-software-applications-list
     outputs:
     - contextPath: KasperskySecurityCenter.Host.Software.ARPRegKey
-      description: Subkey for application under registry key for list of add-remove
-        progamms.
+      description: Subkey for application under registry key for list of add-remove progamms.
       type: String
     - contextPath: KasperskySecurityCenter.Host.Software.Comments
       description: Software application comments.
@@ -336,16 +272,10 @@ script:
       description: Software application publisher.
       type: String
   - arguments:
-    - default: false
-      description: The unique hostname GUID to retrieve the software patches of. Can
-        be retrieved using the ksc-hosts-list command.
-      isArray: false
+    - description: The unique hostname GUID to retrieve the software patches of. Can be retrieved using the ksc-hosts-list command.
       name: hostname
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves patches for a host.
-    execution: false
     name: ksc-host-software-patches-list
     outputs:
     - contextPath: KasperskySecurityCenter.Host.Patch.Classification
@@ -367,17 +297,11 @@ script:
       description: Software application patch publisher.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '-1'
-      description: ID of group to retrieve the policies of. Can be retrieved using
-        the ksc-groups-list command. Set to -1 to retrieve policies of all groups.
-      isArray: false
+    - defaultValue: '-1'
+      description: ID of group to retrieve the policies of. Can be retrieved using the ksc-groups-list command. Set to -1 to retrieve policies of all groups.
       name: group_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns policies located in specified group.
-    execution: false
     name: ksc-policies-list
     outputs:
     - contextPath: KasperskySecurityCenter.Policy.KLPOL_ACTIVE
@@ -405,16 +329,10 @@ script:
       description: Policy ID.
       type: Number
   - arguments:
-    - default: false
-      description: ID of policy to retrieve details of. Can be retrieved using the
-        ksc-policies-list command.
-      isArray: false
+    - description: ID of policy to retrieve details of. Can be retrieved using the ksc-policies-list command.
       name: policy_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves data for specified policy.
-    execution: false
     name: ksc-policy-get
     outputs:
     - contextPath: KasperskySecurityCenter.Policy.KLPOL_ACTIVE
@@ -441,11 +359,7 @@ script:
     - contextPath: KasperskySecurityCenter.Policy.KLPOL_ID
       description: Policy ID.
       type: Number
-  dockerimage: demisto/python3:3.10.4.27798
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3
@@ -453,4 +367,4 @@ script:
 fromversion: 5.5.0
 beta: true
 tests:
-  - Kaspersky Security Center - Test
+- Kaspersky Security Center - Test

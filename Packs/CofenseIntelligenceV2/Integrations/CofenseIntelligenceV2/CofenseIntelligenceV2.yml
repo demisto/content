@@ -24,7 +24,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - additionalinfo: Threshold for IP related threats' severity.
   defaultvalue: Major
@@ -35,7 +34,6 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
 - additionalinfo: Threshold for file related threats' severity.
   defaultvalue: Major
@@ -46,7 +44,6 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
 - additionalinfo: Threshold for URL related threats' severity.
   defaultvalue: Major
@@ -57,7 +54,6 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
 - additionalinfo: Threshold for email related threats' severity.
   defaultvalue: Major
@@ -68,7 +64,6 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
 - additionalinfo: Threshold for domain related threats' severity.
   defaultvalue: Major
@@ -79,13 +74,11 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
 - additionalinfo: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
   defaultvalue: '90'
   display: Time limit for collecting data
   name: days_back
-  required: false
   type: 0
 - additionalinfo: |-
     Mapping of Cofense Intelligence indicator rating to XSOAR DBOT Score
@@ -96,21 +89,17 @@ configuration:
   defaultvalue: None:0, Minor:1, Moderate:2, Major:3
   display: Score Mapping
   name: scoreMapping
-  required: false
   type: 0
 - additionalinfo: Create relationships between indicators as part of Enrichment.
   defaultvalue: 'true'
   display: Create relationships
   name: createRelationship
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Use the Cofense Intelligence integration to check the reputation of domains, URLs, IP addresses, file hashes, and email addresses.
 display: Cofense Intelligence v2
@@ -123,16 +112,9 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.ASN
@@ -352,54 +334,24 @@ script:
       description: If malware, will have value 'malware', otherwise it is empty.
       type: String
   - arguments:
-    - default: false
-      description: String to search.
-      isArray: false
+    - description: String to search.
       name: str
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of strings to search. Default is 10.
-      isArray: false
+    - description: Maximum number of strings to search. Default is 10.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    - default: false
-      description: The malware family associated with a malware campaign.
-      isArray: false
+    - description: The malware family associated with a malware campaign.
       name: malware_family
-      required: false
-      secret: false
-    - default: false
-      description: The filename associated with a phishing or malware campaign.
-      isArray: false
+    - description: The filename associated with a phishing or malware campaign.
       name: malware_file
-      required: false
-      secret: false
-    - default: false
-      description: Search the message subject associated with malware campaigns.
-      isArray: false
+    - description: Search the message subject associated with malware campaigns.
       name: malware_subject
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A specific url to search for.
 
         Note: This supports exact and partial matching of urls.
-      isArray: false
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a specific threat or a list of threats based on the filter values provided in the command arguments.
-    execution: false
     name: cofense-search
     outputs:
     - contextPath: CofenseIntelligence.Threats.id
@@ -576,16 +528,9 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a file hash.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Extension
@@ -813,16 +758,9 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an email address.
-    execution: false
     name: email
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1032,16 +970,9 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a URL.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1260,16 +1191,9 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of the domain.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1483,28 +1407,20 @@ script:
       description: If malware, will have value 'malware', otherwise it is empty.
       type: String
   - arguments:
-    - default: false
-      description: Unique id to download the specified threat report.
-      isArray: false
+    - description: Unique id to download the specified threat report.
       name: report_id
       required: true
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: html
       description: |-
         Report format to download.
         Allowed types are html and pdf.
-      isArray: false
       name: report_format
       predefined:
       - html
       - pdf
-      required: false
-      secret: false
-    deprecated: false
     description: Downloads threat report provided by cofense intelligence of an indicator for the given unique report id.
-    execution: false
     name: cofense-threat-report-get
     outputs:
     - contextPath: File.Size
@@ -1541,10 +1457,6 @@ script:
       description: The file extension.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

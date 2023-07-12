@@ -5,20 +5,17 @@ name: Phish.AI
 display: Phish.AI (Deprecated)
 deprecated: true
 category: Data Enrichment & Threat Intelligence
-description: "Deprecated. Vendor has declared end of life for this integration. No\
-  \ available replacement."
+description: "Deprecated. Vendor has declared end of life for this integration. No available replacement."
 fromversion: "5.0.0"
 configuration:
 - display: Private API Key (Optional)
   name: apiKey
   defaultvalue: ""
   type: 0
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -65,8 +62,7 @@ script:
     - contextPath: PhishAI.URL
       description: URL address
       type: string
-    description: Check if url is phishing and get details about the brand that is
-      being phished
+    description: Check if url is phishing and get details about the brand that is being phished
   - name: phish-ai-check-status
     arguments:
     - name: scan_id
@@ -89,6 +85,5 @@ script:
       required: true
       description: Scan ID of the URL to dispute
     description: Dispute the result of the scan
-  runonce: false
 tests:
 - No tests

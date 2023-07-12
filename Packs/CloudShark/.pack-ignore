@@ -2,7 +2,7 @@
 ignore=RM104
 
 [file:CloudShark.yml]
-ignore=IN145,BA124
+ignore=BA124
 
 [file:CloudShark_image.png]
 ignore=IM111

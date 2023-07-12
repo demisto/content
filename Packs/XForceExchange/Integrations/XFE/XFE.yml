@@ -21,24 +21,18 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
-- display: IP Threshold. Minimum risk score for the IP to be consodered malicious
-    (ranges from 1 to 10).
+- display: IP Threshold. Minimum risk score for the IP to be consodered malicious (ranges from 1 to 10).
   name: ipThreshold
   defaultvalue: "7"
   type: 0
-  required: false
-- display: URL Threshold. Minimum risk score for the URL to be consodered malicious
-    (ranges from 1 to 10).
+- display: URL Threshold. Minimum risk score for the URL to be consodered malicious (ranges from 1 to 10).
   name: urlThreshold
   defaultvalue: "7"
   type: 0
-  required: false
 script:
   script: ''
   type: javascript
@@ -57,9 +51,7 @@ script:
       description: Should we return full response with detected malware on the URLs
       defaultValue: "false"
     - name: threshold
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default URL threshold, as configured in
-        the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -127,9 +119,7 @@ script:
       description: Should we return full response
       defaultValue: "false"
     - name: threshold
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default IP threshold, as configured in
-        the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: IP.Address
       description: Bad IP found
@@ -162,9 +152,7 @@ script:
       description: Should we return full response
       defaultValue: "false"
     - name: threshold
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default URL threshold, as configured in
-        the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -218,7 +206,6 @@ script:
     - contextPath: CVE.Description
       description: The CVE description
     description: Return the latest vulnerabilities found
-  runonce: false
 fromversion: 5.0.0
 tests:
 - No tests - deprecated

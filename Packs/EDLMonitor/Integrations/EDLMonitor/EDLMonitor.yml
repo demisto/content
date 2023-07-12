@@ -7,29 +7,24 @@ configuration:
   defaultvalue: "120"
   display: 'Timeout:'
   name: timeout
-  required: false
   type: 0
 - advanced: true
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   section: Connect
   type: 8
 - advanced: true
   display: Use system proxy settings
   name: proxy
-  required: false
   section: Connect
   type: 8
 - defaultvalue: smtp.gmail.com
   display: 'Email server:'
   name: emailServer
-  required: false
   type: 0
 - display: Email username
   displaypassword: Email password
   name: emailCredentials
-  required: false
   type: 9
 description: This integration can monitor EDLs by emailing the content of an EDL as a zipped file to a specified user at an interval (when run with a job), and/or simply monitor the EDL for availability and email the user if the EDL is not available in other playbooks
 display: EDL Monitor
@@ -86,7 +81,7 @@ script:
     - contextPath: ResponseCode
       description: The response code.
       type: number
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

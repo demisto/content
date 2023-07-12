@@ -1,177 +1,80 @@
 args:
-- default: false
-  description: Incident ID to get the prediction of. If empty, predicts the the current
-    incident ID.
-  isArray: false
+- description: Incident ID to get the prediction of. If empty, predicts the the current incident ID.
   name: incidentId
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
-  description: 'Comma-separated list of incident text fields to take into account
-    when computing similarity. For example: commandline, URL'
-  isArray: false
+  description: 'Comma-separated list of incident text fields to take into account when computing similarity. For example: commandline, URL'
   name: similarTextField
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
-  description: 'Comma-separated list of incident categorical fields to take into account
-    whe computing similarity. For example: IP, URL'
-  isArray: false
+  description: 'Comma-separated list of incident categorical fields to take into account whe computing similarity. For example: IP, URL'
   name: similarCategoricalField
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
-  description: 'Comma-separated list of incident JSON fields to take into account
-    whe computing similarity. For example: CustomFields'
-  isArray: false
+  description: 'Comma-separated list of incident JSON fields to take into account whe computing similarity. For example: CustomFields'
   name: similarJsonField
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
-  description: Comma-separated list of additional incident fields to display, but
-    which will not be taken into account when computing similarity.
-  isArray: false
+  description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
   name: fieldsToDisplay
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
-  description: Comma-separated list of incident fields that have to be equal to the
-    current incident fields. This helps reduce the query size.
-  isArray: false
+  description: Comma-separated list of incident fields that have to be equal to the current incident fields. This helps reduce the query size.
   name: fieldExactMatch
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
-  description: Whether to use a predefined set of fields and custom fields to compute
-    similarity. If "True", it will ignore values in similarTextField, similarCategoricalField,
-    similarJsonField.
-  isArray: false
+  description: Whether to use a predefined set of fields and custom fields to compute similarity. If "True", it will ignore values in similarTextField, similarCategoricalField, similarJsonField.
   name: useAllFields
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
-- default: false
-  defaultValue: 1 months ago
-  description: The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00
-    +0200").
-  isArray: false
+- defaultValue: 1 months ago
+  description: The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   name: fromDate
-  required: false
-  secret: false
-- default: false
-  description: The end date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00
-    +0200").
-  isArray: false
+- description: The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   name: toDate
-  required: false
-  secret: false
-- default: false
-  description: Argument for the query. This helps reduce the query size.
-  isArray: false
+- description: Argument for the query. This helps reduce the query size.
   name: query
-  required: false
-  secret: false
-- default: false
-  defaultValue: '1500'
+- defaultValue: '1500'
   description: The maximum number of incidents to query.
-  isArray: false
   name: limit
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
   description: Whether to aggregate duplicate incidents within diffrerent dates.
-  isArray: false
   name: aggreagateIncidentsDifferentDate
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
   description: Whether to display the similarity score for each of the incident fields.
-  isArray: false
   name: showIncidentSimilarityForAllFields
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0.2'
+- defaultValue: '0.2'
   description: Retain incidents with similarity score that's higher than the MinimunIncidentSimilarity.
-  isArray: false
   name: minimunIncidentSimilarity
-  required: false
-  secret: false
-- default: false
-  defaultValue: '100'
+- defaultValue: '100'
   description: The maximum number of incidents to display.
-  isArray: false
   name: maxIncidentsToDisplay
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
   description: Whether to display the current incident.
-  isArray: false
   name: showCurrentIncident
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
-  description: Whether to include similarity of indicators from DBotFindSimilarIncidentsByIndicators
-    in the final score.
-  isArray: false
+  description: Whether to include similarity of indicators from DBotFindSimilarIncidentsByIndicators in the final score.
   name: includeIndicatorsSimilarity
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
-- default: false
-  description: The minimum number of indicators required related to the incident before
-    running the model. Relevant if includeIndicatorsSimilarity is "True".
-  isArray: false
+- description: The minimum number of indicators required related to the incident before running the model. Relevant if includeIndicatorsSimilarity is "True".
   name: minNumberOfIndicators
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
-  description: Comma-separated list of indicator types to take into account. If empty,
-    uses all indicators types. Relevant if includeIndicatorsSimilarity is "True".
-  isArray: false
+  description: Comma-separated list of indicator types to take into account. If empty, uses all indicators types. Relevant if includeIndicatorsSimilarity is "True".
   name: indicatorsTypes
-  required: false
-  secret: false
-- default: false
-  description: Help to filter out indicators that appear in many incidents. Relevant
-    if includeIndicatorsSimilarity is "True".
-  isArray: false
+- description: Help to filter out indicators that appear in many incidents. Relevant if includeIndicatorsSimilarity is "True".
   name: maxIncidentsInIndicatorsForWhiteList
-  required: false
-  secret: false
-comment: Find past similar incidents based on incident fields' similarity. Includes
-  an option to also display indicators similarity.
+comment: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
 commonfields:
   id: DBotFindSimilarIncidents
   version: -1
@@ -179,7 +82,6 @@ enabled: true
 name: DBotFindSimilarIncidents
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/ml:1.0.0.23334

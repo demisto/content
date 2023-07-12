@@ -6,10 +6,8 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
@@ -18,7 +16,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
@@ -33,8 +30,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -42,13 +38,11 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
   type: 17
-  required: false
   options:
   - never
   - interval
@@ -57,32 +51,24 @@ configuration:
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Deprecated. Use the Google IP Ranges Feed integration instead.
 display: GCP Whitelist Feed (Deprecated)
@@ -95,13 +81,9 @@ script:
       defaultValue: "10"
     deprecated: true
     description: Gets indicators from the feed.
-    execution: false
     name: gcp-whitelist-get-indicators
   dockerimage: demisto/dnspython:1.0.0.24037
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
@@ -109,4 +91,4 @@ script:
 fromversion: 5.5.0
 deprecated: true
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)

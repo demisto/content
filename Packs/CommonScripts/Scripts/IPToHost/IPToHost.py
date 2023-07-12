@@ -1,7 +1,6 @@
-import socket
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import socket
 
 
 def ip_to_host(ip: str) -> CommandResults:

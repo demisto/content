@@ -13,16 +13,13 @@ configuration:
   type: 9
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
 - defaultvalue: Open
   display: Fetch suspicious activity with status
@@ -31,13 +28,10 @@ configuration:
   - Open
   - Closed
   - Suppressed
-  required: false
   type: 16
-- additionalinfo: Comma-separated list of types of suspcious activities to fetch (e.g.
-    HoneytokenActivitySuspiciousActivity)
+- additionalinfo: Comma-separated list of types of suspcious activities to fetch (e.g. HoneytokenActivitySuspiciousActivity)
   display: Fetch suspicious activity with type (leave empty to fetch all)
   name: activity_type
-  required: false
   type: 0
 - defaultvalue: Low
   display: Minimum severity of suspicious activity to fetch
@@ -51,91 +45,50 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: first_fetch
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Use Microsoft Advanced Threat Analytics integration to manage suspicious activities, 
-  monitoring alerts and entities.
+description: Use Microsoft Advanced Threat Analytics integration to manage suspicious activities, monitoring alerts and entities.
 display: Microsoft Advanced Threat Analytics
 name: Microsoft Advanced Threat Analytics
 script:
   commands:
   - arguments:
-    - default: false
-      description: Identifier of suspicious activity to retrieve (if provided, all
-        other arguments are ignored).
-      isArray: false
+    - description: Identifier of suspicious activity to retrieve (if provided, all other arguments are ignored).
       name: id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The specified status of the suspicious activities to retrieve (comma-separated
-        values supported). Can be: "Open", "Closed", and "Suppressed".'
-      isArray: false
+      description: 'The specified status of the suspicious activities to retrieve (comma-separated values supported). Can be: "Open", "Closed", and "Suppressed".'
       name: status
       predefined:
       - Open
       - Closed
       - Suppressed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The specified severity of the suspicious activities to retrieve (comma-separated
-        values supported). Can be: "Low", "High", and "Medium".'
-      isArray: false
+      description: 'The specified severity of the suspicious activities to retrieve (comma-separated values supported). Can be: "Low", "High", and "Medium".'
       name: severity
       predefined:
       - Low
       - High
       - Medium
-      required: false
-      secret: false
-    - default: false
-      description: The specified type of the suspicious activities to retrieve (comma-separated
-        values supported). For example, honeytoken.
-      isArray: false
+    - description: The specified type of the suspicious activities to retrieve (comma-separated values supported). For example, honeytoken.
       name: type
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of suspicious activities to retrieve. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         Suspicious activities which occurred after the given time to retrieve. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'Suspicious activities which occurred before the given
-        time to retrieve. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period
-        (for example, 24 hours).'
-      isArray: false
+    - description: 'Suspicious activities which occurred before the given time to retrieve. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves suspicious activities.
-    execution: false
     name: ms-ata-suspicious-activities-list
     outputs:
     - contextPath: MicrosoftATA.SuspiciousActivity.DescriptionDetailFormatKeys
-      description: The Description detail of the suspicious activity format
-        keys.
+      description: The Description detail of the suspicious activity format keys.
       type: String
     - contextPath: MicrosoftATA.SuspiciousActivity.DescriptionFormatKey
       description: The description format key of the suspicious activity.
@@ -231,16 +184,11 @@ script:
       description: The identifier of the suspicious activity source computer.
       type: String
   - arguments:
-    - default: false
-      description: The Identifier of suspicious activity for which to update the status.
-      isArray: false
+    - description: The Identifier of suspicious activity for which to update the status.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The status for which to update. Can be: "Open", "Closed", "Suppressed", or "Delete".'
-      isArray: false
       name: status
       predefined:
       - Open
@@ -248,68 +196,34 @@ script:
       - Suppressed
       - Delete
       required: true
-      secret: false
-    deprecated: false
     description: Sets the status of the suspicious activity.
-    execution: false
     name: ms-ata-suspicious-activity-status-set
-  - deprecated: false
-    arguments:
+  - arguments:
     - auto: PREDEFINED
-      default: false
-      description: 'Monitoring alerts with a specified status to retrieve (comma-separated
-        values supported). Can be: "Open", "Closed", and "Suppressed".'
-      isArray: false
+      description: 'Monitoring alerts with a specified status to retrieve (comma-separated values supported). Can be: "Open", "Closed", and "Suppressed".'
       name: status
       predefined:
       - Open
       - Closed
       - Suppressed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Monitoring alerts with a specified severity to retrieve (comma-separated
-        values supported). Can be: "Low", "High", and "Medium".'
-      isArray: false
+      description: 'Monitoring alerts with a specified severity to retrieve (comma-separated values supported). Can be: "Low", "High", and "Medium".'
       name: severity
       predefined:
       - Low
       - High
       - Medium
-      required: false
-      secret: false
-    - default: false
-      description: Monitoring alerts of the specified type to retrieve (comma-separated
-        values supported).
-      isArray: false
+    - description: Monitoring alerts of the specified type to retrieve (comma-separated values supported).
       name: type
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of monitoring alerts to retrieve. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         Monitoring alerts which occurred after the given time to retrieve. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'Monitoring alerts which occurred before the given time to retrieve.
-        Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example,
-        24 hours).'
-      isArray: false
+    - description: 'Monitoring alerts which occurred before the given time to retrieve. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
       name: end_time
-      required: false
-      secret: false
     description: Retrieves health alerts.
-    execution: false
     name: ms-ata-monitoring-alerts-list
     outputs:
     - contextPath: MicrosoftATA.MonitoringAlert.DescriptionFormatKey
@@ -361,16 +275,10 @@ script:
       description: The password expiry time of the monitoring alert.
       type: Date
   - arguments:
-    - default: false
-      description: The identifier of an entity to retrieve. Can be retrieved by
-        running the ms-ata-suspicious-activities-list command (from the RelatedUniqueEntityIds output).
-      isArray: false
+    - description: The identifier of an entity to retrieve. Can be retrieved by running the ms-ata-suspicious-activities-list command (from the RelatedUniqueEntityIds output).
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves information of an entity, such as a computer and user.
-    execution: false
     name: ms-ata-entity-get
     outputs:
     - contextPath: MicrosoftATA.Entity.BadPasswordTime
@@ -503,10 +411,7 @@ script:
       description: The update time of the entity profile.
       type: Date
   dockerimage: demisto/ntlm:1.0.0.44693
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
@@ -515,4 +420,4 @@ fromversion: 5.0.0
 defaultclassifier: Microsoft Advanced Threat Analytics
 defaultmapperin: Microsoft Advanced Threat Analytics-mapper
 tests:
-  - Microsoft Advanced Threat Analytics - Test
+- Microsoft Advanced Threat Analytics - Test

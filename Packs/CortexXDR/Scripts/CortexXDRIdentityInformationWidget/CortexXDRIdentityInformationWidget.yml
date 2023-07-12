@@ -4,7 +4,6 @@ commonfields:
   version: -1
 name: CortexXDRIdentityInformationWidget
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'

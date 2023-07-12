@@ -6,7 +6,6 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - defaultvalue: 'https://taxii.dhs.gov:8443'
   display: Base URL
@@ -48,7 +47,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
@@ -59,7 +57,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - defaultvalue: F - Reliability cannot be judged
   display: 'Source Reliability'
@@ -77,7 +74,6 @@ configuration:
 - defaultvalue: 'indicatorType'
   display: ''
   name: feedExpirationPolicy
-  required: false
   type: 17
   options:
   - never
@@ -87,42 +83,34 @@ configuration:
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   defaultvalue: 1 day
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
   hidden: true
   name: feedIncremental
-  required: false
   type: 8
 description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
 display: 'DHS Feed'
@@ -133,25 +121,17 @@ script:
     - defaultValue: 20
       default: true
       description: The maximum number of indicators to return. Default is 20.
-      isArray: false
       name: limit
       required: true
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       predefined:
       - RED
       - AMBER
       - GREEN
       - WHITE
       description: 'The TLP color by which to filter the results. Possible values: "RED", "AMBER", "GREEN", "WHITE".'
-      isArray: false
       name: tlp_color
-      required: false
-      secret: false
-    deprecated: false
     description: Get the indicators.
-    execution: false
     name: dhs-get-indicators
     outputs:
     - contextPath: DHS.type
@@ -165,9 +145,6 @@ script:
       type: string
   dockerimage: demisto/xml-feed:1.0.0.63829
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

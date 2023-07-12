@@ -36,55 +36,38 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
-- display: File Threshold. Minimum number of positive results from VT scanners to
-    consider the file malicious.
+- display: File Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: "10"
   type: 0
-  required: false
-- display: IP Threshold. Minimum number of positive results from VT scanners to consider
-    the IP malicious.
+- display: IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: "10"
   type: 0
-  required: false
-- display: URL Threshold. Minimum number of positive results from VT scanners to consider
-    the URL malicious.
+- display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: "10"
   type: 0
-  required: false
-- display: Domain Threshold. Minimum number of positive results from VT scanners to
-    consider the domain malicious.
+- display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   defaultvalue: "10"
   type: 0
-  required: false
 - display: Preferred Vendors List. CSV list of vendors which are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ""
   type: 12
-  required: false
-- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors
-    required to consider a domain, IP address, URL, or file as malicious. '
+- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious. '
   name: preferredVendorsThreshold
   defaultvalue: ""
   type: 0
-  required: false
-- display: Determines whether to return all results, which can number in the thousands.
-    If “true”, returns all results and overrides the _fullResponse_, _long_ arguments
-    (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments
-    in the command determines how results are returned.
+- display: Determines whether to return all results, which can number in the thousands. If “true”, returns all results and overrides the _fullResponse_, _long_ arguments (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments in the command determines how results are returned.
   name: fullResponseGlobal
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -94,9 +77,7 @@ script:
     - name: file
       required: true
       default: true
-      description: A CSV list of hashes of the file to query. Supports MD5, SHA1,
-        and SHA256.
-      isArray: false
+      description: A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256.
     - name: long
       auto: PREDEFINED
       predefined:
@@ -105,12 +86,9 @@ script:
       description: Whether to return full response for scans. Default is "false".
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is higher than the threshold, the file
-        will be considered malicious. If the threshold is not specified, the default
-        file threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for the API rate limit. Default is "0".
@@ -127,8 +105,7 @@ script:
     - contextPath: File.Malicious.Detections
       description: For malicious files, the total number of detections.
     - contextPath: File.Malicious.TotalEngines
-      description: For malicious files, the total number of engines that checked the
-        file hash.
+      description: For malicious files, the total number of engines that checked the file hash.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -178,16 +155,12 @@ script:
       description: Whether to return full response for detected URLs. Default is "false".
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is higher than the threshold, the IP
-        address will be considered malicious. If the threshold is not specified, the
-        default IP threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
     - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format. Default is "10".
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10".
       defaultValue: "10"
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for API rate limit. Default is "0".
@@ -197,8 +170,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to return all results, which can be thousands. Default
-        is "false". We recommend that you don't return full results in playbooks.
+      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
       defaultValue: "false"
     outputs:
     - contextPath: IP.Address
@@ -227,14 +199,11 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: IP.VirusTotal.DownloadedHashes
-      description: Latest files that were detected by at least one antivirus solution,
-        and were downloaded by VirusTotal from the IP address.
+      description: Latest files that were detected by at least one antivirus solution, and were downloaded by VirusTotal from the IP address.
     - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-      description: Latest files that were not detected by any antivirus solution,
-        and were downloaded by VirusTotal from the specified IP address.
+      description: Latest files that were not detected by any antivirus solution, and were downloaded by VirusTotal from the specified IP address.
     - contextPath: IP.VirusTotal.DetectedURLs
-      description: Latest URLs hosted in this IP address that were detected by at
-        least one URL scanner.
+      description: Latest URLs hosted in this IP address that were detected by at least one URL scanner.
     - contextPath: IP.VirusTotal.CommunicatingHashes
       description: Latest detected files that communicate with this IP address.
     - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
@@ -246,20 +215,17 @@ script:
     - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
       description: Latest undetected files that embed this IP address in their strings.
     - contextPath: IP.VirusTotal.Resolutions.last_resolved
-      description: Last resolution times of the domains that resolved to the specified
-        IP address.
+      description: Last resolution times of the domains that resolved to the specified IP address.
     description: Checks the reputation of an IP address.
   - name: url
     arguments:
     - name: url
       required: true
       default: true
-      description: A comma-seperated list of URLs to check. This command will not
-        work properly on URLs containing commas.
+      description: A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas.
       isArray: true
     - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format.
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
       defaultValue: "10"
     - name: long
       auto: PREDEFINED
@@ -269,16 +235,12 @@ script:
       description: Whether to return the full response for the detected URLs.
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is higher than the threshold, the URL
-        will be considered malicious. If the threshold is not specified, the default
-        URL threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the URL will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     - name: submitWait
-      description: Time (in seconds) to wait if the URL does not exist and is submitted
-        for scanning. Default is "0".
+      description: Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0".
       defaultValue: "0"
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for API rate limit. Default is "0".
@@ -336,20 +298,15 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to return the full response for detected URLs. Default
-        is "false".
+      description: Whether to return the full response for detected URLs. Default is "false".
       defaultValue: "false"
     - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format.
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
       defaultValue: "10"
     - name: threshold
-      description: If the number of positives is higher than the threshold, the domain
-        will be considered malicious. If the threshold is not specified, the default
-        domain threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for API rate limit. Default is "0".
@@ -359,8 +316,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to return all results, which can be thousands. Default
-        is "false". We recommend that you don't return full results in playbooks.
+      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
       defaultValue: "false"
     outputs:
     - contextPath: Domain.Name
@@ -395,22 +351,17 @@ script:
     - contextPath: Domain.VirusTotal.Subdomains
       description: Subdomains.
     - contextPath: Domain.VirusTotal.UnAVDetectedDownloadedHashes
-      description: Latest files that were not detected by any antivirus solution,
-        and were downloaded by VirusTotal from the specified IP address.
+      description: Latest files that were not detected by any antivirus solution, and were downloaded by VirusTotal from the specified IP address.
     - contextPath: Domain.VirusTotal.DetectedURLs
-      description: Latest URLs hosted in this domain address that were detected by
-        at least one URL scanner.
+      description: Latest URLs hosted in this domain address that were detected by at least one URL scanner.
     - contextPath: Domain.VirusTotal.ReferrerHashes
       description: Latest detected files that embed this domain address in their strings.
     - contextPath: Domain.VirusTotal.UnAVDetectedReferrerHashes
-      description: Latest undetected files that embed this domain address in their
-        strings.
+      description: Latest undetected files that embed this domain address in their strings.
     - contextPath: Domain.VirusTotal.UnAVDetectedCommunicatingHashes
-      description: Latest undetected files that communicated with this domain in a
-        sandbox.
+      description: Latest undetected files that communicated with this domain in a sandbox.
     - contextPath: Domain.VirusTotal.Resolutions.last_resolved
-      description: Last resolution times of the IP addresses that resolve to this
-        domain.
+      description: Last resolution times of the IP addresses that resolve to this domain.
     description: Checks the reputation of a domain.
   - name: file-scan
     arguments:
@@ -419,8 +370,7 @@ script:
       default: true
       description: The file entry ID to submit.
     - name: uploadURL
-      description: Private API extension. Special upload URL for files larger than
-        32 MB.
+      description: Private API extension. Special upload URL for files larger than 32 MB.
     outputs:
     - contextPath: vtScanID
       description: Scan IDs of the submitted files.
@@ -440,8 +390,7 @@ script:
     - contextPath: vtLink
       description: Virus Total permanent link.
       type: string
-    description: Re-scans an already submitted file. This avoids having to upload
-      the file again.
+    description: Re-scans an already submitted file. This avoids having to upload the file again.
   - name: url-scan
     arguments:
     - name: url
@@ -463,9 +412,7 @@ script:
       description: The file hash (MD5, SHA1, or SHA256) or URL on which you're commenting.
     - name: comment
       required: true
-      description: 'The actual review, which you can tag by using the "#" twitter-like
-        syntax, for example, #disinfection #zbot, and reference users using the "@"
-        syntax, for example, @VirusTotalTeam).'
+      description: 'The actual review, which you can tag by using the "#" twitter-like syntax, for example, #disinfection #zbot, and reference users using the "@" syntax, for example, @VirusTotalTeam).'
     description: Adds comments to files and URLs.
   - name: vt-file-scan-upload-url
     arguments: []
@@ -478,12 +425,9 @@ script:
     - name: resource
       required: true
       default: true
-      description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving
-        comments.
+      description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving comments.
     - name: before
-      description: Datetime token in the format YYYYMMDDHHMISS. You can use this for
-        paging.
+      description: Datetime token in the format YYYYMMDDHHMISS. You can use this for paging.
     description: Private API. Retrieves comments for a given resource.
-  runonce: false
 tests:
 - virusTotal-test-playbook

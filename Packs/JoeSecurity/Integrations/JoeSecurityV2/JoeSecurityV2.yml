@@ -3,45 +3,42 @@ commonfields:
   id: JoeSecurityV2
   version: -1
 configuration:
-  - name: url
-    display: Server URL
-    required: true
-    defaultvalue: https://jbxcloud.joesecurity.org/api
-    type: 0
-  - name: credentials
-    displaypassword: API Key
-    type: 9
-    required: true
-    hiddenusername: true
-  - name: Reliability
-    additionalinfo: Reliability of the source providing the intelligence data.
-    defaultvalue: C - Fairly reliable
-    display: Source Reliability
-    options:
-      - A+ - 3rd party enrichment
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    required: true
-    type: 15
-  - name: create_relationships
-    display: Create relationships
-    required: false
-    type: 8
-    additionalinfo: Create relationships between indicators as part of enrichment.
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    type: 8
-    additionalinfo:
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    type: 8
-    additionalinfo:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://jbxcloud.joesecurity.org/api
+  type: 0
+- name: credentials
+  displaypassword: API Key
+  type: 9
+  required: true
+  hiddenusername: true
+- name: Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: create_relationships
+  display: Create relationships
+  type: 8
+  additionalinfo: Create relationships between indicators as part of enrichment.
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  additionalinfo:
 description: Access the full set of possibilities the JoeSandbox Cloud provides via the RESTful Web API v2.
 display: Joe Security v2
 name: JoeSecurityV2
@@ -49,1231 +46,1209 @@ script:
   commands:
   - name: joe-is-online
     description: Check if the Joe Sandbox analysis backend is online or in maintenance mode.
-    deprecated: false
-    arguments: [ ]
+    arguments: []
     outputs:
-      - contextPath: Joe.ServerStatus.Online
-        description: The server status.
-        type: Boolean
+    - contextPath: Joe.ServerStatus.Online
+      description: The server status.
+      type: Boolean
   - name: joe-analysis-info
     description: Get information about an analysis.
     arguments:
-      - name: webid
-        description: The analysis ID.
-        required: true
-      - name: full_display
-        description: When set to true, indicators information, including their DBot Scores, will be displayed.
-        defaultValue: "false"
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
+    - name: webid
+      description: The analysis ID.
+      required: true
+    - name: full_display
+      description: When set to true, indicators information, including their DBot Scores, will be displayed.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: The reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: File.Hashes.type
-        description: The hash type.
-        type: String
-      - contextPath: File.Hashes.value
-        description: The hash value.
-        type: String
-      - contextPath: File.Name
-        description: The full file name.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: Joe.Analysis.AnalysisID
-        description: The analysis ID from Joe Security.
-        type: String
-      - contextPath: Joe.Analysis.Classification
-        description: The classification of the analysis.
-        type: String
-      - contextPath: Joe.Analysis.Comments
-        description: Comments regarding the analysis.
-        type: String
-      - contextPath: Joe.Analysis.detection
-        description: The analysis detection. Can be one of unknown, clean, suspicious, malicious.
-        type: String
-      - contextPath: Joe.Analysis.duration
-        description: The duration of the analysis in seconds.
-        type: Number
-      - contextPath: Joe.Analysis.encrypted
-        description: True if the analysis data is encrypted.
-        type: Boolean
-      - contextPath: Joe.Analysis.filename
-        description: The file name of the analysis.
-        type: String
-      - contextPath: Joe.Analysis.md5
-        description: The file MD5.
-        type: String
-      - contextPath: Joe.Analysis.runs.detection
-        description: The run detection. Can be one of unknown, clean, suspicious, malicious.
-        type: String
-      - contextPath: Joe.Analysis.runs.error
-        description: The run errors.
-        type: Unknown
-      - contextPath: Joe.Analysis.runs.score
-        description: The run score.
-        type: Number
-      - contextPath: Joe.Analysis.runs.sigma
-        description: The run sigma.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.snort
-        description: The run snort.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.system
-        description: The run operation system.
-        type: String
-      - contextPath: Joe.Analysis.runs.yara
-        description: The run YARA.
-        type: Boolean
-      - contextPath: Joe.Analysis.score
-        description: The run score.
-        type: Number
-      - contextPath: Joe.Analysis.scriptname
-        description: The run script name.
-        type: String
-      - contextPath: Joe.Analysis.sha1
-        description: The file SHA1.
-        type: String
-      - contextPath: Joe.Analysis.sha256
-        description: The file SHA256.
-        type: String
-      - contextPath: Joe.Analysis.status
-        description: The status is one of submitted, running, finished.
-        type: String
-      - contextPath: Joe.Analysis.threatname
-        description: The analysis threat name.
-        type: String
-      - contextPath: Joe.Analysis.time
-        description: The analysis time.
-        type: Date
-      - contextPath: Joe.Analysis.webid
-        description: The web ID from Joe Security.
-        type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Hashes.type
+      description: The hash type.
+      type: String
+    - contextPath: File.Hashes.value
+      description: The hash value.
+      type: String
+    - contextPath: File.Name
+      description: The full file name.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: Joe.Analysis.AnalysisID
+      description: The analysis ID from Joe Security.
+      type: String
+    - contextPath: Joe.Analysis.Classification
+      description: The classification of the analysis.
+      type: String
+    - contextPath: Joe.Analysis.Comments
+      description: Comments regarding the analysis.
+      type: String
+    - contextPath: Joe.Analysis.detection
+      description: The analysis detection. Can be one of unknown, clean, suspicious, malicious.
+      type: String
+    - contextPath: Joe.Analysis.duration
+      description: The duration of the analysis in seconds.
+      type: Number
+    - contextPath: Joe.Analysis.encrypted
+      description: True if the analysis data is encrypted.
+      type: Boolean
+    - contextPath: Joe.Analysis.filename
+      description: The file name of the analysis.
+      type: String
+    - contextPath: Joe.Analysis.md5
+      description: The file MD5.
+      type: String
+    - contextPath: Joe.Analysis.runs.detection
+      description: The run detection. Can be one of unknown, clean, suspicious, malicious.
+      type: String
+    - contextPath: Joe.Analysis.runs.error
+      description: The run errors.
+      type: Unknown
+    - contextPath: Joe.Analysis.runs.score
+      description: The run score.
+      type: Number
+    - contextPath: Joe.Analysis.runs.sigma
+      description: The run sigma.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.snort
+      description: The run snort.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.system
+      description: The run operation system.
+      type: String
+    - contextPath: Joe.Analysis.runs.yara
+      description: The run YARA.
+      type: Boolean
+    - contextPath: Joe.Analysis.score
+      description: The run score.
+      type: Number
+    - contextPath: Joe.Analysis.scriptname
+      description: The run script name.
+      type: String
+    - contextPath: Joe.Analysis.sha1
+      description: The file SHA1.
+      type: String
+    - contextPath: Joe.Analysis.sha256
+      description: The file SHA256.
+      type: String
+    - contextPath: Joe.Analysis.status
+      description: The status is one of submitted, running, finished.
+      type: String
+    - contextPath: Joe.Analysis.threatname
+      description: The analysis threat name.
+      type: String
+    - contextPath: Joe.Analysis.time
+      description: The analysis time.
+      type: Date
+    - contextPath: Joe.Analysis.webid
+      description: The web ID from Joe Security.
+      type: String
   - name: joe-list-analysis
     description: Lists all analyses.
     arguments:
-      - name: page
-        description: Page number to display.
-        required: false
-      - name: page_size
-        description: Determine how many entries to display on each page.
-        required: false
-      - name: limit
-        description: Limit the number of entries to display.
-        defaultValue: '50'
-        required: false
-      - name: full_display
-        description: When set to true, indicators information, including their DBot Scores, will be displayed.
-        isArray: false
-        required: false
-        defaultValue: "false"
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
+    - name: page
+      description: Page number to display.
+    - name: page_size
+      description: Determine how many entries to display on each page.
+    - name: limit
+      description: Limit the number of entries to display.
+      defaultValue: '50'
+    - name: full_display
+      description: When set to true, indicators information, including their DBot Scores, will be displayed.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: The reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: File.Hashes.type
-        description: The hash type.
-        type: String
-      - contextPath: File.Hashes.value
-        description: The hash value.
-        type: String
-      - contextPath: File.Name
-        description: The full file name.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: Joe.Analysis.AnalysisID
-        description: The analysis ID.
-        type: String
-      - contextPath: Joe.Analysis.Classification
-        description: The classification of the analysis.
-        type: String
-      - contextPath: Joe.Analysis.Comments
-        description: Comments regarding the analysis.
-        type: String
-      - contextPath: Joe.Analysis.detection
-        description: The analysis detection. Can be one of unknown, clean, suspicious, malicious.
-        type: String
-      - contextPath: Joe.Analysis.duration
-        description: The duration of the analysis in seconds.
-        type: Number
-      - contextPath: Joe.Analysis.encrypted
-        description: True if the analysis data is encrypted.
-        type: Boolean
-      - contextPath: Joe.Analysis.filename
-        description: The file name of the analysis.
-        type: String
-      - contextPath: Joe.Analysis.md5
-        description: The file MD5.
-        type: String
-      - contextPath: Joe.Analysis.runs.detection
-        description: The run detection. Can be one of unknown, clean, suspicious, malicious.
-        type: String
-      - contextPath: Joe.Analysis.runs.error
-        description: The run errors.
-        type: Unknown
-      - contextPath: Joe.Analysis.runs.score
-        description: The run score.
-        type: Number
-      - contextPath: Joe.Analysis.runs.sigma
-        description: The run sigma.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.snort
-        description: The run snort.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.system
-        description: The run operation system.
-        type: String
-      - contextPath: Joe.Analysis.runs.yara
-        description: The run YARA.
-        type: Boolean
-      - contextPath: Joe.Analysis.score
-        description: The run score.
-        type: Number
-      - contextPath: Joe.Analysis.scriptname
-        description: The run script name.
-        type: String
-      - contextPath: Joe.Analysis.sha1
-        description: The file SHA1.
-        type: String
-      - contextPath: Joe.Analysis.sha256
-        description: The file SHA256.
-        type: String
-      - contextPath: Joe.Analysis.status
-        description: The status is one of submitted, running, finished.
-        type: String
-      - contextPath: Joe.Analysis.threatname
-        description: The analysis threat name.
-        type: String
-      - contextPath: Joe.Analysis.time
-        description: The analysis time.
-        type: Date
-      - contextPath: Joe.Analysis.webid
-        description: The web ID from Joe Security.
-        type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Hashes.type
+      description: The hash type.
+      type: String
+    - contextPath: File.Hashes.value
+      description: The hash value.
+      type: String
+    - contextPath: File.Name
+      description: The full file name.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: Joe.Analysis.AnalysisID
+      description: The analysis ID.
+      type: String
+    - contextPath: Joe.Analysis.Classification
+      description: The classification of the analysis.
+      type: String
+    - contextPath: Joe.Analysis.Comments
+      description: Comments regarding the analysis.
+      type: String
+    - contextPath: Joe.Analysis.detection
+      description: The analysis detection. Can be one of unknown, clean, suspicious, malicious.
+      type: String
+    - contextPath: Joe.Analysis.duration
+      description: The duration of the analysis in seconds.
+      type: Number
+    - contextPath: Joe.Analysis.encrypted
+      description: True if the analysis data is encrypted.
+      type: Boolean
+    - contextPath: Joe.Analysis.filename
+      description: The file name of the analysis.
+      type: String
+    - contextPath: Joe.Analysis.md5
+      description: The file MD5.
+      type: String
+    - contextPath: Joe.Analysis.runs.detection
+      description: The run detection. Can be one of unknown, clean, suspicious, malicious.
+      type: String
+    - contextPath: Joe.Analysis.runs.error
+      description: The run errors.
+      type: Unknown
+    - contextPath: Joe.Analysis.runs.score
+      description: The run score.
+      type: Number
+    - contextPath: Joe.Analysis.runs.sigma
+      description: The run sigma.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.snort
+      description: The run snort.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.system
+      description: The run operation system.
+      type: String
+    - contextPath: Joe.Analysis.runs.yara
+      description: The run YARA.
+      type: Boolean
+    - contextPath: Joe.Analysis.score
+      description: The run score.
+      type: Number
+    - contextPath: Joe.Analysis.scriptname
+      description: The run script name.
+      type: String
+    - contextPath: Joe.Analysis.sha1
+      description: The file SHA1.
+      type: String
+    - contextPath: Joe.Analysis.sha256
+      description: The file SHA256.
+      type: String
+    - contextPath: Joe.Analysis.status
+      description: The status is one of submitted, running, finished.
+      type: String
+    - contextPath: Joe.Analysis.threatname
+      description: The analysis threat name.
+      type: String
+    - contextPath: Joe.Analysis.time
+      description: The analysis time.
+      type: Date
+    - contextPath: Joe.Analysis.webid
+      description: The web ID from Joe Security.
+      type: String
   - name: joe-download-report
     arguments:
-      - name: webid
-        default: true
-        description: Web ID.
-        required: true
-      - name: type
-        default: false
-        defaultValue: html
-        description: The resource type to download.
-        auto: PREDEFINED
-        predefined:
-          - html
-          - json
-          - pcap
-          - pdf
-          - xml
-          - iocjson
-        required: false
-        secret: false
-    deprecated: false
+    - name: webid
+      default: true
+      description: Web ID.
+      required: true
+    - name: type
+      defaultValue: html
+      description: The resource type to download.
+      auto: PREDEFINED
+      predefined:
+      - html
+      - json
+      - pcap
+      - pdf
+      - xml
+      - iocjson
     description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See the integration README for the full list of supported report types.
     outputs:
-      - contextPath: InfoFile.Name
-        description: The filename.
-        type: string
-      - contextPath: InfoFile.EntryID
-        description: The entry ID of the report
-        type: string
-      - contextPath: InfoFile.Size
-        description: File size.
-        type: number
-      - contextPath: InfoFile.Type
-        description: File type, e.g., "PE".
-        type: string
-      - contextPath: InfoFile.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: File.Extension
-        description: File extension.
-        type: string
+    - contextPath: InfoFile.Name
+      description: The filename.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
   - name: joe-download-sample
     arguments:
-      - name: webid
-        default: true
-        description: Web ID.
-        required: true
+    - name: webid
+      default: true
+      description: Web ID.
+      required: true
     description: Download a sample.
     outputs:
-      - contextPath: File.Size
-        description: File size.
-        type: number
-      - contextPath: File.SHA1
-        description: SHA1 hash of the file.
-        type: string
-      - contextPath: File.SHA256
-        description: SHA256 hash of the file.
-        type: string
-      - contextPath: File.Name
-        description: The sample name.
-        type: string
-      - contextPath: File.SSDeep
-        description: SSDeep hash of the file.
-        type: string
-      - contextPath: File.EntryID
-        description: War Room entry ID of the file.
-        type: string
-      - contextPath: File.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: File.Type
-        description: File type, e.g., "PE".
-        type: string
-      - contextPath: File MD5
-        description: MD5 hash of the file.
-        type: string
-      - contextPath: File.Extension
-        description: File extension.
-        type: string
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: The sample name.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: War Room entry ID of the file.
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: File.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: File MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
   - name: joe-search
     arguments:
-      - name: query
-        description: 'Search string which will search in the following fields only: md5, sha1, sha256, filename, URL, comments.'
-        required: true
-      - name: full_display
-        description: When set to true, indicators information, including their DBot Scores, will be displayed.
-        defaultValue: "false"
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
+    - name: query
+      description: 'Search string which will search in the following fields only: md5, sha1, sha256, filename, URL, comments.'
+      required: true
+    - name: full_display
+      description: When set to true, indicators information, including their DBot Scores, will be displayed.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
     description: Search through all analyses.
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: The reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: File.Hashes.type
-        description: The hash type.
-        type: String
-      - contextPath: File.Hashes.value
-        description: The hash value.
-        type: String
-      - contextPath: File.Name
-        description: The full file name.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: Joe.Analysis.AnalysisID
-        description: The analysis ID.
-        type: String
-      - contextPath: Joe.Analysis.Classification
-        description: The classification of the analysis.
-        type: String
-      - contextPath: Joe.Analysis.Comments
-        description: Comments regarding the analysis.
-        type: String
-      - contextPath: Joe.Analysis.detection
-        description: The analysis detection. Can be one of unknown, clean, suspicious, malicious.
-        type: String
-      - contextPath: Joe.Analysis.duration
-        description: The duration of the analysis in seconds.
-        type: Number
-      - contextPath: Joe.Analysis.encrypted
-        description: True if the analysis data is encrypted.
-        type: Boolean
-      - contextPath: Joe.Analysis.filename
-        description: The file name of the analysis.
-        type: String
-      - contextPath: Joe.Analysis.md5
-        description: The file MD5.
-        type: String
-      - contextPath: Joe.Analysis.runs.detection
-        description: The run detection. Can be one of unknown, clean, suspicious, malicious.
-        type: String
-      - contextPath: Joe.Analysis.runs.error
-        description: The run errors.
-        type: Unknown
-      - contextPath: Joe.Analysis.runs.score
-        description: The run score.
-        type: Number
-      - contextPath: Joe.Analysis.runs.sigma
-        description: The run sigma.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.snort
-        description: The run snort.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.system
-        description: The run operation system.
-        type: String
-      - contextPath: Joe.Analysis.runs.yara
-        description: The run YARA.
-        type: Boolean
-      - contextPath: Joe.Analysis.score
-        description: The run score.
-        type: Number
-      - contextPath: Joe.Analysis.scriptname
-        description: The run script name.
-        type: String
-      - contextPath: Joe.Analysis.sha1
-        description: The file SHA1.
-        type: String
-      - contextPath: Joe.Analysis.sha256
-        description: The file SHA256.
-        type: String
-      - contextPath: Joe.Analysis.status
-        description: The status is one of submitted, running, finished.
-        type: String
-      - contextPath: Joe.Analysis.threatname
-        description: The analysis threat name.
-        type: String
-      - contextPath: Joe.Analysis.time
-        description: The analysis time.
-        type: Date
-      - contextPath: Joe.Analysis.webid
-        description: The web ID from Joe Security.
-        type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Hashes.type
+      description: The hash type.
+      type: String
+    - contextPath: File.Hashes.value
+      description: The hash value.
+      type: String
+    - contextPath: File.Name
+      description: The full file name.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: Joe.Analysis.AnalysisID
+      description: The analysis ID.
+      type: String
+    - contextPath: Joe.Analysis.Classification
+      description: The classification of the analysis.
+      type: String
+    - contextPath: Joe.Analysis.Comments
+      description: Comments regarding the analysis.
+      type: String
+    - contextPath: Joe.Analysis.detection
+      description: The analysis detection. Can be one of unknown, clean, suspicious, malicious.
+      type: String
+    - contextPath: Joe.Analysis.duration
+      description: The duration of the analysis in seconds.
+      type: Number
+    - contextPath: Joe.Analysis.encrypted
+      description: True if the analysis data is encrypted.
+      type: Boolean
+    - contextPath: Joe.Analysis.filename
+      description: The file name of the analysis.
+      type: String
+    - contextPath: Joe.Analysis.md5
+      description: The file MD5.
+      type: String
+    - contextPath: Joe.Analysis.runs.detection
+      description: The run detection. Can be one of unknown, clean, suspicious, malicious.
+      type: String
+    - contextPath: Joe.Analysis.runs.error
+      description: The run errors.
+      type: Unknown
+    - contextPath: Joe.Analysis.runs.score
+      description: The run score.
+      type: Number
+    - contextPath: Joe.Analysis.runs.sigma
+      description: The run sigma.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.snort
+      description: The run snort.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.system
+      description: The run operation system.
+      type: String
+    - contextPath: Joe.Analysis.runs.yara
+      description: The run YARA.
+      type: Boolean
+    - contextPath: Joe.Analysis.score
+      description: The run score.
+      type: Number
+    - contextPath: Joe.Analysis.scriptname
+      description: The run script name.
+      type: String
+    - contextPath: Joe.Analysis.sha1
+      description: The file SHA1.
+      type: String
+    - contextPath: Joe.Analysis.sha256
+      description: The file SHA256.
+      type: String
+    - contextPath: Joe.Analysis.status
+      description: The status is one of submitted, running, finished.
+      type: String
+    - contextPath: Joe.Analysis.threatname
+      description: The analysis threat name.
+      type: String
+    - contextPath: Joe.Analysis.time
+      description: The analysis time.
+      type: Date
+    - contextPath: Joe.Analysis.webid
+      description: The web ID from Joe Security.
+      type: String
   - name: file
     arguments:
-      - name: file
-        isArray: true
-        description: 'A comma-separated list of file names, SHA1, SHA256, or MD5 hashes.'
-        required: true
+    - name: file
+      isArray: true
+      description: 'A comma-separated list of file names, SHA1, SHA256, or MD5 hashes.'
+      required: true
     description: Retrieves files information from Joe Security.
     outputs:
-      - contextPath: File.Name
-        description: Name of the file.
-        type: String
-      - contextPath: File.MD5
-        description: MD5 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: SHA256 hash of the file.
-        type: String
-      - contextPath: File.Tags
-        description: Tags of the file.
-        type: String
-      - contextPath: File.Name
-        description: Name of the file.
-        type: String
-      - contextPath: Joe.File.MD5
-        description: MD5 hash of the file.
-        type: String
-      - contextPath: Joe.File.SHA1
-        description: SHA1 hash of the file.
-        type: String
-      - contextPath: Joe.File.SHA256
-        description: SHA256 hash of the file.
-        type: String
-      - contextPath: Joe.File.Tags
-        description: Tags of the file.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: Reliability of the source providing the intelligence data.
-        type: String
+    - contextPath: File.Name
+      description: Name of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
+    - contextPath: File.Name
+      description: Name of the file.
+      type: String
+    - contextPath: Joe.File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: Joe.File.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: Joe.File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: Joe.File.Tags
+      description: Tags of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
   - name: url
     arguments:
-      - name: url
-        isArray: true
-        description: A comma-separated list of URLs.
-        required: true
+    - name: url
+      isArray: true
+      description: A comma-separated list of URLs.
+      required: true
     description: Retrieves URL information from Joe Security.
     outputs:
-      - contextPath: URL.Data
-        description: The URL data.
-        type: String
-      - contextPath: Joe.URL.Name
-        description: Name of the URL.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: Reliability of the source providing the intelligence data.
-        type: String
+    - contextPath: URL.Data
+      description: The URL data.
+      type: String
+    - contextPath: Joe.URL.Name
+      description: Name of the URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
   - name: joe-list–lia-countries
-    arguments: [ ]
-    deprecated: false
+    arguments: []
     description: Retrieve a list of localized internet anonymization countries.
-    execution: false
     outputs:
-      - contextPath: Joe.LIACountry
-        description: A list of localized internet anonymization countries.
-        type: String
+    - contextPath: Joe.LIACountry
+      description: A list of localized internet anonymization countries.
+      type: String
   - name: joe-list-lang-locales
-    arguments: [ ]
-    deprecated: false
+    arguments: []
     description: Retrieve a list of available language and locale combinations.
-    execution: false
     outputs:
-      - contextPath: Joe.LangLocale
-        description: A list of available language and locale combinations.
-        type: String
+    - contextPath: Joe.LangLocale
+      description: A list of available language and locale combinations.
+      type: String
   - name: joe-get-account-quota
-    arguments: [ ]
-    deprecated: false
+    arguments: []
     description: Retrieve the account quota.
-    execution: false
     outputs:
-      - contextPath: Joe.AccountQuota
-        description: The account quota.
-        type: String
-      - contextPath: Joe.AccountQuota.quota.daily.current
-        description: The current daily quota.
-        type: Number
-      - contextPath: Joe.AccountQuota.quota.daily.limit
-        description: The daily quota limit.
-        type: Number
-      - contextPath: Joe.AccountQuota.quota.daily.remaining
-        description: The remaining daily quota.
-        type: Number
-      - contextPath: Joe.AccountQuota.quota.monthly.current
-        description: The current monthly quota.
-        type: Number
-      - contextPath: Joe.AccountQuota.quota.monthly.limit
-        description: The monthly quota limit.
-        type: Number
-      - contextPath: Joe.AccountQuota.quota.monthly.remaining
-        description: The remaining monthly quota.
-        type: Number
-      - contextPath: Joe.AccountQuota.type
-        description: The quota type.
-        type: String
+    - contextPath: Joe.AccountQuota
+      description: The account quota.
+      type: String
+    - contextPath: Joe.AccountQuota.quota.daily.current
+      description: The current daily quota.
+      type: Number
+    - contextPath: Joe.AccountQuota.quota.daily.limit
+      description: The daily quota limit.
+      type: Number
+    - contextPath: Joe.AccountQuota.quota.daily.remaining
+      description: The remaining daily quota.
+      type: Number
+    - contextPath: Joe.AccountQuota.quota.monthly.current
+      description: The current monthly quota.
+      type: Number
+    - contextPath: Joe.AccountQuota.quota.monthly.limit
+      description: The monthly quota limit.
+      type: Number
+    - contextPath: Joe.AccountQuota.quota.monthly.remaining
+      description: The remaining monthly quota.
+      type: Number
+    - contextPath: Joe.AccountQuota.type
+      description: The quota type.
+      type: String
   - name: joe-submission-info
     arguments:
-      - name: submission_ids
-        description: A comma-separated list of submission IDs.
-      - name: full_display
-        description: When set to true, indicators information, including their DBot Scores, will be displayed.
-        isArray: false
-        required: false
-        defaultValue: "true"
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
+    - name: submission_ids
+      description: A comma-separated list of submission IDs.
+    - name: full_display
+      description: When set to true, indicators information, including their DBot Scores, will be displayed.
+      defaultValue: "true"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
     description: Retrieve the submission info.
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: The reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: File.Hashes.type
-        description: The hash type.
-        type: String
-      - contextPath: File.Hashes.value
-        description: The hash value.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Name
-        description: The full file name.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: Joe.Analysis.AnalysisID
-        description: The analysis ID.
-        type: String
-      - contextPath: Joe.Analysis.Classification
-        description: The classification.
-        type: String
-      - contextPath: Joe.Analysis.Comments
-        description: The comments.
-        type: String
-      - contextPath: Joe.Analysis.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Analysis.duration
-        description: The duration.
-        type: Number
-      - contextPath: Joe.Analysis.encrypted
-        description: True if the analysis data is encrypted.
-        type: Boolean
-      - contextPath: Joe.Analysis.filename
-        description: The filename.
-        type: String
-      - contextPath: Joe.Analysis.runs.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Analysis.runs.error
-        description: The error.
-        type: Unknown
-      - contextPath: Joe.Analysis.runs.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Analysis.runs.sigma
-        description: The sigma.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.snort
-        description: The snort.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.system
-        description: The system.
-        type: String
-      - contextPath: Joe.Analysis.runs.yara
-        description: The YARA.
-        type: Boolean
-      - contextPath: Joe.Analysis.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Analysis.scriptname
-        description: The script name.
-        type: String
-      - contextPath: Joe.Analysis.status
-        description: The status.
-        type: String
-      - contextPath: Joe.Analysis.threatname
-        description: The threat name.
-        type: String
-      - contextPath: Joe.Analysis.time
-        description: The time.
-        type: Date
-      - contextPath: Joe.Analysis.webid
-        description: The web ID.
-        type: String
-      - contextPath: Joe.Submission.most_relevant_analysis.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Submission.most_relevant_analysis.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Submission.most_relevant_analysis.webid
-        description: The web ID.
-        type: String
-      - contextPath: Joe.Submission.name
-        description: The name.
-        type: String
-      - contextPath: Joe.Submission.status
-        description: The status.
-        type: String
-      - contextPath: Joe.Submission.submission_id
-        description: The submission ID.
-        type: String
-      - contextPath: Joe.Submission.time
-        description: The time.
-        type: Date
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Hashes.type
+      description: The hash type.
+      type: String
+    - contextPath: File.Hashes.value
+      description: The hash value.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: Joe.Analysis.AnalysisID
+      description: The analysis ID.
+      type: String
+    - contextPath: Joe.Analysis.Classification
+      description: The classification.
+      type: String
+    - contextPath: Joe.Analysis.Comments
+      description: The comments.
+      type: String
+    - contextPath: Joe.Analysis.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Analysis.duration
+      description: The duration.
+      type: Number
+    - contextPath: Joe.Analysis.encrypted
+      description: True if the analysis data is encrypted.
+      type: Boolean
+    - contextPath: Joe.Analysis.filename
+      description: The filename.
+      type: String
+    - contextPath: Joe.Analysis.runs.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Analysis.runs.error
+      description: The error.
+      type: Unknown
+    - contextPath: Joe.Analysis.runs.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Analysis.runs.sigma
+      description: The sigma.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.snort
+      description: The snort.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.system
+      description: The system.
+      type: String
+    - contextPath: Joe.Analysis.runs.yara
+      description: The YARA.
+      type: Boolean
+    - contextPath: Joe.Analysis.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Analysis.scriptname
+      description: The script name.
+      type: String
+    - contextPath: Joe.Analysis.status
+      description: The status.
+      type: String
+    - contextPath: Joe.Analysis.threatname
+      description: The threat name.
+      type: String
+    - contextPath: Joe.Analysis.time
+      description: The time.
+      type: Date
+    - contextPath: Joe.Analysis.webid
+      description: The web ID.
+      type: String
+    - contextPath: Joe.Submission.most_relevant_analysis.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Submission.most_relevant_analysis.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Submission.most_relevant_analysis.webid
+      description: The web ID.
+      type: String
+    - contextPath: Joe.Submission.name
+      description: The name.
+      type: String
+    - contextPath: Joe.Submission.status
+      description: The status.
+      type: String
+    - contextPath: Joe.Submission.submission_id
+      description: The submission ID.
+      type: String
+    - contextPath: Joe.Submission.time
+      description: The time.
+      type: Date
   - name: joe-submit-sample
     arguments:
-      - name: submission_id
-        description: The submission ID.
-        deprecated: true
-      - name: entry_id
-        description: The War Room entry ID of the file to submit.
-        required: true
-      - name: full_display
-        description: When is set to true, indicators information, including their DBot Scores, will be displayed.
-        isArray: false
-        required: false
-        defaultValue: "true"
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-      - name: timeout
-        description: The timeout for the polling in seconds.
-        defaultValue: "1200"
-      - name: hide_polling_output
-        description: Hide polling output.
-        deprecated: true
-      - name: report_type
-        description: The report type.
-        auto: PREDEFINED
-        predefined:
-          - html
-          - json
-          - pcap
-          - pdf
-          - xml
-          - iocjson
-        defaultValue: 'html'
-      - name: cookbook
-        description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the shape (filename, file-like object)
-      - name: comments
-        description: A comment to be added to the analysis.
-      - name: tags
-        description: A comma-separated list of tags to be added to the analysis.
-      - name: systems
-        description: A comma-separated list of operating systems to be used for the analysis.
-        auto: PREDEFINED
-        predefined:
-          - w7
-          - w7x64
-          - w7_1
-          - w7_2
-          - w7_4
-          - w7_5
-          - w7native
-          - android2
-          - android3
-          - mac1
-          - w7l
-          - w7x64l
-          - w10
-          - android4
-          - w7x64native
-          - w7_3
-          - w10native
-          - android5native_1
-          - w10x64
-          - w7x64_hvm
-          - android6
-          - iphone1
-          - w7_sec
-          - macvm
-          - w7_lang_packs
-          - w7x64native_hvm
-          - lnxubuntu1
-          - lnxcentos1
-          - android7_nougat
-      - name: internet_access
-        description: Whether to allow internet access for the analysis.
-        defaultValue: 'true'
-      - name: archive_no_unpack
-        description: Whether to archive the sample without unpacking it.
-        defaultValue: 'false'
-      - name: ssl_inspection
-        description: Whether to enable SSL inspection.
-        defaultValue: 'false'
-      - name: localized_internet_country
-        description: The localized internet anonymization country.
-      - name: internet_simulation
-        description: Whether to enable internet simulation.
-        defaultValue: 'false'
-      - name: hybrid_code_analysis
-        description: Whether to enable hybrid code analysis.
-        defaultValue: 'true'
-      - name: hybrid_decompilation
-        description: Whether to enable hybrid decompilation.
-        defaultValue: 'false'
-      - name: vba_instrumentation
-        description: Whether to enable VBA instrumentation.
-        defaultValue: 'true'
-      - name: js_instrumentation
-        description: Whether to enable JS instrumentation.
-        defaultValue: 'true'
-      - name: java_jar_tracing
-        description: Whether to enable Java JAR tracing.
-        defaultValue: 'true'
-      - name: dotnet_tracing
-        description: Whether to enable .NET tracing.
-        defaultValue: 'true'
-      - name: amsi_unpacking
-        description: Whether to enable Microsoft Antimalware Scan Interface unpacking.
-        defaultValue: 'true'
-      - name: fast_mode
-        description: Whether to enable fast mode. It focuses on fast analysis and detection versus deep forensic analysis.
-        defaultValue: 'false'
-      - name: secondary_results
-        description: Whether to enable secondary results, such as YARA rule generation, classification via Joe Sandbox Class as well as several detail reports.
-        defaultValue: 'false'
-      - name: report_cache
-        description: Whether to enable report cache.
-        defaultValue: 'false'
-      - name: command_line_argument
-        description: A command line argument to be passed to the sample.
-      - name: live_interaction
-        description: Whether to enable live interaction.
-        defaultValue: 'false'
-      - name: document_password
-        description: The document password.
-      - name: archive_password
-        description: The archive password.
-      - name: start_as_normal_user
-        description: Whether to start the analysis as a normal user.
-        defaultValue: 'false'
-      - name: language_and_locale
-        description: Changes the language and locale of the analysis machine.
-      - name: delete_after_days
-        description: The number of days after which the analysis will be deleted.
-        defaultValue: '30'
-      - name: encrypt_with_password
-        description: The password with which to encrypt the analysis.
-      - name: export_to_jbxview
-        description: Whether to export the analysis to JBXView.
-        defaultValue: 'false'
-      - name: email_notification
-        description: Send an email notification once the analysis completes.
-        defaultValue: 'false'
+    - name: submission_id
+      description: The submission ID.
+      deprecated: true
+    - name: entry_id
+      description: The War Room entry ID of the file to submit.
+      required: true
+    - name: full_display
+      description: When is set to true, indicators information, including their DBot Scores, will be displayed.
+      defaultValue: "true"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: timeout
+      description: The timeout for the polling in seconds.
+      defaultValue: "1200"
+    - name: hide_polling_output
+      description: Hide polling output.
+      deprecated: true
+    - name: report_type
+      description: The report type.
+      auto: PREDEFINED
+      predefined:
+      - html
+      - json
+      - pcap
+      - pdf
+      - xml
+      - iocjson
+      defaultValue: 'html'
+    - name: cookbook
+      description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the shape (filename, file-like object)
+    - name: comments
+      description: A comment to be added to the analysis.
+    - name: tags
+      description: A comma-separated list of tags to be added to the analysis.
+    - name: systems
+      description: A comma-separated list of operating systems to be used for the analysis.
+      auto: PREDEFINED
+      predefined:
+      - w7
+      - w7x64
+      - w7_1
+      - w7_2
+      - w7_4
+      - w7_5
+      - w7native
+      - android2
+      - android3
+      - mac1
+      - w7l
+      - w7x64l
+      - w10
+      - android4
+      - w7x64native
+      - w7_3
+      - w10native
+      - android5native_1
+      - w10x64
+      - w7x64_hvm
+      - android6
+      - iphone1
+      - w7_sec
+      - macvm
+      - w7_lang_packs
+      - w7x64native_hvm
+      - lnxubuntu1
+      - lnxcentos1
+      - android7_nougat
+    - name: internet_access
+      description: Whether to allow internet access for the analysis.
+      defaultValue: 'true'
+    - name: archive_no_unpack
+      description: Whether to archive the sample without unpacking it.
+      defaultValue: 'false'
+    - name: ssl_inspection
+      description: Whether to enable SSL inspection.
+      defaultValue: 'false'
+    - name: localized_internet_country
+      description: The localized internet anonymization country.
+    - name: internet_simulation
+      description: Whether to enable internet simulation.
+      defaultValue: 'false'
+    - name: hybrid_code_analysis
+      description: Whether to enable hybrid code analysis.
+      defaultValue: 'true'
+    - name: hybrid_decompilation
+      description: Whether to enable hybrid decompilation.
+      defaultValue: 'false'
+    - name: vba_instrumentation
+      description: Whether to enable VBA instrumentation.
+      defaultValue: 'true'
+    - name: js_instrumentation
+      description: Whether to enable JS instrumentation.
+      defaultValue: 'true'
+    - name: java_jar_tracing
+      description: Whether to enable Java JAR tracing.
+      defaultValue: 'true'
+    - name: dotnet_tracing
+      description: Whether to enable .NET tracing.
+      defaultValue: 'true'
+    - name: amsi_unpacking
+      description: Whether to enable Microsoft Antimalware Scan Interface unpacking.
+      defaultValue: 'true'
+    - name: fast_mode
+      description: Whether to enable fast mode. It focuses on fast analysis and detection versus deep forensic analysis.
+      defaultValue: 'false'
+    - name: secondary_results
+      description: Whether to enable secondary results, such as YARA rule generation, classification via Joe Sandbox Class as well as several detail reports.
+      defaultValue: 'false'
+    - name: report_cache
+      description: Whether to enable report cache.
+      defaultValue: 'false'
+    - name: command_line_argument
+      description: A command line argument to be passed to the sample.
+    - name: live_interaction
+      description: Whether to enable live interaction.
+      defaultValue: 'false'
+    - name: document_password
+      description: The document password.
+    - name: archive_password
+      description: The archive password.
+    - name: start_as_normal_user
+      description: Whether to start the analysis as a normal user.
+      defaultValue: 'false'
+    - name: language_and_locale
+      description: Changes the language and locale of the analysis machine.
+    - name: delete_after_days
+      description: The number of days after which the analysis will be deleted.
+      defaultValue: '30'
+    - name: encrypt_with_password
+      description: The password with which to encrypt the analysis.
+    - name: export_to_jbxview
+      description: Whether to export the analysis to JBXView.
+      defaultValue: 'false'
+    - name: email_notification
+      description: Send an email notification once the analysis completes.
+      defaultValue: 'false'
     description: Submit a sample for sandbox analysis.
     polling: true
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: The reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: File.Hashes.type
-        description: The hash type.
-        type: String
-      - contextPath: File.Hashes.value
-        description: The hash value.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Name
-        description: The full file name.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: Joe.Analysis.AnalysisID
-        description: The analysis ID.
-        type: String
-      - contextPath: Joe.Analysis.Classification
-        description: The classification.
-        type: String
-      - contextPath: Joe.Analysis.Comments
-        description: The comments.
-        type: String
-      - contextPath: Joe.Analysis.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Analysis.duration
-        description: The duration.
-        type: Number
-      - contextPath: Joe.Analysis.encrypted
-        description: True if the analysis data is encrypted.
-        type: Boolean
-      - contextPath: Joe.Analysis.filename
-        description: The filename.
-        type: String
-      - contextPath: Joe.Analysis.runs.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Analysis.runs.error
-        description: The error.
-        type: Unknown
-      - contextPath: Joe.Analysis.runs.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Analysis.runs.sigma
-        description: The sigma.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.snort
-        description: The snort.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.system
-        description: The system.
-        type: String
-      - contextPath: Joe.Analysis.runs.yara
-        description: The YARA.
-        type: Boolean
-      - contextPath: Joe.Analysis.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Analysis.scriptname
-        description: The script name.
-        type: String
-      - contextPath: Joe.Analysis.status
-        description: The status.
-        type: String
-      - contextPath: Joe.Analysis.threatname
-        description: The threat name.
-        type: String
-      - contextPath: Joe.Analysis.time
-        description: The time.
-        type: Date
-      - contextPath: Joe.Analysis.webid
-        description: The web ID.
-        type: String
-      - contextPath: Joe.Submission.most_relevant_analysis.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Submission.most_relevant_analysis.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Submission.most_relevant_analysis.webid
-        description: The web ID.
-        type: String
-      - contextPath: Joe.Submission.name
-        description: The name.
-        type: String
-      - contextPath: Joe.Submission.status
-        description: The status.
-        type: String
-      - contextPath: Joe.Submission.submission_id
-        description: The submission ID.
-        type: String
-      - contextPath: Joe.Submission.time
-        description: The time.
-        type: Date
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Hashes.type
+      description: The hash type.
+      type: String
+    - contextPath: File.Hashes.value
+      description: The hash value.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: Joe.Analysis.AnalysisID
+      description: The analysis ID.
+      type: String
+    - contextPath: Joe.Analysis.Classification
+      description: The classification.
+      type: String
+    - contextPath: Joe.Analysis.Comments
+      description: The comments.
+      type: String
+    - contextPath: Joe.Analysis.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Analysis.duration
+      description: The duration.
+      type: Number
+    - contextPath: Joe.Analysis.encrypted
+      description: True if the analysis data is encrypted.
+      type: Boolean
+    - contextPath: Joe.Analysis.filename
+      description: The filename.
+      type: String
+    - contextPath: Joe.Analysis.runs.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Analysis.runs.error
+      description: The error.
+      type: Unknown
+    - contextPath: Joe.Analysis.runs.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Analysis.runs.sigma
+      description: The sigma.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.snort
+      description: The snort.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.system
+      description: The system.
+      type: String
+    - contextPath: Joe.Analysis.runs.yara
+      description: The YARA.
+      type: Boolean
+    - contextPath: Joe.Analysis.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Analysis.scriptname
+      description: The script name.
+      type: String
+    - contextPath: Joe.Analysis.status
+      description: The status.
+      type: String
+    - contextPath: Joe.Analysis.threatname
+      description: The threat name.
+      type: String
+    - contextPath: Joe.Analysis.time
+      description: The time.
+      type: Date
+    - contextPath: Joe.Analysis.webid
+      description: The web ID.
+      type: String
+    - contextPath: Joe.Submission.most_relevant_analysis.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Submission.most_relevant_analysis.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Submission.most_relevant_analysis.webid
+      description: The web ID.
+      type: String
+    - contextPath: Joe.Submission.name
+      description: The name.
+      type: String
+    - contextPath: Joe.Submission.status
+      description: The status.
+      type: String
+    - contextPath: Joe.Submission.submission_id
+      description: The submission ID.
+      type: String
+    - contextPath: Joe.Submission.time
+      description: The time.
+      type: Date
   - name: joe-submit-url
     arguments:
-      - name: submission_id
-        description: The submission ID.
-        deprecated: true
-      - name: url
-        description: The URL to submit.
-        required: true
-      - name: url_reputation
-        description: The URL reputation.
-        defaultValue: "false"
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-      - name: full_display
-        description: When set to true. indicators information, including their DBot Scores, will be displayed.
-        isArray: false
-        required: false
-        defaultValue: "true"
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-      - name: timeout
-        description: The timeout for the polling in seconds.
-        defaultValue: "1200"
-      - name: hide_polling_output
-        description: Hide polling output.
-        deprecated: true
-      - name: report_type
-        description: The report type.
-        auto: PREDEFINED
-        predefined:
-          - html
-          - json
-          - pcap
-          - pdf
-          - xml
-          - iocjson
-        defaultValue: 'html'
-      - name: comments
-        description: A comment to be added to the analysis.
-      - name: tags
-        description: A comma-separated list of tags to be added to the analysis.
-      - name: systems
-        description: A comma-separated list of operating systems to be used for the analysis.
-        auto: PREDEFINED
-        predefined:
-          - w7
-          - w7x64
-          - w7_1
-          - w7_2
-          - w7_4
-          - w7_5
-          - w7native
-          - android2
-          - android3
-          - mac1
-          - w7l
-          - w7x64l
-          - w10
-          - android4
-          - w7x64native
-          - w7_3
-          - w10native
-          - android5native_1
-          - w10x64
-          - w7x64_hvm
-          - android6
-          - iphone1
-          - w7_sec
-          - macvm
-          - w7_lang_packs
-          - w7x64native_hvm
-          - lnxubuntu1
-          - lnxcentos1
-          - android7_nougat
-      - name: internet_access
-        description: Whether to allow internet access for the analysis.
-        defaultValue: 'true'
-      - name: archive_no_unpack
-        description: Whether to archive the sample without unpacking it.
-        defaultValue: 'false'
-      - name: ssl_inspection
-        description: Whether to enable SSL inspection.
-        defaultValue: 'false'
-      - name: localized_internet_country
-        description: The localized internet anonymization country.
-      - name: internet_simulation
-        description: Whether to enable internet simulation.
-        defaultValue: 'false'
-      - name: hybrid_code_analysis
-        description: Whether to enable hybrid code analysis.
-        defaultValue: 'false'
-      - name: hybrid_decompilation
-        description: Whether to enable hybrid decompilation.
-        defaultValue: 'false'
-      - name: vba_instrumentation
-        description: Whether to enable VBA instrumentation.
-        defaultValue: 'true'
-      - name: js_instrumentation
-        description: Whether to enable JS instrumentation.
-        defaultValue: 'true'
-      - name: java_jar_tracing
-        description: Whether to enable Java JAR tracing.
-        defaultValue: 'true'
-      - name: dotnet_tracing
-        description: Whether to enable .NET tracing.
-        defaultValue: 'true'
-      - name: amsi_unpacking
-        description: Whether to enable Microsoft Antimalware Scan Interface unpacking.
-        defaultValue: 'true'
-      - name: fast_mode
-        description: Whether to enable fast mode. It focuses on fast analysis and detection versus deep forensic analysis.
-        defaultValue: 'false'
-      - name: secondary_results
-        description: Whether to enable secondary results, such as YARA rule generation, classification via Joe Sandbox Class as well as several detail reports.
-        defaultValue: 'false'
-      - name: report_cache
-        description: Whether to enable report cache.
-        defaultValue: 'false'
-      - name: command_line_argument
-        description: A command line argument to be passed to the sample.
-      - name: live_interaction
-        description: Whether to enable live interaction.
-        defaultValue: 'false'
-      - name: document_password
-        description: The document password.
-      - name: archive_password
-        description: The archive password.
-      - name: start_as_normal_user
-        description: Whether to start the analysis as a normal user.
-        defaultValue: 'false'
-      - name: language_and_locale
-        description: Changes the language and locale of the analysis machine
-      - name: delete_after_days
-        description: The number of days after which the analysis will be deleted.
-        defaultValue: '30'
-      - name: encrypt_with_password
-        description: The password with which to encrypt the analysis.
-      - name: export_to_jbxview
-        description: Whether to export the analysis to JBXView.
-        defaultValue: 'false'
-      - name: email_notification
-        description: Send an email notification once the analysis completes.
-        defaultValue: 'false'
+    - name: submission_id
+      description: The submission ID.
+      deprecated: true
+    - name: url
+      description: The URL to submit.
+      required: true
+    - name: url_reputation
+      description: The URL reputation.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: full_display
+      description: When set to true. indicators information, including their DBot Scores, will be displayed.
+      defaultValue: "true"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: timeout
+      description: The timeout for the polling in seconds.
+      defaultValue: "1200"
+    - name: hide_polling_output
+      description: Hide polling output.
+      deprecated: true
+    - name: report_type
+      description: The report type.
+      auto: PREDEFINED
+      predefined:
+      - html
+      - json
+      - pcap
+      - pdf
+      - xml
+      - iocjson
+      defaultValue: 'html'
+    - name: comments
+      description: A comment to be added to the analysis.
+    - name: tags
+      description: A comma-separated list of tags to be added to the analysis.
+    - name: systems
+      description: A comma-separated list of operating systems to be used for the analysis.
+      auto: PREDEFINED
+      predefined:
+      - w7
+      - w7x64
+      - w7_1
+      - w7_2
+      - w7_4
+      - w7_5
+      - w7native
+      - android2
+      - android3
+      - mac1
+      - w7l
+      - w7x64l
+      - w10
+      - android4
+      - w7x64native
+      - w7_3
+      - w10native
+      - android5native_1
+      - w10x64
+      - w7x64_hvm
+      - android6
+      - iphone1
+      - w7_sec
+      - macvm
+      - w7_lang_packs
+      - w7x64native_hvm
+      - lnxubuntu1
+      - lnxcentos1
+      - android7_nougat
+    - name: internet_access
+      description: Whether to allow internet access for the analysis.
+      defaultValue: 'true'
+    - name: archive_no_unpack
+      description: Whether to archive the sample without unpacking it.
+      defaultValue: 'false'
+    - name: ssl_inspection
+      description: Whether to enable SSL inspection.
+      defaultValue: 'false'
+    - name: localized_internet_country
+      description: The localized internet anonymization country.
+    - name: internet_simulation
+      description: Whether to enable internet simulation.
+      defaultValue: 'false'
+    - name: hybrid_code_analysis
+      description: Whether to enable hybrid code analysis.
+      defaultValue: 'false'
+    - name: hybrid_decompilation
+      description: Whether to enable hybrid decompilation.
+      defaultValue: 'false'
+    - name: vba_instrumentation
+      description: Whether to enable VBA instrumentation.
+      defaultValue: 'true'
+    - name: js_instrumentation
+      description: Whether to enable JS instrumentation.
+      defaultValue: 'true'
+    - name: java_jar_tracing
+      description: Whether to enable Java JAR tracing.
+      defaultValue: 'true'
+    - name: dotnet_tracing
+      description: Whether to enable .NET tracing.
+      defaultValue: 'true'
+    - name: amsi_unpacking
+      description: Whether to enable Microsoft Antimalware Scan Interface unpacking.
+      defaultValue: 'true'
+    - name: fast_mode
+      description: Whether to enable fast mode. It focuses on fast analysis and detection versus deep forensic analysis.
+      defaultValue: 'false'
+    - name: secondary_results
+      description: Whether to enable secondary results, such as YARA rule generation, classification via Joe Sandbox Class as well as several detail reports.
+      defaultValue: 'false'
+    - name: report_cache
+      description: Whether to enable report cache.
+      defaultValue: 'false'
+    - name: command_line_argument
+      description: A command line argument to be passed to the sample.
+    - name: live_interaction
+      description: Whether to enable live interaction.
+      defaultValue: 'false'
+    - name: document_password
+      description: The document password.
+    - name: archive_password
+      description: The archive password.
+    - name: start_as_normal_user
+      description: Whether to start the analysis as a normal user.
+      defaultValue: 'false'
+    - name: language_and_locale
+      description: Changes the language and locale of the analysis machine
+    - name: delete_after_days
+      description: The number of days after which the analysis will be deleted.
+      defaultValue: '30'
+    - name: encrypt_with_password
+      description: The password with which to encrypt the analysis.
+    - name: export_to_jbxview
+      description: Whether to export the analysis to JBXView.
+      defaultValue: 'false'
+    - name: email_notification
+      description: Send an email notification once the analysis completes.
+      defaultValue: 'false'
     description: Submit an URL for sandbox analysis.
     polling: true
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: The reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: Joe.Analysis.AnalysisID
-        description: The analysis ID.
-        type: String
-      - contextPath: Joe.Analysis.Classification
-        description: The classification.
-        type: String
-      - contextPath: Joe.Analysis.Comments
-        description: The comments.
-        type: String
-      - contextPath: Joe.Analysis.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Analysis.duration
-        description: The duration.
-        type: Number
-      - contextPath: Joe.Analysis.encrypted
-        description: True if the analysis data is encrypted.
-        type: Boolean
-      - contextPath: Joe.Analysis.filename
-        description: The filename.
-        type: String
-      - contextPath: Joe.Analysis.runs.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Analysis.runs.error
-        description: The error.
-        type: Unknown
-      - contextPath: Joe.Analysis.runs.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Analysis.runs.sigma
-        description: The sigma.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.snort
-        description: The snort.
-        type: Boolean
-      - contextPath: Joe.Analysis.runs.system
-        description: The system.
-        type: String
-      - contextPath: Joe.Analysis.runs.yara
-        description: The YARA.
-        type: Boolean
-      - contextPath: Joe.Analysis.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Analysis.scriptname
-        description: The script name.
-        type: String
-      - contextPath: Joe.Analysis.status
-        description: The status.
-        type: String
-      - contextPath: Joe.Analysis.threatname
-        description: The threat name.
-        type: String
-      - contextPath: Joe.Analysis.time
-        description: The time.
-        type: Date
-      - contextPath: Joe.Analysis.webid
-        description: The web ID.
-        type: String
-      - contextPath: Joe.Submission.most_relevant_analysis.detection
-        description: The detection.
-        type: String
-      - contextPath: Joe.Submission.most_relevant_analysis.score
-        description: The score.
-        type: Number
-      - contextPath: Joe.Submission.most_relevant_analysis.webid
-        description: The web ID.
-        type: String
-      - contextPath: Joe.Submission.name
-        description: The name.
-        type: String
-      - contextPath: Joe.Submission.status
-        description: The status.
-        type: String
-      - contextPath: Joe.Submission.submission_id
-        description: The submission ID.
-        type: String
-      - contextPath: Joe.Submission.time
-        description: The time.
-        type: Date
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: Joe.Analysis.AnalysisID
+      description: The analysis ID.
+      type: String
+    - contextPath: Joe.Analysis.Classification
+      description: The classification.
+      type: String
+    - contextPath: Joe.Analysis.Comments
+      description: The comments.
+      type: String
+    - contextPath: Joe.Analysis.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Analysis.duration
+      description: The duration.
+      type: Number
+    - contextPath: Joe.Analysis.encrypted
+      description: True if the analysis data is encrypted.
+      type: Boolean
+    - contextPath: Joe.Analysis.filename
+      description: The filename.
+      type: String
+    - contextPath: Joe.Analysis.runs.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Analysis.runs.error
+      description: The error.
+      type: Unknown
+    - contextPath: Joe.Analysis.runs.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Analysis.runs.sigma
+      description: The sigma.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.snort
+      description: The snort.
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.system
+      description: The system.
+      type: String
+    - contextPath: Joe.Analysis.runs.yara
+      description: The YARA.
+      type: Boolean
+    - contextPath: Joe.Analysis.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Analysis.scriptname
+      description: The script name.
+      type: String
+    - contextPath: Joe.Analysis.status
+      description: The status.
+      type: String
+    - contextPath: Joe.Analysis.threatname
+      description: The threat name.
+      type: String
+    - contextPath: Joe.Analysis.time
+      description: The time.
+      type: Date
+    - contextPath: Joe.Analysis.webid
+      description: The web ID.
+      type: String
+    - contextPath: Joe.Submission.most_relevant_analysis.detection
+      description: The detection.
+      type: String
+    - contextPath: Joe.Submission.most_relevant_analysis.score
+      description: The score.
+      type: Number
+    - contextPath: Joe.Submission.most_relevant_analysis.webid
+      description: The web ID.
+      type: String
+    - contextPath: Joe.Submission.name
+      description: The name.
+      type: String
+    - contextPath: Joe.Submission.status
+      description: The status.
+      type: String
+    - contextPath: Joe.Submission.submission_id
+      description: The submission ID.
+      type: String
+    - contextPath: Joe.Submission.time
+      description: The time.
+      type: Date
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/joe-security:1.0.0.46413
 fromversion: 6.8.0
 tests:
-  - testplaybook- JoeSecuirtyV2
+- testplaybook- JoeSecuirtyV2

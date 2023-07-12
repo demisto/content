@@ -11,7 +11,6 @@ configuration:
   name: feed
   defaultvalue: "true"
   type: 8
-  required: false
 - additionalinfo: Zoom clients for certificate validation
   defaultvalue: 'crl3.digicert.com,crl4.digicert.com,ocsp.digicert.com,certificates.godaddy.com,crl.godaddy.com,ocsp.godaddy.com,certificates.starfieldtech.com,crl.starfieldtech.com,ocsp.starfieldtech.com'
   display: Firewall rules for certificate validation
@@ -26,7 +25,6 @@ configuration:
   - certificates.starfieldtech.com
   - crl.starfieldtech.com
   - ocsp.starfieldtech.com
-  required: false
   type: 16
 - additionalinfo: All Zoom Clients. User's web browser
   defaultvalue: '*.zoom.us,*.cloudfront.net'
@@ -35,13 +33,11 @@ configuration:
   options:
   - '*.zoom.us'
   - '*.cloudfront.net'
-  required: false
   type: 16
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Good
   type: 18
-  required: false
   options:
   - None
   - Good
@@ -69,13 +65,11 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
   type: 17
-  required: false
   options:
   - never
   - interval
@@ -85,33 +79,27 @@ configuration:
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
-  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: '240'
   type: 19
-  required: false
   additionalinfo: Setting a more frequent fetch interval may cause errors from the vendor.
 - display: Tags
   name: feedTags
   defaultvalue: ""
   type: 0
-  required: false
   additionalinfo: Supports CSV values.
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -124,7 +112,6 @@ script:
     description: Gets indicators from the feed.
   dockerimage: demisto/btfl-soup:1.0.1.45563
   feed: true
-  runonce: false
   subtype: python3
 tests:
 - FeedZoom_Test

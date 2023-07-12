@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import requests
 
-import demistomock as demisto
 import urllib3.util
-from CommonServerPython import *
 
 urllib3.disable_warnings()
 

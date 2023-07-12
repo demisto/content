@@ -9,15 +9,12 @@ configuration:
   type: 0
 - display: Username (Basic Authentication)
   name: username
-  required: false
   type: 0
 - display: Password (Deprecated - Use API token)
   name: password
-  required: false
   type: 4
 - displaypassword: API token (Recommended)
   name: credentials
-  required: false
   type: 9
   hiddenusername: true
   display: ''
@@ -25,60 +22,48 @@ configuration:
   additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
-  required: false
   type: 0
 - display: Access Token
   additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
   name: accessToken
-  required: false
   type: 0
 - display: Private key (PKCS8 format)
   name: privateKey
-  required: false
   type: 14
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents.
   name: query
-  required: false
   type: 0
 - additionalinfo: This parameter is dismissed while "Use created field to fetch incidents" is checked.
   display: Issue index to start fetching incidents from
   name: idOffset
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Mirror incoming incidents
   hidden:
   - marketplacev2
   name: incoming_mirror
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Use created field to fetch incidents
   name: fetchByCreated
-  required: false
   type: 8
 - display: Mirror outgoing incidents
   hidden:
   - marketplacev2
   name: outgoing_mirror
-  required: false
   type: 8
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
   defaultvalue: attachment
@@ -86,7 +71,6 @@ configuration:
   hidden:
   - marketplacev2
   name: file_tag
-  required: false
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
@@ -94,27 +78,22 @@ configuration:
   hidden:
   - marketplacev2
   name: comment_tag
-  required: false
   type: 0
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
-  required: false
   type: 8
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   name: fetch_attachments
-  required: false
   type: 8
 - display: API token (Deprecated)
   name: APItoken
-  required: false
   type: 4
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
 description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
@@ -562,10 +541,8 @@ script:
       required: true
     - description: The name of the assignee. Relevant for Jira Server only, If you are using Jira Cloud, provide the assignee_id argument instead.
       name: assignee
-      required: false
     - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
       name: assignee_id
-      required: false
     description: Edit the assignee of an existing issue.
     name: jira-issue-assign
     outputs:
@@ -592,7 +569,6 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

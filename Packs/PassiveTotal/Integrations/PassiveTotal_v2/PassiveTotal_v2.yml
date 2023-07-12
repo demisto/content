@@ -18,17 +18,14 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: All the PassiveTotal API calls would timeout if the response is not returned within the configured time interval. Default is 20.
   defaultvalue: '20'
   display: HTTP(S) Request Timeout (in seconds)
   name: request_timeout
-  required: false
   type: 0
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -42,7 +39,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -52,12 +48,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 description: Analyze and understand threat infrastructure from a variety of sources-passive DNS, active DNS, WHOIS, SSL certificates and more-without devoting resources to time-intensive manual threat research and analysis.
 display: PassiveTotal v2
@@ -65,16 +59,11 @@ name: PassiveTotal v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: Query value to use in your request.
-      isArray: false
+    - description: Query value to use in your request.
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'WHOIS field to execute the search on: domain, email, name, organization, address, phone, nameserver.'
-      isArray: false
       name: field
       predefined:
       - domain
@@ -85,10 +74,7 @@ script:
       - phone
       - nameserver
       required: true
-      secret: false
-    deprecated: false
     description: Gets WHOIS information records based on field matching queries.
-    execution: false
     name: pt-whois-search
     outputs:
     - contextPath: Domain.Name
@@ -317,28 +303,19 @@ script:
       description: The telephone number of the domain tech.
       type: String
   - arguments:
-    - default: false
-      description: 'Query value to use in the request. For example: riskiq.com, 1.1.1.1'
-      isArray: false
+    - description: 'Query value to use in the request. For example: riskiq.com, 1.1.1.1'
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: |-
         Whether to return historical results.
         Valid values: true, false.
-      isArray: false
       name: history
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Gets WHOIS information records based on queries.
-    execution: false
     name: pt-get-whois
     outputs:
     - contextPath: PassiveTotal.WHOIS.domain
@@ -500,25 +477,13 @@ script:
   - arguments:
     - default: true
       description: Domain or IP address you want to search components for.
-      isArray: false
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the host attribute components for a domain or IP address. Maximum 2000 records are fetched.
-    execution: false
     name: pt-get-components
     outputs:
     - contextPath: Domain.Name
@@ -563,25 +528,13 @@ script:
   - arguments:
     - default: true
       description: Domain or IP address you want to search trackers for.
-      isArray: false
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 records are fetched.
-    execution: false
     name: pt-get-trackers
     outputs:
     - contextPath: Domain.Name
@@ -623,25 +576,13 @@ script:
   - arguments:
     - default: true
       description: The domain or IP being queried.
-      isArray: false
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the passive DNS results from active account sources.
-    execution: false
     name: pt-get-pdns-details
     outputs:
     - contextPath: PassiveTotal.PDNS.resolve
@@ -691,9 +632,7 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "Field by which to search. \n\nAllowed values: issuerSurname, subjectOrganizationName, issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName, serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName, issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName, sha1, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName, subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName, subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress"
-      isArray: false
       name: field
       predefined:
       - issuerSurname
@@ -724,16 +663,10 @@ script:
       - issuerSerialNumber
       - issuerEmailAddress
       required: true
-      secret: false
-    - default: false
-      description: Field value for which to search.
-      isArray: false
+    - description: Field value for which to search.
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves SSL certificates for a given field value.
-    execution: false
     name: pt-ssl-cert-search
     outputs:
     - contextPath: PassiveTotal.SSL.firstSeen
@@ -836,37 +769,21 @@ script:
       description: Alternative names of the subject from the certificate details.
       type: String
   - arguments:
-    - default: false
-      description: Domain or IP address you want to search host-pairs for.
-      isArray: false
+    - description: Domain or IP address you want to search host-pairs for.
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The direction of searching pair records for a given domain. Valid values: children, parents.'
-      isArray: false
       name: direction
       predefined:
       - children
       - parents
       required: true
-      secret: false
-    - default: false
-      description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
-      isArray: false
+    - description: Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the host attribute pairs related to a domain or IP address. Maximum 2000 records are fetched.
-    execution: false
     name: pt-get-host-pairs
     outputs:
     - contextPath: PassiveTotal.HostPair.firstSeen
@@ -889,11 +806,7 @@ script:
       description: The domain to enrich.
       isArray: true
       name: domain
-      required: false
-      secret: false
-    deprecated: false
     description: Provides data enrichment for domains.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1152,21 +1065,12 @@ script:
       description: Link to the rule.
       type: String
   - arguments:
-    - default: false
-      description: 'Indicator value to search for in articles. For example: riskiq.com, 1.1.1.1'
-      isArray: false
+    - description: 'Indicator value to search for in articles. For example: riskiq.com, 1.1.1.1'
       name: query
       required: true
-      secret: false
-    - default: false
-      description: 'Type of the indicator. For example: domain, ip, url'
-      isArray: false
+    - description: 'Type of the indicator. For example: domain, ip, url'
       name: type
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves information related to articles for a specific indicator.
-    execution: false
     name: pt-get-articles
     outputs:
     - contextPath: PassiveTotal.Article.guid
@@ -1208,13 +1112,9 @@ script:
   - arguments:
     - default: true
       description: IP address for which the user wants to search services for.
-      isArray: false
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves exposed services on the recently open ports for an IP address.
-    execution: false
     name: pt-get-services
     outputs:
     - contextPath: PassiveTotal.Service.ip
@@ -1387,7 +1287,6 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: |-
         Search cookies information by name or domain.
         Valid values:
@@ -1395,7 +1294,6 @@ script:
         2. get addresses by cookie name
         3. get hosts by cookie domain
         4. get hosts by cookie name
-      isArray: false
       name: search_by
       predefined:
       - get addresses by cookie domain
@@ -1403,45 +1301,27 @@ script:
       - get hosts by cookie domain
       - get hosts by cookie name
       required: true
-      secret: false
-    - default: false
-      description: Name or domain of cookie the user wants to search for.
-      isArray: false
+    - description: Name or domain of cookie the user wants to search for.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number for paging through results. Each page contains 2000 values.
-      isArray: false
       name: page
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: last seen
       description: 'Field to sort the results on. Valid values: last seen, first seen.'
-      isArray: false
       name: sort
       predefined:
       - last seen
       - first seen
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: desc
       description: 'Order to return the results in. Valid values: asc, desc'
-      isArray: false
       name: order
       predefined:
       - desc
       - asc
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves cookies addresses or hostname information based on cookie name or domain.
-    execution: false
     name: pt-get-cookies
     outputs:
     - contextPath: PassiveTotal.Cookie.hostname
@@ -1460,15 +1340,10 @@ script:
       description: The date and time when the cookie was most recently observed.
       type: Date
   - arguments:
-    - default: false
-      description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1'
-      isArray: false
+    - description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1'
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a summary data card associated with the given query.
-    execution: false
     name: pt-get-data-card
     outputs:
     - contextPath: PassiveTotal.DataCard.type
@@ -1562,15 +1437,10 @@ script:
       description: Link to the cookie records for the indicator.
       type: String
   - arguments:
-    - default: false
-      description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1'
-      isArray: false
+    - description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1'
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Gets reputation for a given domain, host or IP.
-    execution: false
     name: pt-get-reputation
     outputs:
     - contextPath: PassiveTotal.Reputation.query
@@ -1599,11 +1469,7 @@ script:
       description: The IP address to check.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: PassiveTotal.IP.query
@@ -1643,71 +1509,41 @@ script:
       description: The IP Address.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the profile to retrieve the specific profile.
 
         Note: If 'id' argument is provided, all other arguments will be neglected.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: 'Filter the result based on title or aliases. '
-      isArray: false
+    - description: 'Filter the result based on title or aliases. '
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the results based on the profile type. \n\nPossible values: actor, tool, backdoor."
-      isArray: false
       name: type
       predefined:
       - actor
       - tool
       - backdoor
-      required: false
-      secret: false
-    - default: false
-      description: "Specify the indicator value to retrieve the profiles containing the given indicator.\n\nNote: To retrieve the list of indicators, execute the \"pt-list-intel-profile-indicators\" command. \nWhen both indicator_value and query are provided, higher priority will be given to indicator_value."
-      isArray: false
+    - description: "Specify the indicator value to retrieve the profiles containing the given indicator.\n\nNote: To retrieve the list of indicators, execute the \"pt-list-intel-profile-indicators\" command. \nWhen both indicator_value and query are provided, higher priority will be given to indicator_value."
       name: indicator_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the result based on the indicator source. \n\nPossible values: osint, riskiq.\n\nNote: Requires 'indicator_value' argument."
-      isArray: false
       name: source
       predefined:
       - osint
       - riskiq
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the result based on the indicator category. \n\nPossible values: host, network.\n\nNote: Requires 'indicator_value' argument."
-      isArray: false
       name: category
       predefined:
       - host
       - network
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of all profiles.
-    execution: false
     name: pt-list-intel-profiles
     outputs:
     - contextPath: PassiveTotal.IntelProfile.id
@@ -1738,19 +1574,14 @@ script:
       description: Country code of the tags associated with the intel profile.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the ID of the profile to retrieve indicators for the specific profile.
 
         Note: To retrieve the list of profile IDs, execute the "pt-list-intel-profile" command.
-      isArray: false
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the results based on the indicator type. \n\nPossible values: certificate_sha1, domain, email, hash_md5, hash_sha256, ip, pdb_path, soa_email, url, whois_email."
-      isArray: false
       name: type
       predefined:
       - certificate_sha1
@@ -1763,57 +1594,33 @@ script:
       - soa_email
       - url
       - whois_email
-      required: false
-      secret: false
-    - default: false
-      description: Specify the indicator value to retrieve the specific indicator.
-      isArray: false
+    - description: Specify the indicator value to retrieve the specific indicator.
       name: indicator_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the result based on the indicator source. \n\nPossible values: osint, riskiq."
-      isArray: false
       name: source
       predefined:
       - osint
       - riskiq
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the result based on the indicator category. \n\nPossible values: host, network."
-      isArray: false
       name: category
       predefined:
       - host
       - network
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the indicators for the given profile.
-    execution: false
     name: pt-list-intel-profile-indicators
     outputs:
     - contextPath: PassiveTotal.IntelProfile.id
@@ -1848,32 +1655,23 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: |-
         Filter the results based on the priority level specified.
 
         Possible values: high, medium, low.
-      isArray: false
       name: priority
       predefined:
       - high
       - medium
       - low
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface insight  information of the individual's account.
-    execution: false
     name: pt-list-my-attack-surface-insights
     outputs:
     - contextPath: PassiveTotal.Summary.Insight.name
@@ -1910,19 +1708,13 @@ script:
       description: Segment by of the insight.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface information of the individual's account.
-    execution: false
     name: pt-list-my-attack-surfaces
     outputs:
     - contextPath: PassiveTotal.AttackSurface.id
@@ -1950,35 +1742,21 @@ script:
       description: Link to the low priority attack surface.
       type: String
   - arguments:
-    - default: false
-      description: Specify the vendor ID to retrieve the attack surface third party information.
-      isArray: false
+    - description: Specify the vendor ID to retrieve the attack surface third party information.
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface observations by severity level for the given third-party account.
-    execution: false
     name: pt-list-third-party-attack-surface
     outputs:
     - contextPath: PassiveTotal.ThirdParty.id
@@ -2018,42 +1796,30 @@ script:
       description: Link to the next page.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the vendor ID to retrieve the third-party insights information.
 
         Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
-      isArray: false
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Filter the results based on the priority level specified.
 
         Possible values: high, medium, low.
-      isArray: false
       name: priority
       predefined:
       - high
       - medium
       - low
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is 1000.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface insight information of the given third-party account.
-    execution: false
     name: pt-list-third-party-attack-surface-insights
     outputs:
     - contextPath: PassiveTotal.Summary.ThirdPartyInsight.activeInsightCount
@@ -2093,47 +1859,31 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the insight ID to retrieve the assets.
 
         Note: To retrieve the list of insight IDs, execute the "pt-list-my-attack-surface-insights" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the segment_by to retrieve the assets.
 
         Note: To retrieve the list of segment by, execute the "pt-list-my-attack-surface-insights" command.
-      isArray: false
       name: segment_by
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface asset information of the individual's account.
-    execution: false
     name: pt-list-my-attack-surface-assets
     outputs:
     - contextPath: PassiveTotal.Summary.Asset.totalCount
@@ -2167,29 +1917,19 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface vulnerable component information of the individual's account.
-    execution: false
     name: pt-list-my-attack-surface-vulnerable-components
     outputs:
     - contextPath: PassiveTotal.Summary.VulnerableComponent.name
@@ -2217,29 +1957,19 @@ script:
       description: Number of assets affected.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface vulnerability information of the individual's account.
-    execution: false
     name: pt-list-my-attack-surface-vulnerabilities
     outputs:
     - contextPath: PassiveTotal.Vulnerability.cveId
@@ -2270,38 +2000,25 @@ script:
       description: Link to the next page.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the CVE ID to retrieve observations of that CVE.
 
         Note: To retrieve the list of CVE IDs, execute the "pt-list-my-attack-surface-vulnerabilities" command.
-      isArray: false
       name: cve_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface vulnerability observation information of the individual's account.
-    execution: false
     name: pt-list-my-attack-surface-observations
     outputs:
     - contextPath: PassiveTotal.Observation.asset.type
@@ -2335,56 +2052,37 @@ script:
       description: Link to the next page.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the insight ID to retrieve the assets.
 
         Note: To retrieve the list of insight IDs, execute the "pt-list-third-party-attack-surface-insights" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the vendor ID to retrieve the assets of a specific vendor.
 
         Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
-      isArray: false
       name: vendor_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the segment_by to retrieve the assets.
 
         Note: To retrieve the list of segment by, execute the "pt-list-third-party-attack-surface-insights" command.
-      isArray: false
       name: segment_by
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface asset information of the given third-party account.
-    execution: false
     name: pt-list-third-party-attack-surface-assets
     outputs:
     - contextPath: PassiveTotal.ThirdParty.id
@@ -2421,38 +2119,25 @@ script:
       description: Date & time the record was most recently observed.
       type: Date
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the vendor ID to retrieve the vulnerable components for a particular vendor.
 
         Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface vulnerable component information of the given third-party account.
-    execution: false
     name: pt-list-third-party-attack-surface-vulnerable-components
     outputs:
     - contextPath: PassiveTotal.ThirdParty.id
@@ -2483,38 +2168,25 @@ script:
       description: Number of assets affected.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the vendor ID to retrieve the vulnerabilities for a particular vendor.
 
         Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface vulnerability information of the given third-party account.
-    execution: false
     name: pt-list-third-party-attack-surface-vulnerabilities
     outputs:
     - contextPath: PassiveTotal.ThirdParty.id
@@ -2548,47 +2220,31 @@ script:
       description: Link to the next page.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the vendor ID to retrieve the vulnerability observations for a particular vendor.
 
         Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the CVE ID to retrieve observations of the CVE.
 
         Note: To retrieve the list of CVE IDs, execute the "pt-list-third-party-attack-surface-vulnerabilities" command.
-      isArray: false
       name: cve_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         Page number for paging through results.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Maximum number of results to return per page.
 
         Note: The minimum value supported is 1 and maximum value supported is int32.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the attack surface vulnerability observation information of the given third-party account.
-    execution: false
     name: pt-list-third-party-attack-surface-observations
     outputs:
     - contextPath: PassiveTotal.ThirdParty.id
@@ -2624,11 +2280,7 @@ script:
     - contextPath: PassiveTotal.Summary.ThirdPartyObservation.nextPage
       description: Link to the next page.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

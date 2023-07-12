@@ -4,7 +4,6 @@ commonfields:
   version: -1
 name: ReadNetstatFile
 script: '-'
-system: false
 type: python
 tags:
 - dynamic-section

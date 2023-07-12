@@ -10,16 +10,13 @@ configuration:
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Database refresh interval (hours)
   name: fetchIntervalHours
   defaultvalue: "1"
   type: 0
-  required: false
 script:
   script: ''
   type: javascript
@@ -59,7 +56,6 @@ script:
   - name: phishtank-status
     arguments: []
     description: Show PhishTank database status
-  runonce: false
 tests:
 - PhishTank Testing
 deprecated: true

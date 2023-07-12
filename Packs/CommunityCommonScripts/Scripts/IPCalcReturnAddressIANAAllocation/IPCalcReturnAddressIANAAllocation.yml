@@ -1,10 +1,7 @@
 args:
-- default: false
-  description: Address to use
-  isArray: false
+- description: Address to use
   name: ip_address
   required: true
-  secret: false
 comment: An automation script to return address IANA information
 commonfields:
   id: IPCalcReturnAddressIANAAllocation
@@ -19,7 +16,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.8.24399

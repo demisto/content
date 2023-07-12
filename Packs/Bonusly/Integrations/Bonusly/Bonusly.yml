@@ -14,41 +14,32 @@ configuration:
   type: 4
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Name of the specific Bonusly application (if required)
   name: application_name
-  required: false
   type: 0
 - defaultvalue: '20'
   display: Max. number of bonuses to fetch (Default is 20)
   name: limit
-  required: false
   type: 0
 - display: Filter by user email address (given and received)
   name: user_email
-  required: false
   type: 0
 - display: Filter by hashtag (e.g., %23teamwork)
   name: hashtag
-  required: false
   type: 0
 - defaultvalue: '1'
   display: Start fetching from X days ago (Defaults is 1 day)
   name: fetch_time
-  required: false
   type: 0
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 description: The Bonusly integration is used to interact with the Bonusly platform through the API. Bonusly is an employee recognition platform which enterprises use to for employee recognition.
 display: Bonusly
@@ -56,64 +47,26 @@ name: Bonusly
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: 'Number of bonuses to retrieve (min: 1, max: 100) Default: 20.'
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'The start time by which to filter returned bonuses. e.g., 2015-10-28T21:26:50Z.'
-      isArray: false
+    - description: 'The start time by which to filter returned bonuses. e.g., 2015-10-28T21:26:50Z.'
       name: start-time
-      required: false
-      secret: false
-    - default: false
-      description: 'The end time by which to filter returned bonuses, e.g., 2015-10-28T21:26:50Z.'
-      isArray: false
+    - description: 'The end time by which to filter returned bonuses, e.g., 2015-10-28T21:26:50Z.'
       name: end-time
-      required: false
-      secret: false
-    - default: false
-      description: Email address of the bonus giver by which to filter results.
-      isArray: false
+    - description: Email address of the bonus giver by which to filter results.
       name: giver-email
-      required: false
-      secret: false
-    - default: false
-      description: Email address of the bonus receiver by which to filter results.
-      isArray: false
+    - description: Email address of the bonus receiver by which to filter results.
       name: receiver-email
-      required: false
-      secret: false
-    - default: false
-      description: Email address of the bonus giver or receiver by which to filter results. this email
-      isArray: false
+    - description: Email address of the bonus giver or receiver by which to filter results. this email
       name: user-email
-      required: false
-      secret: false
-    - default: false
-      description: 'Filter to get a list of bonuses by a hashtag Example: %23teamwork'
-      isArray: false
+    - description: 'Filter to get a list of bonuses by a hashtag Example: %23teamwork'
       name: hashtag
-      required: false
-      secret: false
-    - default: false
-      description: 'Whether to include child responses of the bonus.'
-      isArray: false
+    - description: 'Whether to include child responses of the bonus.'
       name: include-children
-      required: false
-      secret: false
-    - default: false
-      description: Whether to show private bonuses. Requires Admin API key.
-      isArray: false
+    - description: Whether to show private bonuses. Requires Admin API key.
       name: show-private-bonuses
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of bonuses based on the supplied filters.
-    execution: false
     name: bonusly-list-bonuses
     outputs:
     - contextPath: Bonusly.Bonus.id
@@ -228,27 +181,15 @@ script:
       description: Family bonus balance.
       type: Number
   - arguments:
-    - default: false
-      description: The email address of the bonus giver.
-      isArray: false
+    - description: The email address of the bonus giver.
       name: giver-email
       required: true
-      secret: false
-    - default: false
-      description: "The bonus message, e.g., \n+10 @george and @john for #execution with that customer #collaboration with the team, and #integrity on the known vulnerabilities to the application. \n\n+10 @francesco because he is fast and detailed\n"
-      isArray: false
+    - description: "The bonus message, e.g., \n+10 @george and @john for #execution with that customer #collaboration with the team, and #integrity on the known vulnerabilities to the application. \n\n+10 @francesco because he is fast and detailed\n"
       name: reason
       required: true
-      secret: false
-    - default: false
-      description: 'The parent bonus ID with which to associate this bonus, e.g., 24abcdef1234567890abcdef.'
-      isArray: false
+    - description: 'The parent bonus ID with which to associate this bonus, e.g., 24abcdef1234567890abcdef.'
       name: parent-bonus-id
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a Bonusly bonus.
-    execution: false
     name: bonusly-create-bonus
     outputs:
     - contextPath: Bonusly.Bonus.id
@@ -363,15 +304,10 @@ script:
       description: Family bonus balance.
       type: Number
   - arguments:
-    - default: false
-      description: 'ID of the bonus to get information for.'
-      isArray: false
+    - description: 'ID of the bonus to get information for.'
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Gets a bonus by bonus ID.
-    execution: false
     name: bonusly-get-bonus
     outputs:
     - contextPath: Bonusly.Bonus.id
@@ -486,21 +422,13 @@ script:
       description: Family bonus balance.
       type: Number
   - arguments:
-    - default: false
-      description: 'ID of the bonus to update. '
-      isArray: false
+    - description: 'ID of the bonus to update. '
       name: id
       required: true
-      secret: false
-    - default: false
-      description: 'Example +10 @francesco @bumblebee for #integrity #collaboration #execution'
-      isArray: false
+    - description: 'Example +10 @francesco @bumblebee for #integrity #collaboration #execution'
       name: reason
       required: true
-      secret: false
-    deprecated: false
     description: Updates a bonus.
-    execution: false
     name: bonusly-update-bonus
     outputs:
     - contextPath: Bonusly.Bonus.id
@@ -615,25 +543,17 @@ script:
       description: Family bonus balance.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the bonus to delete.
-      isArray: false
+    - description: ID of the bonus to delete.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a bonus by bonus ID.
-    execution: false
     name: bonusly-delete-bonus
     outputs:
     - contextPath: Bonusly.Bonus.message
       description: Message
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

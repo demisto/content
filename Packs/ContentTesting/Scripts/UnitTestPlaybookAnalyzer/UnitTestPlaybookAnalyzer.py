@@ -1,10 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # Final Test: 6.10
 import uuid
 from datetime import datetime
 from typing import Dict, TypedDict
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 class Task(TypedDict):

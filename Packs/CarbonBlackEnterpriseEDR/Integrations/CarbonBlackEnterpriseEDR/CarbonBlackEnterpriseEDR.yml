@@ -18,54 +18,45 @@ configuration:
   section: Connect
 - display: Custom Key
   name: custom_key
-  required: false
   type: 4
   section: Connect
   hidden: true
 - display: Custom ID
   name: custom_id
-  required: false
   type: 0
   section: Connect
   hidden: true
 - display: Custom ID
   name: credentials_custom
-  required: false
   type: 9
   displaypassword: Custom Key
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  required: false
   type: 0
   section: Collect
 - defaultvalue: '50'
   display: Fetch limit
   name: fetch_limit
-  required: false
   type: 0
   section: Collect
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
@@ -74,37 +65,20 @@ name: Carbon Black Enterprise EDR
 script:
   commands:
   - arguments:
-    - default: false
-      description: The ID of the alert to update. Get the ID from list-alerts command.
-      isArray: false
+    - description: The ID of the alert to update. Get the ID from list-alerts command.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Workflow state to update.
-      isArray: false
       name: state
       predefined:
       - dismissed
       - open
-      required: false
-      secret: false
-    - default: false
-      description: Comment to include with the operation.
-      isArray: false
+    - description: Comment to include with the operation.
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: Description of the changes done in the workflow state.
-      isArray: false
+    - description: Description of the changes done in the workflow state.
       name: remediation_state
-      required: false
-      secret: false
-    deprecated: false
     description: Updates the workflow of a single event.
-    execution: false
     name: cb-eedr-alert-workflow-update
     outputs:
     - contextPath: CarbonBlackEEDR.Alert.AlertID
@@ -126,99 +100,56 @@ script:
       description: The alert state.
       type: String
   - arguments:
-    - default: false
-      description: The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values.
-      isArray: false
+    - description: The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Quarantines a device.
-    execution: false
     name: cb-eedr-device-quarantine
   - arguments:
-    - default: false
-      description: The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values.
+    - description: The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values.
       isArray: true
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Removes a device from quarantine.
-    execution: false
     name: cb-eedr-device-unquarantine
   - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Supports comma-separated values.
-      isArray: false
+    - description: The device ID. Get the ID from the devices-list command. Supports comma-separated values.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Stops a background scan on the specified devices.
-    execution: false
     name: cb-eedr-device-background-scan-stop
   - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Supports comma-separated values.
-      isArray: false
+    - description: The device ID. Get the ID from the devices-list command. Supports comma-separated values.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Start a background scan on device.
-    execution: false
     name: cb-eedr-device-background-scan
   - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Support comma-separated values.
-      isArray: false
+    - description: The device ID. Get the ID from the devices-list command. Support comma-separated values.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Enable a bypass on device.
-    execution: false
     name: cb-eedr-device-bypass
   - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Support comma-separated values.
-      isArray: false
+    - description: The device ID. Get the ID from the devices-list command. Support comma-separated values.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Disable a bypass on device.
-    execution: false
     name: cb-eedr-device-unbypass
   - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Support comma-separated values.
-      isArray: false
+    - description: The device ID. Get the ID from the devices-list command. Support comma-separated values.
       name: device_id
       required: true
-      secret: false
-    - default: false
-      description: The policy ID.
-      isArray: false
+    - description: The policy ID.
       name: policy_id
       required: true
-      secret: false
-    deprecated: false
     description: Update device policy.
-    execution: false
     name: cb-eedr-device-policy-update
   - arguments:
-    - default: false
-      description: The device ID. Supports comma-separated values.
-      isArray: false
+    - description: The device ID. Supports comma-separated values.
       name: device_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The device status. Supports comma-separated values.
-      isArray: false
       name: status
       predefined:
       - PENDING
@@ -235,61 +166,29 @@ script:
       - SENSOR_OUTOFDATE
       - DELETED
       - LIVE
-      required: false
-      secret: false
-    - default: false
-      description: Device operation system. Supports comma-separated values.
-      isArray: false
+    - description: Device operation system. Supports comma-separated values.
       name: device_os
-      required: false
-      secret: false
-    - default: false
-      description: 'Device start last contact time. For example: 2019-01-01T11:00:00.157Z'
-      isArray: false
+    - description: 'Device start last contact time. For example: 2019-01-01T11:00:00.157Z'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'Device end last contact time. For example: 2019-01-01T11:00:00.157Z'
-      isArray: false
+    - description: 'Device end last contact time. For example: 2019-01-01T11:00:00.157Z'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: Active directory group ID. Supports comma-separated values
-      isArray: false
+    - description: Active directory group ID. Supports comma-separated values
       name: ad_group_id
-      required: false
-      secret: false
-    - default: false
-      description: The policy ID. Supports comma-separated values.
-      isArray: false
+    - description: The policy ID. Supports comma-separated values.
       name: policy_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Device target priority. Supports comma-separated values
-      isArray: false
       name: target_priority
       predefined:
       - LOW
       - MEDIUM
       - HIGH
       - MISSION_CRITICAL
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of rows to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort Fields
-      isArray: false
       name: sort_field
       predefined:
       - target_priority
@@ -297,22 +196,14 @@ script:
       - name
       - last_contact_time
       - av_pack_version
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: DESC
       description: Sort Order for field.
-      isArray: false
       name: sort_order
       predefined:
       - ASC
       - DESC
-      required: false
-      secret: false
-    deprecated: false
     description: List devices based on the search query.
-    execution: false
     name: cb-eedr-devices-list
     outputs:
     - contextPath: CarbonBlackEEDR.Device.sensor_out_of_date
@@ -470,156 +361,66 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to group results.
-      isArray: false
       name: group_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Alert minimum severity (In range of 1-10).
-      isArray: false
+    - description: Alert minimum severity (In range of 1-10).
       name: minimum_severity
-      required: false
-      secret: false
-    - default: false
-      description: Device OS version. Supports comma-separated values.
-      isArray: false
+    - description: Device OS version. Supports comma-separated values.
       name: device_os_version
-      required: false
-      secret: false
-    - default: false
-      description: The policy ID. Supports comma-separated values.
-      isArray: false
+    - description: The policy ID. Supports comma-separated values.
       name: policy_id
-      required: false
-      secret: false
-    - default: false
-      description: Alert tags. Supports comma-separated values.
-      isArray: false
+    - description: Alert tags. Supports comma-separated values.
       name: alert_tag
-      required: false
-      secret: false
-    - default: false
-      description: Alert ID. Supports comma-separated values.
-      isArray: false
+    - description: Alert ID. Supports comma-separated values.
       name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: Device username. Supports comma-separated values.
-      isArray: false
+    - description: Device username. Supports comma-separated values.
       name: device_username
-      required: false
-      secret: false
-    - default: false
-      description: Device ID. Supports comma-separated values.
-      isArray: false
+    - description: Device ID. Supports comma-separated values.
       name: device_id
-      required: false
-      secret: false
-    - default: false
-      description: Device OS. Supports comma-separated values.
-      isArray: false
+    - description: Device OS. Supports comma-separated values.
       name: device_os
-      required: false
-      secret: false
-    - default: false
-      description: Process SHA256. Supports comma-separated values.
-      isArray: false
+    - description: Process SHA256. Supports comma-separated values.
       name: process_sha256
-      required: false
-      secret: false
-    - default: false
-      description: Policy name. Supports comma-separated values.
-      isArray: false
+    - description: Policy name. Supports comma-separated values.
       name: policy_name
-      required: false
-      secret: false
-    - default: false
-      description: Alert reputation. Supports comma-separated values.
-      isArray: false
+    - description: Alert reputation. Supports comma-separated values.
       name: reputation
-      required: false
-      secret: false
-    - default: false
-      description: Alert type. Supports comma-separated values.
-      isArray: false
+    - description: Alert type. Supports comma-separated values.
       name: alert_type
-      required: false
-      secret: false
-    - default: false
-      description: Alert category. Supports comma-separated values.
-      isArray: false
+    - description: Alert category. Supports comma-separated values.
       name: alert_category
-      required: false
-      secret: false
-    - default: false
-      description: Alert workflow. Supports comma-separated values.
-      isArray: false
+    - description: Alert workflow. Supports comma-separated values.
       name: workflow
-      required: false
-      secret: false
-    - default: false
-      description: Device name. Supports comma-separated values.
-      isArray: false
+    - description: Device name. Supports comma-separated values.
       name: device_name
-      required: false
-      secret: false
-    - default: false
-      description: Process name. Supports comma-separated values.
-      isArray: false
+    - description: Process name. Supports comma-separated values.
       name: process_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: first_event_time
       description: Field by which to sort the results. Can be "first_event_time", or "last_event_time".
-      isArray: false
       name: sort_field
       predefined:
       - first_event_time
       - last_event_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: DESC
       description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
-      isArray: false
       name: sort_order
       predefined:
       - ASC
       - DESC
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Alert start time.
-      isArray: false
+    - description: Alert start time.
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Alert end time.
-      isArray: false
+    - description: Alert end time.
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of alerts.
-    execution: false
     name: cb-eedr-list-alerts
     outputs:
     - contextPath: CarbonBlackEEDR.Alert.threat_id
@@ -760,9 +561,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.workflow.state
       description: Alert workflow - state
       type: String
-  - deprecated: false
-    description: Retrieves all watchlists.
-    execution: false
+  - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
     outputs:
     - contextPath: CarbonBlackEEDR.Watchlist.classifier
@@ -790,15 +589,10 @@ script:
       description: Watchlist description.
       type: String
   - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The watchlist ID. Get the ID from the watchlist-list command.
       name: watchlist_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets watchlist information by  watchlist ID.
-    execution: false
     name: cb-eedr-get-watchlist-by-id
     outputs:
     - contextPath: CarbonBlackEEDR.Watchlist.classifier
@@ -829,92 +623,48 @@ script:
       description: Whether alerts are enabled for the watchlists.
       type: Boolean
   - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The watchlist ID. Get the ID from the watchlist-list command.
       name: watchlist_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the alert status for the watchlist with given watchlist ID.
-    execution: false
     name: cb-eedr-watchlist-alerts-status
   - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The watchlist ID. Get the ID from the watchlist-list command.
       name: watchlist_id
       required: true
-      secret: false
-    deprecated: false
     description: Turns on alerts for the watchlist with the specified watchlist ID.
-    execution: false
     name: cb-eedr-watchlist-alerts-enable
   - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The watchlist ID. Get the ID from the watchlist-list command.
       name: watchlist_id
       required: true
-      secret: false
-    deprecated: false
     description: Turns off alerts for the watchlist with the specified watchlist ID.
-    execution: false
     name: cb-eedr-watchlist-alerts-disable
   - arguments:
-    - default: false
-      description: The name of the watchlist.
-      isArray: false
+    - description: The name of the watchlist.
       name: watchlist_name
       required: true
-      secret: false
-    - default: false
-      description: The watchlist description.
-      isArray: false
+    - description: The watchlist description.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to enable watchlist tags. Can be "true" or "false".
-      isArray: false
       name: tags_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Enable watchlist alerts
-      isArray: false
       name: alerts_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The report IDs for creating the watchlist. Supports comma-separated values.
-      isArray: false
+    - description: The report IDs for creating the watchlist. Supports comma-separated values.
       name: report_ids
-      required: false
-      secret: false
-    - default: false
-      description: The classifier key for creating the watchlist.
-      isArray: false
+    - description: The classifier key for creating the watchlist.
       name: classifier_key
-      required: false
-      secret: false
-    - default: false
-      description: The classifier value for creating the watchlist.
-      isArray: false
+    - description: The classifier value for creating the watchlist.
       name: classifier_value
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new report or classifier watchlist.
-    execution: false
     name: cb-eedr-watchlist-create
     outputs:
     - contextPath: CarbonBlackEEDR.Watchlist.Classifier
@@ -945,76 +695,39 @@ script:
       description: Watchlist description.
       type: String
   - arguments:
-    - default: false
-      description: The watchlist ID to remove. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The watchlist ID to remove. Get the ID from the watchlist-list command.
       name: watchlist_id
       required: true
-      secret: false
-    deprecated: false
     description: Removes the specified watchlist.
-    execution: false
     name: cb-eedr-watchlist-delete
   - arguments:
-    - default: false
-      description: The watchlist ID to update.
-      isArray: false
+    - description: The watchlist ID to update.
       name: watchlist_id
       required: true
-      secret: false
-    - default: false
-      description: The watchlist name.
-      isArray: false
+    - description: The watchlist name.
       name: watchlist_name
       required: true
-      secret: false
-    - default: false
-      description: Watchlist description.
-      isArray: false
+    - description: Watchlist description.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to enable watchlist tags. Can be "true" or "false".
-      isArray: false
       name: tags_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Enable watchlist alerts.
-      isArray: false
       name: alerts_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Watchlist report ID. Supports comma-separated values.
-      isArray: false
+    - description: Watchlist report ID. Supports comma-separated values.
       name: report_ids
-      required: false
-      secret: false
-    - default: false
-      description: The classifier key to update.
-      isArray: false
+    - description: The classifier key to update.
       name: classifier_key
-      required: false
-      secret: false
-    - default: false
-      description: The classifier value to update.
-      isArray: false
+    - description: The classifier value to update.
       name: classifier_value
-      required: false
-      secret: false
-    deprecated: false
     description: Updates the specified watchlist. This will update the tags and alert status as well as any reports or classifiers attached to the watchlist.
-    execution: false
     name: cb-eedr-watchlist-update
     outputs:
     - contextPath: CarbonBlackEEDR.Watchlist.Classifier
@@ -1045,15 +758,10 @@ script:
       description: Watchlist description.
       type: String
   - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the specified report.
-    execution: false
     name: cb-eedr-report-get
     outputs:
     - contextPath: CarbonBlackEEDR.Report.Visibility
@@ -1084,164 +792,82 @@ script:
       description: The report's IOCs.
       type: String
   - arguments:
-    - default: false
-      description: Report ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: Report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    - default: false
-      description: IOC ID. Get the ID from get_report command
-      isArray: false
+    - description: IOC ID. Get the ID from get_report command
       name: ioc_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the current ignore status for IOC ioc_id in report report_id.
-    execution: false
     name: cb-eedr-ioc-ignore-status
   - arguments:
-    - default: false
-      description: Report ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: Report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    - default: false
-      description: IOC ID. Get the ID from get_report command.
-      isArray: false
+    - description: IOC ID. Get the ID from get_report command.
       name: ioc_id
       required: true
-      secret: false
-    deprecated: false
     description: IOC ioc_id for report report_id will not match future events for any watchlist.
-    execution: false
     name: cb-eedr-ioc-ignore
   - arguments:
-    - default: false
-      description: Report ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: Report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    - default: false
-      description: IOC ID. Get the ID from get_report command
-      isArray: false
+    - description: IOC ID. Get the ID from get_report command
       name: ioc_id
       required: true
-      secret: false
-    deprecated: false
     description: IOC ioc_id for report report_id will match future events for all watchlists.
-    execution: false
     name: cb-eedr-ioc-reactivate
   - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    deprecated: false
     description: Report with report_id and all contained IOCs will not match future events for any watchlist.
-    execution: false
     name: cb-eedr-report-ignore
   - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    deprecated: false
     description: Report with report_id and all contained IOCs will match future events for all watchlists.
-    execution: false
     name: cb-eedr-report-reactivate
   - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    deprecated: false
     description: Get current ignore status for report with report_id.
-    execution: false
     name: cb-eedr-report-ignore-status
   - arguments:
-    - default: false
-      description: The report ID to remove. Get the ID from the watchlist-list command.
-      isArray: false
+    - description: The report ID to remove. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-      secret: false
-    deprecated: false
     description: Remove report with report_id.
-    execution: false
     name: cb-eedr-report-remove
   - arguments:
-    - default: false
-      description: The report title.
-      isArray: false
+    - description: The report title.
       name: title
       required: true
-      secret: false
-    - default: false
-      description: The report description.
-      isArray: false
+    - description: The report description.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: The report tags. Supports comma-separated values.
-      isArray: false
+    - description: The report tags. Supports comma-separated values.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: The report severity (In range of 1-10).
-      isArray: false
+    - description: The report severity (In range of 1-10).
       name: severity
       required: true
-      secret: false
-    - default: false
-      description: IOCs of type IPv4. Supports comma-separated values.
-      isArray: false
+    - description: IOCs of type IPv4. Supports comma-separated values.
       name: ipv4
-      required: false
-      secret: false
-    - default: false
-      description: 'The IOC query for the report, for example: (netconn_ipv4:2.2.2.2). Supports comma-separated values.'
-      isArray: false
+    - description: 'The IOC query for the report, for example: (netconn_ipv4:2.2.2.2). Supports comma-separated values.'
       name: ioc_query
-      required: false
-      secret: false
-    - default: false
-      description: 'The report timestamp. For example: 2020-01-19T09:16:16'
-      isArray: false
+    - description: 'The report timestamp. For example: 2020-01-19T09:16:16'
       name: timestamp
       required: true
-      secret: false
-    - default: false
-      description: IOCs of type IPv6. Supports comma-separated values.
-      isArray: false
+    - description: IOCs of type IPv6. Supports comma-separated values.
       name: ipv6
-      required: false
-      secret: false
-    - default: false
-      description: IOCs of type MD5. Supports comma-separated values.
-      isArray: false
+    - description: IOCs of type MD5. Supports comma-separated values.
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: IOCs of type DNS. Supports comma-separated values.
-      isArray: false
+    - description: IOCs of type DNS. Supports comma-separated values.
       name: dns
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new watchlist report.
-    execution: false
     name: cb-eedr-report-create
     outputs:
     - contextPath: CarbonBlackEEDR.Report.ID
@@ -1272,75 +898,34 @@ script:
       description: The report description.
       type: String
   - arguments:
-    - default: false
-      description: The report ID to update.
-      isArray: false
+    - description: The report ID to update.
       name: report_id
       required: true
-      secret: false
-    - default: false
-      description: The report title.
-      isArray: false
+    - description: The report title.
       name: title
       required: true
-      secret: false
-    - default: false
-      description: The report description.
-      isArray: false
+    - description: The report description.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: The report tags. Supports comma-separated values.
-      isArray: false
+    - description: The report tags. Supports comma-separated values.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type IPv4. Supports comma-separated values.
-      isArray: false
+    - description: IOC of type IPv4. Supports comma-separated values.
       name: ipv4
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type IPv6. Supports comma-separated values.
-      isArray: false
+    - description: IOC of type IPv6. Supports comma-separated values.
       name: ipv6
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type DNS. Supports comma-separated values.
-      isArray: false
+    - description: IOC of type DNS. Supports comma-separated values.
       name: dns
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type MD5. Supports comma-separated values.
-      isArray: false
+    - description: IOC of type MD5. Supports comma-separated values.
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: 'Query IOC. For example: (netconn_ipv4:2.2.2.2). Supports comma-separated values.'
-      isArray: false
+    - description: 'Query IOC. For example: (netconn_ipv4:2.2.2.2). Supports comma-separated values.'
       name: ioc_query
-      required: false
-      secret: false
-    - default: false
-      description: Report severity (In range of 1-10).
-      isArray: false
+    - description: Report severity (In range of 1-10).
       name: severity
       required: true
-      secret: false
-    - default: false
-      description: The report timestamp.
-      isArray: false
+    - description: The report timestamp.
       name: timestamp
       required: true
-      secret: false
-    deprecated: false
     description: Updates the specified report.
-    execution: false
     name: cb-eedr-report-update
     outputs:
     - contextPath: CarbonBlackEEDR.Report.ID
@@ -1371,15 +956,10 @@ script:
       description: The report description.
       type: String
   - arguments:
-    - default: false
-      description: The requested SHA256 hash to obtain information for.
-      isArray: false
+    - description: The requested SHA256 hash to obtain information for.
       name: sha256
       required: true
-      secret: false
-    deprecated: false
     description: Gets an overview of the devices that executed the file.
-    execution: false
     name: cb-eedr-file-device-summary
     outputs:
     - contextPath: CarbonBlackEEDR.File.first_seen_device_id
@@ -1407,15 +987,10 @@ script:
       description: The SHA256 hash of the file.
       type: String
   - arguments:
-    - default: false
-      description: The requested SHA256 hash to obtain metadata information.
-      isArray: false
+    - description: The requested SHA256 hash to obtain metadata information.
       name: sha256
       required: true
-      secret: false
-    deprecated: false
     description: Returns all of the metadata for the specified binary identified by the SHA256 hash.
-    execution: false
     name: cb-eedr-get-file-metadata
     outputs:
     - contextPath: CarbonBlackEEDR.File.file_size
@@ -1473,33 +1048,20 @@ script:
       description: The MD5 hash of the file.
       type: String
   - arguments:
-    - default: false
-      description: An array of SHA256 hashes (limit 100). Supports comma-separated values.
-      isArray: false
+    - description: An array of SHA256 hashes (limit 100). Supports comma-separated values.
       name: sha256
       required: true
-      secret: false
-    - default: false
-      defaultValue: '300'
+    - defaultValue: '300'
       description: The number of seconds to make the download URLs available for.
-      isArray: false
       name: expiration_seconds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Download the file to XSOAR.
-      isArray: false
       name: download_to_xsoar
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: The files are able to be downloaded via AWS S3 pre-signed URLs.
-    execution: false
     name: cb-eedr-files-download-link-get
     outputs:
     - contextPath: CarbonBlackEEDR.File.found.sha256
@@ -1515,15 +1077,10 @@ script:
       description: The SHA256 hashes that had an intermittent error.
       type: String
   - arguments:
-    - default: false
-      description: The requested SHA256 hash to obtain information for. Supports comma-separated values.
-      isArray: false
+    - description: The requested SHA256 hash to obtain information for. Supports comma-separated values.
       name: sha256
       required: true
-      secret: false
-    deprecated: false
     description: Return a summary of the observed file paths
-    execution: false
     name: cb-eedr-file-paths
     outputs:
     - contextPath: CarbonBlackEEDR.File.file_path_count
@@ -1539,57 +1096,25 @@ script:
       description: The total number of file paths that have been observed, by this organization, for this file.
       type: Number
   - arguments:
-    - default: false
-      description: The process name to search.
+    - description: The process name to search.
       isArray: true
       name: process_name
-      required: false
-      secret: false
-    - default: false
-      description: The process hash to search.
+    - description: The process hash to search.
       isArray: true
       name: process_hash
-      required: false
-      secret: false
-    - default: false
-      description: The event ID to search.
-      isArray: false
+    - description: The event ID to search.
       name: event_id
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of rows to return. Default is 20.
-      isArray: false
+    - description: The maximum number of rows to return. Default is 20.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A free-style query. For example, "process_name:svchost.exe".
-      isArray: false
+    - description: A free-style query. For example, "process_name:svchost.exe".
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
-      isArray: false
+    - description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
-      isArray: false
+    - description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: Index of first records to fetch. Default is 0.
-      isArray: false
+    - description: Index of first records to fetch. Default is 0.
       name: start
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a process search job.
-    execution: false
     name: cb-eedr-process-search
     outputs:
     - contextPath: CarbonBlackEEDR.SearchProcess.job_id
@@ -1599,19 +1124,11 @@ script:
       description: The status of the job found by the search.
       type: String
   - arguments:
-    - default: false
-      description: The process GUID to search. Must be focused on a single process.
-      isArray: false
+    - description: The process GUID to search. Must be focused on a single process.
       name: process_guid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The event type to search.
-      isArray: false
       name: event_type
-      required: false
-      secret: false
       predefined:
       - filemod
       - netconn
@@ -1619,39 +1136,17 @@ script:
       - modload
       - crossproc
       - childproc
-    - default: false
-      description: The maximum number of rows to return. Default is 20.
-      isArray: false
+    - description: The maximum number of rows to return. Default is 20.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A free-style query. For example, "process_name:svchost.exe".
-      isArray: false
+    - description: A free-style query. For example, "process_name:svchost.exe".
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
-      isArray: false
+    - description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
-      isArray: false
+    - description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: Index of first records to fetch. Default is 0.
-      isArray: false
+    - description: Index of first records to fetch. Default is 0.
       name: start
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the events associated with a given process.
-    execution: false
     name: cb-eedr-events-by-process-get
     outputs:
     - contextPath: CarbonBlackEEDR.SearchEvent.backend_timestamp
@@ -1703,15 +1198,11 @@ script:
       description: The PID of the process.
       type: Number
   - arguments:
-    - default: false
-      description: The job ID to search.
+    - description: The job ID to search.
       isArray: true
       name: job_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the process search results for a given job ID.
-    execution: false
     name: cb-eedr-process-search-results
     outputs:
     - contextPath: CarbonBlackEEDR.SearchProcess.job_id
@@ -1802,10 +1293,7 @@ script:
       description: The cumulative count of loaded scripts since process tracking started.
       type: Number
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

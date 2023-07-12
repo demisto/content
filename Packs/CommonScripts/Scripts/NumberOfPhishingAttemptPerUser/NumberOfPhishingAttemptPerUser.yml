@@ -15,8 +15,7 @@ tags:
 - dynamic-section
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.10.48392
-runonce: false
+dockerimage: demisto/python3:3.10.12.63474
 subtype: python3
 tests:
 - No test

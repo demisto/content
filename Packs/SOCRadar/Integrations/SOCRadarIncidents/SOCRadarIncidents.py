@@ -3,13 +3,13 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 ''' IMPORTS '''
 
-import requests
+import urllib3
 import traceback
 from json.decoder import JSONDecodeError
 from typing import Dict, Any, Tuple, cast
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # noqa # pylint: disable=no-member
+urllib3.disable_warnings()  # noqa # pylint: disable=no-member
 
 
 ''' CONSTANTS '''

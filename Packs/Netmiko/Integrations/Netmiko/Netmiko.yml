@@ -243,8 +243,6 @@ script:
     - auto: PREDEFINED
       name: override_platform
       description: If specified, it will override the target platform specified in the integration instance.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - a10
@@ -454,8 +452,7 @@ script:
     - contextPath: Netmiko.Output
       description: The results of the command.
       type: string
-  dockerimage: demisto/netmiko:1.0.0.63868
-  runonce: false
+  dockerimage: demisto/netmiko:1.0.0.64631
   script: ""
   subtype: python3
   type: python

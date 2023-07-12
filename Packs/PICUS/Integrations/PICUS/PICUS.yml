@@ -9,8 +9,7 @@ configuration:
   name: server
   required: true
   type: 0
-- additionalinfo: Picus Interface  - SETTINGS -  ADVANCED - API TOKEN - Generate and
-    Show Token
+- additionalinfo: Picus Interface  - SETTINGS -  ADVANCED - API TOKEN - Generate and Show Token
   display: API Key - Refresh Token
   name: apikey
   required: true
@@ -18,12 +17,10 @@ configuration:
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Continuous Breach And Attack Simulation
 display: PICUS
@@ -43,9 +40,7 @@ script:
     - description: Attacker Peer
       name: untrusted
       required: true
-    description: 'Attack Result - Makes a comparison of the given vector''s results.
-      Example Command: !picus-vector-compare begin_date=2020-01-20 end_date=2021-01-20
-      trusted=Trusted_Peer1 untrusted=Untrusted_Peer1'
+    description: 'Attack Result - Makes a comparison of the given vector''s results. Example Command: !picus-vector-compare begin_date=2020-01-20 end_date=2021-01-20 trusted=Trusted_Peer1 untrusted=Untrusted_Peer1'
     name: picus-vector-compare
   - arguments:
     - auto: PREDEFINED
@@ -60,18 +55,13 @@ script:
       name: begin_date
       required: true
     - defaultValue: "False"
-      description: 'Default: false -  Process Results of Scenario Details have console
-        output information which can be in large sizes so this data is disabled by
-        default'
+      description: 'Default: false -  Process Results of Scenario Details have console output information which can be in large sizes so this data is disabled by default'
       name: console_output_info
-    - description: "\t string Default: \"Today's date formatted YYYY-mm-dd\" Threat\
-        \ release date filter end of the date range if a begin date is given and end\
-        \ date not, default will be used"
+    - description: "\t string Default: \"Today's date formatted YYYY-mm-dd\" Threat release date filter end of the date range if a begin date is given and end date not, default will be used"
       name: end_date
       required: true
     - defaultValue: "null"
-      description: 'Default: "null" allowed time formats RFC822, RFC822Z, RFC1123,
-        RFC1123Z, RFC850, RFC3339'
+      description: 'Default: "null" allowed time formats RFC822, RFC822Z, RFC1123, RFC1123Z, RFC850, RFC3339'
       name: from_time
     - defaultValue: "1"
       description: 'Default: 1 Requested page number'
@@ -80,9 +70,7 @@ script:
       defaultValue: "50"
       description: 'Default: 50 Requested data size'
       name: size
-    - description: '"threat_parameters": { "begin_date": "2018-10-29", "categories":
-        [ [ "Malicious Code" ], [ "Attack Scenario", "Defense Evasion", "Indicator
-        Removal from Tools" ] ],'
+    - description: '"threat_parameters": { "begin_date": "2018-10-29", "categories": [ [ "Malicious Code" ], [ "Attack Scenario", "Defense Evasion", "Indicator Removal from Tools" ] ],'
       name: threat_parameters
     - description: ' Array of objects (PeerPairParams) Vectors.(Trusted Peer)'
       name: vector1
@@ -90,10 +78,7 @@ script:
     - description: ' Array of objects (PeerPairParams) Vectors.(Untrusted Peer)'
       name: vector2
       required: true
-    description: Returns the list of the attack results have optional parameters
-      for pagination and filtration. \nExample Command:\n !picus-attack-result-list
-      attack_result=insecure begin_date=2020-01-01 end_date=2020-09-05  vector1=Trusted-Peer1
-      vector2=Untrusted-Peer1
+    description: Returns the list of the attack results have optional parameters for pagination and filtration. \nExample Command:\n !picus-attack-result-list attack_result=insecure begin_date=2020-01-01 end_date=2020-09-05  vector1=Trusted-Peer1 vector2=Untrusted-Peer1
     name: picus-attack-result-list
   - arguments:
     - description: CVE code of the threat to be filtered
@@ -111,9 +96,7 @@ script:
     - description: integer <int64> PID of the threat
       name: threat_id
       required: true
-    description: 'Returns the list of the attack results of a single threat have
-      optional parameters for pagination and filtration. Example Command: !picus-specific-threats-results
-      threat_id=666059'
+    description: 'Returns the list of the attack results of a single threat have optional parameters for pagination and filtration. Example Command: !picus-specific-threats-results threat_id=666059'
     name: picus-specific-threats-results
   - arguments: []
     description: Returns the peer list with current statuses
@@ -131,19 +114,16 @@ script:
     - description: 'Example: variant=HTTP'
       name: variant
       required: true
-    - description: 'Example: trusted=Trusted-Peer-Name Trusted peer name, if type
-        is overall, it is not necessary'
+    - description: 'Example: trusted=Trusted-Peer-Name Trusted peer name, if type is overall, it is not necessary'
       name: vector1
       required: true
-    - description: 'Example: untrusted=Untrusted-Peer-Name Untrusted peer name, if
-        type is overall, it is not necessary'
+    - description: 'Example: untrusted=Untrusted-Peer-Name Untrusted peer name, if type is overall, it is not necessary'
       name: vector2
       required: true
     description: Schedules a single attack on requested vector
     name: picus-attack-single
   - arguments: []
-    description: Triggers the update mechanism manually, returns if the update-command
-      is taken successfully
+    description: Triggers the update mechanism manually, returns if the update-command is taken successfully
     name: picus-trigger-update
   - arguments: []
     description: Returns the current version and the update time config
@@ -152,9 +132,7 @@ script:
     - description: Threat release date filter start of the date range
       name: begin_date
       required: true
-    - description: 'Default: "Today''s date formatted YYYY-mm-dd" Threat release date
-        filter end of the date range if a begin date is given and end date not, default
-        will be used'
+    - description: 'Default: "Today''s date formatted YYYY-mm-dd" Threat release date filter end of the date range if a begin date is given and end date not, default will be used'
       name: end_date
       required: true
     - defaultValue: "1"
@@ -177,10 +155,7 @@ script:
     - description: integer <int64> -  PID of the threat
       name: threat_id
       required: true
-    description: 'Returns the list of the mitigations of threats\nhave optional parameters
-      for pagination and filtration, this route may not be used associated with your
-      license. Example Command: !picus-mitigation-list begin_date=2021-01-01 end_date=2021-02-01
-      threat_id=528370 products="McAfee IPS" signature_id=0x40208a00'
+    description: 'Returns the list of the mitigations of threats\nhave optional parameters for pagination and filtration, this route may not be used associated with your license. Example Command: !picus-mitigation-list begin_date=2021-01-01 end_date=2021-02-01 threat_id=528370 products="McAfee IPS" signature_id=0x40208a00'
     name: picus-mitigation-list
   - arguments: []
     description: Returns the mitre matrix metadata takes no parameters
@@ -193,9 +168,7 @@ script:
       defaultValue: "1"
       description: Page of Displayed Rule
       name: page
-    description: Returns the list of the sigma rules of scenario actions have optional
-      parameters for pagination and filtration, this route may not be used associated
-      with your license
+    description: Returns the list of the sigma rules of scenario actions have optional parameters for pagination and filtration, this route may not be used associated with your license
     name: picus-sigma-rules-list
   - arguments:
     - defaultValue: "True"
@@ -207,11 +180,9 @@ script:
     - defaultValue: "50"
       description: 'Default: 50 Requested data size'
       name: size
-    description: Returns the list of the vectors all disabled and enabled ones have
-      optional parameters for pagination
+    description: Returns the list of the vectors all disabled and enabled ones have optional parameters for pagination
     name: picus-vector-list
-  dockerimage: demisto/python3:3.9.8.24399
-  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
   script: ''
   subtype: python3
   type: python

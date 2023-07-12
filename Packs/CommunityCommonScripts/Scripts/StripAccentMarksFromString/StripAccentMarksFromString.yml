@@ -13,7 +13,6 @@ dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: StripAccentMarksFromString
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

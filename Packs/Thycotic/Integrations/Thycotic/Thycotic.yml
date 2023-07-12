@@ -14,11 +14,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Deprecated. Use DelineaSS instead.
 display: Thycotic (Deprecated)
@@ -26,197 +24,127 @@ name: Thycotic
 script:
   commands:
   - arguments:
-    - default: false
-      description: Secret ID
-      isArray: false
+    - description: Secret ID
       name: secret_id
       required: true
-      secret: false
-    deprecated: false
     description: Extracting the password field from the required secret
-    execution: false
     name: thycotic-secret-password-get
     outputs:
     - contextPath: Thycotic.Secret.Password
       description: Password from secret
       type: String
   - arguments:
-    - default: false
-      description: Secret ID
-      isArray: false
+    - description: Secret ID
       name: secret_id
       required: true
-      secret: false
-    deprecated: false
     description: Extracting the username field from the required secret
-    execution: false
     name: thycotic-secret-username-get
     outputs:
     - contextPath: Thycotic.Secret.Username
       description: Username from secret
       type: String
   - arguments:
-    - default: false
-      description: Search for secret using secret name.
-      isArray: false
+    - description: Search for secret using secret name.
       name: search_name
       required: true
-      secret: false
-    deprecated: false
     description: Search a secret by its name.
-    execution: false
     name: thycotic-secret-search-name
     outputs:
     - contextPath: Thycotic.Secret.Id
       description: List of Secret IDs.
       type: String
   - arguments:
-    - default: false
-      description: Secret ID
-      isArray: false
+    - description: Secret ID
       name: secret_id
       required: true
-      secret: false
-    - default: false
-      description: New password value
-      isArray: false
+    - description: New password value
       name: newpassword
       required: true
       secret: true
-    deprecated: false
     description: Update password for a secret by ID
-    execution: false
     name: thycotic-secret-password-update
     outputs:
     - contextPath: Thycotic.Secret.Newpassword
       description: New password changed for secret
       type: String
   - arguments:
-    - default: false
-      description: Secret ID
-      isArray: false
+    - description: Secret ID
       name: secret_id
       required: true
-      secret: false
-    deprecated: false
     description: Check Out a Secret
-    execution: false
     name: thycotic-secret-checkout
     outputs:
     - contextPath: Thycotic.Secret.Checkout
       description: Returns response (None = Successful)
       type: String
   - arguments:
-    - default: false
-      description: Secret ID
-      isArray: false
+    - description: Secret ID
       name: secret_id
       required: true
-      secret: false
-    deprecated: false
     description: Check In a secret
-    execution: false
     name: thycotic-secret-checkin
     outputs:
     - contextPath: Thycotic.Secret.Checkin
       description: Secret object
       type: String
   - arguments:
-    - default: false
-      description: Name for new folder
-      isArray: false
+    - description: Name for new folder
       name: foldername
       required: true
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Folder type ID, 1 - for folder
-      isArray: false
       name: foldertypeid
       predefined:
       - ''
       required: true
-      secret: false
-    - default: false
-      description: Parent folder ID
-      isArray: false
+    - description: Parent folder ID
       name: parentfolderid
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the folder should inherit permissions from its parent (default: true)'
-      isArray: false
       name: inheritpermissions
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the folder should inherit the secret policy. Defaults to true unless creating a root folder.
-      isArray: false
       name: inheritsecretpolicy
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Secret policy ID
-      isArray: false
+    - description: Secret policy ID
       name: secretpolicyid
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new Secret folder
-    execution: false
     name: thycotic-folder-create
     outputs:
     - contextPath: Thycotic.Folder.Create
       description: New object folder
       type: String
   - arguments:
-    - default: false
-      description: Search folder name
-      isArray: false
+    - description: Search folder name
       name: foldername
       required: true
-      secret: false
-    deprecated: false
     description: Search a specific folder by name.
-    execution: false
     name: thycotic-folder-search
     outputs:
     - contextPath: Thycotic.Folder.Id
       description: List of Folder IDs
       type: String
   - arguments:
-    - default: false
-      description: Folder ID
-      isArray: false
+    - description: Folder ID
       name: folder_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a folder by folder ID
-    execution: false
     name: thycotic-folder-delete
     outputs:
     - contextPath: Thycotic.Folder.Delete
       description: Folder ID
       type: String
   - arguments:
-    - default: false
-      description: Secret ID
-      isArray: false
+    - description: Secret ID
       name: secret_id
       required: true
-      secret: false
-    deprecated: false
     description: Get secret object by ID secret
-    execution: false
     name: thycotic-secret-get
     outputs:
     - contextPath: Thycotic.Secret
@@ -224,276 +152,137 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Whether to allow DoubleLocks as part of the search. True by default
-      isArray: false
       name: filter_allowdoublelocks
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to return the total number of secrets matching the filters. False by default
-      isArray: false
       name: filter_donotcalculatetotal
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Only include Secrets with this DoubleLock ID assigned in the search results
-      isArray: false
+    - description: Only include Secrets with this DoubleLock ID assigned in the search results
       name: filter_doublelockid
-      required: false
-      secret: false
-    - default: false
-      description: Names of Secret Template fields to return. Only exposed fields can be returned.
-      isArray: false
+    - description: Names of Secret Template fields to return. Only exposed fields can be returned.
       name: filter_extendedfields
-      required: false
-      secret: false
-    - default: false
-      description: Return only secrets matching a certain extended type
-      isArray: false
+    - description: Return only secrets matching a certain extended type
       name: filter_extendedtypeid
-      required: false
-      secret: false
-    - default: false
-      description: Return only secrets within a certain folder
-      isArray: false
+    - description: Return only secrets within a certain folder
       name: filter_folderid
-      required: false
-      secret: false
-    - default: false
-      description: Return only secrets with a certain heartbeat status
-      isArray: false
+    - description: Return only secrets with a certain heartbeat status
       name: filter_heartbeatstatus
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to include active secrets in results (when excluded equals true)
-      isArray: false
       name: filter_includeactive
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to include inactive secrets in results
-      isArray: false
       name: filter_includeinactive
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Whether to include restricted secrets in results\t\t"
-      isArray: false
       name: filter_includerestricted
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to do an exact match of the search text or a partial match
-      isArray: false
       name: filter_isexactmatch
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to only include secrets whose template has Remote Password Changing enabled
-      isArray: false
       name: filter_onlyrpcenabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: When true only Secrets where you are not the owner and the Secret was shared explicitly with your user id will be returned.
-      isArray: false
       name: filter_onlysharedwithme
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Return only secrets matching certain password types
-      isArray: false
+    - description: Return only secrets matching certain password types
       name: filter_passwordtypelds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify whether to filter by List, View, Edit, or Owner permission. Default is List. (List = 1, View = 2, Edit = 3, Owner = 4
-      isArray: false
       name: filter_permissionrequired
       predefined:
       - '1'
       - '2'
       - '3'
       - '4'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify whether to search AllSecrets, Recent, or Favorites (All = 1, Recent = 2,Favorites = 3
-      isArray: false
       name: filter_scope
       predefined:
       - '1'
       - '2'
       - '3'
-      required: false
-      secret: false
-    - default: false
-      description: Field to search
-      isArray: false
+    - description: Field to search
       name: filter_searchfield
-      required: false
-      secret: false
-    - default: false
-      description: Field-slug to search. This will override SearchField.
-      isArray: false
+    - description: Field-slug to search. This will override SearchField.
       name: filter_searchfieldslug
-      required: false
-      secret: false
-    - default: false
-      description: Search text
-      isArray: false
+    - description: Search text
       name: filter_searchtext
-      required: false
-      secret: false
-    - default: false
-      description: Return only secrets matching a certain template
-      isArray: false
+    - description: Return only secrets matching a certain template
       name: filter_secrettemplateid
-      required: false
-      secret: false
-    - default: false
-      description: Return only secrets within a certain site
-      isArray: false
+    - description: Return only secrets within a certain site
       name: filter_siteid
-      required: false
-      secret: false
-    - default: false
-      description: Number of records to skip before taking results
-      isArray: false
+    - description: Number of records to skip before taking results
       name: skip
-      required: false
-      secret: false
-    - default: false
-      description: Sort direction
-      isArray: false
+    - description: Sort direction
       name: sortBy_direction
-      required: false
-      secret: false
-    - default: false
-      description: Sort field name
-      isArray: false
+    - description: Sort field name
       name: sortBy_name
-      required: false
-      secret: false
-    - default: false
-      description: Priority index. Sorts with lower values are executed earlier
-      isArray: false
+    - description: Priority index. Sorts with lower values are executed earlier
       name: sortBy_priority
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of records to include in results
-      isArray: false
+    - description: Maximum number of records to include in results
       name: take
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to include secrets in subfolders of the specified folder
-      isArray: false
       name: filter_includesubfolders
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Search secret ID by multiply parameters
-    execution: false
     name: thycotic-secret-search
     outputs:
     - contextPath: Thycotic.Secret.Secret
       description: List of Folder IDs
       type: String
   - arguments:
-    - default: false
-      description: Folder name
-      isArray: false
+    - description: Folder name
       name: foldername
-      required: false
-      secret: false
-    - default: false
-      description: Folder type ID
-      isArray: false
+    - description: Folder type ID
       name: foldertypeid
-      required: false
-      secret: false
-    - default: false
-      description: Folder ID. Must match ID in path
-      isArray: false
+    - description: Folder ID. Must match ID in path
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the folder inherits permissions from its parent
-      isArray: false
       name: inheritpermissions
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the folder inherits the secret policy
-      isArray: false
       name: inheritsecretpolicy
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: ID parent folder
-      isArray: false
+    - description: ID parent folder
       name: parentfolderid
-      required: false
-      secret: false
-    - default: false
-      description: Secret Policy ID
-      isArray: false
+    - description: Secret Policy ID
       name: secretpolicyid
-      required: false
-      secret: false
-    deprecated: false
     description: Update a single secret folder by ID
-    execution: false
     name: thycotic-folder-update
     outputs:
     - contextPath: Thycotic.Folder.Update
@@ -501,596 +290,313 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Whether the secret’s password is automatically rotated on a schedule.
-      isArray: false
       name: autochangeenabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the secret’s password is automatically changed when a secret is checked in. This is a security feature that prevents a use of the password retrieved from check-out after the secret is checked in.
-      isArray: false
       name: checkoutchangepasswordenabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the user must check-out the secret to view it. Checking out gives the user exclusive access to the secret for a specified period or until the secret is checked in.
-      isArray: false
       name: checkoutenabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The number of minutes that a secret will remain checked out.
-      isArray: false
+    - description: The number of minutes that a secret will remain checked out.
       name: checkoutintervalminutes
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the secret inherits permissions from the containing folder.
-      isArray: false
       name: enableinheritpermissions
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the secret policy is inherited from the containing folder.
-      isArray: false
       name: enableinheritsecretpolicy
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Secret folder ID. If the secret is contained in a folder, the id of the containing folder. Use -1 for secrets that are in the root folder.
-      isArray: false
+    - description: Secret folder ID. If the secret is contained in a folder, the id of the containing folder. Use -1 for secrets that are in the root folder.
       name: folderid
-      required: false
-      secret: false
-    - default: false
-      description: When an SSH secret is proxied, you can choose to connect as another user and then do an su to the current secret’s user. This is a common practice for connecting with a lower privileged account and then switching to the root user.
-      isArray: false
+    - description: When an SSH secret is proxied, you can choose to connect as another user and then do an su to the current secret’s user. This is a common practice for connecting with a lower privileged account and then switching to the root user.
       name: launcherconnectassecretid
-      required: false
-      secret: false
-    - default: false
-      description: Secret name
-      isArray: false
+    - description: Secret name
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The id of the password change script to use on applicable web password secrets.
-      isArray: false
+    - description: The id of the password change script to use on applicable web password secrets.
       name: passwordtypewebscriptld
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the user must enter a comment to view the secret.
-      isArray: false
       name: requirescommen
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The id of the secret policy that controls the security and other settings of the secret.
-      isArray: false
+    - description: The id of the secret policy that controls the security and other settings of the secret.
       name: secretpolicyid
-      required: false
-      secret: false
-    - default: false
-      description: Secret Template ID (integer)
-      isArray: false
+    - description: Secret Template ID (integer)
       name: secrettemplateid
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether session recording is enabled.
-      isArray: false
       name: sessionrecordingenabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: ' The id of the distributed engine site that is used by this secret for operations such as password changing.'
-      isArray: false
       name: siteid
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         sshKeyArgs options. generateSshKeys (bool) – Whether to generate an SSH private key.
         generatePassphrase (bool) – Whether to generate an SSH private key passphrase.  Only applicable when the Secret template has a password changer with the Private Key Passphrase field mapped.  If it is not mapped, this setting is ignored.
-      isArray: false
       name: sshkeyargs
-      required: false
-      secret: false
-    - default: false
-      description: Item Domain for secret. If need to select template.
-      isArray: false
+    - description: Item Domain for secret. If need to select template.
       name: domain_item
-      required: false
-      secret: false
-    - default: false
-      description: Item Machine for secret. If need to select template.
-      isArray: false
+    - description: Item Machine for secret. If need to select template.
       name: machine_item
-      required: false
-      secret: false
-    - default: false
-      description: Item Username for secret.If need to select template.
-      isArray: false
+    - description: Item Username for secret.If need to select template.
       name: username_item
-      required: false
-      secret: false
-    - default: false
-      description: Item Password for secret.If need to select template.
-      isArray: false
+    - description: Item Password for secret.If need to select template.
       name: password_item
-      required: false
-      secret: false
-    - default: false
-      description: Item Notes for secret.IF  need to select template.
-      isArray: false
+    - description: Item Notes for secret.IF  need to select template.
       name: notes_item
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the secret should be flagged for immediate password change.
-      isArray: false
       name: autochangenextpassword
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The id of the mapping entity that associates this secret to a specific access request workflow.
-      isArray: false
+    - description: The id of the mapping entity that associates this secret to a specific access request workflow.
       name: accessRequestWorkflowMapId
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new Secret
-    execution: false
     name: thycotic-secret-create
     outputs:
     - contextPath: Thycotic.Secret.Create
       description: Secret object
       type: String
   - arguments:
-    - default: false
-      description: ID secret for delete
-      isArray: false
+    - description: ID secret for delete
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete secret
-    execution: false
     name: thycotic-secret-delete
     outputs:
     - contextPath: Thycotic.Secret.Delete
       description: Secret object
       type: String
   - arguments:
-    - default: false
-      description: The user’s name as displayed in the user interface.
-      isArray: false
+    - description: The user’s name as displayed in the user interface.
       name: displayname
       required: true
-      secret: false
-    - default: false
-      description: Password for new user. The password used to log in.
-      isArray: false
+    - description: Password for new user. The password used to log in.
       name: password
       required: true
-      secret: false
-    - default: false
-      description: Username
-      isArray: false
+    - description: Username
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Active Directory unique identifier
-      isArray: false
+    - description: Active Directory unique identifier
       name: adguid
-      required: false
-      secret: false
-    - default: false
-      description: Active Directory domain ID
-      isArray: false
+    - description: Active Directory domain ID
       name: domainid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether Duo two-factor authentication is enabled
-      isArray: false
       name: duotwofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The user's email address. Used by the system to send reports, access requests, and other notifications.
-      isArray: false
+    - description: The user's email address. Used by the system to send reports, access requests, and other notifications.
       name: emailaddress
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
-      isArray: false
       name: enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether Duo two-factor authentication is enabled
-      isArray: false
       name: fido2twofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether this is an application account. Application accounts are used for automation, cannot log in using the UI, and do not consume a user license.
-      isArray: false
       name: isapplicationaccount
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether OATH two-factor authentication is enabled
-      isArray: false
       name: oathtwofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether RADIUS two-factor authentication is enabled
-      isArray: false
       name: radiustwofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: When a user account uses RADIUS two-factor authentication, this property is the user name of the RADIUS account used to authenticate this user.
-      isArray: false
+    - description: When a user account uses RADIUS two-factor authentication, this property is the user name of the RADIUS account used to authenticate this user.
       name: radiususername
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether two-factor authentication is enabled
-      isArray: false
       name: twofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new user
-    execution: false
     name: thycotic-user-create
     outputs:
     - contextPath: Thycotic.User.Create
       description: User object
       type: String
   - arguments:
-    - default: false
-      description: Filter users by Active Directory domain (integer)
-      isArray: false
+    - description: Filter users by Active Directory domain (integer)
       name: filter_domainid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to include inactive users in the results
-      isArray: false
       name: filter_includeinactive
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Fields to search
-      isArray: false
+    - description: Fields to search
       name: filter_searchfields
-      required: false
-      secret: false
-    - default: false
-      description: Search text
-      isArray: false
+    - description: Search text
       name: filter_searchtext
-      required: false
-      secret: false
-    - default: false
-      description: Number of records to skip before taking results
-      isArray: false
+    - description: Number of records to skip before taking results
       name: skip
-      required: false
-      secret: false
-    - default: false
-      description: Sort direction
-      isArray: false
+    - description: Sort direction
       name: sortBy_direction
-      required: false
-      secret: false
-    - default: false
-      description: Sort field name
-      isArray: false
+    - description: Sort field name
       name: sortBy_name
-      required: false
-      secret: false
-    - default: false
-      description: Priority index. Sorts with lower values are executed earlier (integer)
-      isArray: false
+    - description: Priority index. Sorts with lower values are executed earlier (integer)
       name: sortBy_priority
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of records to include in results(integer)
-      isArray: false
+    - description: Maximum number of records to include in results(integer)
       name: take
-      required: false
-      secret: false
-    deprecated: false
     description: Search, filter, sort, and page users
-    execution: false
     name: thycotic-user-search
     outputs:
     - contextPath: Thycotic.User.Search
       description: List of User IDs
       type: String
   - arguments:
-    - default: false
-      description: User ID. Must match ID in path.
-      isArray: false
+    - description: User ID. Must match ID in path.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The d of the date format to use when displaying dates to this user. These options are defined in Admin > Configuration.
-      isArray: false
+    - description: The d of the date format to use when displaying dates to this user. These options are defined in Admin > Configuration.
       name: dateoptionid
-      required: false
-      secret: false
-    - default: false
-      description: The user’s name as displayed in the user interface.
-      isArray: false
+    - description: The user’s name as displayed in the user interface.
       name: displayname
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether Duo two-factor authentication is enabled.
-      isArray: false
       name: duotwofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The user's email address. Used by the system to send reports, access requests, and other notifications.
-      isArray: false
+    - description: The user's email address. Used by the system to send reports, access requests, and other notifications.
       name: emailaddress
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
-      isArray: false
       name: enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether FIDO2 two-factor authentication is enabled.
-      isArray: false
       name: fido2twofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: 'A list of group ids for the groups that can manage this user. '
-      isArray: false
+    - description: 'A list of group ids for the groups that can manage this user. '
       name: groupowners
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether this is an application account. Application accounts are used for automation, cannot log in using the UI, and do not consume a user license.
-      isArray: false
       name: isapplicationaccount
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the user is managed by the groups specified in GroupOwners or is managed by all users with the ‘Administer Users’ role permission.
-      isArray: false
       name: isgroupownerupdate
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the user is locked out
-      isArray: false
       name: isLockedout
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Number of login failures to allow before the account is locked out. Set to 0 for unlimited login attempts.
-      isArray: false
+    - description: Number of login failures to allow before the account is locked out. Set to 0 for unlimited login attempts.
       name: loginfailures
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether OATH two-factor authentication is enabled.
-      isArray: false
       name: oathtwofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Password for update user. The password used to log in.
-      isArray: false
+    - description: Password for update user. The password used to log in.
       name: password
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether RADIUS two-factor authentication is enabled
-      isArray: false
       name: radiustwofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: When a user account uses RADIUS two-factor authentication, this property is the user name of the RADIUS account used to authenticate this user.
-      isArray: false
+    - description: When a user account uses RADIUS two-factor authentication, this property is the user name of the RADIUS account used to authenticate this user.
       name: radiususername
-      required: false
-      secret: false
-    - default: false
-      description: The id of the time format to use when displaying times to this user. These options are defined in Admin > Configuration.
-      isArray: false
+    - description: The id of the time format to use when displaying times to this user. These options are defined in Admin > Configuration.
       name: timeoptionid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether two-factor authentication is enabled
-      isArray: false
       name: twofactor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: etermines the type of Unix authentication to use. Must be Password (0), PublicKey (1), PasswordOrPublicKey (2), or PasswordAndPublicKey (3).
-      isArray: false
       name: unixauthenticationmethodtype
       predefined:
       - '0'
       - '1'
       - '2'
       - '3'
-      required: false
-      secret: false
-    deprecated: false
     description: Update a single user by ID
-    execution: false
     name: thycotic-user-update
     outputs:
     - contextPath: Thycotic.User.Update
       description: User object
       type: String
   - arguments:
-    - default: false
-      description: User ID
-      isArray: false
+    - description: User ID
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete user by ID
-    execution: false
     name: thycotic-user-delete
     outputs:
     - contextPath: Thycotic.User.Delete
       description: User object
       type: String
   - arguments:
-    - default: false
-      description: Secret ID
-      isArray: false
+    - description: Secret ID
       name: secret_id
       required: true
-      secret: false
-    - default: false
-      description: The new password
-      isArray: false
+    - description: The new password
       name: newpassword
       required: true
-      secret: false
-    deprecated: false
     description: Remote Password Changing
-    execution: false
     name: thycotic-secret-rpc-changepassword
     outputs:
     - contextPath: Thycotic.Secret.ChangePassword
       description: Secret summary
       type: String
   dockerimage: demisto/python3:3.9.8.24399
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

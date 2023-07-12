@@ -15,7 +15,6 @@ dockerimage: demisto/python3:3.10.4.27798
 enabled: true
 name: RandomElementFromList
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

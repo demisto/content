@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import ssl
 import email
 from datetime import timezone
@@ -7,9 +9,6 @@ from dateparser import parse
 from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
 from imapclient import IMAPClient
-
-import demistomock as demisto
-from CommonServerPython import *
 
 
 class Email(object):

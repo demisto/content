@@ -8,14 +8,12 @@ commonfields:
 configuration:
 - display: IP Address (e.g., 127.0.0.1)
   name: address
-  required: false
   type: 0
   section: Connect
   additionalinfo: A Syslog server address must be provided. Note, the maximal supported length of a label inside an address is 64 characters.
 - defaultvalue: '514'
   display: Port
   name: port
-  required: false
   type: 0
   section: Connect
   additionalinfo: When using UDP or TCP, port 514 is the default. When using TLS, port 6514 is the default.
@@ -26,20 +24,17 @@ configuration:
   - TCP
   - UDP
   - TLS
-  required: false
   type: 15
   section: Connect
   advanced: true
   additionalinfo: TLS versions supported are 1.2 and above.
 - name: certificate
-  required: false
   type: 9
   displaypassword: Certificate
   hiddenusername: true
   additionalinfo: Required for TLS.
 - display: Self Signed Certificate
   name: self_signed_certificate
-  required: false
   type: 8
   additionalinfo: Required for TLS. Check if the certificate is self signed.
 - defaultvalue: LOG_USER
@@ -66,7 +61,6 @@ configuration:
   - LOG_LOCAL5
   - LOG_LOCAL6
   - LOG_LOCAL7
-  required: false
   type: 15
   section: Connect
   advanced: true
@@ -79,7 +73,6 @@ configuration:
   - LOG_WARNING
   - LOG_ERR
   - LOG_CRIT
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -92,7 +85,6 @@ configuration:
   - Medium
   - High
   - Critical
-  required: false
   type: 15
 description: Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.
 display: Syslog Sender
@@ -104,46 +96,28 @@ script:
       default: true
       defaultValue: all
       description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
-      isArray: false
       name: type
       predefined:
       - all
       - chat
       - none
-      required: false
-      secret: false
-    deprecated: false
     description: Mirrors the investigation's War Room to Syslog.
-    execution: false
     name: mirror-investigation
   - arguments:
     - default: true
       description: The message content.
-      isArray: false
       name: message
-      required: false
-      secret: false
-    - default: false
-      description: An entry ID to send as a link.
-      isArray: false
+    - description: An entry ID to send as a link.
       name: entry
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". The default value is "false'.
-      isArray: false
       name: ignoreAddURL
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
-      isArray: false
       name: level
       predefined:
       - DEBUG
@@ -151,23 +125,14 @@ script:
       - WARNING
       - ERROR
       - CRITICAL
-      required: false
-      secret: false
-    deprecated: false
     description: Sends a message to Syslog. Used by the mirroring functionality.
-    execution: false
     name: send-notification
   - arguments:
-    - default: false
-      description: The message content.
-      isArray: false
+    - description: The message content.
       name: message
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
-      isArray: false
       name: level
       predefined:
       - DEBUG
@@ -175,34 +140,18 @@ script:
       - WARNING
       - ERROR
       - CRITICAL
-      required: false
-      secret: false
-    - default: false
-      description: The Syslog server address.
-      isArray: false
+    - description: The Syslog server address.
       name: address
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The protocol to use. Can be "TCP", "UDP", or "TLS".
-      isArray: false
       name: protocol
       predefined:
       - TCP
       - UDP
-      required: false
-      secret: false
-    - default: false
-      description: The Syslog server port.
-      isArray: false
+    - description: The Syslog server port.
       name: port
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The Syslog facility.
-      isArray: false
       name: facility
       predefined:
       - LOG_AUTH
@@ -225,17 +174,9 @@ script:
       - LOG_LOCAL5
       - LOG_LOCAL6
       - LOG_LOCAL7
-      required: false
-      secret: false
-    deprecated: false
     description: Sends a message to Syslog.
-    execution: false
     name: syslog-send
   dockerimage: demisto/syslog:1.0.0.48738
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

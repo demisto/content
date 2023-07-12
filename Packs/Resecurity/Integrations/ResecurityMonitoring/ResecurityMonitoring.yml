@@ -16,11 +16,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: 'This package allows retrieving asset monitoring results from monitoring tasks that can be configured in Context and Risk platforms.'
 display: 'Resecurity Monitoring'
@@ -30,37 +28,17 @@ script:
   - arguments:
     - default: true
       description: Monitor Task ID.
-      isArray: false
       name: monitor_task_id
       required: true
-      secret: false
-    - default: false
-      description: Page number. The results will be returned only for specified page if param value is not empty.
-      isArray: false
+    - description: Page number. The results will be returned only for specified page if param value is not empty.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: "Page size. Possible range of values: 1 - 50. Default value is 20."
-      isArray: false
+    - description: "Page size. Possible range of values: 1 - 50. Default value is 20."
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Limit of the records in dataset. Default value is 1000.
-      isArray: false
+    - description: Limit of the records in dataset. Default value is 1000.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: "Affects which results will be included in dataset. Possible values: 1 - only new results, 2 - last results (default value), 3 - all results"
-      isArray: false
+    - description: "Affects which results will be included in dataset. Possible values: 1 - only new results, 2 - last results (default value), 3 - all results"
       name: mode
-      required: false
-      secret: false
-    deprecated: false
     description: 'Retrieve monitoring results from a specific monitor task'
-    execution: false
     name: resecurity-get-task-monitor-results-data-breaches
     outputs:
     - contextPath: Resecurity.DataBreach.id
@@ -93,12 +71,11 @@ script:
     - contextPath: Resecurity.DataBreach.source_name
       description: 'Data breach source name'
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

@@ -1,16 +1,11 @@
 args:
-- default: false
-  description: The PAN-OS version - ex 9.1.0
-  isArray: false
+- description: The PAN-OS version - ex 9.1.0
   name: version
   required: true
-  secret: false
-- default: false
-  description: The list of advisories, produced by pan-advisories-get-advisories
+- description: The list of advisories, produced by pan-advisories-get-advisories
   isArray: true
   name: advisories
   required: true
-  secret: false
 comment: Checks if the given PAN-OS version number is affected by the given list of vulnerabilties from the pan-advisories-get-advisories command.
 commonfields:
   id: CheckPanosVersionAffected
@@ -46,7 +41,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.10.48392

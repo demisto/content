@@ -1,10 +1,7 @@
 args:
-- default: false
-  description: Integration name to check its health status.
-  isArray: false
+- description: Integration name to check its health status.
   name: integration_name
   required: true
-  secret: false
 comment: Checks for existing errors in a given integration.
 commonfields:
   id: VerifyIntegrationHealth
@@ -21,13 +18,12 @@ outputs:
   description: Requested integration name.
   type: String
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 tests:
 - No test

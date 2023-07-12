@@ -14,7 +14,6 @@ outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input and escaped for Arcanna to be used
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,22 +1,12 @@
 args:
-- default: false
-  description: CSV list of entry ids for the files to zip.
+- description: CSV list of entry ids for the files to zip.
   isArray: true
   name: entryID
   required: true
-  secret: false
-- default: false
-  description: 'Name of the output file, for example: zipName="test" would result in output file "test.zip"'
-  isArray: false
+- description: 'Name of the output file, for example: zipName="test" would result in output file "test.zip"'
   name: zipName
-  required: false
-  secret: false
-- default: false
-  description: 'Used to create a password protected zip file. Example: password="abcd"'
-  isArray: false
+- description: 'Used to create a password protected zip file. Example: password="abcd"'
   name: password
-  required: false
-  secret: false
 comment: Zip a file and upload to war room
 commonfields:
   id: ZipFile
@@ -58,7 +48,6 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in file entries).
   type: String
 script: '-'
-system: false
 tags:
 - Utility
 - file
@@ -66,5 +55,4 @@ timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/py3-tools:1.0.0.49703
-runonce: false
 fromversion: 5.0.0

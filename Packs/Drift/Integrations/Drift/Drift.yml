@@ -16,11 +16,9 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -86,7 +84,7 @@ script:
     - contextPath: Drift.Contacts.Attributes
       description: Attributes of the contact (JSON dict).
     description: 'Post New Contact using a new contact Email '
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   subtype: python3
 fromversion: 6.2.0

@@ -1,6 +1,6 @@
-# type: ignore
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# type: ignore
 import copy
 from requests import Response
 

@@ -9,11 +9,9 @@ configuration:
   type: 0
 - display: Port
   name: port
-  required: false
   type: 0
 - display: Database Name
   name: dbname
-  required: false
   type: 0
 - display: Username
   name: credentials
@@ -21,15 +19,12 @@ configuration:
   type: 9
 - display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
   name: connect_parameters
-  required: false
   type: 0
 - display: Use an SSL connection
   name: ssl_connect
-  required: false
   type: 8
 - display: Use Persistent Connection
   name: use_persistent
-  required: false
   type: 8
 description: Integration to provide connectivity to IBM DB2 using the python ibm_db2 library.
 display: DB2
@@ -53,7 +48,6 @@ script:
     description: Running a DB2 query command
     name: db2-query
   dockerimage: demisto/ibm-db2:1.0.0.27972
-  runonce: false
   script: ''
   subtype: python3
   type: python

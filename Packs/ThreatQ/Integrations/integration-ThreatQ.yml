@@ -27,12 +27,10 @@ configuration:
   name: insecure
   defaultvalue: 'false'
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
-  required: false
 script:
   script: >-
     ''' IMPORTS '''
@@ -455,7 +453,6 @@ script:
     - contextPath: DBotScore.Malicious
       description: DBotScore Malicious status
     description: Run file check against ThreatQ
-  runonce: false
   dockerimage: demisto/python:2.7.18.24398
 beta: true
 deprecated: true
