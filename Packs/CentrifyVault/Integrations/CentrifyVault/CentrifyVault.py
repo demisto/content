@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import re
 import time
 
-import demistomock as demisto  # noqa: F401
 # IMPORTS
 
-from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 import urllib3

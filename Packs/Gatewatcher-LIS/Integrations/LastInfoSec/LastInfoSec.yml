@@ -10,11 +10,9 @@ configuration:
   type: 4
 - display: Check the TLS certificate
   name: check_cert
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: This integration allow to interact with the Gatewatcher LastInfoSec product via API.
 display: LastInfoSec
@@ -26,12 +24,9 @@ script:
       description: |2-
          Number of minutes to get.
         Max 1440 minutes.
-      isArray: false
       name: Minute
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter IoC by categories
       isArray: true
       name: Categories
@@ -46,10 +41,7 @@ script:
       - keylogger
       - agent
       - backdoor
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter IoC by type
       isArray: true
       name: Type
@@ -59,20 +51,13 @@ script:
       - MD5
       - URL
       - Host
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter IoC by mode
-      isArray: false
       name: Mode
       predefined:
       - detection
       - hunting
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter IoC by risk
       isArray: true
       name: Risk
@@ -80,23 +65,16 @@ script:
       - Malicious
       - Suspicious
       - High suspicious
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter IoC by TLP
       isArray: true
       name: TLP
       predefined:
       - green
       - white
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieve the data from Gatewatcher CTI feed by minute.
       Max 1440 minutes.
-    execution: false
     name: gw-lis-get-by-minute
     outputs:
     - contextPath: LIS.GetByMinute.Value
@@ -105,13 +83,9 @@ script:
   - arguments:
     - default: true
       description: Value to be search
-      isArray: false
       name: Value
       required: true
-      secret: false
-    deprecated: false
     description: Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gatewatcher CTI database. If the data is known, only the IOC corresponding to the value will be returned.
-    execution: false
     name: gw-lis-get-by-value
     outputs:
     - contextPath: LIS.GetByValue.Categories
@@ -136,10 +110,6 @@ script:
       description: Vulnerabilities
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

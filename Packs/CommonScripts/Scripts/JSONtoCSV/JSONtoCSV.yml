@@ -33,8 +33,7 @@ outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file (only in case of report type=json)
 scripttarget: 0
-runonce: false
 tests:
 - JSONtoCSV-Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474

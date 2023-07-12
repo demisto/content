@@ -2,8 +2,8 @@
 ignore=IN126
 
 [file:ServiceDeskPlus_On_Premise.yml]
-ignore=BA108,BA109,IN145
-
+ignore=BA108,BA109
 
 [file:ServiceDeskPlus_On_Premise_image.png]
 ignore=IM111
+

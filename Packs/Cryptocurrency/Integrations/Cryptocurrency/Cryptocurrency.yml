@@ -17,7 +17,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -30,7 +29,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -71,8 +69,6 @@ script:
       type: string
     description: Return Cryptocurrency reputation.
   dockerimage: demisto/python3:3.10.12.63474
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

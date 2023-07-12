@@ -15,30 +15,24 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - defaultvalue: '100'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
 - additionalinfo: 'Format: [number] [time unit]. e.g., 12 hours, 7 days, 2 seconds etc.'
   defaultvalue: 5 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
 - additionalinfo: Types of tickets to fetch
   defaultvalue: INCIDENT
@@ -48,7 +42,6 @@ configuration:
   - CASE
   - INCIDENT
   - CHANGE
-  required: false
   type: 16
 description: |
   The Trustwave Fusion platform connects your organization’s digital footprint
@@ -135,16 +128,12 @@ script:
       description: 'The ticket urgency (HIGH, MEDIUM, LOW)'
       type: String
   - arguments:
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Ticket ID
       name: id
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Ticket Subject
       name: subject
-      required: false
     - auto: PREDEFINED
       defaultValue:
       description: Ticket type to query
@@ -255,42 +244,35 @@ script:
       description: 'The ticket urgency (HIGH, MEDIUM, LOW)'
       type: String
   - arguments:
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Incident ID
       name: id
       required: true
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Comment text
       name: comment
       required: true
     description: Add a comment to a ticket
     name: trustwave-add-ticket-comment
   - arguments:
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Incident ID
       name: id
       required: true
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Comment text
       name: comment
       required: true
     description: Close a ticket
     name: trustwave-close-ticket
   - arguments:
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Absolute or relative date to check for updates
       name: since
       required: true
-    - default: false
-      defaultValue: 100
+    - defaultValue: 100
       description: Maximum number of tickets to fetch
       name: fetch_limit
-      required: false
     - auto: PREDEFINED
       defaultValue: INCIDENT
       description: Ticket type to query
@@ -358,70 +340,44 @@ script:
       description: 'The ticket urgency (HIGH, MEDIUM, LOW)'
       type: String
   - arguments:
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Finding ID
       name: id
-      required: false
-    - default: false
-      defaultValue: 100
+    - defaultValue: 100
       description: Maximum number of Findings to return
       name: limit
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Name of the Finding
-      isArray: false
       name: name
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Finding Classification
-      isArray: false
       name: classification
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Finding summary
-      isArray: false
       name: summary
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Finding detail
-      isArray: false
       name: detail
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Finding priority
       isArray: true
       name: priority
-      required: false
       auto: PREDEFINED
       predefined:
       - CRITICAL
       - HIGH
       - MEDIUM
       - LOW
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Finding severity
       isArray: true
       name: severity
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: created_since
-      isArray: false
       name: created_since
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Updated since.
-      isArray: false
       name: updated_since
-      required: false
     description: Search for Findings
     name: trustwave-search-findings
     outputs:
@@ -610,66 +566,42 @@ script:
       defaultValue:
       description: Asset ID
       name: id
-      required: false
-    - default: false
-      defaultValue: 100
+    - defaultValue: 100
       description: Maximum number of Assets to return
       name: limit
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Name of the Asset
-      isArray: false
       name: name
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: OS for the Asset
       isArray: true
       name: os
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Asset Tags to search for
       isArray: true
       name: tags
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: port
       isArray: true
       name: port
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Application Protocol
       isArray: true
       name: app_protocol
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Transport Protocol
       isArray: true
       name: transport
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Asset Type
       isArray: true
       name: type
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: created_since
-      isArray: false
       name: created_since
-      required: false
-    - default: false
-      defaultValue:
+    - defaultValue:
       description: Updated since.
-      isArray: false
       name: updated_since
-      required: false
     description: Search for Assets
     name: trustwave-search-assets
     outputs:
@@ -729,7 +661,6 @@ script:
       type: String
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

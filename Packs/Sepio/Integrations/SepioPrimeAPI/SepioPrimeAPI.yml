@@ -18,30 +18,24 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Initial time to start fetching incidents. In days.
   name: fetch_time
   defaultvalue: 1 Day
   type: 0
   required: true
-- display: "Alert minimum severity from which to retrieve. Values are: Warning, Error,\
-    \ Critical"
+- display: "Alert minimum severity from which to retrieve. Values are: Warning, Error, Critical"
   name: min_severity
   defaultvalue: Error
   type: 15
-  required: false
   options:
   - Warning
   - Error
@@ -58,7 +52,6 @@ configuration:
   name: max_alerts
   defaultvalue: "10"
   type: 0
-  required: false
 script:
   script: ''
   type: python
@@ -93,9 +86,7 @@ script:
       description: Maximum number of Agent entries to return.
     outputs:
     - contextPath: Sepio.Agent.HostIdentifier
-      description: Sepio Agent’s instance assigned textual name. usually derived from
-        the HOST name of the workstation.  This is not a unique identifier of the
-        Sepio Agent’s instance.
+      description: Sepio Agent’s instance assigned textual name. usually derived from the HOST name of the workstation.  This is not a unique identifier of the Sepio Agent’s instance.
       type: string
     - contextPath: Sepio.Agent.IpAddress
       description: Sepio Agent IP Address.
@@ -119,16 +110,13 @@ script:
       description: Current status of Sepio Agent.
       type: string
     - contextPath: Sepio.Agent.HasUnapprovedPeripherals
-      description: True if the Agent has at least one approved peripheral device that
-        is attached.
+      description: True if the Agent has at least one approved peripheral device that is attached.
       type: boolean
     - contextPath: Sepio.Agent.HasVulnerablePeripherals
-      description: True if the Agent has at least one vulnerable peripheral that is
-        attached.
+      description: True if the Agent has at least one vulnerable peripheral that is attached.
       type: boolean
     - contextPath: Sepio.Agent.HasKnownAttackTools
-      description: True if the Agent has at least one peripheral that is identified
-        as a known attack tool.
+      description: True if the Agent has at least one peripheral that is identified as a known attack tool.
       type: boolean
     - contextPath: Sepio.Agent.LastConfiguration
       description: Last configuration time. Format YYYY-MM-DDThh:mm:ss.sTZD
@@ -147,14 +135,11 @@ script:
     - name: host_uuid
       description: Filter results based on the UUID of the Agent.
     - name: vendor_name
-      description: Filter peripheral devices that contain a certain textual name (partial
-        or full, "contains") in the vendor name.
+      description: Filter peripheral devices that contain a certain textual name (partial or full, "contains") in the vendor name.
     - name: product_name
-      description: Filter peripheral devices that contain a certain textual name (partial
-        or full, "contains") in the product name.
+      description: Filter peripheral devices that contain a certain textual name (partial or full, "contains") in the product name.
     - name: serial_number
-      description: Filter peripheral devices that contain a certain text value (partial
-        or full, "contains") in the serial number.
+      description: Filter peripheral devices that contain a certain text value (partial or full, "contains") in the serial number.
     - name: is_unapproved_peripheral
       auto: PREDEFINED
       predefined:
@@ -172,16 +157,13 @@ script:
       predefined:
       - 'True'
       - 'False'
-      description: Filter only peripheral devices that are identified as known attack
-        tools.
+      description: Filter only peripheral devices that are identified as known attack tools.
     - name: limit
       description: Maximum number of peripheral device entries to return.
       defaultValue: "20"
     outputs:
     - contextPath: Sepio.Peripheral.HostIdentifier
-      description: Sepio Agent’s instance assigned textual name. usually derived from
-        the HOST name of the workstation.  This is not a unique identifier of the
-        Sepio Agent’s instance.
+      description: Sepio Agent’s instance assigned textual name. usually derived from the HOST name of the workstation.  This is not a unique identifier of the Sepio Agent’s instance.
       type: string
     - contextPath: Sepio.Peripheral.HostUUID
       description: Sepio Agent’s instance unique identifier.
@@ -214,16 +196,13 @@ script:
       description: Current status of the peripheral device.
       type: string
     - contextPath: Sepio.Peripheral.IsUnapprovedPeripheral
-      description: True if the Agent has at least one unapproved peripheral device
-        that is attached.
+      description: True if the Agent has at least one unapproved peripheral device that is attached.
       type: boolean
     - contextPath: Sepio.Peripheral.IsVulnerablePeripheral
-      description: True if the Agent has at least one vulnerable peripheral that is
-        attached.
+      description: True if the Agent has at least one vulnerable peripheral that is attached.
       type: boolean
     - contextPath: Sepio.Peripheral.IsKnownAttackTool
-      description: True if the Agent has at least one peripheral that is identified
-        as a known attack tool.
+      description: True if the Agent has at least one peripheral that is identified as a known attack tool.
       type: boolean
     description: Get Peripherals
   - name: sepio-query-switches
@@ -233,11 +212,9 @@ script:
     - name: switch_name
       description: Filter results based on switch name.
     - name: model
-      description: Filter only switches that are of the specified model (partial or
-        full, "begins with").
+      description: Filter only switches that are of the specified model (partial or full, "begins with").
     - name: ios_version
-      description: Filter only switches that run a certain iosVersion (partial or
-        full, "contains").
+      description: Filter only switches that run a certain iosVersion (partial or full, "contains").
     - name: is_alarmed
       auto: PREDEFINED
       predefined:
@@ -287,8 +264,7 @@ script:
     - name: port_name
       description: Filter results based on port name.
     - name: link_partner_data_contains
-      description: Filter only switch ports that contain the specified address (partial
-        or full, "contains").
+      description: Filter only switch ports that contain the specified address (partial or full, "contains").
     - name: is_alarmed
       auto: PREDEFINED
       predefined:
@@ -321,8 +297,7 @@ script:
       description: The number of MAC addresses detected on the switch port.
       type: number
     - contextPath: Sepio.Port.LinkPartners
-      description: List of the MAC addresses detected on the switch port (limited
-        to maximum of 10)
+      description: List of the MAC addresses detected on the switch port (limited to maximum of 10)
       type: string
     - contextPath: Sepio.Port.Status
       description: Current status of the switch port.
@@ -337,11 +312,9 @@ script:
   - name: sepio-query-system-events
     arguments:
     - name: start_datetime
-      description: Filter results based on event timestamp in ISO 8601 format, for
-        example 2020-03-01T18:00:00Z.
+      description: Filter results based on event timestamp in ISO 8601 format, for example 2020-03-01T18:00:00Z.
     - name: end_datetime
-      description: Filter results based on event timestamp in ISO 8601 format, for
-        example 2020-04-01T18:00:00Z.
+      description: Filter results based on event timestamp in ISO 8601 format, for example 2020-04-01T18:00:00Z.
     - name: min_severity
       auto: PREDEFINED
       predefined:
@@ -361,8 +334,7 @@ script:
       - Network
       description: Filter results based on event category.
     - name: source
-      description: Filter results based on source entity of the event (partial or
-        full, "contains").
+      description: Filter results based on source entity of the event (partial or full, "contains").
     - name: peripheral_type
       auto: PREDEFINED
       predefined:
@@ -381,9 +353,7 @@ script:
       - '13'
       - '14'
       - '98'
-      description: Filter only events (in the case of Peripheral events) that match
-        a certain peripheral type. can contain multiple peripheral types separated
-        with comma, i.e '1,2,3,4' or single type, i.e '1'
+      description: Filter only events (in the case of Peripheral events) that match a certain peripheral type. can contain multiple peripheral types separated with comma, i.e '1,2,3,4' or single type, i.e '1'
     - name: limit
       description: Maximum number of event entries to return.
       defaultValue: "20"
@@ -450,9 +420,8 @@ script:
       description: New mode to apply – "Approve" or "Disapprove".
     description: Set Agent Peripherals Mode
     execution: true
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 from datetime import datetime
@@ -5,8 +7,6 @@ from typing import Dict
 
 import requests
 
-import demistomock as demisto
-from CommonServerPython import *
 
 """ IMPORTS """
 

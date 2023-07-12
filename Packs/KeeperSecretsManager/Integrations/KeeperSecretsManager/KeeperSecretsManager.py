@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Keeper Secrets Manager Integration for Cortex XSOAR (aka Demisto)
 
 Manage Secrets and Protect Sensitive Data through Keeper Vault.
 
 """
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import urllib3
