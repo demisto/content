@@ -2625,10 +2625,10 @@ def fetch_incidents():
                                                                       last_run=current_fetch_info_idp_detections,
                                                                       fetch_limit=fetch_limit, id_field='name')
             updated_last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
-                                              fetch_limit=fetch_limit,
-                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
-                                              look_back=look_back,
-                                              created_time_field='occurred', id_field='name', date_format=IDP_DATE_FORMAT)
+                                                      fetch_limit=fetch_limit,
+                                                      start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                      look_back=look_back,
+                                                      created_time_field='occurred', id_field='name', date_format=IDP_DATE_FORMAT)
             current_fetch_info_idp_detections = updated_last_run
             demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
 
