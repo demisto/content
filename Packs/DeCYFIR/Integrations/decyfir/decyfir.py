@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, List
+from typing import Any
 
 ''' IMPORTS '''
 
@@ -118,14 +118,16 @@ class Client(BaseClient):
         else:
             return IncidentSeverity.UNKNOWN
 
-    def request_decyfir_api(self, category, category_type, api_param_query) -> List[Dict]:
+    def request_decyfir_api(self, category, category_type, api_param_query) -> list[dict]:
         response = self._http_request(
             url_suffix=f"{API_PATH_SUFFIX}" + f"/{category}?" + f"type={category_type}" + api_param_query,
             resp_type='response',
             method='GET')
 
-        if response.status_code == 200:
-            return response.json() if response.content else []
+        if response.status_code == 200 and response.content:
+            return response.json()
+
+        return []
 
     def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch):
 
@@ -167,7 +169,7 @@ class Client(BaseClient):
         return return_data
 
     def prepare_incident_json(self, alert_type: str, alert_subtype: str, name: str, date_val: str,
-                              severity: int, details: dict, record_id: str) -> Dict[str, Any]:
+                              severity: int, details: dict, record_id: str) -> dict[str, Any]:
 
         occurred_date = dateparser.parse(date_val)
         occurred = occurred_date.strftime(DATE_FORMAT) if isinstance(occurred_date, datetime) else None
@@ -176,6 +178,7 @@ class Client(BaseClient):
 
         for key, value in details.items():
             if key != 'uid' and value is not None and value != 'null':
+                key = str(key).replace("_", " ").capitalize()
                 decyfir_data_details.append({"fields": key, "values": value})
 
         return_data = {
@@ -189,7 +192,7 @@ class Client(BaseClient):
             "sourceBrand": LABEL_DECYFIR,
             "labels": [
                 {
-                    "type": "description",
+                    "type": "Description",
                     "value": details.get('description')
                 }
             ],
@@ -202,7 +205,7 @@ class Client(BaseClient):
 
         return return_data
 
-    def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> List[dict]:
+    def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> list[dict]:
         try:
             incidents_json = []
             for json_ in json_data:
@@ -217,10 +220,10 @@ class Client(BaseClient):
                     domain = json_.get("sub_domain")
                 domain = domain + ", " + json_.get("top_domain") if domain else json_.get("top_domain")
 
-                name = "DOMAIN : {}".format(domain) if domain else ""
+                name = f"DOMAIN : {domain}" if domain else ""
 
                 if ip:
-                    name = name + "\n IP: {}".format(ip) if name else "IP: {}".format(ip)
+                    name = name + f"\n IP: {ip}" if name else f"IP: {ip}"
 
                 if not name:
                     name = "Asset: {}".format(json_.get("asset_name")) if json_.get("asset_name") else ""
@@ -233,7 +236,7 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(str(e))
 
-    def prepare_incidents_for_digital_risk(self, json_data, alert_type: str, alert_subtype: str) -> List:
+    def prepare_incidents_for_digital_risk(self, json_data, alert_type: str, alert_subtype: str) -> list:
         try:
             incidents_json = []
             for json_ in json_data:
@@ -253,7 +256,7 @@ class Client(BaseClient):
 
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
         try:
-            return_data: List[dict] = []
+            return_data: list[dict] = []
 
             # Attack Surface
             # Open Ports

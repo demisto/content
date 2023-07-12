@@ -19,6 +19,7 @@ LABEL_THREAT_ACTOR = "threat-actor"
 LABEL_INTRUSION_SET = "intrusion-set"
 LABEL_CAMPAIGN = "campaign"
 LABEL_MALWARE = "malware"
+LABEL_VULNERABILITY = "vulnerability"
 LABEL_RELATIONSHIP = "relationship"
 LABEL_RELATIONSHIPS = "relationships"
 LABEL_ATTACK_PATTERN = "attack-pattern"
@@ -27,6 +28,13 @@ LABEL_ID = "id"
 LABEL_VALUE = "value"
 LABEL_SOURCE_REF = "source_ref"
 LABEL_TARGET_REF = "target_ref"
+
+CVSS_COMMON_METRICS = ['availability_impact', 'integrity_impact', 'impact_score', 'exploitability_score',
+                       'confidentiality_impact']
+
+CVSS_VERSION_METRICS_2 = ['access_vector', 'access_complexity', 'authentication']
+
+CVSS_VERSION_METRICS_3 = ['attack_vector', 'attack_complexity', 'privileges_required', 'user_interaction', 'scope']
 
 THREAT_INTEL_SCORES = {
     ThreatIntel.ObjectsNames.CAMPAIGN: ThreatIntel.ObjectsScore.CAMPAIGN,
@@ -39,32 +47,45 @@ THREAT_INTEL_SCORES = {
     ThreatIntel.ObjectsNames.TOOL: ThreatIntel.ObjectsScore.TOOL
 }
 
+INDICATOR_AND_TI_TYPES = {
+    "[domain-name:value": FeedIndicatorType.Domain,
+    "[email:value": FeedIndicatorType.Email,
+    "[ipv4-addr:value": FeedIndicatorType.IP,
+    "[ipv6-addr:value": FeedIndicatorType.IPv6,
+    "[url:value": FeedIndicatorType.URL,
+    "[file:name": FeedIndicatorType.File,
+    "[file:hashes.md5": FeedIndicatorType.File,
+    "[file:hashes.'SHA-1'": FeedIndicatorType.File,
+    "[file:hashes.'SHA-256'": FeedIndicatorType.File,
+    "[mutex:value": FeedIndicatorType.MUTEX,
+    "[host": FeedIndicatorType.Host,
+    "[cve:value": FeedIndicatorType.CVE,
+    "vulnerability": FeedIndicatorType.CVE,
+    "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "malware": ThreatIntel.ObjectsNames.MALWARE,
+    "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+    "tool": ThreatIntel.ObjectsNames.TOOL
+}
+
+RELATIONSHIPS_MAPPING_TYPES = {
+    ThreatIntel.ObjectsNames.INTRUSION_SET: EntityRelationship.Relationships.ATTRIBUTED_TO,
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: EntityRelationship.Relationships.USES,
+    ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
+    ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.USES,
+    FeedIndicatorType.CVE: EntityRelationship.Relationships.TARGETS,
+    ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
+}
+
 
 class Client(BaseClient):
     def get_indicator_or_threatintel_type(self, data):
-        indicator_mapping = {
-            "[domain-name:value": FeedIndicatorType.Domain,
-            "[email:value": FeedIndicatorType.Email,
-            "[ipv4-addr:value": FeedIndicatorType.IP,
-            "[ipv6-addr:value": FeedIndicatorType.IPv6,
-            "[url:value": FeedIndicatorType.URL,
-            "[file:name": FeedIndicatorType.File,
-            "[file:hashes.md5": FeedIndicatorType.File,
-            "[file:hashes.'SHA-1'": FeedIndicatorType.File,
-            "[file:hashes.'SHA-256'": FeedIndicatorType.File,
-            "[mutex:value": FeedIndicatorType.MUTEX,
-            "[host": FeedIndicatorType.Host,
-            "[cve:value": FeedIndicatorType.CVE,
-            "vulnerability": FeedIndicatorType.CVE,
-            "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
-            "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
-            "malware": ThreatIntel.ObjectsNames.MALWARE,
-            "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-            "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
-            "tool": ThreatIntel.ObjectsNames.TOOL
-        }
+        for key, value in INDICATOR_AND_TI_TYPES.items():
+            if key in data:
+                return value
 
-        return (indicator_mapping.get(data))
+        return None
 
     def get_decyfir_api_iocs_ti_data(self, decyfir_api_path: str) -> List[Dict]:
         response = self._http_request(url_suffix=decyfir_api_path, method='GET', resp_type='response')
@@ -82,21 +103,13 @@ class Client(BaseClient):
                                   ).to_indicator()
 
     def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]):
-        relationship_mapping = {
-            ThreatIntel.ObjectsNames.INTRUSION_SET: EntityRelationship.Relationships.ATTRIBUTED_TO,
-            ThreatIntel.ObjectsNames.ATTACK_PATTERN: EntityRelationship.Relationships.USES,
-            ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
-            ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.USES,
-            FeedIndicatorType.CVE: EntityRelationship.Relationships.TARGETS,
-            ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
-        }
 
         target_type = target_data.get(LABEL_TYPE)
         target_value = target_data.get(LABEL_VALUE)
         source_type = source_data.get(LABEL_TYPE)
         source_value = source_data.get(LABEL_VALUE)
 
-        relationship = relationship_mapping.get(target_type)
+        relationship = RELATIONSHIPS_MAPPING_TYPES.get(str(target_type))
         if relationship:
             return self.build_relationships(relationship, source_value, source_type, target_value, target_type)
 
@@ -156,7 +169,7 @@ class Client(BaseClient):
         }
         ti_fields = ti_data_obj["fields"]
 
-        if FeedIndicatorType.CVE == intel_type:
+        if intel_type == FeedIndicatorType.CVE:
             ti_fields["cvedescription"] = data.get("description", "")
             ti_fields["cvemodified"] = data.get("modified")
 
@@ -193,34 +206,58 @@ class Client(BaseClient):
                     ti_fields["geocountry"] = label.get("origin-of-country")
 
                 if label.get("target-countries"):
-                    self.add_tags(ti_data_obj, label.get("target-countries"))
                     ti_fields["targetcountries"] = label.get("target-countries")
 
                 if label.get("target-industries"):
-                    self.add_tags(ti_data_obj, label.get("target-industries"))
                     ti_fields["targetindustries"] = label.get("target-industries")
 
                 if label.get("geographies"):
-                    self.add_tags(ti_data_obj, label.get("geographies"))
                     ti_fields["targetcountries"] = label.get("geographies")
 
                 if label.get("industries"):
-                    self.add_tags(ti_data_obj, label.get("industries"))
                     ti_fields["targetindustries"] = label.get("industries")
 
                 if label.get("technologies"):
-                    self.add_tags(ti_data_obj, label.get("technologies"))
                     ti_fields["technologies"] = label.get("technologies")
 
-                if FeedIndicatorType.CVE == intel_type:
+                if intel_type == FeedIndicatorType.CVE:
                     ti_fields["cvssscore"] = label.get("cvss_score", "")
                     ti_fields["cvssvector"] = label.get("cvss_vector", "")
                     ti_fields["cvssversion"] = label.get("cvss_version", "")
-                    if cvss_metrics_data := label.get("cvss_metrics_data") is not None and label.get("cvss_metrics_data"):
-                        cvss_metrics_data_table = []
-                        for key, value in cvss_metrics_data:
-                            cvss_metrics_data_table.append({"metrics": key, "value": value})
-                        ti_fields["cvsstable"] = cvss_metrics_data_table
+
+                    if label.get("cvss_metrics_data"):
+                        metrics = []
+                        cvss_metrics_data = label["cvss_metrics_data"]
+
+                        for metric in CVSS_COMMON_METRICS:
+                            key = str(metric).replace("_", " ").capitalize()
+                            metrics.append({"metrics": key, "value": cvss_metrics_data.get(metric)})
+
+                        cvss_version = label.get("cvss_version", "")
+                        if cvss_version and cvss_version[0] == "2":
+                            cvss_version_metrics = CVSS_VERSION_METRICS_2
+                        elif cvss_version and cvss_version[0] == "3":
+                            cvss_version_metrics = CVSS_VERSION_METRICS_3
+                        else:
+                            cvss_version_metrics = []
+
+                        for metric in cvss_version_metrics:
+                            key = str(metric).replace("_", " ").capitalize()
+                            metrics.append({"metrics": key, "value": cvss_metrics_data.get(metric)})
+
+                        if cvss_metrics_data.get('vendors'):
+                            vendors = ', '.join(cvss_metrics_data['vendors'])
+                            metrics.append({"metrics": 'Vendors', "value": vendors})
+
+                        if cvss_metrics_data.get('products'):
+                            products = ', '.join(cvss_metrics_data['products'])
+                            metrics.append({"metrics": 'Products', "value": products})
+
+                        if cvss_metrics_data.get('technologies'):
+                            technologies = ', '.join(cvss_metrics_data['technologies'])
+                            metrics.append({"metrics": 'Technologies', "value": technologies})
+
+                        ti_fields["cvsstable"] = metrics
 
         if feed_tags:
             self.add_tags(ti_data_obj, feed_tags)
@@ -249,11 +286,11 @@ class Client(BaseClient):
                     raw_ta_obj: Dict = {}
                     # Only source object getting from the iterating
                     for ta_rel_data in ta_rel_data_coll:
-                        if LABEL_THREAT_ACTOR == ta_rel_data.get(LABEL_TYPE):
+                        if ta_rel_data.get(LABEL_TYPE) == LABEL_THREAT_ACTOR:
                             raw_ta_obj = ta_rel_data
                             ta_source_obj = self.build_threat_intel_indicator_obj(ta_rel_data, tlp_color, feed_tags)
 
-                        if LABEL_RELATIONSHIP == ta_rel_data.get(LABEL_TYPE):
+                        if ta_rel_data.get(LABEL_TYPE) == LABEL_RELATIONSHIP:
                             raw_ta_rels.append(ta_rel_data)
                         else:
                             if raw_ta_obj.get(LABEL_ID) != ta_rel_data.get(LABEL_ID):
@@ -394,15 +431,15 @@ class Client(BaseClient):
             if ioc_rel_data:
                 relationships_data = []
                 for ioc_rel in ioc_rel_data:
-                    if LABEL_INDICATOR != ioc_rel.get(LABEL_TYPE) and LABEL_RELATIONSHIP != ioc_rel.get(LABEL_TYPE):
+                    if ioc_rel.get(LABEL_TYPE) != LABEL_INDICATOR and ioc_rel.get(LABEL_TYPE) != LABEL_RELATIONSHIP:
                         in_rel_ti_data_ = self.build_threat_intel_indicator_obj(ioc_rel, tlp_color, feed_tags)
-                        if ThreatIntel.ObjectsNames.THREAT_ACTOR == in_rel_ti_data_.get(LABEL_TYPE):
+                        if in_rel_ti_data_.get(LABEL_TYPE) == ThreatIntel.ObjectsNames.THREAT_ACTOR:
                             tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, in_rel_ti_data_, tlp_color,
                                                                                    feed_tags,
                                                                                    ThreatIntel.ObjectsNames.THREAT_ACTOR)
                             for t_rel_d in tis_data:
                                 return_data.append(t_rel_d)
-                                if ThreatIntel.ObjectsNames.THREAT_ACTOR == t_rel_d.get(LABEL_TYPE):
+                                if t_rel_d.get(LABEL_TYPE) == ThreatIntel.ObjectsNames.THREAT_ACTOR:
                                     in_rel_data = self.build_ioc_relationship_obj(ioc_data, t_rel_d)
                                     if in_rel_data:
                                         relationships_data.append(in_rel_data)
@@ -416,13 +453,17 @@ class Client(BaseClient):
         return return_data
 
     def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str],
-                         feed_tags: Optional[List]) -> List[Dict]:
+                         feed_tags: Optional[List], is_data_save: bool) -> List[Dict]:
 
         # Indicators from DeCYFIR
         iocs_data = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
 
         # Threat Intel Data from DeCYFIR
         tas_data = self.get_decyfir_api_iocs_ti_data(TA_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
+
+        if not is_data_save:
+            if iocs_data:
+                iocs_data = iocs_data[:2]
 
         return_data = []
 
@@ -431,11 +472,13 @@ class Client(BaseClient):
                                                                         feed_tags)
         return_data.extend(ioc_indicators)
 
+        if not is_data_save:
+            return return_data
+
         # Converting threat intel data to XSOAR indicators format
         ta_indicators = self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags,
                                                                       ThreatIntel.ObjectsNames.THREAT_ACTOR)
         return_data.extend(ta_indicators)
-
         return return_data
 
 
@@ -452,7 +495,22 @@ def test_module_command(client, decyfir_api_key):
 
 def fetch_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str],
                              feed_tags: Optional[List]) -> List[Dict]:
-    return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags)
+    return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, True)
+
+
+def decyfir_get_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str],
+                                   feed_tags: Optional[List]):
+    indicators = client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, False)
+    human_readable = tableToMarkdown('Indicators from DeCYFIR Feed:', indicators,
+                                     headers=['value', 'type', 'rawJSON'], headerTransform=string_to_table_header, removeNull=True,
+                                     is_auto_json_transform=True)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='',
+        outputs_key_field='',
+        raw_response=indicators,
+        outputs={},
+    )
 
 
 def main():
@@ -481,6 +539,8 @@ def main():
             indicators = fetch_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags)
             for ioc in batch(indicators, batch_size=2500):
                 demisto.createIndicators(ioc)
+        elif demisto.command() == "decyfir-get-indicators":
+            return_results(decyfir_get_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags))
         else:
             raise NotImplementedError('DeCYFIR error: ' + f'command {demisto.command()} is not implemented')
 
