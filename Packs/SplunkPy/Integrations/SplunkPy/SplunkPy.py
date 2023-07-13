@@ -309,8 +309,7 @@ def build_fetch_query(params):
     fetch_query = params['fetchQuery']
 
     if (extract_fields := params.get('extractFields')):
-        extra_raw_arr = extract_fields.split(',')
-        for field in extra_raw_arr:
+        for field in extract_fields.split(','):
             field_trimmed = field.strip()
             fetch_query = f'{fetch_query} | eval {field_trimmed}={field_trimmed}'
 
