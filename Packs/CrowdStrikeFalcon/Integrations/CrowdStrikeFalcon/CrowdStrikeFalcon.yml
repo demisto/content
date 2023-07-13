@@ -58,16 +58,19 @@ configuration:
   defaultvalue: '15'
   section: Collect
   advanced: true
+  required: false
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
   required: false
@@ -124,6 +127,7 @@ configuration:
   additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
   defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
