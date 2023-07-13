@@ -62,8 +62,10 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='GET',
-            full_url=urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}') + '?api-version=2022-09-01'
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}?api-version={API_VERSION}'
+
+                      )
         )
 
     @logger
@@ -82,11 +84,10 @@ class ASClient:
         """
         return self.ms_client.http_request(
             method='GET',
-            full_url=urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?'
-                             ),
-            params={'api-version': API_VERSION}
-
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?'
+                      f'api-version={API_VERSION}'
+                      )
         )
 
     @logger
@@ -188,11 +189,9 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='PUT',
-
-            full_url=urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}?'
-                             ),
-            params={'api-version': API_VERSION},
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}?'
+                      f'api-version={API_VERSION}'),
             json_data=json_data_args,
             resp_type='response'
         )
@@ -271,9 +270,10 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='PUT',
-            full_url=urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?'),
-            params={'api-version': API_VERSION},
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?'
+                      f'api-version={API_VERSION}'
+                      ),
             json_data={'properties': properties}
         )
 
@@ -305,10 +305,11 @@ class ASClient:
 
         return self.ms_client.http_request(
             method=method,
-            full_url=urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
-                             f'/blobServices/default/containers/{container_name}'),
-            params={'api-version': API_VERSION},
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
+                      f'/blobServices/default/containers/{container_name}'
+                      f'?api-version={API_VERSION}'
+                      ),
             json_data={'properties': properties}
         )
 
@@ -326,9 +327,9 @@ class ASClient:
         """
         account_name = args.get('account_name', '')
         container_name = args.get('container_name', '')
-        full_url = urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                           f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
-                           f'/blobServices/default/containers/{container_name}?')
+        full_url = (f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                    f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
+                    f'/blobServices/default/containers/{container_name}?')
 
         params = {
             'api-version': API_VERSION,
@@ -352,10 +353,11 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='DELETE',
-            full_url=urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
-                             f'/blobServices/default/containers/{container_name}?'),
-            params={'api-version': API_VERSION},
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
+                      f'/blobServices/default/containers/{container_name}?'
+                      f'api-version={API_VERSION}'
+                      ),
             resp_type='response'
         )
 
