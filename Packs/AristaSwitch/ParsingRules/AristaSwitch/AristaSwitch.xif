@@ -1,4 +1,4 @@
-[INGEST:vendor="Arista", product="Switch", target_dataset="arista_switch_raw", no_hit=keep]
+[INGEST:vendor="arista", product="switch", target_dataset="arista_switch_raw", no_hit=keep]
 // extract the ts (timestamp) string representation from the raw log
 filter _raw_log ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+|-]\d{2}:\d{2}"
 | alter tmp_raw_ts = arrayindex(regextract(_raw_log, "<\d+>(.+?)\s+\S+\s+\w+\:\s"), 0)
