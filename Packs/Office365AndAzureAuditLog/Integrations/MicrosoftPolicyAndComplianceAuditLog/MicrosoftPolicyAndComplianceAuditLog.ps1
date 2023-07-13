@@ -2,8 +2,8 @@ $script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
 Import-Module ExchangeOnlineManagement
+. "$PSScriptRoot/CommonServerPowerShell.ps1"
 
-#### Security And Compliance client - OAUTH2.0 ####
 
 class ExchangeOnlinePowershellV3Client
 {
@@ -29,7 +29,7 @@ class ExchangeOnlinePowershellV3Client
         {
             throw "Could not decode the certificate. Try to re-enter it"
         }
-        $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $password)
+        $this.certificate = New-object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList ($ByteArray, $password)
 
         $this.organization = $organization
         $this.app_id = $app_id

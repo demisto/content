@@ -41,6 +41,7 @@ Describe "SearchAuditLogCommand Tests" {
         . "$PSScriptRoot/MicrosoftPolicyAndComplianceAuditLog.ps1"
         Mock Connect-ExchangeOnline
         Mock Disconnect-ExchangeOnline
+        Mock New-Object
         function Search-UnifiedAuditLog {
             param (
                 [string]$start_date,
@@ -59,7 +60,9 @@ Describe "SearchAuditLogCommand Tests" {
             "https://example.com",
             "app_id",
             "organization",
-            "base64encodedcertificate",
+            [System.Convert]::ToBase64String(
+                [System.Text.Encoding]::UTF8.GetBytes(
+                    "certificate")),
             (ConvertTo-SecureString "password" -AsPlainText -Force)
         )
     }
@@ -116,7 +119,7 @@ Describe "SearchAuditLogCommand Tests" {
     
         Context "When an invalid start_date is provided" {
             It "Should throw an error" {
-                    { SearchAuditLogCommand $mockedClient $command_arguments } | Should -Throw "start_date"
+                    { SearchAuditLogCommand $mockedClient $command_arguments } | Should -Throw "start_date ('') is not a date range or a valid date "
             }
         }
     }
