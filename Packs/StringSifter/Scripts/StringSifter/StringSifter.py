@@ -64,7 +64,7 @@ def stringsifter(args: dict):
     args_rank_strings = create_rank_strings_args(args)
     p2 = Popen(args_rank_strings, stdin=p1.stdout, stdout=PIPE)
     if p1.stdout is not None:
-        p1.stdout.close() # Allow p1 to receive a SIGPIPE if p2 exits.
+        p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
     output = p2.communicate()[0]  # gets the stdout from the pipe.
 
     if string_text:
