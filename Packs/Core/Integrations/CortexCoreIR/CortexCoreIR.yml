@@ -7,23 +7,28 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
   hidden: true
+  required: false
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
+  required: false
 - display: API Key
   name: apikey
   type: 4
   hidden: true
+  required: false
 - additionalinfo: The timeout of the HTTP requests sent to Cortex API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
   type: 0
+  required: false
 description: The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Investigation & Response
 name: Cortex Core - IR

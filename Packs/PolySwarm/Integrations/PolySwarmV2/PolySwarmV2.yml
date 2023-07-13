@@ -30,6 +30,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -39,11 +40,13 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   additionalinfo: the segment of PolySwarm's marketplace to query on.
+  required: false
 description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
 display: PolySwarm
 name: PolySwarmV2
