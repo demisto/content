@@ -209,9 +209,7 @@ def account_entry(person_object, custom_attributes):
         'Groups': person_object.get('memberOf')
     }
 
-    lower_cased_person_object_keys = {
-        person_object_key.lower(): person_object_key for person_object_key in person_object
-    }
+    lower_cased_person_object_keys = {key.lower(): key for key in person_object}
 
     for attr in custom_attributes:
         try:
@@ -236,9 +234,7 @@ def endpoint_entry(computer_object, custom_attributes):
         'Groups': computer_object.get('memberOf')
     }
 
-    lower_cased_person_object_keys = {
-        person_object_key.lower(): person_object_key for person_object_key in computer_object
-    }
+    lower_cased_person_object_keys = {key.lower(): key for key in computer_object}
 
     for attr in custom_attributes:
         if attr == '*':
@@ -265,9 +261,7 @@ def group_entry(group_object, custom_attributes):
         'Groups': group_object.get('memberOf'),
     }
 
-    lower_cased_person_object_keys = {
-        person_object_key.lower(): person_object_key for person_object_key in group_object
-    }
+    lower_cased_person_object_keys = {key.lower(): key for key in group_object}
 
     for attr in custom_attributes:
         if attr == '*':
