@@ -311,7 +311,13 @@ def main():
                     if indicator_type == 'report':
                         kwargs['name'] = xsoar_indicator.get('value', '')
                         kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
-                        kwargs['object_refs'] = [xsoar_indicator.get('id', '')]
+                        results, _ = CommandRunner.execute_commands(
+                            CommandRunner.Command("SearchIndicatorRelationships",
+                                                  args_lst={"entities": xsoar_indicator.get('value')})
+                        )
+                        relationships = results[0].res.get("Relationships", [])
+                        kwargs['object_refs'] = [res.get("EntityB") if xsoar_indicator.get('value', '').lower(
+                        ) == res.get("EntityA", '').lower() else res.get("EntityA") for res in relationships]
 
                     demisto.debug(f"Creating {indicator_type} indicator: {value}, with the following kwargs: {kwargs}")
                     indicator = SDOs[indicator_type](
