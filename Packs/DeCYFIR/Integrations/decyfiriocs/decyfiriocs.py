@@ -81,6 +81,7 @@ RELATIONSHIPS_MAPPING_TYPES = {
 
 class Client(BaseClient):
     def get_indicator_or_threatintel_type(self, data):
+        if data is None: return None
         for key, value in INDICATOR_AND_TI_TYPES.items():
             if key in data:
                 return value
@@ -364,6 +365,7 @@ class Client(BaseClient):
                                                   tlp_color: Optional[str], feed_tags: Optional[List]) -> List[Dict]:
 
         return_data = []
+
         for ioc in decyfir_iocs:
             ioc_type = self.get_indicator_or_threatintel_type(ioc.get("pattern"))
             value: str = str(ioc.get("name"))
@@ -378,13 +380,16 @@ class Client(BaseClient):
                 decyfir_ioc_type = "MD5"
 
             pattern_val: str = str(ioc.get("pattern"))
-            pattern_val = pattern_val.replace("[", "").replace("]", "").replace("file:hashes.", "")
-            pattern_vals: list = pattern_val.split("OR")
-            for p_v in pattern_vals:
-                p = p_v.split(" = ")
-                key_ = p[0].replace("'", '').replace(" ", '')
-                val_ = p[1].replace("'", '').replace(" ", '')
-                file_hash_values[key_] = val_
+
+            if pattern_val != "None" and pattern_val is not None:
+                pattern_val = pattern_val.replace("[", "").replace("]", "").replace("file:hashes.", "")
+                pattern_vals: list = pattern_val.split("OR")
+
+                for p_v in pattern_vals:
+                    p = p_v.split(" = ")
+                    key_ = p[0].replace("'", '').replace(" ", '')
+                    val_ = p[1].replace("'", '').replace(" ", '')
+                    file_hash_values[key_] = val_
 
             if ioc_type is FeedIndicatorType.IPv6:
                 decyfir_ioc_type = FeedIndicatorType.IP
@@ -502,7 +507,8 @@ def decyfir_get_indicators_command(client: Client, decyfir_api_key: str, tlp_col
                                    feed_tags: Optional[List]):
     indicators = client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, False)
     human_readable = tableToMarkdown('Indicators from DeCYFIR Feed:', indicators,
-                                     headers=['value', 'type', 'rawJSON'], headerTransform=string_to_table_header, removeNull=True,
+                                     headers=['value', 'type', 'rawJSON'], headerTransform=string_to_table_header,
+                                     removeNull=True,
                                      is_auto_json_transform=True)
     return CommandResults(
         readable_output=human_readable,

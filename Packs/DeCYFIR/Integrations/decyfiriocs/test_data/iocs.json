@@ -2,14 +2,14 @@
     {
         "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
         "type": "indicator",
-        "name": "192.30.255.113",
-        "description": "Early Campaign - UNC054",
+        "name": "0.0.0.0",
+        "description": "Sample Testing",
         "created": "2023-07-11T06:21:42.110Z",
         "modified": "2023-07-11T06:21:42.110Z",
         "indicator_types": [
             "attribution"
         ],
-        "pattern": "[ipv4-addr:value = '192.30.255.113']",
+        "pattern": "[ipv4-addr:value = '0.0.0.0']",
         "pattern_type": "stix",
         "valid_from": "2023-07-11T06:21:42.110Z",
         "kill_chain_phases  ": [
@@ -23,156 +23,11 @@
                     "group 83",
                     "macdownloader",
                     "parastoo",
-                    "Charming Kitten",
-                    "elfin",
-                    "ikittens",
-                    "charming kitten",
-                    "apt33",
-                    "newsbeef",
-                    "apt 35",
-                    "magic hound",
-                    "ta453",
-                    "temp.beanie",
-                    "cobalt gypsy",
-                    "phosphorus",
-                    "TA505",
-                    "ta505",
-                    "atk 103",
-                    "chimborazo",
-                    "evil corp",
-                    "gold evergreen",
-                    "gold tahoe",
-                    "graceful spider",
-                    "hive0065",
-                    "sectorj04",
-                    "ta 505",
-                    "ta-505",
-                    "unc054",
-                    "dev-0206",
-                    "dev-0243",
-                    "silence group"
+                    "Charming Kitten"
                 ]
             }
         ],
-        "first_seen ": "2022-06-06T00:00:00.000Z",
-        "last_seen ": "2022-12-16T00:00:00.000Z"
-    },
-    {
-        "type": "threat-actor",
-        "spec_version": "2.1",
-        "id": "threat-actor--0245dc07-1f6b-478e-927f-c93ae6a7176c",
-        "created": "2023-07-11T06:21:42.112Z",
-        "modified": "2023-07-11T06:21:42.112Z",
-        "description": "",
-        "aliases": [
-            "Magic Hound",
-            "APT 35",
-            " Cobalt Gypsy",
-            " Phosphorus",
-            " TA453",
-            " TEMP.Beanie"
-        ],
-        "labels": [
-            {
-                "origin-of-country": "Iran",
-                "target-technologies": [],
-                "target-industries": [
-                    " Technology",
-                    " Healthcare",
-                    " Financial",
-                    " Energy",
-                    " Government",
-                    " IT",
-                    " Oil and gas",
-                    "Defense",
-                    " Telecommunications"
-                ],
-                "target-countries": []
-            }
-        ],
-        "name": "Charming Kitten",
-        "threat_actor_types": [
-            "crime-syndicate"
-        ],
-        "primary_motivation": "personal-gain"
-    },
-    {
-        "source_ref": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
-        "target_ref": "threat-actor--0245dc07-1f6b-478e-927f-c93ae6a7176c",
-        "relationship_type": "indicates",
-        "type": "relationship",
-        "spec_version": "2.1",
-        "id": "relationship--1de481bb-c142-4745-84bc-b62f430c005f",
-        "created": "2023-07-11T06:21:42.112Z",
-        "modified": "2023-07-11T06:21:42.112Z"
-    },
-    {
-        "id": "campaign--f6457f2c-f4e4-4302-a15f-bd0f748bbe67",
-        "type": "campaign",
-        "name": "UNC054",
-        "description": "CTI has observed Russian cybercriminals carrying out a unnamed cyberattack campaign, identifying potential target assets of organizations and their subsidiaries/vendors that are associated with nations that have imposed economic sanctions against Russia due to the ongoing conflict with Ukraine. \n\nMotivation: Exfiltration of sensitive information, credential stealing, gaining privilege access, cause operational disruption / reputational damage, and retribution",
-        "created": "2022-06-06T10:49:26.149Z",
-        "modified": "2022-06-06T11:06:21.999Z",
-        "spec_version": "2.1",
-        "aliases": [],
-        "labels": [
-            {
-                "geographies": [
-                    "United States",
-                    "Portugal",
-                    "Iceland",
-                    "Greece",
-                    "Netherlands",
-                    "Latvia",
-                    "Luxembourg",
-                    "Poland",
-                    "Slovakia",
-                    "Slovenia",
-                    "France",
-                    "Lithuania",
-                    "Romania",
-                    "Hungary",
-                    "Japan",
-                    "United Kingdom",
-                    "Albania",
-                    "Spain",
-                    "Canada",
-                    "Czech Republic",
-                    "Turkey",
-                    "Belgium",
-                    "Norway",
-                    "Denmark",
-                    "Italy",
-                    "Australia",
-                    "Germany",
-                    "Montenegro",
-                    "Estonia"
-                ],
-                "technologies": [
-                    "Web Application"
-                ],
-                "industries": [
-                    "Health Care Equipment & Supplies",
-                    "Health Care Technology",
-                    "Electronic Equipment, Instruments & Components",
-                    "Government",
-                    "Industrial Conglomerates",
-                    "Diversified Financial Services",
-                    "IT Services"
-                ]
-            }
-        ],
-        "first_seen ": "2022-06-06T00:00:00.000Z",
-        "last_seen ": "2022-06-07T00:00:00.000Z"
-    },
-    {
-        "source_ref": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
-        "target_ref": "campaign--f6457f2c-f4e4-4302-a15f-bd0f748bbe67",
-        "relationship_type": "indicates",
-        "type": "relationship",
-        "spec_version": "2.1",
-        "id": "relationship--28b458b5-addd-410a-9042-b64e3325997a",
-        "created": "2023-07-11T06:21:42.112Z",
-        "modified": "2023-07-11T06:21:42.112Z"
+        "first_seen": "2022-06-06T00:00:00.000Z",
+        "last_seen": "2022-12-16T00:00:00.000Z"
     }
 ]
