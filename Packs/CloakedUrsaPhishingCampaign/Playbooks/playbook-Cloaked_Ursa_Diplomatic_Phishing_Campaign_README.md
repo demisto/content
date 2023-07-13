@@ -43,10 +43,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Rapid Breach Response - Set Incident Info
-* Block Indicators - Generic v3
 * QRadarFullSearch
+* Block Indicators - Generic v3
 * Threat Hunting - Generic
+* Rapid Breach Response - Set Incident Info
 
 ### Integrations
 
@@ -59,11 +59,11 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* splunk-search
-* xdr-xql-generic-query
-* closeInvestigation
 * es-eql-search
 * azure-log-analytics-execute-query
+* splunk-search
+* closeInvestigation
+* xdr-xql-generic-query
 
 ## Playbook Inputs
 

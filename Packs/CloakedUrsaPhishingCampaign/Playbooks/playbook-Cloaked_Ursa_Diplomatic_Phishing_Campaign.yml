@@ -1347,9 +1347,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "50"
       "Yes":
       - "41"
-      - "50"
     separatecontext: false
     continueonerrortype: ""
     view: |-
