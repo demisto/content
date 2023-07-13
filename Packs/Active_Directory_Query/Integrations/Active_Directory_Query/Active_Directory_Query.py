@@ -1784,7 +1784,9 @@ def test_credentials(SERVER_IP):
     args = demisto.args()
     username = demisto.args().get('username')
     server = Server(SERVER_IP, get_info='ALL')
-    set_connection_ntlm(server, SERVER_IP, username, args.get('password'))
+    connection = set_connection_ntlm(server, SERVER_IP, username, args.get('password'))
+    if conn:
+        conn.unbind()
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
         outputs_key_field='username',
@@ -1795,12 +1797,9 @@ def test_credentials(SERVER_IP):
 
 def set_connection_ntlm(server, server_ip, username, password):
     domain_name = server_ip + '\\' + username if '\\' not in username else username
-    conn = True
     try:
         # open socket and bind to server
-        conn = Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=True)
-        if conn:
-            conn.unbind()
+        return Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=True)        
     except Exception as e:
         raise DemistoException(domain_name + ' ' + str(e))
 
@@ -1878,7 +1877,7 @@ def main():
             if NTLM_AUTH:
                 # initialize connection to LDAP server with NTLM authentication
                 # user example: domain\user
-                set_connection_ntlm(server, SERVER_IP, USERNAME, PASSWORD)
+                conn = set_connection_ntlm(server, SERVER_IP, USERNAME, PASSWORD)
             else:
                 # here username should be the user dn
                 conn = Connection(server, user=USERNAME, password=PASSWORD, auto_bind=auto_bind)
