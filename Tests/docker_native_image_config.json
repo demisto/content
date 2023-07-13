@@ -60,7 +60,7 @@
             "chromium",
             "tesseract"
          ],
-         "docker_ref": "devdemisto/py3-native:8.3.0.65154"
+         "docker_ref": "devdemisto/py3-native:8.3.0.65163"
       },
       "native:dev":{
          "supported_docker_images":[
