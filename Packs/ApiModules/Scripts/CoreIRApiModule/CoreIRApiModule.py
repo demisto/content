@@ -177,9 +177,6 @@ class CoreClient(BaseClient):
             'search_to': search_to,
         }
 
-        if not isinstance(status, list):
-            status = [status]
-
         filters = create_request_filters(
             status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
             ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
@@ -3461,7 +3458,7 @@ def create_request_filters(
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': status
+            'value': status if isinstance(status, list) else [status]
         })
 
     if username:
