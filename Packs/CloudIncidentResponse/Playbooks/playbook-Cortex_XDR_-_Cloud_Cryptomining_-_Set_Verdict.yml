@@ -499,4 +499,5 @@ outputs:
 quiet: true
 tests:
 - No tests (auto formatted)
+marketplaces: ["xsoar"]
 fromversion: 6.5.0
