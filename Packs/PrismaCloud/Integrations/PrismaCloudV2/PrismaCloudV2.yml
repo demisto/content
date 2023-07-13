@@ -25,40 +25,34 @@ configuration:
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
-  required: false
   section: Connect
   advanced: true
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
-  required: false
   section: Connect
   advanced: true
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
 - additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
-  required: false
   type: 0
   section: Collect
 - additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time.
   defaultvalue: 20
   display: 'Advanced: Time in minutes to look back when fetching incidents'
   name: look_back
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -66,20 +60,17 @@ configuration:
   defaultvalue: 'alert.status=open'
   name: filters
   type: 0
-  required: false
   additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
   section: Collect
   advanced: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - name: output_old_format
   display: Output results of V1 commands to the context data in the old format
   defaultvalue: 'false'
   type: 8
-  required: false
   section: Connect
   advanced: true
 script:
@@ -90,28 +81,16 @@ script:
   isfetch: true
   commands:
   - arguments:
-    - default: false
-      description: Comma-separated list of alert IDs to be dismissed.
+    - description: Comma-separated list of alert IDs to be dismissed.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of policy IDs.
+    - description: Comma-separated list of policy IDs.
       isArray: true
       name: policy_ids
-      required: false
-      secret: false
-    - default: false
-      description: The amount of time for snoozing alert. Both snooze value and unit must be specified if snoozing.
-      isArray: false
+    - description: The amount of time for snoozing alert. Both snooze value and unit must be specified if snoozing.
       name: snooze_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time unit for snoozing alert. Both snooze value and unit must be specified if snoozing.
-      isArray: false
       name: snooze_unit
       predefined:
       - hour
@@ -119,30 +98,15 @@ script:
       - week
       - month
       - year
-      required: false
-      secret: false
-    - default: false
-      description: Reason for dismissal.
-      isArray: false
+    - description: Reason for dismissal.
       name: dismissal_note
       required: true
-      secret: false
-    - default: false
-      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
-      required: false
-      secret: false
-    - default: false
-      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-      isArray: false
       name: time_range_unit
       predefined:
       - hour
@@ -152,42 +116,26 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
       isArray: true
       name: filters
-      required: false
-      secret: false
-    deprecated: false
     description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
     execution: true
     name: prisma-cloud-alert-dismiss
   - arguments:
     - default: true
       description: The alert ID.
-      isArray: false
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to retrieve the entire / trimmed alert model.
-      isArray: false
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     description: Gets the details of an alert based on the alert ID.
     name: prisma-cloud-alert-get-details
     outputs:
@@ -291,34 +239,17 @@ script:
       description: Whether the filter is static.
       type: Unknown
   - arguments:
-    - default: false
-      description: Comma-seperated list of alert IDs for which to get remediation details. Provided alert IDs must be associated with the same policy. If a policy is specified, all the alerts specified must belong to that policy.
+    - description: Comma-seperated list of alert IDs for which to get remediation details. Provided alert IDs must be associated with the same policy. If a policy is specified, all the alerts specified must belong to that policy.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: Policy ID for which to get remediation details.
-      isArray: false
+    - description: Policy ID for which to get remediation details.
       name: policy_id
-      required: false
-      secret: false
-    - default: false
-      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
-      required: false
-      secret: false
-    - default: false
-      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-      isArray: false
       name: time_range_unit
       predefined:
       - hour
@@ -328,33 +259,18 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to retrieve all results. The "limit" argument will be ignored.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
-    execution: false
     name: prisma-cloud-remediation-command-list
     outputs:
     - contextPath: PrismaCloud.AlertRemediation.description
@@ -372,42 +288,24 @@ script:
   - arguments:
     - default: true
       description: The alert ID.
-      isArray: false
       name: alert_id
       required: true
-      secret: false
     name: prisma-cloud-alert-remediate
     description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy.
     execution: true
   - arguments:
-    - default: false
-      description: Comma-separated list of alert IDs to be reopened.
+    - description: Comma-separated list of alert IDs to be reopened.
       isArray: true
       name: alert_ids
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of policy IDs.
+    - description: Comma-separated list of policy IDs.
       isArray: true
       name: policy_ids
-      required: false
-      secret: false
-    - default: false
-      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
-      required: false
-      secret: false
-    - default: false
-      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-      isArray: false
       name: time_range_unit
       predefined:
       - hour
@@ -417,40 +315,21 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
       isArray: true
       name: filters
-      required: false
-      secret: false
     description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
     execution: true
     name: prisma-cloud-alert-reopen
   - arguments:
-    - default: false
-      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
-      required: false
-      secret: false
-    - default: false
-      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-      isArray: false
       name: time_range_unit
       predefined:
       - hour
@@ -460,69 +339,39 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
       isArray: true
       name: filters
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to retrieve the entire / trimmed alert model.
-      isArray: false
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Token of the next page to retrive. When provided, other arguments are ignored.
-      isArray: false
+    - description: Token of the next page to retrive. When provided, other arguments are ignored.
       name: next_token
-      required: false
-      secret: false
-    - default: false
-      description: 'The field to sort the results by. Possible values are: alertTime,firstSeen,lastSeen,lastUpdated.'
-      isArray: false
+    - description: 'The field to sort the results by. Possible values are: alertTime,firstSeen,lastSeen,lastUpdated.'
       name: sort_field
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - alertTime
       - firstSeen
       - lastSeen
       - lastUpdated
-    - default: false
-      description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
-      isArray: false
+    - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
       name: sort_direction
-      required: false
-      secret: false
       defaultValue: asc
       auto: PREDEFINED
       predefined:
       - asc
       - desc
     description: Search alerts on the Prisma Cloud platform. When no absolute time nor relative time arguments are provided, the search will show alerts from the last 7 days.
-    execution: false
     name: prisma-cloud-alert-search
     outputs:
     - contextPath: PrismaCloud.AlertPageToken.nextPageToken
@@ -598,22 +447,12 @@ script:
       description: The restricted resource name of the returned alert.
       type: String
   - arguments:
-    - default: false
-      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
-      required: false
-      secret: false
-    - default: false
-      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-      isArray: false
       name: time_range_unit
       predefined:
       - hour
@@ -623,49 +462,26 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-      required: false
-      secret: false
-    - default: false
-      description: 'Query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query.'
-      isArray: false
+    - description: 'Query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query.'
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Search ID. Can be used to rerun the same search.
-      isArray: false
+    - description: Search ID. Can be used to rerun the same search.
       name: search_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'desc'
       description: The direction to sort the results by. Both sort direction and field must be specified if sorting.
-      isArray: false
       name: sort_direction
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'insertTs'
       description: The field to sort the results by. Both sort direction and field must be specified if sorting.
-      isArray: false
       name: sort_field
       predefined:
       - id
@@ -677,10 +493,7 @@ script:
       - cloudAccount
       - cloudRegion
       - stateId
-      required: false
-      secret: false
     description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
-    execution: false
     name: prisma-cloud-config-search
     outputs:
     - contextPath: PrismaCloud.Config.accountId
@@ -747,22 +560,12 @@ script:
       description: State ID.
       type: String
   - arguments:
-    - default: false
-      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
-      required: false
-      secret: false
-    - default: false
-      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
-      isArray: false
       name: time_range_unit
       predefined:
       - hour
@@ -772,33 +575,16 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-      required: false
-      secret: false
-    - default: false
-      description: 'Query to run in Prisma Cloud event API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/event-query.'
-      isArray: false
+    - description: 'Query to run in Prisma Cloud event API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/event-query.'
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'The field to sort the results by. Possible values are: cloudService, operation, cloudAccount, cloudRegion, id, time, crud, user.'
-      isArray: false
+    - description: 'The field to sort the results by. Possible values are: cloudService, operation, cloudAccount, cloudRegion, id, time, crud, user.'
       name: sort_field
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - cloudService
@@ -809,19 +595,14 @@ script:
       - time
       - crud
       - user
-    - default: false
-      description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
-      isArray: false
+    - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
       name: sort_direction
-      required: false
-      secret: false
       defaultValue: asc
       auto: PREDEFINED
       predefined:
       - asc
       - desc
     description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
-    execution: false
     name: prisma-cloud-event-search
     outputs:
     - contextPath: PrismaCloud.Event.subject
@@ -897,22 +678,12 @@ script:
       description: Cloud event state ID.
       type: Number
   - arguments:
-    - default: false
-      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
-      required: false
-      secret: false
-    - default: false
-      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-      isArray: false
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-      isArray: false
       name: time_range_unit
       predefined:
       - hour
@@ -922,24 +693,13 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-      required: false
-      secret: false
-    - default: false
-      description: 'Query to run in Prisma Cloud network API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/network-query.'
-      isArray: false
+    - description: 'Query to run in Prisma Cloud network API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/network-query.'
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud in which the network should be searched.
-      isArray: false
       name: cloud_type
       predefined:
       - aws
@@ -947,17 +707,9 @@ script:
       - gcp
       - alibaba_cloud
       - oci
-      required: false
-      secret: false
-    - default: false
-      description: Search ID. Can be used to rerun the same search.
-      isArray: false
+    - description: Search ID. Can be used to rerun the same search.
       name: search_id
-      required: false
-      secret: false
-    deprecated: false
     description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
-    execution: false
     name: prisma-cloud-network-search
     outputs:
     - contextPath: PrismaCloud.Network.Node.id
@@ -997,124 +749,64 @@ script:
       description: Cloud network connection metadata.
       type: Unknown
   - arguments:
-    - default: false
-      description: ID number of the CICD run.
-      isArray: false
+    - description: ID number of the CICD run.
       name: cicd_run_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of authors of the files.
+    - description: Comma-separated list of authors of the files.
       isArray: true
       name: authors
-      required: false
-      secret: false
-    - default: false
-      description: Branch of the files.
-      isArray: false
+    - description: Branch of the files.
       name: branch
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of categories of the files. Available options are: IAM, Compute, Monitoring, Networking, Kubernetes, General, Storage, Secrets, Public, Vulnerabilities, Drift, BuildIntegrity, Licenses.'
+    - description: 'Comma-separated list of categories of the files. Available options are: IAM, Compute, Monitoring, Networking, Kubernetes, General, Storage, Secrets, Public, Vulnerabilities, Drift, BuildIntegrity, Licenses.'
       isArray: true
       name: categories
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The code status.
-      isArray: false
       name: code_status
       predefined:
       - hasFix
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of file types of the files. Available options are: tf, json, yml, yaml, template, .checkov.baseline, hcl, Dockerfile, package.json, package-lock.json, bower.json, pom.xml, build.gradle, build.gradle.kts, gradle.properties, gradle-wrapper.properties, go.sum, go.mod, requirements.txt, METADATA, bicep, Pipfile.lock, Pipfile, yarn.lock, Gemfile, Gemfile.lock, gemspec, env, settings.py, main.py, application.py, config.py, app.js, config.js, dev.js, db.properties, application.properties, private.pem, privatekey.pem, index.php, config.php, config.xml, strings.xml, app.module.ts, environment.ts, tpl, tfvars, unknown.'
+    - description: 'Comma-separated list of file types of the files. Available options are: tf, json, yml, yaml, template, .checkov.baseline, hcl, Dockerfile, package.json, package-lock.json, bower.json, pom.xml, build.gradle, build.gradle.kts, gradle.properties, gradle-wrapper.properties, go.sum, go.mod, requirements.txt, METADATA, bicep, Pipfile.lock, Pipfile, yarn.lock, Gemfile, Gemfile.lock, gemspec, env, settings.py, main.py, application.py, config.py, app.js, config.js, dev.js, db.properties, application.properties, private.pem, privatekey.pem, index.php, config.php, config.xml, strings.xml, app.module.ts, environment.ts, tpl, tfvars, unknown.'
       isArray: true
       name: file_types
-      required: false
-      secret: false
-    - default: false
-      description: Repository of the files.
-      isArray: false
+    - description: Repository of the files.
       name: repository
       required: true
-      secret: false
-    - default: false
-      description: Repository ID of the files.
-      isArray: false
+    - description: Repository ID of the files.
       name: repository_id
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of search options of the files. Available options are: path, code.'
+    - description: 'Comma-separated list of search options of the files. Available options are: path, code.'
       isArray: true
       name: search_options
-      required: false
-      secret: false
-    - default: false
-      description: Search text in the files.
-      isArray: false
+    - description: Search text in the files.
       name: search_text
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Search title of the files.
-      isArray: false
       name: search_title
       predefined:
       - 'title'
       - 'constructive_title'
       - 'descriptive_title'
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of severities of the files. Available options are: CRITICAL, HIGH, MEDIUM, LOW, INFO.'
+    - description: 'Comma-separated list of severities of the files. Available options are: CRITICAL, HIGH, MEDIUM, LOW, INFO.'
       isArray: true
       name: severities
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of source types of the files. Available options are: Github, Bitbucket, Gitlab, AzureRepos, cli, AWS, Azure, GCP, Docker, githubEnterprise, gitlabEnterprise, bitbucketEnterprise, terraformCloud, githubActions, circleci, codebuild, jenkins, tfcRunTasks, admissionController, terraformEnterprise.'
+    - description: 'Comma-separated list of source types of the files. Available options are: Github, Bitbucket, Gitlab, AzureRepos, cli, AWS, Azure, GCP, Docker, githubEnterprise, gitlabEnterprise, bitbucketEnterprise, terraformCloud, githubActions, circleci, codebuild, jenkins, tfcRunTasks, admissionController, terraformEnterprise.'
       isArray: true
       name: source_types
       required: true
-      secret: false
-    - default: false
-      description: 'Comma-separated list of tag key and value, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc.'
+    - description: 'Comma-separated list of tag key and value, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc.'
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed.'
+    - description: 'Comma-separated list of statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed.'
       isArray: true
       name: statuses
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to retrieve all results. The "limit" argument will be ignored.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
-    execution: false
     name: prisma-cloud-error-file-list
     outputs:
     - contextPath: PrismaCloud.ErrorFile.filePath
@@ -1141,14 +833,10 @@ script:
   - name: prisma-cloud-trigger-scan
     description: Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
   - arguments:
-    - default: false
-      description: Restricted Resource Name of the resource to get details about. Can be retrieved by running a command that has that RRN.
-      isArray: false
+    - description: Restricted Resource Name of the resource to get details about. Can be retrieved by running a command that has that RRN.
       name: rrn
       required: true
-      secret: false
     description: Get resource details.
-    execution: false
     name: prisma-cloud-resource-get
     outputs:
     - contextPath: PrismaCloud.Resource.rrn
@@ -1222,35 +910,22 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to exclude account group details.
-      isArray: false
       name: exclude_account_group_details
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to retrieve all results. The "limit" argument will be ignored.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     description: List accounts.
-    execution: false
     name: prisma-cloud-account-list
     outputs:
     - contextPath: PrismaCloud.Account.name
@@ -1299,14 +974,11 @@ script:
       description: Account added on time.
       type: Date
   - arguments:
-    - default: false
-      description: A comma-separated list of accound IDs. To get account IDs, run the "prisma-cloud-account-list" command.
+    - description: A comma-separated list of accound IDs. To get account IDs, run the "prisma-cloud-account-list" command.
       isArray: true
       name: account_ids
       required: true
-      secret: false
     description: Get the statuses of the provided accounts.
-    execution: false
     name: prisma-cloud-account-status-get
     outputs:
     - contextPath: PrismaCloud.Account.accountId
@@ -1325,14 +997,11 @@ script:
       description: Account remediation action.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of account IDs. To get account IDs, run the "prisma-cloud-account-list" command.
+    - description: A comma-separated list of account IDs. To get account IDs, run the "prisma-cloud-account-list" command.
       isArray: true
       name: account_ids
       required: true
-      secret: false
     description: Get the owners of the provided accounts.
-    execution: false
     name: prisma-cloud-account-owner-list
     outputs:
     - contextPath: PrismaCloud.Account.accountId
@@ -1342,43 +1011,25 @@ script:
       description: Account owner emails.
       type: Unknown
   - arguments:
-    - default: false
-      description: Restricted Resource Name of the resource to get host finding of. Can be retrieved by running a command that has that RRN.
-      isArray: false
+    - description: Restricted Resource Name of the resource to get host finding of. Can be retrieved by running a command that has that RRN.
       name: rrn
       required: true
-      secret: false
-    - default: false
-      description: 'Comma separated list of finding types to look for. Available options are: guard_duty_host, guard_duty_iam, inspector_sbp, compliance_cis, host_vulnerability_cve. When left empty, will return all options.'
+    - description: 'Comma separated list of finding types to look for. Available options are: guard_duty_host, guard_duty_iam, inspector_sbp, compliance_cis, host_vulnerability_cve. When left empty, will return all options.'
       isArray: true
       name: finding_types
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma separated list of risk factors to look for. Available options are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE. When left empty, will return all options.'
+    - description: 'Comma separated list of risk factors to look for. Available options are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE. When left empty, will return all options.'
       isArray: true
       name: risk_factors
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to retrieve all results. The "limit" argument will be ignored.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     description: Get resource host finding list.
-    execution: false
     name: prisma-cloud-host-finding-list
     outputs:
     - contextPath: PrismaCloud.HostFinding.accountId
@@ -1448,33 +1099,16 @@ script:
       description: The number of host findings.
       type: Number
   - arguments:
-    - default: false
-      description: User ID to look for. Must be provided with the "query" argument.
-      isArray: false
+    - description: User ID to look for. Must be provided with the "query" argument.
       name: user_id
-      required: false
-      secret: false
-    - default: false
-      description: 'IAM query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/iam-query.'
-      isArray: false
+    - description: 'IAM query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/iam-query.'
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Token of the next page to retrive.
-      isArray: false
+    - description: Token of the next page to retrive.
       name: next_token
-      required: false
-      secret: false
     description: Get permission list. You must provide either "query" or "next_token".
-    execution: false
     name: prisma-cloud-permission-list
     outputs:
     - contextPath: PrismaCloud.PermissionPageToken.nextPageToken
@@ -1610,28 +1244,14 @@ script:
       description: Permission granted by level restricted resource name.
       type: String
   - arguments:
-    - default: false
-      description: Start time for the search in the following string format - MM/DD/YYYY.
-      isArray: false
+    - description: Start time for the search in the following string format - MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search in the following format - MM/DD/YYYY.
-      isArray: false
+    - description: End time for the search in the following format - MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of units to go back in time.
-      isArray: false
+    - description: The number of units to go back in time.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The search unit. login and epoch are only available if timeRangeValue is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -1641,12 +1261,8 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy name.
-      isArray: false
       name: policy-name
       predefined:
       - IAM password policy does not have a symbol
@@ -1679,136 +1295,69 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      required: false
-      secret: false
-    - default: false
-      description: The policy label.
-      isArray: false
+    - description: The policy label.
       name: policy-label
-      required: false
-      secret: false
-    - default: false
-      description: The number of alerts to return.
-      isArray: false
+    - description: The number of alerts to return.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The policy compliance standard.
-      isArray: false
+    - description: The policy compliance standard.
       name: policy-compliance-standard
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account ID.
-      isArray: false
+    - description: The cloud account ID.
       name: cloud-account-id
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account name.
-      isArray: false
+    - description: The cloud account name.
       name: cloud-account
-      required: false
-      secret: false
-    - default: false
-      description: The cloud region name.
-      isArray: false
+    - description: The cloud region name.
       name: cloud-region
-      required: false
-      secret: false
-    - default: false
-      description: The alert rule name.
-      isArray: false
+    - description: The alert rule name.
       name: alert-rule-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource ID.
-      isArray: false
+    - description: The resource ID.
       name: resource-id
-      required: false
-      secret: false
-    - default: false
-      description: The resource name.
-      isArray: false
+    - description: The resource name.
       name: resource-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource type.
-      isArray: false
+    - description: The resource type.
       name: resource-type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: open
       description: The alert status.
-      isArray: false
       name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      required: false
-      secret: false
-    - default: false
-      description: The alert ID.
-      isArray: false
+    - description: The alert ID.
       name: alert-id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud type.
-      isArray: false
       name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The risk grade.
-      isArray: false
       name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      required: false
-      secret: false
       deprecated: true
     - auto: PREDEFINED
-      default: false
       description: The policy type.
-      isArray: false
       name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy severity.
-      isArray: false
       name: policy-severity
       predefined:
       - high
       - medium
       - low
-      required: false
-      secret: false
     deprecated: true
     description: Search alerts on the Prisma Cloud platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
-    execution: false
     name: redlock-search-alerts
     outputs:
     - contextPath: PrismaCloud.AlertPageToken.nextPageToken
@@ -1886,31 +1435,18 @@ script:
   - arguments:
     - default: true
       description: The alert ID.
-      isArray: false
       name: alert-id
       required: true
-      secret: false
     deprecated: true
     description: Gets the details of an alert based on the alert ID.
-    execution: false
     name: redlock-get-alert-details
   - arguments:
-    - default: false
-      description: Comma-separated list of string IDs to be dismissed.
-      isArray: false
+    - description: Comma-separated list of string IDs to be dismissed.
       name: alert-id
-      required: false
-      secret: false
-    - default: false
-      description: The amount of time to snooze. Both snooze value and unit must be specified.
-      isArray: false
+    - description: The amount of time to snooze. Both snooze value and unit must be specified.
       name: snooze-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time unit for snoozing alert.  Both snooze value and unit must be specified if snoozing.
-      isArray: false
       name: snooze-unit
       predefined:
       - hour
@@ -1919,36 +1455,17 @@ script:
       - month
       - year
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Reason for dismissal.
-      isArray: false
+    - description: Reason for dismissal.
       name: dismissal-note
       required: true
-      secret: false
-    - default: false
-      description: Start time for the search in the following string format - MM/DD/YYYY.
-      isArray: false
+    - description: Start time for the search in the following string format - MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search in the following format - MM/DD/YYYY.
-      isArray: false
+    - description: End time for the search in the following format - MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of units to go back in time.
-      isArray: false
+    - description: The number of units to go back in time.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The search unit.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -1958,12 +1475,8 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy name.
-      isArray: false
       name: policy-name
       predefined:
       - IAM password policy does not have a symbol
@@ -1996,153 +1509,78 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      required: false
-      secret: false
-    - default: false
-      description: The policy label.
-      isArray: false
+    - description: The policy label.
       name: policy-label
-      required: false
-      secret: false
-    - default: false
-      description: The policy compliance standard.
-      isArray: false
+    - description: The policy compliance standard.
       name: policy-compliance-standard
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account.
-      isArray: false
+    - description: The cloud account.
       name: cloud-account
-      required: false
-      secret: false
-    - default: false
-      description: The cloud region.
-      isArray: false
+    - description: The cloud region.
       name: cloud-region
-      required: false
-      secret: false
-    - default: false
-      description: The alert rule name.
-      isArray: false
+    - description: The alert rule name.
       name: alert-rule-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource ID.
-      isArray: false
+    - description: The resource ID.
       name: resource-id
-      required: false
-      secret: false
-    - default: false
-      description: The resource name.
-      isArray: false
+    - description: The resource name.
       name: resource-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource type.
-      isArray: false
+    - description: The resource type.
       name: resource-type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The alert status.
-      isArray: false
       name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud type.
-      isArray: false
       name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The risk grade.
-      isArray: false
       name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      required: false
-      secret: false
       deprecated: true
     - auto: PREDEFINED
-      default: false
       description: The policy type.
-      isArray: false
       name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy severity.
-      isArray: false
       name: policy-severity
       predefined:
       - high
       - medium
       - low
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated string of policy IDs.
+    - description: Comma-separated string of policy IDs.
       isArray: true
       name: policy-id
-      required: false
-      secret: false
     deprecated: true
     description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
     execution: true
     name: redlock-dismiss-alerts
   - arguments:
-    - default: false
-      description: The IDs of alerts to reopen.
-      isArray: false
+    - description: The IDs of alerts to reopen.
       name: alert-id
-      required: false
-      secret: false
-    - default: false
-      description: Start time for search in the following string format -  MM/DD/YYYY.
-      isArray: false
+    - description: Start time for search in the following string format -  MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for search in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: End time for search in the following format -  MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of units to go back in time.
-      isArray: false
+    - description: The number of units to go back in time.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The search unit.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -2152,12 +1590,8 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy name.
-      isArray: false
       name: policy-name
       predefined:
       - IAM password policy does not have a symbol
@@ -2190,158 +1624,84 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      required: false
-      secret: false
-    - default: false
-      description: The policy label.
-      isArray: false
+    - description: The policy label.
       name: policy-label
-      required: false
-      secret: false
-    - default: false
-      description: The policy compliance standard.
-      isArray: false
+    - description: The policy compliance standard.
       name: policy-compliance-standard
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account.
-      isArray: false
+    - description: The cloud account.
       name: cloud-account
-      required: false
-      secret: false
-    - default: false
-      description: The cloud region.
-      isArray: false
+    - description: The cloud region.
       name: cloud-region
-      required: false
-      secret: false
-    - default: false
-      description: The alert rule name.
-      isArray: false
+    - description: The alert rule name.
       name: alert-rule-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource ID.
-      isArray: false
+    - description: The resource ID.
       name: resource-id
-      required: false
-      secret: false
-    - default: false
-      description: The resource name.
-      isArray: false
+    - description: The resource name.
       name: resource-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource type.
-      isArray: false
+    - description: The resource type.
       name: resource-type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The alert status.
-      isArray: false
       name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud type.
-      isArray: false
       name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The risk grade.
-      isArray: false
       name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      required: false
-      secret: false
       deprecated: true
     - auto: PREDEFINED
-      default: false
       description: The policy type.
-      isArray: false
       name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy severity.
-      isArray: false
       name: policy-severity
       predefined:
       - high
       - medium
       - low
-      required: false
-      secret: false
     deprecated: true
     description: Re-open the alerts matching the given filter. Must provide either policy IDs or alert IDs.
     execution: true
     name: redlock-reopen-alerts
   - arguments:
-    - default: false
-      description: The alert ID for which to get remediation details.
-      isArray: false
+    - description: The alert ID for which to get remediation details.
       name: alert-id
-      required: false
-      secret: false
     deprecated: true
     description: Gets remediation details for the given alert.
-    execution: false
     name: redlock-get-remediation-details
   - deprecated: true
     description: List the acceptable filters and values for alerts.
-    execution: false
     name: redlock-list-alert-filters
   - arguments:
-    - default: false
-      description: Start time for the search, in the following string format -  MM/DD/YYYY.
-      isArray: false
+    - description: Start time for the search, in the following string format -  MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The search unit. The "login" and "epoch" options are only available if timeRangeValue
         is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -2351,24 +1711,14 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Query to run in Prisma Cloud config API using RQL language.
-      isArray: false
+    - description: Query to run in Prisma Cloud config API using RQL language.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: Search the configuration inventory on the Prisma Cloud platform using RQL language.
-    execution: false
     name: redlock-search-config
     outputs:
     - contextPath: PrismaCloud.Config.accountId
@@ -2435,47 +1785,25 @@ script:
       description: State ID.
       type: String
   - arguments:
-    - default: false
-      description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
-      isArray: false
+    - description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the RQL input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
-      isArray: false
+    - description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the RQL input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
       name: rql
       required: true
-      secret: false
     deprecated: true
     description: Returns the results of an RQL config query.
-    execution: false
     name: redlock-get-rql-response
   - arguments:
-    - default: false
-      description: Start time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: Start time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The search unit. The "login" and "epoch" options are only available if timeRangeValue
         is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -2485,50 +1813,26 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Query to run in Prisma Cloud search API using RQL language.
-      isArray: false
+    - description: Query to run in Prisma Cloud search API using RQL language.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: Search events on the Prisma Cloud platform using RQL language.
-    execution: false
     name: redlock-search-event
   - arguments:
-    - default: false
-      description: Start time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: Start time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The search unit. The "login" and "epoch" options are only available if timeRangeValue
         is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -2538,18 +1842,11 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Query to run in Prisma Cloud search API using RQL language.
-      isArray: false
+    - description: Query to run in Prisma Cloud search API using RQL language.
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud in which the network should be searched.
-      isArray: false
       name: cloud-type
       predefined:
       - aws
@@ -2557,11 +1854,8 @@ script:
       - gcp
       - alibaba_cloud
       - oci
-      required: false
-      secret: false
     deprecated: true
     description: Search networks on the Prisma Cloud platform using RQL language.
-    execution: false
     name: redlock-search-network
 tests:
 - Prisma Cloud V2 Test

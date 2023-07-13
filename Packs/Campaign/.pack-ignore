@@ -22,6 +22,8 @@ ignore=RM109,BA124
 [file:ShowCampaignUniqueRecipients.yml]
 ignore=BA124
 
-[file:ShowCampaignIncidentsOwners.yml]
-ignore=RM109
+[file:ShowCampaignUniqueSenders.yml]
+ignore=BA124
 
+[file:ShowNumberOfCampaignIncidents.yml]
+ignore=BA124

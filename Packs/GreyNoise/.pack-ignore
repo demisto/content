@@ -1,9 +1,10 @@
 [file:GreyNoise.yml]
-ignore=IN136,IN145
+ignore=IN136
 
 [file:GreyNoise_Community.yml]
-ignore=BA108,BA109,BA111,IN145
+ignore=BA108,BA109,BA111
 
 [known_words]
-XSOAR8
-XSIAM
+xsoar8
+xsiam
+

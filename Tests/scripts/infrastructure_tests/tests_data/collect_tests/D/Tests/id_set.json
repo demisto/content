@@ -8,8 +8,8 @@
         "name": "myTestPlaybook",
         "file_path": "Packs/myPack/TestPlaybooks/myTestPlaybook.yml",
         "pack": "myPack",
-        "fromversion": "6.5.0",
-        "toversion": "6.5.0",
+        "fromversion": "6.8.0",
+        "toversion": "6.8.0",
         "marketplaces": [
           "marketplacev2",
           "xsoar"

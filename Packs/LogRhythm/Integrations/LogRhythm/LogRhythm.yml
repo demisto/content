@@ -20,40 +20,32 @@ configuration:
   name: Insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: ""
   type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Default page size for alarm queries
   name: pageSize
   defaultvalue: "2000"
   type: 0
-  required: false
 - display: Timezone offset in minutes of the LogRhythm server machine
   name: timeZone
   defaultvalue: ""
   type: 0
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Use Windows Authentication
   name: use_ntlm
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Domain of the Windows authentication server (used for Windows authentication)
   name: domain
   defaultvalue: ""
   type: 0
-  required: false
 script:
   script: ''
   type: javascript
@@ -236,8 +228,7 @@ script:
   - name: lr-get-alarms
     arguments:
     - name: start-date
-      description: 'Start date for the data query, for example: "2018-03-27". Only
-        use this argument if the time_frame argument is "Custom".'
+      description: 'Start date for the data query, for example: "2018-03-27". Only use this argument if the time_frame argument is "Custom".'
     - name: end-date
       description: 'End date for the data query. For example: end-date="2018-04-08"'
     - name: all-users
@@ -247,8 +238,7 @@ script:
       - "false"
       description: Alarms for all users
     - name: count
-      description: Number of alerts to retrieve. If empty, will be set to default
-        of 1000.
+      description: Number of alerts to retrieve. If empty, will be set to default of 1000.
       defaultValue: "1000"
     - name: status
       required: true
@@ -299,8 +289,7 @@ script:
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
       type: number
-    description: Retrieve alarms in the specified time period. Alerts can be filtered
-      by the alarm status.
+    description: Retrieve alarms in the specified time period. Alerts can be filtered by the alarm status.
   - name: lr-get-hosts-by-entity-id
     arguments:
     - name: entity-id
@@ -340,8 +329,7 @@ script:
     - contextPath: LogRhythm.Host.OSType
       description: The host OS type.
       type: string
-    description: Retrieves a list of hosts for a given entity, or an empty list if
-      none is found.
+    description: Retrieves a list of hosts for a given entity, or an empty list if none is found.
   - name: lr-add-host
     arguments:
     - name: entity-id
@@ -454,11 +442,9 @@ script:
       required: true
       description: Filter log message by keywords.
     - name: start-date
-      description: 'Start date for the query, for example: "2018-03-27". Only use
-        this argument if the time_frame argument is "Custom".'
+      description: 'Start date for the query, for example: "2018-03-27". Only use this argument if the time_frame argument is "Custom".'
     - name: end-date
-      description: 'End date for the query, for example: end-date="2018-04-20". Only
-        use this argument if the time_frame argument is "Custom".'
+      description: 'End date for the query, for example: end-date="2018-04-20". Only use this argument if the time_frame argument is "Custom".'
     - name: time_frame
       auto: PREDEFINED
       predefined:
@@ -468,39 +454,32 @@ script:
       - LastWeek
       - LastMonth
       - Custom
-      description: If time_frame is "Custom", specify the start time for the time
-        range.
+      description: If time_frame is "Custom", specify the start time for the time range.
       defaultValue: Custom
     outputs:
     - contextPath: LogRhythm.Log.ClassificationName
-      description: 'The name of one of three major activity groups: "Operations",
-        "Audit", or "Security", and a more specific sub-classification.'
+      description: 'The name of one of three major activity groups: "Operations", "Audit", or "Security", and a more specific sub-classification.'
       type: string
     - contextPath: LogRhythm.Log.CommonEventName
-      description: A short, plain-language description of the log that determines
-        its Classification.
+      description: A short, plain-language description of the log that determines its Classification.
       type: string
     - contextPath: LogRhythm.Log.Count
-      description: The number of times the log entry occurred when aggregated with
-        other identical log entries.
+      description: The number of times the log entry occurred when aggregated with other identical log entries.
       type: number
     - contextPath: LogRhythm.Log.Direction
-      description: Direction by name of activity between a log's Origin and Impacted
-        Zones. Values can be "Internal", "External", "Outbound", "Local", or "Unknown".
+      description: Direction by name of activity between a log's Origin and Impacted Zones. Values can be "Internal", "External", "Outbound", "Local", or "Unknown".
       type: string
     - contextPath: LogRhythm.Log.EntityName
       description: The name of the entity.
       type: string
     - contextPath: LogRhythm.Log.ImpactedHostName
-      description: The name of the host, such as a DNS name or NetBIOS name impacted
-        by the log activity.
+      description: The name of the host, such as a DNS name or NetBIOS name impacted by the log activity.
       type: string
     - contextPath: LogRhythm.Log.ImpactedZone
       description: The name of the Impacted Zone.
       type: string
     - contextPath: LogRhythm.Log.LogDate
-      description: The creation date contained in the log. It can be in UTC or a user-selected
-        time zone.
+      description: The creation date contained in the log. It can be in UTC or a user-selected time zone.
       type: date
     - contextPath: LogRhythm.Log.LogMessage
       description: The log message generated due to the activity detected by the source.
@@ -512,23 +491,19 @@ script:
       description: The name of the log source host.
       type: string
     - contextPath: LogRhythm.Log.MPERuleName
-      description: Message Processing Engine (MPE) Rule. It identifies and normalizes
-        a log message and assigns it a Common Event.
+      description: Message Processing Engine (MPE) Rule. It identifies and normalizes a log message and assigns it a Common Event.
       type: string
     - contextPath: LogRhythm.Log.MessageType
-      description: 'The message type. Values can be: "Message", "Log", "Known Log",
-        "Event", or "Alarm".'
+      description: 'The message type. Values can be: "Message", "Log", "Known Log", "Event", or "Alarm".'
       type: string
     - contextPath: LogRhythm.Log.OriginEntityName
       description: The resolved Entity of the origin host.
       type: string
     - contextPath: LogRhythm.Log.OriginHostName
-      description: The name of the host, such as a DNS name or NetBIOS name that was
-        the origin of the log activity.
+      description: The name of the host, such as a DNS name or NetBIOS name that was the origin of the log activity.
       type: string
     - contextPath: LogRhythm.Log.OriginZone
-      description: 'The enumeration value of the resolved Zone that was the origin
-        of the activity. Values can be: "Internal", "External", or "DMZ".'
+      description: 'The enumeration value of the resolved Zone that was the origin of the activity. Values can be: "Internal", "External", or "DMZ".'
       type: string
     - contextPath: LogRhythm.Log.Session
       description: User, system, or application session.
@@ -546,12 +521,10 @@ script:
       description: The name of the impacted device.
       type: string
     - contextPath: LogRhythm.Log.ObjectName
-      description: 'The name for an Object. Note: Object will store the full path
-        and name but ObjectName will only store the object name.'
+      description: 'The name for an Object. Note: Object will store the full path and name but ObjectName will only store the object name.'
       type: string
     description: Executes a query for logs that match query parameters.
   isfetch: true
-  runonce: false
 deprecated: true
 tests:
 - LogRhythm-Test-Playbook

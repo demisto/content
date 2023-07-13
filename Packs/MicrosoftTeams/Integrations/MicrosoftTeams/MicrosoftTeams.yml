@@ -8,31 +8,26 @@ commonfields:
 configuration:
 - display: "Bot ID"
   name: credentials
-  required: false
   type: 9
   section: Connect
   displaypassword: "Bot Password"
 - display: Bot ID
   name: bot_id
-  required: false
   type: 0
   section: Connect
   hidden: true
 - display: Bot Password
   name: bot_password
-  required: false
   type: 4
   section: Connect
   hidden: true
 - display: Tenant ID
   name: tenant_id
-  required: false
   type: 0
   section: Connect
   advanced: true
 - display: Authentication Type
   name: auth_type
-  required: false
   type: 15
   defaultvalue: Client Credentials
   options:
@@ -41,12 +36,10 @@ configuration:
   section: Connect
 - display: Application redirect URI (for Authorization Code mode)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
 - display: ''
   name: auth_code_creds
-  required: false
   type: 9
   displaypassword: Authorization code
   hiddenusername: true
@@ -64,28 +57,24 @@ configuration:
   section: Connect
 - display: Certificate (Required for HTTPS)
   name: creds_certificate
-  required: false
   type: 9
   section: Connect
   advanced: true
   displaypassword: Private Key (Required for HTTPS)
 - display: Certificate (Required for HTTPS)
   name: certificate
-  required: false
   type: 12
   section: Connect
   advanced: true
   hidden: true
 - display: Private Key (Required for HTTPS)
   name: key
-  required: false
   type: 14
   section: Connect
   advanced: true
   hidden: true
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
-  required: false
   type: 15
   section: Collect
   advanced: true
@@ -99,7 +88,6 @@ configuration:
   - Critical
 - display: Disable Automatic Notifications
   name: auto_notifications
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -107,43 +95,36 @@ configuration:
   defaultvalue: 'false'
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
-  required: false
   type: 8
   section: Collect
   advanced: true
 - display: The header of an external form hyperlink.
   name: external_form_url_header
-  required: false
   type: 0
   section: Connect
   defaultvalue: Microsoft Teams Form
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Long running instance
   name: longRunning
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Listen port, e.g. 7000 (Required for investigation mirroring and direct messages)
   name: longRunningPort
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 description: Send messages and notifications to your team members.
@@ -165,7 +146,6 @@ script:
     - description: The team member to which to send the message.
       name: to
     - description: The header of an external form hyperlink.
-      required: false
       defaultValue: "Microsoft Teams Form"
       name: external_form_url_header
     description: |-
@@ -263,7 +243,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: false
       defaultValue: false
     description: Adds a member (user) to a private/shared channel.
     name: microsoft-teams-add-user-to-channel
@@ -278,8 +257,6 @@ script:
       name: description
     - description: The type of the channel.
       name: membership_type
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'private'
@@ -288,7 +265,6 @@ script:
       defaultValue: 'standard'
     - description: The channel owner (Display name/mail/UPN).
       name: owner_user
-      required: false
     description: Creates a new channel in a Microsoft Teams team.
     name: microsoft-teams-create-channel
   - arguments:
@@ -379,7 +355,6 @@ script:
     - description: Specifies the type of chat.
       name: chat_type
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'group'
@@ -387,12 +362,9 @@ script:
       defaultValue: 'group'
     - description: Display name/mail/UPN of user that should be added to the chat. Can be an array.
       name: member
-      required: false
       isArray: true
     - description: The title of the chat. The chat title can be provided only if the chat is of group type.
       name: chat_name
-      required: false
-      isArray: false
     description: |-
       Creates a new chat. 
       Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
@@ -439,11 +411,8 @@ script:
       - 'text'
       - 'html'
       defaultValue: 'text'
-      required: false
     - description: The type of chat message.
       name: message_type
-      required: false
-      isArray: false
       defaultValue: 'message'
     description: Sends a new chat message in the specified chat.
     name: microsoft-teams-message-send-to-chat
@@ -527,12 +496,10 @@ script:
       isArray: true
     - description: Whether to share the whole history of the chat.
       name: share_history
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: false
       defaultValue: true
     description: Adds a member (user) to a group chat.
     name: microsoft-teams-chat-add-user
@@ -573,7 +540,6 @@ script:
       required: true
     - description: The number of results to retrieve.
       name: limit
-      required: false
       defaultValue: 50
     - description: Orders results by lastModifiedDateTime (default) or createdDateTime in descending order.
       name: order_by
@@ -581,20 +547,11 @@ script:
       predefined:
       - 'lastModifiedDateTime'
       - 'createdDateTime'
-      required: false
       defaultValue: 'lastModifiedDateTime'
-    - default: false
-      description: A link that specifies a starting point to use for subsequent calls.
-      isArray: false
+    - description: A link that specifies a starting point to use for subsequent calls.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: Number of results to return per page.
-      isArray: false
+    - description: Number of results to return per page.
       name: page_size
-      required: false
-      secret: false
       defaultValue: 50
     description: Retrieves a list of messages in a chat.
     name: microsoft-teams-chat-message-list
@@ -674,33 +631,21 @@ script:
   - arguments:
     - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN)
       name: chat
-      required: false
     - description: "Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. "
       name: filter
-      required: false
     - description: Expands the results to include members or lastMessagePreview properties.
       name: expand
       auto: PREDEFINED
       predefined:
       - 'members'
       - 'lastMessagePreview'
-      required: false
     - description: The number of results to retrieve.
       name: limit
-      required: false
       defaultValue: 50
-    - default: false
-      description: A link that specifies a starting point to use for subsequent calls.
-      isArray: false
+    - description: A link that specifies a starting point to use for subsequent calls.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: Number of results to return per page.
-      isArray: false
+    - description: Number of results to return per page.
       name: page_size
-      required: false
-      secret: false
       defaultValue: 50
     description: Retrieves a list of chats that the user is part of. If 'chat' is specified, retrieves this chat only.
     name: microsoft-teams-chat-list
@@ -745,15 +690,11 @@ script:
     description: Updates the chat name. It can only be set for group chats.
     name: microsoft-teams-chat-update
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
   dockerimage: demisto/teams:1.0.0.63824
-  feed: false
-  isfetch: false
   longRunning: true
   longRunningPort: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

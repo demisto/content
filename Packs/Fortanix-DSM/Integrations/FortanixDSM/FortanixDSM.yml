@@ -18,15 +18,12 @@ configuration:
   name: credentials
   type: 9
   additionalinfo: If Certificate, specify PEM
-  required: false
 - display: API Key
   name: token
   type: 4
   additionalinfo: Private key cannot be encrypted
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -35,22 +32,18 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo: Whether to use proxy settings from the Environment
-  required: false
 - display: Group UUID to list secrets from
   name: group_ids
   type: 0
   additionalinfo: Filter the secrets accessible to a single DSM Group
-  required: false
 - display: Data protection key used for encryption and decryption
   name: protection_key
   type: 0
-  required: false
   additionalinfo: Also configure the Cipher Mode
 - display: Encryption and decryption mode
   name: protection_mode
   type: 15
   additionalinfo: e.g. FPE, GCM, CBC, None
-  required: false
   options:
   - FPE
   - GCM

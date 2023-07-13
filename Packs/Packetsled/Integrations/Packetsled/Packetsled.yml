@@ -14,11 +14,9 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: "Username"
   name: credentials
   defaultvalue: ""
@@ -26,7 +24,6 @@ configuration:
   required: true
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
-  required: false
   defaultvalue: 7 days
   type: 0
   additionalinfo: ""
@@ -34,7 +31,6 @@ configuration:
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
-  required: false
   type: 0
 script:
   script: ''
@@ -563,7 +559,7 @@ script:
       description: The respondant of the Events
     description: Get all of the events for a given uid
   isfetch: true
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No test
 fromversion: 5.0.0

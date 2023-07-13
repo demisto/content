@@ -5,8 +5,7 @@ args:
   type: unknown
 - auto: PREDEFINED
   defaultValue: expiring
-  description: The status of certificate to extract (good (> 180 days), warning (<=180
-    days and > 90 days), expiring (<= 90 days))
+  description: The status of certificate to extract (good (> 180 days), warning (<=180 days and > 90 days), expiring (<= 90 days))
   name: StatusType
   predefined:
   - expired
@@ -23,12 +22,7 @@ args:
   - "True"
   - "False"
   type: unknown
-comment: "Parses the output from the !SSLVerifierV2 automation into a markdown table
-  and separate context key . \n\nThis automation uses the SSLVerifierV2 key by default,
-  but a custom context key can be specified in the event extend-context is used with
-  the SSLVerifierV2 automation. \n\nOption to specify whether to output certificates
-  with an expiring, warning, or good status (or all at once). \n\nOption to specify
-  whether or not to output the generated tables to the war room. \n\n"
+comment: "Parses the output from the !SSLVerifierV2 automation into a markdown table and separate context key . \n\nThis automation uses the SSLVerifierV2 key by default, but a custom context key can be specified in the event extend-context is used with the SSLVerifierV2 automation. \n\nOption to specify whether to output certificates with an expiring, warning, or good status (or all at once). \n\nOption to specify whether or not to output the generated tables to the war room. \n\n"
 commonfields:
   id: SSLVerifierV2_ParseOutput
   version: -1
@@ -44,7 +38,6 @@ outputs:
 - contextPath: SSLReport.Warning
   description: Certificates expiring in > 90 days and <= 180 days
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

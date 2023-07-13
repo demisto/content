@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import ast
 import hashlib
 import re
 from typing import Any
 
-import demistomock as demisto  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
-from CommonServerPython import *  # noqa: F401
 
 MAIN_URL = 'https://malwr.com'
 STATUS_URL = '/submission/status/{}/'
