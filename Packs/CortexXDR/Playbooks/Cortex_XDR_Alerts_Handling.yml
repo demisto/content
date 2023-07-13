@@ -1,7 +1,9 @@
 id: Cortex XDR Alerts Handling
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cryptojacking\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation"
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +21,7 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +34,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: a47291e4-58cb-40b4-8eb5-306b2ffbbd0b
@@ -209,6 +214,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -221,6 +227,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 12258730-025a-4931-8da9-9f68bfb6a32c
@@ -243,6 +251,7 @@ tasks:
         complex:
           root: inputs.incident_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -255,6 +264,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 73393504-1664-4f81-8baf-f5e29f222cea
@@ -271,11 +282,12 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1360,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -283,6 +295,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: dbf4c20e-2308-41d5-88df-477133c8e571
@@ -308,6 +322,7 @@ tasks:
         complex:
           root: inputs.alert_id
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -317,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -453,7 +468,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -480,8 +495,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      SOCEmailAddress:
-        simple:
       alert_id:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
@@ -511,7 +524,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -750,
+          "x": -730,
           "y": 920
         }
       }
@@ -568,8 +581,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 565
+          "x": -730,
+          "y": 575
         }
       }
     note: false
@@ -594,13 +607,15 @@ tasks:
     nexttasks:
       '#default#':
       - "5"
-      'Cryptojacking':
+      Cryptojacking:
       - "10"
       IAM User Access:
       - "15"
+      Token Theft:
+      - "16"
     separatecontext: false
     conditions:
-    - label: 'Cryptojacking'
+    - label: Cryptojacking
       condition:
       - - operator: containsGeneral
           left:
@@ -645,11 +660,166 @@ tasks:
           right:
             value:
               simple: Penetration testing tool attempt
+    - label: Token Theft
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of EC2 token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of VM Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of AWS Lambda’s token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of AWS Lambda’s role
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an AWS service token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an AWS EKS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of an AWS EKS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of an AWS ECS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an AWS ECS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of AWS service token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of VM Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of VM Service Account token
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -520,
+          "x": -730,
           "y": 730
         }
       }
@@ -791,7 +961,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -926,8 +1096,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1100,
-          "y": 565
+          "x": -1430,
+          "y": 575
         }
       }
     note: false
@@ -1002,6 +1172,90 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ad830609-c796-44fc-8de4-76d6ec8ce8dd
+    type: playbook
+    task:
+      id: ad830609-c796-44fc-8de4-76d6ec8ce8dd
+      version: -1
+      name: Cortex XDR - XCloud Token Theft Response
+      description: |-
+        ---
+
+        ## Cloud Token Theft Response Playbook
+
+        The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
+
+        **Cloud Enrichment:**
+        - Enriches the involved resources
+        - Enriches the involved identities
+        - Enriches the involved IPs
+
+        **Verdict Decision Tree:**
+        - Determines the appropriate verdict based on the investigation findings
+
+        **Early Containment using the Cloud Response - Generic Playbook:**
+        - Implements early containment measures to prevent further impact
+
+        **Cloud Persistence Threat Hunting:**
+        - Conducts threat hunting activities to identify any cloud persistence techniques
+
+        **Enriching and Responding to Hunting Findings:**
+        - Performs additional enrichment and responds to the findings from threat hunting
+
+        **Verdict Handling:**
+        - Handles false positives identified during the investigation
+        - Handles true positives by initiating appropriate response actions
+
+        ---
+      playbookName: Cortex XDR - XCloud Token Theft Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ResolveIP:
+        simple: "True"
+      alert_id:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
+              ignorecase: true
+          accessor: alert_id
+      earlyContainment:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1016,8 +1270,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1095,
-        "width": 2840,
-        "x": -1100,
+        "width": 3170,
+        "x": -1430,
         "y": 70
       }
     }
