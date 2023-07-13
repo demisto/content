@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import dateparser as dateparser
+import dateparser
 
 
 ''' IMPORTS '''
@@ -308,11 +308,11 @@ def main():
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
 
                     if indicator_type == 'report':
-                        kwargs['name'] = xsoar_indicator.get('value', '')
+                        kwargs['name'] = value
                         kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
                         results, _ = CommandRunner.execute_commands(
                             CommandRunner.Command("SearchIndicatorRelationships",
-                                                  args_lst={"entities": xsoar_indicator.get('value')})
+                                                  args_lst={"entities": value})
                         )
                         relationships = results[0].res.get("Relationships", [])
                         kwargs['object_refs'] = [res.get("EntityB") if xsoar_indicator.get('value', '').lower(
