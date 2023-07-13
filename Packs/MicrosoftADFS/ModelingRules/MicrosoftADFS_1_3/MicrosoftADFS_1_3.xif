@@ -1,6 +1,6 @@
-[MODEL: dataset = microsoft_windows_raw]
+[MODEL: dataset = microsoft_adfs_raw]
 // filter event ids based on XDRC configuration.
-filter event_id in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206", "1207")
+ filter to_string(event_id) in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206", "1207")
 // xml part
 | alter accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
