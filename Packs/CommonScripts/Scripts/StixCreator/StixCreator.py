@@ -308,14 +308,9 @@ def main():
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
 
                     if indicator_type == 'report':
-                        kwargs['name'] = value
                         kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
-                        results, _ = CommandRunner.execute_commands(
-                            CommandRunner.Command("SearchIndicatorRelationships",
-                                                  args_lst={"entities": value})
-                        )
-                        relationships = results[0].res.get("Relationships", [])
-                        kwargs['object_refs'] = [res.get("EntityB") if xsoar_indicator.get('value', '').lower(
+                        relationships = demisto.searchRelationships({"filter": {"entities": [value]}}).get("data", [])
+                        kwargs['object_refs'] = [res.get("EntityB") if value.lower(
                         ) == res.get("EntityA", '').lower() else res.get("EntityA") for res in relationships]
 
                     demisto.debug(f"Creating {indicator_type} indicator: {value}, with the following kwargs: {kwargs}")
@@ -326,17 +321,22 @@ def main():
 
                     indicators.append(indicator)
 
-                except (KeyError, TypeError) as e:
+                except (KeyError, TypeError):
                     demisto.info(
                         f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible")
-                    demisto.info(f"Export failure excpetion: {e}")
+                    demisto.info(f"Export failure exception: {traceback.format_exc()}")
+                    # for testing purposes
+                    raise Exception(traceback.format_exc())
+
                     continue
 
-            except InvalidValueError as e:
-                demisto.info(
-                    f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
-                demisto.debug(f"Export failure exception: {e}")
-                continue
+                except InvalidValueError:
+                    demisto.info(
+                        f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
+                    demisto.info(f"Export failure exception: {traceback.format_exc()}")
+                    # for testing purposes
+                    raise Exception(traceback.format_exc())
+                    continue
     if len(indicators) > 1:
         bundle = Bundle(indicators, allow_custom=True)
         context = {
