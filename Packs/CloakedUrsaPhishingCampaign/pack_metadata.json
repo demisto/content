@@ -7,8 +7,7 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Case Management",
-        "Incident Response"
+        "Case Management"
     ],
     "tags": [],
     "useCases": [],
@@ -28,7 +27,6 @@
         }
     },
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }
