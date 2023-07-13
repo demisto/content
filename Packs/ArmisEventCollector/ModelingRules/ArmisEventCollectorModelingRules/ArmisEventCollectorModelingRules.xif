@@ -1,6 +1,6 @@
 [MODEL: dataset=armis_armis_raw]
 // alerts mapping 
-filter type != "Threat Detected"  
+filter alertId != null
 | alter
 	xdm.event.type = type,
 	xdm.alert.description = description,
@@ -8,11 +8,12 @@ filter type != "Threat Detected"
 	xdm.alert.original_alert_id = to_string(alertId),
 	xdm.alert.severity = severity,
 	xdm.event.outcome = status,
-	xdm.event.id = arraystring(json_extract_array(activityUUIDs, "$."), ";"), 
-	xdm.source.host.device_id = arraystring(json_extract_array(deviceIds, "$."), ";");
+	xdm.event.id = arraystring(arraymap(activityUUIDs -> [], trim("@element", "\"")), ";"),
+	xdm.source.host.device_id = arraystring(json_extract_array(deviceIds, "$."), ";"),
+	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";");
 
-// threat detection activities 
-filter type = "Threat Detected"  
+// activities mapping
+filter activityUUID != null   
 | alter
 	xdm.network.ip_protocol = protocol,
 	xdm.alert.original_threat_name = content,
@@ -21,4 +22,6 @@ filter type = "Threat Detected"
 	xdm.event.id = activityUUID,
 	xdm.observer.name = json_extract_scalar(sensor, "$.name"),
 	xdm.observer.type = json_extract_scalar(sensor, "$.type"),
-	xdm.source.host.device_id = arraystring(json_extract_array(deviceIds, "$."), ";");
+	xdm.source.host.device_id = arraystring(deviceIds -> [], ";"),
+	xdm.source.zone = json_extract_scalar(site, "$.location"),
+	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";");
