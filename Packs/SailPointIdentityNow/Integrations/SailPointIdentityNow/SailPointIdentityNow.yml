@@ -20,19 +20,15 @@ configuration:
   type: 4
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 description: The SailPoint Identity Security platform can be configured either on-prem/single tenant SaaS, or multi-tenant. This package is intended to be used with the SaaS, multi-tenant solution, IdentityNow.
 display: SailPoint IdentityNow
@@ -40,27 +36,14 @@ name: SailPointIdentityNow
 script:
   commands:
   - arguments:
-    - default: false
-      description: Elastic search query for retrieving identities.
-      isArray: false
+    - description: Elastic search query for retrieving identities.
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Offset into the full result set. Usually specified with limit to paginate through the results.
-      isArray: false
+    - description: Offset into the full result set. Usually specified with limit to paginate through the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Max number of results to return. Maximum of 250.
-      isArray: false
+    - description: Max number of results to return. Maximum of 250.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search for identity(identities) using elastic search query used by IdentityNow Search Engine.
-    execution: false
     name: identitynow-search-identities
     outputs:
     - contextPath: SailPointIdentityNow.Identity.id
@@ -139,39 +122,17 @@ script:
       description: Type of object, will be "identity".
       type: String
   - arguments:
-    - default: false
-      description: Account Id of the user/identity(uuid).
-      isArray: false
+    - description: Account Id of the user/identity(uuid).
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the user/identity on the account.
-      isArray: false
+    - description: Name of the user/identity on the account.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Native identity for the user account.
-      isArray: false
+    - description: Native identity for the user account.
       name: native_identity
-      required: false
-      secret: false
-    - default: false
-      description: Offset into the full result set. Usually specified with limit to paginate through the results.
-      isArray: false
+    - description: Offset into the full result set. Usually specified with limit to paginate through the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Max number of results to return. Maximum of 250.
-      isArray: false
+    - description: Max number of results to return. Maximum of 250.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get accounts by search/filter parameters (id, name, native_identity).
-    execution: false
     name: identitynow-get-accounts
     outputs:
     - contextPath: SailPointIdentityNow.Account.id
@@ -220,51 +181,21 @@ script:
       description: Indicates whether the account has entitlement.
       type: Boolean
   - arguments:
-    - default: false
-      description: Account activity Id (uuid).
-      isArray: false
+    - description: Account activity Id (uuid).
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The identity (uuid) that the activity was requested for (me indicates current user).
-      isArray: false
+    - description: The identity (uuid) that the activity was requested for (me indicates current user).
       name: requested_for
-      required: false
-      secret: false
-    - default: false
-      description: The identity (uuid) that requested the activity (me indicates current user).
-      isArray: false
+    - description: The identity (uuid) that requested the activity (me indicates current user).
       name: requested_by
-      required: false
-      secret: false
-    - default: false
-      description: The specified identity (uuid) will be either requester or target of account activity (me indicates current user).
-      isArray: false
+    - description: The specified identity (uuid) will be either requester or target of account activity (me indicates current user).
       name: regarding_identity
-      required: false
-      secret: false
-    - default: false
-      description: Type of account activity.
-      isArray: false
+    - description: Type of account activity.
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Offset into the full result set. Usually specified with limit to paginate through the results.
-      isArray: false
+    - description: Offset into the full result set. Usually specified with limit to paginate through the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Max number of results to return. Maximum of 250.
-      isArray: false
+    - description: Max number of results to return. Maximum of 250.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get account activities by search/filter parameters (requested_for, requested_by, regarding_identity, type).
-    execution: false
     name: identitynow-get-accountactivities
     outputs:
     - contextPath: SailPointIdentityNow.AccountActivity.id
@@ -307,27 +238,14 @@ script:
       description: Comments added while canceling the account activity.
       type: String
   - arguments:
-    - default: false
-      description: Elastic search query for retrieving identities.
-      isArray: false
+    - description: Elastic search query for retrieving identities.
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Offset into the full result set. Usually specified with limit to paginate through the results.
-      isArray: false
+    - description: Offset into the full result set. Usually specified with limit to paginate through the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Max number of results to return. Maximum of 250.
-      isArray: false
+    - description: Max number of results to return. Maximum of 250.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search for access profile(s) using elastic search query used by IdentityNow Search Engine.
-    execution: false
     name: identitynow-search-accessprofiles
     outputs:
     - contextPath: SailPointIdentityNow.AccessProfile.id
@@ -379,27 +297,14 @@ script:
       description: Type of access profile, will be "accessprofile".
       type: String
   - arguments:
-    - default: false
-      description: Elastic search query for retrieving roles.
-      isArray: false
+    - description: Elastic search query for retrieving roles.
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Offset into the full result set. Usually specified with limit to paginate through the results.
-      isArray: false
+    - description: Offset into the full result set. Usually specified with limit to paginate through the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Max number of results to return. Maximum of 250.
-      isArray: false
+    - description: Max number of results to return. Maximum of 250.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search for role(s) using elastic search query used by IdentityNow Search Engine.
-    execution: false
     name: identitynow-search-roles
     outputs:
     - contextPath: SailPointIdentityNow.Role.id
@@ -448,27 +353,14 @@ script:
       description: Type of object, will be "role".
       type: String
   - arguments:
-    - default: false
-      description: Elastic search query for retrieving entitlements.
-      isArray: false
+    - description: Elastic search query for retrieving entitlements.
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Offset into the full result set. Usually specified with limit to paginate through the results.
-      isArray: false
+    - description: Offset into the full result set. Usually specified with limit to paginate through the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Max number of results to return. Maximum of 250.
-      isArray: false
+    - description: Max number of results to return. Maximum of 250.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search for entitlement(s) using elastic search query used by IdentityNow Search Engine.
-    execution: false
     name: identitynow-search-entitlements
     outputs:
     - contextPath: SailPointIdentityNow.Entitlement.id
@@ -517,27 +409,14 @@ script:
       description: Type of object, will be "entitlement".
       type: String
   - arguments:
-    - default: false
-      description: Elastic search query for retrieving events.
-      isArray: false
+    - description: Elastic search query for retrieving events.
       name: query
       required: true
-      secret: false
-    - default: false
-      description: Offset into the full result set. Usually specified with limit to paginate through the results.
-      isArray: false
+    - description: Offset into the full result set. Usually specified with limit to paginate through the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Max number of results to return. Maximum of 250.
-      isArray: false
+    - description: Max number of results to return. Maximum of 250.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search for event(s) using elastic search query used by IdentityNow Search Engine.
-    execution: false
     name: identitynow-search-events
     outputs:
     - contextPath: SailPointIdentityNow.Event.id
@@ -592,76 +471,42 @@ script:
       description: Type of event.
       type: String
   - arguments:
-    - default: false
-      description: Identity Id (uuid) for whom the access request is being made.
-      isArray: false
+    - description: Identity Id (uuid) for whom the access request is being made.
       name: requested_for
       required: true
-      secret: false
-    - default: false
-      description: Id (uuid) of the object (access profile or role).
-      isArray: false
+    - description: Id (uuid) of the object (access profile or role).
       name: requested_item
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of object (ACCESS_PROFILE or ROLE).
-      isArray: false
       name: requested_item_type
       predefined:
       - ACCESS_PROFILE
       - ROLE
       required: true
-      secret: false
-    - default: false
-      description: Comments to attach to the item request.
-      isArray: false
+    - description: Comments to attach to the item request.
       name: comment
-      required: false
-      secret: false
-    deprecated: false
     description: Grant access request for a single object(access profile or role) for a single user.
-    execution: false
     name: identitynow-request-grant
   - arguments:
-    - default: false
-      description: Identity Id (uuid) for whom the access request is being made.
-      isArray: false
+    - description: Identity Id (uuid) for whom the access request is being made.
       name: requested_for
       required: true
-      secret: false
-    - default: false
-      description: Id (uuid) of the object(access profile or role).
-      isArray: false
+    - description: Id (uuid) of the object(access profile or role).
       name: requested_item
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of object (ACCESS_PROFILE or ROLE).
-      isArray: false
       name: requested_item_type
       predefined:
       - ACCESS_PROFILE
       - ROLE
       required: true
-      secret: false
-    - default: false
-      description: Comments to attach to the item request.
-      isArray: false
+    - description: Comments to attach to the item request.
       name: comment
-      required: false
-      secret: false
-    deprecated: false
     description: Revoke access request for a single object(access profile or role) for a single user.
-    execution: false
     name: identitynow-request-revoke
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

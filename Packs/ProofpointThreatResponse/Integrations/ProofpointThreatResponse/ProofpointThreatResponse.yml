@@ -12,75 +12,63 @@ configuration:
   type: 0
   section: Connect
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
   section: Connect
 - display: API Key
   name: apikey
-  required: false
   type: 4
   hidden: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   defaultvalue: 'false'
   section: Connect
   advanced: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
 - defaultvalue: '12 hours'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
   section: Collect
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit
-  required: false
   type: 0
   section: Collect
 - display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
-  required: false
   type: 0
   defaultvalue: 6 hours
   additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
   section: Collect
 - display: Fetch incidents with specific event sources. Can be a list of comma separated values.
   name: event_sources
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values.
   name: abuse_disposition
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Fetch incident with specific states.
   name: states
-  required: false
   type: 16
   options:
   - new
@@ -93,7 +81,6 @@ configuration:
 - additionalinfo: You can find this value by navigating to Sources -> JSON event source -> POST URL.
   display: POST URL of the JSON alert source.
   name: post_url_id
-  required: false
   type: 0
   section: Collect
   advanced: true
@@ -103,176 +90,96 @@ name: Proofpoint Threat Response
 script:
   commands:
   - arguments:
-    - default: false
-      description: The ID of the list.
-      isArray: false
+    - description: The ID of the list.
       name: list-id
       required: true
-      secret: false
-    deprecated: false
     description: Gets items for the specified list.
-    execution: false
     name: proofpoint-tr-get-list
   - arguments:
-    - default: false
-      description: The list to add a member to.
-      isArray: false
+    - description: The list to add a member to.
       name: list-id
       required: true
-      secret: false
-    - default: false
-      description: 'A comma-separated list of indicator values. Can be IP addresses, URLs, domains, or file hashes. For example: "192.168.1.1,192.168.1.2".'
+    - description: 'A comma-separated list of indicator values. Can be IP addresses, URLs, domains, or file hashes. For example: "192.168.1.1,192.168.1.2".'
       isArray: true
       name: indicator
       required: true
-      secret: false
-    - default: false
-      description: A comment about the member.
-      isArray: false
+    - description: A comment about the member.
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: The member expiration.
-      isArray: false
+    - description: The member expiration.
       name: expiration
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a member to the specified list.
     execution: true
     name: proofpoint-tr-add-to-list
   - arguments:
-    - default: false
-      description: A comma-separated list of IP addresses to add to block list.
+    - description: A comma-separated list of IP addresses to add to block list.
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: 'The date and time the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
-      isArray: false
+    - description: 'The date and time the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       name: expiration
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the IP block list.
-      isArray: false
+    - description: The ID of the IP block list.
       name: blacklist_ip
       required: true
-      secret: false
-    deprecated: false
     description: Adds the supplied IP addresses to the specified IP block list.
     execution: true
     name: proofpoint-tr-block-ip
   - arguments:
-    - default: false
-      description: A comma-separated list of domains to add to the block list.
+    - description: A comma-separated list of domains to add to the block list.
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      description: 'The date and time the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
-      isArray: false
+    - description: 'The date and time the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       name: expiration
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the domain block list.
-      isArray: false
+    - description: The ID of the domain block list.
       name: blacklist_domain
       required: true
-      secret: false
-    deprecated: false
     description: Adds the supplied domains to the specified block list.
-    execution: false
     name: proofpoint-tr-block-domain
   - arguments:
-    - default: false
-      description: The ID of the list in which to search.
-      isArray: false
+    - description: The ID of the list in which to search.
       name: list-id
       required: true
-      secret: false
-    - default: false
-      description: The filter for the indicator search. For example, "1.1" will return [1.1.1.1, 22.22.1.1, 1.1.22.22]
-      isArray: false
+    - description: The filter for the indicator search. For example, "1.1" will return [1.1.1.1, 22.22.1.1, 1.1.22.22]
       name: filter
       required: true
-      secret: false
-    deprecated: false
     description: Returns indicators from the specified list, according to the defined filter.
-    execution: false
     name: proofpoint-tr-search-indicator
   - arguments:
-    - default: false
-      description: The ID of the list from which to delete indicators.
-      isArray: false
+    - description: The ID of the list from which to delete indicators.
       name: list-id
       required: true
-      secret: false
-    - default: false
-      description: 'The indicator value to delete from the list. Can be an IP address, URL, domain, or file hash. For example: "demisto.com".'
-      isArray: false
+    - description: 'The indicator value to delete from the list. Can be an IP address, URL, domain, or file hash. For example: "demisto.com".'
       name: indicator
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an indicator from the specified list.
-    execution: false
     name: proofpoint-tr-delete-indicator
   - arguments:
-    - default: false
-      description: A comma-separated list of URLs to add to the URL block list.
+    - description: A comma-separated list of URLs to add to the URL block list.
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      description: 'The date and time the supplied URLs should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
-      isArray: false
+    - description: 'The date and time the supplied URLs should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       name: expiration
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the URL block list.
-      isArray: false
+    - description: The ID of the URL block list.
       name: blacklist_url
       required: true
-      secret: false
-    deprecated: false
     description: Adds the supplied URLs to the specified URL block list.
-    execution: false
     name: proofpoint-tr-block-url
   - arguments:
-    - default: false
-      description: A comma-separated list of file hashes to add to the file hash block list.
+    - description: A comma-separated list of file hashes to add to the file hash block list.
       isArray: true
       name: hash
       required: true
-      secret: false
-    - default: false
-      description: 'The date and time the supplied file hashes should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
-      isArray: false
+    - description: 'The date and time the supplied file hashes should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       name: expiration
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the hash block list
-      isArray: false
+    - description: The ID of the hash block list
       name: blacklist_hash
       required: true
-      secret: false
-    deprecated: false
     description: Adds the supplied file hashes to the specified file hash block list.
-    execution: false
     name: proofpoint-tr-block-hash
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The state of the incidents to retrieve.
-      isArray: false
       name: state
       predefined:
       - new
@@ -280,54 +187,27 @@ script:
       - assigned
       - closed
       - ignored
-      required: false
-      secret: false
-    - default: false
-      description: 'Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
-      isArray: false
+    - description: 'Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
       name: created_after
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: 'Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
-      isArray: false
+    - description: 'Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
       name: created_before
-      required: false
-      secret: false
-    - default: false
-      description: 'Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
-      isArray: false
+    - description: 'Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
       name: closed_after
-      required: false
-      secret: false
-    - default: false
-      description: 'Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
-      isArray: false
+    - description: 'Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: closed_before
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with large numbers of alerts.
-      isArray: false
       name: expand_events
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of incidents to return.
-      isArray: false
       name: limit
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves all incident metadata from Threat Response by specifying filter criteria such as the state of the incident or time of closure.
-    execution: false
     name: proofpoint-tr-list-incidents
     outputs:
     - contextPath: ProofPointTRAP.Incident.id
@@ -489,23 +369,15 @@ script:
   - arguments:
     - default: true
       description: The ID value of the incident to retrieve (e.g. for incident INC-4000, the input for this argument should be 4000).
-      isArray: false
       name: incident_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with large numbers of alerts.
-      isArray: false
       name: expand_events
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves incident metadata from Threat Response.
-    execution: false
     name: proofpoint-tr-get-incident
     outputs:
     - contextPath: ProofPointTRAP.Incident.id
@@ -665,27 +537,16 @@ script:
       description: The list of IDs attached to the incident.
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID value of the incident to add the comment to (e.g. for incident INC-4000, the input for this argument should be 4000).
-      isArray: false
+    - description: The ID value of the incident to add the comment to (e.g. for incident INC-4000, the input for this argument should be 4000).
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: 'The details of the comments. '
-      isArray: false
+    - description: 'The details of the comments. '
       name: details
       required: true
-      secret: false
-    - default: false
-      description: The summary of the comments.
-      isArray: false
+    - description: The summary of the comments.
       name: comments
       required: true
-      secret: false
-    deprecated: false
     description: Adds comments to an existing Threat Response incident, by incident ID.
-    execution: false
     name: proofpoint-tr-update-incident-comment
     outputs:
     - contextPath: ProofPointTRAP.IncidentComment.id
@@ -722,27 +583,18 @@ script:
       description: The date the incident was last updated.
       type: Date
   - arguments:
-    - default: false
-      description: The ID value of the incident to add the user to (e.g. for incident INC-4000, the input for this argument should be 4000).
-      isArray: false
+    - description: The ID value of the incident to add the user to (e.g. for incident INC-4000, the input for this argument should be 4000).
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The list of targets to add to the incident.
+    - description: The list of targets to add to the incident.
       isArray: true
       name: targets
       required: true
-      secret: false
-    - default: false
-      description: The list of attackers to add to the incident.
+    - description: The list of attackers to add to the incident.
       isArray: true
       name: attackers
       required: true
-      secret: false
-    deprecated: false
     description: Assigns a user to an incident as a target or attacker.
-    execution: false
     name: proofpoint-tr-add-user-to-incident
   - arguments:
     - description: The incident ID to close.
@@ -754,33 +606,20 @@ script:
     description: Close a specified incident
     name: proofpoint-tr-close-incident
   - arguments:
-    - default: false
-      description: POST URL of the JSON alert source. You can find it by navigating to Sources -> JSON event source -> POST URL.
-      isArray: false
+    - description: POST URL of the JSON alert source. You can find it by navigating to Sources -> JSON event source -> POST URL.
       name: post_url_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: '2.0'
       description: The Threat Response JSON version.
-      isArray: false
       name: json_version
       predefined:
       - '2.0'
       - '1.0'
       required: true
-      secret: false
-    - default: false
-      description: 'An attacker object in JSON format : "{"attacker" : {...}}". The attacker object must contain one of ["ip_address", mac_address", "host_name", "url", "user"] keys. You can also add the "port" key to the object. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'An attacker object in JSON format : "{"attacker" : {...}}". The attacker object must contain one of ["ip_address", mac_address", "host_name", "url", "user"] keys. You can also add the "port" key to the object. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: attacker
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The alert classification shown as "Alert Type" in the TRAP UI.
-      isArray: false
       name: classification
       predefined:
       - malware
@@ -796,36 +635,16 @@ script:
       - impostor
       - reported-abuse
       - unknown
-      required: false
-      secret: false
-    - default: false
-      description: 'The Command and Control host information in JSON format : "{"cnc_hosts": [{"host" : "-", "port": "-"}, ...]}". Note: Every item of the "cnc_hosts" list is in JSON format. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'The Command and Control host information in JSON format : "{"cnc_hosts": [{"host" : "-", "port": "-"}, ...]}". Note: Every item of the "cnc_hosts" list is in JSON format. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: cnc_hosts
-      required: false
-      secret: false
-    - default: false
-      description: 'The threat detection tool such as Firewall and IPS/IDS systems (in the format: "{"detector" : {...}}"), which generated the original alert. To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'The threat detection tool such as Firewall and IPS/IDS systems (in the format: "{"detector" : {...}}"), which generated the original alert. To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: detector
-      required: false
-      secret: false
-    - default: false
-      description: 'The email metadata related to the alert, in JSON format: "{"email": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'The email metadata related to the alert, in JSON format: "{"email": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: email
-      required: false
-      secret: false
-    - default: false
-      description: 'The forensics host information in JSON format : "{"forensics_hosts": [{"host" : "-", "port": "-"}...]}". Note: Every item of the "forensics_hosts" list is in JSON format. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'The forensics host information in JSON format : "{"forensics_hosts": [{"host" : "-", "port": "-"}...]}". Note: Every item of the "forensics_hosts" list is in JSON format. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: forensics_hosts
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The attribute to link alerts to.
-      isArray: false
       name: link_attribute
       predefined:
       - target_ip_address
@@ -844,12 +663,8 @@ script:
       - message_id
       - threat_filename
       - threat_filehash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The severity of the alert.
-      isArray: false
       name: severity
       predefined:
       - info
@@ -862,62 +677,33 @@ script:
       - Medium
       - High
       - Critical
-      required: false
-      secret: false
-    - default: false
-      description: The alert summary. This argument will populate the Alert Details field.
-      isArray: false
+    - description: The alert summary. This argument will populate the Alert Details field.
       name: summary
-      required: false
-      secret: false
-    - default: false
-      description: 'The target host information in JSON format : "{"target": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'The target host information in JSON format : "{"target": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: target
-      required: false
-      secret: false
-    - default: false
-      description: 'The threat information in JSON format: "{"threat_info": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'The threat information in JSON format: "{"threat_info": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: threat_info
-      required: false
-      secret: false
-    - default: false
-      description: 'A JSON object for collecting custom name-value pairs as part of the JSON alert sent to Threat Response, in the format: "{"custom_fields": {..}}". Although there is no limit to the number of custom fields, Proofpoint recommends keeping it to 10 or fewer fields. To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
-      isArray: false
+    - description: 'A JSON object for collecting custom name-value pairs as part of the JSON alert sent to Threat Response, in the format: "{"custom_fields": {..}}". Although there is no limit to the number of custom fields, Proofpoint recommends keeping it to 10 or fewer fields. To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       name: custom_fields
-      required: false
-      secret: false
-    deprecated: false
     description: Ingest an alert into Threat Response.
-    execution: false
     name: proofpoint-tr-ingest-alert
   - arguments:
     - description: The message ID of the email.
       name: message_id
-      isArray: false
       required: true
-      secret: false
     - description: The recipient of the email.
       name: recipient
-      isArray: false
       required: true
-      secret: false
     - description: 'The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       name: time
-      isArray: false
       required: true
-      secret: false
     outputs:
     - contextPath: ProofPointTRAP.Quarantine
       description: Results of the email quarantine operation.
       type: String
     description: Verify if an email has been quarantined.
     name: proofpoint-tr-verify-quarantine
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

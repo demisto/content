@@ -5,11 +5,9 @@ commonfields:
 configuration:
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: useProxy
-  required: false
   type: 8
 description: Deprecated. Analyzes suspicious domains and IP addresses
 display: Cymon (Deprecated)
@@ -20,24 +18,17 @@ script:
   - arguments:
     - default: true
       description: IP to check the reputation of
-      isArray: false
       name: ip
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Returns all results, of which there can be hundreds. We recommend that you do not use this argument in playbooks. Default is false.
-      isArray: false
       name: fullResponse
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     deprecated: true
     description: Check the reputation of an IP address
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -61,24 +52,17 @@ script:
   - arguments:
     - default: true
       description: A domain name
-      isArray: false
       name: domain
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Displays all the malicious hits of the domain
-      isArray: false
       name: fullResponse
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     deprecated: true
     description: Retrieves a report on a given domain
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -105,7 +89,6 @@ script:
     - contextPath: Cymon.Domain.Activities.IP
       description: The IP on which the malicious activity was reported
       type: Unknown
-  isfetch: false
   runonce: false
   script: ''
   type: python

@@ -6,11 +6,9 @@ deprecated: true
 configuration:
 - display: API Key
   name: api_key
-  required: false
   type: 4
 - display: Fetch indicators
   name: feed
-  required: false
   type: 8
   defaultvalue: 'true'
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
@@ -22,7 +20,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
@@ -45,7 +42,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - display: ''
   name: feedExpirationPolicy
@@ -54,35 +50,28 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: Deprecated. Use Unit42 ATOMs Feed instead.
 display: Unit 42 Feed (Deprecated)
@@ -90,22 +79,13 @@ name: Unit42 Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of indicators to return. The default is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a limited number of the indicators.
-    execution: false
     name: unit42-get-indicators
   dockerimage: demisto/taxii2:1.0.0.23423
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

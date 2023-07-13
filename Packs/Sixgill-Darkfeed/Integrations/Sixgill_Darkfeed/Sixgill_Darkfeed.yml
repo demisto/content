@@ -14,7 +14,6 @@ configuration:
 - defaultvalue: 'all'
   display: Sixgill Confidence
   name: confidence
-  required: false
   type: 15
   options:
   - all
@@ -26,7 +25,6 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
@@ -37,7 +35,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
@@ -59,13 +56,11 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 - defaultvalue: 'indicatorType'
   display: ""
   name: feedExpirationPolicy
-  required: false
   type: 17
   options:
   - never
@@ -75,41 +70,33 @@ configuration:
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
-  required: false
   type: 1
 - defaultvalue: '2'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - display: The maximum number of indicators to fetch.
   name: maxIndicators
-  required: false
   type: 0
   defaultvalue: '1000'
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Incremental Feed
   name: feedIncremental
   type: 8
-  required: false
   defaultvalue: 'true'
   hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses straight into the XSOAR platform.
 display: Sixgill DarkFeed Threat Intelligence
@@ -121,19 +108,12 @@ script:
     - default: true
       defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
   dockerimage: demisto/sixgill:1.0.0.63753
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   subtype: python3
   type: python

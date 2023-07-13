@@ -5,34 +5,27 @@ commonfields:
 configuration:
 - display: Service Account Private Key file contents (JSON)
   name: service_account_json
-  required: false
   type: 4
   hidden: true
 - displaypassword: Service Account Private Key file contents (JSON)
-  name:  credentials_service_account_json
-  required: false
+  name: credentials_service_account_json
   hiddenusername: true
   type: 9
 - display: Default Bucket
   name: default_bucket
-  required: false
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: Google Cloud Storage is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure.
 display: Google Cloud Storage
 name: Google Cloud Storage
 script:
   commands:
-  - deprecated: false
-    description: Retrieves the list of buckets.
-    execution: false
+  - description: Retrieves the list of buckets.
     name: gcs-list-buckets
     outputs:
     - contextPath: GCS.Bucket.Name
@@ -50,13 +43,8 @@ script:
   - arguments:
     - default: true
       description: Name of the bucket to retrieve. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
       name: bucket_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves bucket information.
-    execution: false
     name: gcs-get-bucket
     outputs:
     - contextPath: GCS.Bucket.Name
@@ -74,14 +62,10 @@ script:
   - arguments:
     - default: true
       description: Name of the bucket to create.
-      isArray: false
       name: bucket_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Access Control List for the bucket.
-      isArray: false
       name: bucket_acl
       predefined:
       - authenticatedRead
@@ -89,12 +73,8 @@ script:
       - projectPrivate
       - publicRead
       - publicReadWrite
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Default Access Control List for the object.
-      isArray: false
       name: default_object_acl
       predefined:
       - authenticatedRead
@@ -103,44 +83,28 @@ script:
       - private
       - projectPrivate
       - publicRead
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new bucket.
-    execution: false
     name: gcs-create-bucket
   - arguments:
     - default: true
       description: Name of the bucket to delete.
-      isArray: false
       name: bucket_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Forces the bucket to delete (if not empty).
-      isArray: false
       name: force
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a bucket.
-    execution: false
     name: gcs-delete-bucket
   - arguments:
     - default: true
       description: Name of the bucket in which to list objects. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
       name: bucket_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of objects in a bucket.
-    execution: false
     name: gcs-list-bucket-objects
     outputs:
     - contextPath: GCS.BucketObject.Name
@@ -180,51 +144,28 @@ script:
       description: SHA256 hash value of the encryption key.
       type: String
   - arguments:
-    - default: false
-      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
     - default: true
       description: Name of the object to download.
-      isArray: false
       name: object_name
       required: true
-      secret: false
-    - default: false
-      description: Name of the file in which the object is downloaded (if not specified, the name is derived from the object name, but this may fail if the object contains invalid filename characters).
-      isArray: false
+    - description: Name of the file in which the object is downloaded (if not specified, the name is derived from the object name, but this may fail if the object contains invalid filename characters).
       name: saved_file_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves object data into a file.
-    execution: false
     name: gcs-download-file
   - arguments:
     - default: true
       description: ID of a context entry containing the file to upload.
-      isArray: false
       name: entry_id
       required: true
-      secret: false
-    - default: false
-      description: Name of the bucket in which to upload the object. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which to upload the object. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
-    - default: false
-      description: Name of the uploaded object within the bucket.
-      isArray: false
+    - description: Name of the uploaded object within the bucket.
       name: object_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Access Control List for the uploaded object.
-      isArray: false
       name: object_acl
       predefined:
       - authenticatedRead
@@ -233,22 +174,13 @@ script:
       - private
       - projectPrivate
       - publicRead
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a file (object) into a bucket.
-    execution: false
     name: gcs-upload-file
   - arguments:
     - default: true
       description: Name of the bucket for the Access Control List. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
       name: bucket_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the Access Control List of a bucket.
-    execution: false
     name: gcs-list-bucket-policy
     outputs:
     - contextPath: GCS.BucketPolicy.Bucket
@@ -267,12 +199,8 @@ script:
       description: Project team associated with the entity (if any).
       type: String
   - arguments:
-    - default: false
-      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
     - default: true
       description: |-
         Entity to add into the Access Control List.
@@ -282,34 +210,23 @@ script:
         * allUsers
         * allAuthenticatedUsers
         For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
-      isArray: false
       name: entity
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The access permission for the entity.
-      isArray: false
       name: role
       predefined:
       - Reader
       - Writer
       - Owner
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Adds a new entity to a bucket's Access Control List.
       Note: use the gcs-put-bucket-policy command to update an existing entry.
-    execution: false
     name: gcs-create-bucket-policy
   - arguments:
-    - default: false
-      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
     - default: true
       description: |-
         The entity to update in the Access Control List.
@@ -319,34 +236,23 @@ script:
         * allUsers
         * allAuthenticatedUsers
         For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
-      isArray: false
       name: entity
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The access permissions for the entity.
-      isArray: false
       name: role
       predefined:
       - Reader
       - Writer
       - Owner
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Updates an existing entity in a bucket's Access Control List.
       Note: use the gcs-create-bucket-policy command to create a new entry.
-    execution: false
     name: gcs-put-bucket-policy
   - arguments:
-    - default: false
-      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
     - default: true
       description: |-
         Entity to remove from the Access Control List.
@@ -356,30 +262,18 @@ script:
         * allUsers
         * allAuthenticatedUsers
         For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
-      isArray: false
       name: entity
       required: true
-      secret: false
-    deprecated: false
     description: Removes an entity from a bucket's Access Control List.
-    execution: false
     name: gcs-delete-bucket-policy
   - arguments:
-    - default: false
-      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
     - default: true
       description: Name of the object in which to list access controls.
-      isArray: false
       name: object_name
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the Access Control List of an object.
-    execution: false
     name: gcs-list-bucket-object-policy
     outputs:
     - contextPath: GCS.BucketObjectPolicy.Bucket
@@ -401,18 +295,11 @@ script:
       description: Project team associated with the entity (if any).
       type: String
   - arguments:
-    - default: false
-      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
-    - default: false
-      description: Name of the object in which to modify the Access control List.
-      isArray: false
+    - description: Name of the object in which to modify the Access control List.
       name: object_name
       required: true
-      secret: false
     - default: true
       description: |-
         Entity to add into the Access Control List.
@@ -422,39 +309,25 @@ script:
         * allUsers
         * allAuthenticatedUsers
         For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
-      isArray: false
       name: entity
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The access permission for the entity.
-      isArray: false
       name: role
       predefined:
       - Reader
       - Owner
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Adds a new entity to an object's Access Control List.
       Note: use the gcs-put-bucket-object-policy command to update an existing entry.
-    execution: false
     name: gcs-create-bucket-object-policy
   - arguments:
-    - default: false
-      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
-    - default: false
-      description: Name of the object in which to modify access controls.
-      isArray: false
+    - description: Name of the object in which to modify access controls.
       name: object_name
       required: true
-      secret: false
     - default: true
       description: |-
         The entity to update in the Access Control List.
@@ -464,39 +337,25 @@ script:
         * allUsers
         * allAuthenticatedUsers
         For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
-      isArray: false
       name: entity
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The access permissions for the entity.
-      isArray: false
       name: role
       predefined:
       - Reader
       - Owner
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Updates an existing entity in an object's Access Control List.
       Note: use gcs-create-bucket-object-policy command to create a new entry.
-    execution: false
     name: gcs-put-bucket-object-policy
   - arguments:
-    - default: false
-      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
-      isArray: false
+    - description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
-      required: false
-      secret: false
-    - default: false
-      description: Name of the object in which to modify access controls.
-      isArray: false
+    - description: Name of the object in which to modify access controls.
       name: object_name
       required: true
-      secret: false
     - default: true
       description: |-
         Entity to remove from the Access Control List.
@@ -506,18 +365,11 @@ script:
         * allUsers
         * allAuthenticatedUsers
         For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
-      isArray: false
       name: entity
       required: true
-      secret: false
-    deprecated: false
     description: Removes an entity from an object's Access Control List.
-    execution: false
     name: gcs-delete-bucket-object-policy
   dockerimage: demisto/google-cloud-storage:1.0.0.63865
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

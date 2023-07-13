@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 """Close incident on Securonix."""
 
 
-
 def main():
     """Entry point."""
     try:

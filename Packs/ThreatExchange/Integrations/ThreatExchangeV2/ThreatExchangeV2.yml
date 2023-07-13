@@ -11,19 +11,16 @@ configuration:
   defaultvalue: '50'
   display: Malicious Threshold
   name: malicious_threshold
-  required: false
   type: 0
 - additionalinfo: If the number of 'Suspicious' reported statuses is above this threshold the indicator will be defined as suspicious
   defaultvalue: '1'
   display: Suspicious Threshold
   name: suspicious_threshold
-  required: false
   type: 0
 - additionalinfo: If the percentage of 'Non Malicious' reported statuses is above this threshold the indicator will be defined as good, otherwise unknown
   defaultvalue: '50'
   display: Non Malicious Threshold
   name: non_malicious_threshold
-  required: false
   type: 0
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: C - Fairly reliable
@@ -41,12 +38,10 @@ configuration:
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 defaultclassifier: 'null'
 description: Receive threat intelligence about applications, IP addresses, URLs, and hashes. A service by Facebook.
@@ -60,35 +55,16 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of results per page. The maximum is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
-      isArray: false
+    - description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the file reputation of the given hash.
-    execution: false
     name: file
     outputs:
     - contextPath: File.MD5
@@ -178,34 +154,15 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
-      isArray: false
+    - description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results per page. The maximum is 1000.
-      isArray: false
+    - description: The maximum number of results per page. The maximum is 1000.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of the given IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -292,35 +249,16 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of results per page. The maximum is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
-      isArray: false
+    - description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the URL reputation.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -407,35 +345,16 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of results per page. The maximum is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
-      isArray: false
+    - description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
-      required: false
-      secret: false
-    deprecated: false
     description: Checks a domain reputation.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -516,14 +435,10 @@ script:
   - arguments:
     - default: true
       description: Free-form text field with a value to search for. This can be a file hash or a string found in other fields of the objects.
-      isArray: false
       name: text
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of descriptor to search for.
-      isArray: false
       name: type
       predefined:
       - ADJUST_TOKEN
@@ -605,54 +520,23 @@ script:
       - WHOIS_ADDR2
       - XPI
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of results per page. The maximum is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
-      isArray: false
+    - description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
-      isArray: false
+    - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: When set to 'true', the API will not do approximate matching on the value in the text.
-      isArray: false
       name: strict_text
-      required: false
-      secret: false
-    - default: false
-      description: Returns results collected before this cursor.
-      isArray: false
+    - description: Returns results collected before this cursor.
       name: before
-      required: false
-      secret: false
-    - default: false
-      description: Returns results collected after this cursor.
-      isArray: false
+    - description: Returns results collected after this cursor.
       name: after
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for subjective opinions on indicators of compromise stored in ThreatExchange.
-    execution: false
     name: threatexchange-query
     outputs:
     - contextPath: ThreatExchange.Query.data.share_level
@@ -688,9 +572,7 @@ script:
     - contextPath: ThreatExchange.Query.paging.after
       description: Paging after cursor.
       type: String
-  - deprecated: false
-    description: Returns a list of current members of  ThreatExchange, alphabetized by application name. Each application may also include an optional contact email address. You can set this address, if desired, under the settings panel for your application.
-    execution: false
+  - description: Returns a list of current members of  ThreatExchange, alphabetized by application name. Each application may also include an optional contact email address. You can set this address, if desired, under the settings panel for your application.
     name: threatexchange-members
     outputs:
     - contextPath: ThreatExchange.Member.id
@@ -707,27 +589,15 @@ script:
       description: |-
         Freeform text field with a value to search for.
         This value should describe a broader type or class of attack you are interested in.
-      isArray: false
       name: text
       required: true
-      secret: false
-    - default: false
-      description: Returns results collected before this cursor.
-      isArray: false
+    - description: Returns results collected before this cursor.
       name: before
-      required: false
-      secret: false
-    - default: false
-      description: Returns results collected after this cursor.
-      isArray: false
+    - description: Returns results collected after this cursor.
       name: after
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Enables searching for tags in ThreatExchange.
       With this call, you can search for ThreatTag objects by text.
-    execution: false
     name: threatexchange-tags-search
     outputs:
     - contextPath: ThreatExchange.Tag.data.id
@@ -745,37 +615,17 @@ script:
   - arguments:
     - default: true
       description: ThreatTag ID to get it's related tagged objects. ThreatTag ID can be retrieved by the threatexchange-tags-search command.
-      isArray: false
       name: tag_id
       required: true
-      secret: false
-    - default: false
-      description: Fetches all objects that have been tagged since this time (inclusive).
-      isArray: false
+    - description: Fetches all objects that have been tagged since this time (inclusive).
       name: tagged_since
-      required: false
-      secret: false
-    - default: false
-      description: Fetches all objects that have been tagged until this time (inclusive).
-      isArray: false
+    - description: Fetches all objects that have been tagged until this time (inclusive).
       name: tagged_until
-      required: false
-      secret: false
-    - default: false
-      description: Returns results collected before this cursor.
-      isArray: false
+    - description: Returns results collected before this cursor.
       name: before
-      required: false
-      secret: false
-    - default: false
-      description: Returns results collected after this cursor.
-      isArray: false
+    - description: Returns results collected after this cursor.
       name: after
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of tagged objects for a specific ThreatTag.
-    execution: false
     name: threatexchange-tagged-objects-list
     outputs:
     - contextPath: ThreatExchange.TaggedObject.data.id
@@ -796,23 +646,15 @@ script:
   - arguments:
     - default: true
       description: ID of a ThreatExchange object. Can be retrieved by ThreatExchange reputation commands and the threatexchange-tagged-objects-list command.
-      isArray: false
       name: object_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets a ThreatExchange object by ID.
-    execution: false
     name: threatexchange-object-get-by-id
     outputs:
     - contextPath: ThreatExchange.Object.id
       description: ID of a ThreatExchange object.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

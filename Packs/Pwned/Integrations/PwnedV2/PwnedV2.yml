@@ -5,36 +5,29 @@ commonfields:
 configuration:
 - display: API Key
   name: api_key
-  required: false
   type: 4
   hidden: true
 - displaypassword: API Key
-  name:  credentials_api_key
-  required: false
+  name: credentials_api_key
   hiddenusername: true
   type: 9
 - defaultvalue: '30'
   display: Maximum time per request (in seconds)
   name: max_retry_time
-  required: false
   type: 0
 - defaultvalue: SUSPICIOUS
   display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: default_dbot_score_email
-  required: false
   type: 0
 - defaultvalue: SUSPICIOUS
   display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or MALICIOUS)'
   name: default_dbot_score_domain
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
@@ -48,7 +41,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -58,12 +50,10 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
 description: Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
 display: Have I Been Pwned? v2
@@ -76,10 +66,7 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Checks if an email address was compromised.
-    execution: false
     name: pwned-email
     outputs:
     - contextPath: Account.Email.Pwned-V2.Compromised.Vendor
@@ -115,10 +102,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Checks if a domain was compromised.
-    execution: false
     name: pwned-domain
     outputs:
     - contextPath: Domain.Pwned-V2.Compromised.Vendor
@@ -154,10 +138,7 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Checks if an email address was compromised.
-    execution: false
     name: email
     outputs:
     - contextPath: Account.Email.Pwned-V2.Compromised.Vendor
@@ -193,10 +174,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Checks if a domain was compromised.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Pwned-V2.Compromised.Vendor
@@ -232,10 +210,7 @@ script:
       isArray: true
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Checks if a username was compromised.
-    execution: false
     name: pwned-username
     outputs:
     - contextPath: Username.Pwned-V2.Compromised.Vendor
@@ -253,10 +228,6 @@ script:
     - contextPath: Username.Malicious.Description
       description: For malicious usernames, the reason that the vendor made the decision.
       type: String
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 
 
-
 def publish():
     now_utc = datetime.now(timezone.utc)
     object_id = demisto.getArg('object.id')

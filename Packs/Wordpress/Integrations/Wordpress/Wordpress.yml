@@ -16,11 +16,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: The WordPress REST API provides an interface for applications to interact with your WordPress site by sending and receiving data as JSON (JavaScript Object Notation) objects. It is the foundation of the WordPress Block Editor, and can likewise enable your theme, plugin or custom application to present new, powerful interfaces for managing and publishing your site content.
 display: Wordpress
@@ -32,7 +30,6 @@ script:
     - auto: PREDEFINED
       defaultValue: get
       description: Method
-      isArray: false
       name: method
       predefined:
       - get
@@ -41,25 +38,14 @@ script:
       - delete
       - patch
       required: true
-      secret: false
     - description: URL suffix to append to the base URL
-      isArray: false
       name: url
       required: true
-      secret: false
     - description: Body data (JSON)
-      isArray: false
       name: body
-      required: false
-      secret: false
     - description: Parameters (JSON)
-      isArray: false
       name: params
-      required: false
-      secret: false
-    deprecated: false
     description: Get information from a custom URL
-    execution: false
     outputs:
     - contextPath: Wordpress.URL
       description: URL output data
@@ -69,78 +55,41 @@ script:
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
     - description: Current page of the collection (defaults is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
     - description: Maximum number of items to be returned in result set (default is 10).
-      isArray: false
       name: per_page
-      required: false
-      secret: false
     - description: Limit results to those matching a string.
-      isArray: false
       name: search
-      required: false
-      secret: false
     - description: Limit response to posts published after a given ISO8601 compliant date.
-      isArray: false
       name: after
-      required: false
-      secret: false
     - description: Limit result set to posts assigned to specific authors.
-      isArray: false
       name: author
-      required: false
-      secret: false
     - description: Ensure result set excludes posts assigned to specific authors.
-      isArray: false
       name: author_exclude
-      required: false
-      secret: false
     - description: Limit response to posts published before a given ISO8601 compliant date.
-      isArray: false
       name: before
-      required: false
-      secret: false
     - description: Ensure result set excludes specific IDs.
-      isArray: false
       name: exclude
-      required: false
-      secret: false
     - description: Limit result set to specific IDs.
-      isArray: false
       name: include
-      required: false
-      secret: false
     - description: Offset the result set by a specific number of items.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: desc
       description: Order sort attribute ascending or descending (default is desc).
-      isArray: false
       name: order
       predefined:
       - desc
       - asc
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: date
       description: Sort collection by object attribute (default is date).
-      isArray: false
       name: orderby
       predefined:
       - author
@@ -153,56 +102,28 @@ script:
       - slug
       - include_slugs
       - title
-      required: false
-      secret: false
     - description: Limit result set to posts with one or more specific slugs.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - defaultValue: publish
       description: Limit result set to posts assigned one or more statuses (default is publish).
-      isArray: false
       name: status
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: Limit result set based on relationship between multiple taxonomies.
-      isArray: false
       name: tax_relation
       predefined:
       - AND
       - OR
-      required: false
-      secret: false
     - description: Limit result set to all items that have the specified term assigned in the categories taxonomy.
-      isArray: false
       name: categories
-      required: false
-      secret: false
     - description: Limit result set to all items except those that have the specified term assigned in the categories taxonomy.
-      isArray: false
       name: categories_exclude
-      required: false
-      secret: false
     - description: Limit result set to all items that have the specified term assigned in the tags taxonomy.
-      isArray: false
       name: tags
-      required: false
-      secret: false
     - description: Limit result set to all items except those that have the specified term assigned in the tags taxonomy.
-      isArray: false
       name: tags_exclude
-      required: false
-      secret: false
     - description: Limit result set to items that are sticky.
-      isArray: false
       name: sticky
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all posts
-    execution: false
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
       description: Exerpt protected
@@ -284,32 +205,20 @@ script:
       type: String
   - name: wordpress-get-post
     arguments:
-    - default: false
-      description: Unique identifier for the object.
-      isArray: false
+    - description: Unique identifier for the object.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
-    - default: false
-      description: The password for the post if it is password protected.
-      isArray: false
+    - description: The password for the post if it is password protected.
       name: password
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a specific post record.
-    execution: false
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
       description: Exerpt protected
@@ -394,7 +303,6 @@ script:
     - auto: PREDEFINED
       defaultValue: draft
       description: A named status for the object (default is draft).
-      isArray: false
       name: status
       predefined:
       - publish
@@ -403,64 +311,38 @@ script:
       - pending
       - private
       required: true
-      secret: false
     - description: An alphanumeric identifier for the object unique to its type.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: A password to protect access to the content and excerpt.
-      isArray: false
       name: password
-      required: false
-      secret: false
     - description: The title for the object.
-      isArray: false
       name: title
       required: true
-      secret: false
     - description: The content for the object.
-      isArray: false
       name: content
       required: true
-      secret: false
     - description: The ID for the author of the object.
-      isArray: false
       name: author
       required: true
-      secret: false
     - description: The excerpt for the object.
-      isArray: false
       name: exerpt
-      required: false
-      secret: false
     - description: The ID of the featured media for the object.
-      isArray: false
       name: featured_media
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: Whether or not comments are open on the object.
-      isArray: false
       name: comment_status
       predefined:
       - open
       - closed
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: Whether or not the object can be pinged.
-      isArray: false
       name: ping_status
       predefined:
       - open
       - closed
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: standard
       description: The format for the object (default is standard).
-      isArray: false
       name: format
       predefined:
       - standard
@@ -474,40 +356,22 @@ script:
       - video
       - audio
       required: true
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether or not the object should be treated as sticky (default is false).
-      isArray: false
       name: sticky
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - description: The theme file to use to display the object.
-      isArray: false
       name: template
-      required: false
-      secret: false
     - description: The terms assigned to the object in the category taxonomy (CSV of IDs).
-      isArray: false
       name: categories
-      required: false
-      secret: false
     - description: The terms assigned to the object in the post_tag taxonomy (CSV).
-      isArray: false
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: Create a post
-    execution: false
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
       description: Exerpt protected
@@ -590,24 +454,15 @@ script:
   - name: wordpress-update-post
     arguments:
     - description: Post ID
-      isArray: false
       name: id
       required: true
-      secret: false
     - description: The date the object was published, in the sites timezone.
-      isArray: false
       name: date
-      required: false
-      secret: false
     - description: The date the object was published, as GMT.
-      isArray: false
       name: date_gmt
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: draft
       description: A named status for the object (default is draft).
-      isArray: false
       name: status
       predefined:
       - publish
@@ -615,65 +470,35 @@ script:
       - draft
       - pending
       - private
-      required: false
-      secret: false
     - description: An alphanumeric identifier for the object unique to its type.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: A password to protect access to the content and excerpt.
-      isArray: false
       name: password
-      required: false
-      secret: false
     - description: The title for the object.
-      isArray: false
       name: title
-      required: false
-      secret: false
     - description: The content for the object.
-      isArray: false
       name: content
-      required: false
-      secret: false
     - description: The ID for the author of the object.
-      isArray: false
       name: author
-      required: false
-      secret: false
     - description: The excerpt for the object.
-      isArray: false
       name: exerpt
-      required: false
-      secret: false
     - description: The ID of the featured media for the object.
-      isArray: false
       name: featured_media
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: Whether or not comments are open on the object.
-      isArray: false
       name: comment_status
       predefined:
       - open
       - closed
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: Whether or not the object can be pinged.
-      isArray: false
       name: ping_status
       predefined:
       - open
       - closed
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: standard
       description: The format for the object (default is standard).
-      isArray: false
       name: format
       predefined:
       - standard
@@ -686,41 +511,22 @@ script:
       - status
       - video
       - audio
-      required: false
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether or not the object should be treated as sticky (default is false).
-      isArray: false
       name: sticky
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - description: The theme file to use to display the object.
-      isArray: false
       name: template
-      required: false
-      secret: false
     - description: The terms assigned to the object in the category taxonomy (CSV of IDs).
-      isArray: false
       name: categories
-      required: false
-      secret: false
     - description: The terms assigned to the object in the post_tag taxonomy (CSV of IDs).
-      isArray: false
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: Update a post
-    execution: false
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
       description: Exerpt protected
@@ -803,23 +609,16 @@ script:
   - name: wordpress-delete-post
     arguments:
     - description: Post ID
-      isArray: false
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to bypass Trash and force deletion (default is false).
-      isArray: false
       name: force
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Delete a post
-    execution: false
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
       description: Exerpt protected
@@ -904,53 +703,31 @@ script:
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
     - description: Current page of the collection (defaults is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
     - description: Maximum number of items to be returned in result set (default is 10).
-      isArray: false
       name: per_page
-      required: false
-      secret: false
     - description: Limit results to those matching a string.
-      isArray: false
       name: search
-      required: false
-      secret: false
     - description: Ensure result set excludes specific IDs.
-      isArray: false
       name: exclude
-      required: false
-      secret: false
     - description: Limit result set to specific IDs.
-      isArray: false
       name: include
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: desc
       description: Order sort attribute ascending or descending (default is desc).
-      isArray: false
       name: order
       predefined:
       - desc
       - asc
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: date
       description: Sort collection by object attribute (default is date).
-      isArray: false
       name: orderby
       predefined:
       - author
@@ -963,31 +740,15 @@ script:
       - slug
       - include_slugs
       - title
-      required: false
-      secret: false
     - description: Limit result set to posts with one or more specific slugs.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: Whether to hide terms not assigned to any posts.
-      isArray: false
       name: hide_empty
-      required: false
-      secret: false
     - description: Limit result set to terms assigned to a specific post.
-      isArray: false
       name: post
-      required: false
-      secret: false
     - description: Limit result set to terms assigned to a specific parent.
-      isArray: false
       name: parent
-      required: false
-      secret: false
-    deprecated: false
     description: List categories
-    execution: false
     outputs:
     - contextPath: Wordpress.Categories.meta
       description: Metadata
@@ -1022,33 +783,17 @@ script:
   - name: wordpress-create-category
     arguments:
     - description: HTML description of the term.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: HTML title for the term.
-      isArray: false
       name: name
       required: true
-      secret: false
     - description: An alphanumeric identifier for the term unique to its type.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: The parent term ID.
-      isArray: false
       name: parent
-      required: false
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Create a category
-    execution: false
     outputs:
     - contextPath: Wordpress.Categories.meta
       description: Metadata
@@ -1083,24 +828,17 @@ script:
   - name: wordpress-get-category
     arguments:
     - description: Unique identifier for the category.
-      isArray: false
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
-    deprecated: false
     description: Retrieve a category
-    execution: false
     outputs:
     - contextPath: Wordpress.Categories.meta
       description: Metadata
@@ -1135,38 +873,19 @@ script:
   - name: wordpress-update-category
     arguments:
     - description: Category ID.
-      isArray: false
       name: id
       required: true
-      secret: false
     - description: HTML description of the term.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: HTML title for the term.
-      isArray: false
       name: name
-      required: false
-      secret: false
     - description: An alphanumeric identifier for the term unique to its type.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: The parent term ID.
-      isArray: false
       name: parent
-      required: false
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Update a category
-    execution: false
     outputs:
     - contextPath: Wordpress.Categories.meta
       description: Metadata
@@ -1201,70 +920,41 @@ script:
   - name: wordpress-delete-category
     arguments:
     - description: Category ID.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a category
-    execution: false
   - name: wordpress-list-tags
     arguments:
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
     - description: Current page of the collection (defaults is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
     - description: Maximum number of items to be returned in result set (default is 10).
-      isArray: false
       name: per_page
-      required: false
-      secret: false
     - description: Limit results to those matching a string.
-      isArray: false
       name: search
-      required: false
-      secret: false
     - description: Ensure result set excludes specific IDs.
-      isArray: false
       name: exclude
-      required: false
-      secret: false
     - description: Limit result set to specific IDs.
-      isArray: false
       name: include
-      required: false
-      secret: false
     - description: Offset the result set by a specific number of items.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: desc
       description: Order sort attribute ascending or descending (default is desc).
-      isArray: false
       name: order
       predefined:
       - desc
       - asc
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: date
       description: Sort collection by object attribute (default is date).
-      isArray: false
       name: orderby
       predefined:
       - author
@@ -1277,26 +967,13 @@ script:
       - slug
       - include_slugs
       - title
-      required: false
-      secret: false
     - description: Limit result set to posts with one or more specific slugs.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: Whether to hide terms not assigned to any posts.
-      isArray: false
       name: hide_empty
-      required: false
-      secret: false
     - description: Limit result set to terms assigned to a specific post.
-      isArray: false
       name: post
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all tags
-    execution: false
     outputs:
     - contextPath: Wordpress.Tags.meta
       description: Metadata
@@ -1328,28 +1005,14 @@ script:
   - name: wordpress-create-tag
     arguments:
     - description: HTML description of the term.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: HTML title for the term.
-      isArray: false
       name: name
-      required: false
-      secret: false
     - description: An alphanumeric identifier for the term unique to its type.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Create a tag
-    execution: false
     outputs:
     - contextPath: Wordpress.Tags.meta
       description: Metadata
@@ -1383,22 +1046,15 @@ script:
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
     - description: Tag ID
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a tag
-    execution: false
     outputs:
     - contextPath: Wordpress.Tags.meta
       description: Metadata
@@ -1430,38 +1086,19 @@ script:
   - name: wordpress-update-tag
     arguments:
     - description: Tag ID.
-      isArray: false
       name: id
       required: true
-      secret: false
     - description: HTML description of the term.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: HTML title for the term.
-      isArray: false
       name: name
-      required: false
-      secret: false
     - description: An alphanumeric identifier for the term unique to its type.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: The parent term ID.
-      isArray: false
       name: parent
-      required: false
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Update a tag
-    execution: false
     outputs:
     - contextPath: Wordpress.Tags.meta
       description: Metadata
@@ -1493,95 +1130,51 @@ script:
   - name: wordpress-delete-tag
     arguments:
     - description: Tag ID.
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a tag
-    execution: false
   - name: wordpress-list-comments
     arguments:
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
     - description: Current page of the collection (defaults is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
     - description: Maximum number of items to be returned in result set (default is 10).
-      isArray: false
       name: per_page
-      required: false
-      secret: false
     - description: Limit results to those matching a string.
-      isArray: false
       name: search
-      required: false
-      secret: false
     - description: Limit response to comments published after a given ISO8601 compliant date.
-      isArray: false
       name: after
-      required: false
-      secret: false
     - description: Limit result set to comments assigned to specific user IDs.
-      isArray: false
       name: author
-      required: false
-      secret: false
     - description: Ensure result set excludes comments assigned to specific user IDs.
-      isArray: false
       name: author_exclude
-      required: false
-      secret: false
     - description: Limit result set to that from a specific author email.
-      isArray: false
       name: author_email
-      required: false
-      secret: false
     - description: Limit response to comments published before a given ISO8601 compliant date.
-      isArray: false
       name: before
-      required: false
-      secret: false
     - description: Ensure result set excludes specific IDs.
-      isArray: false
       name: exclude
-      required: false
-      secret: false
     - description: Limit result set to specific IDs.
-      isArray: false
       name: include
-      required: false
-      secret: false
     - description: Offset the result set by a specific number of items.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: desc
       description: Order sort attribute ascending or descending (default is desc).
-      isArray: false
       name: order
       predefined:
       - desc
       - asc
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: date_gmt
       description: Sort collection by object attribute (default is date_gmt).
-      isArray: false
       name: orderby
       predefined:
       - date
@@ -1591,43 +1184,21 @@ script:
       - post
       - parent
       - type
-      required: false
-      secret: false
     - description: Limit result set to terms assigned to a specific parent.
-      isArray: false
       name: parent
-      required: false
-      secret: false
     - description: Ensure result set excludes specific parent IDs.
-      isArray: false
       name: parent_exclude
-      required: false
-      secret: false
     - description: Limit result set to terms assigned to a specific post.
-      isArray: false
       name: post
-      required: false
-      secret: false
     - defaultValue: approve
       description: Limit result set to comments assigned a specific status (default is approve).
-      isArray: false
       name: status
-      required: false
-      secret: false
     - defaultValue: comment
       description: Limit result set to comments assigned a specific type (default is comment).
-      isArray: false
       name: type
-      required: false
-      secret: false
     - description: The password for the post if it is password protected.
-      isArray: false
       name: password
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all comments
-    execution: false
     outputs:
     - contextPath: Wordpress.Comments.post
       description: Post ID
@@ -1677,63 +1248,28 @@ script:
   - name: wordpress-create-comment
     arguments:
     - description: The ID of the user object, if author was a user.
-      isArray: false
       name: author
-      required: false
-      secret: false
     - description: Email address for the object author.
-      isArray: false
       name: author_email
-      required: false
-      secret: false
     - description: IP address for the object author.
-      isArray: false
       name: author_ip
-      required: false
-      secret: false
     - description: Display name for the object author.
-      isArray: false
       name: author_name
-      required: false
-      secret: false
     - description: URL for the object author.
-      isArray: false
       name: author_url
-      required: false
-      secret: false
     - description: User agent for the object author.
-      isArray: false
       name: author_user_agent
-      required: false
-      secret: false
     - description: The content for the object.
-      isArray: false
       name: content
-      required: false
-      secret: false
     - description: The ID for the parent of the object.
-      isArray: false
       name: parent
-      required: false
-      secret: false
     - description: The ID of the associated post object.
-      isArray: false
       name: post
-      required: false
-      secret: false
     - description: State of the object.
-      isArray: false
       name: status
-      required: false
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Create a comment
-    execution: false
     outputs:
     - contextPath: Wordpress.Comments.post
       description: Post ID
@@ -1785,27 +1321,17 @@ script:
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
     - description: Comment ID
-      isArray: false
       name: id
       required: true
-      secret: false
     - description: The password for the parent post of the comment (if the post is password protected).
-      isArray: false
       name: password
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a comment
-    execution: false
     outputs:
     - contextPath: Wordpress.Comments.post
       description: Post ID
@@ -1855,78 +1381,35 @@ script:
   - name: wordpress-update-comment
     arguments:
     - description: Comment ID
-      isArray: false
       name: id
       required: true
-      secret: false
     - description: The ID of the user object, if author was a user.
-      isArray: false
       name: author
-      required: false
-      secret: false
     - description: Email address for the object author.
-      isArray: false
       name: author_email
-      required: false
-      secret: false
     - description: IP address for the object author.
-      isArray: false
       name: author_ip
-      required: false
-      secret: false
     - description: Display name for the object author.
-      isArray: false
       name: author_name
-      required: false
-      secret: false
     - description: URL for the object author.
-      isArray: false
       name: author_url
-      required: false
-      secret: false
     - description: User agent for the object author.
-      isArray: false
       name: author_user_agent
-      required: false
-      secret: false
     - description: The content for the object.
-      isArray: false
       name: content
-      required: false
-      secret: false
     - description: The date the object was published, in the sites timezone.
-      isArray: false
       name: date
-      required: false
-      secret: false
     - description: The date the object was published, as GMT.
-      isArray: false
       name: date_gmt
-      required: false
-      secret: false
     - description: The ID for the parent of the object.
-      isArray: false
       name: parent
-      required: false
-      secret: false
     - description: The ID of the associated post object.
-      isArray: false
       name: post
-      required: false
-      secret: false
     - description: State of the object.
-      isArray: false
       name: status
-      required: false
-      secret: false
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Update a comment
-    execution: false
     outputs:
     - contextPath: Wordpress.Comments.post
       description: Post ID
@@ -1976,25 +1459,17 @@ script:
   - name: wordpress-delete-comment
     arguments:
     - description: Tag ID.
-      isArray: false
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to bypass Trash and force deletion (default is false).
-      isArray: false
       name: force
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - description: The password for the parent post of the comment (if the post is password protected).
-      isArray: false
       name: password
-      required: false
-      secret: false
     outputs:
     - contextPath: Wordpress.Comments.post
       description: Post ID
@@ -2041,67 +1516,40 @@ script:
     - contextPath: Wordpress.Comments.author_name
       description: Author name
       type: String
-    deprecated: false
     description: Delete a comment
-    execution: false
   - name: wordpress-list-users
     arguments:
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
     - defaultValue: '1'
       description: Current page of the collection (defaults is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
     - description: Maximum number of items to be returned in result set (default is 10).
-      isArray: false
       name: per_page
-      required: false
-      secret: false
     - description: Limit results to those matching a string.
-      isArray: false
       name: search
-      required: false
-      secret: false
     - description: Ensure result set excludes specific IDs.
-      isArray: false
       name: exclude
-      required: false
-      secret: false
     - description: Limit result set to specific IDs.
-      isArray: false
       name: include
-      required: false
-      secret: false
     - description: Offset the result set by a specific number of items.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: desc
       description: Order sort attribute ascending or descending (default is desc).
-      isArray: false
       name: order
       predefined:
       - desc
       - asc
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: name
       description: Sort collection by object attribute (default is name).
-      isArray: false
       name: orderby
       predefined:
       - id
@@ -2112,26 +1560,15 @@ script:
       - include_slugs
       - email
       - url
-      required: false
-      secret: false
     - description: Limit result set to users with one or more specific slugs.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: Limit result set to users matching at least one specific role provided (CSV).
-      isArray: false
       name: roles
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: Limit result set to users who are considered authors.
-      isArray: false
       name: who
       predefined:
       - authors
-      required: false
-      secret: false
     outputs:
     - contextPath: Wordpress.Users.meta
       description: Metadata
@@ -2160,31 +1597,21 @@ script:
     - contextPath: Wordpress.Users.description
       description: Description
       type: String
-    deprecated: false
     description: List users
-    execution: false
   - name: wordpress-get-user
     arguments:
-    - default: false
-      description: User ID.
-      isArray: false
+    - description: User ID.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
       defaultValue: view
       description: Scope under which the request is made; determines fields present in response (default is view).
-      isArray: false
       name: context
-      required: false
-      secret: false
       predefined:
       - view
       - edit
       - embed
-    deprecated: false
     description: Retrieve a user.
-    execution: false
     outputs:
     - contextPath: Wordpress.Users.meta
       description: Metadata
@@ -2217,73 +1644,36 @@ script:
     arguments:
     - defaultValue: en_US
       description: Locale for the user (default is en_US).
-      isArray: false
       name: locale
-      required: false
-      secret: false
     - description: Login name for the user.
-      isArray: false
       name: username
       required: true
-      secret: false
     - description: Display name for the user.
-      isArray: false
       name: name
-      required: false
-      secret: false
     - description: First name for the user.
-      isArray: false
       name: first_name
-      required: false
-      secret: false
     - description: Last name for the user.
-      isArray: false
       name: last_name
-      required: false
-      secret: false
     - description: The email address for the user.
-      isArray: false
       name: email
       required: true
-      secret: false
     - description: URL of the user.
-      isArray: false
       name: url
-      required: false
-      secret: false
     - description: Description of the user.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: The nickname for the user.
-      isArray: false
       name: nickname
-      required: false
-      secret: false
     - description: An alphanumeric identifier for the user.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: Roles assigned to the user (CSV).
-      isArray: false
       name: roles
-      required: false
-      secret: false
     - description: Password for the user.
-      isArray: false
       name: password
       required: true
       secret: true
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Create a user
-    execution: false
     outputs:
     - contextPath: Wordpress.Users.meta
       description: Metadata
@@ -2315,79 +1705,37 @@ script:
   - name: wordpress-update-user
     arguments:
     - description: User ID
-      isArray: false
       name: id
       required: true
-      secret: false
     - defaultValue: en_US
       description: Locale for the user (default is en_US).
-      isArray: false
       name: locale
-      required: false
-      secret: false
     - description: Login name for the user.
-      isArray: false
       name: username
-      required: false
-      secret: false
     - description: Display name for the user.
-      isArray: false
       name: name
-      required: false
-      secret: false
     - description: First name for the user.
-      isArray: false
       name: first_name
-      required: false
-      secret: false
     - description: Last name for the user.
-      isArray: false
       name: last_name
-      required: false
-      secret: false
     - description: The email address for the user.
-      isArray: false
       name: email
-      required: false
-      secret: false
     - description: URL of the user.
-      isArray: false
       name: url
-      required: false
-      secret: false
     - description: Description of the user.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: The nickname for the user.
-      isArray: false
       name: nickname
-      required: false
-      secret: false
     - description: An alphanumeric identifier for the user.
-      isArray: false
       name: slug
-      required: false
-      secret: false
     - description: Roles assigned to the user (CSV).
-      isArray: false
       name: roles
-      required: false
-      secret: false
     - description: Password for the user.
-      isArray: false
       name: password
-      required: false
       secret: true
     - description: Meta fields (JSON dict).
-      isArray: false
       name: meta
-      required: false
-      secret: false
-    deprecated: false
     description: Update a user
-    execution: false
     outputs:
     - contextPath: Wordpress.Users.meta
       description: Metadata
@@ -2419,19 +1767,12 @@ script:
   - name: wordpress-delete-user
     arguments:
     - description: User ID
-      isArray: false
       name: id
       required: true
-      secret: false
     - description: Reassign the deleted users posts and links to this user ID.
-      isArray: false
       name: reassign
       required: true
-      secret: false
-    deprecated: false
     description: Delete a user
-    execution: false
-  isfetch: false
   runonce: false
   script: '-'
   type: python

@@ -7,9 +7,7 @@ type: javascript
 tags:
 - Utility
 - Condition
-comment: Checks if the investigation found any malicious indicators (file, URL, IP
-  address, domain, or email). Returns "yes" if at least one malicious indicator is
-  found.
+comment: Checks if the investigation found any malicious indicators (file, URL, IP address, domain, or email). Returns "yes" if at least one malicious indicator is found.
 enabled: true
 args:
 - name: includeSuspicious
@@ -25,12 +23,10 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: Query all indicators in an investigation (relevant if running in a
-    sub-playbook).
+  description: Query all indicators in an investigation (relevant if running in a sub-playbook).
   defaultValue: "yes"
 - name: maliciousQueryOverride
-  description: Whether to override the default query for malicious indicators in Demisto
-    (Indicators page).
+  description: Whether to override the default query for malicious indicators in Demisto (Indicators page).
 - name: includeManual
   auto: PREDEFINED
   predefined:
@@ -44,6 +40,5 @@ outputs:
 - contextPath: "no"
   description: Whether any malicious indicators were found in the investigation.
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0

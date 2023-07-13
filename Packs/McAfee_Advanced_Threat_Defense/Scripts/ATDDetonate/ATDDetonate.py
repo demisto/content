@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from time import sleep
 
 
-
 def main():
 
     dArgs = demisto.args()

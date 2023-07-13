@@ -1,16 +1,8 @@
 args:
-- default: false
-  description: The number of CVEs.
-  isArray: false
+- description: The number of CVEs.
   name: CvesCount
-  required: false
-  secret: false
-- default: false
-  description: The number of trending CVEs.
-  isArray: false
+- description: The number of trending CVEs.
   name: TrendingCvesCount
-  required: false
-  secret: false
 comment: 'Display bar chart based on cves count and trending cves count with the different colors. '
 commonfields:
   id: DisplayCVEChartScript
@@ -18,7 +10,6 @@ commonfields:
 name: DisplayCVEChartScript
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 tags:

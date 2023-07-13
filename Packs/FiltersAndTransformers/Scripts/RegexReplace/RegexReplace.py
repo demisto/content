@@ -4,7 +4,6 @@ import re
 from typing import Optional
 
 
-
 class Main:
     def __init__(self, input_text: str, output_format: str, regex: str, action_dt: Optional[str], regex_flags: int):
         self.__input_text = input_text

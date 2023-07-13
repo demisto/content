@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 def is_domain_internal(domain: str, internal_domains: List[str]) -> bool:
     parts = domain.split(".")
     for i in range(len(parts), 0, -1):

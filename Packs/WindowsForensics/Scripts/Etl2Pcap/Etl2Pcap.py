@@ -4,7 +4,6 @@ import subprocess
 import uuid
 
 
-
 def etl_to_pcap(etl_file_path, output_file_path):
     etl_file_path = os.path.abspath("./" + etl_file_path)
     output_file_path = os.path.abspath("./" + output_file_path)
