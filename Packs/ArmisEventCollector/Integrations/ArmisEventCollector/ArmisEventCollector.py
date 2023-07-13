@@ -22,7 +22,7 @@ class Client(BaseClient):
     def __init__(self, base_url, api_key, access_token, verify=False, proxy=False):
         self._api_key = api_key
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        if not access_token:  # TODO: add current access token verification function
+        if not access_token or not self.is_valid_access_token(access_token):
             access_token = self.get_access_token()
         headers = {
             'Authorization': f'{access_token}',
@@ -40,6 +40,19 @@ class Client(BaseClient):
         params = {'aql': f'in:activity type:"Threat Detected" timeFrame:"{time_frame} seconds"',
                   'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
         return self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+
+    def is_valid_access_token(self, access_token):
+        try:
+            headers = {
+                'Authorization': f'{access_token}',
+                "Accept": "application/json"
+            }
+            params = {'aql': 'in:alerts timeFrame:"1 seconds"',
+                      'includeTotal': 'true', 'length': 1, 'orderBy': 'time'}
+            self._http_request(url_suffix='/search/', method='GET', params=params, headers=headers)
+        except Exception:
+            return False
+        return True
 
     def get_access_token(self):
         headers = {
