@@ -610,3 +610,24 @@ test-upload-flow:
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
 
+.server_test_playbooks_report:
+  stage: test_playbooks_report
+  rules:
+    - if: '$NIGHTLY'
+  extends:
+    - .default-job-settings
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+  script:
+    - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
+
+
+xsoar_server_master-test_playbooks_results:
+  extends: .server_test_playbooks_report
+  needs: ["xsoar_server_master"]
+
+xsiam_server_ga-test_playbooks_results:
+  extends: .server_test_playbooks_report
+  needs: ["xsiam_server_ga"]
+
+
