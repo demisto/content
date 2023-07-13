@@ -497,7 +497,8 @@ tasks:
       - "8"
     scriptarguments:
       indicator_values:
-        simple: dawid.tomaszewski@resetlocations.com, ops.rejon4@kazmierz.pl
+        complex:
+          root: inputs.emailIndicators
       source:
         complex:
           root: http.parsedBlog
@@ -1346,10 +1347,9 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "42"
       "Yes":
       - "41"
+      - "50"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1454,8 +1454,7 @@ tasks:
           - operator: uniq
       EmailToBlock:
         complex:
-          root: DBotScore
-          accessor: Indicator
+          root: inputs.emailIndicators
           transformers:
           - operator: uniq
       FilesToBlock:
@@ -1472,37 +1471,6 @@ tasks:
           - operator: uniq
       InputEnrichment:
         simple: "False"
-      MD5:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -1515,36 +1483,12 @@ tasks:
           - operator: uniq
       URL:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          accessor: Indicator
+          root: URL
+          accessor: Data
           transformers:
           - operator: uniq
       UserVerification:
         simple: "True"
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          accessor: Indicator
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1611,7 +1555,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+      - "50"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1646,7 +1590,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3600
+          "y": 3760
         }
       }
     note: false
@@ -1828,6 +1772,38 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 1f0a8941-2aaf-4997-87cf-6fc060069222
+    type: regular
+    task:
+      id: 1f0a8941-2aaf-4997-87cf-6fc060069222
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1839,7 +1815,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3325,
+        "height": 3485,
         "width": 3040,
         "x": -780,
         "y": 340
