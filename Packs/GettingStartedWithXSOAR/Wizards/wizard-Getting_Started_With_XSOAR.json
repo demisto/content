@@ -10,7 +10,7 @@
       "min_required": 1,
       "packs": [
       {
-        "name": "SampleIncidentGenerator",
+        "name": "sampleSiem",
         "display_name": "Sample Incident Generator"
       }
       ]
