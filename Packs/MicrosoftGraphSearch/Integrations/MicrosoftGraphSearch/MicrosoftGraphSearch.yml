@@ -78,7 +78,7 @@ script:
   - name: msgraph-search-generate-login-url
     arguments: []
     description: Generate the login url used for Authorization code flow.
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.64970
   script: ''
   subtype: python3
   type: python
