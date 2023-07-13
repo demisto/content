@@ -637,8 +637,6 @@ def test_search_with_paging_bug(mocker):
         def entry_to_json(self):
             return '{"dn": "dn","attributes": {"memberOf": ["memberOf"], "name": ["name"]}}'
 
-
-
     class ConnectionMocker:
         entries = []
         result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
@@ -648,7 +646,6 @@ def test_search_with_paging_bug(mocker):
             if page_size:
                 self.entries = [EntryMocker() for _ in range(page_size)]
                 time.sleep(1)
-
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'args',
