@@ -1021,7 +1021,7 @@ tasks:
       version: -1
       name: get all incidents
       description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
-      script: RSANetWitnessv115|||rsa-nw-list-incidents
+      script: "|||rsa-nw-list-incidents"
       type: regular
       iscommand: true
       brand: ""
