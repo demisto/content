@@ -57,35 +57,22 @@ class Client(BaseClient):
             raise DemistoException('Could not get access token form get_access_token().')
 
 
-def test_module(client: Client, params: Dict[str, Any], fetch_start_time: int) -> str:
+def test_module(client: Client) -> str:
     """
-    Tests API connectivity and authentication'
+    Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
     Args:
         client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        fetch_start_time (int): The first fetch time as configured in the integration params.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
     try:
-        alert_status = params.get('alert_status', None)
-
-        # fetch_events(
-        #     client=client,
-        #     last_run={},
-        #     fetch_start_time=fetch_start_time,
-        #     alert_status=alert_status,
-        # )
+        client.fetch_alerts(1, 1)
 
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+        raise DemistoException(f'Error while testing: {e}') from e
 
     return 'ok'
 
@@ -99,12 +86,24 @@ def get_events(client, alert_status):
     return events, CommandResults(readable_output=hr)
 
 
+def min_datetime(last_fetch_time, fetch_start_time_param):
+    if not isinstance(last_fetch_time, datetime) or not isinstance(fetch_start_time_param, datetime):
+        raise DemistoException(f'last_fetch_time or fetch_start_time_param is not a valid date: {last_fetch_time}')
+    comparable_datetime = datetime(year=last_fetch_time.year, month=last_fetch_time.month,
+                                   day=last_fetch_time.day,
+                                   hour=last_fetch_time.hour,
+                                   minute=last_fetch_time.minute,
+                                   second=last_fetch_time.second,
+                                   microsecond=last_fetch_time.microsecond)
+    return min(comparable_datetime, fetch_start_time_param)
+
+
 def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param):
     if last_fetch_time and fetch_start_time_param:
         last_fetch_time = arg_to_datetime(last_fetch_time)
         if not isinstance(last_fetch_time, datetime):
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
-        return min(last_fetch_time, fetch_start_time_param)
+        return min_datetime(last_fetch_time, fetch_start_time_param)
     else:
         return fetch_start_time_param
 
@@ -119,35 +118,37 @@ def dedup_threats(threats, threats_last_fetch_ids):
 
 def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param):
     events = []
-
+    demisto.debug('####### 1')
     # calculate fetch start time for each event type
     alerts_first_fetch_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
     threats_first_fetch_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
-
+    demisto.debug('####### 2')
     # calculate time_frame query parameter in seconds for each event type
     now = datetime.now()
     alerts_fetch_start_time_in_seconds = int((now - alerts_first_fetch_time).total_seconds() + 1)
     threats_fetch_start_time_in_seconds = int((now - threats_first_fetch_time).total_seconds() + 1)
-
+    demisto.debug('####### 3')
     alerts_response = client.fetch_alerts(max_fetch=max_fetch, time_frame=alerts_fetch_start_time_in_seconds)
     threats_response = client.fetch_threats(
         max_fetch=max_fetch - int(alerts_response.get('data', {}).get('count', 0)),
         time_frame=threats_fetch_start_time_in_seconds)
-
+    demisto.debug('####### 4')
     # dedup events from last fetch
     alerts = dedup_alerts(alerts_response.get('data', {}).get('results', []), last_run.get('alerts_last_fetch_ids', []))
     threats = dedup_threats(threats_response.get('data', {}).get('results', []), last_run.get('threats_last_fetch_ids', []))
-
+    demisto.debug('####### 5')
     events.extend(alerts)
     events.extend(threats)
+    demisto.debug('####### 6')
 
     # determine last fetch time of each event type
-    alerts_last_fetch_time = alerts[-1].get('time') if alerts[-1].get('time') else last_run.get('alerts_last_fetch_time')
-    threats_last_fetch_time = threats[-1].get('time') if threats[-1].get('time') else last_run.get('threats_last_fetch_time')
+    alerts_last_fetch_time = alerts[-1].get('time') if alerts else last_run.get('alerts_last_fetch_time')
+    threats_last_fetch_time = threats[-1].get('time') if threats else last_run.get('threats_last_fetch_time')
 
+    demisto.debug('####### 7')
     alerts_last_fetch_ids = [alert.get('alertId') for alert in alerts]
     threats_last_fetch_ids = [threat.get('activityUUID') for threat in threats]
-
+    demisto.debug('####### 8')
     # set values for next fetch events
     next_run = {
         'alerts_last_fetch_ids': alerts_last_fetch_ids,
@@ -156,7 +157,8 @@ def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param):
         'threats_last_fetch_time': threats_last_fetch_time,
         'access_token': client._access_token
     }
-
+    demisto.debug('####### next_run: {next_run}')
+    demisto.debug('####### 9')
     return events, next_run
 
 
@@ -190,7 +192,7 @@ def main() -> None:
     api_key = params.get('credentials', {}).get('password')
     base_url = urljoin(params.get('server_url'), '/api/v1')
     verify_certificate = not params.get('insecure', True)
-    max_fetch = params.get('max_fetch', 1000)
+    max_fetch = arg_to_number(params.get('max_fetch', 1000))
     first_fetch = params.get('first_fetch', '3 days')
     fetch_start_time_param = arg_to_datetime(first_fetch)
     proxy = params.get('proxy', False)
@@ -205,13 +207,7 @@ def main() -> None:
             access_token=access_token)
 
         if command == 'test-module':
-            try:
-                client.fetch_alerts(1, 1)
-
-            except Exception as e:
-                raise DemistoException(f'Error while testing: {e}') from e
-
-            return_results('ok')
+            return_results(test_module(client))
 
         elif command in 'armis-get-events':
             ...
@@ -242,7 +238,8 @@ def main() -> None:
             )
 
             demisto.setLastRun(next_run)
-
+        else:
+            return_error(f'Command {command} does not exist for this integration.')
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
