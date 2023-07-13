@@ -264,7 +264,8 @@ def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_resul
 
 
 EXTRACT_SERVER_VERSION = [('projects/xsoar-content-build/global/images/server-image-master-345040-2023-06-04', '99.99.98'),
-                          ('projects/xsoar-content-build/global/images/server-image-ga-6-11-300044-2023-06-04', '6.11.0')]
+                          ('projects/xsoar-content-build/global/images/server-image-ga-6-11-300044-2023-06-04', '6.11.0'),
+                          ('server-image-ga-6-11-300044-2023-06-04', '6.11.0')]
 @pytest.mark.parametrize('instances_ami_name, res_version', EXTRACT_SERVER_VERSION)
 def test_extract_server_numeric_version(instances_ami_name, res_version):
     from Tests.test_content import extract_server_numeric_version
