@@ -1,6 +1,6 @@
-[MODEL: dataset=armis_security_raw]
+[MODEL: dataset=armis_armis_raw]
 // alerts mapping 
-filter alertId != null  
+filter type != "Threat Detected"  
 | alter
 	xdm.event.type = type,
 	xdm.alert.description = description,
@@ -18,7 +18,7 @@ filter type = "Threat Detected"
 	xdm.alert.original_threat_name = content,
 	xdm.event.type = type,
 	xdm.event.description = title,
-	xdm.event.id = activityUUIDs,
+	xdm.event.id = activityUUID,
 	xdm.observer.name = json_extract_scalar(sensor, "$.name"),
 	xdm.observer.type = json_extract_scalar(sensor, "$.type"),
 	xdm.source.host.device_id = arraystring(json_extract_array(deviceIds, "$."), ";");
