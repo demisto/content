@@ -7,6 +7,7 @@ from functools import partial
 import enum
 import html
 
+
 import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
@@ -550,9 +551,6 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: O
             return f'<{field_name}>{member_stringify_list}</{field_name}>'
         else:
             return f'<{field_name}>{arg}</{field_name}>'
-
-    elif field_name == 'tag':
-        return f'<{field_name}></{field_name}>'
 
     if any_:
         if member:
@@ -3848,10 +3846,13 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
                 return_warning(f'The following {element_to_change}s do not exist: {", ".join(not_existing_values)}',
                                exit=len(not_existing_values) == len(element_value))
             values = [item for item in current_objects_items if item not in element_value]
-            if not values and element_to_change != 'tag':
-                raise Exception(f'The object: {element_to_change} must have at least one item.')
+            if not values:
+                if element_to_change == 'tag':
+                    params['element'] = '<tag></tag>'
+                else:
+                    raise Exception(f'The object: {element_to_change} must have at least one item.')
 
-        params['element'] = add_argument_list(values, element_to_change, True)
+        params['element'] = add_argument_list(values, element_to_change, True) if 'element' not in params else params['element']
         result = http_request(URL, 'POST', body=params)
 
     rule_output = {
