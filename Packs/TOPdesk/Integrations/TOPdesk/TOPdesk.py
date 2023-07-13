@@ -52,9 +52,13 @@ class Client(BaseClient):
 
         except DemistoException as e:
             if 'Error 401' in str(e):
-                raise DemistoException('Authorization Error: make sure username and password are correctly set')
+                raise DemistoException(
+                    'Authorization Error: make sure username and password are correctly set'
+                ) from e
             if '[404] - Not Found' in str(e):
-                raise DemistoException('Page Not Found: make sure the url is correctly set')
+                raise DemistoException(
+                    'Page Not Found: make sure the url is correctly set'
+                ) from e
             else:
                 raise e
 
@@ -109,8 +113,8 @@ class Client(BaseClient):
 
         if fields:
             qfield = "fields"
-            if list_type == "persons" or list_type == "branches":
-                qfield = "$" + qfield
+            if list_type in {"persons", "branches"}:
+                qfield = f"${qfield}"
 
             if inline_parameters:
                 url_suffix = f"{url_suffix}&{qfield}={fields}"
@@ -255,8 +259,7 @@ class Client(BaseClient):
 
         endpoint = f'/incidents/id/{incident_id}' if incident_id else f'/incidents/number/{incident_number}'
 
-        request_params: dict[str, Any] = {}
-        request_params["invisibleForCaller"] = invisible_for_caller
+        request_params: dict[str, Any] = {"invisibleForCaller": invisible_for_caller}
         if file_description:
             request_params["description"] = file_description
 
@@ -288,12 +291,10 @@ class Client(BaseClient):
             raise ValueError('Either id or number must be specified to update incident.')
 
         if incident_id:
-            attachments = self.get_list(f"/incidents/id/{incident_id}/attachments")
+            return self.get_list(f"/incidents/id/{incident_id}/attachments")
 
         else:
-            attachments = self.get_list(f"/incidents/number/{incident_number}/attachments")
-
-        return attachments
+            return self.get_list(f"/incidents/number/{incident_number}/attachments")
 
     def list_actions(self, incident_id: str | None, incident_number: str | None) -> list[dict[str, Any]]:
         """List actions of a given incident.
@@ -309,11 +310,10 @@ class Client(BaseClient):
             raise ValueError('Either id or number must be specified to update incident.')
 
         if incident_id:
-            actions = self.get_list(f"/incidents/id/{incident_id}/actions")
+            return self.get_list(f"/incidents/id/{incident_id}/actions")
 
         else:
-            actions = self.get_list(f"/incidents/number/{incident_number}/actions")
-        return actions
+            return self.get_list(f"/incidents/number/{incident_number}/actions")
 
     @staticmethod
     def add_filter_to_query(query: str | None, filter_name: str, filter_arg: str,
@@ -489,13 +489,13 @@ def prepare_touch_request_params(args: dict[str, Any]) -> dict[str, Any]:
                        "action_invisible_for_caller", "call_type", "category", "subcategory",
                        "external_number", "main_incident", "priority", "urgency", "impact",
                        "processingStatus"]
-    optional_named_params = ["call_type", "category", "subcategory", "priority", "urgency", "impact",
-                             "processingStatus"]
     if args:
+        optional_named_params = ["call_type", "category", "subcategory", "priority", "urgency", "impact",
+                                 "processingStatus"]
         for optional_param in optional_params:
             if args.get(optional_param, None):
                 if optional_param == "description":
-                    request_params["briefDescription"] = args.get(optional_param, None)
+                    request_params["briefDescription"] = args.get(optional_param)
 
                 elif optional_param == "caller":
                     if args.get("registered_caller", False):
@@ -507,7 +507,7 @@ def prepare_touch_request_params(args: dict[str, Any]) -> dict[str, Any]:
                     request_params[half_camelize(optional_param)] = {"name": args[optional_param]}
 
                 else:
-                    request_params[half_camelize(optional_param)] = args.get(optional_param, None)
+                    request_params[half_camelize(optional_param)] = args.get(optional_param)
 
     if args.get("additional_params", None):
         request_params.update(json.loads(args["additional_params"]))
@@ -575,7 +575,7 @@ def command_with_all_fields_readable_list(results: list[dict[str, Any]], result_
     Return CommandResults with all fields in results and readable_output.
     """
 
-    if len(results) == 0:
+    if not results:
         return CommandResults(readable_output=f'No {result_name} found')
 
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} {result_name}', capitalize_for_outputs(results),
@@ -612,9 +612,9 @@ def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
     Return all incidents fetched.
     """
     incidents = []
-    max_incidents = int(max_fetch)
+    max_incidents = max_fetch
     number_of_requests = math.ceil(max_incidents / MAX_API_PAGE_SIZE)
-    page_size = max_incidents if max_incidents < MAX_API_PAGE_SIZE else MAX_API_PAGE_SIZE
+    page_size = min(max_incidents, MAX_API_PAGE_SIZE)
 
     start = 0
     for _index in range(number_of_requests):
@@ -644,42 +644,45 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
     Return list of incidents got from the API.
     """
     if args.get('incident_id', None):
-        incidents = [client.get_single_endpoint(f"/incidents/id/{args.get('incident_id')}")]
+        return [client.get_single_endpoint(f"/incidents/id/{args.get('incident_id')}")]
     elif args.get('incident_number', None):
-        incidents = [client.get_single_endpoint(f"/incidents/number/{args.get('incident_number')}")]
+        return [
+            client.get_single_endpoint(
+                f"/incidents/number/{args.get('incident_number')}"
+            )
+        ]
     else:
         allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
         if args.get('status', None) not in allowed_statuses:
             raise (ValueError(f"status {args.get('status', None)} id not in "
                               f"the allowed statuses list: {allowed_statuses}"))
-        else:
-            filter_arguments: dict[str, Any] = {"status": "status",
-                                                "caller_id": "caller",
-                                                "branch_id": "branch",
-                                                "category": "category",
-                                                "subcategory": "subcategory",
-                                                "call_type": "callType",
-                                                "entry_type": "entryType"}
-            old_query_not_allowed_filters = ["category", "subcategory", "call_type", "entry_type"]
+        filter_arguments: dict[str, Any] = {"status": "status",
+                                            "caller_id": "caller",
+                                            "branch_id": "branch",
+                                            "category": "category",
+                                            "subcategory": "subcategory",
+                                            "call_type": "callType",
+                                            "entry_type": "entryType"}
+        old_query_not_allowed_filters = ["category", "subcategory", "call_type", "entry_type"]
 
-            query = args.get('query', None)
-            for filter_arg in filter_arguments:
-                if not client.rest_api_new_query and args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
-                    raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
+        query = args.get('query')
+        for filter_arg in filter_arguments:
+            if not client.rest_api_new_query and args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
+                raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
 
-                query = client.add_filter_to_query(query=query,
-                                                   filter_name=filter_arguments.get(filter_arg, None),
-                                                   filter_arg=args.get(filter_arg, None),
-                                                   use_new_query=client.rest_api_new_query)
-            incidents = client.get_list_with_query(list_type="incidents",
-                                                   start=args.get('start', None),
-                                                   page_size=args.get('page_size', None),
-                                                   query=query,
-                                                   modification_date_start=modification_date_start,
-                                                   modification_date_end=modification_date_end,
-                                                   fields=args.get('fields', None))
-
-    return incidents
+            query = client.add_filter_to_query(query=query,
+                                               filter_name=filter_arguments.get(filter_arg, None),
+                                               filter_arg=args.get(filter_arg, None),
+                                               use_new_query=client.rest_api_new_query)
+        return client.get_list_with_query(
+            list_type="incidents",
+            start=args.get('start', None),
+            page_size=args.get('page_size', None),
+            query=query,
+            modification_date_start=modification_date_start,
+            modification_date_end=modification_date_end,
+            fields=args.get('fields', None),
+        )
 
 
 def incidents_to_command_results(client: Client, incidents: list[dict[str, Any]]) -> CommandResults:
@@ -691,7 +694,7 @@ def incidents_to_command_results(client: Client, incidents: list[dict[str, Any]]
 
     Return CommandResults of Incidents.
     """
-    if len(incidents) == 0:
+    if not incidents:
         return CommandResults(readable_output='No incidents found')
 
     headers = ['Id', 'Number', 'Request', 'Line', 'Actions', 'CallerName', 'Status', 'Operator', 'Priority',
@@ -821,18 +824,21 @@ def list_operators_command(client: Client, args: dict[str, Any]) -> CommandResul
                'City', 'BranchName', 'LoginName']
 
     readable_operators = []
-    for operator in operators:
-        readable_operators.append({
+    readable_operators.extend(
+        {
             'Id': operator.get('id', None),
             'Name': operator.get('dynamicName', None),
             'Telephone': operator.get('phoneNumber', None),
             'JobTitle': operator.get('jobTitle', None),
             'Department': operator.get('department', None),
             'City': operator.get('city', None),
-            'BranchName': operator.get('branch', {}).get('name', None) if operator.get('branch') else None,
+            'BranchName': operator.get('branch', {}).get('name', None)
+            if operator.get('branch')
+            else None,
             'LoginName': operator.get('tasLoginName', None),
-        })
-
+        }
+        for operator in operators
+    )
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators',
                                       readable_operators,
                                       headers=headers,
@@ -1209,7 +1215,7 @@ def fetch_incidents(client: Client,
     """
 
     first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
 
     if not last_fetch:
         if first_fetch_datetime:
@@ -1302,8 +1308,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     try:
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {ticket_id} '
                       f'and last_update: {last_update}')
-        _args = {}
-        _args['incident_id'] = ticket_id
+        _args = {'incident_id': ticket_id}
         result = get_incidents_list(client=client, args=_args)
 
         if not result:
@@ -1417,7 +1422,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
 
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta keys {list(parsed_args.delta.keys())}')
 
     try:
         # ticket_type = client.ticket_type
@@ -1451,18 +1456,21 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                     file_name, file_extension = os.path.splitext(full_file_name)
                     if not file_extension:
                         file_extension = ''
-                    client.attachment_upload(incident_id=ticket_id, incident_number=None, file_entry=entry.get('id'),
-                                             file_name=file_name + '_mirrored_from_xsoar' + file_extension,
-                                             invisible_for_caller=False,
-                                             file_description=f"Upload from xsoar: {file_name}.{file_extension}")
+                    client.attachment_upload(
+                        incident_id=ticket_id,
+                        incident_number=None,
+                        file_entry=entry.get('id'),
+                        file_name=f'{file_name}_mirrored_from_xsoar{file_extension}',
+                        invisible_for_caller=False,
+                        file_description=f"Upload from xsoar: {file_name}.{file_extension}",
+                    )
                 else:
-                    # Mirroring comment and work notes as entries
+                    tags = entry.get('tags', [])
                     xargs = {
                         'id': ticket_id,
                         'action': '',
                         'action_invisible_for_caller': False,
                     }
-                    tags = entry.get('tags', [])
                     if params.get('work_notes_tag') in tags:
                         xargs['action_invisible_for_caller'] = True
                     # Sometimes user is an empty str, not None, therefore nothing is displayed
@@ -1473,8 +1481,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                     else:
                         name = 'Xsoar dbot'
 
-                    text = f"<i><u>Update from {name}:</u></i><br><br>{str(entry.get('contents', ''))}" \
-                        + "<br><br><i>Mirrored from Cortex XSOAR</i>"
+                    text = f"<i><u>Update from {name}:</u></i><br><br>{str(entry.get('contents', ''))}<br><br><i>Mirrored from Cortex XSOAR</i>"
 
                     xargs['action'] = text
                     client.update_incident(xargs)

@@ -1650,7 +1650,7 @@ def check_and_update_token(client: Client, client_id: str, client_secret: str, c
                 raise DemistoException(
                     "Auth Token Expired, Refresh Token is not found."
                     + "Please create a new Auth Token using '!vd-auth-start' command."
-                )
+                ) from e
 
     return None
 
@@ -1698,7 +1698,7 @@ def create_client_header(
             return_error("Basic Authentication method chosen but Username or Password parameters are missing.")
             return None
 
-    elif not use_basic_auth:
+    else:
         # Auth Token authentication using Auth token parameter
         case_auth_token = bool(access_token and (not client_id and not client_secret))
         # Auth token already created and saved in integration context using `vd-auth-start`
@@ -1713,9 +1713,6 @@ def create_client_header(
                 + "Client ID or Client Secret parameters are missing or invalid."
                 + " Please enter Client ID and Client Secret OR Auth Token parameters OR use '!vd-auth-start' command."
             )
-
-    else:
-        raise DemistoException(message=AUTH_PARAMETERS_MISSING)
 
 
 def update_integration_auth_context(obj: dict[Any, Any]) -> None:
@@ -1804,8 +1801,6 @@ def get_sdwan_policy_rule_args_with_possible_custom_rule_json(args: dict[str, An
         forwarding_profile = rule.get("set", {}).get("forwarding-profile", "")
         predefined_application = rule.get("match", {}).get("application", {}).get("predefined-application-list", [])
         user_defined_application = rule.get("match", {}).get("application", {}).get("user-defined-application-list", [])
-        rule_disable = args.get("rule_disable", "false")
-
     else:
         rule_name = args.get("rule_name", "")
         description = args.get("description", "")
@@ -1820,7 +1815,7 @@ def get_sdwan_policy_rule_args_with_possible_custom_rule_json(args: dict[str, An
         forwarding_profile = args.get("forwarding_profile", "")
         predefined_application = argToList(args.get("predefined_application"))
         user_defined_application = argToList(args.get("user_defined_application"))
-        rule_disable = args.get("rule_disable", "false")
+    rule_disable = args.get("rule_disable", "false")
 
     return {
         "rule_name": rule_name,
@@ -1870,7 +1865,9 @@ def handle_auth_token_command(client: Client, args: dict[str, Any]) -> CommandRe
         raise DemistoException(message=BASIC_CREDENTIALS_COULD_NOT_START)
     username, password = client._auth
     auth_client_name = args.get("auth_client_name", OAUTH_CLIENT)
-    token_description = args.get("description", OAUTH_CLIENT + " for Versa Director Integration")
+    token_description = args.get(
+        "description", f"{OAUTH_CLIENT} for Versa Director Integration"
+    )
     client_id = None
     client_secret = None
     _outputs = None
@@ -1881,12 +1878,10 @@ def handle_auth_token_command(client: Client, args: dict[str, Any]) -> CommandRe
         client_id = client.client_id_param
         client_secret = client.client_secret_param
 
-    # check if Client ID and Client Secret were passed as arguments
     elif args.get("client_id") and args.get("client_secret"):
         client_id = args.get("client_id")
         client_secret = args.get("client_secret")
 
-    # if Client ID and Client Secret are not passed, create new Client ID and Client Secret (New Auth Client)
     else:
         client_id = CLIENT_ID
         client_secret = CLIENT_CREDENTIALS
@@ -1904,11 +1899,11 @@ def handle_auth_token_command(client: Client, args: dict[str, Any]) -> CommandRe
 
         except DemistoException as e:
             if e.res.status_code == 500:
-                raise DemistoException(message=AUTH_EXISTING_TOKEN, exception=e)
+                raise DemistoException(message=AUTH_EXISTING_TOKEN, exception=e) from e
             elif e.res.status_code == 400:
-                raise DemistoException(message=AUTH_EXCEEDED_MAXIMUM, exception=e)
+                raise DemistoException(message=AUTH_EXCEEDED_MAXIMUM, exception=e) from e
             else:
-                raise DemistoException(message="Auth process failed.", exception=e)
+                raise DemistoException(message="Auth process failed.", exception=e) from e
 
         # if "Auth Client" created successfully, Client ID and Client Secret would return
         # in the response and saved in the Integration Context
@@ -1930,9 +1925,9 @@ def handle_auth_token_command(client: Client, args: dict[str, Any]) -> CommandRe
         response = client.access_token_request(username, password, client_id, client_secret)
     except DemistoException as e:
         if e.res.status_code == 401:
-            raise DemistoException(message=AUTH_INVALID_ACCESS_TOKEN)
+            raise DemistoException(message=AUTH_INVALID_ACCESS_TOKEN) from e
         else:
-            raise DemistoException(message=AUTH_BAD_CREDENTIALS)
+            raise DemistoException(message=AUTH_BAD_CREDENTIALS) from e
 
     # save response with generated Auth Token, Refresh Token, Expiration Information and User Information
     # in Integration Context (among other information).
@@ -1948,7 +1943,7 @@ def handle_auth_token_command(client: Client, args: dict[str, Any]) -> CommandRe
     output_message += "To ensure the authentication is valid, run the 'vd-auth-test' command."
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".AuthClient",
+        outputs_prefix=f"{VENDOR_NAME}.AuthClient",
         outputs=_outputs if _outputs else {"client_id": client_id},
         raw_response=_outputs if _outputs else {"client_id": client_id},
         readable_output=output_message,
@@ -1967,7 +1962,9 @@ def auth_test_command(client: Client, args: dict[str, Any]):
     if organization_name := client.organization_params:
         client.test_organization_name_request(organization_name)
 
-    return CommandResults(readable_output=message + "Authentication method connectivity verified.")
+    return CommandResults(
+        readable_output=f"{message}Authentication method connectivity verified."
+    )
 
 
 def appliance_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1981,7 +1978,7 @@ def appliance_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     response = client.appliance_list_request(offset, limit)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".Appliance",
+        outputs_prefix=f"{VENDOR_NAME}.Appliance",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2004,22 +2001,31 @@ def organization_list_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     response = client.organization_list_request(offset, limit)
 
-    # extract 'applianceuuid' list from 'appliances' dictionary
-    appliances = []
     if response:
-        for appliance in response[0].get("appliances", []):
-            appliances.append(appliance.get("applianceuuid"))
+        # extract 'applianceuuid' list from 'appliances' dictionary
+        appliances = []
+        appliances.extend(
+            appliance.get("applianceuuid")
+            for appliance in response[0].get("appliances", [])
+        )
         response[0]["appliances"] = appliances
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".Organization",
+        outputs_prefix=f"{VENDOR_NAME}.Organization",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name="Organization List",
             headerTransform=pascalToSpace,
             t=response,
-            headers=["name", "id", "parent", "appliances", "cpeDeploymentType", "uuid"],
+            headers=[
+                "name",
+                "id",
+                "parent",
+                "appliances",
+                "cpeDeploymentType",
+                "uuid",
+            ],
         ),
     )
 
@@ -2027,7 +2033,7 @@ def organization_list_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def appliances_list_by_organization_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    organization_args = args.get("organization", None)
+    organization_args = args.get("organization")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size", 0))
     limit = arg_to_number(args.get("limit", 50))
@@ -2040,12 +2046,18 @@ def appliances_list_by_organization_command(client: Client, args: dict[str, Any]
     response = client.appliances_list_by_organization_request(organization, offset, limit)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".Appliance",
+        outputs_prefix=f"{VENDOR_NAME}.Appliance",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name="Organization List",
-            headers=["name", "ipAddress", "type", "softwareVersion", "ownerOrg"],
+            headers=[
+                "name",
+                "ipAddress",
+                "type",
+                "softwareVersion",
+                "ownerOrg",
+            ],
             t=response.get("appliances", {}),
             headerTransform=pascalToSpace,
         ),
@@ -2055,7 +2067,7 @@ def appliances_list_by_organization_command(client: Client, args: dict[str, Any]
 
 
 def appliances_group_list_by_organization_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    organization_args = args.get("organization", None)
+    organization_args = args.get("organization")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
@@ -2068,7 +2080,7 @@ def appliances_group_list_by_organization_command(client: Client, args: dict[str
     response = client.appliances_group_list_by_organization_request(organization, offset, limit)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".DeviceGroup",
+        outputs_prefix=f"{VENDOR_NAME}.DeviceGroup",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2100,7 +2112,7 @@ def appliances_list_by_device_group_command(client: Client, args: dict[str, Any]
     response = client.appliances_list_by_device_group_request(device_group, template_name, offset, limit)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".DeviceGroup",
+        outputs_prefix=f"{VENDOR_NAME}.DeviceGroup",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2141,7 +2153,7 @@ def template_list_by_organization_command(client: Client, args: dict[str, Any]) 
     response = client.template_list_by_organization_request(organization, type, offset, limit)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".Template",
+        outputs_prefix=f"{VENDOR_NAME}.Template",
         outputs=response.get("versanms.templates", {}).get("template", {}),
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2176,7 +2188,7 @@ def template_list_by_datastore_command(client: Client, args: dict[str, Any]) -> 
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".DataStoreTemplate",
+        outputs_prefix=f"{VENDOR_NAME}.DataStoreTemplate",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2211,7 +2223,7 @@ def application_service_template_list_command(client: Client, args: dict[str, An
     response = client.application_service_template_list_request(organization, keyword, offset, limit)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplicationServiceTemplate",
+        outputs_prefix=f"{VENDOR_NAME}.ApplicationServiceTemplate",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2256,7 +2268,7 @@ def template_change_commit_command(args: dict[str, Any], client: Client) -> Poll
     if percentage_completion == 100:
         return PollResult(
             response=CommandResults(
-                outputs_prefix=VENDOR_NAME + ".Commit",
+                outputs_prefix=f"{VENDOR_NAME}.Commit",
                 raw_response=response.get("versa-tasks.task", {}),
                 readable_output=tableToMarkdown(
                     name="Template change committed",
@@ -2274,13 +2286,12 @@ def template_change_commit_command(args: dict[str, Any], client: Client) -> Poll
             ),
             continue_to_poll=False,
         )
-    else:
-        results = CommandResults(readable_output="Polling job failed.")
-        return PollResult(
-            continue_to_poll=True,
-            args_for_next_run={"task_id": task_id, **args},
-            response=results,
-        )
+    results = CommandResults(readable_output="Polling job failed.")
+    return PollResult(
+        continue_to_poll=True,
+        args_for_next_run={"task_id": task_id, **args},
+        response=results,
+    )
 
 
 def template_custom_url_category_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2300,14 +2311,19 @@ def template_custom_url_category_list_command(client: Client, args: dict[str, An
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateCustomUrlCategory",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateCustomUrlCategory",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Application Service Templates associated with {organization}",
             t=response.get("collection", {}).get("url-category", {}),
             headerTransform=pascalToSpace,
-            headers=["category-name", "category-description", "confidence", "urls"],
+            headers=[
+                "category-name",
+                "category-description",
+                "confidence",
+                "urls",
+            ],
             is_auto_json_transform=True,
         ),
     )
@@ -2346,7 +2362,7 @@ def template_custom_url_category_create_command(client: Client, args: dict[str, 
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateCustomUrlCategory",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateCustomUrlCategory",
         readable_output=message,
     )
     return command_results
@@ -2378,7 +2394,7 @@ def template_custom_url_category_edit_command(client: Client, args: dict[str, An
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateCustomUrlCategory",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateCustomUrlCategory",
         readable_output=f"Command run successfully.\nRequest Body:\n\n{request_body}",
     )
     return command_results
@@ -2398,7 +2414,7 @@ def template_custom_url_category_delete_command(client: Client, args: dict[str, 
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateCustomUrlCategory",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateCustomUrlCategory",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -2421,14 +2437,19 @@ def appliance_custom_url_category_list_command(client: Client, args: dict[str, A
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceCustomUrlCategory",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceCustomUrlCategory",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Application Service Appliances associated with {organization}",
             t=response.get("collection", {}).get("url-category", {}),
             headerTransform=pascalToSpace,
-            headers=["category-name", "category-description", "confidence", "urls"],
+            headers=[
+                "category-name",
+                "category-description",
+                "confidence",
+                "urls",
+            ],
             is_auto_json_transform=True,
             removeNull=True,
         ),
@@ -2472,8 +2493,8 @@ def appliance_custom_url_category_create_command(client: Client, args: dict[str,
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceCustomUrlCategory",
-        readable_output=message + f"\nRequest Body:\n\n{request_body}",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceCustomUrlCategory",
+        readable_output=f"{message}\nRequest Body:\n\n{request_body}",
     )
     return command_results
 
@@ -2504,8 +2525,9 @@ def appliance_custom_url_category_edit_command(client: Client, args: dict[str, A
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceCustomUrlCategory",
-        readable_output="Command run successfully.\nRequest Body:\n\n" + str(request_body),
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceCustomUrlCategory",
+        readable_output="Command run successfully.\nRequest Body:\n\n"
+        + str(request_body),
     )
     return command_results
 
@@ -2524,7 +2546,7 @@ def appliance_custom_url_category_delete_command(client: Client, args: dict[str,
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceCustomUrlCategory",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceCustomUrlCategory",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -2546,7 +2568,7 @@ def template_access_policy_list_command(client: Client, args: dict[str, Any]) ->
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAccessPolicy",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAccessPolicy",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2577,7 +2599,7 @@ def template_access_policy_rule_list_command(client: Client, args: dict[str, Any
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAccessPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAccessPolicyRule",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2615,8 +2637,8 @@ def template_access_policy_rule_create_command(client: Client, args: dict[str, A
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAccessPolicyRule",
-        readable_output=message + f"\nRequest Body:\n\n{request_body}",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAccessPolicyRule",
+        readable_output=f"{message}\nRequest Body:\n\n{request_body}",
     )
     return command_results
 
@@ -2635,8 +2657,9 @@ def template_access_policy_rule_edit_command(client: Client, args: dict[str, Any
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAccessPolicyRule",
-        readable_output="Command run successfully.\nRequest Body:\n\n" + str(request_body),
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAccessPolicyRule",
+        readable_output="Command run successfully.\nRequest Body:\n\n"
+        + str(request_body),
     )
     return command_results
 
@@ -2652,7 +2675,7 @@ def template_access_policy_rule_delete_command(client: Client, args: dict[str, A
     client.template_access_policy_rule_delete_request(organization, template_name, access_policy_name, rule_name)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAccessPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAccessPolicyRule",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -2674,7 +2697,7 @@ def appliance_access_policy_list_command(client: Client, args: dict[str, Any]) -
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAccessPolicy",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAccessPolicy",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2705,7 +2728,7 @@ def appliance_access_policy_rule_list_command(client: Client, args: dict[str, An
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAccessPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAccessPolicyRule",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2743,8 +2766,8 @@ def appliance_access_policy_rule_create_command(client: Client, args: dict[str, 
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAccessPolicyRule",
-        readable_output=message + f"\nRequest Body:\n\n{request_body}",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAccessPolicyRule",
+        readable_output=f"{message}\nRequest Body:\n\n{request_body}",
     )
     return command_results
 
@@ -2763,8 +2786,9 @@ def appliance_access_policy_rule_edit_command(client: Client, args: dict[str, An
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAccessPolicyRule",
-        readable_output="Command run successfully.\nRequest Body:\n\n" + str(request_body),
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAccessPolicyRule",
+        readable_output="Command run successfully.\nRequest Body:\n\n"
+        + str(request_body),
     )
     return command_results
 
@@ -2780,7 +2804,7 @@ def appliance_access_policy_rule_delete_command(client: Client, args: dict[str, 
     client.appliance_access_policy_rule_delete_request(organization, appliance_name, access_policy_name, rule_name)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAccessPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAccessPolicyRule",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -2802,7 +2826,7 @@ def template_sdwan_policy_list_command(client: Client, args: dict[str, Any]) -> 
     response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateSdwanPolicy",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateSdwanPolicy",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2833,7 +2857,7 @@ def template_sdwan_policy_rule_list_command(client: Client, args: dict[str, Any]
     response = json.loads(xml2json(response.content)).get("collection").get("rule")
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateSdwanPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateSdwanPolicyRule",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2872,8 +2896,8 @@ def template_sdwan_policy_rule_create_command(client: Client, args: dict[str, An
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateSdwanPolicyRule",
-        readable_output=message + f"\nRequest Body:\n\n{request_body}",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateSdwanPolicyRule",
+        readable_output=f"{message}\nRequest Body:\n\n{request_body}",
     )
     return command_results
 
@@ -2892,8 +2916,9 @@ def template_sdwan_policy_rule_edit_command(client: Client, args: dict[str, Any]
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateSdwanPolicyRule",
-        readable_output="Command run successfully.\nRequest Body:\n\n" + str(request_body),
+        outputs_prefix=f"{VENDOR_NAME}.TemplateSdwanPolicyRule",
+        readable_output="Command run successfully.\nRequest Body:\n\n"
+        + str(request_body),
     )
     return command_results
 
@@ -2914,7 +2939,7 @@ def template_sdwan_policy_rule_delete_command(client: Client, args: dict[str, An
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateSdwanPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateSdwanPolicyRule",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -2936,7 +2961,7 @@ def appliance_sdwan_policy_list_command(client: Client, args: dict[str, Any]) ->
     response = json.loads(xml2json(response.content)).get("collection", {}).get("sdwan-policy-group")
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceSdwanPolicy",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceSdwanPolicy",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -2966,7 +2991,7 @@ def appliance_sdwan_policy_rule_list_command(client: Client, args: dict[str, Any
     response = client.appliance_sdwan_policy_rule_list_request(organization, appliance_name, sdwan_policy_name, offset, limit)
     response = json.loads(xml2json(response.content)).get("collection", {}).get("rule", {})
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceSdwanPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceSdwanPolicyRule",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -3004,8 +3029,8 @@ def appliance_sdwan_policy_rule_create_command(client: Client, args: dict[str, A
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceSdwanPolicyRule",
-        readable_output=message + f"\nRequest Body:\n\n{request_body}",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceSdwanPolicyRule",
+        readable_output=f"{message}\nRequest Body:\n\n{request_body}",
     )
     return command_results
 
@@ -3023,7 +3048,7 @@ def appliance_sdwan_policy_rule_edit_command(client: Client, args: dict[str, Any
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceSdwanPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceSdwanPolicyRule",
         readable_output=f"Command run successfully.\nRequest Body:\n\n{request_body}",
     )
     return command_results
@@ -3039,7 +3064,7 @@ def appliance_sdwan_policy_rule_delete_command(client: Client, args: dict[str, A
     client.appliance_sdwan_policy_rule_delete_request(organization, appliance_name, sdwan_policy_name, rule_name)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceSdwanPolicyRule",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceSdwanPolicyRule",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -3060,7 +3085,7 @@ def template_address_object_list_command(client: Client, args: dict[str, Any]) -
     response = client.template_address_object_list_request(organization, template_name, offset, limit)
     response = json.loads(xml2json(response.content)).get("collection", {}).get("address", {})
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAddressObject",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAddressObject",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -3117,8 +3142,8 @@ def template_address_object_create_command(client: Client, args: dict[str, Any])
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAddressObject",
-        readable_output=message + f"\nRequest Body:\n\n{request_body}",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAddressObject",
+        readable_output=f"{message}\nRequest Body:\n\n{request_body}",
     )
     return command_results
 
@@ -3145,8 +3170,9 @@ def template_address_object_edit_command(client: Client, args: dict[str, Any]) -
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAddressObject",
-        readable_output="Command run successfully.\nRequest Body:\n\n" + str(request_body),
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAddressObject",
+        readable_output="Command run successfully.\nRequest Body:\n\n"
+        + str(request_body),
     )
     return command_results
 
@@ -3165,7 +3191,7 @@ def template_address_object_delete_command(client: Client, args: dict[str, Any])
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateAddressObject",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateAddressObject",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -3186,7 +3212,7 @@ def appliance_address_object_list_command(client: Client, args: dict[str, Any]) 
     response = client.appliance_address_object_list_request(organization, appliance_name, offset, limit)
     response = json.loads(xml2json(response.content)).get("collection", {}).get("address", {})
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAddressObject",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAddressObject",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -3243,8 +3269,8 @@ def appliance_address_object_create_command(client: Client, args: dict[str, Any]
             raise e
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAddressObject",
-        readable_output=message + f"\nRequest Body:\n\n{request_body}",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAddressObject",
+        readable_output=f"{message}\nRequest Body:\n\n{request_body}",
     )
     return command_results
 
@@ -3271,8 +3297,9 @@ def appliance_address_object_edit_command(client: Client, args: dict[str, Any]) 
     )
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAddressObject",
-        readable_output="Command run successfully.\nRequest Body:\n\n" + str(request_body),
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAddressObject",
+        readable_output="Command run successfully.\nRequest Body:\n\n"
+        + str(request_body),
     )
     return command_results
 
@@ -3287,7 +3314,7 @@ def appliance_address_object_delete_command(client: Client, args: dict[str, Any]
     client.appliance_address_object_delete_request(organization, appliance_name, object_name)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceAddressObject",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceAddressObject",
         readable_output="Command run successfully.",
     )
     return command_results
@@ -3308,14 +3335,21 @@ def template_user_defined_application_list_command(client: Client, args: dict[st
     response = client.template_user_defined_application_list_request(organization, template_name, offset, limit)
     response = json.loads(xml2json(response.content)).get("collection", {}).get("user-defined-application", {})
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateUserDefinedApplication",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateUserDefinedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User defined application objects associated with {organization}",
             t=response,
             headerTransform=pascalToSpace,
-            headers=["app-name", "description", "precedence", "tag", "risk", "family"],
+            headers=[
+                "app-name",
+                "description",
+                "precedence",
+                "tag",
+                "risk",
+                "family",
+            ],
             is_auto_json_transform=True,
             removeNull=True,
         ),
@@ -3339,14 +3373,21 @@ def appliance_user_defined_application_list_command(client: Client, args: dict[s
 
     response = json.loads(xml2json(response.content)).get("collection", {}).get("user-defined-application", {})
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceUserDefinedApplication",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceUserDefinedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User defined application objects associated with {organization}",
             t=response,
             headerTransform=pascalToSpace,
-            headers=["app-name", "description", "precedence", "tag", "risk", "family"],
+            headers=[
+                "app-name",
+                "description",
+                "precedence",
+                "tag",
+                "risk",
+                "family",
+            ],
             is_auto_json_transform=True,
             removeNull=True,
         ),
@@ -3369,7 +3410,7 @@ def template_user_modified_application_list_command(client: Client, args: dict[s
     response = client.template_user_modified_application_list_request(organization, template_name, offset, limit)
     response = json.loads(xml2json(response.content)).get("collection", {}).get("app-specific-option-list", {})
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".TemplateUserModifiedApplication",
+        outputs_prefix=f"{VENDOR_NAME}.TemplateUserModifiedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -3406,7 +3447,7 @@ def appliance_user_modified_application_list_command(client: Client, args: dict[
 
     response = json.loads(xml2json(response.content)).get("collection", {}).get("app-specific-option-list", {})
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".ApplianceUserModifiedApplication",
+        outputs_prefix=f"{VENDOR_NAME}.ApplianceUserModifiedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -3441,7 +3482,7 @@ def predefined_application_list_command(client: Client, args: dict[str, Any]) ->
     response = client.predefined_application_list_request(family, risks, tags, offset, limit)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".PredefinedApplication",
+        outputs_prefix=f"{VENDOR_NAME}.PredefinedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
@@ -3507,11 +3548,13 @@ def test_module(
     """
 
     case_client_id_and_client_secret = bool(client_id and client_secret)
-    case_not_client_id_and_not_client_secret = bool(not client_id and not client_secret)
-    case_missing_client_id_or_client_secret = bool(not client_id or not client_secret)
-    case_missing_username_or_password = bool(not username or not password)
+    case_not_client_id_and_not_client_secret = not client_id and not client_secret
+    case_missing_client_id_or_client_secret = not client_id or not client_secret
+    case_missing_username_or_password = not username or not password
     case_client_id_and_client_secret_and_access_token = bool(client_id and client_secret and access_token)
-    case_not_client_id_and_not_client_secret_and_not_access_token = bool(not client_id and not client_secret and not access_token)
+    case_not_client_id_and_not_client_secret_and_not_access_token = (
+        not client_id and not client_secret and not access_token
+    )
 
     # Case: using Basic authentication with Username and Password parameter
     if use_basic_auth and client:
@@ -3579,7 +3622,7 @@ def main() -> None:
     use_basic_auth = params.get("use_basic_auth", False)
     port = PORT_CREDENTIALS if use_basic_auth else PORT_AUTH
     url = params.get("url", "")
-    url = url[:-1] + f":{port}" if url.endswith("/") else url + f":{port}"
+    url = f"{url[:-1]}:{port}" if url.endswith("/") else f"{url}:{port}"
     context = get_integration_context()
     if context.get("context"):
         context = context.get("context")

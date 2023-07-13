@@ -146,8 +146,8 @@ class Client(BaseClient):
         try:
             if resp.json().get('error', ''):
                 error_message = f'Reason: {resp.json().get("error", "")}'
-        except ValueError:
-            raise ValueError(MESSAGES['NO_RESPONSE_BODY'])
+        except ValueError as e:
+            raise ValueError(MESSAGES['NO_RESPONSE_BODY']) from e
         status_code_message_map = {
             400: f'{MESSAGES["BAD_REQUEST_ERROR"]} {error_message}',
             401: MESSAGES['AUTHENTICATION_ERROR'],
@@ -180,19 +180,19 @@ class Client(BaseClient):
             resp = self._http_request(method=method, url_suffix=url_suffix, headers=headers, params=params,
                                       json_data=json_data, timeout=self.request_timeout, resp_type='response',
                                       ok_codes=(200, 400, 401, 404, 407, 500), proxies=handle_proxy())
-        except MissingSchema:
-            raise ValueError(MESSAGES['MISSING_SCHEMA_ERROR'])
+        except MissingSchema as e:
+            raise ValueError(MESSAGES['MISSING_SCHEMA_ERROR']) from e
 
-        except InvalidSchema:
-            raise ValueError(MESSAGES['INVALID_SCHEMA_ERROR'])
+        except InvalidSchema as e:
+            raise ValueError(MESSAGES['INVALID_SCHEMA_ERROR']) from e
 
         except DemistoException as e:
             if 'ProxyError' in str(e):
-                raise ConnectionError(MESSAGES['PROXY_ERROR'])
+                raise ConnectionError(MESSAGES['PROXY_ERROR']) from e
             elif 'ConnectTimeout' in str(e) or 'ReadTimeoutError' in str(e):
-                raise ConnectionError(MESSAGES['TIMEOUT_ERROR'])
+                raise ConnectionError(MESSAGES['TIMEOUT_ERROR']) from e
             elif 'ConnectionError' in str(e):
-                raise ConnectionError(MESSAGES['CONNECTION_ERROR'])
+                raise ConnectionError(MESSAGES['CONNECTION_ERROR']) from e
             else:
                 raise e
 
@@ -240,8 +240,8 @@ def get_timeout_and_size(size) -> tuple[int, int]:
         size = int(size)
         if size <= 0 or size > 1000:
             raise ValueError(MESSAGES['SIZE_VALIDATION'])
-    except ValueError:
-        raise ValueError(MESSAGES['SIZE_VALIDATION'])
+    except ValueError as e:
+        raise ValueError(MESSAGES['SIZE_VALIDATION']) from e
 
     request_timeout = 10
     if 50 < size <= 500:
@@ -312,8 +312,10 @@ def validate_asset_connections_args_and_get_params(args: dict[str, Any]) -> tupl
     if global_arg:
         try:
             params['global'] = argToBoolean(global_arg)
-        except ValueError:
-            raise ValueError(MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('global'))
+        except ValueError as e:
+            raise ValueError(
+                MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('global')
+            ) from e
 
     page = args.get('page')
     if page:
@@ -322,8 +324,8 @@ def validate_asset_connections_args_and_get_params(args: dict[str, Any]) -> tupl
             if page < 0:
                 raise ValueError(MESSAGES['PAGE_VALIDATION'])
             params['page'] = page
-        except ValueError:
-            raise ValueError(MESSAGES['PAGE_VALIDATION'])
+        except ValueError as exc:
+            raise ValueError(MESSAGES['PAGE_VALIDATION']) from exc
 
     size = args.get('size')
     if size:
@@ -340,9 +342,7 @@ def convert_list_to_comma_separated_string(values: list[dict[str, Any]], key: st
     :param: key: key to consider the value for
     :return: a string containing values of passed attribute in comma separated manner
     """
-    value_list = set()
-    for value in values:
-        value_list.add(value.get(key, ''))
+    value_list = {value.get(key, '') for value in values}
     return ', '.join(value_list)
 
 
@@ -354,10 +354,9 @@ def get_comma_separated_values_only_current(values: list[dict[str, Any]], key: s
     :param: key: the key to fetch the value of
     :return: a string containing values of passed attribute in comma separated manner
     """
-    value_list = set()
-    for value in values:
-        if value.get('current'):
-            value_list.add(str(value.get(key, '')))
+    value_list = {
+        str(value.get(key, '')) for value in values if value.get('current')
+    }
     return ', '.join(value_list)
 
 
@@ -404,7 +403,6 @@ def get_asset_connections_outputs(resp: dict[str, Any],
     :param total_elements: Dictionary of total_elements fetched for each asset type
     :return: hr, standard_ec, custom_ec: Human readable, Standard Context and Custom Context outputs
     """
-    hr = ''
     asset_type_standard_context_map = {
         'DOMAIN': get_standard_context_domain,
         'IP_ADDRESS': get_standard_context_ip,
@@ -412,7 +410,7 @@ def get_asset_connections_outputs(resp: dict[str, Any],
     }
     command_results: list[CommandResults] = []
 
-    hr += '### CONNECTED ASSETS\n'
+    hr = '' + '### CONNECTED ASSETS\n'
     for asset_type in total_elements:
         if total_elements.get(asset_type) and total_elements.get(asset_type) != 0:
             for asset_details in resp.get(asset_type, {}).get('content', []):
@@ -451,8 +449,8 @@ def validate_asset_changes_summary_args(date_arg: str, range_arg: str) -> tuple[
     try:
         if date_arg and date_arg != datetime.strptime(date_arg, '%Y-%m-%d').strftime('%Y-%m-%d'):
             raise ValueError(MESSAGES['INVALID_DATE_FORMAT_ERROR'])
-    except ValueError:
-        raise ValueError(MESSAGES['INVALID_DATE_FORMAT_ERROR'])
+    except ValueError as e:
+        raise ValueError(MESSAGES['INVALID_DATE_FORMAT_ERROR']) from e
     if range_arg and range_arg not in VALID_RANGES:
         raise ValueError(MESSAGES['INVALID_RANGE_ERROR'])
     return date_arg, range_arg
@@ -504,7 +502,7 @@ def get_asset_changes_summary_hr(summary: dict[str, Any]) -> list[dict[str, Any]
             'range_30': prepare_hr_cell_for_changes_summary(delta.get('aggregations', []), 2)
             if delta.get('aggregations') else ''
         }
-        if not all(value == '' for value in result.values()):
+        if any(value != '' for value in result.values()):
             human_readable_dict = {'Asset Type': f'**{ASSET_TYPE_HR.get(delta.get("type", ""), "")}**',
                                    '1 Day': result['range_1'],
                                    '7 Days': result['range_7'],
@@ -622,16 +620,16 @@ def get_standard_context_host_for_get_asset(record: dict[str, Any]) -> list:
     """
     standard_context_host = []
     for web_component in record.get('asset', {}).get('webComponents', []):
-        for cve in web_component.get('cves', []):
-            standard_context_host.append(
-                Common.CVE(
-                    id=cve.get('name', ''),
-                    cvss=cve.get('cvssScore', ''),
-                    published='',
-                    modified='',
-                    description=''
-                )
+        standard_context_host.extend(
+            Common.CVE(
+                id=cve.get('name', ''),
+                cvss=cve.get('cvssScore', ''),
+                published='',
+                modified='',
+                description='',
             )
+            for cve in web_component.get('cves', [])
+        )
     return standard_context_host
 
 
@@ -670,17 +668,16 @@ def get_standard_context_ip_for_get_asset(record: dict[str, Any]) -> list:
     )]
 
     for web_component in record.get('asset', {}).get('webComponents', []):
-        for cve in web_component.get('cves', []):
-            standard_context_ip.append(
-                Common.CVE(
-                    id=cve.get('name', ''),
-                    cvss=cve.get('cvssScore', ''),
-                    published='',
-                    modified='',
-                    description=''
-                )
+        standard_context_ip.extend(
+            Common.CVE(
+                id=cve.get('name', ''),
+                cvss=cve.get('cvssScore', ''),
+                published='',
+                modified='',
+                description='',
             )
-
+            for cve in web_component.get('cves', [])
+        )
     return standard_context_ip
 
 
@@ -718,17 +715,16 @@ def get_standard_context_url_for_get_asset(record: dict[str, Any]) -> list:
     )]
 
     for web_component in record.get('asset', {}).get('webComponents', []):
-        for cve in web_component.get('cves', []):
-            standard_context_url.append(
-                Common.CVE(
-                    id=cve.get('name', ''),
-                    cvss=cve.get('cvssScore', ''),
-                    published='',
-                    modified='',
-                    description=''
-                )
+        standard_context_url.extend(
+            Common.CVE(
+                id=cve.get('name', ''),
+                cvss=cve.get('cvssScore', ''),
+                published='',
+                modified='',
+                description='',
             )
-
+            for cve in web_component.get('cves', [])
+        )
     return standard_context_url
 
 
@@ -863,8 +859,8 @@ def validate_date_for_asset_changes(date_arg: str) -> str:
     try:
         if date_text != datetime.strptime(date_text, '%Y-%m-%d').strftime('%Y-%m-%d'):
             raise ValueError(MESSAGES['INVALID_DATE_FORMAT_ERROR'])
-    except ValueError:
-        raise ValueError(MESSAGES['INVALID_DATE_FORMAT_ERROR'])
+    except ValueError as e:
+        raise ValueError(MESSAGES['INVALID_DATE_FORMAT_ERROR']) from e
     return date_text
 
 
@@ -913,8 +909,8 @@ def validate_page_for_asset_changes(page: str) -> int:
         if valid_page < 0:
             raise ValueError(MESSAGES['PAGE_VALIDATION'])
         return valid_page
-    except ValueError:
-        raise ValueError(MESSAGES['PAGE_VALIDATION'])
+    except ValueError as e:
+        raise ValueError(MESSAGES['PAGE_VALIDATION']) from e
 
 
 def get_asset_changes_params(args: dict[str, Any]) -> dict[str, Any]:
@@ -928,11 +924,10 @@ def get_asset_changes_params(args: dict[str, Any]) -> dict[str, Any]:
     asset_type = args.get('type', '').replace(' ', '_').upper()
     if asset_type not in VALID_ASSET_DETAIL_TYPES and asset_type not in VALID_ASSET_TYPES:
         raise ValueError(MESSAGES['INVALID_ASSET_TYPE_AND_ASSET_DETAIL_TYPE_ERROR'])
+    if asset_type == 'ASN':
+        params['type'] = 'AS'
     else:
-        if asset_type == 'ASN':
-            params['type'] = 'AS'
-        else:
-            params['type'] = asset_type
+        params['type'] = asset_type
 
     if args.get('date'):
         params['date'] = validate_date_for_asset_changes(args.get('date', ''))
@@ -999,16 +994,20 @@ def get_asset_params(args: dict[str, Any]) -> dict[str, Any]:
         try:
             global_arg = argToBoolean(global_arg)
             params['global'] = global_arg
-        except ValueError:
-            raise ValueError(MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('global'))
+        except ValueError as e:
+            raise ValueError(
+                MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('global')
+            ) from e
 
     if recent:
         recent = recent.lower()
         try:
             recent = argToBoolean(recent)
             params['recent'] = recent
-        except ValueError:
-            raise ValueError(MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('recent'))
+        except ValueError as exc:
+            raise ValueError(
+                MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('recent')
+            ) from exc
 
     return params
 
@@ -1022,10 +1021,11 @@ def get_attribute_details_from_given_lists(source_dict: dict[str, Any], key: str
     :param lists: The lists from which the attribute value is to be fetched
     :return: value: value of the requested attribute
     """
-    value = ''
-    for single_list in source_dict and lists:
-        if key in source_dict.get(single_list, []):
-            value += f'{single_list.capitalize()}: {source_dict.get(single_list, []).get(key, "")}\n'
+    value = ''.join(
+        f'{single_list.capitalize()}: {source_dict.get(single_list, []).get(key, "")}\n'
+        for single_list in source_dict and lists
+        if key in source_dict.get(single_list, [])
+    )
     return value
 
 
@@ -1098,7 +1098,7 @@ def get_asset_domain_hr(asset_details: dict[str, Any]) -> str:
         'Domain Status': convert_list_to_comma_separated_string(asset_details.get('domainStatuses', []), 'value')
     }
 
-    if not all(value == '' or value == [] for value in asset_specific_details.values()):
+    if any(value not in ['', []] for value in asset_specific_details.values()):
         asset_specific_hr += tableToMarkdown('Domain Details', asset_specific_details,
                                              ['Domain Name', 'Parked', 'Alexa Rank', 'Domain Status'],
                                              removeNull=True)
@@ -1237,7 +1237,7 @@ def get_asset_host_hr(asset_details: dict[str, Any]) -> str:
         'Alexa Rank': asset_details.get('alexaRank', '')
     }
 
-    if not all(value == '' or value == [] for value in asset_specific_details.values()):
+    if any(value not in ['', []] for value in asset_specific_details.values()):
         asset_specific_hr += tableToMarkdown('Host Details', asset_specific_details,
                                              ['Domain', 'IP Address', 'CName', 'Alexa Rank'],
                                              removeNull=True)
@@ -1325,7 +1325,7 @@ def get_asset_ip_address_hr(asset_details: dict[str, Any]) -> str:
         'ASNs': convert_list_to_comma_separated_string(asset_details.get('asns', []), 'fullName')
     }
 
-    if not all(value == '' or value == [] for value in asset_specific_details.values()):
+    if any(value not in ['', []] for value in asset_specific_details.values()):
         asset_specific_hr += tableToMarkdown('IP Address Details', asset_specific_details,
                                              ['IP Blocks', 'ASNs'],
                                              removeNull=True)
@@ -1372,7 +1372,7 @@ def get_asset_ip_block_hr(asset_details: dict[str, Any]) -> str:
         'Net Range': get_comma_separated_values_only_current(asset_details.get('netRanges', []), 'value')
     }
 
-    if not all(value == '' or value == [] for value in asset_specific_details.values()):
+    if any(value not in ['', []] for value in asset_specific_details.values()):
         asset_specific_hr += tableToMarkdown('IP Block Details', asset_specific_details,
                                              ['CIDR', 'Network Name', 'Organisation Name',
                                               'ASN', 'Country', 'Net Range'], removeNull=True)
@@ -1405,7 +1405,7 @@ def get_asset_as_hr(asset_details: dict[str, Any]) -> str:
         'Registries': get_comma_separated_values_only_current(asset_details.get('registries', []), 'value')
     }
 
-    if not all(value == '' or value == [] for value in asset_specific_details.values()):
+    if any(value not in ['', []] for value in asset_specific_details.values()):
         asset_specific_hr += tableToMarkdown('ASN Details', asset_specific_details,
                                              ['AS Number', 'Full Name', 'Description', 'Organizations', 'Countries',
                                               'Registries'], removeNull=True)
@@ -1613,10 +1613,10 @@ def get_asset_custom_context_for_services_and_web_components(resp: dict[str, Any
     """
 
     attribute_content = []
-    for attribute in resp.get('asset', {}).get(key, []):
-        attribute_content.append(
-            prepare_context_dict(attribute, exclude_keys=exclude_keys))
-
+    attribute_content.extend(
+        prepare_context_dict(attribute, exclude_keys=exclude_keys)
+        for attribute in resp.get('asset', {}).get(key, [])
+    )
     return attribute_content
 
 
@@ -1873,11 +1873,9 @@ def get_asset_outputs(resp: dict[str, Any]) -> list[CommandResults]:
             raw_response=resp
         ))
     if standard_ec:
-        for indicator in standard_ec:
-            command_results.append(CommandResults(
-                indicator=indicator
-            ))
-
+        command_results.extend(
+            CommandResults(indicator=indicator) for indicator in standard_ec
+        )
     return command_results
 
 
@@ -1894,8 +1892,10 @@ def get_add_and_update_assets_params(args: dict[str, Any]) -> dict[str, Any]:
     if args.get('fail_on_error'):
         try:
             fail_on_error = argToBoolean(args.get('fail_on_error'))
-        except ValueError:
-            raise ValueError(MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('fail_on_error'))
+        except ValueError as e:
+            raise ValueError(
+                MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('fail_on_error')
+            ) from e
         params['failOnError'] = fail_on_error
     return params
 
@@ -2016,12 +2016,11 @@ def prepare_single_asset_payload(args: dict[str, Any], operation: str) -> dict[s
     asset_type = args.get('type', '').replace(' ', '_').upper()
     if asset_type not in VALID_ASSET_TYPES:
         raise ValueError(MESSAGES['INVALID_ASSET_TYPE_ERROR'])
-    else:
-        valid_json['assets'] = [{
-            'name': args.get('name'),
-            'type': asset_type if asset_type != 'ASN' else 'AS'
-        }]
-        valid_json['properties'] = []
+    valid_json['assets'] = [{
+        'name': args.get('name'),
+        'type': asset_type if asset_type != 'ASN' else 'AS'
+    }]
+    valid_json['properties'] = []
 
     # Prepare payload for general properties
     valid_json = validate_properties_and_prepare_payload(args, operation, valid_json)
@@ -2065,11 +2064,10 @@ def check_task_status(client: Client, resp: dict[str, Any]) -> dict[str, Any]:
         task_resp = client.http_request(method='GET', url_suffix=url_suffix)
         if task_resp.get('state', '') in COMPLETE_TASK_STATES:
             break
-        else:
-            demisto.debug(f'Fetching the task status. Retry number: {retries}')
-            wait = retries * 30
-            time.sleep(wait)  # pylint: disable=sleep-exists
-            retries += 1
+        demisto.debug(f'Fetching the task status. Retry number: {retries}')
+        wait = retries * 30
+        time.sleep(wait)  # pylint: disable=sleep-exists
+        retries += 1
     return task_resp
 
 
@@ -2120,8 +2118,10 @@ def validate_asset_json(args: dict[str, Any], operation: str) -> dict[str, Any]:
     # Validate the input JSON is valid or not
     try:
         valid_json = safe_load_json(asset_json)
-    except ValueError:
-        raise ValueError('Unable to parse JSON file. Please verify the JSON is valid or the Entry ID is correct.')
+    except ValueError as e:
+        raise ValueError(
+            'Unable to parse JSON file. Please verify the JSON is valid or the Entry ID is correct.'
+        ) from e
 
     # Check if the required keys are present in the JSON payload
     required_keys = ['assets', 'properties']

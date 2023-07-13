@@ -165,7 +165,7 @@ def test_gcb_ioc_details_command_success(client):
 def test_gcb_ioc_details_command_empty_response(client):
     """When there is an empty response the command should response empty ec and valid text in hr."""
     from GoogleChronicleBackstory import gcb_ioc_details_command
-    expected_hr = '### For artifact: {}\n'.format(ARGS['artifact_value'])
+    expected_hr = f"### For artifact: {ARGS['artifact_value']}\n"
     expected_hr += MESSAGES["NO_RECORDS"]
 
     dummy_response = '{}'
@@ -799,7 +799,7 @@ def test_ip_command_empty_response_when_uri_empty_response(client):
 
     with open("test_data/empty_list_ioc_details.json") as f:
         dummy_response = f.read()
-    expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
+    expected_hr = f"### IP: {ARGS['ip']} found with Reputation: Unknown\n"
     expected_hr += MESSAGES["NO_RECORDS"]
 
     mock_response = (
@@ -828,7 +828,7 @@ def test_ip_command_invalid_ip_address(client):
 def test_ip_command_empty_response(client):
     """When there is an empty response the command should response empty ec and valid text in hr."""
     from GoogleChronicleBackstory import ip_command
-    expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
+    expected_hr = f"### IP: {ARGS['ip']} found with Reputation: Unknown\n"
     expected_hr += MESSAGES["NO_RECORDS"]
 
     dummy_response = '{}'
@@ -919,7 +919,7 @@ def test_domain_command_empty_response(client):
 
     with open("test_data/empty_list_ioc_details.json") as f:
         dummy_response = f.read()
-    expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
+    expected_hr = f"### Domain: {ARGS['domain']} found with Reputation: Unknown\n"
     expected_hr += MESSAGES["NO_RECORDS"]
 
     mock_response = (
@@ -937,7 +937,7 @@ def test_domain_command_empty_response(client):
 def test_gcb_domain_command_empty_response(client):
     """When there is an empty response the command should response empty ec and valid text in hr."""
     from GoogleChronicleBackstory import domain_command
-    expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
+    expected_hr = f"### Domain: {ARGS['domain']} found with Reputation: Unknown\n"
     expected_hr += MESSAGES["NO_RECORDS"]
 
     dummy_response = '{}'

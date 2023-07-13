@@ -84,7 +84,7 @@ class Client(BaseClient):
                                          auth=auth, json_data=json_data, params=self.params, data=data, files=files,
                                          timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
         except DemistoException as error:
-            raise parse_demisto_exception(error, 'text')
+            raise parse_demisto_exception(error, 'text') from error
 
     def test_module(self) -> dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
@@ -421,10 +421,9 @@ def list_response_policy_zone_rules_command(client: Client, args: dict) -> tuple
             fixed_keys_rule_list
     }
     if new_next_page_id:
-        context.update({
-            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {   # type: ignore
-                'NextPageID': new_next_page_id}
-        })
+        context[f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)'] = {  # type: ignore
+            'NextPageID': new_next_page_id
+        }
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response

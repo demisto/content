@@ -653,7 +653,7 @@ class Client(BaseClient):
                                 if (x := reg.get(f)):
                                     ml_feature_list.append(x)
 
-        if len(ml_feature_list) > 0:
+        if ml_feature_list:
             changed = True
         return assets, ml_feature_list, changed
 
@@ -686,15 +686,15 @@ def calculate_limits(limit: Any) -> tuple[int, int]:
         total_results = DEFAULT_RESULTS
     elif total_results > MAX_RESULTS:
         total_results = MAX_RESULTS
-    max_page_size = MAX_PAGE_SIZE if total_results > MAX_PAGE_SIZE else total_results
+    max_page_size = min(total_results, MAX_PAGE_SIZE)
     return (total_results, max_page_size)
 
 
 def handle_iprange_include(arg: str | None, arg_name: str | None) -> str:
     include = argToList(arg)
     sanitized_include: str = ''
-    if include and not any('none' in i for i in include):
-        if not all(i in IPRANGE_INCLUDE_OPTIONS for i in include):
+    if include and all('none' not in i for i in include):
+        if any(i not in IPRANGE_INCLUDE_OPTIONS for i in include):
             raise ValueError(f'{arg_name} must contain the following options: {", ".join(IPRANGE_INCLUDE_OPTIONS)}')
         else:
             sanitized_include = ','.join(include)
@@ -707,7 +707,7 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         for i in ipaddress.summarize_address_range(ipaddress.IPv4Address(start), ipaddress.IPv4Address(end)):
             yield str(i)
     except ipaddress.AddressValueError as e:
-        raise ValueError(f'Invalid IP address in range: {str(e)}')
+        raise ValueError(f'Invalid IP address in range: {str(e)}') from e
 
 
 def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int | None = None,
@@ -721,7 +721,7 @@ def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int 
 
     # check if argument is mandatory
     if arg is None:
-        if required is True:
+        if required:
             raise ValueError(f'Missing argument "{arg_name}"')
         return None
 
@@ -732,8 +732,8 @@ def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int 
             raise ValueError(f'Integer invalid: "{arg_name}"="{arg}"')
         try:
             i = int(arg)
-        except ValueError:
-            raise ValueError(f'Integer invalid: "{arg_name}"="{arg}"')
+        except ValueError as e:
+            raise ValueError(f'Integer invalid: "{arg_name}"="{arg}"') from e
     elif isinstance(arg, int):
         i = arg
     else:
@@ -803,11 +803,13 @@ def format_cidr_data(cidrs: list[dict[str, Any]]) -> list[CommandResults]:
             readable_output=tableToMarkdown("New CIDR indicator was found", cidr_standard_context.to_context()),
             indicator=cidr_standard_context
         ))
-    command_results.append(CommandResults(
-        outputs_prefix='Expanse.IPRange',
-        outputs_key_field='id',
-        outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
-    ))
+    command_results.append(
+        CommandResults(
+            outputs_prefix='Expanse.IPRange',
+            outputs_key_field='id',
+            outputs=cidr_data_list if cidr_data_list else None,
+        )
+    )
     return command_results
 
 
@@ -898,14 +900,19 @@ def format_domain_data(domains: list[dict[str, Any]]) -> list[CommandResults]:
             for k in domain_data if k not in domain_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.Domain',
-        outputs_key_field='domain',
-        outputs=domain_data_list if len(domain_data_list) > 0 else None,
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse Domain List', domain_data_list)
+        if domain_data_list
+        else "## No Domains found"
+    )
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.Domain',
+            outputs_key_field='domain',
+            outputs=domain_data_list if domain_data_list else None,
+        )
+    )
     return command_results
 
 
@@ -983,16 +990,20 @@ def format_certificate_data(certificates: list[dict[str, Any]]) -> list[CommandR
             for k in certificate if k not in certificate_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse Certificate List', certificate_data_list) if len(
-        certificate_data_list) > 0 else "## No Certificates found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.Certificate',
-        outputs_key_field='id',
-        outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
-        ignore_auto_extract=True,
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse Certificate List', certificate_data_list)
+        if certificate_data_list
+        else "## No Certificates found"
+    )
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.Certificate',
+            outputs_key_field='id',
+            outputs=certificate_data_list if certificate_data_list else None,
+            ignore_auto_extract=True,
+        )
+    )
     return command_results
 
 
@@ -1026,16 +1037,22 @@ def format_cloud_resource_data(cloud_resources: list[dict[str, Any]]) -> list[Co
             "Region": cloud_resource_data.get("region"),
             "Source": cloud_resource_data.get("sourceDetails"),
         })
-    readable_output = tableToMarkdown(
-        'Expanse Cloud Resource List', hr_cloud_resource_list) if len(hr_cloud_resource_list) > 0 else \
-        "## No Cloud Resources found"
-    command_results.append(CommandResults(
-        outputs_prefix='Expanse.CloudResource',
-        outputs_key_field='id',
-        outputs=cloud_resource_data_list if len(cloud_resource_data_list) > 0 else None,
-        readable_output=readable_output,
-        raw_response=cloud_resources
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse Cloud Resource List', hr_cloud_resource_list)
+        if hr_cloud_resource_list
+        else "## No Cloud Resources found"
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix='Expanse.CloudResource',
+            outputs_key_field='id',
+            outputs=cloud_resource_data_list
+            if cloud_resource_data_list
+            else None,
+            readable_output=readable_output,
+            raw_response=cloud_resources,
+        )
+    )
 
     return command_results
 
@@ -1086,40 +1103,40 @@ def get_issues_command(client: Client, args: dict[str, Any]) -> CommandResults:
     port_number = ','.join(arg_list)
 
     arg_list = argToList(args.get('progress_status'))
-    if arg_list and not all(i in ISSUE_PROGRESS_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_PROGRESS_STATUS for i in arg_list):
         raise ValueError(f'progress_status must include: {", ".join(ISSUE_PROGRESS_STATUS)}')
     progress_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('activity_status'))
-    if arg_list and not all(i in ISSUE_ACTIVITY_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_ACTIVITY_STATUS for i in arg_list):
         raise ValueError(f'activity_status must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
     activity_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('priority'))
-    if arg_list and not all(i in ISSUE_PRIORITY for i in arg_list):
+    if arg_list and any(i not in ISSUE_PRIORITY for i in arg_list):
         raise ValueError(f'priority must include: {", ".join(ISSUE_PRIORITY)}')
     priority = ','.join(arg_list)
 
     arg_list = argToList(args.get('cloud_management_status'))
-    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+    if arg_list and any(i not in CLOUD_MANAGEMENT_STATUS for i in arg_list):
         raise ValueError(f'cloud_management_status must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
     cloud_management_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('sort'))
-    if arg_list and not all(i in ISSUE_SORT_OPTIONS for i in arg_list):
+    if arg_list and any(i not in ISSUE_SORT_OPTIONS for i in arg_list):
         raise ValueError(f'sort must include: {", ".join(ISSUE_SORT_OPTIONS)}')
     sort = ','.join(arg_list)
 
-    d = args.get('created_before', None)
+    d = args.get('created_before')
     created_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('created_after', None)
+    d = args.get('created_after')
     created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('modified_before', None)
+    d = args.get('modified_before')
     modified_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('modified_after', None)
+    d = args.get('modified_after')
     modified_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issues = list(
@@ -1135,7 +1152,7 @@ def get_issues_command(client: Client, args: dict[str, Any]) -> CommandResults:
         )
     )
 
-    if len(issues) < 1:
+    if not issues:
         return CommandResults(readable_output='No Issues Found')
 
     readable_output = tableToMarkdown(
@@ -1174,17 +1191,17 @@ def get_services_command(client: Client, args: dict[str, Any]) -> CommandResults
     country_code = ','.join([i.upper() for i in arg_list])
 
     arg_list = argToList(args.get('activity_status'))
-    if arg_list and not all(i in ISSUE_ACTIVITY_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_ACTIVITY_STATUS for i in arg_list):
         raise ValueError(f'activity_status must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
     activity_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('discovery_type'))
-    if arg_list and not all(i in SERVICE_DISCOVERY_TYPE for i in arg_list):
+    if arg_list and any(i not in SERVICE_DISCOVERY_TYPE for i in arg_list):
         raise ValueError(f'discovery_type must include: {", ".join(SERVICE_DISCOVERY_TYPE)}')
     discovery_type = ','.join(arg_list)
 
     arg_list = argToList(args.get('cloud_management_status'))
-    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+    if arg_list and any(i not in CLOUD_MANAGEMENT_STATUS for i in arg_list):
         raise ValueError(f'cloud_management_status must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
     cloud_management_status = ','.join(arg_list)
 
@@ -1204,7 +1221,7 @@ def get_services_command(client: Client, args: dict[str, Any]) -> CommandResults
         )
     )
 
-    if len(services) < 1:
+    if not services:
         return CommandResults(readable_output='No Services Found')
 
     # reduce some objects for human readable
@@ -1289,7 +1306,7 @@ def get_issue_updates_command(client: Client, args: dict[str, Any]) -> CommandRe
         raise ValueError('issue_id not specified')
 
     update_types = argToList(args.get('update_types'))
-    if update_types and not all(i in ISSUE_UPDATE_TYPES for i in update_types):
+    if update_types and any(i not in ISSUE_UPDATE_TYPES for i in update_types):
         raise ValueError(f'Invalid update_type: {update_types}. Must include: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
     d = args.get('created_after')
@@ -1416,22 +1433,22 @@ def fetch_incidents(client: Client, max_incidents: int,
     incidents: list[dict[str, Any]] = []
 
     arg_list = argToList(priority)
-    if arg_list and not all(i in ISSUE_PRIORITY for i in arg_list):
+    if arg_list and any(i not in ISSUE_PRIORITY for i in arg_list):
         raise ValueError(f'priority must include: {", ".join(ISSUE_PRIORITY)}')
     _priority = ','.join(arg_list)
 
     arg_list = argToList(progress_status)
-    if arg_list and not all(i in ISSUE_PROGRESS_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_PROGRESS_STATUS for i in arg_list):
         raise ValueError(f'progressStatus must include: {", ".join(ISSUE_PROGRESS_STATUS)}')
     _progress_status = ','.join(arg_list)
 
     arg_list = argToList(activity_status)
-    if arg_list and not all(i in ISSUE_ACTIVITY_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_ACTIVITY_STATUS for i in arg_list):
         raise ValueError(f'activityStatus must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
     _activity_status = ','.join(arg_list)
 
     arg_list = argToList(cloud_management_status)
-    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+    if arg_list and any(i not in CLOUD_MANAGEMENT_STATUS for i in arg_list):
         raise ValueError(f'cloudManagementStatus must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
     _cloud_management_status = ','.join(arg_list)
 
@@ -1690,7 +1707,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], sync_owners: b
             incident_updates['ml_features'] = ' '.join(sorted(set(ml_feature_list)))
 
     # process incident updates only if anything has changed
-    if len(incident_updates) > 0 or len(new_entries) > 0:
+    if incident_updates or new_entries:
         incident_updates['id'] = parsed_args.remote_incident_id
 
     return GetRemoteDataResponse(incident_updates, new_entries)
@@ -1777,8 +1794,8 @@ def list_businessunits_command(client: Client, args: dict[str, Any]) -> CommandR
     return CommandResults(
         outputs_prefix="Expanse.BusinessUnit",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Business Units found" if len(outputs) == 0 else None
+        outputs=outputs if outputs else None,
+        readable_output="## No Business Units found" if not outputs else None,
     )
 
 
@@ -1790,8 +1807,8 @@ def list_providers_command(client: Client, args: dict[str, Any]) -> CommandResul
     return CommandResults(
         outputs_prefix="Expanse.Provider",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Providers found" if len(outputs) == 0 else None
+        outputs=outputs if outputs else None,
+        readable_output="## No Providers found" if not outputs else None,
     )
 
 
@@ -1810,8 +1827,10 @@ def list_pocs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="Expanse.PointOfContact",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Point Of Contacts found" if len(outputs) == 0 else readable_output
+        outputs=outputs if outputs else None,
+        readable_output="## No Point Of Contacts found"
+        if not outputs
+        else readable_output,
     )
 
 
@@ -1859,14 +1878,14 @@ def list_tags_command(client: Client, args: dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="Expanse.Tag",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Tags found" if len(outputs) == 0 else None
+        outputs=outputs if outputs else None,
+        readable_output="## No Tags found" if not outputs else None,
     )
 
 
 def create_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
     name: str = args.get('name', '')
-    if not name or len(name) < 1 or len(name) > 127:
+    if not name or len(name) > 127:
         raise ValueError('Tag name must be less than 128 characters long')
 
     description: str = args.get('description', '')
@@ -1906,7 +1925,7 @@ def manage_asset_tags_command(client: Client, args: dict[str, Any]) -> CommandRe
     if len(tag_names) > 0:
         [tag_ids.append(t['id']) for t in client.list_tags() if t['name'] in tag_names]
     tags: list[str] = list(set(tag_ids))
-    if len(tags) < 1:
+    if not tags:
         raise ValueError('Must provide valid tag IDs or names')
 
     client.manage_asset_tags(mapped_asset_type, operation_type, asset_id, tags)
@@ -1937,7 +1956,7 @@ def manage_asset_pocs_command(client: Client, args: dict[str, Any]) -> CommandRe
             if p.get('email') in poc_emails:
                 poc_ids.append(p['id'])
     pocs: list[str] = list(set(poc_ids))
-    if len(pocs) < 1:
+    if not pocs:
         raise ValueError('Must provide valid Point of Contact IDs or emails')
 
     client.manage_asset_pocs(mapped_asset_type, operation_type, asset_id, pocs)
@@ -1950,7 +1969,7 @@ def get_iprange_command(client: Client, args: dict[str, Any]) -> list[CommandRes
     include = handle_iprange_include(args.pop('include', None), 'include')
     id_: str | None = args.pop('id', None)
 
-    if id_ is not None and len(args) != 0:
+    if id_ is not None and args:
         raise ValueError("You can only use [id] only with [include] parameter")
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
@@ -1994,7 +2013,7 @@ def get_domain_command(client: Client, args: dict[str, Any]) -> list[CommandResu
     domain: str | None = args.pop('domain', None)
     last_observed_date: str | None = args.pop('last_observed_date', None)
 
-    if domain is not None and len(args) != 0:
+    if domain is not None and args:
         raise ValueError("The only argument allowed with domain is last_observed_date")
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
@@ -2132,7 +2151,7 @@ def get_certificate_command(client: Client, args: dict[str, Any]) -> list[Comman
     md5_hash: str | None = args.pop('md5_hash', None)
     last_observed_date: str | None = args.pop('last_observed_date', None)
 
-    if md5_hash is not None and len(args) != 0:
+    if md5_hash is not None and args:
         raise ValueError("The only argument allowed with md5_hash is last_observed_date")
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
@@ -2256,7 +2275,7 @@ def get_associated_domains_command(client: Client, args: dict[str, Any]) -> list
 
                 ips_to_query[ip_address].add(md5_hash)
 
-    for ip2q in ips_to_query:
+    for ip2q, value in ips_to_query.items():
         ips_search_params: dict[str, Any] = {
             'inetSearch': ip2q,
             'assetType': 'DOMAIN'
@@ -2275,12 +2294,14 @@ def get_associated_domains_command(client: Client, args: dict[str, Any]) -> list
                 }
 
             matching_domains[domain]['IP'].append(ip2q)
-            matching_domains[domain]['certificate'].extend(list(ips_to_query[ip2q]))
+            matching_domains[domain]['certificate'].extend(list(value))
 
     readable_output = tableToMarkdown(
         f"Expanse Domains matching Certificate Common Name: {cn_search}",
-        list(matching_domains.values()) if len(matching_domains) > 0 else "## No Domains found",
-        headers=['name', 'IP', 'certificate']
+        list(matching_domains.values())
+        if matching_domains
+        else "## No Domains found",
+        headers=['name', 'IP', 'certificate'],
     )
     for d in matching_domains:
         indicator = Common.Domain(d, Common.DBotScore(d, DBotScoreType.DOMAIN, "ExpanseV2", Common.DBotScore.NONE))
@@ -2288,12 +2309,16 @@ def get_associated_domains_command(client: Client, args: dict[str, Any]) -> list
             readable_output=tableToMarkdown("New Domain indicator was found.", indicator.to_context()),
             indicator=indicator
         ))
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.AssociatedDomain',
-        outputs_key_field='name',
-        outputs=list(
-            matching_domains.values()) if len(matching_domains) > 0 else None, ))
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.AssociatedDomain',
+            outputs_key_field='name',
+            outputs=list(matching_domains.values())
+            if matching_domains
+            else None,
+        )
+    )
     return command_results
 
 
@@ -2368,11 +2393,7 @@ def certificate_command(client: Client, args: dict[str, Any]) -> list[CommandRes
 
         business_unit_names: list[str] = []
         business_units = certificate.get("businessUnits", [])
-        for bu in business_units:
-            if 'name' not in bu:
-                continue
-            business_unit_names.append(bu['name'])
-
+        business_unit_names.extend(bu['name'] for bu in business_units if 'name' in bu)
         indicator: dict[str, Any] = {
             'type': 'Certificate',
             'value': indicator_value,
@@ -2466,14 +2487,19 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
             for k in ip_data if k not in ip_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.IP',
-        outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
-        outputs=ip_data_list if len(ip_data_list) > 0 else None,
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse IP List', ip_data_list)
+        if ip_data_list
+        else "## No IPs found"
+    )
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.IP',
+            outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
+            outputs=ip_data_list if ip_data_list else None,
+        )
+    )
     return command_results
 
 

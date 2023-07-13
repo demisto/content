@@ -70,21 +70,21 @@ def reformat_outputs(text: str) -> str:
         return reformat_resource_groups_outputs(text)
     if text == 'id':
         return 'ID'
-    if text in ['lanid', 'u_lanid']:
+    if text in {'lanid', 'u_lanid'}:
         return 'LanID'
     if text == 'jobId':
         return 'JobID'
     if text == 'eventId':
         return 'EventID'
-    if text in ['entityId', 'entityid']:
+    if text in {'entityId', 'entityid'}:
         return 'EntityID'
-    if text in ['tenantId', 'tenantid']:
+    if text in {'tenantId', 'tenantid'}:
         return 'TenantID'
     if text == 'incidentId':
         return 'IncidentID'
     if text == 'Datasourceid':
         return 'DataSourceID'
-    if text in ['employeeId', 'employeeid', 'u_employeeid']:
+    if text in {'employeeId', 'employeeid', 'u_employeeid'}:
         return 'EmployeeID'
     if text == 'violatorId':
         return 'ViolatorID'
@@ -97,7 +97,13 @@ def reformat_outputs(text: str) -> str:
 
     if text.startswith(("U_", "u_")):
         text = text[2:]
-    return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
+    return (
+        ''.join(
+            f' {char}' if char.isupper() else char.strip() for char in text
+        )
+        .strip()
+        .title()
+    )
 
 
 def parse_data_arr(data_arr: Any, fields_to_drop: list = [], fields_to_include: list = []):
@@ -251,24 +257,33 @@ def validate_mirroring_parameters(params: dict[str, Any]) -> None:
                          'XSOAR\'s closed state for Outgoing mirroring", "Securonix status to map with XSOAR\'s '
                          'closed state for Outgoing mirroring", "Comment Entry Tag".')
 
-    if mirror_direction == 'Incoming And Outgoing':
-        if not active_state_action or not active_state_status or not close_state_action \
-                or not close_state_status or not close_states_of_securonix \
-                or not argToList(close_states_of_securonix) or not comment_entry_tag:
-            raise ValueError('Following fields are required for Incoming And Outgoing Mirroring: "Securonix workflow '
-                             'state(s) that can be considered as Close state in XSOAR for Incoming mirroring", '
-                             '"Securonix action name to map with XSOAR\'s active state for Outgoing mirroring", '
-                             '"Securonix status to map with XSOAR\'s active state for Outgoing mirroring", "Securonix'
-                             ' action name to map with XSOAR\'s closed state for Outgoing mirroring", "Securonix status'
-                             ' to map with XSOAR\'s closed state for Outgoing mirroring", "Comment Entry Tag".')
+    if mirror_direction == 'Incoming And Outgoing' and (
+        not active_state_action
+        or not active_state_status
+        or not close_state_action
+        or not close_state_status
+        or not close_states_of_securonix
+        or not argToList(close_states_of_securonix)
+        or not comment_entry_tag
+    ):
+        raise ValueError('Following fields are required for Incoming And Outgoing Mirroring: "Securonix workflow '
+                         'state(s) that can be considered as Close state in XSOAR for Incoming mirroring", '
+                         '"Securonix action name to map with XSOAR\'s active state for Outgoing mirroring", '
+                         '"Securonix status to map with XSOAR\'s active state for Outgoing mirroring", "Securonix'
+                         ' action name to map with XSOAR\'s closed state for Outgoing mirroring", "Securonix status'
+                         ' to map with XSOAR\'s closed state for Outgoing mirroring", "Comment Entry Tag".')
 
-    if close_incident:
-        if not active_state_action or not active_state_status or not close_state_action or not close_state_status:
-            raise ValueError('Following fields are required for closing incident on Securonix: "Securonix action name '
-                             'to map with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map '
-                             'with XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with '
-                             'XSOAR\'s closed state for Outgoing mirroring", "Securonix status to map with XSOAR\'s '
-                             'closed state for Outgoing mirroring".')
+    if close_incident and (
+        not active_state_action
+        or not active_state_status
+        or not close_state_action
+        or not close_state_status
+    ):
+        raise ValueError('Following fields are required for closing incident on Securonix: "Securonix action name '
+                         'to map with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map '
+                         'with XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with '
+                         'XSOAR\'s closed state for Outgoing mirroring", "Securonix status to map with XSOAR\'s '
+                         'closed state for Outgoing mirroring".')
 
 
 def validate_delete_whitelist_parameters(whitelist_type: str, entity_id: str, attribute_name: str,
@@ -296,13 +311,12 @@ def validate_delete_whitelist_parameters(whitelist_type: str, entity_id: str, at
     if whitelist_type == "Global" and not entity_id:
         raise ValueError("entity_id is required parameter for Global whitelist type.")
 
-    # Validate attribute_name parameter.
-    if whitelist_type == "Attribute" and not attribute_name:
-        raise ValueError("attribute_name is required parameter for Attribute whitelist type.")
+    if whitelist_type == "Attribute":
+        if not attribute_name:
+            raise ValueError("attribute_name is required parameter for Attribute whitelist type.")
 
-    # Validate attribute_value parameter.
-    if whitelist_type == "Attribute" and not attribute_value:
-        raise ValueError("attribute_value is required parameter for Attribute whitelist type.")
+        if not attribute_value:
+            raise ValueError("attribute_value is required parameter for Attribute whitelist type.")
 
     # Validate tenant_name parameter.
     if not tenant_name:
@@ -451,9 +465,9 @@ def extract_closing_comments(activity_data: list[dict[str, Any]], close_states_o
         if current_status != last_status and current_status in close_states_of_securonix:
             comments_list = activity.get('comment', [])
 
-            for _comment in comments_list:
-                closing_comments.append(_comment.get('Comments', ''))
-
+            closing_comments.extend(
+                _comment.get('Comments', '') for _comment in comments_list
+            )
     if not closing_comments:
         closing_comments.append('Closing the XSOAR incident as Securonix incident is closed.')
 
@@ -581,13 +595,10 @@ class Client(BaseClient):
             # https://github.com/python/cpython/pull/25778
             # https://bugs.python.org/issue43998
 
-            if self._verify:
+            if self._verify or not IS_PY3 or PY_VER_MINOR < 10:
                 https_adapter = http_adapter
-            elif IS_PY3 and PY_VER_MINOR >= 10:
-                https_adapter = SSLAdapter(max_retries=retry, verify=self._verify)  # type: ignore[arg-type]
             else:
-                https_adapter = http_adapter
-
+                https_adapter = SSLAdapter(max_retries=retry, verify=self._verify)  # type: ignore[arg-type]
             self.session.mount('https://', https_adapter)
 
         except NameError:
@@ -629,34 +640,35 @@ class Client(BaseClient):
                 if response_type != 'json':
                     return result.text
                 return result.json()
-            except Exception:
+            except Exception as e:
                 raise ValueError(
-                    f'Failed to parse http response to JSON format. Original response body: \n{result.text}')
+                    f'Failed to parse http response to JSON format. Original response body: \n{result.text}'
+                ) from e
 
         except requests.exceptions.ConnectTimeout as exception:
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            raise Exception(f'{err_msg}\n{exception}')
+                          ' is incorrect or that the Server is not accessible from your host.'
+            raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.SSLError as exception:
             err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                      ' the integration configuration.'
-            raise Exception(f'{err_msg}\n{exception}')
+                          ' the integration configuration.'
+            raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.ProxyError as exception:
             err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                      ' selected, try clearing the checkbox.'
-            raise Exception(f'{err_msg}\n{exception}')
+                          ' selected, try clearing the checkbox.'
+            raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.ConnectionError as exception:
             error_class = str(exception.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
             err_msg = f'Error Type: {err_type}\n' \
-                      f'Error Number: [{exception.errno}]\n' \
-                      f'Message: {exception.strerror}\n' \
-                      f'Verify that the tenant parameter is correct ' \
-                      f'and that you have access to the server from your host.'
-            raise Exception(f'{err_msg}\n{exception}')
+                          f'Error Number: [{exception.errno}]\n' \
+                          f'Message: {exception.strerror}\n' \
+                          f'Verify that the tenant parameter is correct ' \
+                          f'and that you have access to the server from your host.'
+            raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.RetryError as exception:
             try:
@@ -664,22 +676,24 @@ class Client(BaseClient):
             except Exception:  # noqa: disable=broad-except
                 reason = ''
             err_msg = f'Max Retries Error: Request attempts with {self._securonix_retry_count} retries and with ' \
-                      f'{self._securonix_retry_delay} seconds {self._securonix_retry_delay_type} delay ' \
-                      f'failed.\n{reason}'
+                          f'{self._securonix_retry_delay} seconds {self._securonix_retry_delay_type} delay ' \
+                          f'failed.\n{reason}'
             if self._securonix_retry_delay_type == "Exponential":
                 # For Exponential delay we are dividing it by 2 so for error message make it to original value
                 err_msg = f'Max Retries Error: Request attempts with {self._securonix_retry_count} retries and with' \
-                          f' {self._securonix_retry_delay * 2} seconds {self._securonix_retry_delay_type} delay ' \
-                          f'failed.\n{reason}'
+                              f' {self._securonix_retry_delay * 2} seconds {self._securonix_retry_delay_type} delay ' \
+                              f'failed.\n{reason}'
             demisto.error(err_msg)
-            raise Exception(f'{err_msg}\n{exception}')
+            raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.InvalidHeader as exception:
             set_integration_context({})
-            raise Exception(f"Invalid token generated from the API.\n{exception}")
+            raise Exception(
+                f"Invalid token generated from the API.\n{exception}"
+            ) from exception
 
         except Exception as exception:
-            raise Exception(str(exception))
+            raise Exception(str(exception)) from exception
 
     def _generate_token(self) -> str:
         """Generate a token
@@ -1400,7 +1414,7 @@ class Client(BaseClient):
         for field in field_names:
             field_dic = {"fieldName": field, "encrypt": field in encrypt, "key": field in key}
             field_list.append(field_dic)
-        data.update({"lookupFieldList": field_list})
+        data["lookupFieldList"] = field_list
         remove_nulls_from_dictionary(data)
         response = self.http_request('POST', '/lookupTable/createLookupTable',
                                      headers={'token': self._token}, json=data, response_type='text')
@@ -1669,9 +1683,8 @@ def run_polling_command(client, args: dict, command_name: str, search_function: 
     Returns:
         Outputs.
     """
-    command_results = []
     result = search_function(client, args)
-    command_results.append(result)
+    command_results = [result]
     outputs = result[0].raw_response.get('events')
     delay_type = client.get_securonix_retry_delay_type()
     retry_count: int = client.get_securonix_retry_count()
@@ -1809,9 +1822,9 @@ def get_incident_available_actions(client: Client, args: dict) -> tuple[str, dic
     if not incident_actions:
         return f'Incident {incident_id} does not have any available actions.', {}, incident_actions
     actions = []
-    for action_details in incident_actions:
-        actions.append(action_details.get('actionName'))
-
+    actions.extend(
+        action_details.get('actionName') for action_details in incident_actions
+    )
     incident_outputs = {
         'IncidentID': incident_id,
         'AvailableActions': actions
@@ -1872,14 +1885,14 @@ def get_incident_attachments(client: Client, args: dict, incident_id: str = None
         for name in zip_filenames:
             with open(name, 'br') as file:
                 file_list.append(fileResult(filename=name, data=file.read()))
-        return file_list
     else:
         file_list.extend(
             [CommandResults(outputs_prefix="Securonix.Incidents.Attachments",
                             outputs=[{'IncidentID': incident_id_, 'Files': filename}],
                             readable_output=f"### Incident ID:{incident_id_}"),
              fileResult(filename=filename, data=attachments_res.content)])
-        return file_list
+
+    return file_list
 
 
 def perform_action_on_incident(client: Client, args: dict) -> tuple[str, dict, dict]:
@@ -2233,13 +2246,10 @@ def get_whitelist_entry(client: Client, args: dict[str, Any]) -> tuple[str, dict
 
     whitelist_entries = []
 
-    for key, val in whitelist.items():
-        whitelist_entries.append(
-            {
-                "Entity/Attribute": key,
-                "ExpiryDate": val
-            }
-        )
+    whitelist_entries.extend(
+        {"Entity/Attribute": key, "ExpiryDate": val}
+        for key, val in whitelist.items()
+    )
     watchlist_outputs = {
         "WhitelistName": whitelist_name,
         "TenantName": tenant_name,
@@ -2294,8 +2304,8 @@ def add_whitelist_entry(client: Client, args) -> tuple[str, dict, dict]:
     try:
         if expiry_date:
             datetime.strptime(expiry_date, '%m/%d/%Y')
-    except ValueError:
-        raise Exception("exipry_date is not in MM/DD/YYYY format")
+    except ValueError as e:
+        raise Exception("exipry_date is not in MM/DD/YYYY format") from e
 
     response = client.add_whitelist_entry_request(tenant_name, whitelist_name, whitelist_type, entity_type, entity_id,
                                                   expiry_date, resource_name, resource_group_id, attribute_name,
@@ -2735,7 +2745,7 @@ def fetch_securonix_incident(client: Client, fetch_time: str | None, incident_st
                     'rawJSON': json.dumps(incident),
                 })
 
-                already_fetched.append(str(incident_id))
+                already_fetched.append(incident_id)
 
         # If incidents returned from API, then only update the offset value.
         if incident_items:
@@ -3010,9 +3020,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any],
         comments_text = []
         comments_list = entry.get('comment', {})
 
-        for _comment in comments_list:
-            comments_text.append(_comment.get('Comments'))
-
+        comments_text.extend(_comment.get('Comments') for _comment in comments_list)
         comments_text: list[str] = list(filter(None, comments_text))
 
         if "Mirrored From XSOAR" in ", ".join(comments_text):

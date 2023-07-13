@@ -172,15 +172,15 @@ class Client(BaseClient):
             resp = self._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
                                       headers=headers, timeout=self.request_timeout, resp_type='response',
                                       ok_codes=(200, 400, 401, 404, 407, 500), proxies=handle_proxy())
-        except MissingSchema:
-            raise ValueError(MESSAGES['MISSING_SCHEMA_ERROR'])
-        except InvalidSchema:
-            raise ValueError(MESSAGES['INVALID_SCHEMA_ERROR'])
+        except MissingSchema as e:
+            raise ValueError(MESSAGES['MISSING_SCHEMA_ERROR']) from e
+        except InvalidSchema as e:
+            raise ValueError(MESSAGES['INVALID_SCHEMA_ERROR']) from e
         except DemistoException as e:
             if 'Proxy Error' in str(e):
-                raise ConnectionError(MESSAGES['PROXY_ERROR'])
+                raise ConnectionError(MESSAGES['PROXY_ERROR']) from e
             elif 'ConnectionError' in str(e) or 'ConnectTimeout' in str(e):
-                raise ConnectionError(MESSAGES['CONNECTION_ERROR'])
+                raise ConnectionError(MESSAGES['CONNECTION_ERROR']) from e
             else:
                 raise e
 
@@ -190,18 +190,20 @@ class Client(BaseClient):
         if status_code != 200:
             error_message = ''
             if resp.json().get('message', ''):
-                error_message = 'Reason: {}'.format(resp.json().get('message', ''))
+                error_message = f"Reason: {resp.json().get('message', '')}"
             status_code_message_map = {
-                400: '{} {}'.format(MESSAGES['BAD_REQUEST_ERROR'], error_message),
+                400: f"{MESSAGES['BAD_REQUEST_ERROR']} {error_message}",
                 401: MESSAGES['AUTHENTICATION_ERROR'],
                 404: MESSAGES['PAGE_NOT_FOUND_ERROR'],
-                407: MESSAGES['PROXY_ERROR']
+                407: MESSAGES['PROXY_ERROR'],
             }
             if status_code in status_code_message_map:
                 demisto.info(f'Response code: {status_code}. Reason: {status_code_message_map[status_code]}')
                 raise ValueError(status_code_message_map[status_code])
             elif status_code >= 500:
-                demisto.info('Response code: {}. Reason: {}'.format(status_code, MESSAGES['INTERNAL_SERVER_ERROR']))
+                demisto.info(
+                    f"Response code: {status_code}. Reason: {MESSAGES['INTERNAL_SERVER_ERROR']}"
+                )
                 raise ValueError(MESSAGES['INTERNAL_SERVER_ERROR'])
             else:
                 resp.raise_for_status()
@@ -225,8 +227,8 @@ def get_request_timeout() -> Any | None:
         request_timeout = demisto.params().get('request_timeout', DEFAULT_REQUEST_TIMEOUT)
         request_timeout = request_timeout if request_timeout else DEFAULT_REQUEST_TIMEOUT
         request_timeout = int(request_timeout)
-    except ValueError:
-        raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
+    except ValueError as e:
+        raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION']) from e
 
     if request_timeout <= 0:
         raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
@@ -536,14 +538,14 @@ def get_context_for_get_whois_commands(domains: list[dict[str, Any]]) -> list:
     """
     custom_context: list[dict[str, Any]] = []
     # set domain standard context
-    for domain in domains:
-        custom_context.append(
-            prepare_context_dict(
-                response_dict=domain,
-                keys_with_hierarchy=('registrant', 'admin', 'billing', 'tech'),
-                exclude_keys=('zone', 'rawText')
-            )
+    custom_context.extend(
+        prepare_context_dict(
+            response_dict=domain,
+            keys_with_hierarchy=('registrant', 'admin', 'billing', 'tech'),
+            exclude_keys=('zone', 'rawText'),
         )
+        for domain in domains
+    )
     return createContext(custom_context, removeNull=True)
 
 
@@ -555,8 +557,10 @@ def prepare_hr_cell_for_whois_info(domain_info: dict[str, Any]) -> str:
     :return: domain information as a readable format
     """
     hr_cell_info: list[str] = []
-    for key, value in domain_info.items():
-        hr_cell_info.append(f'**{key[0].upper() + key[1:]}:** {value}')
+    hr_cell_info.extend(
+        f'**{key[0].upper() + key[1:]}:** {value}'
+        for key, value in domain_info.items()
+    )
     return ',\n'.join(hr_cell_info)
 
 
@@ -590,7 +594,7 @@ def get_human_readable_for_whois_commands(domains: list[dict[str, Any]], is_repu
 
     hr = ''
     if not is_reputation_command:
-        hr += '### Total Retrieved Record(s): ' + str(len(domains)) + '\n'
+        hr += f'### Total Retrieved Record(s): {len(domains)}' + '\n'
         table_name = 'Associated Domains'
     hr += tableToMarkdown(
         name=table_name,
@@ -625,7 +629,7 @@ def get_human_readable_for_articles_commands(articles: list[dict[str, Any]]):
         }
         hr_table_content.append(hr_row)
 
-    hr = '### Total Retrieved Record(s): ' + str(len(articles)) + '\n'
+    hr = f'### Total Retrieved Record(s): {len(articles)}' + '\n'
     hr += tableToMarkdown(
         name=table_name,
         t=hr_table_content,
@@ -767,7 +771,7 @@ def get_ssl_cert_search_hr(results: list[dict[str, Any]]) -> str:
     """
     ssl_cert_search_hr: list[dict[str, Any]] = prepare_human_readable_dict_for_ssl(results)
 
-    hr = '### Total Retrieved Record(s): ' + str(len(results)) + '\n'
+    hr = f'### Total Retrieved Record(s): {len(results)}' + '\n'
     hr += tableToMarkdown('SSL certificate(s)', ssl_cert_search_hr,
                           ['Sha1', 'Serial Number', 'Issued (GMT)', 'Expires (GMT)', 'SSL Version', 'First (GMT)',
                            'Last (GMT)', 'Issuer Common Name', 'Subject Common Name', 'Subject Alternative Names',
@@ -791,7 +795,7 @@ def get_pdns_details_hr(results: list[dict[str, Any]], total_record: int) -> str
 
     table_headers = ['Resolve', 'Resolve Type', 'Record Type', 'Collected (GMT)', 'First (GMT)', 'Last (GMT)',
                      'Source', 'Record Hash']
-    hr = '### Total Retrieved Record(s): ' + str(total_record) + '\n'
+    hr = f'### Total Retrieved Record(s): {total_record}' + '\n'
     hr += tableToMarkdown('PDNS detail(s)', pdns_details_hr, table_headers, removeNull=True)
     return hr
 
@@ -836,10 +840,11 @@ def get_services_hr(total_records: int, results: list) -> str:
     for result in results:
         current_services = result.get("currentServices", [])
         labels = []
-        for services in current_services:
-            if services.get("label"):
-                labels.append(services.get("label"))
-
+        labels.extend(
+            services.get("label")
+            for services in current_services
+            if services.get("label")
+        )
         services_hr.append({
             "Port Number": result.get("portNumber"),
             "Protocol": result.get("protocol"),
@@ -869,8 +874,8 @@ def validate_get_cookies_arguments(args: dict[str, Any]) -> None:
     try:
         if int(args.get("page", "0")) < 0:
             raise ValueError
-    except ValueError:
-        raise ValueError(MESSAGES['INVALID_WHOLE_NUMBER'].format('page'))
+    except ValueError as e:
+        raise ValueError(MESSAGES['INVALID_WHOLE_NUMBER'].format('page')) from e
 
     # check if the single-select values of arguments are valid or not
     valid_values = {
@@ -924,8 +929,8 @@ def get_cookies_hr(results: list[dict[str, Any]], hostname_header: str, total_re
 
     table_headers = [hostname_header, 'Cookie Name', 'Cookie Domain', 'First Seen Date (GMT)', 'Last Seen Date (GMT)']
 
-    hr = '### Total Record(s): ' + str(total_records) + '\n'
-    hr += '### Total Retrieved Record(s): ' + str(len(hr_results)) + '\n'
+    hr = f'### Total Record(s): {total_records}' + '\n'
+    hr += f'### Total Retrieved Record(s): {len(hr_results)}' + '\n'
     hr += tableToMarkdown('Cookies', hr_results, table_headers, removeNull=True)
     return hr
 
@@ -937,14 +942,13 @@ def calculate_dbot_score(classification: str) -> int:
     :return: Dbot Score
     """
     if classification == "UNKNOWN":
-        score = Common.DBotScore.NONE  # unknown
+        return Common.DBotScore.NONE
     elif classification == "MALICIOUS":
-        score = Common.DBotScore.BAD  # bad
+        return Common.DBotScore.BAD
     elif classification == "SUSPICIOUS":
-        score = Common.DBotScore.SUSPICIOUS  # suspicious
+        return Common.DBotScore.SUSPICIOUS
     else:
-        score = Common.DBotScore.GOOD  # good
-    return score
+        return Common.DBotScore.GOOD
 
 
 def get_standard_context(score: int, ip: str) -> Common.IP:
@@ -976,9 +980,9 @@ def get_data_card_summary(summary: dict) -> str:
     data_card_summary = ""
     for key, value in summary.items():
         if value.get("count") == 0:
-            data_card_summary += "{}: {}, ".format(key, value.get("count"))
+            data_card_summary += f'{key}: {value.get("count")}, '
         else:
-            data_card_summary += "{}: [{}]({}), ".format(key, value.get("count"), value.get("link"))
+            data_card_summary += f'{key}: [{value.get("count")}]({value.get("link")}), '
 
     return data_card_summary[:-2]
 
@@ -1318,7 +1322,7 @@ def get_human_readable_for_my_asi_vulnerabilities_command(results: list[dict[str
     for component in results:
         hr_row = {
             'CVE ID': component.get('cveId', ''),
-            'CWE ID': f'{", ".join("{}".format(i.get("cweId")) for i in component.get("cwes", []))} ',
+            'CWE ID': f"""{", ".join(f'{i.get("cweId")}' for i in component.get("cwes", []))} """,
             'RiskIQ Priority Score': component.get('priorityScore', ''),
             'Asset Count': component.get('observationCount', ''),
         }
@@ -1844,7 +1848,11 @@ def get_cookies_command(client: Client, args: dict[str, str]) -> str | CommandRe
     total_records = resp.get("totalRecords", 0)
     # return standard no records found message on empty results
     if len(results) <= 0:
-        return 'Total Record(s): ' + str(total_records) + '\n' + MESSAGES['NO_RECORDS_FOUND'].format('cookies')
+        return (
+            f'Total Record(s): {str(total_records)}'
+            + '\n'
+            + MESSAGES['NO_RECORDS_FOUND'].format('cookies')
+        )
 
     # creating entry context
     entry_context = createContext(results, removeNull=True)
@@ -1986,7 +1994,7 @@ def ip_reputation_command(client_obj: Client, args: dict[str, Any]) -> list[Comm
     ips = [x.strip() for x in argToList(args.get('ip', '')) if x.strip()]
 
     # argument validation
-    if len(ips) == 0:
+    if not ips:
         raise ValueError(MESSAGES["EMPTY_IP_ARGUMENT"])
 
     command_results: list[CommandResults] = []

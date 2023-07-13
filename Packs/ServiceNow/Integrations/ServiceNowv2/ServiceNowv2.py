@@ -167,7 +167,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
         returns ``None`` if arg is ``None`` and required is set to ``False``
         otherwise throws an Exception
     """
-    if arg is None and required is True:
+    if arg is None and required:
         raise ValueError(f'Missing "{arg_name}"')
 
     if isinstance(arg, str) and arg.isdigit():
@@ -305,8 +305,7 @@ def get_ticket_context(data: Any, additional_fields: list | None = None) -> Any:
         return create_ticket_context(data, additional_fields)
 
     tickets = []
-    for d in data:
-        tickets.append(create_ticket_context(d, additional_fields))
+    tickets.extend(create_ticket_context(d, additional_fields) for d in data)
     return tickets
 
 
@@ -477,7 +476,7 @@ def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
             if field.startswith('u_'):
                 body[field] = custom_fields[field]
             else:
-                body['u_' + field] = custom_fields[field]
+                body[f'u_{field}'] = custom_fields[field]
 
     return body
 
@@ -524,7 +523,9 @@ def split_notes(raw_notes, note_type, time_info):
             display_date_format = time_info.get('display_date_format')
             created_on_UTC = datetime.strptime(created_on, display_date_format) + time_info.get('timezone_offset')
         except ValueError as e:
-            raise Exception(f'Failed to convert {created_on} to a datetime object. Error: {e}')
+            raise Exception(
+                f'Failed to convert {created_on} to a datetime object. Error: {e}'
+            ) from e
 
         if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
@@ -708,7 +709,7 @@ class Client(BaseClient):
                                                    verify=self._verify, proxies=self._proxies)
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
-                    raise Exception('Failed to upload file - ' + str(err))
+                    raise Exception(f'Failed to upload file - {str(err)}') from err
             else:
                 if self.use_oauth:
                     access_token = self.snow_client.get_access_token()
@@ -732,7 +733,9 @@ class Client(BaseClient):
                     return "The ticket was successfully created."
                 if not res.content:
                     return ''
-                raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
+                raise Exception(
+                    f'Error parsing reply - {str(res.content)} - {str(err)}'
+                ) from err
 
             if 'error' in json_res:
                 error = json_res.get('error', {})
@@ -855,7 +858,7 @@ class Client(BaseClient):
         for link in links:
             if self.use_oauth:
                 access_token = self.snow_client.get_access_token()
-                headers.update({'Authorization': f'Bearer {access_token}'})
+                headers['Authorization'] = f'Bearer {access_token}'
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
                 file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
@@ -1714,9 +1717,9 @@ def query_computers_command(client: Client, args: dict) -> tuple[Any, dict[Any, 
         Demisto Outputs.
     """
     table_name = 'cmdb_ci_computer'
-    computer_id = args.get('computer_id', None)
-    computer_name = args.get('computer_name', None)
-    asset_tag = args.get('asset_tag', None)
+    computer_id = args.get('computer_id')
+    computer_name = args.get('computer_name')
+    asset_tag = args.get('asset_tag')
     computer_query = args.get('query', {})
     offset = args.get('offset', client.sys_param_offset)
     limit = args.get('limit', client.sys_param_limit)
@@ -1970,9 +1973,7 @@ def query_items_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any]
         return 'No items were found.', {}, {}, True
 
     mapped_items = []
-    for item in items_list:
-        mapped_items.append(get_item_human_readable(item))
-
+    mapped_items.extend(get_item_human_readable(item) for item in items_list)
     headers = ['ID', 'Name', 'Price', 'Description']
     human_readable = tableToMarkdown('ServiceNow Catalog Items', mapped_items, headers=headers,
                                      removeNull=True, headerTransform=pascalToSpace)
@@ -2136,7 +2137,7 @@ def fetch_incidents(client: Client) -> list:
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
 
     demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
-    demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
+    demisto.debug(f"ServiceNowV2 - Query sent to the server: {query_params}")
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
     count = 0
     skipped_incidents = 0
@@ -2219,7 +2220,7 @@ def test_instance(client: Client):
 
     result = client.send_request(f'table/{client.ticket_type}', params={'sysparm_limit': 1}, method='GET')
     if 'result' not in result:
-        raise Exception('ServiceNow error: ' + str(result))
+        raise Exception(f'ServiceNow error: {str(result)}')
     ticket = result.get('result')
     if ticket and demisto.params().get('isFetch'):
         if isinstance(ticket, list):
@@ -2337,12 +2338,16 @@ def get_timezone_offset(full_response, display_date_format):
         local_time = full_response.get('result', {}).get('sys_created_on', {}).get('display_value', '')
         local_time = datetime.strptime(local_time, display_date_format)
     except Exception as e:
-        raise Exception(f'Failed to get the display value offset time. ERROR: {e}')
+        raise Exception(
+            f'Failed to get the display value offset time. ERROR: {e}'
+        ) from e
     try:
         utc_time = full_response.get('result', {}).get('sys_created_on', {}).get('value', '')
         utc_time = datetime.strptime(utc_time, DATE_FORMAT)
     except ValueError as e:
-        raise Exception(f'Failed to convert {utc_time} to datetime object. ERROR: {e}')
+        raise Exception(
+            f'Failed to convert {utc_time} to datetime object. ERROR: {e}'
+        ) from e
     offset = utc_time - local_time
     return offset
 
@@ -2449,11 +2454,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
             else:
                 if str(note.get('element')) == 'comments':
                     tags = tagsstr + params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')
-                    tags = argToList(tags)
                 else:
                     tags = tagsstr + params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')
-                    tags = argToList(tags)
-
+                tags = argToList(tags)
             entries.append({
                 'Type': note.get('type'),
                 'Category': note.get('category'),
@@ -2545,13 +2548,13 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta keys {list(parsed_args.delta.keys())}')
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
     closure_case = get_closure_case(params)
     is_custom_close = False
-    close_custom_state = params.get('close_custom_state', None)
+    close_custom_state = params.get('close_custom_state')
 
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
@@ -2569,7 +2572,11 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 parsed_args.data['state'] = close_custom_state
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if closure_case:
-            fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
+            fields = {
+                key: val
+                for key, val in fields.items()
+                if key not in ['closed_at', 'resolved_at']
+            }
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
         result = client.update(ticket_type, ticket_id, fields)
@@ -2597,8 +2604,12 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 if not file_extension:
                     file_extension = ''
                 if params.get('file_tag_from_service_now') not in entry.get('tags', []):
-                    client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
-                                       ticket_type)
+                    client.upload_file(
+                        ticket_id,
+                        entry.get('id'),
+                        f'{file_name}_mirrored_from_xsoar{file_extension}',
+                        ticket_type,
+                    )
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
@@ -2764,9 +2775,10 @@ def get_tasks_for_co_command(client: Client, args: dict) -> CommandResults:
         )
 
     mapped_items = []
-    for item in items_list:
-        mapped_items.append(get_tasks_from_co_human_readable(item, client.ticket_type))
-
+    mapped_items.extend(
+        get_tasks_from_co_human_readable(item, client.ticket_type)
+        for item in items_list
+    )
     headers = ['ID', 'Name', 'State', 'Description']
     human_readable = tableToMarkdown('ServiceNow Catalog Items', mapped_items, headers=headers,
                                      removeNull=True, headerTransform=pascalToSpace)
@@ -2856,7 +2868,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
         'Additional Comments': ticket.get('comments', {}).get('value', '')
     }
     for field in additional_fields:
-        item.update({field: ticket.get(field, {}).get('value', '')})
+        item[field] = ticket.get(field, {}).get('value', '')
 
     return item
 

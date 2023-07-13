@@ -112,13 +112,13 @@ def pagination(
         """
 
         def inner(
-            self,
-            page: Optional[int],
-            page_size: Optional[int],
-            limit: Optional[int],
-            *args,
-            **kwarg
-        ) -> tuple[list | dict, list | dict]:
+                    self,
+                    page: Optional[int],
+                    page_size: Optional[int],
+                    limit: Optional[int],
+                    *args,
+                    **kwarg
+                ) -> tuple[list | dict, list | dict]:
             """
             Handle pagination arguments to return multiple response from an API.
 
@@ -134,8 +134,10 @@ def pagination(
                 tuple[Union[list, dict], Union[list, dict]]:
                     All the items combined within raw response, All the raw responses combined
             """
-            is_automatic = bool(limit is not None and limit > 0)
-            is_manual = bool((page is not None and page > 0) or (page_size is not None and page_size > 0))
+            is_automatic = limit is not None and limit > 0
+            is_manual = (page is not None and page > 0) or (
+                page_size is not None and page_size > 0
+            )
 
             if all((is_manual, is_automatic)):
                 raise ValueError('page or page_size can not be entered with limit.')
@@ -223,7 +225,9 @@ def pagination(
                 offset = (offset or 0) + received_items
 
             return raw_items, raw_responses
+
         return inner
+
     return dec
 
 
@@ -329,7 +333,7 @@ class Client(BaseClient):
             Dict: Information about deployable devices.
         """
         params = {'expanded': 'true', 'limit': limit, 'offset': offset}
-        end_suffix = '/' + container_uuid + '/deployments' if container_uuid else ''
+        end_suffix = f'/{container_uuid}/deployments' if container_uuid else ''
         suffix = f'deployment/deployabledevices{end_suffix}'
         return self._http_request('GET', suffix, params=params)
 
@@ -726,7 +730,11 @@ class Client(BaseClient):
         Returns:
             Dict: Information about access rules.
         """
-        end_suffix = f'?expanded=true&limit={limit}&offset={offset}' if rule_id == '' else '/' + rule_id
+        end_suffix = (
+            f'?expanded=true&limit={limit}&offset={offset}'
+            if rule_id == ''
+            else f'/{rule_id}'
+        )
         suffix = f'policy/accesspolicies/{policy_id}/accessrules{end_suffix}'
         return self._http_request('GET', suffix)
 
@@ -2041,7 +2049,7 @@ def append_items_to_value(raw_response: dict[str, Any], value: str, items_key: s
 
     prev_value = ','.join(item[inner_key] for item in items)
 
-    return prev_value if not value else prev_value + f',{value}'
+    return prev_value if not value else f'{prev_value},{value}'
 
 
 def check_is_get_request(get_args: list, list_args: list) -> bool:
@@ -3420,11 +3428,18 @@ def update_policy_assignments_command(client: Client, args: dict) -> CommandResu
 
         targets = raw_response['targets']
         prev_device_ids = ','.join(target['id'] for target in targets if target['type'] == 'Device')
-        device_ids = prev_device_ids if not device_ids else prev_device_ids + f',{device_ids}'
+        device_ids = (
+            prev_device_ids
+            if not device_ids
+            else f'{prev_device_ids},{device_ids}'
+        )
 
         prev_device_group_ids = ','.join(target['id'] for target in targets if target['type'] == 'DeviceGroup')
-        device_group_ids = prev_device_group_ids if not device_group_ids else \
-            prev_device_group_ids + f',{device_group_ids}'
+        device_group_ids = (
+            prev_device_group_ids
+            if not device_group_ids
+            else f'{prev_device_group_ids},{device_group_ids}'
+        )
 
     raw_response = client.update_policy_assignments(policy_id, device_ids, device_group_ids)
     title = f'{INTEGRATION_NAME} - policy update has been done.'

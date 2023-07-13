@@ -23,9 +23,9 @@ class McAfeeESMClient(BaseClient):
         self.difference = int(params.get('timezone', 0))
         self.version = params.get('version', '10.2')
         super().__init__(
-            '{}/rs/esm/v2/'.format(params.get('url', '').strip('/')),
+            f"{params.get('url', '').strip('/')}/rs/esm/v2/",
             proxy=params.get('proxy', False),
-            verify=not params.get('insecure', False)
+            verify=not params.get('insecure', False),
         )
         self._headers = {'Content-Type': 'application/json'}
         self.__login()
@@ -62,7 +62,7 @@ class McAfeeESMClient(BaseClient):
             'locale': 'en_US'
         }
         res = self._http_request('POST', 'login', data=json.dumps(params), resp_type='response', timeout=20)
-        self._headers['Cookie'] = 'JWTToken={}'.format(res.cookies.get('JWTToken'))
+        self._headers['Cookie'] = f"JWTToken={res.cookies.get('JWTToken')}"
         self._headers['X-Xsrf-Token'] = res.headers.get('Xsrf-Token')
         if None in (self._headers['X-Xsrf-Token'], self._headers['Cookie']):
             raise DemistoException(f'Failed login\nurl: {self._base_url}login\nresponse '
@@ -472,7 +472,9 @@ class McAfeeESMClient(BaseClient):
         alarm_ids = argToList(str(self.args.get('alarmIds')))
         alarm_ids = [int(i) for i in alarm_ids]
         data = {
-            'triggeredIds': {"alarmIdList": alarm_ids} if not self.version < '11.3' else alarm_ids
+            'triggeredIds': {"alarmIdList": alarm_ids}
+            if self.version >= '11.3'
+            else alarm_ids
         }
         self.__request(path, data=data)
 
@@ -685,8 +687,8 @@ class McAfeeESMClient(BaseClient):
     def __get_watchlist_id(self, watchlist_name: str):
         try:
             return list(filter(lambda x: x.get('name') == watchlist_name, self.__get_watchlists({})))[0].get('id')
-        except IndexError:
-            raise DemistoException(f'Can not find the watchlist {watchlist_name}')
+        except IndexError as e:
+            raise DemistoException(f'Can not find the watchlist {watchlist_name}') from e
 
     def get_watchlists_names_and_ids(self):
         raw_watch_lists = self.__get_watchlists(self.args)
@@ -804,7 +806,7 @@ class McAfeeESMClient(BaseClient):
                 'count': buff_size
             }
             result = self.__request(command, data=data, params=params)
-            file_data = '{}{}'.format(end, result.get('data', ''))
+            file_data = f"{end}{result.get('data', '')}"
             file_data = file_data.split('\n')
             more_data_exist = buff_size == result.get('bytesRead') or not file_data
             if more_data_exist:
@@ -886,7 +888,9 @@ def time_format(current_time: str, difference: int = 0) -> str:
                 if str(error_3) != f'time data \'{current_time}\' does not match format \'%d-%m-%Y %H:%M:%S\'':
                     raise error_3
                 else:
-                    raise ValueError(f'time data \'{current_time}\' does not match the time format.')
+                    raise ValueError(
+                        f'time data \'{current_time}\' does not match the time format.'
+                    ) from error_3
     return to_return
 
 
@@ -984,9 +988,12 @@ def time_fields(field_list: list[dict]) -> list:
     :return: all fields (names only) that have a time value
     """
     indexes_list = []
-    for i in range(len(field_list)):
-        if 'time' in field_list[i]['name'].lower() or 'date' in field_list[i]['name'].lower():
-            indexes_list.append(i)
+    indexes_list.extend(
+        i
+        for i in range(len(field_list))
+        if 'time' in field_list[i]['name'].lower()
+        or 'date' in field_list[i]['name'].lower()
+    )
     return indexes_list
 
 
@@ -1009,23 +1016,22 @@ def search_readable_outputs(table: dict) -> str:
     :param table: the raw data for a search
     :return: md format table
     """
-    if 'columns' in table and 'rows' in table:
-        line_1 = line_2 = '|'
-        for header in table.get('columns', []):
-            line_1 += str(header.get('name')) + '|'
-            line_2 += '--|'
-        rows = table['rows']
-        data: list = [str] * len(rows)
-        for i in range(len(rows)):
-            middle = '~'.join(rows[i].get('values', []))
-            middle = middle.replace('|', '\\|')
-            middle = middle.replace('~', '|')
-            data[i] = f'| {middle} |'
-
-        start = f'Search results\n{line_1}\n{line_2}\n'
-        return start + '\n'.join(data)
-    else:
+    if 'columns' not in table or 'rows' not in table:
         return ''
+    line_1 = line_2 = '|'
+    for header in table.get('columns', []):
+        line_1 += str(header.get('name')) + '|'
+        line_2 += '--|'
+    rows = table['rows']
+    data: list = [str] * len(rows)
+    for i in range(len(rows)):
+        middle = '~'.join(rows[i].get('values', []))
+        middle = middle.replace('|', '\\|')
+        middle = middle.replace('~', '|')
+        data[i] = f'| {middle} |'
+
+    start = f'Search results\n{line_1}\n{line_2}\n'
+    return start + '\n'.join(data)
 
 
 def create_incident(raw_incidents: list[dict], alarms: bool) -> list[dict[str, dict]]:

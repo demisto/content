@@ -138,12 +138,13 @@ def prepare_kwargs(kwargs: dict[str, Any], ignore_args: STR_OR_STR_LIST = [],
                    bool_args: STR_OR_STR_LIST = [],
                    int_args: STR_OR_STR_LIST = [],
                    json_args: STR_OR_STR_LIST = []) -> dict[str, Any]:
-    return_kwargs = {}
-
-    for arg in ignore_args if isinstance(ignore_args, list) else [ignore_args]:
-        if arg in kwargs:
-            return_kwargs[arg] = kwargs[arg]
-
+    return_kwargs = {
+        arg: kwargs[arg]
+        for arg in (
+            ignore_args if isinstance(ignore_args, list) else [ignore_args]
+        )
+        if arg in kwargs
+    }
     for arg in str_args if isinstance(str_args, list) else [str_args]:
         if arg in kwargs:
             return_kwargs[arg] = str(kwargs[arg])
@@ -317,8 +318,7 @@ class ZendeskClient(BaseClient):
             final_params_list = []
             for k, v in params.items():
                 if isinstance(v, list):
-                    for singel_v in v:
-                        final_params_list.append(f'{k}[]={singel_v}')
+                    final_params_list.extend(f'{k}[]={singel_v}' for singel_v in v)
                 else:
                     final_params_list.append(f'{k}={v}')
             params_str = f'?{"&".join(final_params_list)}'
@@ -370,8 +370,12 @@ class ZendeskClient(BaseClient):
         elif page_size is not None or page_number is not None:
             raise AssertionError("you need to specify both 'page_size' and 'page_number'.")
         else:
-            return self.__cursor_pagination(url_suffix=url_suffix, data_field_name=data_field_name,
-                                            params=params, limit=int(limit))
+            return self.__cursor_pagination(
+                url_suffix=url_suffix,
+                data_field_name=data_field_name,
+                params=params,
+                limit=limit,
+            )
 
     # ---- user related functions ---- #
 
@@ -813,22 +817,26 @@ class ZendeskClient(BaseClient):
     def __zendesk_search_results(self, query: str, limit: int = 50, page_number: int | None = None, page_size: int = 50,
                                  additional_params: dict = {}):
         params = {'query': query} | additional_params
-        results = []
         if page_number:
-            results = list(self.__get_spesific_page(url_suffix='search.json', params=params,
-                           data_field_name='results', page_number=int(page_number), page_size=int(page_size)))
-        else:
-            count = self._http_request('GET', url_suffix='search/count.json', params=params)['count']
-            limit = min(int(limit), count)
-            size = min(limit, MAX_PAGE_SIZE)
-            current_page = 1
-            while len(results) < limit:
-                results.extend(self.__get_spesific_page(url_suffix='search.json', params=params,
-                               data_field_name='results', page_number=current_page, page_size=size))
-                current_page += 1
-            results = results[:limit]
-
-        return results
+            return list(
+                self.__get_spesific_page(
+                    url_suffix='search.json',
+                    params=params,
+                    data_field_name='results',
+                    page_number=int(page_number),
+                    page_size=page_size,
+                )
+            )
+        count = self._http_request('GET', url_suffix='search/count.json', params=params)['count']
+        limit = min(limit, count)
+        size = min(limit, MAX_PAGE_SIZE)
+        current_page = 1
+        results = []
+        while len(results) < limit:
+            results.extend(self.__get_spesific_page(url_suffix='search.json', params=params,
+                           data_field_name='results', page_number=current_page, page_size=size))
+            current_page += 1
+        return results[:limit]
 
     def zendesk_search(self, query: str, limit: int = 50, page_number: int | None = None, page_size: int = 50):
         return CommandResults(outputs_prefix="Zendesk.Search",
@@ -850,9 +858,10 @@ class ZendeskClient(BaseClient):
                 url_suffix=f'help_center/{locale}articles', data_field_name='articles', **kwargs))
 
         readable_output = ["</h1>Zendesk articles</h1>"]
-        for title, body in ((x['title'], x['body']) for x in articles):
-            readable_output.append(f'<h1>{title}</h1>\n{body}')
-
+        readable_output.extend(
+            f'<h1>{title}</h1>\n{body}'
+            for title, body in ((x['title'], x['body']) for x in articles)
+        )
         return CommandResults(outputs_prefix='Zendesk.Article', outputs=articles,
                               readable_output='\n\n\n'.join(readable_output))
 
@@ -890,14 +899,16 @@ class ZendeskClient(BaseClient):
     def _fetch_query_builder(ticket_priority: str = None, ticket_status: str = None, ticket_types: str = None, **_):
         query_parts = []
         if ticket_priority and 'all' not in ticket_priority:
-            for priority in argToList(ticket_priority):
-                query_parts.append(f'priority:{priority}')
+            query_parts.extend(
+                f'priority:{priority}' for priority in argToList(ticket_priority)
+            )
         if ticket_status and 'all' not in ticket_status:
-            for status in argToList(ticket_status):
-                query_parts.append(f'status:{status}')
+            query_parts.extend(f'status:{status}' for status in argToList(ticket_status))
         if ticket_types and 'all' not in ticket_types:
-            for ticket_type in argToList(ticket_types):
-                query_parts.append(f'ticket_type:{ticket_type}')
+            query_parts.extend(
+                f'ticket_type:{ticket_type}'
+                for ticket_type in argToList(ticket_types)
+            )
         return ' '.join(query_parts)
 
     @staticmethod
@@ -1104,9 +1115,15 @@ class ZendeskClient(BaseClient):
                     args.delta['priority'] = priority
                     break
 
-        if args.incident_changed and CLOSE_INCIDENT:
-            if args.inc_status == IncidentStatus.DONE or (args.data.get('state') == 'closed'):
-                args.delta['status'] = 'closed'
+        if (
+            args.incident_changed
+            and CLOSE_INCIDENT
+            and (
+                args.inc_status == IncidentStatus.DONE
+                or (args.data.get('state') == 'closed')
+            )
+        ):
+            args.delta['status'] = 'closed'
 
         def upload_files_and_reset_files_list(files: list):
             while files:

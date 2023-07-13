@@ -168,10 +168,11 @@ def prepare_markdown_from_dictionary(data: dict[str, Any], ignore_fields: list[s
     :return: data in markdown format.
     """
     hr_cell_info: list[str] = []
-    for key, value in data.items():
-        if key not in ignore_fields:
-            hr_cell_info.append(
-                '{}: {}'.format(pascalToSpace(key), ', '.join(value) if isinstance(value, list) else value))
+    hr_cell_info.extend(
+        f"{pascalToSpace(key)}: {', '.join(value) if isinstance(value, list) else value}"
+        for key, value in data.items()
+        if key not in ignore_fields
+    )
     return '\n'.join(hr_cell_info)
 
 
@@ -285,14 +286,20 @@ def prepare_body_for_drive_activity(args: dict[str, str]) -> dict[str, str | int
         filter_activity += f'time >= "{time_range}"'
 
     if action_detail_case_include:
-        filter_activity += ' AND ' + DRIVE_ACTIVITY_DETAIL_ACTION.format(
-            action_detail_case_include) if time_range else DRIVE_ACTIVITY_DETAIL_ACTION.format(
-            action_detail_case_include)
+        filter_activity += (
+            f' AND {DRIVE_ACTIVITY_DETAIL_ACTION.format(action_detail_case_include)}'
+            if time_range
+            else DRIVE_ACTIVITY_DETAIL_ACTION.format(
+                action_detail_case_include
+            )
+        )
 
     if action_detail_case_remove:
-        filter_activity += ' AND -' + DRIVE_ACTIVITY_DETAIL_ACTION.format(
-            action_detail_case_remove) if time_range or action_detail_case_include \
-            else ' -' + DRIVE_ACTIVITY_DETAIL_ACTION.format(action_detail_case_remove)
+        filter_activity += (
+            f' AND -{DRIVE_ACTIVITY_DETAIL_ACTION.format(action_detail_case_remove)}'
+            if time_range or action_detail_case_include
+            else f' -{DRIVE_ACTIVITY_DETAIL_ACTION.format(action_detail_case_remove)}'
+        )
 
     if args.get('filter', ''):
         filter_activity = args.get('filter', '')
@@ -356,15 +363,16 @@ def prepare_hr_setting_changes_entity(context: dict[str, Any]) -> str:
     :param context: Prepared context data.
     :return: Restriction changes.
     """
-    restriction_changes = ''
     settings_change = [
         {
             'feature': setting.get('feature', ''),
             'newRestriction': setting.get('newRestriction', '')
         } for setting in context.get('primaryActionDetail', {}).get('settingsChange', {}).get('restrictionChanges', [])
     ]
-    for restriction in settings_change:
-        restriction_changes += prepare_markdown_from_dictionary(restriction) + '\n'
+    restriction_changes = ''.join(
+        prepare_markdown_from_dictionary(restriction) + '\n'
+        for restriction in settings_change
+    )
     return restriction_changes
 
 
@@ -460,8 +468,13 @@ def prepare_drive_activity_human_readable(outputs_context: list[dict[str, Any]])
 
         elif name == 'create':
             created: list = list(primary_action_detail.get('create', {}).keys())
-            drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Create ' + created[0].capitalize(),
-                             OBJECT_HEADER: object_target})
+            drive_hr.append(
+                {
+                    ACTIVITY_TIME: time_stamp,
+                    PRIMARY_ACTION: f'Create {created[0].capitalize()}',
+                    OBJECT_HEADER: object_target,
+                }
+            )
 
     drive_hr = GSuiteClient.remove_empty_entities(drive_hr)
     drive_activity_hr = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive Activity(s)', len(drive_hr)),
@@ -758,7 +771,9 @@ def drive_changes_list_command(client: 'GSuiteClient', args: dict[str, Any]) -> 
     if response.get('nextPageToken'):
         readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     if response.get('newStartPageToken'):
-        readable_output += '### New Start Page Token: {}\n'.format(response.get('newStartPageToken'))
+        readable_output += (
+            f"### New Start Page Token: {response.get('newStartPageToken')}\n"
+        )
 
     readable_output += tableToMarkdown('Files(s)',
                                        drive_changes_hr_files_list,
@@ -854,9 +869,7 @@ def handle_response_drive_list(response: dict[str, Any]) -> CommandResults:
 
     drives_context = set_true_for_empty_dict(response)
     cleaned_drives_context = GSuiteClient.remove_empty_entities(drives_context)
-    for current_drive in cleaned_drives_context.get('drives', []):
-        outputs_context.append(current_drive)
-
+    outputs_context.extend(iter(cleaned_drives_context.get('drives', [])))
     outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_DRIVE_HEADER']: {
             OUTPUT_PREFIX['DRIVE']: outputs_context,
@@ -1004,10 +1017,7 @@ def handle_response_files_list(response: dict[str, Any]) -> CommandResults:
     outputs_context = []
     readable_output = ''
 
-    for current_file in response.get('files', []):
-        # outputs_context.append(prepare_file_output(current_file))
-        outputs_context.append(current_file)
-
+    outputs_context.extend(iter(response.get('files', [])))
     files_hr = prepare_files_human_readable(outputs_context)
 
     outputs: dict = {
@@ -1167,7 +1177,7 @@ def file_download_command(client: 'GSuiteClient', args: dict[str, str]) -> Comma
     fh = io.BytesIO()
     downloader = MediaIoBaseDownload(fh, request)
     done = False
-    while done is False:
+    while not done:
         status, done = downloader.next_chunk()
     return fileResult(args.get('file_name'), fh.getvalue())
 
@@ -1454,9 +1464,10 @@ def handle_response_permissions_list(response: dict[str, Any], args: dict[str, s
     outputs_context = []
     readable_output = ''
 
-    for current_permission in response.get('permissions', []):
-        outputs_context.append(prepare_permission_output(current_permission))
-
+    outputs_context.extend(
+        prepare_permission_output(current_permission)
+        for current_permission in response.get('permissions', [])
+    )
     files_hr = prepare_permissions_human_readable(outputs_context, args)
 
     outputs: dict = {
@@ -1569,9 +1580,10 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
     outputs_context = []
     readable_output = ''
 
-    for activity in response.get('activities', []):
-        outputs_context.append(prepare_drive_activity_output(activity))
-
+    outputs_context.extend(
+        prepare_drive_activity_output(activity)
+        for activity in response.get('activities', [])
+    )
     drive_activity_hr = prepare_drive_activity_human_readable(outputs_context)
 
     outputs: dict = {

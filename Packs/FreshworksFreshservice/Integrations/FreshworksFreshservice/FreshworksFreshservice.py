@@ -419,7 +419,7 @@ class Client(BaseClient):
         verify: bool,
         proxy: bool,
     ):
-        api_key = api_token + ':X'
+        api_key = f'{api_token}:X'
         api_key_bytes = api_key.encode('utf-8')
         encoded_key = base64.b64encode(api_key_bytes).decode('utf-8')
 
@@ -2061,7 +2061,7 @@ def delete_freshservice_ticket_command(
             readable_output = f'{output_prefix} {entity_id_value} does not exist'
         else:
             # if there's a different HTTP status code, it's not an expected behavior.
-            raise Exception(f'Got the following error: {exc.message}')
+            raise Exception(f'Got the following error: {exc.message}') from exc
 
     return CommandResults(readable_output=readable_output)
 
@@ -2204,7 +2204,7 @@ def delete_freshservice_ticket_task_command(
             readable_output = f'Task {task_id} does not exist'
         else:
             # if there's a different HTTP status code, it's not an expected behavior.
-            raise Exception(f'Got the following error: {exc.message}')
+            raise Exception(f'Got the following error: {exc.message}') from exc
 
     return CommandResults(readable_output=readable_output)
 
@@ -2417,7 +2417,7 @@ def delete_freshservice_ticket_conversation_command(
             readable_output = 'Conversation does not exist'
         else:
             # if there's a different HTTP status code, it's not an expected behavior.
-            raise Exception(f'Got the following error: {exc.message}')
+            raise Exception(f'Got the following error: {exc.message}') from exc
 
     return CommandResults(readable_output=readable_output)
 
@@ -2963,7 +2963,6 @@ def build_query(
 
             updated_query = value
 
-        # assign to updated_query only the filter arguments
         elif key not in [
                 'command_name', 'limit', 'page', 'page_size', 'order_type'
         ]:
@@ -2973,7 +2972,7 @@ def build_query(
             correct_value = int(value) if 'id' in key else f"'{value}'"
 
             # Convert str value to int in case it's a predefined values
-            if entity_name in ['ticket', 'problem', 'change', 'release']:
+            if entity_name in {'ticket', 'problem', 'change', 'release'}:
                 if dict_key := TICKET_PROPERTIES_BY_TYPE[entity_name].get(key):
                     integer_value = dict_key.get(value)
                     correct_value = integer_value if integer_value is not None else correct_value
@@ -3153,8 +3152,10 @@ def update_remote_system(
     ticket_type, ticket_id = get_ticket_type_by_alert_id(incident_id)
 
     demisto.debug(
-        f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
-        if parsed_args.delta else "There is no delta fields in Freshservice")
+        f"Got the following delta keys {list(parsed_args.delta.keys())}"
+        if parsed_args.delta
+        else "There is no delta fields in Freshservice"
+    )
 
     try:
         demisto.debug(
@@ -3178,7 +3179,7 @@ def update_remote_system(
                                                  value)
                     updated_arguments[key] = update_value
 
-            updated_arguments.update({'ticket_id': ticket_id})
+            updated_arguments['ticket_id'] = ticket_id
 
             demisto.debug(
                 f"remote ID [{ticket_id} - {ticket_type}] to Freshservice. {updated_arguments=}|| {update_args=}"
@@ -3261,7 +3262,7 @@ def convert_datetime_to_iso(created_at: str) -> datetime:
         datetime: Updated argument.
     """
     alert_date = datetime.strptime(created_at, TIME_FORMAT)
-    return FormatIso8601(alert_date) + 'Z'
+    return f'{FormatIso8601(alert_date)}Z'
 
 
 def get_alert_properties(args: dict[str, Any]) -> tuple:

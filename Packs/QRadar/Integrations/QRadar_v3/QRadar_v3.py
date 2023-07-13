@@ -400,7 +400,7 @@ class Client(BaseClient):
             message = error_entry.get('message', '')
             if 'items=x-y' in message:
                 message = 'Failed to parse Range argument. The syntax of the Range argument must follow this pattern:' \
-                          ' x-y'
+                              ' x-y'
             elif 'unauthorized to access' in err_msg or 'No SEC header present in request' in err_msg:
                 message = 'Authorization Error: make sure credentials are correct.'
             elif 'The specified encryption strength is not available' in err_msg:
@@ -408,14 +408,14 @@ class Client(BaseClient):
                 message = 'The specified encryption is not available, try using a weaker encryption (AES128).'
             elif 'User has insufficient capabilities to access this endpoint resource' in message:
                 message = 'The given credentials do not have the needed permissions to perform the call the endpoint' \
-                          f'\n{res.request.path_url}.\n' \
-                          'Please supply credentials with the needed permissions as can be seen in the integration ' \
-                          'description, or do not call or enrich offenses with the mentioned endpoint.'
+                              f'\n{res.request.path_url}.\n' \
+                              'Please supply credentials with the needed permissions as can be seen in the integration ' \
+                              'description, or do not call or enrich offenses with the mentioned endpoint.'
             err_msg += f'\n{message}'
             raise DemistoException(err_msg, res=res)
-        except ValueError:
+        except ValueError as e:
             err_msg += f'\n{res.text}'
-            raise DemistoException(err_msg, res=res)
+            raise DemistoException(err_msg, res=res) from e
 
     def offenses_list(self, range_: Optional[str] = None, offense_id: Optional[int] = None,
                       filter_: Optional[str] = None, fields: Optional[str] = None, sort: Optional[str] = None):
@@ -758,7 +758,7 @@ def get_remote_events(client: Client,
         search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
         offenses_queried[offense_id] = search_id
         changed_ids_ctx.append(offense_id)
-    elif offense_id in offenses_finished:  # if our offense is in finished list, we will get the result
+    else:
         search_id = offenses_finished[offense_id]
         try:
             search_results = client.search_results_get(search_id)
@@ -774,19 +774,12 @@ def get_remote_events(client: Client,
             status = QueryStatus.ERROR.value
             print_debug_msg(f'No results for {offense_id}. Error: {e}. Stopping execution')
             time.sleep(FAILURE_SLEEP)
-    elif offense_id in offenses_queried:  # if our offense is in the queried list, we will get the result
-        search_id = offenses_queried[offense_id]
-        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
-        if status == QueryStatus.SUCCESS.value:
-            del offenses_queried[offense_id]
-            changed_ids_ctx.append(offense_id)
-
     if status == QueryStatus.SUCCESS.value:
         offenses_fetched[offense_id] = get_num_events(events)
-        context_data.update({MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched})
+        context_data[MIRRORED_OFFENSES_FETCHED_CTX_KEY] = offenses_fetched
 
-    context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried})
-    context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
+    context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = offenses_queried
+    context_data[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = offenses_finished
 
     safely_update_context_data(context_data, context_version, offense_ids=changed_ids_ctx)
     return events, status
@@ -1500,10 +1493,11 @@ def get_cidrs_indicators(query):
     res = demisto.searchIndicators(query=query)
 
     indicators = []
-    for indicator in res.get('iocs', []):
-        if indicator.get('indicator_type').lower() == 'cidr':
-            indicators.append(indicator.get('value'))
-
+    indicators.extend(
+        indicator.get('value')
+        for indicator in res.get('iocs', [])
+        if indicator.get('indicator_type').lower() == 'cidr'
+    )
     return indicators
 
 
@@ -1537,7 +1531,7 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, grou
 
 def is_positive(*values: int | None) -> bool:
     # checks if all values are positive or None but not a negative numbers
-    return all(not (value is not None and value < 1) for value in values)
+    return all(value is None or value >= 1 for value in values)
 
 
 def verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name):
@@ -1729,7 +1723,9 @@ def poll_offense_events_with_retry(
     """
     for retry in range(max_retries):
         print_debug_msg(f'Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}')
-        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
+        events, status = poll_offense_events(
+            client, search_id, should_get_events=True, offense_id=offense_id
+        )
         if status == QueryStatus.SUCCESS.value:
             return events, ''
         elif status == QueryStatus.ERROR.value:
@@ -1852,8 +1848,7 @@ def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
                                          last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
-                                         first_fetch: str, mirror_options: str) \
-        -> tuple[Optional[List[dict]], Optional[int]]:
+                                         first_fetch: str, mirror_options: str) -> tuple[Optional[List[dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
     Args:
@@ -1901,15 +1896,17 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     offenses: list[dict] = []
     if fetch_mode != FetchMode.no_events.value:
         futures = []
-        for offense in raw_offenses:
-            futures.append(EXECUTOR.submit(
+        futures.extend(
+            EXECUTOR.submit(
                 enrich_offense_with_events,
                 client=client,
                 offense=offense,
                 fetch_mode=fetch_mode,  # type: ignore
                 events_columns=events_columns,
                 events_limit=events_limit,
-            ))
+            )
+            for offense in raw_offenses
+        )
         offenses_with_metadata = [future.result() for future in futures]
         offenses = [offense for offense, _ in offenses_with_metadata]
         if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
@@ -3568,10 +3565,10 @@ def add_modified_remote_offenses(client: Client,
             mirrored_offenses_queries[offense_id] = search_id
             changed_ids_ctx.append(offense_id)
 
-        new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
-        new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
+        new_context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = mirrored_offenses_queries
+        new_context_data[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = finished_offenses_queue
 
-    new_context_data.update({LAST_MIRROR_KEY: current_last_update})
+    new_context_data[LAST_MIRROR_KEY] = current_last_update
     print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(
         new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True
@@ -3845,8 +3842,8 @@ def qradar_remote_network_cidr_list_command(client: Client, args: dict[str, Any]
                 'description': res.get('description')}
                for res in response]
     headers = ['id', 'name', 'group', 'cidrs', 'description']
-    success_message = 'List of the staged remote networks'
     if response:
+        success_message = 'List of the staged remote networks'
         readable_output = tableToMarkdown(success_message, response, headers=headers)
         readable_output += f"Above results are with page number: {page} and with size: {page_size}." if page and page_size \
             else f"Above results are with limit: {limit if limit else DEFAULT_LIMIT_VALUE}."
@@ -3956,7 +3953,7 @@ def qradar_remote_network_deploy_execution_command(client: Client, args):
 
     if not re.match(ipv4Regex, host_ip) and not re.match(ipv6Regex, host_ip):
         raise DemistoException('The host_ip argument is not a valid ip address.')
-    if not status == 'INITIATING':
+    if status != 'INITIATING':
         raise DemistoException('The status argument must be INITIATING.')
     if deployment_type not in ['INCREMENTAL', 'FULL']:
         raise DemistoException('The deployment_type argument must be INCREMENTAL or FULL.')
@@ -4076,9 +4073,11 @@ def main() -> None:  # pragma: no cover
                     raise DemistoException(
                         f'The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it')
         except DemistoException as e:
-            raise DemistoException(f'Failed to parse advanced params. Error: {e.message}')
+            raise DemistoException(
+                f'Failed to parse advanced params. Error: {e.message}'
+            ) from e
         except Exception as e:
-            raise DemistoException(f'Failed to parse advanced params. Error: {e}')
+            raise DemistoException(f'Failed to parse advanced params. Error: {e}') from e
 
     server = params.get('server')
     verify_certificate = not params.get('insecure', False)
@@ -4109,19 +4108,23 @@ def main() -> None:  # pragma: no cover
             support_multithreading()
             long_running_execution_command(client, params)
 
-        elif command == 'qradar-offenses-list' or command == 'qradar-offenses' or command == 'qradar-offense-by-id':
+        elif command in [
+            'qradar-offenses-list',
+            'qradar-offenses',
+            'qradar-offense-by-id',
+        ]:
             return_results(qradar_offenses_list_command(client, args))
 
-        elif command == 'qradar-offense-update' or command == 'qradar-update-offense':
+        elif command in ['qradar-offense-update', 'qradar-update-offense']:
             return_results(qradar_offense_update_command(client, args))
 
-        elif command == 'qradar-closing-reasons' or command == 'qradar-get-closing-reasons':
+        elif command in ['qradar-closing-reasons', 'qradar-get-closing-reasons']:
             return_results(qradar_closing_reasons_list_command(client, args))
 
-        elif command == 'qradar-offense-notes-list' or command == 'qradar-get-note':
+        elif command in ['qradar-offense-notes-list', 'qradar-get-note']:
             return_results(qradar_offense_notes_list_command(client, args))
 
-        elif command == 'qradar-offense-note-create' or command == 'qradar-create-note':
+        elif command in ['qradar-offense-note-create', 'qradar-create-note']:
             return_results(qradar_offense_notes_create_command(client, args))
 
         elif command == 'qradar-rules-list':
@@ -4130,7 +4133,11 @@ def main() -> None:  # pragma: no cover
         elif command == 'qradar-rule-groups-list':
             return_results(qradar_rule_groups_list_command(client, args))
 
-        elif command == 'qradar-assets-list' or command == 'qradar-get-assets' or command == 'qradar-get-asset-by-id':
+        elif command in [
+            'qradar-assets-list',
+            'qradar-get-assets',
+            'qradar-get-asset-by-id',
+        ]:
             return_results(qradar_assets_list_command(client, args))
 
         elif command == 'qradar-saved-searches-list':
@@ -4139,36 +4146,57 @@ def main() -> None:  # pragma: no cover
         elif command == 'qradar-searches-list':
             return_results(qradar_searches_list_command(client, args))
 
-        elif command == 'qradar-search-create' or command == 'qradar-searches':
+        elif command in ['qradar-search-create', 'qradar-searches']:
             return_results(qradar_search_create_command(client, params, args))
 
-        elif command == 'qradar-search-status-get' or command == 'qradar-get-search':
+        elif command in ['qradar-search-status-get', 'qradar-get-search']:
             return_results(qradar_search_status_get_command(client, args))
 
-        elif command == 'qradar-search-results-get' or command == 'qradar-get-search-results':
+        elif command in [
+            'qradar-search-results-get',
+            'qradar-get-search-results',
+        ]:
             return_results(qradar_search_results_get_command(client, args))
 
-        elif command == 'qradar-reference-sets-list' or command == 'qradar-get-reference-by-name':
+        elif command in [
+            'qradar-reference-sets-list',
+            'qradar-get-reference-by-name',
+        ]:
             return_results(qradar_reference_sets_list_command(client, args))
 
-        elif command == 'qradar-reference-set-create' or command == 'qradar-create-reference-set':
+        elif command in [
+            'qradar-reference-set-create',
+            'qradar-create-reference-set',
+        ]:
             return_results(qradar_reference_set_create_command(client, args))
 
-        elif command == 'qradar-reference-set-delete' or command == 'qradar-delete-reference-set':
+        elif command in [
+            'qradar-reference-set-delete',
+            'qradar-delete-reference-set',
+        ]:
             return_results(qradar_reference_set_delete_command(client, args))
 
-        elif command == 'qradar-reference-set-value-upsert' or command == 'qradar-create-reference-set-value' or \
-                command == 'qradar-update-reference-set-value':
+        elif command in [
+            'qradar-reference-set-value-upsert',
+            'qradar-create-reference-set-value',
+            'qradar-update-reference-set-value',
+        ]:
             return_results(qradar_reference_set_value_upsert_command(client, args))
 
-        elif command == 'qradar-reference-set-value-delete' or command == 'qradar-delete-reference-set-value':
+        elif command in [
+            'qradar-reference-set-value-delete',
+            'qradar-delete-reference-set-value',
+        ]:
             return_results(qradar_reference_set_value_delete_command(client, args))
 
-        elif command == 'qradar-domains-list' or command == 'qradar-get-domains' or \
-                command == 'qradar-get-domain-by-id':
+        elif command in [
+            'qradar-domains-list',
+            'qradar-get-domains',
+            'qradar-get-domain-by-id',
+        ]:
             return_results(qradar_domains_list_command(client, args))
 
-        elif command == 'qradar-indicators-upload' or command == 'qradar-upload-indicators':
+        elif command in ['qradar-indicators-upload', 'qradar-upload-indicators']:
             return_results(qradar_indicators_upload_command(client, args))
 
         elif command == 'qradar-geolocations-for-ip':
@@ -4221,7 +4249,6 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
-    # Log exceptions and return errors
     except Exception:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}')

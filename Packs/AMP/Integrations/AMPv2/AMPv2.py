@@ -2072,22 +2072,21 @@ def event_list_command(client: Client, args: dict[str, Any]) -> List[CommandResu
     raw_response_list: List[dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
-    for request_number in pagination_range(pagination):
-        raw_response_list.append(
-            client.event_list_request(
-                detection_sha256=detection_sha256,
-                application_sha256=application_sha256,
-                connector_guids=connector_guid,
-                group_guids=group_guid,
-                start_date=start_date,
-                event_types=event_type,  # type: ignore # List[Optional[int]] arg_to_number; expected Optional[List[int]]
-                limit=pagination.limit,
-                offset=None
-                if pagination.offset is None
-                else pagination.offset * request_number,
-            )
+    raw_response_list.extend(
+        client.event_list_request(
+            detection_sha256=detection_sha256,
+            application_sha256=application_sha256,
+            connector_guids=connector_guid,
+            group_guids=group_guid,
+            start_date=start_date,
+            event_types=event_type,  # type: ignore # List[Optional[int]] arg_to_number; expected Optional[List[int]]
+            limit=pagination.limit,
+            offset=None
+            if pagination.offset is None
+            else pagination.offset * request_number,
         )
-
+        for request_number in pagination_range(pagination)
+    )
     raw_response: dict[str, Any] = combine_response_results(
         raw_response_list, pagination.is_automatic
     )
@@ -2206,14 +2205,14 @@ def file_list_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     page_size = arg_to_number(args.get("page_size", 0))
     limit = arg_to_number(args.get("limit", 0))
 
-    file_list_request_by_type = {
-        "Application Blocking": client.file_list_application_blocking_list_request,
-        "Simple Custom Detection": client.file_list_simple_custom_detections_list_request,
-    }
-
     if not file_list_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
         raw_response_list: List[dict[str, Any]] = []
+
+        file_list_request_by_type = {
+            "Application Blocking": client.file_list_application_blocking_list_request,
+            "Simple Custom Detection": client.file_list_simple_custom_detections_list_request,
+        }
 
         # Run multiple requests according to pagination inputs.
         for request_number in pagination_range(pagination):
@@ -3522,11 +3521,10 @@ def get_readable_output(
         items = [items]
 
     for item in items:
-        dictionary: dict[str, Any] = {}
-
-        for key, value in header_by_keys.items():
-            dictionary[key] = dict_safe_get(item, value)
-
+        dictionary: dict[str, Any] = {
+            key: dict_safe_get(item, value)
+            for key, value in header_by_keys.items()
+        }
         item_readable_arguments.append(dictionary)
 
     readable_output = tableToMarkdown(
@@ -3559,21 +3557,20 @@ def get_computer_readable_output(response: dict[str, Any]) -> str:
     operating_system_format = "{operating_system} (Build {os_version})"
     readable_arguments: List[dict[str, Any]] = []
 
-    for computer in computers:
-        readable_arguments.append(
-            {
-                "Host Name": computer.get("hostname"),
-                "Connector GUID": computer.get("connector_guid"),
-                "Operating System": operating_system_format.format(
-                    operating_system=computer.get("operating_system"),
-                    os_version=computer.get("os_version"),
-                ),
-                "External IP": computer.get("external_ip"),
-                "Group GUID": computer.get("group_guid"),
-                "Policy GUID": dict_safe_get(computer, ["policy", "guid"]),
-            }
-        )
-
+    readable_arguments.extend(
+        {
+            "Host Name": computer.get("hostname"),
+            "Connector GUID": computer.get("connector_guid"),
+            "Operating System": operating_system_format.format(
+                operating_system=computer.get("operating_system"),
+                os_version=computer.get("os_version"),
+            ),
+            "External IP": computer.get("external_ip"),
+            "Group GUID": computer.get("group_guid"),
+            "Policy GUID": dict_safe_get(computer, ["policy", "guid"]),
+        }
+        for computer in computers
+    )
     headers = [
         "Host Name",
         "Connector GUID",

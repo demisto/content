@@ -643,11 +643,9 @@ def get_endpoint_id(client: Client, endpoint_ip: list = None, endpoint_name: lis
 
     if endpoint_ip:
         endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-        endpoint_id = endpoints.get('data')
-
-    elif endpoint_name:
+    else:
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
-        endpoint_id = endpoints.get('data')
+    endpoint_id = endpoints.get('data')
 
     return endpoint_id
 
@@ -796,7 +794,7 @@ def file_search(client: Client, args: dict) -> tuple[str, dict, dict]:
             'quantifier': 'greaterThan'
         }
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
     response = client.search_file(host, md5, file_extension, file_path, file_size)
     if not response.get('success'):
@@ -914,13 +912,14 @@ def list_scripts_command(client: Client, *_) -> tuple[str, dict, dict]:
     if not scripts:
         return 'No scripts were found.', {}, {}
     contents = []
-    for script in scripts:
-        contents.append({
+    contents.extend(
+        {
             'ID': script.get('id'),
             'Name': script.get('name'),
-            'Description': script.get('description')
-        })
-
+            'Description': script.get('description'),
+        }
+        for script in scripts
+    )
     entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': contents}
     human_readable = tableToMarkdown('Fidelis Endpoint scripts', contents, headers)
 
@@ -1078,7 +1077,7 @@ def kill_process_by_pid(client: Client, args: dict) -> tuple[str, dict, dict]:
     if operating_system == 'Windows':
         script_id = KILL_PROCESS_WINDOWS
 
-    elif operating_system == 'Linux' or operating_system == 'macOS':
+    elif operating_system in ['Linux', 'macOS']:
         script_id = KILL_PROCESS_MAC_LINUX
 
     response = client.kill_process(script_id, pid, time_out, endpoint_id)
@@ -1106,7 +1105,7 @@ def delete_file_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     if operating_system == 'Windows':
         script_id = DELETE_FILE_WINDOWS
 
-    elif operating_system == 'Linux' or operating_system == 'macOS':
+    elif operating_system in ['Linux', 'macOS']:
         script_id = DELETE_FILE_MAC_LINUX
 
     response = client.delete_file(script_id, file_path, time_out, endpoint_id)
@@ -1134,7 +1133,7 @@ def network_isolation_command(client: Client, args: dict) -> tuple[str, dict, di
     if operating_system == 'Windows':
         script_id = NETWORK_ISOLATION_WINDOWS
 
-    elif operating_system == 'Linux' or operating_system == 'macOS':
+    elif operating_system in ['Linux', 'macOS']:
         script_id = NETWORK_ISOLATION_MAC_LINUX
 
     response = client.network_isolation(script_id, allowed_server, time_out, endpoint_id)
@@ -1186,13 +1185,15 @@ def script_job_status(client: Client, args: dict) -> tuple[str, dict, dict]:
 
     results = response.get('data', {}).get('targets', [])
 
-    for result in results:
-        contents.append({
+    contents.extend(
+        {
             'JobResultID': result.get('jobResultId'),
             'Name': result.get('name'),
             'Status': result.get('status'),
-            'JobName': response.get('data', {}).get('jobName')  # type: ignore
-        })
+            'JobName': response.get('data', {}).get('jobName'),  # type: ignore
+        }
+        for result in results
+    )
     entry_context = {'FidelisEndpoint.ScriptResult(val.JobResultID && val.JobResultID === obj.JobResultID)': contents}
     human_readable = tableToMarkdown('Fidelis Endpoint script job status', contents, removeNull=True)
 

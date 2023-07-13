@@ -1972,14 +1972,22 @@ def new_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         propertylink = raw_response.get('propertyLink', '')
         regex_match = re.search('prp_\d+', propertylink)
-        entry_context.append(assign_params(**{
-            "PropertyLink": propertylink,
-            "PropertyId": regex_match.group(0) if regex_match else '',
-        }))
-        human_readable.append(assign_params(**{
-            "PropertyLink": propertylink,
-            "PropertyId": regex_match.group(0) if regex_match else '',
-        }))
+        entry_context.append(
+            assign_params(
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyId": regex_match[0] if regex_match else '',
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyId": regex_match[0] if regex_match else '',
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2029,16 +2037,24 @@ def clone_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
         propertylink = raw_response.get('propertyLink', '')
         property_name = raw_response.get('propertyName')
         regex_match = re.search('prp_\d+', propertylink)
-        entry_context.append(assign_params(**{
-            "PropertyLink": propertylink,
-            "PropertyName": property_name,
-            "PropertyId": regex_match.group(0) if regex_match else '',
-        }))
-        human_readable.append(assign_params(**{
-            "PropertyLink": propertylink,
-            "PropertyName": property_name,
-            "PropertyId": regex_match.group(0) if regex_match else '',
-        }))
+        entry_context.append(
+            assign_params(
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyName": property_name,
+                    "PropertyId": regex_match[0] if regex_match else '',
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyName": property_name,
+                    "PropertyId": regex_match[0] if regex_match else '',
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2122,7 +2138,7 @@ def new_papi_edgehostname_command_ec(raw_response: dict) -> tuple[list, list]:
         edgeHostnameLink = raw_response.get('edgeHostnameLink', '')
         domain_prefix = raw_response.get('domainPrefix')
         regex_match = re.search('ehn_\d+', edgeHostnameLink)
-        edge_hostname_id = regex_match.group(0) if regex_match else ''
+        edge_hostname_id = regex_match[0] if regex_match else ''
         entry_context.append(assign_params(**{
             "EdgeHostnameLink": edgeHostnameLink,
             "DomainPrefix": domain_prefix,
@@ -2233,7 +2249,7 @@ def new_papi_cpcode_ec(raw_response: dict) -> tuple[list, list]:
         cpcodeLink = raw_response.get('cpcodeLink', '')
         cpcode_name = raw_response.get('cpcodeName')
         regex_match = re.search('cpc_\d+', cpcodeLink)
-        cpcode_id = regex_match.group(0) if regex_match else ''
+        cpcode_id = regex_match[0] if regex_match else ''
         entry_context.append(assign_params(**{
             "CpcodeLink": cpcodeLink,
             "CpcodeName": cpcode_name,
@@ -2291,14 +2307,22 @@ def activate_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         activationLink = raw_response.get('activationLink', '')
         regex_match = re.search('atv_\d+', activationLink)
-        entry_context.append(assign_params(**{
-            "ActivationLink": activationLink,
-            "ActivationId": regex_match.group(0) if regex_match else '',
-        }))
-        human_readable.append(assign_params(**{
-            "ActivationLink": activationLink,
-            "ActivationId": regex_match.group(0) if regex_match else '',
-        }))
+        entry_context.append(
+            assign_params(
+                **{
+                    "ActivationLink": activationLink,
+                    "ActivationId": regex_match[0] if regex_match else '',
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "ActivationLink": activationLink,
+                    "ActivationId": regex_match[0] if regex_match else '',
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -3512,8 +3536,7 @@ def remove_element_from_network_list_command(client: Client, network_list_id: st
 
 
 @logger
-def get_activation_status_command(client: Client, network_list_ids: str | list, env: str) \
-        -> tuple[str, dict[str, Any], list | dict]:
+def get_activation_status_command(client: Client, network_list_ids: str | list, env: str) -> tuple[str, dict[str, Any], list | dict]:
     """Get activation status
 
     Args:
@@ -3555,15 +3578,10 @@ def get_activation_status_command(client: Client, network_list_ids: str | list, 
         except requests.exceptions.RequestException:
             human_readable += f'{INTEGRATION_NAME} - Could not find any results for given query\n'
 
-    if env == "PRODUCTION":
+    if env in {"PRODUCTION", "STAGING"}:
         context_entry = {
             f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs
         }
-    elif env == "STAGING":
-        context_entry = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs
-        }
-
     return human_readable, context_entry, raws
 
 
@@ -4030,8 +4048,8 @@ def patch_papi_property_rule_origin_command(client: Client,
             {
                 "op": operation,
                 "path": path,
-                "value": {  # type: ignore
-                    "name": "Origin for " + external_url,
+                "value": {
+                    "name": f"Origin for {external_url}",
                     "children": [],
                     "behaviors": [
                         {
@@ -4053,14 +4071,14 @@ def patch_papi_property_rule_origin_command(client: Client,
                                 "hostname": origin,
                                 "customValidCnValues": [
                                     "{{Origin Hostname}}",
-                                    "{{Forward Host Header}}"
+                                    "{{Forward Host Header}}",
                                 ],
                                 "originCertsToHonor": "STANDARD_CERTIFICATE_AUTHORITIES",
                                 "standardCertificateAuthorities": [
                                     "akamai-permissive",
-                                    "THIRD_PARTY_AMAZON"
-                                ]
-                            }
+                                    "THIRD_PARTY_AMAZON",
+                                ],
+                            },
                         }
                     ],
                     "criteria": [
@@ -4068,14 +4086,12 @@ def patch_papi_property_rule_origin_command(client: Client,
                             "name": "hostname",
                             "options": {
                                 "matchOperator": "IS_ONE_OF",
-                                "values": [
-                                    external_url
-                                ]
-                            }
+                                "values": [external_url],
+                            },
                         }
                     ],
-                    "criteriaMustSatisfy": "all"
-                }
+                    "criteriaMustSatisfy": "all",
+                },
             }
         ]
 
@@ -4221,7 +4237,6 @@ def clone_security_policy_command(client: Client,
             human_readable = tableToMarkdown(name=title,
                                              t=human_readable_ec,
                                              removeNull=True)
-        return human_readable, context_entry, raw_response
     else:
         raw_response = client.clone_security_policy(
             config_id=arg_to_number(config_id),  # type: ignore[arg-type]
@@ -4242,7 +4257,8 @@ def clone_security_policy_command(client: Client,
             removeNull=True,
         )
 
-        return human_readable, context_entry, raw_response
+
+    return human_readable, context_entry, raw_response
 
 # Created by D.S.
 
@@ -4275,12 +4291,11 @@ def new_match_target_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
     networkList = []
-    for network in argToList(bypass_network_lists):
-        networkList.append({'id': network})
+    networkList.extend(
+        {'id': network} for network in argToList(bypass_network_lists)
+    )
     hostnameList = []
-    for hostname in hostnames.split(','):
-        hostnameList.append(hostname)
-
+    hostnameList.extend(iter(hostnames.split(',')))
     raw_response: dict = client.new_match_target(config_id=arg_to_number(config_id),  # type: ignore[arg-type]
                                                  config_version=arg_to_number(config_version),  # type: ignore[arg-type]
                                                  match_type=match_type,
@@ -4417,7 +4432,7 @@ def get_appsec_config_latest_version_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    for _i in range(0, int(retries)):
+    for _i in range(int(retries)):
         raw_response: dict = client.list_appsec_config()
         lookupKey = 'name'
         lookupValue = sec_config_name
@@ -4717,8 +4732,9 @@ def modify_appsec_config_selected_hosts_command(client: Client,
     """
 
     hostname_dict_list = []
-    for hostname in hostname_list[0].split(','):
-        hostname_dict_list.append({'hostname': hostname})
+    hostname_dict_list.extend(
+        {'hostname': hostname} for hostname in hostname_list[0].split(',')
+    )
     raw_response: dict = client.modify_appsec_config_selected_hosts(config_id=config_id,
                                                                     config_version=config_version,
                                                                     hostname_list=hostname_dict_list,
@@ -4852,12 +4868,11 @@ def new_or_renew_match_target_command(client: Client,
     """
 
     networkList = []
-    for network in argToList(bypass_network_lists):
-        networkList.append({'id': network})
+    networkList.extend(
+        {'id': network} for network in argToList(bypass_network_lists)
+    )
     hostnameList = []
-    for hostname in hostnames.split(','):
-        hostnameList.append(hostname)
-
+    hostnameList.extend(iter(hostnames.split(',')))
     # Get the list of match targets
     raw_response: dict = client.list_match_target(config_id=arg_to_number(config_id),  # type: ignore[arg-type]
                                                   config_version=arg_to_number(config_version),  # type: ignore[arg-type]

@@ -922,8 +922,7 @@ def build_title_with_page_numbers(title: str, count: int, limit: int, offset: in
         tot_pages = math.ceil(count / limit)
         page = math.floor((offset / count) * tot_pages) + 1
         # In case offset > count
-        if page > tot_pages:
-            page = tot_pages
+        page = min(page, tot_pages)
         return f'{title}\n### Page {page}/{tot_pages}'
     except (TypeError, ValueError, ZeroDivisionError):
         return title
@@ -989,9 +988,9 @@ def fetch_incidents(client: Client, fetch_time: str | None, last_run: dict) -> t
     Returns:
         incidents, new last_run
     """
-    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
     # Get incidents from API
     if not last_run:  # if first time running
+        timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
         new_last_run = last_run

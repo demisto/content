@@ -801,7 +801,7 @@ def get_query_params_str(params: dict, array_type_params: dict) -> str:
     query_params_str = '&'.join([f'{k}={v}' for k, v in params.items()])
     for array_type_param, values in array_type_params.items():
         curr_param_str = '&'.join([f'{array_type_param}={v}' for v in values])
-        query_params_str += '&' + curr_param_str
+        query_params_str += f'&{curr_param_str}'
     return query_params_str
 
 
@@ -1175,8 +1175,8 @@ def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> tuple
 
 
 def convert_all_unix_keys_to_date(incident: dict) -> dict:
-    keys = ['createdAt', 'startedDate', 'closedDate', 'updatedAt']
     if 'baseFields' in incident:
+        keys = ['createdAt', 'startedDate', 'closedDate', 'updatedAt']
         for key in keys:
             if key in incident['baseFields']:
                 incident['baseFields'][key] = convert_unix_to_date(incident['baseFields'][key]).split('.')[0] + 'Z'
@@ -1246,7 +1246,7 @@ def get_notable_users(client: Client, args: dict) -> tuple[str, dict, dict]:
     limit: int = args.get('limit', 10)
     time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
-    if not len(time_) == 2:
+    if len(time_) != 2:
         raise Exception('Got invalid time period. Enter the time period number and unit. For example, 20 d.')
     num: str = time_[0]
     unit: str = time_[1]
@@ -1322,17 +1322,18 @@ def get_user_sessions(client: Client, args: dict) -> tuple[str, dict, dict]:
     if not session:
         return f'The user {username} has no sessions in this time frame.', {}, {}
 
-    for session_ in session:
-        contents.append({
+    contents.extend(
+        {
             'SessionID': session_.get('sessionId'),
             'StartTime': convert_unix_to_date(session_.get('startTime')),
             'EndTime': convert_unix_to_date(session_.get('endTime')),
             'InitialRiskScore': session_.get('initialRiskScore'),
             'RiskScore': round(session_.get('riskScore')),
             'LoginHost': session_.get('loginHost'),
-            'Label': session_.get('label')
-        })
-
+            'Label': session_.get('label'),
+        }
+        for session_ in session
+    )
     entry_context = {
         'Exabeam.User(val.SessionID && val.SessionID === obj.SessionID)': {
             'Username': username,
@@ -1353,9 +1354,7 @@ def get_peer_groups(client: Client, *_) -> tuple[str, dict, dict]:
     """
     groups = client.get_peer_groups_request()
     contents = []
-    for group in groups:
-        contents.append({'Name': group})
-
+    contents.extend({'Name': group} for group in groups)
     entry_context = {'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents}
     human_readable = tableToMarkdown('Exabeam Peer Groups:', contents)
 
@@ -1371,9 +1370,7 @@ def get_user_labels(client: Client, *_) -> tuple[str, dict, dict]:
     """
     labels = client.get_user_labels_request()
     contents = []
-    for label in labels:
-        contents.append({'Label': label})
-
+    contents.extend({'Label': label} for label in labels)
     entry_context = {'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents}
     human_readable = tableToMarkdown('Exabeam User Labels:', contents)
 
@@ -1390,13 +1387,14 @@ def get_watchlist(client: Client, *_) -> tuple[str, dict, dict]:
 
     watchlist = client.get_watchlist_request()
     contents = []
-    for list_ in watchlist:
-        contents.append({
+    contents.extend(
+        {
             'WatchlistID': list_.get('watchlistId'),
             'Title': list_.get('title'),
-            'Category': list_.get('category')
-        })
-
+            'Category': list_.get('category'),
+        }
+        for list_ in watchlist
+    )
     entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
     human_readable = tableToMarkdown('Exabeam Watchlists:', contents, headers=['WatchlistID', 'Title', 'Category'])
 
@@ -1894,7 +1892,7 @@ def get_notable_assets(client: Client, args: dict) -> tuple[Any, dict[str, Any],
     limit: int = args.get('limit', 10)
     time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
-    if not len(time_) == 2:
+    if len(time_) != 2:
         raise Exception('Got invalid time period. Enter the time period number and unit.')
     num: str = time_[0]
     unit: str = time_[1]
@@ -1944,20 +1942,19 @@ def get_notable_session_details(client: Client, args: dict[str, str]) -> tuple[A
     users: list = []
     executive_user_flags: list = []
     sessions = session_details_raw_data.get('sessions', {})
-    for session in sessions:
-        contents.append(contents_append_notable_session_details(session))
-
+    contents.extend(
+        contents_append_notable_session_details(session)
+        for session in sessions
+    )
     users_response = session_details_raw_data.get('users', {})
     for _user_name, user_details in users_response.items():
         user_info = user_details.get('info', {})
         users.append(contents_append_notable_session_user_details(user_details, user_info))
 
     executive_user = session_details_raw_data.get('executiveUserFlags', {})
-    for username, status in executive_user.items():
-        executive_user_flags.append({
-            username: status
-        })
-
+    executive_user_flags.extend(
+        {username: status} for username, status in executive_user.items()
+    )
     contents_entry = {'sessions': contents, 'users': users, 'executiveUserFlags': executive_user_flags}
     entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
     human_readable = tableToMarkdown('Notable Sessions details:', sessions, removeNull=True) if sessions else 'No results found.'
@@ -2024,9 +2021,12 @@ def get_notable_sequence_event_types(client: Client, args: dict[str, str]) -> tu
         return f'The Asset {asset_sequence_id} has no sequence event types.', {}, {}
 
     contents: list = []
-    for sequence in sequence_event_types_raw_data:
-        contents.append(contents_append_notable_sequence_event_types(sequence, asset_sequence_id))
-
+    contents.extend(
+        contents_append_notable_sequence_event_types(
+            sequence, asset_sequence_id
+        )
+        for sequence in sequence_event_types_raw_data
+    )
     contents = contents[from_idx:to_idx]
 
     entry_context = {'Exabeam.SequenceEventTypes(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
@@ -2068,8 +2068,10 @@ def list_incidents(client: Client, args: dict[str, str]):
                                                                 page_number,
                                                                 )
             raw_response = client.get_list_incidents(query_params)
-            for incident in raw_response['incidents']:
-                incidents.append(format_single_incident(incident))
+            incidents.extend(
+                format_single_incident(incident)
+                for incident in raw_response['incidents']
+            )
         else:
             return_error('One of the following params is a must: query, incident_type, priority, status')
 
