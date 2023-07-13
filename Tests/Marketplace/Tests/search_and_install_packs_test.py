@@ -193,8 +193,8 @@ def test_search_pack_with_id(mocker):
     assert expected_response == script.search_pack(client, "New Hello World", 'HelloWorld', None)
 
     # Response fist fail and the suceed
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=[({}, 500, None),
-                                                                             ({'id': 'HelloWorld', 'currentVersion': '1.1.10'}, 200, None)])
+    mocker.patch.object(demisto_client, 'generic_request_func',
+                        side_effect=[({}, 500, None), ({'id': 'HelloWorld', 'currentVersion': '1.1.10'}, 200, None)])
 
     assert expected_response == script.search_pack(client, "New Hello World", 'HelloWorld', None, sleep_interval=0)
 
