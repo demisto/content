@@ -52,7 +52,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: box-get-events
-  dockerimage: demisto/pydantic-jwt3:1.0.0.62282
+  dockerimage: demisto/pydantic-jwt3:1.0.0.64406
   runonce: false
   script: '-'
   subtype: python3
