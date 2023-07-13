@@ -57,6 +57,7 @@ configuration:
   display: ''
   type: 1
 script:
+  script: '-'
   type: python
   commands:
   - name: domain
