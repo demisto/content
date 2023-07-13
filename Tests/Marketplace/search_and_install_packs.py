@@ -709,7 +709,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         # install_packs(client, host, packs_to_install_body)
         packs_to_install_together.extend(packs_to_install_body)
         if len(packs_to_install_together) > 20:
-            while result := client.generic_request_func(self=client, method="GET", path="/content/updating"):
+            # from demisto_client.demisto_api import DefaultApi
+            while result := client.generic_request(method="GET", path="/content/updating"):
                 logging.info(f'got from the api for /content/updating: {result}')
                 logging.info('sleeping for 60 seconds as /content/updating returned True')
                 sleep(60)
