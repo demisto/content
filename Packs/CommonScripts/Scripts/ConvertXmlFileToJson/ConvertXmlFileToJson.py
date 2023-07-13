@@ -3,7 +3,7 @@ from CommonServerPython import *
 import xmltodict
 
 
-def convert_file(entry_id: str, verbose: bool, context_key:str) -> dict:
+def convert_file(entry_id: str, verbose: bool, context_key:str):
     xml_file = demisto.getFilePath(entry_id).get("path", "")
     with open(xml_file['path'], 'rb') as xml:
         xml_json = xmltodict.parse(xml)
