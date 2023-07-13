@@ -1781,27 +1781,28 @@ def set_password_not_expire(default_base_dn):
 
 
 def test_credentials(SERVER_IP):
-    server = Server(SERVER_IP, get_info='ALL')
+    args = demisto.args()
     username = demisto.args().get('username')
-    set_connection(SERVER_IP, username, demisto.args().get('password'))
+    server = Server(SERVER_IP, get_info='ALL')
+    set_connection_ntlm(server, SERVER_IP, username, args.get('password'))
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
         outputs_key_field='username',
         outputs=username,
-        readable_output="Credential with username " + username + " is valid"
+        readable_output=f"Credential with username {username} is valid"
     )
 
 
-def set_connection(server_ip, username, password):
-    domain_name = SERVER_IP + '\\' + username if '\\' not in username else username
+def set_connection_ntlm(server, server_ip, username, password):
+    domain_name = server_ip + '\\' + username if '\\' not in username else username
     conn = True
     try:
         # open socket and bind to server
-        conn = Connection(server_ip, domain_name, password=password, authentication=NTLM, auto_bind=True)
+        conn = Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=True)
         if conn:
             conn.unbind()
     except Exception as e:
-        raise demisto.exception(domain_name + ' ' + str(e))
+        raise DemistoException(domain_name + ' ' + str(e))
 
 
 def get_auto_bind_value(secure_connection, unsecure) -> str:
@@ -1877,8 +1878,7 @@ def main():
             if NTLM_AUTH:
                 # initialize connection to LDAP server with NTLM authentication
                 # user example: domain\user
-                domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-                conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM, auto_bind=auto_bind)
+                set_connection_ntlm(server, SERVER_IP, USERNAME, PASSWORD)
             else:
                 # here username should be the user dn
                 conn = Connection(server, user=USERNAME, password=PASSWORD, auto_bind=auto_bind)
@@ -1986,7 +1986,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(SERVER_IP)
+            return return_results(test_credentials(SERVER_IP))
 
         # IAM commands
         elif command == 'iam-get-user':
