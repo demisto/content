@@ -1779,27 +1779,30 @@ def set_password_not_expire(default_base_dn):
     else:
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
-def test_credentials(SERVER_IP):
-    args = demisto.args()
-    server = Server(SERVER_IP, get_info='ALL')
-    username = args.get('username')
-    domain_name = SERVER_IP + '\\' + username if '\\' not in username else username
-    conn = True
-    try:
-        # open socket and bind to server
-        conn = Connection(server, domain_name , password=args.get('password'), authentication=NTLM, auto_bind=True)
-        if conn:
-            conn.unbind()
-    except Exception as e:
-        return_error(domain_name + ' ' + str(e))
 
-    result = CommandResults(
+def test_credentials(SERVER_IP):
+    server = Server(SERVER_IP, get_info='ALL')
+    username = demisto.args().get('username')
+    set_connection(SERVER_IP, username, demisto.args().get('password'))
+    return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
         outputs_key_field='username',
         outputs=username,
         readable_output="Credential with username " + username + " is valid"
     )
-    return_results(result)
+
+
+def set_connection(server_ip, username, password):
+    domain_name = SERVER_IP + '\\' + username if '\\' not in username else username
+    conn = True
+    try:
+        # open socket and bind to server
+        conn = Connection(server_ip, domain_name, password=password, authentication=NTLM, auto_bind=True)
+        if conn:
+            conn.unbind()
+    except Exception as e:
+        raise demisto.exception(domain_name + ' ' + str(e))
+
 
 def get_auto_bind_value(secure_connection, unsecure) -> str:
     """
@@ -1983,7 +1986,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            test_credentials(SERVER_IP)
+            return return_results(SERVER_IP)
 
         # IAM commands
         elif command == 'iam-get-user':
@@ -2026,10 +2029,8 @@ def main():
             set_library_log_detail_level(last_log_detail_level)
 
 
-
 from IAMApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-
