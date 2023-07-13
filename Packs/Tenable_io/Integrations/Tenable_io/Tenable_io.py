@@ -1179,7 +1179,7 @@ def list_scan_filters_command() -> CommandResults:
 def get_scan_history_request(scan_id, params) -> dict:
     remove_nulls_from_dictionary(params)
     response = requests.get(
-        f'/scans/{scan_id}/history',
+        f'{BASE_URL}/scans/{scan_id}/history',
         params=params,
         headers=NEW_HEADERS,
         verify=USE_SSL
@@ -1238,9 +1238,42 @@ def get_scan_history_command(args: dict[str, Any]) -> CommandResults:
     )
 
 
-@polling_function
-def export_scan_command(args: dict[str, Any]) -> CommandResults:
+def initiate_export_scan(scan_id: str, args: dict) -> str:
     pass
+
+
+def check_export_scan_status(scan_id: str, file_id: str) -> str:
+    response = requests.get(
+        f'{BASE_URL}scans/{scan_id}/export',
+        headers=NEW_HEADERS, verify=USE_SSL)
+    handle_errors(response)
+    return response.json().get('status', '')
+
+
+def download_export_scan(scan_id: str, file_id: str):
+    pass
+
+
+@polling_function(
+    'tenable-io-export-scan',
+    poll_message='Preparing scan report:',
+    requires_polling_arg=False,
+)
+def export_scan_command(args: dict[str, Any]) -> PollResult:
+    scan_id = args['scanId']
+    file_id = args.get('file_id') or initiate_export_scan(scan_id, args)
+
+    match check_export_scan_status(scan_id, file_id):
+        case 'ready':
+            download_export_scan(scan_id, file_id)
+        case 'error':
+            pass
+        case 'loading':
+            pass
+        case default:
+            pass
+
+    return PollResult(None, None, None, None)
 
 
 def main():  # pragma: no cover
