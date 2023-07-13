@@ -1808,7 +1808,7 @@ def set_connection(server: Server, server_ip: str, username: str, password: str,
         return Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=auto_bind) if ntlm_connection \
             else Connection(server, user=username, password=password, auto_bind=auto_bind)
     except Exception as e:
-        raise DemistoException(f'domain_name {str(e)}')
+        raise DemistoException(f'domain_name {str(e)}') from e
 
 
 def get_auto_bind_value(secure_connection, unsecure) -> str:
