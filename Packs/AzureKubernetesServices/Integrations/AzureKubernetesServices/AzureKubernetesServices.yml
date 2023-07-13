@@ -394,7 +394,7 @@ script:
   longRunningPort: false
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Azure Kubernetes Services - Test
 sectionorder:
 - Connect
 - Collect
