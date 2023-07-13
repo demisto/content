@@ -627,8 +627,8 @@ xsoar_server_master-test_playbooks_results:
   extends: .server_test_playbooks_report
   needs: ["xsoar_server_master"]
 
-xsiam_server_ga-test_playbooks_results:
-  extends: .server_test_playbooks_report
-  needs: ["xsiam_server_ga"]
+#xsiam_server_ga-test_playbooks_results:
+#  extends: .server_test_playbooks_report
+#  needs: ["xsiam_server_ga"]
 
 
