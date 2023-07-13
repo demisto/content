@@ -63,9 +63,7 @@ class ASClient:
         return self.ms_client.http_request(
             method='GET',
             full_url=urljoin(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
-                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}?'
-                             ),
-            params={'api-version': API_VERSION}
+                             f'/providers/Microsoft.Storage/storageAccounts/{account_name}') + '?api-version=2022-09-01'
         )
 
     @logger
