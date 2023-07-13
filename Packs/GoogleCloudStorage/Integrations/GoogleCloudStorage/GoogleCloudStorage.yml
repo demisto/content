@@ -5,27 +5,27 @@ commonfields:
 configuration:
 - display: Service Account Private Key file contents (JSON)
   name: service_account_json
-  required: false
   type: 4
   hidden: true
+  required: false
 - displaypassword: Service Account Private Key file contents (JSON)
   name: credentials_service_account_json
-  required: false
   hiddenusername: true
   type: 9
   display: ''
+  required: false
 - display: Default Bucket
   name: default_bucket
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Google Cloud Storage is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure.
 display: Google Cloud Storage
 name: Google Cloud Storage
@@ -90,11 +90,15 @@ script:
       - private
       - projectPrivate
       - publicRead
-    - defaultValue: eu
+    - defaultValue: us
       description: The location of the bucket. Object data for objects in the bucket resides in physical storage within this region or multi-region.
       name: location
-    - description: Whether or not the bucket uses uniform bucket-level access.
+    - auto: PREDEFINED
+      description: Whether the bucket is configured to allow only IAM.
       name: uniform_bucket_level_access
+      predefined:
+      - 'false'
+      - 'true'
     description: Creates a new bucket.
     name: gcs-create-bucket
   - arguments:

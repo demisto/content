@@ -190,11 +190,11 @@ def gcs_create_bucket(client, args):
     bucket_name = args['bucket_name']
     bucket_acl = args.get('bucket_acl', '')
     default_object_acl = args.get('default_object_acl', '')
-    location = args['location']
-    uniform_bucket_level_access = args['uniform_bucket_level_access']
+    location = args.get('location')
+    uniform_bucket_level_access = args.get('uniform_bucket_level_access')
 
     bucket = client.create_bucket(bucket_name, location=location)
-    if uniform_bucket_level_access:
+    if uniform_bucket_level_access == "true":
         bucket.iam_configuration.uniform_bucket_level_access_enabled = True
         bucket.patch()
     if bucket_acl:
