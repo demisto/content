@@ -1784,9 +1784,15 @@ def test_credentials(SERVER_IP):
     args = demisto.args()
     username = demisto.args().get('username')
     server = Server(SERVER_IP, get_info='ALL')
-    connection = set_connection_ntlm(server, SERVER_IP, username, args.get('password'))
-    if conn:
-        conn.unbind()
+    if connection := set_connection(
+        server,
+        SERVER_IP,
+        username,
+        args.get('password'),
+        argToBoolean(args.get('ntlm')),
+        True,
+    ):
+        connection.unbind()
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
         outputs_key_field='username',
@@ -1795,13 +1801,14 @@ def test_credentials(SERVER_IP):
     )
 
 
-def set_connection_ntlm(server, server_ip, username, password):
+def set_connection(server: Server, server_ip: str, username: str, password: str, ntlm_connection: bool, auto_bind: str | bool):
     domain_name = server_ip + '\\' + username if '\\' not in username else username
     try:
         # open socket and bind to server
-        return Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=True)        
+        return Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=auto_bind) if ntlm_connection \
+            else Connection(server, user=username, password=password, auto_bind=auto_bind)
     except Exception as e:
-        raise DemistoException(domain_name + ' ' + str(e))
+        raise DemistoException(f'domain_name {str(e)}')
 
 
 def get_auto_bind_value(secure_connection, unsecure) -> str:
@@ -1873,14 +1880,8 @@ def main():
         auto_bind = get_auto_bind_value(SECURE_CONNECTION, UNSECURE)
 
         try:
-
-            if NTLM_AUTH:
-                # initialize connection to LDAP server with NTLM authentication
-                # user example: domain\user
-                conn = set_connection_ntlm(server, SERVER_IP, USERNAME, PASSWORD)
-            else:
-                # here username should be the user dn
-                conn = Connection(server, user=USERNAME, password=PASSWORD, auto_bind=auto_bind)
+            # user example: domain\user
+            conn = set_connection(server, SERVER_IP, USERNAME, PASSWORD, NTLM_AUTH, auto_bind)
 
         except Exception as e:
             err_msg = str(e)

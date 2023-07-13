@@ -789,7 +789,14 @@ script:
     - description: Password to test.
       name: password
       required: true
-    description: Test if credentials are valid.
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: NTLM authentication
+      name: ntlm
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
     name: ad-test-credentials
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
