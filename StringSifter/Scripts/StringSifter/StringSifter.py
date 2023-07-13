@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 from subprocess import Popen, PIPE
 import re
 from pathlib import Path
@@ -64,7 +63,8 @@ def stringsifter(args: dict):
     p1 = Popen(["flarestrings", path], stdout=PIPE)
     args_rank_strings = create_rank_strings_args(args)
     p2 = Popen(args_rank_strings, stdin=p1.stdout, stdout=PIPE)
-    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+    if p1.stdout is not None:
+        p1.stdout.close() # Allow p1 to receive a SIGPIPE if p2 exits.
     output = p2.communicate()[0]  # gets the stdout from the pipe.
 
     if string_text:
@@ -78,11 +78,11 @@ def stringsifter(args: dict):
     for line in output_data.splitlines():
         matches = re.search(regex, line)
         # --min-score flag and --limit can't be used together added this implementation in the code
-        if min_score and min_score > matches.group('rating'):
+        if matches and min_score and min_score > matches.group('rating'):
             break
         words_rating_list.append(
-            {'Rating': matches.group('rating'),
-             'Word': matches.group('word')})
+            {'Rating': matches.group('rating') if matches else '',
+             'Word': matches.group('word') if matches else ''})
 
     readable = tableToMarkdown(
         f'Top {str(min(20, len(words_rating_list)))} '
