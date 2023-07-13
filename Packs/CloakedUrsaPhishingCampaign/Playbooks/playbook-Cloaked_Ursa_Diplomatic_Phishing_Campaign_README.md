@@ -43,10 +43,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Threat Hunting - Generic
-* Rapid Breach Response - Set Incident Info
 * Block Indicators - Generic v3
+* Rapid Breach Response - Set Incident Info
 * QRadarFullSearch
+* Threat Hunting - Generic
 
 ### Integrations
 
@@ -59,10 +59,10 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* es-eql-search
-* splunk-search
 * azure-log-analytics-execute-query
+* splunk-search
 * xdr-xql-generic-query
+* es-eql-search
 
 ## Playbook Inputs
 
@@ -78,6 +78,7 @@ This playbook does not use any integrations.
 | LogAnalyticsTimespan | The time range for the Azure Log Analytics queries. | 30d | Optional |
 | XQLTimeRange | The time range for the XQL queries. | 30 days ago | Optional |
 | ElasticIndex | The elastic index to search in. |  | Optional |
+| emailIndicators | The email indicators provided in the blog. | dawid.tomaszewski@resetlocations.com, ops.rejon4@kazmierz.pl | Optional |
 
 ## Playbook Outputs
 

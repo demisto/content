@@ -586,6 +586,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "43"
       "Yes":
       - "26"
     separatecontext: false
@@ -643,6 +645,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "43"
       "Yes":
       - "28"
     separatecontext: false
@@ -700,6 +704,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "43"
       "Yes":
       - "27"
     separatecontext: false
@@ -760,6 +766,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "43"
       "yes":
       - "25"
     separatecontext: false
@@ -1190,6 +1198,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "43"
       "Yes":
       - "35"
     separatecontext: false
@@ -1820,7 +1830,13 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "21_43_#default#": 0.34,
+      "22_43_#default#": 0.34,
+      "23_43_#default#": 0.32,
+      "24_43_#default#": 0.32,
+      "34_43_#default#": 0.11
+    },
     "paper": {
       "dimensions": {
         "height": 3325,
@@ -1877,6 +1893,12 @@ inputs:
   value: {}
   required: false
   description: The elastic index to search in.
+  playbookInputQuery:
+- key: emailIndicators
+  value:
+    simple: dawid.tomaszewski@resetlocations.com, ops.rejon4@kazmierz.pl
+  required: false
+  description: The email indicators provided in the blog.
   playbookInputQuery:
 outputs: []
 tests:
