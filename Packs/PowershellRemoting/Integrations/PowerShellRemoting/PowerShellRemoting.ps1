@@ -1,5 +1,4 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
-
 # remove progress messages such as [oo  ] - used to hide archiving operations
 $global:ProgressPreference = 'SilentlyContinue'
 
@@ -530,6 +529,7 @@ function InvokeCommandCommand {
 
 function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zip_file, [string]$check_hash, [bool]$host_as_prefix)
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingBrokenHashAlgorithms', '', Justification='Just an example')]
     $temp = $script:Demisto.UniqueFile()
     $file_name = $script:Demisto.Investigation().id + "_$temp"
 

@@ -14,3 +14,10 @@ Check Point SMART API allowing:
 * Collect security events for your secured SaaS periodically.
 * Retrieve the entity info to attach evidence to your incidents.
 * Request actions over a specific entity.
+
+### Pack Contributors:
+
+---
+ - Christian Gutierrez
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

@@ -22,6 +22,7 @@ class Client(BaseClient):
         self.token = None
 
     def _generate_signature(self, request_id: str, timestamp: str, request_string: str = None) -> str:
+        # test
         if request_string:
             signature_string = f'{request_id}{self.client_id}{timestamp}{request_string}{self.client_secret}'
         else:

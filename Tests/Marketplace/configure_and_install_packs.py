@@ -62,7 +62,7 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     """
     # Get the host by the ami env
     server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
-
+    logging.info(f'{server_version=}')
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json(file_path=options.secret)
     username: str = secret_conf_file.get('username')
