@@ -1127,7 +1127,7 @@ def update_edl_command(args: Dict, params: Dict):
     hr = 'EDL will be updated the next time you access it.'
     
     if not query:
-        warning = "Warning: Updating EDL while not specifying a query may load unwanted indicators."
+        warning = "\n**Warning**: Updating EDL while not specifying a query may load unwanted indicators."
         
         if (param_query := params.get("query")):
             warning += f" Hint: use {param_query} to update indicators using the configured integration instance parameter."
