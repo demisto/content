@@ -1,15 +1,16 @@
 {
-  "iocs": [
-     {
+    "iocs": [
+        {
+        "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
         "type": "indicator",
-        "name": "192.30.255.113",
-        "description": "Early Campaign - UNC054",
+        "name": "0.0.0.0",
+        "description": "Sample Testing",
         "created": "2023-07-11T06:21:42.110Z",
         "modified": "2023-07-11T06:21:42.110Z",
         "indicator_types": [
             "attribution"
         ],
-        "pattern": "[ipv4-addr:value = '192.30.255.113']",
+        "pattern": "[ipv4-addr:value = '0.0.0.0']",
         "pattern_type": "stix",
         "valid_from": "2023-07-11T06:21:42.110Z",
         "kill_chain_phases  ": [
@@ -23,39 +24,12 @@
                     "group 83",
                     "macdownloader",
                     "parastoo",
-                    "Charming Kitten",
-                    "elfin",
-                    "ikittens",
-                    "charming kitten",
-                    "apt33",
-                    "newsbeef",
-                    "apt 35",
-                    "magic hound",
-                    "ta453",
-                    "temp.beanie",
-                    "cobalt gypsy",
-                    "phosphorus",
-                    "TA505",
-                    "ta505",
-                    "atk 103",
-                    "chimborazo",
-                    "evil corp",
-                    "gold evergreen",
-                    "gold tahoe",
-                    "graceful spider",
-                    "hive0065",
-                    "sectorj04",
-                    "ta 505",
-                    "ta-505",
-                    "unc054",
-                    "dev-0206",
-                    "dev-0243",
-                    "silence group"
+                    "Charming Kitten"
                 ]
             }
         ],
-        "first_seen ": "2022-06-06T00:00:00.000Z",
-        "last_seen ": "2022-12-16T00:00:00.000Z"
+        "first_seen": "2022-06-06T00:00:00.000Z",
+        "last_seen": "2022-12-16T00:00:00.000Z"
     }
-  ]
+    ]
 }
