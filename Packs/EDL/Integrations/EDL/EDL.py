@@ -1125,13 +1125,13 @@ def update_edl_command(args: Dict, params: Dict):
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
     hr = 'EDL will be updated the next time you access it.'
-    
+
     if not query:
         warning = "\n**Warning**: Updating EDL while not specifying a query may load unwanted indicators."
-        
+
         if (param_query := params.get("query")):
             warning += f" Hint: use {param_query} to update indicators using the configured integration instance parameter."
-            
+
         hr += warning
         demisto.info(warning)
 
