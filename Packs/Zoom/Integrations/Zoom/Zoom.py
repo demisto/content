@@ -1589,8 +1589,10 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
         except DemistoException as e:
             error_message = e.message
             if 'The next page token is invalid or expired.' in error_message and next_page_token:
-                raise DemistoException(" please check that the right arguments value are using in order to use next_page_token \n\
-                you can find the right values in context under ChatMessageNextToken \n  {error_message}")
+                raise DemistoException(f"Please ensure that the correct argument values are used when attempting to use \
+                                       the next_page_toke.\n \
+                                       To find the appropriate values, refer to the ChatMessageNextToken located in the context. \
+                                       \n {error_message}")
     outputs = []
     for i in all_messages:
         outputs.append({
