@@ -106,9 +106,9 @@ def test_build_mail_object():
 
 
 def test_assert_pages():
-    assert GraphMailUtils.assert_pages(3) == 3\
-        and GraphMailUtils.assert_pages(None) == 1\
-        and GraphMailUtils.assert_pages('4') == 4
+    assert GraphMailUtils.assert_pages(3) == 3
+    assert GraphMailUtils.assert_pages(None) == 1
+    assert GraphMailUtils.assert_pages('4') == 4
 
 
 def test_build_folders_path():
