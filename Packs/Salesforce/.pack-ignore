@@ -1,5 +1,5 @@
 [file:Salesforce.yml]
-ignore=IN126,IN145
+ignore=IN126
 
 [file:classifier-User_Profile_-_Salesforce_(Incoming).json]
 ignore=MP106
@@ -8,7 +8,7 @@ ignore=MP106
 ignore=MP106
 
 [file:Salesforce_IAM.yml]
-ignore=BA108,BA109,IN145
+ignore=BA108,BA109
 
 [file:Salesforce_image.png]
 ignore=IM111
@@ -24,4 +24,13 @@ ignore=BA124
 
 [file:GenerateTimeZone.yml]
 ignore=BA124
+
+[file:Salesforce_1_3.yml]
+ignore=MR108
+
+[file:SalesforceParsingRules.yml]
+ignore=PR101
+
+[file:SalesforceModelingRule.yml]
+ignore=MR108
 

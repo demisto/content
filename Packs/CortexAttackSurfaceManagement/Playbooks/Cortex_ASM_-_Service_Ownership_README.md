@@ -10,17 +10,17 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* GCP-IAM
+* Cortex Attack Surface Management
 
 ### Scripts
 
-* GetTime
+* GetProjectOwners
 * GridFieldSetup
 * RankServiceOwners
 
 ### Commands
 
-* gcp-iam-project-iam-policy-get
+* asm-get-external-service
 
 ## Playbook Inputs
 

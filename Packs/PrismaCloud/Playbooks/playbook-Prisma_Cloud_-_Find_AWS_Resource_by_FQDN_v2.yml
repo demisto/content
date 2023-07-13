@@ -792,7 +792,7 @@ tasks:
             iscontext: true
             value:
               complex:
-                root: AWSFQDN
+                root: NONAWSFQDN
           operator: isNotEmpty
       label: "yes"
     id: "26"

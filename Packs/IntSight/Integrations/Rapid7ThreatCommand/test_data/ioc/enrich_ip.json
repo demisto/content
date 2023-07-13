@@ -1,0 +1,236 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "Data_Value",
+        "Type": "IpAddresses",
+        "Sources": [
+            {
+                "Name": "Threat Library",
+                "ConfidenceLevel": 3
+            }
+        ],
+        "SystemTags": [
+            "Actions on Objective",
+            "Collection",
+            "Credential Access",
+            "Installation",
+            "T1056.001 - Input Capture: Keylogging",
+            "T1417.001 - Input Capture: Keylogging",
+            "backdoor",
+            "ccinfrastructure",
+            "credentialstealing",
+            "exploitkit",
+            "keylogging",
+            "malware related",
+            "pinkslipbot",
+            "polymorphic",
+            "polymorphicvirus",
+            "qakbot",
+            "qbot",
+            "quackbot",
+            "worm"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [
+            "qakbot"
+        ],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "High",
+            "Score": 70,
+            "Origin": "system"
+        },
+        "IpDetails": {
+            "Country": "US",
+            "ASN": 22612,
+            "ASDescription": "NAMECHEAP-NET"
+        },
+        "Whois": {
+            "NetworkDetails": {
+                "IPRange": "",
+                "Statuses": [],
+                "CreatedDate": "Data_Whois_NetworkDetails_CreatedDate",
+                "UpdatedDate": "Data_Whois_NetworkDetails_UpdatedDate"
+            },
+            "RegistrantDetails": [
+                {
+                    "Organization": "Namecheap, Inc.",
+                    "Name": "Namecheap, Inc.",
+                    "Email": "",
+                    "Telephone": "",
+                    "Fax": "",
+                    "City": "Los Angeles",
+                    "State": "",
+                    "Country": "UNITED STATES",
+                    "Address": "11400 W. Olympic Blvd. Suite 200",
+                    "PostalCode": "90064",
+                    "CountryCode": "US"
+                }
+            ]
+        },
+        "RelatedHashes": {
+            "downloaded": [
+                "23488c009bd3cbae012625d2879d8b1c857f1bc4"
+            ],
+            "communicating": [
+                "0ee307ee94ab3011058bdcc5f0793e1248e7197de1ea26bdb51add989b8b3655",
+                "3dfa5ae365143b97ef6a4b34c112615f76b2fd360d85edec0b2aff3e95538981"
+            ],
+            "referencing": []
+        },
+        "Resolutions": [
+            {
+                "ResolvedDomain": "emfnorcal.com",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "debtremoval.us",
+                "FirstResolved": "Data_Resolutions[1]_FirstResolved",
+                "LastResolved": "Data_Resolutions[1]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "anonpress.com",
+                "FirstResolved": "Data_Resolutions[2]_FirstResolved",
+                "LastResolved": "Data_Resolutions[2]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "gehringss.com",
+                "FirstResolved": "Data_Resolutions[485]_FirstResolved",
+                "LastResolved": "Data_Resolutions[485]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "dealsfr.com",
+                "FirstResolved": "Data_Resolutions[486]_FirstResolved",
+                "LastResolved": "Data_Resolutions[486]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "lanoticia.app",
+                "FirstResolved": "Data_Resolutions[487]_FirstResolved",
+                "LastResolved": "Data_Resolutions[487]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "rchzqz.com",
+                "FirstResolved": "Data_Resolutions[488]_FirstResolved",
+                "LastResolved": "Data_Resolutions[488]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "wuuftruck.com",
+                "FirstResolved": "Data_Resolutions[489]_FirstResolved",
+                "LastResolved": "Data_Resolutions[489]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "howtotowel.com",
+                "FirstResolved": "Data_Resolutions[490]_FirstResolved",
+                "LastResolved": "Data_Resolutions[490]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "bhareth.com",
+                "FirstResolved": "Data_Resolutions[491]_FirstResolved",
+                "LastResolved": "Data_Resolutions[491]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "binngold.com",
+                "FirstResolved": "Data_Resolutions[492]_FirstResolved",
+                "LastResolved": "Data_Resolutions[492]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "slothruns.com",
+                "FirstResolved": "Data_Resolutions[493]_FirstResolved",
+                "LastResolved": "Data_Resolutions[493]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "edgelid.com",
+                "FirstResolved": "Data_Resolutions[494]_FirstResolved",
+                "LastResolved": "Data_Resolutions[494]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "botoxmagic.com",
+                "FirstResolved": "Data_Resolutions[495]_FirstResolved",
+                "LastResolved": "Data_Resolutions[495]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "102bangkok.com",
+                "FirstResolved": "Data_Resolutions[496]_FirstResolved",
+                "LastResolved": "Data_Resolutions[496]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "fast2help.in",
+                "FirstResolved": "Data_Resolutions[497]_FirstResolved",
+                "LastResolved": "Data_Resolutions[497]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "c6hjq.com",
+                "FirstResolved": "Data_Resolutions[498]_FirstResolved",
+                "LastResolved": "Data_Resolutions[498]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "teroid.co",
+                "FirstResolved": "Data_Resolutions[499]_FirstResolved",
+                "LastResolved": "Data_Resolutions[499]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            }
+        ]
+    }
+}

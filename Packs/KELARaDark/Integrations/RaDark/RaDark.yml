@@ -12,15 +12,12 @@ configuration:
   defaultvalue: 45 days
   display: First time fetching
   name: first_fetch
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Set your monitor ID in RaDark.
   display: Monitor ID
@@ -29,26 +26,21 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - additionalinfo: 'Maximum supported: 1000'
   defaultvalue: "10"
   display: Max incidents to fetch each fetching
   name: max_fetch
-  required: false
   type: 0
 - additionalinfo: Set which incident types to fetch from RaDark.
-  defaultvalue: Leaked Credentials,Compromised Accounts,Intelligence Reports,Network
-    Vulnerabilities,Credit Cards,Hacking Discussions
+  defaultvalue: Leaked Credentials,Compromised Accounts,Intelligence Reports,Network Vulnerabilities,Credit Cards,Hacking Discussions
   display: Incident types to fetch
   name: incident_types
   options:
@@ -60,8 +52,7 @@ configuration:
   - Hacking Discussions
   required: true
   type: 16
-description: This integration enables you to fetch incidents and manage your RaDark
-  monitor from Cortex XSOAR.
+description: This integration enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.
 display: RaDark
 name: RaDark
 script:
@@ -179,8 +170,7 @@ script:
     - description: The email address tested for leaked credentials.
       name: email
       required: true
-    description: Search a specific email address to get all exposed leaked credentials
-      collected by RaDark.
+    description: Search a specific email address to get all exposed leaked credentials collected by RaDark.
     name: radark-email-enrich
     outputs:
     - contextPath: Radark.emailDetails.emails.email
@@ -216,9 +206,8 @@ script:
       required: true
     description: Request to purchase an item offered for sale on an automated store.
     name: radark-item-purchase
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

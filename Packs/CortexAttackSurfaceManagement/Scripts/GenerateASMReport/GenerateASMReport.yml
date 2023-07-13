@@ -40,15 +40,25 @@ args:
 - description: Matched remediation path rule (if there is a match).
   isArray: true
   name: asm_remediation_path_rule
+- description: External Service ID for generating Service Summary.
+  name: asm_service_id
+- description: Asset ID related to alert.
+  name: asm_asset_id
+- name: report_type
+  auto: PREDEFINED
+  predefined:
+  - analysis
+  - summary
+  description: Type of report to generate (Analysis report after enrichment or Summary).
+  defaultValue: summary
 comment: Generate an ASM Alert Summary report.
 commonfields:
   id: GenerateASMReport
   version: -1
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.11.61265
 enabled: true
 name: GenerateASMReport
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

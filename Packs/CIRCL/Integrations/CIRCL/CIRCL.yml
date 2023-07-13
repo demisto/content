@@ -14,11 +14,9 @@ configuration:
   type: 9
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: |-
   CIRCL Passive DNS is a database storing historical DNS records from various resources.
@@ -28,15 +26,10 @@ name: CIRCL
 script:
   commands:
   - arguments:
-    - default: false
-      description: IP address, hostname, or domain name
-      isArray: false
+    - description: IP address, hostname, or domain name
       name: queryValue
       required: true
-      secret: false
-    deprecated: false
     description: Get DNS records for your query value from CIRCL's Passive DNS.
-    execution: false
     name: circl-dns-get
     outputs:
     - contextPath: CIRCLdns.Query.Value
@@ -49,15 +42,10 @@ script:
       description: DNS record last recorded time
       type: date
   - arguments:
-    - default: false
-      description: IP address or CIDR block
-      isArray: false
+    - description: IP address or CIDR block
       name: queryValue
       required: true
-      secret: false
-    deprecated: false
     description: Query IP address or CIDR blocks (/32 up to /23) for SSL certificates history.
-    execution: false
     name: circl-ssl-list-certificates
     outputs:
     - contextPath: CIRCLssl.IPAddress.Value
@@ -70,22 +58,13 @@ script:
       description: Certificate subjects
       type: string
   - arguments:
-    - default: false
-      description: SHA-1 fingerprint of a certificate
-      isArray: false
+    - description: SHA-1 fingerprint of a certificate
       name: certificate
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Limit the results number (Increasing number can cause browser slowdowns).
-      isArray: false
       name: limitResults
-      required: false
-      secret: false
-    deprecated: false
     description: Query a certificate value to get all associated addresses
-    execution: false
     name: circl-ssl-query-certificate
     outputs:
     - contextPath: CIRCLssl.Certificate.SHA1
@@ -98,15 +77,10 @@ script:
       description: IP address associated to the certificate
       type: string
   - arguments:
-    - default: false
-      description: SHA-1 fingerprint of a certificate
-      isArray: false
+    - description: SHA-1 fingerprint of a certificate
       name: certificate
       required: true
-      secret: false
-    deprecated: false
     description: Get the raw certificate and related information.
-    execution: false
     name: circl-ssl-get-certificate
     outputs:
     - contextPath: CIRCLssl.Certificate.SHA1
@@ -136,12 +110,11 @@ script:
     - contextPath: CIRCLssl.Certificate.Seen
       description: Number of times the certificate was seen
       type: number
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - CirclIntegrationTest
 fromversion: 5.0.0

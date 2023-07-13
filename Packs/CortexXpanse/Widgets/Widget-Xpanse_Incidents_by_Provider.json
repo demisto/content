@@ -1,0 +1,25 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "xpanseprovider"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:\"Xpanse Alert\"",
+    "modified": "2023-05-26T17:22:54.191249081Z",
+    "name": "Xpanse Incidents by Provider",
+    "dateRange": {
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "d32b7678-e28b-4d4f-8ebc-33bb1f7fe9b3",
+    "widgetType": "bar",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

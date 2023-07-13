@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 from abc import ABCMeta
 from typing import NamedTuple, Type
 
 from requests import Response
 
-import demistomock as demisto
-from CommonServerPython import *
 
 urllib3.disable_warnings()  # Disable insecure warnings
 

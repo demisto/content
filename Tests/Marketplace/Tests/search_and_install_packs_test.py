@@ -109,6 +109,12 @@ class MockLock:
     def release(self):
         return None
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        return False
+
 
 def test_search_and_install_packs_and_their_dependencies(mocker):
     """
@@ -389,3 +395,57 @@ def test_malformed_pack_id():
 
 def test_get_pack_id_from_error_with_gcp_path():
     assert script.get_pack_id_from_error_with_gcp_path(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY) == 'pack2'
+
+
+class TestFindMalformedPackId:
+    """
+    Code Analysis
+
+    Objective:
+    The objective of the function is to extract the pack ID from the installation error message in case the error is that the
+     pack is not found or the error is that the pack's version is invalid.
+
+    Inputs:
+    The function takes a single input, which is a string containing the response message of the failed installation pack.
+
+    Flow:
+    The function first initializes an empty list to store the malformed pack IDs. It then compiles a regular expression pattern
+    to match the invalid version of the pack. If the input string is not empty, it loads the JSON response and extracts the error
+    information. If the error message contains the string 'pack id:', it extracts the pack IDs from the error message. Otherwise,
+    it searches for the malformed pack ID using the regular expression pattern. The function returns the list of
+    malformed pack IDs.
+
+    Outputs:
+    The main output of the function is a list of malformed pack IDs.
+
+    Additional aspects:
+    The function uses ``contextlib.suppress()`` to catch JSONDecodeError exceptions that may occur when loading the JSON response.
+    It also handles cases where the error message contains multiple errors by iterating over the list of errors.
+    """
+
+    #  Tests that the function handles an empty input string.
+    def test_empty_input(self):
+        assert script.find_malformed_pack_id('') == []
+
+    #  Tests that the function returns an empty list if no malformed pack IDs are found.
+    def test_no_malformed_ids(self):
+        assert script.find_malformed_pack_id('{"errors": ["Some error message"]}') == []
+
+    #  Tests that the function handles a case where the error message contains an invalid version number but no pack ID.
+    def test_invalid_version_no_id(self):
+        assert script.find_malformed_pack_id('{"errors": ["invalid version 1.0.0 for pack"]}') == []
+
+    #  Tests that the function correctly extracts multiple pack IDs from the error message.
+    def test_multiple_malformed_ids(self):
+        error_msg = '{"errors": ["Pack installation failed. pack id: pack1","Pack installation failed. pack id: pack2"]}'
+        assert script.find_malformed_pack_id(error_msg) == ['pack1', 'pack2']
+
+    #  Tests that the function handles a JSONDecodeError when parsing the input string.
+    def test_invalid_json(self):
+        assert script.find_malformed_pack_id('invalid json') == []
+
+    #  Tests that the function correctly extracts the pack ID when the error message contains additional
+    #  information after the pack ID.
+    def test_additional_info(self):
+        error_msg = '{"errors": ["invalid version 1.0.0 for pack with ID pack1 some additional info"]}'
+        assert script.find_malformed_pack_id(error_msg) == ['pack1']

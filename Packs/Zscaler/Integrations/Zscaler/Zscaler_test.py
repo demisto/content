@@ -27,17 +27,21 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
     if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
-                                 'get_departments_command', 'get_usergroups_command']:
+                                 'get_departments_command', 'get_usergroups_command',
+                                 'list_ip_destination_groups', 'create_ip_destination_group',
+                                 'edit_ip_destination_group', 'delete_ip_destination_groups']:
         res = command_func(args)
     else:
         res = command_func(**args)
-
     if result_validator:
         assert result_validator(res)
     else:
         with open(expected_result_path, 'r') as ex_f:
             expected_result = json.load(ex_f)
-            assert expected_result == res
+            if isinstance(res, CommonServerPython.CommandResults):
+                assert expected_result == res.to_context()
+            else:
+                assert expected_result == res
 
 
 @pytest.fixture(autouse=True)
@@ -565,4 +569,108 @@ def test_get_usergroups_command(mocker):
                      args={'pageSize': '100'},
                      response_path='test_data/responses/get_usergroups.json',
                      expected_result_path='test_data/results/get_usergroups.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups__command_no_argument(mocker):
+    """zscaler-list-ip-destination-groups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={},
+                     response_path='test_data/responses/'
+                                   + 'list_ip_destination_groups.json',
+                     expected_result_path='test_data/results/'
+                                          + 'list_ip_destination_groups.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups__command_with_id_argument(mocker):
+    """zscaler-list-ip-destination-groups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={
+                         'ip_group_id': '1964949'
+                     },
+                     response_path='test_data/responses/'
+                                   + 'list_ip_destination_groups_with_id.json',
+                     expected_result_path='test_data/results/'
+                                          + 'list_ip_destination_groups_with'
+                                          + '_id.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups__command_with_exclude_argument(mocker):
+    """zscaler-list-ip-destination-groups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={
+                         'exclude_type': 'DSTN_OTHER'
+                     },
+                     response_path='test_data/responses/'
+                                   + 'list_ip_destination_groups_with_exclude'
+                                   + '.json',
+                     expected_result_path='test_data/results/'
+                                          + 'list_ip_destination_groups_with'
+                                          + '_exclude.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups_command_with_lite_argument(mocker):
+    """zscaler-list-ip-destination-groups-lite"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={
+                         'lite': 'True'
+                     },
+                     response_path='test_data/responses/list_ip_destination_groups_lite.json',
+                     expected_result_path='test_data/results/list_ip_destination_groups_lite.json',
+                     mocker=mocker)
+
+
+def test_create_ip_destination_group(mocker):
+    """zscaler-create-ip-destination-group"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.create_ip_destination_group,
+                     args={
+                         'name': 'Test99',
+                         'type': 'DSTN_IP',
+                         'addresses': [
+                             '127.0.0.2',
+                             '127.0.0.1'
+                         ],
+                         'description': 'Localhost'},
+                     response_path='test_data/responses/'
+                                   + 'create_ip_destination_group.json',
+                     expected_result_path='test_data/results/'
+                                          + 'create_ip_destination_group.json',
+                     mocker=mocker)
+
+
+def test_edit_ip_destination_group(mocker):
+    """zscaler-edit-ip-destination-group"""
+    import Zscaler
+
+    run_command_test(command_func=Zscaler.edit_ip_destination_group,
+                     args={
+                         'ip_group_id': 2000359,
+                         'name': 'Test01',
+                         'addresses': [
+                             '127.0.0.2'
+                         ],
+                         'description': 'Localhost v2'},
+                     response_path='test_data/responses/'
+                                   + 'edit_ip_destination_group.json',
+                     expected_result_path='test_data/results/'
+                                          + 'edit_ip_destination_group.json',
+                     mocker=mocker)
+
+
+def test_delete_ip_destination_groups(mocker):
+    """zscaler-delete-ip-destination-group"""
+    import Zscaler
+
+    run_command_test(command_func=Zscaler.delete_ip_destination_groups,
+                     args={'ip_group_id': '1964949'},
+                     response_path='test_data/responses/delete_ip_destination_group.json',
+                     expected_result_path='test_data/results/delete_ip_destination_group.json',
                      mocker=mocker)

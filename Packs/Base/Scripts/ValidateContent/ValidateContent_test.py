@@ -41,6 +41,9 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     requests_mock.get(
         'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_tags.json'
     )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_categories.json'
+    )
     cached_modules = tmp_path / 'cached_modules'
     cached_modules.mkdir()
     monkeypatch.setattr('ValidateContent.CACHED_MODULES_DIR', str(cached_modules))
@@ -57,6 +60,7 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     assert os.path.isfile(content_tmp_dir / 'Tests/scripts/dev_envs/pytest/conftest.py')
     assert os.path.isfile(content_tmp_dir / 'Tests/Marketplace/approved_usecases.json')
     assert os.path.isfile(content_tmp_dir / 'Tests/Marketplace/approved_tags.json')
+    assert os.path.isfile(content_tmp_dir / 'Tests/Marketplace/approved_categories.json')
 
 
 row_and_column_adjustment_test_data = [

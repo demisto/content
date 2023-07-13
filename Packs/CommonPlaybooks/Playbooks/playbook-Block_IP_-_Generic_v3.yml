@@ -90,6 +90,7 @@ tasks:
       - "79"
       - "74"
       - "104"
+      - "106"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -290,10 +291,10 @@ tasks:
       description: |-
         This playbook blocks IP addresses using Custom Block Rules in Palo Alto Networks Panorama or Firewall.
         The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and commits the configuration.
-      playbookName: PAN-OS - Block IP - Custom Block Rule
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: PAN-OS - Block IP - Custom Block Rule
     nexttasks:
       '#none#':
       - "2"
@@ -344,10 +345,10 @@ tasks:
         The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
 
         ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
-      playbookName: PAN-OS - Block IP - Static Address Group
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: PAN-OS - Block IP - Static Address Group
     nexttasks:
       '#none#':
       - "2"
@@ -489,10 +490,10 @@ tasks:
       version: -1
       name: PAN-OS DAG Configuration
       description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
-      playbookName: PAN-OS DAG Configuration
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: PAN-OS DAG Configuration
     nexttasks:
       '#none#':
       - "2"
@@ -825,7 +826,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -898,7 +899,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -976,7 +977,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1834,7 +1835,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1912,7 +1913,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2128,7 +2129,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2244,7 +2245,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2361,7 +2362,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2437,7 +2438,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2729,7 +2730,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2897,7 +2898,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2945,7 +2946,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -3010,8 +3011,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3392.5,
-          "y": 3800
+          "x": -3870,
+          "y": 3780
         }
       }
     note: false
@@ -3427,6 +3428,136 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "106":
+    continueonerrortype: ""
+    id: "106"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "108"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c4cee8d1-81c7-4c4e-8465-0b913bce5337
+      iscommand: false
+      name: Prisma SASE
+      type: title
+      version: -1
+      description: ''
+    taskid: c4cee8d1-81c7-4c4e-8465-0b913bce5337
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -3422.5,
+          "y": 3790
+        }
+      }
+  "107":
+    continueonerrortype: ""
+    id: "107"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      Folder:
+        complex:
+          root: inputs.Folder
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          accessor: Final
+          root: BlockList
+          transformers:
+          - operator: uniq
+      StaticAddressGroupName:
+        complex:
+          root: inputs.StaticAddressGroup
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook assists in blocking communication with the provided IPs in the Prisma SASE policy.
+        If a group name is provided, the IPs will be added to the mentioned static address group (there should be a rule associated with the group name to block communication with that group).
+        And if the group name is not provided, a new group will be created with a dedicated rule to block communication with those IPs.
+      id: 281f9d65-c396-4441-86f2-340da163d601
+      iscommand: false
+      name: Prisma SASE - Block IP
+      playbookId: Prisma SASE - Block IP
+      type: playbook
+      version: -1
+    taskid: 281f9d65-c396-4441-86f2-340da163d601
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -3422.5,
+          "y": 4120
+        }
+      }
+  "108":
+    continueonerrortype: ""
+    id: "108"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "107"
+    note: false
+    quietmode: 0
+    results:
+    - brandInstances
+    scriptarguments:
+      brandname:
+        simple: Palo Alto Networks - Prisma SASE
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 4d7717be-2f2d-4962-8b96-18edd3a0977c
+      iscommand: false
+      name: Is Prisma SASE enabled?
+      scriptName: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 4d7717be-2f2d-4962-8b96-18edd3a0977c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -3422.5,
+          "y": 3945
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -3462,8 +3593,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4270,
-        "width": 8232.5,
-        "x": -3392.5,
+        "width": 8710,
+        "x": -3870,
         "y": 120
       }
     }
@@ -3565,6 +3696,15 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
     Determine the Dynamic Address Group name for IPs list handling.
   playbookInputQuery:
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
+    Remember, this input will only be used when there is no input to the CategoryName.
+    Default: Shared
+  playbookInputQuery: null
 outputs:
 - contextPath: Aria.BlockDestSubnet.Rule
   description: The rule name/ID which was created in the system for this playbook.
@@ -3599,10 +3739,26 @@ outputs:
 - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
   description: Signal Sciences - the blocking rule's creator name.
   type: unknown
+- contextPath: PrismaSase
+  description: The root context key for Prisma SASE integration output.
+  type: unknown
+- contextPath: PrismaSase.AddressGroup
+  description: The Prisma Access Address group object.
+  type: unknown
+- contextPath: PrismaSase.SecurityRule
+  description: Created security rule.
+- contextPath: PrismaSase.SecurityRule.profile_setting
+  description: The Security rule group object in the rule.
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig
+  description: Configuration job object.
+  type: unknown
+- contextPath: PrismaSase.Address
+  description: Created address object.
 tests:
-- Block IP - Generic V3_Test
+- No tests (auto formatted)
 fromversion: 6.0.0
 system: true
-marketplaces:
-  - xsoar
-  - marketplacev2
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels: []

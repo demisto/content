@@ -140,3 +140,7 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-edit-application-group name=test-3 action=remove applications=4shared
 !pan-os-delete-application-group name=test-3
 !pan-os-query-logs log-type=traffic number_of_logs=1 polling=true
+!pan-os-list-tag include_shared_tags=No
+!pan-os-create-tag name="testtag" comment="some comment" is_shared=false
+!pan-os-edit-tag name="testtag" new_name="newtesttag" comment="some comment"
+!pan-os-delete-tag name="testtag"

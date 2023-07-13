@@ -2,10 +2,8 @@ comment: This widget displays Cortex XDR identity information.
 commonfields:
   id: CortexXDRIdentityInformationWidget
   version: -1
-enabled: false
 name: CortexXDRIdentityInformationWidget
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'

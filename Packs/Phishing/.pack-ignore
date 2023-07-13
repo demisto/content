@@ -165,6 +165,7 @@ CheckEmailAuthenticity
 DeleteReportedEmail
 GetBrandDeleteReportedEmail
 CommonTypes
+UseOldHTMLFields
 
 [file:LinkToPhishingCampaign.yml]
 ignore=BA124

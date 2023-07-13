@@ -913,6 +913,118 @@
                 "category": ""
             },
             "reflectDimensions": true
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
+            "id": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.5.0",
+                "id": "c63390c0-0c5e-4906-8b44-a748e6a639ea",
+                "isPredefined": true,
+                "itemVersion": "3.0.0",
+                "modified": "2023-05-10T15:54:41.634649071+03:00",
+                "name": "API Call Results for Rapid7 Threat Command",
+                "packID": "IntSight",
+                "packName": "Rapid7 - Threat Command (IntSights)",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(d)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {
+                        "type": "max"
+                    },
+                    "showOthers": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "prevName": "API Call Results for Rapid7 Threat Command",
+                "propagationLabels": [],
+                "query": "type:integration and instance:\"rapid7_threat_command_instance_1\" or \"rapid7_threat_command_instance_1_copy\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 8
         }
     ],
     "fromVersion": "6.8.0",

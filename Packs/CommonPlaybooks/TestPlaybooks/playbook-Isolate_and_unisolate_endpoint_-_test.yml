@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ca8f1562-f4b7-4968-837a-405419c787f6
+    taskid: e7355ec5-531e-43c5-8ad4-2bcfc4d6dc7b
     type: start
     task:
-      id: ca8f1562-f4b7-4968-837a-405419c787f6
+      id: e7355ec5-531e-43c5-8ad4-2bcfc4d6dc7b
       version: -1
       name: ""
       iscommand: false
@@ -16,13 +16,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 80
+          "x": 450,
+          "y": -180
         }
       }
     note: false
@@ -30,27 +30,31 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3e4af0b2-cd8c-469c-8e7a-48e7b001b1fe
+    taskid: bd4d9269-f92d-4a81-8913-9c5a9abbce0b
     type: playbook
     task:
-      id: 3e4af0b2-cd8c-469c-8e7a-48e7b001b1fe
+      id: bd4d9269-f92d-4a81-8913-9c5a9abbce0b
       version: -1
       name: Unisolate Endpoint - Generic
       playbookName: Unisolate Endpoint - Generic
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: "This playbook unisolates endpoints according to the endpoint ID or host name provided in the playbook.\nIt currently supports the following integrations:\n- Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n- Microsoft Defender For Endpoint"
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       Endpoint_ID:
-        simple: ${inputs.Endpoint_id}
-      Hostname: {}
-      ManualHunting.DetectedHosts: {}
+        complex:
+          root: inputs.Endpoint_id
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -60,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 440
+          "x": 450,
+          "y": 1110
         }
       }
     note: false
@@ -69,12 +73,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: fb4cdaaa-a342-45a0-845d-cc34f0a804a1
+    taskid: 0db06d03-b181-4c67-8480-6c96f72efc58
     type: title
     task:
-      id: fb4cdaaa-a342-45a0-845d-cc34f0a804a1
+      id: 0db06d03-b181-4c67-8480-6c96f72efc58
       version: -1
       name: Done
       type: title
@@ -85,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 650
+          "x": 450,
+          "y": 1270
         }
       }
     note: false
@@ -94,28 +101,33 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9dac35b0-a165-492b-8162-79fd2fa096af
+    taskid: 928ea5bf-a199-48be-87f1-dc735ce7765b
     type: playbook
     task:
-      id: 9dac35b0-a165-492b-8162-79fd2fa096af
+      id: 928ea5bf-a199-48be-87f1-dc735ce7765b
       version: -1
       name: Isolate Endpoint - Generic V2
       playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      Endpoint_hostname: {}
       Endpoint_id:
-        simple: ${inputs.Endpoint_id}
-      Endpoint_ip: {}
-      ManualHunting.DetectedHosts: {}
+        complex:
+          root: inputs.Endpoint_id
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -125,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 250
+          "x": 450,
+          "y": 940
         }
       }
     note: false
@@ -134,15 +146,239 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 75ee3f7d-beb2-466e-8082-f65ee834f478
+    type: title
+    task:
+      id: 75ee3f7d-beb2-466e-8082-f65ee834f478
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 762c424b-6515-43cc-8755-6647fce0ad28
+    type: regular
+    task:
+      id: 762c424b-6515-43cc-8755-6647fce0ad28
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ebe0dda6-b756-4801-8bad-4ff24e2c16ee
+    type: playbook
+    task:
+      id: ebe0dda6-b756-4801-8bad-4ff24e2c16ee
+      version: -1
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Endpoint_id:
+        simple: ${inputs.Endpoint_id}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 41af0134-3453-4ade-8f2a-188ca4dc0c64
+    type: playbook
+    task:
+      id: 41af0134-3453-4ade-8f2a-188ca4dc0c64
+      version: -1
+      name: Unisolate Endpoint - Generic
+      description: "This playbook unisolates endpoints according to the endpoint ID or host name provided in the playbook.\nIt currently supports the following integrations:\n- Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n- Microsoft Defender For Endpoint"
+      playbookName: Unisolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ea33a923-afdd-4ecc-8eb3-dc31da516194
+    type: title
+    task:
+      id: ea33a923-afdd-4ecc-8eb3-dc31da516194
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a6d258fb-58e8-4d56-8964-e72720af1bc0
+    type: regular
+    task:
+      id: a6d258fb-58e8-4d56-8964-e72720af1bc0
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 635,
+        "height": 1515,
         "width": 380,
-        "x": 440,
-        "y": 80
+        "x": 450,
+        "y": -180
       }
     }
   }
@@ -155,4 +391,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
-description: ''
+description: this test playbooks is testing for multiple test condition including empty input

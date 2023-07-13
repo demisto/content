@@ -1,0 +1,6 @@
+fromversion: 8.2.0  # Will be updated with XSIAM version updates
+id: Arista_Switch_Modeling_Rules
+name: Arista Switch Modeling Rules
+rules: ''
+schema: ''
+tags: 'Arista Switch EOS'

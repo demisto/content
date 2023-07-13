@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -1300
+          "x": 685,
+          "y": -750
         }
       }
     note: false
@@ -55,14 +55,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -1165
+          "x": 685,
+          "y": -615
         }
       }
     note: false
     timertriggers:
-    - fieldname: containmentsla
-      action: start
     - fieldname: triagesla
       action: start
     ignoreworker: false
@@ -97,9 +95,30 @@ tasks:
       '#none#':
       - "109"
     scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "1"
       Username:
         complex:
           root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -110,8 +129,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": -1020
+          "x": 685,
+          "y": -470
         }
       }
     note: false
@@ -142,13 +161,11 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1720
+          "y": 2410
         }
       }
     note: false
-    timertriggers:
-    - fieldname: triagesla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -231,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2175
+          "y": 2865
         }
       }
     note: false
@@ -262,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2350
+          "y": 3040
         }
       }
     note: false
@@ -370,7 +387,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2700
+          "y": 3390
         }
       }
     note: false
@@ -387,7 +404,7 @@ tasks:
     task:
       id: 3ccd86fb-693f-405d-81f7-7444add80f10
       version: -1
-      name: True Positive
+      name: Malicious
       type: title
       iscommand: false
       brand: ""
@@ -401,11 +418,13 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 2910
+          "y": 3600
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -418,7 +437,7 @@ tasks:
     task:
       id: 34f837cd-83aa-4268-8a9c-63725c629908
       version: -1
-      name: False Positive
+      name: Benign
       type: title
       iscommand: false
       brand: ""
@@ -432,7 +451,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2910
+          "y": 3600
         }
       }
     note: false
@@ -468,7 +487,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": 5340
+          "y": 5650
         }
       }
     note: false
@@ -496,7 +515,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5660
+          "y": 5970
         }
       }
     note: false
@@ -521,7 +540,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+      - "150"
     scriptarguments:
       ip:
         complex:
@@ -531,8 +550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 905,
-          "y": -1020
+          "x": 1275,
+          "y": -470
         }
       }
     note: false
@@ -637,7 +656,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2700
+          "y": 3390
         }
       }
     note: false
@@ -699,7 +718,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1060
+          "y": 1750
         }
       }
     note: false
@@ -752,7 +771,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 1230
+          "y": 1920
         }
       }
     note: false
@@ -805,7 +824,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2010
+          "y": 2700
         }
       }
     note: false
@@ -836,7 +855,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 930
+          "y": 1620
         }
       }
     note: false
@@ -869,8 +888,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 610
+          "x": 685,
+          "y": 1300
         }
       }
     note: false
@@ -896,7 +915,7 @@ tasks:
       '#default#':
       - "72"
       "yes":
-      - "74"
+      - "153"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -915,8 +934,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -690
+          "x": 685,
+          "y": 160
         }
       }
     note: false
@@ -933,25 +952,27 @@ tasks:
     task:
       id: b465a999-a205-4292-818b-be2e6a5504e7
       version: -1
-      name: Initial Containment
+      name: Containment Execution
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "103"
+      - "140"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": -520
+          "x": 230,
+          "y": 510
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1004,7 +1025,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 3210
+          "y": 3900
         }
       }
     note: false
@@ -1034,8 +1055,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 470
+          "x": 230,
+          "y": 1160
         }
       }
     note: false
@@ -1068,7 +1089,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4400
+          "y": 4710
         }
       }
     note: false
@@ -1114,57 +1135,12 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4530
+          "y": 4840
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "92":
-    id: "92"
-    taskid: e026a817-ada8-4a83-8ef1-2e26a98fd8c6
-    type: regular
-    task:
-      id: e026a817-ada8-4a83-8ef1-2e26a98fd8c6
-      version: -1
-      name: Set User Containment Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "82"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: RDP_Brute_Force_Investigation.User_Containment
-      value:
-        simple: Executed
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -630,
-          "y": 300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: User Disabled Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: User_Containment
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1219,6 +1195,15 @@ tasks:
       entityID:
         complex:
           root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
       timeRange:
         simple: 6 hours
     separatecontext: true
@@ -1232,7 +1217,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 750
+          "y": 1440
         }
       }
     note: false
@@ -1305,58 +1290,13 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 1440
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "95":
-    id: "95"
-    taskid: ca28ab81-ea7c-43e1-8985-a660366cd32b
-    type: regular
-    task:
-      id: ca28ab81-ea7c-43e1-8985-a660366cd32b
-      version: -1
-      name: Set IP Containment Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "82"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: RDP_Brute_Force_Investigation.IP_Containment
-      value:
-        simple: Executed
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -220,
-          "y": 290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: IP Blocked Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: IP_Containment
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1377,15 +1317,17 @@ tasks:
       '#none#':
       - "79"
     scriptarguments:
+      severity:
+        simple: "3"
       verdict:
-        simple: True Positive
+        simple: Malicious
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 160,
-          "y": 3050
+          "y": 3740
         }
       }
     note: false
@@ -1412,15 +1354,17 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
+      severity:
+        simple: "1"
       verdict:
-        simple: False Positive
+        simple: Benign
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1155,
-          "y": 3050
+          "y": 3740
         }
       }
     note: false
@@ -1464,147 +1408,13 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 4700
+          "y": 5010
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "103":
-    id: "103"
-    taskid: 50114a4b-787e-4250-86c3-6f8b88501e34
-    type: condition
-    task:
-      id: 50114a4b-787e-4250-86c3-6f8b88501e34
-      version: -1
-      name: Auto Containment?
-      description: Check if AutoRemediation input is true.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "104"
-      "yes":
-      - "122"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 250,
-          "y": -390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "104":
-    id: "104"
-    taskid: 383d0c2d-91ab-431a-8dc2-5aae5ed9ea7d
-    type: collection
-    task:
-      id: 383d0c2d-91ab-431a-8dc2-5aae5ed9ea7d
-      version: -1
-      name: Manual Containment
-      description: Remediate a mark task as complete.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "118"
-      - "125"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 250,
-          "y": -215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-        simple: Would you like to contain the IP and account using playbooks?
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-      replyOptions:
-      - "Yes"
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Block the account ${inputs.Username} ?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: "yes"
-        - simple: "no"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: 'Block the IP ${inputs.ExternalIP} ? '
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Would you like to contain the IP and account using playbooks?
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1615,7 +1425,7 @@ tasks:
     task:
       id: a65d9512-2d2d-4991-85fe-8928ce4226c6
       version: -1
-      name: Containment Complete
+      name: Remediation Complete
       type: title
       iscommand: false
       brand: ""
@@ -1629,12 +1439,12 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5515
+          "y": 5825
         }
       }
     note: false
     timertriggers:
-    - fieldname: containmentsla
+    - fieldname: remediationsla
       action: stop
     ignoreworker: false
     skipunavailable: false
@@ -1656,7 +1466,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "73"
+      - "154"
     scriptarguments:
       accountgroups:
         complex:
@@ -1684,8 +1494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": -860
+          "x": 685,
+          "y": -310
         }
       }
     note: false
@@ -1734,7 +1544,7 @@ tasks:
       {
         "position": {
           "x": 1330,
-          "y": 750
+          "y": 1440
         }
       }
     note: false
@@ -1799,7 +1609,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1850
+          "y": 2540
         }
       }
     note: false
@@ -1861,7 +1671,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 1390
+          "y": 2080
         }
       }
     note: false
@@ -1898,7 +1708,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 1550
+          "y": 2240
         }
       }
     note: false
@@ -1965,249 +1775,13 @@ tasks:
       {
         "position": {
           "x": 895,
-          "y": 750
+          "y": 1440
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "118":
-    id: "118"
-    taskid: b6b7625d-db6d-403d-85d4-fec23a23a9da
-    type: condition
-    task:
-      id: b6b7625d-db6d-403d-85d4-fec23a23a9da
-      version: -1
-      name: Block IP?
-      description: Check if the user asked to block the IP.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "82"
-      "Yes":
-      - "120"
-    separatecontext: false
-    conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Would you like to contain the IP and account using playbooks?.Answers
-                accessor: "1"
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "120":
-    id: "120"
-    taskid: 9a66ec23-da58-48bd-8ea8-d76d86511840
-    type: playbook
-    task:
-      id: 9a66ec23-da58-48bd-8ea8-d76d86511840
-      version: -1
-      name: Block IP - Generic v3
-      playbookName: Block IP - Generic v3
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "92"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      IP:
-        complex:
-          root: inputs.ExternalIP
-      InputEnrichment:
-        simple: "False"
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block IP playbook - ${incident.id}
-      UserVerification:
-        simple: "True"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -630,
-          "y": 130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "122":
-    id: "122"
-    taskid: e8d93686-118d-4776-8204-7ebad13c6d87
-    type: title
-    task:
-      id: e8d93686-118d-4776-8204-7ebad13c6d87
-      version: -1
-      name: Auto Containment
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "120"
-      - "124"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -420,
-          "y": -20
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "124":
-    id: "124"
-    taskid: 95f10b67-e697-47d6-80f5-e78fdd410a77
-    type: playbook
-    task:
-      id: 95f10b67-e697-47d6-80f5-e78fdd410a77
-      version: -1
-      name: Block Account - Generic v2
-      description: |-
-        This playbook blocks malicious usernames using all integrations that you enabled.
-
-        Supported integrations for this playbook:
-        * Active Directory
-        * PAN-OS - This requires PAN-OS 9.1 or higher.
-        * SailPoint
-        * PingOne
-        * AWS IAM
-        * Clarizen IAM
-        * Envoy IAM
-        * ExceedLMS IAM
-        * Okta
-      playbookName: Block Account - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "95"
-    scriptarguments:
-      Tag:
-        simple: Bad Account
-      UserVerification:
-        simple: "false"
-      Username:
-        complex:
-          root: inputs.Username
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -220,
-          "y": 130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "125":
-    id: "125"
-    taskid: 5d208b8f-a31a-447d-82a1-3cc511a9d645
-    type: condition
-    task:
-      id: 5d208b8f-a31a-447d-82a1-3cc511a9d645
-      version: -1
-      name: Block account?
-      description: Check if the user asked to block the account.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "82"
-      "yes":
-      - "124"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Would you like to contain the IP and account using playbooks?.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": -40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2218,481 +1792,21 @@ tasks:
     task:
       id: 19599f59-4689-4ff6-860e-bd44bb4d6c0f
       version: -1
-      name: Containment
+      name: Block Indicators
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "129"
+      - "141"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -350,
-          "y": 3390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "127":
-    id: "127"
-    taskid: f09ccd0e-2bb3-450d-801a-f5dcba09e3fe
-    type: regular
-    task:
-      id: f09ccd0e-2bb3-450d-801a-f5dcba09e3fe
-      version: -1
-      name: Set User Containment Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "86"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: RDP_Brute_Force_Investigation.User_Containment
-      value:
-        simple: Executed
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 4210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: User Disabled Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: User_Containment
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "128":
-    id: "128"
-    taskid: 3b3b1c38-91ba-46bf-8d1d-f798f0178998
-    type: regular
-    task:
-      id: 3b3b1c38-91ba-46bf-8d1d-f798f0178998
-      version: -1
-      name: Set IP Containment Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "86"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: RDP_Brute_Force_Investigation.IP_Containment
-      value:
-        simple: Executed
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -820,
-          "y": 4200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: IP Blocked Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: IP_Containment
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "129":
-    id: "129"
-    taskid: d7096063-9c6a-49d8-8329-93bb5855f927
-    type: condition
-    task:
-      id: d7096063-9c6a-49d8-8329-93bb5855f927
-      version: -1
-      name: Auto Containment?
-      description: Check if the AutoRemediation input is true.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "130"
-      "yes":
-      - "133"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -350,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "130":
-    id: "130"
-    taskid: 6c31b325-d2f6-4256-8303-77c9165253a9
-    type: collection
-    task:
-      id: 6c31b325-d2f6-4256-8303-77c9165253a9
-      version: -1
-      name: Manual Containment
-      description: Remediate a mark task as complete.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "131"
-      - "135"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -350,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-        simple: Would you like to contain indicators using playbooks?
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-      replyOptions:
-      - "Yes"
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Block the account ${inputs.Username} ?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: "yes"
-        - simple: "no"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: 'Block the IP ${inputs.ExternalIP} ? '
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Would you like to contain indicators using playbooks?
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "131":
-    id: "131"
-    taskid: c014061b-d3bd-43c1-8f68-cc1f81ba843c
-    type: condition
-    task:
-      id: c014061b-d3bd-43c1-8f68-cc1f81ba843c
-      version: -1
-      name: Block IP?
-      description: Check if the user asked to block the IP.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "86"
-      "Yes":
-      - "132"
-    separatecontext: false
-    conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Would you like to contain indicators using playbooks?.Answers
-                accessor: "1"
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -150,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "132":
-    id: "132"
-    taskid: ff26ecd9-4a31-4891-8184-866131ae69d1
-    type: playbook
-    task:
-      id: ff26ecd9-4a31-4891-8184-866131ae69d1
-      version: -1
-      name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing).\nNote the following:\n-  Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
-      playbookName: Block IP - Generic v3
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "127"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      IP:
-        complex:
-          root: inputs.ExternalIP
-      InputEnrichment:
-        simple: "False"
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block IP playbook - ${incident.id}
-      UserVerification:
-        simple: "False"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 4040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "133":
-    id: "133"
-    taskid: 91053ac6-af98-4e03-82f3-aa47b4aec285
-    type: title
-    task:
-      id: 91053ac6-af98-4e03-82f3-aa47b4aec285
-      version: -1
-      name: Auto Containment
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "132"
-      - "134"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1020,
-          "y": 3890
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "134":
-    id: "134"
-    taskid: 55db13b2-0f8f-4ce5-8dad-e90e917255ce
-    type: playbook
-    task:
-      id: 55db13b2-0f8f-4ce5-8dad-e90e917255ce
-      version: -1
-      name: Block Account - Generic v2
-      description: |-
-        This playbook blocks malicious usernames using all integrations that you enabled.
-
-        Supported integrations for this playbook:
-        * Active Directory
-        * PAN-OS - This requires PAN-OS 9.1 or higher.
-        * SailPoint
-        * PingOne
-        * AWS IAM
-        * Clarizen IAM
-        * Envoy IAM
-        * ExceedLMS IAM
-        * Okta
-      playbookName: Block Account - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "128"
-    scriptarguments:
-      Tag:
-        simple: Bad Account
-      UserVerification:
-        simple: "false"
-      Username:
-        complex:
-          root: inputs.Username
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -820,
-          "y": 4040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "135":
-    id: "135"
-    taskid: b2c9a493-38f3-447f-8943-3ed61d2477fa
-    type: condition
-    task:
-      id: b2c9a493-38f3-447f-8943-3ed61d2477fa
-      version: -1
-      name: Block account?
-      description: Check if the user asked to block the account.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "86"
-      "yes":
-      - "134"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Would you like to contain indicators using playbooks?.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -560,
-          "y": 3870
+          "y": 4080
         }
       }
     note: false
@@ -2723,7 +1837,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5040
+          "y": 5350
         }
       }
     note: false
@@ -2762,7 +1876,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5170
+          "y": 5480
         }
       }
     note: false
@@ -2797,7 +1911,7 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 4860
+          "y": 5170
         }
       }
     note: false
@@ -2834,7 +1948,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2520
+          "y": 3210
         }
       }
     note: false
@@ -2844,18 +1958,830 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: bf916381-2f06-4522-82c4-23404e9fd117
+    type: playbook
+    task:
+      id: bf916381-2f06-4522-82c4-23404e9fd117
+      version: -1
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "142"
+      - "143"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoRemediation
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: inputs.ExternalIP
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: 63871804-93c6-4407-8768-ebf3cd78fbde
+    type: playbook
+    task:
+      id: 63871804-93c6-4407-8768-ebf3cd78fbde
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "146"
+      - "147"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoRemediation
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      IP:
+        complex:
+          root: inputs.ExternalIP
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 4210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
+    type: condition
+    task:
+      id: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
+      version: -1
+      name: IP block executed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "145"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.ExternalIP
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: IndicatorsToBlock
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: 6663c63c-2385-4491-8c16-c824eff03d1d
+    type: condition
+    task:
+      id: 6663c63c-2385-4491-8c16-c824eff03d1d
+      version: -1
+      name: User containment executed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "144"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: IndicatorsToBlock
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 4ea24c92-5399-460c-82c0-f5be741952bf
+    type: regular
+    task:
+      id: 4ea24c92-5399-460c-82c0-f5be741952bf
+      version: -1
+      name: Set User Containment Executed
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      ipblockedstatus:
+        simple: Executed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: 9a7c664f-4906-4afe-836e-ebe01c20037d
+    type: regular
+    task:
+      id: 9a7c664f-4906-4afe-836e-ebe01c20037d
+      version: -1
+      name: Set IP Block Executed
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      userblockstatus:
+        simple: Executed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: eab0c096-8fcf-4b32-8f4c-a481621a23df
+    type: condition
+    task:
+      id: eab0c096-8fcf-4b32-8f4c-a481621a23df
+      version: -1
+      name: IP block executed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "148"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.ExternalIP
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: IndicatorsToBlock
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "147":
+    id: "147"
+    taskid: 445ebaa4-d11c-4b27-8e85-f4fbee601ecf
+    type: condition
+    task:
+      id: 445ebaa4-d11c-4b27-8e85-f4fbee601ecf
+      version: -1
+      name: User containment executed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "149"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: IndicatorsToBlock
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: 747c7a22-a0e0-4b2a-823f-b2e83512742a
+    type: regular
+    task:
+      id: 747c7a22-a0e0-4b2a-823f-b2e83512742a
+      version: -1
+      name: Set IP Block Executed
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      ipblockedstatus:
+        simple: Executed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: 3eea2565-9ef3-4c66-8721-6969c5855b63
+    type: regular
+    task:
+      id: 3eea2565-9ef3-4c66-8721-6969c5855b63
+      version: -1
+      name: Set User Containment Executed
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      userblockstatus:
+        simple: Executed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: 67cc761d-26b2-438a-8bed-cfc1a6bfcec8
+    type: condition
+    task:
+      id: 67cc761d-26b2-438a-8bed-cfc1a6bfcec8
+      version: -1
+      name: Check IP Reputation
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      0 or 1:
+      - "151"
+      2 or 3:
+      - "152"
+    separatecontext: false
+    conditions:
+    - label: 0 or 1
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: ipreputation
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: ipreputation
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: 2 or 3
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: ipreputation
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: ipreputation
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1275,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: ea6b5254-06a5-4900-870a-94283fb2bb29
+    type: regular
+    task:
+      id: ea6b5254-06a5-4900-870a-94283fb2bb29
+      version: -1
+      name: Set Reputation - Unknown or Benign
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "154"
+    scriptarguments:
+      ipreputation:
+        complex:
+          root: incident
+          accessor: ipreputation
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: Benign
+              equals: {}
+              lhs:
+                value:
+                  simple: incident.ipreputation
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "0"
+              rhsB: {}
+              then:
+                value:
+                  simple: Unknown
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1065,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "152":
+    id: "152"
+    taskid: 4ae89760-9d18-4881-86b8-aa102cc7f6a1
+    type: regular
+    task:
+      id: 4ae89760-9d18-4881-86b8-aa102cc7f6a1
+      version: -1
+      name: Set Reputation - Suspicious or Malicious
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "154"
+    scriptarguments:
+      ipreputation:
+        complex:
+          root: incident
+          accessor: ipreputation
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: Malicious
+              equals: {}
+              lhs:
+                value:
+                  simple: incident.ipreputation
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "2"
+              rhsB: {}
+              then:
+                value:
+                  simple: Suspicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "153":
+    id: "153"
+    taskid: 4567bca9-5d88-4092-8ed0-a56ca2170cdc
+    type: condition
+    task:
+      id: 4567bca9-5d88-4092-8ed0-a56ca2170cdc
+      version: -1
+      name: Early containment enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EarlyContainment
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: 8a1e0eb1-0d3c-42e3-8cc6-85dee74f8987
+    type: title
+    task:
+      id: 8a1e0eb1-0d3c-42e3-8cc6-85dee74f8987
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: triagesla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "103_104_#default#": 0.3,
       "112_113_yes": 0.31,
       "112_6_#default#": 0.37,
-      "118_120_Yes": 0.1,
-      "118_82_#default#": 0.37,
       "11_20_no": 0.18,
-      "125_124_yes": 0.28,
-      "125_82_#default#": 0.28,
-      "131_86_#default#": 0.65,
+      "143_82_#default#": 0.83,
+      "146_86_#default#": 0.52,
+      "147_86_#default#": 0.71,
+      "153_72_#default#": 0.29,
       "20_21_yes": 0.4,
       "20_22_#default#": 0.34,
       "35_21_#default#": 0.1,
@@ -2863,15 +2789,14 @@ view: |-
       "53_6_#default#": 0.11,
       "56_11_#default#": 0.42,
       "56_21_yes": 0.21,
-      "73_72_#default#": 0.38,
-      "73_74_yes": 0.85
+      "73_72_#default#": 0.14
     },
     "paper": {
       "dimensions": {
-        "height": 7025,
-        "width": 2940,
-        "x": -1230,
-        "y": -1300
+        "height": 6785,
+        "width": 2420,
+        "x": -550,
+        "y": -750
       }
     }
   }
@@ -2955,6 +2880,12 @@ inputs:
   value: {}
   required: false
   description: The SOC email address to use for the user engagement section.
+  playbookInputQuery:
+- key: EarlyContainment
+  value:
+    simple: "true"
+  required: false
+  description: Set this value to "true" to allow early containment when the IP is known malicious
   playbookInputQuery:
 outputs: []
 tests:

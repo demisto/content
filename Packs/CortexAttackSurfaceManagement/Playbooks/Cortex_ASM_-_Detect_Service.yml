@@ -1,15 +1,15 @@
 id: Cortex ASM - Detect Service
 version: -1
 name: Cortex ASM - Detect Service
-description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
+description: Playbook that looks to see if a service ID exists and chooses to start a Remediation Confirmation Scan.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0572001c-322b-438d-8bec-667b631d18a8
+    taskid: a84d8c8c-5937-4da3-86aa-bf8c30e4adc7
     type: start
     task:
-      id: 0572001c-322b-438d-8bec-667b631d18a8
+      id: a84d8c8c-5937-4da3-86aa-bf8c30e4adc7
       version: -1
       name: ""
       iscommand: false
@@ -17,124 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 496ac3c4-b77d-4485-870e-4d464c2045f1
-    type: condition
-    task:
-      id: 496ac3c4-b77d-4485-870e-4d464c2045f1
-      version: -1
-      name: What is the sub-alert type?
-      description: Determines ASM sub-alert type for different scans.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      Banner Check:
-      - "8"
-      Single Port Check:
-      - "9"
-      SNMP Check:
-      - "29"
-      Unclaimed S3 Bucked:
-      - "32"
-    separatecontext: false
-    conditions:
-    - label: Single Port Check
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: inputs.ASMRuleID
-                transformers:
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: '[\"]'
-            iscontext: true
-          right:
-            value:
-              simple: RdpServer,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer
-          ignorecase: true
-    - label: Banner Check
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: inputs.ASMRuleID
-                transformers:
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: '[\"]'
-            iscontext: true
-          right:
-            value:
-              simple: InsecureOpenSSH
-          ignorecase: true
-    - label: SNMP Check
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: inputs.ASMRuleID
-                transformers:
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: '[\"]'
-            iscontext: true
-          right:
-            value:
-              simple: SnmpServer
-    - label: Unclaimed S3 Bucked
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: inputs.ASMRuleID
-                transformers:
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: '[\"]'
-            iscontext: true
-          right:
-            value:
-              simple: UnclaimedS3Bucket
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 170
+          "x": 540,
+          "y": -210
         }
       }
     note: false
@@ -146,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e227705c-072b-4c39-8f0a-fabcd441c509
+    taskid: 4b9d0bb7-dd62-4ef4-8d94-7b18f53e7e11
     type: title
     task:
-      id: e227705c-072b-4c39-8f0a-fabcd441c509
+      id: 4b9d0bb7-dd62-4ef4-8d94-7b18f53e7e11
       version: -1
       name: Complete
       type: title
@@ -161,8 +51,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1290
+          "x": 550,
+          "y": 390
         }
       }
     note: false
@@ -172,15 +62,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 5939a3ad-e2a5-4fc2-80a8-dca750191887
+  "10":
+    id: "10"
+    taskid: 4656b3de-e239-4651-8cd3-734e37a83017
+    type: title
+    task:
+      id: 4656b3de-e239-4651-8cd3-734e37a83017
+      version: -1
+      name: Non-Service Based Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bb84f3c8-ee66-4569-89df-e1066a0d0b86
     type: condition
     task:
-      id: 5939a3ad-e2a5-4fc2-80a8-dca750191887
+      id: bb84f3c8-ee66-4569-89df-e1066a0d0b86
       version: -1
-      name: Is RemoteIP and RemotePort defined?
-      description: Determines if RemoteIp and RemotePort inputs are defined for error checking.
+      name: Is there a ASM service ID?
+      description: Conditional task to check for an existing ASM service ID. The Remediation Confirmation Scan can only be used to scan existing service IDs found by Cortex Xpanse.
       type: condition
       iscommand: false
       brand: ""
@@ -188,482 +109,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.RemoteIP
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.RemotePort
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -20
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 3a718f43-9294-415f-8b9b-ab9066a45ebe
-    type: playbook
-    task:
-      id: 3a718f43-9294-415f-8b9b-ab9066a45ebe
-      version: -1
-      name: NMAP - Banner Check
-      description: Sub-playbook that performs an Nmap scan and compares the results against a regular expression to determine a match. This could be used to look for OpenSSH versions or other OS information found in the banner.
-      playbookName: NMAP - Banner Check
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      NMAPOptions:
-        simple: -sV --version-intensity 0 --unprivileged -Pn
-      Regex:
-        simple: '(?<=OpenSSH version: )(?:(?:(?:[0-8]|9\.[0-1])(?:\..*)?))'
-      RemoteIP:
-        complex:
-          root: inputs.RemoteIP
-      RemotePort:
-        complex:
-          root: inputs.RemotePort
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 0176cbed-c89b-4cc1-85ff-87a8378acf15
-    type: playbook
-    task:
-      id: 0176cbed-c89b-4cc1-85ff-87a8378acf15
-      version: -1
-      name: NMAP - Single Port Scan
-      description: Sub-playbook that conducts a single port Nmap scan and returns the results to the parent playbook.
-      playbookName: NMAP - Single Port Scan
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      NMAPOptions:
-        simple: -Pn --unprivileged
-      RemoteIP:
-        complex:
-          root: inputs.RemoteIP
-      RemotePort:
-        complex:
-          root: inputs.RemotePort
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 850,
-          "y": 430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 57c4893e-b658-4487-8d84-b50c78beb114
-    type: title
-    task:
-      id: 57c4893e-b658-4487-8d84-b50c78beb114
-      version: -1
-      name: continue
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -150,
-          "y": 445
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 59fb6ec6-05d7-4a73-8e8a-cfccdf8bbd8a
-    type: title
-    task:
-      id: 59fb6ec6-05d7-4a73-8e8a-cfccdf8bbd8a
-      version: -1
-      name: Set Field
-      description: commands.local.cmd.set.incident
-      type: title
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "28"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: b035273e-8a9f-4e29-81b2-2c6d144293af
-    type: regular
-    task:
-      id: b035273e-8a9f-4e29-81b2-2c6d144293af
-      version: -1
-      name: Set service detection grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      gridfield:
-        simple: asmservicedetection
-      keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
-      val1:
-        complex:
-          root: inputs.ScanNumber
-      val2:
-        complex:
-          root: ScanDone
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "null"
-      val3:
-        complex:
-          root: ScanResult
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "null"
-      val4:
-        complex:
-          root: NMAP.Scan
-          accessor: Started
-          transformers:
-          - operator: TimeStampToDate
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "null"
-      val5:
-        complex:
-          root: NMAP.Scan.Hosts.Services
-          accessor: State
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "null"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: c4ec1f9d-8a63-483f-8d48-b46b96822ce2
-    type: playbook
-    task:
-      id: c4ec1f9d-8a63-483f-8d48-b46b96822ce2
-      version: -1
-      name: Cortex ASM - SNMP Check
-      description: Sub-playbook that performs an SNMP scan and checks if SNMP is enabled or not and obtains running versions.
-      playbookName: Cortex ASM - SNMP Check
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      RemoteIP:
-        complex:
-          root: inputs.RemoteIP
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1250,
-          "y": 430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 108d7dcf-5abc-4ebc-8c7b-7644be377a7a
-    type: regular
-    task:
-      id: 108d7dcf-5abc-4ebc-8c7b-7644be377a7a
-      version: -1
-      name: Set service detection grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      gridfield:
-        simple: asmservicedetection
-      keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
-      val1:
-        complex:
-          root: inputs.ScanNumber
-      val2:
-        complex:
-          root: ScanDone
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "null"
-      val3:
-        complex:
-          root: ScanResult
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "null"
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-      val5:
-        complex:
-          root: SnmpDetection
-          accessor: versions
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "null"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1250,
-          "y": 780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 7473830c-9808-4d22-85cf-971ff1db5fa2
-    type: regular
-    task:
-      id: 7473830c-9808-4d22-85cf-971ff1db5fa2
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1250,
-          "y": 615
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 5dc7bb32-2569-4ee5-8d8c-ac6650ead6cb
-    type: playbook
-    task:
-      id: 5dc7bb32-2569-4ee5-8d8c-ac6650ead6cb
-      version: -1
-      name: AWS - Unclaimed S3 Bucket Validation
-      description: 'The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information. '
-      playbookName: AWS - Unclaimed S3 Bucket Validation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1650,
-          "y": 430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: c33f8ca8-df5f-4190-8b6d-3bb910c4e780
-    type: condition
-    task:
-      id: c33f8ca8-df5f-4190-8b6d-3bb910c4e780
-      version: -1
-      name: Was an S3 bucket passed back?
-      description: Determines if S3 bucket was passed back or not.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "40"
-      "yes":
-      - "35"
+      - "44"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -672,14 +118,17 @@ tasks:
           left:
             value:
               complex:
-                root: S3BucketName
+                root: alert
+                accessor: asmserviceid
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1650,
-          "y": 615
+          "x": 540,
+          "y": -60
         }
       }
     note: false
@@ -689,215 +138,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 4d193f22-11ee-47f1-8873-181467a608fb
-    type: regular
+  "44":
+    id: "44"
+    taskid: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
+    type: playbook
     task:
-      id: 4d193f22-11ee-47f1-8873-181467a608fb
+      id: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
       version: -1
-      name: Set service detection grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      gridfield:
-        simple: asmservicedetection
-      keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
-      val1:
-        complex:
-          root: inputs.ScanNumber
-      val2:
-        simple: "True"
-      val3:
-        simple: Open
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-      val5:
-        simple: N/A
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1650,
-          "y": 945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: f8af735f-83f9-4b60-8754-2c5015fffdcd
-    type: regular
-    task:
-      id: f8af735f-83f9-4b60-8754-2c5015fffdcd
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
+      name: 'Cortex ASM - Remediation Confirmation Scan'
+      playbookName: Cortex ASM - Remediation Confirmation Scan
+      type: playbook
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1650,
-          "y": 785
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: 083d671a-6aaa-40fc-83c1-355ccba15833
-    type: regular
-    task:
-      id: 083d671a-6aaa-40fc-83c1-355ccba15833
-      version: -1
-      name: Set service detection grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
+      description: ''
     nexttasks:
       '#none#':
       - "4"
-    scriptarguments:
-      gridfield:
-        simple: asmservicedetection
-      keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
-      val1:
-        complex:
-          root: inputs.ScanNumber
-      val2:
-        simple: "True"
-      val3:
-        simple: Closed
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-      val5:
-        simple: N/A
-    separatecontext: false
+    separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2050,
-          "y": 945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: 581e808c-cd80-4d01-8343-6e430cfa8c16
-    type: regular
-    task:
-      id: 581e808c-cd80-4d01-8343-6e430cfa8c16
-      version: -1
-      name: Set system IDs grid field (BucketName)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: S3-BucketName
-      val2:
-        complex:
-          root: S3BucketName
-      val3:
-        simple: N/A
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1650,
-          "y": 1110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 7524c34a-98bd-47c1-8862-e7843900f28b
-    type: regular
-    task:
-      id: 7524c34a-98bd-47c1-8862-e7843900f28b
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "37"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2050,
-          "y": 780
+          "x": 290,
+          "y": 190
         }
       }
     note: false
@@ -910,50 +173,18 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_29_SNMP Check": 0.72,
-      "1_32_Unclaimed S3 Bucked": 0.83,
-      "1_9_Single Port Check": 0.7,
-      "7_1_yes": 0.7
+      "43_44_yes": 0.64
     },
     "paper": {
       "dimensions": {
-        "height": 1515,
-        "width": 2580,
-        "x": -150,
-        "y": -160
+        "height": 665,
+        "width": 900,
+        "x": 290,
+        "y": -210
       }
     }
   }
-inputs:
-- key: RemoteIP
-  value:
-    complex:
-      root: alert
-      accessor: remoteip
-  required: false
-  description: Remote IP address in the alert.
-  playbookInputQuery:
-- key: RemotePort
-  value:
-    complex:
-      root: alert
-      accessor: remoteport
-  required: false
-  description: Remote port number in the alert.
-  playbookInputQuery:
-- key: ASMRuleID
-  value:
-    complex:
-      root: alert
-      accessor: asmattacksurfaceruleid
-  required: true
-  description: Attack Surface Management Rule ID.
-  playbookInputQuery:
-- key: ScanNumber
-  value: {}
-  required: true
-  description: Scan number in case there are multiple IDs in the parent playbook.
-  playbookInputQuery:
+inputs: []
 outputs: []
 fromversion: 6.5.0
 tests:

@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: watchguard_firebox_modeling_rule
+name: Watchguard Firebox Private Access Modeling Rule
+rules: ''
+schema: ''
+tags: Watchguard Firebox

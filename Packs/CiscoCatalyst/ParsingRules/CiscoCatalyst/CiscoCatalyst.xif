@@ -1,0 +1,13 @@
+[INGEST:vendor="cisco", product="catalyst", target_dataset="cisco_catalyst_raw", no_hit = keep]
+filter _raw_log ~= "[A-Za-z]+\s+\d+\s+\d{4}\s+\d+\:\d+\:\d+\sUTC" or _raw_log ~= "[A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+\.\d+\sUTC"
+//supported format May 16 2023 14:30:00 UTC
+| alter tmp_time_string1 = arrayindex(regextract(_raw_log ,"(\w+\s\d+\s\d+\s\d+\:\d+\:\d+)\sUTC"),0)
+| alter tmp_time1 = parse_timestamp("%b %d %Y %H:%M:%S",tmp_time_string1 )
+//supported format May  2 09:47:18.714 UTC
+| alter tmp_time_string2 = arrayindex(regextract(_raw_log, "\w+\s+(\d+\s\d+\:\d+\:\d+)\.\d+\sUTC"),0),
+    tmp_month_string2 = arrayindex(regextract(_raw_log, "(\w+)\s+\d+\s\d+\:\d+\:\d+\.\d+\sUTC"),0),
+    tmp_Year = format_timestamp("%Y",_insert_time)
+| alter tmp_time_concat2 = concat(tmp_month_string2, " ", tmp_time_string2, " ", tmp_Year)
+| alter tmp_time2 = parse_timestamp("%b %d %H:%M:%S %Y",to_string(tmp_time_concat2) )
+| alter _time = coalesce(tmp_time1, tmp_time2 )
+| fields -tmp_time_string1, tmp_time1, tmp_time_string2, tmp_time2 , tmp_time_concat2 , tmp_Year ;

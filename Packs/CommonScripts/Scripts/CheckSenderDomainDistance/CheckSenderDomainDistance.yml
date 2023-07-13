@@ -20,7 +20,6 @@ args:
   required: true
   description: Sender email address
 - name: distance
-  required: false
   description: Distance that is considered close
   defaultValue: "3"
 outputs:
@@ -30,6 +29,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

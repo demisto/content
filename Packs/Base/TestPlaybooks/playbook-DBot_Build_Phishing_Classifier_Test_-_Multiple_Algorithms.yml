@@ -811,3 +811,5 @@ inputs: []
 outputs: []
 sourceplaybookid: Create Phishing Classifier V2 ML Test
 fromversion: 6.1.0
+marketplaces:
+- xsoar

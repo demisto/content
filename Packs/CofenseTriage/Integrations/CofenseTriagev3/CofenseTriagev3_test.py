@@ -1047,3 +1047,59 @@ def test_cofense_report_image_download_command_when_invalid_args_are_provided(mo
     with pytest.raises(ValueError) as err:
         cofense_report_image_download_command(mocked_client, args)
     assert str(err.value) == err_msg
+
+
+def test_cofense_report_attachment_payload_list_command_when_valid_response_is_returned(mocked_client):
+    """Test case scenario for successful execution of cofense-report-attachment-payload-list command."""
+
+    from CofenseTriagev3 import cofense_report_attachment_payload_list_command
+
+    response = util_load_json(
+        os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list_response.json"))
+
+    mocked_client.http_request.return_value = response
+
+    context_output = util_load_json(
+        os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list_context.json"))
+
+    with open(os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list.md"), 'r') as f:
+        readable_output = f.read()
+
+    # Execute
+    args = {"id": "4720", "updated_at": "2020-10-21T20:30:24.185Z"}
+
+    command_response = cofense_report_attachment_payload_list_command(mocked_client, args)
+    # Assert
+    assert command_response.outputs_prefix == 'Cofense.AttachmentPayload'
+    assert command_response.outputs_key_field == "id"
+    assert command_response.outputs == context_output
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == response
+
+
+def test_cofense_report_attachment_payload_list_command_when_empty_response_is_returned(mocked_client):
+    """Test case scenario for successful execution of cofense-report-attachment-payload-list command with an empty
+    response. """
+
+    from CofenseTriagev3 import cofense_report_attachment_payload_list_command
+    mocked_client.http_request.return_value = {"data": {}}
+    readable_output = "No attachment payloads were found for the given argument(s)."
+
+    # Execute
+    command_response = cofense_report_attachment_payload_list_command(mocked_client, {'id': 'test'})
+    # Assert
+    assert command_response.readable_output == readable_output
+
+
+def test_validate_report_attachment_payload_list_args_when_invalid_args_are_provided(mocked_client):
+    """Test case scenario when the arguments provided are not valid."""
+
+    from CofenseTriagev3 import MESSAGES, cofense_report_attachment_payload_list_command
+
+    args = {
+        "id": None,
+    }
+
+    with pytest.raises(ValueError) as err:
+        cofense_report_attachment_payload_list_command(mocked_client, args)
+    assert str(err.value) == MESSAGES['REQUIRED_ARGUMENT'].format('id')

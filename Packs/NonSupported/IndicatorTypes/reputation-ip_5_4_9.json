@@ -17,7 +17,7 @@
         "IPReputation",
         "SplunkPySearch"
     ],
-    "system": true,
+    "system": false,
     "locked": false,
     "disabled": false,
     "file": false,

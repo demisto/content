@@ -2,10 +2,8 @@ comment: Load and return the processes file (generated from the cs-falcon-rtr-li
 commonfields:
   id: ReadProcessesFile
   version: -1
-enabled: false
 name: ReadProcessesFile
 script: '-'
-system: false
 type: python
 tags:
 - dynamic-section

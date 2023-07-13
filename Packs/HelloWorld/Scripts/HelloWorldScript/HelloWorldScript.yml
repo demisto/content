@@ -1,22 +1,16 @@
 args:
-- default: false
-  description: 'Hello command - prints hello to anyone.'
-  isArray: false
+- description: 'Hello command - prints hello to anyone.'
   name: name
-  required: false
-  secret: false
 comment: Hello World Script
 commonfields:
   id: HelloWorldScript
   version: -1
-enabled: false
 name: HelloWorldScript
 outputs:
 - contextPath: HelloWorld.hello
   description: Should be Hello **something** here.
   type: String
 script: '-'
-system: false
 tags:
 - helloworld
 timeout: '0'

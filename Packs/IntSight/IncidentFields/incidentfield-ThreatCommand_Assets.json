@@ -1,0 +1,63 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rapid7 ThreatCommand Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rapid7threatcommandassets",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "type",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rapid7threatcommandassets",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rapid7 ThreatCommand Assets",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

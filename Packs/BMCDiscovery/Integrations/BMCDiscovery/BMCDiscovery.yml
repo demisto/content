@@ -15,11 +15,9 @@ configuration:
   hiddenusername: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: BMC Discovery is a SaaS-based, cloud-native discovery and dependency modeling system that provides instant visibility into hardware, software, and service dependencies across multi-cloud, hybrid, and on-premises environments.
 detaileddescription: ''
@@ -28,15 +26,9 @@ name: BMC Discovery
 script:
   commands:
   - arguments:
-    - default: false
-      description: UUID of a specific scan (run)
-      isArray: false
+    - description: UUID of a specific scan (run)
       name: run_id
-      required: false
-      secret: false
-    deprecated: false
     description: Get status of all currently running scans (no arguments) or a specific scan (provide a run_id argument)
-    execution: false
     name: bmc-discovery-scan-status-list
     outputs:
     - contextPath: BmcDiscovery.Scan.Status.cancelled
@@ -132,9 +124,7 @@ script:
 
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Host
-      isArray: false
       name: kind
       predefined:
       - Host
@@ -142,28 +132,13 @@ script:
       - SNMPManagedDevice
       required: true
       description: Type (kind) of BMC Discovery nodes
-      secret: false
-    - default: false
-      description: IP address
-      isArray: false
+    - description: IP address
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Hostname
-      isArray: false
+    - description: Hostname
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: Name of the search
-      isArray: false
+    - description: Name of the search
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Search for a node by hostname or IP address. If not found, repeat the search with a different node kind.
-    execution: false
     name: bmc-discovery-search
     outputs:
     - contextPath: BmcDiscovery.Search.count
@@ -189,12 +164,8 @@ script:
       defaultValue: "50"
     - name: results_id
       description: Search results id
-    - default: false
-      description: Name of the search
-      isArray: false
+    - description: Name of the search
       name: name
-      required: false
-      secret: false
     outputs:
     - contextPath: BmcDiscovery.CustomSearch.data
       description: Search results
@@ -303,11 +274,7 @@ script:
       type: Unknown
     description: Get detailed scan (run) results
 
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

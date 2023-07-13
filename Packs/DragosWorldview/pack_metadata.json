@@ -2,7 +2,7 @@
     "name": "Dragos Worldview",
     "description": "The pack contains an integration the pulls from the Dragos Worldview API. The integration can be configured to fetch report as incidents. The has commands which can pull the indicators related to a report and any files associated with the report in the API.",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Accenture",
     "url": "",
     "email": "",

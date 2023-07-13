@@ -33,6 +33,11 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 | --- | --- | --- |
 | sample_id | The sample ID. | Optional |
 | artifact | The artifact to download. Sample ID is required when choosing 'artifact'. Possible values are: video.webm, network-artifacts.zip, report.html, sample.zip, screenshot.png, extracted-artifacts.zip, timeline.json, analysis.json, processes.json, network.pcap. | Optional |
+| sha1 | A sha1 of the submitted sample, only matches samples, not their artifacts. | Optional |
+| sha256 | A SHA256 of the submitted sample, only matches samples, not their artifacts. | Optional |
+| md5 | A MD5 checksum of the submitted sample, only matches samples, not their artifacts. | Optional |
+| user_only | It 'True' - Only display samples created by the current user, as determined by the value of api_key. | Optional |
+| org_only | It 'True' - Only display samples created by the current user's organization, as determined by the value of api_key. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | The number of items per page. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
@@ -135,7 +140,11 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 | interval_in_seconds | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10. Default is 10. | Optional |
 | timeout_in_seconds | Indicates the time in seconds until the polling sequence timeouts. Default is 60. Default is 60. | Optional |
 | sample_id | The uploaded sample ID. | Optional |
+| private | Whether to mark the sample as private. | Optional |
 | hide_polling_output | Whether to hide the polling result (automatically filled by polling). | Optional |
+| vm | a string identifying a specific VM to use. Options: win7-x64: Windows 7 64bit, win7-x64-2: Windows 7 64-bit Profile 2, win10-x64-2-beta: Windows 10 LTSC 2019 (beta), win10-x64-browser: Windows 10 Browser, win10-x64-jp: Windows 10 Japanese, win10-x64-kr: Windows 10 Korean, win10-x64-phishing-beta: Windows 10 (Phishing), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese character sets, such as S-JIS, submit to the appropriate VM. | Optional |
+| playbook | Name of a playbook to apply to this sample run. none: Explicitly disables playbooks, default: Default Playbook, alt_tab_programs: Conduct Active Window Change, open_word_embedded_object: Open Embedded Object in Word Document, use_best_option: allows Malware Analytics to select the best Playbook option based on the submitted sample, visit_site: Visit Website Using Internet Explorer, close_file: Close Active Window. The current list of playbooks endpoints can be obtained by querying /api/v3/configuration/playbooks. | Optional |
+
 
 
 #### Context Output
@@ -153,7 +162,7 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 | ThreatGrid.Sample.submitted_at | String | The sample submission time |
 
 #### Command example
-```!threat-grid-sample-upload url=http://domain_example:80/```
+```!threat-grid-sample-upload url=http://domain_example:80/ private=True```
 #### Human Readable Output
 
 >Upload sample is executing

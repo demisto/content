@@ -98,11 +98,15 @@ class TestHelperFunctions:
         """
         import EDL as edl
         edl.EDL_ON_DEMAND_CACHE_PATH = 'test_data/iocs_cache_values_text.txt'
+        edl.EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE = 40
         mocker.patch.object(edl, 'get_integration_context', return_value={})
-        actual_edl = edl.get_edl_on_demand()
+        actual_edl, original_indicators_count = edl.get_edl_on_demand()
+
         with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
             expected_edl = f.read()
-            assert actual_edl == expected_edl
+
+        assert actual_edl == expected_edl
+        assert edl.EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE == original_indicators_count
 
     def test_get_edl_on_demand__with_refresh_signal(self, mocker):
         """
@@ -120,8 +124,9 @@ class TestHelperFunctions:
         tmp_dir = mkdtemp()
         edl.EDL_ON_DEMAND_CACHE_PATH = os.path.join(tmp_dir, 'cache')
         mocker.patch.object(edl, 'get_integration_context', return_value=ctx)
-        mocker.patch.object(edl, 'create_new_edl', return_value=expected_edl)
-        actual_edl = edl.get_edl_on_demand()
+        mocker.patch.object(edl, 'create_new_edl', return_value=(expected_edl, 1))
+        actual_edl, _ = edl.get_edl_on_demand()
+
         with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
             cached_edl = f.read()
             assert actual_edl == expected_edl == cached_edl
@@ -173,10 +178,10 @@ class TestHelperFunctions:
                 'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
                 '{"value": "demisto.com", "indicator_type": "URL"}')
 
-        mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=(f, 4))
         request_args = edl.RequestArguments(query='', limit=3, url_port_stripping=True, url_protocol_stripping=True,
                                             url_truncate=True)
-        edl_vals = edl.create_new_edl(request_args)
+        edl_vals, original_indicators_count = edl.create_new_edl(request_args)
 
         assert edl_vals == 'google.com\ndemisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopq' \
                            'wertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
@@ -190,10 +195,10 @@ class TestHelperFunctions:
                 'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert'
                 'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
                 '{"value": "demisto.com", "indicator_type": "URL"}')
-        mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=(f, 4))
         request_args = edl.RequestArguments(out_format='CSV', query='', limit=3, url_port_stripping=True,
                                             url_protocol_stripping=True, url_truncate=True, fields_to_present='name,value')
-        edl_v = edl.create_new_edl(request_args)
+        edl_v, original_indicators_count = edl.create_new_edl(request_args)
         assert edl_v == '{"value": "https://google.com", "indicator_type": "URL"}\n' \
                         '{"value": "demisto.com:7000", "indicator_type": "URL"}\n' \
                         '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu' \
@@ -225,8 +230,8 @@ class TestHelperFunctions:
                       {"value": "aא.com", "indicator_type": "URL"}]  # no ascii
         f = '\n'.join((json.dumps(indicator) for indicator in indicators))
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=2)
-        mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
-        edl_v = edl.create_new_edl(request_args)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=(io.StringIO(f), 6))
+        edl_v, _ = edl.create_new_edl(request_args)
         expected_values = set()
         for indicator in indicators:
             value = indicator.get('value')
@@ -236,14 +241,14 @@ class TestHelperFunctions:
         assert set(edl_v.split('\n')) == expected_values
 
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
-        mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
-        edl_v = edl.create_new_edl(request_args)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
+        edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
                                           "co.uk", "*.google.com", "google.com", "aא.com"}
 
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, no_wildcard_tld=True, maximum_cidr_size=13)
-        mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
-        edl_v = edl.create_new_edl(request_args)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=(io.StringIO(f), 6))
+        edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
 
     def test_create_json_out_format(self):
@@ -673,9 +678,10 @@ def test_get_indicators_to_format_csv():
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(out_format='CSV', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True, fields_to_present='name,type')
-    f = get_indicators_to_format(indicator_searcher, request_args)
-    f.seek(0)
-    indicators = f.read()
+    indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
+    indicators_data.seek(0)
+    indicators = indicators_data.read()
+
     assert indicators == 'name,type\n"google.com","URL"\n"demisto.com","URL"\n"demisto.com/qwertqwer","URL"\n' \
                          '"demisto.com","URL"'
 
@@ -694,7 +700,7 @@ def test_get_indicators_to_format_json():
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(out_format='JSON', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True, fields_to_present='name,type')
-    f = get_indicators_to_format(indicator_searcher, request_args)
+    f, _ = get_indicators_to_format(indicator_searcher, request_args)
     f.seek(0)
     indicators = f.read()
     assert indicators == '[{"value": "google.com", "indicator_type": "URL"},' \
@@ -717,7 +723,7 @@ def test_get_indicators_to_format_mwg():
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(out_format='McAfee Web Gateway', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
-    f = get_indicators_to_format(indicator_searcher, request_args)
+    f, _ = get_indicators_to_format(indicator_searcher, request_args)
     f.seek(0)
     indicators = f.read()
     assert indicators == 'type=string\n"google.com" "from CORTEX XSOAR"\n"demisto.com" "from CORTEX XSOAR"\n' \
@@ -738,7 +744,7 @@ def test_get_indicators_to_format_symantec():
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(out_format='Symantec ProxySG', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
-    f = get_indicators_to_format(indicator_searcher, request_args)
+    f, _ = get_indicators_to_format(indicator_searcher, request_args)
     f.seek(0)
     indicators = f.read()
     assert indicators == 'define category bc_category\ngoogle.com\ndemisto.com\ndemisto.com/qwertqwer\ndemisto.com\nend'
@@ -788,9 +794,9 @@ def test_get_indicators_to_format_text():
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
-    f = get_indicators_to_format(indicator_searcher, request_args)
-    f = edl.create_text_out_format(f, request_args)
+    indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
+    indicators_data = edl.create_text_out_format(indicators_data, request_args)
 
-    f.seek(0)
-    indicators = f.read()
+    indicators_data.seek(0)
+    indicators = indicators_data.read()
     assert indicators == 'google.com\ndemisto.com\ndemisto.com/qwertqwer\ndemisto.com'

@@ -102,86 +102,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: b098fed0-d1ae-418c-8a37-756e1ae0cb37
-    type: condition
-    task:
-      id: b098fed0-d1ae-418c-8a37-756e1ae0cb37
-      version: -1
-      name: Is ePO enabled?
-      description: Is ePO enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "6"
-    scriptarguments:
-      value:
-        complex:
-          root: modules
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: epo
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.state
-                iscontext: true
-              right:
-                value:
-                  simple: active
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: epo
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 1638
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 26ba9604-ced2-4c35-8e13-075d3ed04042
@@ -190,11 +110,11 @@ tasks:
       id: 26ba9604-ced2-4c35-8e13-075d3ed04042
       version: -1
       name: List all agents that the Hash has been executed on
-      description: Get Agent GUIDS for the given hashes
-      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      description: Retrieves the set of systems which have referenced (typically executed) the specified hashes.
+      script: '|||tie-file-references'
       type: regular
       iscommand: true
-      brand: McAfee Threat Intelligence Exchange
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -207,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 737
+          "y": 757
         }
       }
     note: false
@@ -233,8 +153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 178,
-          "y": 2143
+          "x": 162.5,
+          "y": 1693
         }
       }
     note: false
@@ -281,43 +201,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 101e3e85-0246-4bd4-80be-2df713ee96e6
-    type: regular
-    task:
-      id: 101e3e85-0246-4bd4-80be-2df713ee96e6
-      version: -1
-      name: Get Agent info from ePO
-      description: Get hostnames for the Agent GUIDS
-      scriptName: EPOFindSystem
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      searchText:
-        complex:
-          root: File
-          accessor: References.AgentGuid
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 1937
+          "y": 920
         }
       }
     note: false
@@ -343,6 +227,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -442,7 +327,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "4"
       "yes":
       - "11"
     scriptarguments:
@@ -497,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1310
+          "x": 430,
+          "y": 1290
         }
       }
     note: false
@@ -527,14 +412,14 @@ tasks:
     scriptarguments:
       searchText:
         complex:
-          root: File.References
+          root: McAfee.TIE.FilesReferences.References
           accessor: AgentGuid
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 1630
+          "x": 430,
+          "y": 1500
         }
       }
     note: false
@@ -549,16 +434,15 @@ view: |-
   {
     "linkLabelsPosition": {
       "10_11_yes": 0.48,
-      "10_2_#default#": 0.48,
       "1_4_#default#": 0.1,
-      "2_4_#default#": 0.17,
-      "5_4_#default#": 0.11,
-      "9_4_#default#": 0.12
+      "5_4_#default#": 0.24,
+      "5_8_yes": 0.59,
+      "9_4_#default#": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 2158,
-        "width": 1227.5,
+        "height": 1708,
+        "width": 647.5,
         "x": 162.5,
         "y": 50
       }

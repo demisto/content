@@ -85,9 +85,12 @@ if (!renderBody) {
 
 if (addresses.length > 0) {
     // prepare args and run send-mail
-    emailArgs = args;
-    emailArgs.to = addresses.join(',');
-    emailArgs.subject = subject;
+    emailArgs = {
+        to: addresses.join(','),
+        subject: subject,
+        bodyType: bodyType,
+        renderBody: renderBody,
+    };
     if (bodyType === 'html') {
         emailArgs.htmlBody = message;
     } else {
@@ -106,10 +109,14 @@ if (addresses.length > 0) {
         emailArgs.bcc = args.bcc;
     }
 
-    emailArgs.bodyType = bodyType;
-    emailArgs.renderBody = renderBody;
+     // Add additional fields from args to emailArgs
+    for (const key in args) {
+        if (args.hasOwnProperty(key) && !emailArgs.hasOwnProperty(key)) {
+            emailArgs[key] = args[key];
+        }
+    }
 
-    return executeCommand('send-mail', emailArgs);
+  return executeCommand('send-mail', emailArgs);
 
 } else {
     return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
