@@ -1816,8 +1816,7 @@ def get_endpoints_command(client, args):
     alias_name = argToList(args.get('alias_name'))
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    status = args.get('status')
-    status = argToList(status)
+    status = argToList(args.get('status'))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
