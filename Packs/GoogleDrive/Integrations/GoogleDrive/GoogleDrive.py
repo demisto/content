@@ -6,11 +6,13 @@ import io
 import urllib3
 import uuid
 import dateparser
-from typing import List, Dict, Any, Tuple, Optional, Union, Callable
+from typing import Any
+from collections.abc import Callable
 
 from apiclient import discovery
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -18,7 +20,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
     'DRIVE_CHANGES_FIELDS': 'The argument fields must be either basic or advance.',
     'INTEGER_ERROR': 'The argument {} must be a positive integer.',
@@ -29,7 +31,7 @@ MESSAGES: Dict[str, str] = {
     'USER_ID_REQUIRED': 'The parameter User ID is required.'
 }
 
-HR_MESSAGES: Dict[str, str] = {
+HR_MESSAGES: dict[str, str] = {
     'DRIVE_CREATE_SUCCESS': 'A new shared drive created.',
     'NOT_FOUND': 'No {} found.',
     'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
@@ -40,12 +42,12 @@ HR_MESSAGES: Dict[str, str] = {
     'EXCEPTION_GENERIC': 'Exception handling a {} request: {}',
 }
 
-SCOPES: Dict[str, List[str]] = {
+SCOPES: dict[str, list[str]] = {
     'TEST_MODULE': ['https://www.googleapis.com/auth/userinfo.email'],
     'DRIVE': ['https://www.googleapis.com/auth/drive']
 }
 
-COMMAND_SCOPES: Dict[str, List[str]] = {
+COMMAND_SCOPES: dict[str, list[str]] = {
     'DRIVE_CHANGES': [
         'https://www.googleapis.com/auth/drive',
         'https://www.googleapis.com/auth/drive.file',
@@ -101,10 +103,10 @@ COMMAND_SCOPES: Dict[str, List[str]] = {
 
 }
 
-URLS: Dict[str, str] = {
+URLS: dict[str, str] = {
     'DRIVE_ACTIVITY': 'https://driveactivity.googleapis.com/v2/activity:query'
 }
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'DRIVE_CHANGES': 'drive/v3/changes',
     'DRIVE_CREATE': 'drive/v3/drives',
     'DRIVE_DRIVES': 'drive/v3/drives',
@@ -121,7 +123,7 @@ URL_SUFFIX: Dict[str, str] = {
     'FILE_PERMISSION_DELETE': 'drive/v3/files/{}/permissions/{}',
 }
 
-OUTPUT_PREFIX: Dict[str, str] = {
+OUTPUT_PREFIX: dict[str, str] = {
     'GOOGLE_DRIVE_HEADER': 'GoogleDrive.Drive',
     'PAGE_TOKEN': 'PageToken',
 
@@ -152,11 +154,11 @@ ACTIVITY_TIME: str = 'Activity Time'
 PRIMARY_ACTION: str = 'Primary Action'
 NEXT_PAGE_TOKEN: str = '### Next Page Token: {}\n'
 COLOR_RGB: str = 'Color RGB'
-ACTION_MAPPINGS: Dict[str, str] = {'dlpChange': 'DLPChange'}
+ACTION_MAPPINGS: dict[str, str] = {'dlpChange': 'DLPChange'}
 DRIVE_ACTIVITY_DETAIL_ACTION: str = 'detail.action_detail_case: {}'
 
 
-def prepare_markdown_from_dictionary(data: Dict[str, Any], ignore_fields: List[str] = []) -> str:
+def prepare_markdown_from_dictionary(data: dict[str, Any], ignore_fields: list[str] = []) -> str:
     """
     Prepares markdown from dictionary.
 
@@ -165,7 +167,7 @@ def prepare_markdown_from_dictionary(data: Dict[str, Any], ignore_fields: List[s
 
     :return: data in markdown format.
     """
-    hr_cell_info: List[str] = []
+    hr_cell_info: list[str] = []
     for key, value in data.items():
         if key not in ignore_fields:
             hr_cell_info.append(
@@ -173,7 +175,7 @@ def prepare_markdown_from_dictionary(data: Dict[str, Any], ignore_fields: List[s
     return '\n'.join(hr_cell_info)
 
 
-def prepare_params_for_drive_changes_list(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_params_for_drive_changes_list(args: dict[str, str]) -> dict[str, Any]:
     """
     Prepares arguments for google-drive-changes-list command.
 
@@ -213,8 +215,8 @@ def prepare_params_for_drive_changes_list(args: Dict[str, str]) -> Dict[str, Any
     return GSuiteClient.remove_empty_entities(params)
 
 
-def prepare_drive_changes_output(response: Dict[str, Any], drive_id: str, user_id: str) -> \
-        Tuple[Dict[str, Any], List[Dict[str, Optional[Any]]], List[Dict[str, Optional[Any]]]]:
+def prepare_drive_changes_output(response: dict[str, Any], drive_id: str, user_id: str) -> \
+        tuple[dict[str, Any], list[dict[str, Any | None]], list[dict[str, Any | None]]]:
     """
     Prepares context output and human readable for google-drive-changes-list command.
 
@@ -240,8 +242,8 @@ def prepare_drive_changes_output(response: Dict[str, Any], drive_id: str, user_i
     }
     outputs = GSuiteClient.remove_empty_entities(outputs)
 
-    drive_changes_hr_files: List[Dict[str, Any]] = [{}]
-    drive_changes_hr_drives: List[Dict[str, Any]] = [{}]
+    drive_changes_hr_files: list[dict[str, Any]] = [{}]
+    drive_changes_hr_drives: list[dict[str, Any]] = [{}]
     for drive_change in drive_changes_context:
         drive_change_file = drive_change.get('file', {})
         drive_changes_hr_files.append({
@@ -266,7 +268,7 @@ def prepare_drive_changes_output(response: Dict[str, Any], drive_id: str, user_i
     return outputs, drive_changes_hr_files, drive_changes_hr_drives
 
 
-def prepare_body_for_drive_activity(args: Dict[str, str]) -> Dict[str, Union[str, int]]:
+def prepare_body_for_drive_activity(args: dict[str, str]) -> dict[str, str | int]:
     """
     To prepare body for drive_activity_list_command.
 
@@ -280,7 +282,7 @@ def prepare_body_for_drive_activity(args: Dict[str, str]) -> Dict[str, Union[str
     if time_range:
         time_range, _ = parse_date_range(time_range, date_format=DATE_FORMAT_TIME_RANGE, utc=True)
 
-        filter_activity += 'time >= "{}"'.format(time_range)
+        filter_activity += f'time >= "{time_range}"'
 
     if action_detail_case_include:
         filter_activity += ' AND ' + DRIVE_ACTIVITY_DETAIL_ACTION.format(
@@ -318,10 +320,10 @@ def set_true_for_empty_dict(d):
     :param d: Input dictionary.
     :return: Dictionary with all empty dictionary's value set as True.
     """
-    if not isinstance(d, (dict, list)):
+    if not isinstance(d, dict | list):
         return d
     elif isinstance(d, list):
-        return [value for value in (set_true_for_empty_dict(value) for value in d)]
+        return ([set_true_for_empty_dict(value) for value in d])
     else:
         if d == {}:
             return True
@@ -329,7 +331,7 @@ def set_true_for_empty_dict(d):
                                                                        for key, value in d.items())}
 
 
-def prepare_drive_activity_output(activity: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_drive_activity_output(activity: dict[str, Any]) -> dict[str, Any]:
     """
     Prepares context output for google-drive-activity-list command.
 
@@ -347,7 +349,7 @@ def prepare_drive_activity_output(activity: Dict[str, Any]) -> Dict[str, Any]:
     return GSuiteClient.remove_empty_entities(drive_activity_context)
 
 
-def prepare_hr_setting_changes_entity(context: Dict[str, Any]) -> str:
+def prepare_hr_setting_changes_entity(context: dict[str, Any]) -> str:
     """
     Prepare human readable of setting entity of google-drive-activity-list
 
@@ -366,7 +368,7 @@ def prepare_hr_setting_changes_entity(context: Dict[str, Any]) -> str:
     return restriction_changes
 
 
-def prepare_target_for_drive_activity(targets_list: List) -> str:
+def prepare_target_for_drive_activity(targets_list: list) -> str:
     """
 
     :param targets_list: Target entity in context data.
@@ -375,9 +377,9 @@ def prepare_target_for_drive_activity(targets_list: List) -> str:
     """
     targets_data: str = ''
     for target in targets_list:
-        drive: Dict[str, Any] = target.get('drive', {})
-        file_comment_parent: Dict[str, Any] = target.get('fileComment', {}).get('parent', {})
-        drive_item: Dict[str, Any] = target.get('driveItem', {})
+        drive: dict[str, Any] = target.get('drive', {})
+        file_comment_parent: dict[str, Any] = target.get('fileComment', {}).get('parent', {})
+        drive_item: dict[str, Any] = target.get('driveItem', {})
         if drive_item:
             targets_data += 'Target: \'' + drive_item.get('title', '') + "'\n"
 
@@ -390,7 +392,7 @@ def prepare_target_for_drive_activity(targets_list: List) -> str:
     return targets_data
 
 
-def prepare_drive_activity_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
+def prepare_drive_activity_human_readable(outputs_context: list[dict[str, Any]]) -> str:
     """
     Prepares human readable for google-drive-activity-list command.
 
@@ -398,7 +400,7 @@ def prepare_drive_activity_human_readable(outputs_context: List[Dict[str, Any]])
 
     :return: Human readable.
     """
-    drive_hr: List[Dict[str, Any]] = [{}]
+    drive_hr: list[dict[str, Any]] = [{}]
     for context in outputs_context:
         primary_action_detail = context.get('primaryActionDetail', {})
 
@@ -406,58 +408,58 @@ def prepare_drive_activity_human_readable(outputs_context: List[Dict[str, Any]])
         object_target: str = prepare_target_for_drive_activity(context.get('targets', []))
         time_stamp = context.get('timestamp', '')
 
-        if 'edit' == name:
+        if name == 'edit':
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Edit',
                              OBJECT_HEADER: object_target})
 
-        elif 'delete' == name:
+        elif name == 'delete':
             delete_type: str = 'Delete Type: ' + primary_action_detail.get('delete', {}).get('type', '') + '\n'
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Delete',
                              OBJECT_HEADER: delete_type + object_target})
 
-        elif 'restore' == name:
+        elif name == 'restore':
             restore_type: str = 'Restore Type: ' + primary_action_detail.get('restore', {}).get('type', '') + '\n'
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Restore',
                              OBJECT_HEADER: restore_type + object_target})
 
-        elif 'dlpChange' == name:
+        elif name == 'dlpChange':
             dlp_type: str = 'DataLeakPreventionChange Type: ' + primary_action_detail.get('dlpChange',
                                                                                           {}).get('type', '') + '\n'
             drive_hr.append(
                 {ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'DataLeakPreventionChange',
                  OBJECT_HEADER: dlp_type + object_target})
 
-        elif 'reference' == name:
+        elif name == 'reference':
             reference_type: str = 'Reference Type: ' + primary_action_detail.get('reference', {}).get('type', '') + '\n'
 
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Reference',
                              OBJECT_HEADER: reference_type + object_target})
 
-        elif 'rename' == name:
-            rename_object: Dict[str, Any] = primary_action_detail.get('rename', {})
+        elif name == 'rename':
+            rename_object: dict[str, Any] = primary_action_detail.get('rename', {})
             rename_titles: str = 'Old Title: \'' + rename_object.get('oldTitle', '') + "'\n" + 'New Title: \'' + \
                                  rename_object.get('newTitle', '') + "'\n"
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Rename',
                              OBJECT_HEADER: rename_titles})
 
-        elif 'move' == name:
+        elif name == 'move':
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Move', OBJECT_HEADER: object_target})
 
-        elif 'permissionChange' == name:
+        elif name == 'permissionChange':
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'PermissionChange',
                              OBJECT_HEADER: object_target})
 
-        elif 'settingsChange' == name:
+        elif name == 'settingsChange':
             settings_changes: str = prepare_hr_setting_changes_entity(context)
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'SettingsChange',
                              OBJECT_HEADER: settings_changes + object_target})
 
-        elif 'comment' == name:
+        elif name == 'comment':
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Comment',
                              OBJECT_HEADER: object_target})
 
-        elif 'create' == name:
-            created: List = list(primary_action_detail.get('create', {}).keys())
+        elif name == 'create':
+            created: list = list(primary_action_detail.get('create', {}).keys())
             drive_hr.append({ACTIVITY_TIME: time_stamp, PRIMARY_ACTION: 'Create ' + created[0].capitalize(),
                              OBJECT_HEADER: object_target})
 
@@ -471,7 +473,7 @@ def prepare_drive_activity_human_readable(outputs_context: List[Dict[str, Any]])
     return drive_activity_hr
 
 
-def flatten_user_dict(user: Dict[str, Any]) -> Dict[str, Any]:
+def flatten_user_dict(user: dict[str, Any]) -> dict[str, Any]:
     """
     Flatten keys of user to populate the grid field.
 
@@ -487,7 +489,7 @@ def flatten_user_dict(user: Dict[str, Any]) -> Dict[str, Any]:
         'isUnknownUser': set_true_for_empty_dict(user.get('unknownUser'))})
 
 
-def flatten_targets_keys_for_fetch_incident(activity: Dict[str, Any]) -> None:
+def flatten_targets_keys_for_fetch_incident(activity: dict[str, Any]) -> None:
     """
     Flatten keys of targets to populate the grid field.
 
@@ -521,7 +523,7 @@ def flatten_targets_keys_for_fetch_incident(activity: Dict[str, Any]) -> None:
     activity['targets'] = flatten_targets
 
 
-def actors_type_keys_for_fetch_incident(activity: Dict[str, Any]) -> None:
+def actors_type_keys_for_fetch_incident(activity: dict[str, Any]) -> None:
     """
     Actors to populate on incident.
 
@@ -545,7 +547,7 @@ def actors_type_keys_for_fetch_incident(activity: Dict[str, Any]) -> None:
     activity['actors'] = flatten_actors
 
 
-def flatten_permission_change_keys_for_fetch_incident(permission_change: Dict[str, Any]) -> None:
+def flatten_permission_change_keys_for_fetch_incident(permission_change: dict[str, Any]) -> None:
     """
     Flatten keys of permission change to populate the grid field.
 
@@ -575,7 +577,7 @@ def flatten_permission_change_keys_for_fetch_incident(permission_change: Dict[st
                                                    permission_change['removedPermissions']]
 
 
-def flatten_move_keys_for_fetch_incident(move: Dict[str, Any]) -> None:
+def flatten_move_keys_for_fetch_incident(move: dict[str, Any]) -> None:
     """
     Flatten keys of move to populate the grid field.
 
@@ -604,7 +606,7 @@ def flatten_move_keys_for_fetch_incident(move: Dict[str, Any]) -> None:
                                   move['removedParents']]
 
 
-def flatten_comment_mentioned_user_keys_for_fetch_incident(comment: Dict[str, Any]) -> None:
+def flatten_comment_mentioned_user_keys_for_fetch_incident(comment: dict[str, Any]) -> None:
     """
      Flatten keys of mentioned_users to populate the grid field.
 
@@ -617,7 +619,7 @@ def flatten_comment_mentioned_user_keys_for_fetch_incident(comment: Dict[str, An
                                      comment['mentionedUsers']]
 
 
-def prepare_args_for_fetch_incidents(last_fetch: int, args: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_args_for_fetch_incidents(last_fetch: int, args: dict[str, Any]) -> dict[str, Any]:
     """
      Prepares arguments for fetch-incidents.
 
@@ -647,7 +649,7 @@ def prepare_args_for_fetch_incidents(last_fetch: int, args: Dict[str, Any]) -> D
     })
 
 
-def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
+def validate_params_for_fetch_incidents(params: dict[str, Any]) -> None:
     """
     Validates parameters for fetch-incidents command.
 
@@ -673,7 +675,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
 
 
 @logger
-def test_module(gsuite_client: 'GSuiteClient', last_run: Dict, params: Dict[str, Any]) -> str:
+def test_module(gsuite_client: 'GSuiteClient', last_run: dict, params: dict[str, Any]) -> str:
     """
     Performs test connectivity by valid http response
 
@@ -697,7 +699,7 @@ def test_module(gsuite_client: 'GSuiteClient', last_run: Dict, params: Dict[str,
 
 
 @logger
-def drive_create_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def drive_create_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the
     first organizer.
@@ -735,7 +737,7 @@ def drive_create_command(client: 'GSuiteClient', args: Dict[str, str]) -> Comman
 
 
 @logger
-def drive_changes_list_command(client: 'GSuiteClient', args: Dict[str, Any]) -> CommandResults:
+def drive_changes_list_command(client: 'GSuiteClient', args: dict[str, Any]) -> CommandResults:
     """
     Lists the changes for a user or shared drive.
 
@@ -775,7 +777,7 @@ def drive_changes_list_command(client: 'GSuiteClient', args: Dict[str, Any]) -> 
     )
 
 
-def prepare_drives_request(client: 'GSuiteClient', args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_drives_request(client: 'GSuiteClient', args: dict[str, str]) -> dict[str, Any]:
     """
     prepare_drives_request
     Preparing http_request_params and populating the client
@@ -786,7 +788,7 @@ def prepare_drives_request(client: 'GSuiteClient', args: Dict[str, str]) -> Dict
     :return: Objects ready for requests
     """
 
-    http_request_params: Dict[str, str] = assign_params(
+    http_request_params: dict[str, str] = assign_params(
         q=args.get('query'),
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
@@ -803,7 +805,7 @@ def prepare_drives_request(client: 'GSuiteClient', args: Dict[str, str]) -> Dict
 
 
 @logger
-def drives_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def drives_list_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     google-drive-drives-list
     Query drives list in Google Drive.
@@ -825,7 +827,7 @@ def drives_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> Command
 
 
 @logger
-def drive_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def drive_get_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     google-drive-drive-get
     Query a single drive in Google Drive.
@@ -845,7 +847,7 @@ def drive_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandRe
     return handle_response_single_drive(response, args)
 
 
-def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
+def handle_response_drive_list(response: dict[str, Any]) -> CommandResults:
 
     outputs_context = []
     readable_output = ''
@@ -855,7 +857,7 @@ def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
     for current_drive in cleaned_drives_context.get('drives', []):
         outputs_context.append(current_drive)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_DRIVE_HEADER']: {
             OUTPUT_PREFIX['DRIVE']: outputs_context,
         },
@@ -877,11 +879,11 @@ def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
     )
 
 
-def handle_response_single_drive(response: Dict[str, Any], args: Dict[str, str]):
+def handle_response_single_drive(response: dict[str, Any], args: dict[str, str]):
     drive_context = set_true_for_empty_dict(response)
     outputs_context = GSuiteClient.remove_empty_entities(drive_context)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_DRIVE_HEADER']: {
             OUTPUT_PREFIX['DRIVE']: outputs_context,
         },
@@ -901,7 +903,7 @@ def handle_response_single_drive(response: Dict[str, Any], args: Dict[str, str])
     )
 
 
-def prepare_drives_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
+def prepare_drives_human_readable(outputs_context: list[dict[str, Any]]) -> str:
     """
     Prepares human readable for google-drives-list command.
 
@@ -917,7 +919,7 @@ def prepare_drives_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: Dict[str, str]) -> str:
+def prepare_single_drive_human_readable(outputs_context: dict[str, Any], args: dict[str, str]) -> str:
     """
     Prepares human readable for a single drive in google-drives-list command.
 
@@ -934,8 +936,8 @@ def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: D
                            removeNull=True)
 
 
-def prepare_file_read_request(client: 'GSuiteClient', args: Dict[str, str]) -> Dict[str, Any]:
-    http_request_params: Dict[str, str] = assign_params(
+def prepare_file_read_request(client: 'GSuiteClient', args: dict[str, str]) -> dict[str, Any]:
+    http_request_params: dict[str, str] = assign_params(
         q=args.get('query'),
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
@@ -955,7 +957,7 @@ def prepare_file_read_request(client: 'GSuiteClient', args: Dict[str, str]) -> D
 
 
 @logger
-def files_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def files_list_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     google-drive-files-list
     Query files list in Google Drive.
@@ -976,7 +978,7 @@ def files_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandR
 
 
 @logger
-def file_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_get_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     google-drive-file-get
     Query a single file in Google Drive.
@@ -997,7 +999,7 @@ def file_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandRes
     return handle_response_single_file(response, args)
 
 
-def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
+def handle_response_files_list(response: dict[str, Any]) -> CommandResults:
 
     outputs_context = []
     readable_output = ''
@@ -1008,7 +1010,7 @@ def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
 
     files_hr = prepare_files_human_readable(outputs_context)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
             OUTPUT_PREFIX['FILE']: outputs_context,
         },
@@ -1028,12 +1030,12 @@ def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
     )
 
 
-def handle_response_single_file(response: Dict[str, Any], args: Dict[str, str]):
+def handle_response_single_file(response: dict[str, Any], args: dict[str, str]):
     outputs_context = prepare_single_file_output(response)
 
     file_hr = prepare_single_file_human_readable(outputs_context, args)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
             OUTPUT_PREFIX['FILE']: outputs_context
         }
@@ -1050,7 +1052,7 @@ def handle_response_single_file(response: Dict[str, Any], args: Dict[str, str]):
     )
 
 
-def prepare_files_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
+def prepare_files_human_readable(outputs_context: list[dict[str, Any]]) -> str:
     """
     Prepares human readable for google-files-list command.
 
@@ -1067,7 +1069,7 @@ def prepare_files_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def prepare_single_file_output(response: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_single_file_output(response: dict[str, Any]) -> dict[str, Any]:
     """
     Prepares context output for a single file in google-files-list command.
 
@@ -1080,7 +1082,7 @@ def prepare_single_file_output(response: Dict[str, Any]) -> Dict[str, Any]:
     return GSuiteClient.remove_empty_entities(files_context)
 
 
-def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Dict[str, str]) -> str:
+def prepare_single_file_human_readable(outputs_context: dict[str, Any], args: dict[str, str]) -> str:
     """
     Prepares human readable for a single file in google-files-list command.
 
@@ -1097,7 +1099,7 @@ def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Di
         removeNull=False)
 
 
-def prepare_file_command_request(client: 'GSuiteClient', args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
+def prepare_file_command_request(client: 'GSuiteClient', args: dict[str, str], scopes: list[str]) -> dict[str, Any]:
     # Prepare generic HTTP request params
     http_request_params = assign_params(supportsAllDrives=args.get('supports_all_drives'))
 
@@ -1112,7 +1114,7 @@ def prepare_file_command_request(client: 'GSuiteClient', args: Dict[str, str], s
 
 
 @logger
-def file_upload_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_upload_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Upload a file to Google Drive
 
@@ -1130,7 +1132,7 @@ def file_upload_command(client: 'GSuiteClient', args: Dict[str, str]) -> Command
     user_id = args.get('user_id') or client.user_id
     client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=user_id)
     drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
-    body: Dict[str, str] = assign_params(
+    body: dict[str, str] = assign_params(
         parents=[args.get('parent')] if 'parent' in args else None,
         name=args.get('file_name'),
     )
@@ -1146,7 +1148,7 @@ def file_upload_command(client: 'GSuiteClient', args: Dict[str, str]) -> Command
 
 
 @logger
-def file_download_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_download_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Download a file from Google Drive
 
@@ -1171,7 +1173,7 @@ def file_download_command(client: 'GSuiteClient', args: Dict[str, str]) -> Comma
 
 
 @logger
-def file_replace_existing_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_replace_existing_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Replace an existing file in Google Drive
         google-drive-file-replace-existing
@@ -1198,7 +1200,7 @@ def file_replace_existing_command(client: 'GSuiteClient', args: Dict[str, str]) 
 
 
 @logger
-def file_delete_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_delete_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Delete a file in Google Drive
 
@@ -1216,7 +1218,7 @@ def file_delete_command(client: 'GSuiteClient', args: Dict[str, str]) -> Command
     outputs_context = {
         'id': args.get('file_id'),
     }
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
             OUTPUT_PREFIX['FILE']: outputs_context,
         }
@@ -1235,7 +1237,7 @@ def file_delete_command(client: 'GSuiteClient', args: Dict[str, str]) -> Command
     return ret_value
 
 
-def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
+def handle_response_file_single(response: dict[str, Any], args: dict[str, str]) -> CommandResults:
 
     readable_output = ''
 
@@ -1243,7 +1245,7 @@ def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) 
 
     files_hr = prepare_file_single_human_readable(outputs_context, args)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
             OUTPUT_PREFIX['FILE']: outputs_context
         }
@@ -1258,7 +1260,7 @@ def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) 
     )
 
 
-def prepare_file_single_output(file_single: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_file_single_output(file_single: dict[str, Any]) -> dict[str, Any]:
     """
     Prepares context output for google-drive-file commands.
 
@@ -1274,7 +1276,7 @@ def prepare_file_single_output(file_single: Dict[str, Any]) -> Dict[str, Any]:
     return GSuiteClient.remove_empty_entities(ret_value)
 
 
-def prepare_file_single_human_readable(outputs_context: Dict[str, Any], args: Dict[str, str]) -> str:
+def prepare_file_single_human_readable(outputs_context: dict[str, Any], args: dict[str, str]) -> str:
     """
     Prepares human readable for google-drive-file commands.
 
@@ -1302,13 +1304,13 @@ def prepare_file_single_human_readable(outputs_context: Dict[str, Any], args: Di
                            removeNull=False)
 
 
-def prepare_file_permission_request(client: 'GSuiteClient', args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
+def prepare_file_permission_request(client: 'GSuiteClient', args: dict[str, str], scopes: list[str]) -> dict[str, Any]:
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
     client.set_authorized_http(scopes=scopes, subject=user_id)
 
     # Prepare generic HTTP request params
-    http_request_params: Dict[str, str] = assign_params(
+    http_request_params: dict[str, str] = assign_params(
         fileId=args.get('file_id'),
         supportsAllDrives=args.get('supports_all_drives'),
         fields='*',
@@ -1322,7 +1324,7 @@ def prepare_file_permission_request(client: 'GSuiteClient', args: Dict[str, str]
 
 
 @logger
-def file_permission_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_permission_list_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     List file permissions
 
@@ -1335,7 +1337,7 @@ def file_permission_list_command(client: 'GSuiteClient', args: Dict[str, str]) -
     # All permissions
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_LIST'])
-    http_request_params: Dict[str, str] = prepare_file_permission_request_res['http_request_params']
+    http_request_params: dict[str, str] = prepare_file_permission_request_res['http_request_params']
 
     http_request_params.update(
         assign_params(
@@ -1350,7 +1352,7 @@ def file_permission_list_command(client: 'GSuiteClient', args: Dict[str, str]) -
 
 
 @logger
-def file_permission_create_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_permission_create_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Create file permissions
 
@@ -1362,7 +1364,7 @@ def file_permission_create_command(client: 'GSuiteClient', args: Dict[str, str])
 
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
-    http_request_params: Dict[str, str] = prepare_file_permission_request_res['http_request_params']
+    http_request_params: dict[str, str] = prepare_file_permission_request_res['http_request_params']
 
     http_request_params.update(
         assign_params(
@@ -1370,7 +1372,7 @@ def file_permission_create_command(client: 'GSuiteClient', args: Dict[str, str])
         )
     )
 
-    body: Dict[str, str] = assign_params(
+    body: dict[str, str] = assign_params(
         role=args.get('role'),
         type=args.get('type'),
         domain=args.get('domain'),
@@ -1383,7 +1385,7 @@ def file_permission_create_command(client: 'GSuiteClient', args: Dict[str, str])
 
 
 @logger
-def file_permission_update_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_permission_update_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Update file permissions
 
@@ -1397,7 +1399,7 @@ def file_permission_update_command(client: 'GSuiteClient', args: Dict[str, str])
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
     http_request_params = prepare_file_permission_request_res['http_request_params']
 
-    body: Dict[str, str] = assign_params(
+    body: dict[str, str] = assign_params(
         role=args.get('role'),
         expirationTime=args.get('expiration_time'),
     )
@@ -1408,7 +1410,7 @@ def file_permission_update_command(client: 'GSuiteClient', args: Dict[str, str])
 
 
 @logger
-def file_permission_delete_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def file_permission_delete_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Delete file permissions
 
@@ -1425,11 +1427,11 @@ def file_permission_delete_command(client: 'GSuiteClient', args: Dict[str, str])
     url_suffix = URL_SUFFIX['FILE_PERMISSION_DELETE'].format(args.get('file_id'), args.get('permission_id'))
     client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
 
-    outputs_context: Dict = {
+    outputs_context: dict = {
         'fileId': args.get('file_id'),
         'id': args.get('permission_id'),
     }
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_PERMISSION_HEADER']: {
             OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context,
         }
@@ -1447,7 +1449,7 @@ def file_permission_delete_command(client: 'GSuiteClient', args: Dict[str, str])
     )
 
 
-def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
+def handle_response_permissions_list(response: dict[str, Any], args: dict[str, str]) -> CommandResults:
 
     outputs_context = []
     readable_output = ''
@@ -1457,7 +1459,7 @@ def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, s
 
     files_hr = prepare_permissions_human_readable(outputs_context, args)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_PERMISSION_HEADER']: {
             OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context,
         },
@@ -1477,7 +1479,7 @@ def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, s
     )
 
 
-def prepare_permissions_human_readable(outputs_context: List[Dict[str, Any]], args: Dict[str, str]) -> str:
+def prepare_permissions_human_readable(outputs_context: list[dict[str, Any]], args: dict[str, str]) -> str:
     """
     Prepares human readable for google-drive-file-permissions-list command.
 
@@ -1493,7 +1495,7 @@ def prepare_permissions_human_readable(outputs_context: List[Dict[str, Any]], ar
                            removeNull=False)
 
 
-def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
+def handle_response_permission_single(response: dict[str, Any], args: dict[str, str]) -> CommandResults:
 
     readable_output = ''
 
@@ -1501,7 +1503,7 @@ def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, 
 
     files_hr = prepare_permission_human_readable(outputs_context, args)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_PERMISSION_HEADER']: {
             OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context
         }
@@ -1516,7 +1518,7 @@ def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, 
     )
 
 
-def prepare_permission_output(permission: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_permission_output(permission: dict[str, Any]) -> dict[str, Any]:
     """
     Prepares context output for google-drive-file-permissions commands.
 
@@ -1532,7 +1534,7 @@ def prepare_permission_output(permission: Dict[str, Any]) -> Dict[str, Any]:
     return GSuiteClient.remove_empty_entities(ret_value)
 
 
-def prepare_permission_human_readable(outputs_context: Dict[str, Any], args: Dict[str, str]) -> str:
+def prepare_permission_human_readable(outputs_context: dict[str, Any], args: dict[str, str]) -> str:
     """
     Prepares human readable for google-drive-file-permissions commands.
 
@@ -1549,7 +1551,7 @@ def prepare_permission_human_readable(outputs_context: Dict[str, Any], args: Dic
 
 
 @logger
-def drive_activity_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
+def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
     Query past activity in Google Drive.
 
@@ -1572,7 +1574,7 @@ def drive_activity_list_command(client: 'GSuiteClient', args: Dict[str, str]) ->
 
     drive_activity_hr = prepare_drive_activity_human_readable(outputs_context)
 
-    outputs: Dict = {
+    outputs: dict = {
         OUTPUT_PREFIX['DRIVE_ACTIVITY_LIST']: outputs_context
     }
     if response.get('nextPageToken', ''):
@@ -1589,8 +1591,8 @@ def drive_activity_list_command(client: 'GSuiteClient', args: Dict[str, str]) ->
     )
 
 
-def fetch_incidents(client: 'GSuiteClient', last_run: Dict, params: Dict, is_test: bool = False) -> \
-        Tuple[Optional[list], Optional[dict]]:
+def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_test: bool = False) -> \
+        tuple[list | None, dict | None]:
     """
     Prepares incidents from past activity in Google Drive.
 
@@ -1613,7 +1615,7 @@ def fetch_incidents(client: 'GSuiteClient', last_run: Dict, params: Dict, is_tes
 
     body = prepare_args_for_fetch_incidents(last_fetch, params)
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     client.set_authorized_http(scopes=COMMAND_SCOPES['DRIVE_ACTIVITY'], subject=params.get('user_id'))
     response = client.http_request(body=body, full_url=URLS['DRIVE_ACTIVITY'],
@@ -1661,7 +1663,7 @@ def main() -> None:
     """
 
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'google-drive-create': drive_create_command,
         'google-drive-changes-list': drive_changes_list_command,
         'google-drive-activity-list': drive_activity_list_command,

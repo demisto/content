@@ -2,12 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any
+from collections.abc import Callable
 
-import urllib3
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
@@ -74,8 +71,8 @@ RPZ_RULES_DICT = {
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
-        super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, params=None):
+        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.params = params
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
@@ -89,7 +86,7 @@ class Client(BaseClient):
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
         is successful.
 
@@ -98,7 +95,7 @@ class Client(BaseClient):
         """
         return self.list_response_policy_zones()
 
-    def list_response_policy_zones(self, max_results: Optional[str] = None) -> Dict:
+    def list_response_policy_zones(self, max_results: str | None = None) -> dict:
         """List all response policy zones.
         Args:
                 max_results:  maximum number of results
@@ -110,7 +107,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ip(self, ip: Optional[str]) -> Dict:
+    def get_ip(self, ip: str | None) -> dict:
         """Get ip information.
         Args:
             ip: ip to retrieve.
@@ -126,7 +123,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_related_objects_by_ip(self, ip: Optional[str], max_results: Optional[str]) -> Dict:
+    def search_related_objects_by_ip(self, ip: str | None, max_results: str | None) -> dict:
         """Search ip related objects.
         Args:
             ip: ip to retrieve.
@@ -142,8 +139,8 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: Optional[str], view: Optional[str], max_results: Optional[str],
-                                        next_page_id: Optional[str]) -> Dict:
+    def list_response_policy_zone_rules(self, zone: str | None, view: str | None, max_results: str | None,
+                                        next_page_id: str | None) -> dict:
         """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
@@ -163,9 +160,9 @@ class Client(BaseClient):
 
         return self._http_request('GET', suffix, params=request_params)
 
-    def create_response_policy_zone(self, fqdn: Optional[str], rpz_policy: Optional[str],
-                                    rpz_severity: Optional[str], substitute_name: Optional[str],
-                                    rpz_type: Optional[str]) -> Dict:
+    def create_response_policy_zone(self, fqdn: str | None, rpz_policy: str | None,
+                                    rpz_severity: str | None, substitute_name: str | None,
+                                    rpz_type: str | None) -> dict:
         """Creates new response policy zone
         Args:
             fqdn: The name of this DNS zone.
@@ -182,7 +179,7 @@ class Client(BaseClient):
         suffix = 'zone_rp'
         return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
 
-    def delete_response_policy_zone(self, ref_id: Optional[str]) -> Dict:
+    def delete_response_policy_zone(self, ref_id: str | None) -> dict:
         """Delete new response policy zone
         Args:
             ref_id: Zone reference id to delete.
@@ -193,9 +190,9 @@ class Client(BaseClient):
         suffix = ref_id
         return self._http_request('DELETE', suffix)
 
-    def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
-                        rp_zone: Optional[str], view: Optional[str], substitute_name: Optional[str],
-                        comment: Optional[str] = None) -> Dict:
+    def create_rpz_rule(self, rule_type: str | None, object_type: str | None, name: str | None,
+                        rp_zone: str | None, view: str | None, substitute_name: str | None,
+                        comment: str | None = None) -> dict:
         """Creates new response policy zone rule.
         Args:
             rule_type: Type of rule to create.
@@ -208,7 +205,7 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
-        canonical: Optional[str] = ''
+        canonical: str | None = ''
         if rule_type == 'Passthru':
             canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
         elif rule_type == 'Block (No data)':
@@ -230,7 +227,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+    def create_substitute_record_rule(self, suffix: str | None, **kwargs: str | int | None) -> dict:
         """Creates new response policy zone substitute rule.
         Args:
             suffix: The infoblox object to be used as a url path.
@@ -260,7 +257,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def change_rule_status(self, reference_id: Optional[str], disable: Optional[bool]) -> Dict:
+    def change_rule_status(self, reference_id: str | None, disable: bool | None) -> dict:
         """Changes a given rule status.
         Args:
             reference_id: Rule reference ID
@@ -272,7 +269,7 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
 
-    def get_object_fields(self, object_type: Optional[str]) -> Dict:
+    def get_object_fields(self, object_type: str | None) -> dict:
         """Retrieve a given object fields.
         Args:
             object_type: Infoblox object type
@@ -283,8 +280,8 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_rule(self, object_type: Optional[str], rule_name: Optional[str],
-                    output_fields: Optional[str]) -> Dict:
+    def search_rule(self, object_type: str | None, rule_name: str | None,
+                    output_fields: str | None) -> dict:
         """Search rule by its name
         Args:
             object_type: Infoblox object type
@@ -299,7 +296,7 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def delete_rpz_rule(self, reference_id: Optional[str]) -> Dict:
+    def delete_rpz_rule(self, reference_id: str | None) -> dict:
         """Deletes a rule by its reference id
         Args:
             reference_id: Rule reference ID
@@ -331,12 +328,12 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
 ''' COMMANDS '''
 
 
-def test_module_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def test_module_command(client: Client, *_) -> tuple[str, dict, dict]:
     client.test_module()
     return 'ok', {}, {}
 
 
-def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dict]:
+def get_ip_command(client: Client, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -361,7 +358,7 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
     return human_readable, context, raw_response
 
 
-def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_related_objects_by_ip_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -390,7 +387,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     return human_readable, context, raw_response
 
 
-def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_response_policy_zone_rules_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -433,7 +430,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     return human_readable, context, raw_response
 
 
-def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_response_policy_zones_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -460,7 +457,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     return human_readable, context, raw_response
 
 
-def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_response_policy_zone_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -487,7 +484,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     return human_readable, context, raw_response
 
 
-def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_response_policy_zone_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -504,7 +501,7 @@ def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     return human_readable, {}, raw_response
 
 
-def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_rpz_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -538,7 +535,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return human_readable, context, raw_response
 
 
-def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_a_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -565,7 +562,7 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
     return human_readable, context, raw_response
 
 
-def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_aaaa_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -592,7 +589,7 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     return human_readable, context, raw_response
 
 
-def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_mx_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -621,7 +618,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
     return human_readable, context, raw_response
 
 
-def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_naptr_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -652,7 +649,7 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
     return human_readable, context, raw_response
 
 
-def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_ptr_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -683,7 +680,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     return human_readable, context, raw_response
 
 
-def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_srv_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -714,7 +711,7 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     return human_readable, context, raw_response
 
 
-def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_txt_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -741,7 +738,7 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     return human_readable, context, raw_response
 
 
-def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_ipv4_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -768,7 +765,7 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     return human_readable, context, raw_response
 
 
-def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_ipv6_substitute_record_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -795,7 +792,7 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     return human_readable, context, raw_response
 
 
-def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def enable_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -817,7 +814,7 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def disable_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -839,7 +836,7 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_object_fields_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -865,7 +862,7 @@ def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     return human_readable, context, raw_response
 
 
-def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -894,7 +891,7 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_rpz_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -928,7 +925,7 @@ def main():  # pragma: no cover
     demisto.info(f'Command being called is {command}')
 
     # Switch case
-    commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+    commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
         'test-module': test_module_command,
         f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,

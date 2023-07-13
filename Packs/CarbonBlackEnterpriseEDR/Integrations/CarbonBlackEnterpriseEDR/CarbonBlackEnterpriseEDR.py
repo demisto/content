@@ -8,8 +8,6 @@ import requests
 import urllib3
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 
 class Client(BaseClient):

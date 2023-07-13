@@ -9,6 +9,7 @@ import demistomock as demisto
 
 from GoogleChronicleBackstory import MESSAGES
 
+
 PROXY_MOCK = {
     "proxy": "0.0.0.0"
 }
@@ -89,7 +90,7 @@ def test_gcb_list_ioc_success(client):
         dummy_ec = json.load(f)
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -109,7 +110,7 @@ def test_gcb_list_ioc_failure_response(client):
         dummy_response = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response + b'}'
     )
 
@@ -126,7 +127,7 @@ def test_gcb_list_ioc_failure_response_400(client, mocker):
     mocker.patch(RETURN_ERROR_MOCK_PATH, new=return_error)
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         b'{"error": { "code": 400, "message": "page not found", "status": "INVALID_ARGUMENT" } }'
     )
 
@@ -140,13 +141,13 @@ def test_gcb_ioc_details_command_success(client):
     """When command execute successfully then it should prepare valid hr, ec."""
     from GoogleChronicleBackstory import gcb_ioc_details_command
 
-    with open("test_data/list_ioc_details_response.json", "r") as f:
+    with open("test_data/list_ioc_details_response.json") as f:
         dummy_response = f.read()
-    with open("test_data/gcb_ioc_details_command_ec.json", "r") as f:
+    with open("test_data/gcb_ioc_details_command_ec.json") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -169,7 +170,7 @@ def test_gcb_ioc_details_command_empty_response(client):
 
     dummy_response = '{}'
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -189,7 +190,7 @@ def test_gcb_ioc_details_command_failure(client, mocker):
                      " in request message.\", \"status\": \"INVALID_ARGUMENT\", \"details\": [ {  } ] } } "
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         dummy_response
     )
 
@@ -210,7 +211,7 @@ def test_gcb_ioc_details_command_failure_permission_denied(client, mocker):
     dummy_response = COMMON_RESP['PERM_DENIED_RESP']
 
     mock_response = (
-        Response(dict(status=403)),
+        Response({"status": 403}),
         dummy_response
     )
 
@@ -245,7 +246,7 @@ def test_function_success(client):
     """When success response come then test_function command should pass."""
     from GoogleChronicleBackstory import test_function
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         b'{}'
     )
     client.http_client.request.return_value = mock_response
@@ -259,7 +260,7 @@ def test_function_failure_status_code_400(client, mocker):
     """When unsuccessful response come then test_function command should raise ValueError with appropriate message."""
     from GoogleChronicleBackstory import test_function
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         b'{"error": { "code": 400, "message": "Request contains an invalid argument.", "status": "INVALID_ARGUMENT" } }'
     )
 
@@ -275,7 +276,7 @@ def test_function_failure_status_code_403(client, mocker):
     """When entered JSON is correct but client has not given any access, should return permission denied."""
     from GoogleChronicleBackstory import test_function
     mock_response = (
-        Response(dict(status=403)),
+        Response({"status": 403}),
         b'{"error": { "code": 403, "message": "Permission denied" } }'
     )
 
@@ -377,7 +378,7 @@ def test_main_success(mocker, client):
 
     }
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         b'{"error": { "code": 400, "message": "Request contains an invalid argument.", "status": "INVALID_ARGUMENT" } }'
     )
     client.http_client.request.return_value = mock_response
@@ -398,7 +399,7 @@ def test_gcb_assets_command_success(client):
         expected_response = json.load(f)
 
     success_mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         json.dumps(expected_response, indent=2).encode('utf-8')
     )
 
@@ -415,7 +416,7 @@ def test_gcb_assets_command_failure(client):
     from GoogleChronicleBackstory import gcb_assets_command
 
     failure_mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         json.dumps({}, indent=2).encode('utf-8')
     )
     client.http_client.request.return_value = failure_mock_response
@@ -432,7 +433,7 @@ def test_gcb_assets_command_failure_with_uri_empty_response(client):
         expected_response = json.load(f)
 
     failure_mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         json.dumps(expected_response, indent=2).encode('utf-8')
     )
     client.http_client.request.return_value = failure_mock_response
@@ -474,7 +475,7 @@ def test_fetch_incident_success_with_no_param_no_alerts(client):
     param = {}
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         b'{}'
     )
     client.http_client.request.return_value = mock_response
@@ -501,7 +502,7 @@ def test_fetch_incident_run_ioc_domain_matches(mocker, client):
         dummy_response = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -517,7 +518,7 @@ def test_fetch_incident_error_in_response(client, mocker):
     param = {}
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         b'{"error": { "code": 400, "message": "Invalid Argument", "status": "INVALID_ARGUMENT" } }'
     )
     client.http_client.request.return_value = mock_response
@@ -566,7 +567,7 @@ def test_fetch_incident_success_with_param_and_alerts_when_executed_1st_time(moc
         gcb_alert_sample = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         gcb_alert_sample
     )
     client.http_client.request.return_value = mock_response
@@ -589,7 +590,7 @@ def test_gcb_fetch_incident_success_with_alerts_with_demisto_last_run(mocker, cl
         gcb_alert_sample = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         gcb_alert_sample
     )
     client.http_client.request.return_value = mock_response
@@ -614,7 +615,7 @@ def test_asset_with_multiple_alerts_human_readable(client):
         gcb_alert_sample = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         gcb_alert_sample
     )
     client.http_client.request.return_value = mock_response
@@ -623,10 +624,10 @@ def test_asset_with_multiple_alerts_human_readable(client):
 
     assert alert_per_asset
     assert len(alert_per_asset) == 4
-    assert 'svetla-Command Shell Launched by Office Applications' in alert_per_asset.keys()
-    assert 'svetla-Suspicious PowerShell Process Ancestry' in alert_per_asset.keys()
-    assert 'dc12-Suspicious PowerShell Process Ancestry' in alert_per_asset.keys()
-    assert 'dc12-Possible Bitsadmin Exfiltration' in alert_per_asset.keys()
+    assert 'svetla-Command Shell Launched by Office Applications' in alert_per_asset
+    assert 'svetla-Suspicious PowerShell Process Ancestry' in alert_per_asset
+    assert 'dc12-Suspicious PowerShell Process Ancestry' in alert_per_asset
+    assert 'dc12-Possible Bitsadmin Exfiltration' in alert_per_asset
 
 
 def test_gcb_list_alert_with_no_arg_supplied_success(mocker, client):
@@ -640,7 +641,7 @@ def test_gcb_list_alert_with_no_arg_supplied_success(mocker, client):
     param = {}
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_hr_gcb_alerts()
     )
     client.http_client.request.return_value = mock_response
@@ -670,7 +671,7 @@ def test_gcb_list_alert_with_severity_medium_arg_supplied_success(mocker, client
     }
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_hr_gcb_alerts()
     )
     client.http_client.request.return_value = mock_response
@@ -700,7 +701,7 @@ def test_gcb_list_alert_with_severity_lowercase_medium_arg_supplied_success(mock
     }
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_hr_gcb_alerts()
     )
     client.http_client.request.return_value = mock_response
@@ -730,7 +731,7 @@ def test_gcb_list_alert_when_no_alert_found(mocker, client):
     param = {}
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         b'{}'
     )
     client.http_client.request.return_value = mock_response
@@ -770,13 +771,13 @@ def test_ip_command_success(mocker, client):
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from GoogleChronicleBackstory import ip_command
 
-    with open("test_data/list_ioc_details_response.json", "r") as f:
+    with open("test_data/list_ioc_details_response.json") as f:
         dummy_response = f.read()
-    with open("test_data/ip_command_ec.json", "r") as f:
+    with open("test_data/ip_command_ec.json") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -796,13 +797,13 @@ def test_ip_command_empty_response_when_uri_empty_response(client):
     """Test ip_command for empty response."""
     from GoogleChronicleBackstory import ip_command
 
-    with open("test_data/empty_list_ioc_details.json", "r") as f:
+    with open("test_data/empty_list_ioc_details.json") as f:
         dummy_response = f.read()
     expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
     expected_hr += MESSAGES["NO_RECORDS"]
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -832,7 +833,7 @@ def test_ip_command_empty_response(client):
 
     dummy_response = '{}'
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -852,7 +853,7 @@ def test_ip_command_failure(client, mocker):
                      " in request message.\", \"status\": \"INVALID_ARGUMENT\", \"details\": [ {  } ] } } "
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         dummy_response
     )
 
@@ -874,7 +875,7 @@ def test_ip_command_failure_permission_denied(client, mocker):
 
     mocker.patch(RETURN_ERROR_MOCK_PATH, new=return_error)
     mock_response = (
-        Response(dict(status=403)),
+        Response({"status": 403}),
         dummy_response
     )
 
@@ -891,13 +892,13 @@ def test_domain_command_success(mocker, client):
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from GoogleChronicleBackstory import domain_command
 
-    with open("test_data/list_ioc_details_response.json", "r") as f:
+    with open("test_data/list_ioc_details_response.json") as f:
         dummy_response = f.read()
-    with open("test_data/domain_command_ec.json", "r") as f:
+    with open("test_data/domain_command_ec.json") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -916,13 +917,13 @@ def test_domain_command_empty_response(client):
     """Test domain_command for empty response."""
     from GoogleChronicleBackstory import domain_command
 
-    with open("test_data/empty_list_ioc_details.json", "r") as f:
+    with open("test_data/empty_list_ioc_details.json") as f:
         dummy_response = f.read()
     expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
     expected_hr += MESSAGES["NO_RECORDS"]
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -941,7 +942,7 @@ def test_gcb_domain_command_empty_response(client):
 
     dummy_response = '{}'
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -961,7 +962,7 @@ def test_domain_command_failure(client, mocker):
                      "in request message.\", \"status\": \"INVALID_ARGUMENT\", \"details\": [ {  } ] } } "
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         dummy_response
     )
 
@@ -982,7 +983,7 @@ def test_domain_command_failure_permission_denied(client, mocker):
     dummy_response = COMMON_RESP['PERM_DENIED_RESP']
 
     mock_response = (
-        Response(dict(status=403)),
+        Response({"status": 403}),
         dummy_response
     )
 
@@ -1873,14 +1874,14 @@ def test_list_events_command(client):
     """Test gcb_list_events_command for non-empty and empty response."""
     from GoogleChronicleBackstory import gcb_list_events_command
 
-    with open("test_data/list_events_response.json", "r") as f:
+    with open("test_data/list_events_response.json") as f:
         dummy_response = f.read()
 
-    with open("test_data/list_events_ec.json", "r") as f:
+    with open("test_data/list_events_ec.json") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -1893,7 +1894,7 @@ def test_list_events_command(client):
 
     # Test command when no events found
     client.http_client.request.return_value = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
 
@@ -1909,17 +1910,17 @@ def test_list_detections_command(client):
     args = {'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '2019-10-17T00:00:00Z',
             'detection_end_time': '2 days ago'}
 
-    with open("test_data/list_detections_response.json", "r") as f:
+    with open("test_data/list_detections_response.json") as f:
         dummy_response = f.read()
 
-    with open("test_data/list_detections_ec.json", "r") as f:
+    with open("test_data/list_detections_ec.json") as f:
         dummy_ec = json.load(f)
 
-    with open("test_data/list_detections_hr.md", "r") as f:
+    with open("test_data/list_detections_hr.md") as f:
         dummy_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -1932,7 +1933,7 @@ def test_list_detections_command(client):
 
     # Test command when no detections found
     client.http_client.request.return_value = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
 
@@ -1997,7 +1998,7 @@ def test_gcb_fetch_incident_success_with_alerts_with_incident_identifiers(mocker
         gcb_alert_sample = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         gcb_alert_sample
     )
     client.http_client.request.return_value = mock_response
@@ -2078,7 +2079,7 @@ def test_fetch_incident_detection_when_1st_sync_n_data_less_thn_max_fetch_and_id
         get_detection_json_size_2 = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_2
     )
     client.http_client.request.return_value = mock_response
@@ -2156,12 +2157,12 @@ def test_fetch_incident_detection_case_2(client, mocker):
         get_detection_json_size_2 = f.read()
 
     mock_response_5 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_5
     )
 
     mock_response_2 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_2
     )
 
@@ -2241,7 +2242,7 @@ def test_fetch_incident_detection_case_3(client, mocker):
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_3
     )
 
@@ -2249,7 +2250,7 @@ def test_fetch_incident_detection_case_3(client, mocker):
         get_detection_json_size_2 = f.read()
 
     mock_response_size_2 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_2
     )
 
@@ -2283,9 +2284,8 @@ def test_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_no_next_toke
     test_detection_to_pull_is_empty
     """
     from GoogleChronicleBackstory import get_max_fetch_detections, get_detections
-    import io
 
-    with io.open("test_data/fetch_detection_size_2.json", mode='r', encoding='utf-8') as f:
+    with open("test_data/fetch_detection_size_2.json", encoding='utf-8') as f:
         get_detection_json_size_2 = json.loads(f.read())
 
     mock_build.return_value = ('p', get_detection_json_size_2)
@@ -2343,17 +2343,17 @@ def test_429_or_500_error_with_max_attempts_60(mock_error, client):
     """
     from GoogleChronicleBackstory import get_max_fetch_detections
     mock_error.return_value = {}
-    mock_response_with_429_error = (Response(dict(status=429)),
+    mock_response_with_429_error = (Response({"status": 429}),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
-    mock_response_with_500_error = (Response(dict(status=500)),
+    mock_response_with_500_error = (Response({"status": 500}),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
     with open("test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_3
     )
     client.http_client.request.side_effect = [mock_response_with_429_error] * 30 + [mock_response_size_3] + [
@@ -2384,17 +2384,17 @@ def test_400_and_404_error(mock_error, client):
     from GoogleChronicleBackstory import get_max_fetch_detections
 
     mock_error.return_value = {}
-    mock_response_with_400_error = (Response(dict(status=400)),
+    mock_response_with_400_error = (Response({"status": 400}),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
-    mock_response_with_404_error = (Response(dict(status=404)),
+    mock_response_with_404_error = (Response({"status": 404}),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
     with open("test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_3
     )
     client.http_client.request.side_effect = [mock_response_size_3, mock_response_with_400_error,
@@ -2456,7 +2456,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_3
     )
 
@@ -2464,7 +2464,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_5
     )
 
@@ -2472,7 +2472,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         get_detection_json = f.read()
 
     mock_response_size_2 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json
     )
 
@@ -2538,7 +2538,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_3
     )
 
@@ -2546,7 +2546,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_5
     )
 
@@ -2554,7 +2554,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         get_detection_json = f.read()
 
     mock_response_size_2 = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json
     )
 
@@ -2611,7 +2611,7 @@ def test_gcb_fetch_incident_success_with_detections_with_incident_identifiers(mo
         get_detection_json_size_5 = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_detection_json_size_5
     )
     client.http_client.request.return_value = mock_response
@@ -2664,7 +2664,7 @@ def test_fetch_user_alert_incident_success_with_param_and_alerts_when_executed_1
         gcb_alert_sample = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         gcb_alert_sample
     )
     client.http_client.request.return_value = mock_response
@@ -2686,7 +2686,7 @@ def test_gcb_user_alert_fetch_incident_success_with_alerts_with_demisto_last_run
         gcb_alert_sample = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         gcb_alert_sample
     )
     client.http_client.request.return_value = mock_response
@@ -2711,7 +2711,7 @@ def test_gcb_fetch_incident_user_alert_success_with_alerts_with_incident_identif
         gcb_alert_sample = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         gcb_alert_sample
     )
     client.http_client.request.return_value = mock_response
@@ -2735,7 +2735,7 @@ def test_gcb_list_user_alert_with_no_arg_supplied_success(mocker, client):
     }
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         get_hr_gcb_alerts()
     )
     client.http_client.request.return_value = mock_response
@@ -2760,7 +2760,7 @@ def test_gcb_list_user_alert_when_no_alert_found(mocker, client):
     }
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         b'{}'
     )
     client.http_client.request.return_value = mock_response
@@ -2780,17 +2780,17 @@ def test_list_rules_command(client):
     args = {'page_size': '2',
             'page_token': 'foobar_page_token'}
 
-    with open("test_data/list_rules_response.json", "r") as f:
+    with open("test_data/list_rules_response.json") as f:
         dummy_response = f.read()
 
-    with open("test_data/list_rules_ec.json", "r") as f:
+    with open("test_data/list_rules_ec.json") as f:
         dummy_ec = json.load(f)
 
-    with open("test_data/list_rules_hr.md", "r") as f:
+    with open("test_data/list_rules_hr.md") as f:
         dummy_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -2803,7 +2803,7 @@ def test_list_rules_command(client):
 
     # Test command when no rules found
     client.http_client.request.return_value = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
 
@@ -2846,13 +2846,13 @@ def test_gcb_list_rules_live_rule_argument_true(client):
     """Test gcb_list_rules command when live_rule argument is true."""
     from GoogleChronicleBackstory import gcb_list_rules_command
 
-    with open("test_data/list_rules_live_rule_true.json", "r") as f:
+    with open("test_data/list_rules_live_rule_true.json") as f:
         response_true = f.read()
 
-    with open("test_data/list_rules_live_rule_true_ec.json", "r") as f:
+    with open("test_data/list_rules_live_rule_true_ec.json") as f:
         dummy_ec = json.load(f)
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response_true
     )
 
@@ -2867,13 +2867,13 @@ def test_gcb_list_rules_live_rule_argument_false(client):
     """Test gcb_list_rules command when live_rule argument is false."""
     from GoogleChronicleBackstory import gcb_list_rules_command
 
-    with open("test_data/list_rules_live_rule_false.json", "r") as f:
+    with open("test_data/list_rules_live_rule_false.json") as f:
         response_false = f.read()
 
-    with open("test_data/list_rules_live_rule_false_ec.json", "r") as f:
+    with open("test_data/list_rules_live_rule_false_ec.json") as f:
         dummy_ec = json.load(f)
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response_false
     )
 
@@ -2888,17 +2888,17 @@ def test_gcb_create_rule_command_with_valid_response(client):
     """Test gcb_create_rule command when valid response is returned."""
     from GoogleChronicleBackstory import gcb_create_rule_command
 
-    with open("test_data/create_rule_response.json", "r") as f:
+    with open("test_data/create_rule_response.json") as f:
         response = f.read()
 
-    with open("test_data/create_rule_ec.json", "r") as f:
+    with open("test_data/create_rule_ec.json") as f:
         expected_ec = json.loads(f.read())
 
-    with open("test_data/create_rule_hr.md", "r") as f:
+    with open("test_data/create_rule_hr.md") as f:
         expected_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
 
@@ -2953,11 +2953,11 @@ def test_gcb_create_rule_command_when_400_error_code_returned(client):
         "rule_text": DUMMY_RULE_TEXT
     }
 
-    with open("test_data/create_rule_400_response.json", 'r') as f:
+    with open("test_data/create_rule_400_response.json") as f:
         response = f.read()
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -2983,17 +2983,17 @@ def test_gcb_get_rule_output_when_valid_args_provided(client):
     from GoogleChronicleBackstory import gcb_get_rule_command
     args = {'id': 'dummy rule or version id'}
 
-    with open("test_data/gcb_get_rule_response.json", "r") as f:
+    with open("test_data/gcb_get_rule_response.json") as f:
         dummy_response = f.read()
 
-    with open("test_data/gcb_get_rule_ec.json", "r") as f:
+    with open("test_data/gcb_get_rule_ec.json") as f:
         dummy_ec = json.loads(f.read())
 
-    with open("test_data/gcb_get_rule_hr.md", "r") as f:
+    with open("test_data/gcb_get_rule_hr.md") as f:
         dummy_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -3010,7 +3010,7 @@ def test_gcb_get_rule_command_when_rule_id_provided_does_not_exist(client):
     with open('test_data/gcb_get_rule_invalid_id_400.json') as f:
         raw_response = f.read()
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3024,14 +3024,14 @@ def test_gcb_delete_rule_command_with_valid_response(client):
     """Test gcb_delete_rule command when valid response is returned."""
     from GoogleChronicleBackstory import gcb_delete_rule_command
 
-    with open("test_data/delete_rule_ec.json", "r") as f:
+    with open("test_data/delete_rule_ec.json") as f:
         expected_ec = json.loads(f.read())
 
-    with open("test_data/delete_rule_hr.md", "r") as f:
+    with open("test_data/delete_rule_hr.md") as f:
         expected_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
 
@@ -3068,11 +3068,11 @@ def test_gcb_delete_rule_command_when_400_error_code_returned(client):
         "rule_id": "12345"
     }
 
-    with open("test_data/delete_rule_400_response.json", 'r') as f:
+    with open("test_data/delete_rule_400_response.json") as f:
         response = f.read()
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3115,7 +3115,7 @@ def test_gcb_create_rule_version_command_when_provided_rule_id_is_not_valid(clie
         "rule_text": DUMMY_RULE_TEXT
     }
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3127,14 +3127,14 @@ def test_gcb_create_rule_version_command_when_provided_rule_id_is_not_valid(clie
 def test_gcb_create_rule_version_command_when_valid_args_provided(client):
     """Test gcb_create_rule_version_command for correct output when valid arguments are given."""
     from GoogleChronicleBackstory import gcb_create_rule_version_command
-    with open("test_data/gcb_create_rule_version_command_response.json", "r") as f:
+    with open("test_data/gcb_create_rule_version_command_response.json") as f:
         expected_response = f.read()
-    with open("test_data/gcb_create_rule_version_command_ec.json", "r") as f:
+    with open("test_data/gcb_create_rule_version_command_ec.json") as f:
         expected_ec = json.loads(f.read())
-    with open("test_data/gcb_create_rule_version_command_hr.md", "r") as f:
+    with open("test_data/gcb_create_rule_version_command_hr.md") as f:
         expected_hr = f.read()
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         expected_response
     )
     client.http_client.request.return_value = mock_response
@@ -3180,7 +3180,7 @@ def test_gcb_change_rule_alerting_status_command_when_provided_rule_id_does_not_
         "alerting_status": "enable"
     }
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3193,14 +3193,14 @@ def test_gcb_change_rule_alerting_status_command_when_valid_args_provided(client
     """Test gcb_change_rule_alerting_status_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_change_rule_alerting_status_command
 
-    with open('test_data/gcb_change_rule_alerting_status_ec.json', 'r') as f:
+    with open('test_data/gcb_change_rule_alerting_status_ec.json') as f:
         expected_ec = json.loads(f.read())
 
-    with open('test_data/gcb_change_rule_alerting_status_hr.md', 'r') as f:
+    with open('test_data/gcb_change_rule_alerting_status_hr.md') as f:
         expected_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
     args = {"rule_id": "ru_ab4d76c1-20d2-4cde-9825-3fb1c09a9b62", "alerting_status": "enable"}
@@ -3244,7 +3244,7 @@ def test_gcb_change_live_rule_status_command_when_provided_rule_id_does_not_exis
         "live_rule_status": "enable"
     }
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3258,14 +3258,14 @@ def test_gcb_change_live_rule_status_command_when_valid_args_provided(client):
     """Test gcb_change_live_rule_status_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_change_live_rule_status_command
 
-    with open('test_data/gcb_change_live_rule_status_command_ec.json', 'r') as f:
+    with open('test_data/gcb_change_live_rule_status_command_ec.json') as f:
         expected_ec = json.loads(f.read())
 
-    with open('test_data/gcb_change_live_rule_status_command_hr.md', 'r') as f:
+    with open('test_data/gcb_change_live_rule_status_command_hr.md') as f:
         expected_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
     args = {"rule_id": "ru_abcd", "live_rule_status": "enable"}
@@ -3303,7 +3303,7 @@ def test_gcb_start_retrohunt_command_when_invalid_rule_id_provided(client):
         "end_time": "today"
     }
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3325,7 +3325,7 @@ def test_gcb_start_retrohunt_command_when_provided_rule_id_does_not_exist(client
         "end_time": "today"
     }
     mock_response = (
-        Response(dict(status=404)),
+        Response({"status": 404}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3340,17 +3340,17 @@ def test_gcb_start_retrohunt_command_when_valid_args_provided(client):
     """Test gcb_start_retrohunt_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_start_retrohunt_command
 
-    with open('test_data/gcb_start_retrohunt_command_ec.json', 'r') as f:
+    with open('test_data/gcb_start_retrohunt_command_ec.json') as f:
         expected_ec = json.loads(f.read())
 
-    with open('test_data/gcb_start_retrohunt_command_hr.md', 'r') as f:
+    with open('test_data/gcb_start_retrohunt_command_hr.md') as f:
         expected_hr = f.read()
 
-    with open('test_data/start_retrohunt_response.json', 'r') as f:
+    with open('test_data/start_retrohunt_response.json') as f:
         mocked_response = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         mocked_response
     )
     args = {"rule_id": "ru_abcd", "start_time": "1 day", "end_time": "today"}
@@ -3378,17 +3378,17 @@ def test_gcb_get_retrohunt_command_when_valid_args_provided(client):
     from GoogleChronicleBackstory import gcb_get_retrohunt_command
     args = {'id': 'dummy_rule_or_version_id', 'retrohunt_id': 'dummy_retrohunt_id'}
 
-    with open("test_data/gcb_get_retrohunt_command_response.json", "r") as f:
+    with open("test_data/gcb_get_retrohunt_command_response.json") as f:
         dummy_response = f.read()
 
-    with open("test_data/gcb_get_retrohunt_command_ec.json", "r") as f:
+    with open("test_data/gcb_get_retrohunt_command_ec.json") as f:
         dummy_ec = json.loads(f.read())
 
-    with open("test_data/gcb_get_retrohunt_hr.md", "r") as f:
+    with open("test_data/gcb_get_retrohunt_hr.md") as f:
         dummy_hr = f.read()
 
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         dummy_response
     )
 
@@ -3407,7 +3407,7 @@ def test_gcb_get_retrohunt_command_when_rule_id_provided_is_invalid(client):
         raw_response = f.read()
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
 
@@ -3427,7 +3427,7 @@ def test_gcb_get_retrohunt_command_when_retrohunt_id_provided_is_invalid(client)
         raw_response = f.read()
 
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
 
@@ -3446,7 +3446,7 @@ def test_gcb_get_retrohunt_command_when_retrohunt_id_provided_does_not_exists(cl
         raw_response = f.read()
 
     mock_response = (
-        Response(dict(status=404)),
+        Response({"status": 404}),
         raw_response
     )
 
@@ -3481,7 +3481,7 @@ def test_gcb_list_retrohunts_command_when_empty_response_is_obtained(client):
         "id": "dummy",
     }
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
     client.http_client.request.return_value = mock_response
@@ -3494,18 +3494,18 @@ def test_gcb_list_retrohunts_command_when_empty_response_is_obtained(client):
 def test_gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_true(client):
     """Test gcb_list_retrohunts_command when retrohunts_for_all_versions is true and rule_id is provided."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_all_versions_true.json', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_all_versions_true.json') as f:
         response_false = f.read()
-    with open('test_data/gcb_list_retrohunts_all_versions_true_ec.json', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_all_versions_true_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_retrohunts_all_versions_true_hr.md', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_all_versions_true_hr.md') as f:
         expected_hr = f.read()
     args = {
         "id": "dummy",
         "gcb_list_retrohunts_command": "true"
     }
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response_false
     )
     client.http_client.request.return_value = mock_response
@@ -3518,18 +3518,18 @@ def test_gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_tru
 def test__gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_false(client):
     """Test gcb_list_retrohunts_command when retrohunts_for_all_versions is false and rule_id is provided."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_all_versions_false.json', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_all_versions_false.json') as f:
         response_true = f.read()
-    with open('test_data/gcb_list_retrohunts_all_versions_false_ec.json', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_all_versions_false_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_retrohunts_all_versions_false_hr.md', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_all_versions_false_hr.md') as f:
         expected_hr = f.read()
     args = {
         "id": "dummy",
         "gcb_list_retrohunts_command": "false"
     }
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response_true
     )
     client.http_client.request.return_value = mock_response
@@ -3542,15 +3542,15 @@ def test__gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_fa
 def test_gcb_list_retrohunts_command_when_no_arg_supplied_success(client):
     """Test gcb_list_retrohunts_command when no argumnets are provided."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_no_arg.json', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_no_arg.json') as f:
         response = f.read()
-    with open('test_data/gcb_list_retrohunts_no_arg_ec.json', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_no_arg_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_retrohunts_no_arg_hr.md', 'r') as f:
+    with open('test_data/gcb_list_retrohunts_no_arg_hr.md') as f:
         expected_hr = f.read()
     args = {}
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3568,7 +3568,7 @@ def test_gcb_list_retrohunts_command_when_provided_rule_id_is_not_valid(client):
         "rule_id": "dummy",
     }
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3588,7 +3588,7 @@ def test_gcb_list_retrohunts_command_when_provided_rule_id_does_not_exist(client
         "rule_id": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c9",
     }
     mock_response = (
-        Response(dict(status=404)),
+        Response({"status": 404}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3613,13 +3613,13 @@ def test_gcb_cancel_retrohunt_command_when_valid_args_are_provided(client):
     """Test gcb_cancel_retrohunt_command for valid output when valid args are provided."""
     from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
 
-    with open('test_data/gcb_cancel_retrohunt_ec.json', 'r') as f:
+    with open('test_data/gcb_cancel_retrohunt_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_cancel_retrohunt_hr.md', 'r') as f:
+    with open('test_data/gcb_cancel_retrohunt_hr.md') as f:
         expected_hr = f.read()
     args = {"id": "dummy_id", "retrohunt_id": "dummy_retrohunt_id"}
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         '{}'
     )
     client.http_client.request.return_value = mock_response
@@ -3638,7 +3638,7 @@ def test_gcb_cancel_retrohunt_command_when_provided_rule_id_does_not_exist(clien
         "retrohunt_id": "dummy"
     }
     mock_response = (
-        Response(dict(status=404)),
+        Response({"status": 404}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3659,7 +3659,7 @@ def test_gcb_cancel_retrohunt_command_when_provided_retrohunt_id_is_not_in_runni
         "retrohunt_id": "dummy"
     }
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3700,7 +3700,7 @@ def test_gcb_create_reference_list_command_when_valid_args_provided(client):
     with open('test_data/gcb_create_reference_list_hr.md') as f:
         expected_hr = f.read()
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3725,7 +3725,7 @@ def test_gcb_create_reference_list_command_when_delimiter_provided(client):
     with open('test_data/gcb_create_reference_list_hr.md') as f:
         expected_hr = f.read()
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3745,7 +3745,7 @@ def test_gcb_create_reference_list_command_when_list_already_exists(client):
     with open('test_data/gcb_create_reference_list_400.json') as f:
         response = f.read()
     mock_response = (
-        Response(dict(status=409)),
+        Response({"status": 409}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3779,7 +3779,7 @@ def test_gcb_list_reference_list_command_when_invalid_page_token_provided(client
         "page_token": "abcd"
     }
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3792,18 +3792,18 @@ def test_gcb_list_reference_list_command_when_invalid_page_token_provided(client
 def test_gcb_list_reference_list_command_when_valid_args_provided(client):
     """Test gcb-list-reference-list-command when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_list_reference_list_command
-    with open('test_data/gcb_list_reference_list_valid_args.json', 'r') as f:
+    with open('test_data/gcb_list_reference_list_valid_args.json') as f:
         response = f.read()
-    with open('test_data/gcb_list_reference_list_ec.json', 'r') as f:
+    with open('test_data/gcb_list_reference_list_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_reference_list_hr.md', 'r') as f:
+    with open('test_data/gcb_list_reference_list_hr.md') as f:
         expected_hr = f.read()
     args = {
         "page_size": "3",
         "view": "BASIC"
     }
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3833,7 +3833,7 @@ def test_gcb_get_reference_list_command_when_provided_list_name_does_not_exist(c
         "name": "dummy",
     }
     mock_response = (
-        Response(dict(status=404)),
+        Response({"status": 404}),
         raw_response
     )
     client.http_client.request.return_value = mock_response
@@ -3845,18 +3845,18 @@ def test_gcb_get_reference_list_command_when_provided_list_name_does_not_exist(c
 def test_gcb_get_reference_list_command_when_valid_arguments_provided(client):
     """Test gcb_get_reference_list_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_get_reference_list_command
-    with open('test_data/gcb_get_reference_list_valid_args.json', 'r') as f:
+    with open('test_data/gcb_get_reference_list_valid_args.json') as f:
         response = f.read()
-    with open('test_data/gcb_get_reference_list_ec.json', 'r') as f:
+    with open('test_data/gcb_get_reference_list_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_get_reference_list_hr.md', 'r') as f:
+    with open('test_data/gcb_get_reference_list_hr.md') as f:
         expected_hr = f.read()
     args = {
         "name": "dummy",
         "view": "FULL"
     }
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3887,7 +3887,7 @@ def test_gcb_update_reference_list_command_when_valid_args_provided(client):
     with open("test_data/gcb_update_reference_list_command_hr.md") as f:
         expected_hr = f.read()
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3904,7 +3904,7 @@ def test_gcb_update_reference_list_command_when_name_prided_does_not_exists(clie
     with open("test_data/gcb_update_reference_list_command_response_404.json") as f:
         response = f.read()
     mock_response = (
-        Response(dict(status=404)),
+        Response({"status": 404}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -3961,7 +3961,7 @@ def test_gcb_test_rule_stream_command_valid_args(client):
     with open("test_data/gcb_test_rule_stream_command_hr.md") as f:
         expected_hr = f.read()
     mock_response = (
-        Response(dict(status=200)),
+        Response({"status": 200}),
         response
     )
     client.http_client.request.return_value = mock_response
@@ -4006,7 +4006,7 @@ def test_gcb_test_rule_stream_command_invalid_rule_text_provided(client):
     with open("test_data/gcb_test_rule_stream_command_400.json") as f:
         response = f.read()
     mock_response = (
-        Response(dict(status=400)),
+        Response({"status": 400}),
         response
     )
     client.http_client.request.return_value = mock_response
