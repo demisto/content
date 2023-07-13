@@ -1030,6 +1030,42 @@ script:
       description: Total amount of results to show.
       type: number
     outputs:
+    - contextPath: Zoom.ChatMessageNextToken.next_page_token
+      type: string
+      description: The next page token value.
+    - contextPath: Zoom.ChatMessageNextToken.user_id
+      type: string
+      description: The original request 'user_id' value.
+    - contextPath: Zoom.ChatMessageNextToken.to_contact
+      type: string
+      description: The original request 'to_contact' value.
+    - contextPath: Zoom.ChatMessageNextToken.to_channel
+      type: string
+      description: The to_channel value.
+    - contextPath: Zoom.ChatMessageNextToken.date
+      type: string
+      description: The original request 'date' value.
+    - contextPath: Zoom.ChatMessageNextToken.from
+      type: string
+      description: The original request 'from' value.
+    - contextPath: Zoom.ChatMessageNextToken.to
+      type: string
+      description: The original request 'to' date value.
+    - contextPath: Zoom.ChatMessageNextToken.include_deleted_and_edited_message
+      type: string
+      description: The original request 'include_deleted_and_edited_message' value.
+    - contextPath: Zoom.ChatMessageNextToken.search_type
+      type: string
+      description: The original request 'search_type' value.
+    - contextPath: Zoom.ChatMessageNextToken.search_key
+      type: string
+      description: The original request 'search_key' value.
+    - contextPath: Zoom.ChatMessageNextToken.exclude_child_message
+      type: string
+      description: The original request 'exclude_child_message' value.
+    - contextPath: Zoom.ChatMessageNextToken.page_size
+      type: string
+      description: The original request 'page_size' value.
     - contextPath: Zoom.ChatMessage.date
       type: date
       description: The queried date value.
@@ -1152,9 +1188,6 @@ script:
     - contextPath: Zoom.ChatMessage.at_items.start_position
       type: integer
       description: The start position of the mention.
-    - contextPath: Zoom.ChatMessage.next_page_token
-      type: string
-      description: The next page token for pagination.
 
   dockerimage: demisto/pyjwt3:1.0.0.63826
   script: "-"
