@@ -87,8 +87,9 @@ def test_remove_identity_key_with_invalid_object():
     Then
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
-    res = remove_identity_key("not a dict")
-    assert res == object
+    source = 'not a dict'
+    res = remove_identity_key(source)
+    assert res == source
 
 
 def test_url_validation_with_valid_link():
