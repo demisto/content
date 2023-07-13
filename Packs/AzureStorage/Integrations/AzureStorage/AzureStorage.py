@@ -63,7 +63,8 @@ class ASClient:
         return self.ms_client.http_request(
             method='GET',
             full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft\
-.Storage/storageAccounts/{account_name}?api-version={API_VERSION}'
+.Storage/storageAccounts/{account_name}?',
+            params={'api-version': API_VERSION}
         )
 
     @logger
@@ -83,7 +84,8 @@ class ASClient:
         return self.ms_client.http_request(
             method='GET',
             full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.\
-Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}'
+Storage/storageAccounts/{account_name}/blobServices/default?',
+            params={'api-version': API_VERSION}
         )
 
     @logger
@@ -187,7 +189,8 @@ Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VER
             method='PUT',
 
             full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.\
-Storage/storageAccounts/{account_name}?api-version={API_VERSION}',
+Storage/storageAccounts/{account_name}?',
+            params={'api-version': API_VERSION},
             json_data=json_data_args,
             resp_type='response'
         )
@@ -267,7 +270,8 @@ Storage/storageAccounts/{account_name}?api-version={API_VERSION}',
         return self.ms_client.http_request(
             method='PUT',
             full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.\
-Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}',
+Storage/storageAccounts/{account_name}/blobServices/default?',
+            params={'api-version': API_VERSION},
             json_data={'properties': properties}
         )
 
@@ -300,7 +304,8 @@ Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VER
         return self.ms_client.http_request(
             method=method,
             full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft\
-.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',
+.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}?',
+            params={'api-version': API_VERSION},
             json_data={'properties': properties}
         )
 
@@ -318,8 +323,8 @@ Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VER
         """
         account_name = args.get('account_name', '')
         container_name = args.get('container_name', '')
-        full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/\
-providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}'
+        full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft\
+.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}'
 
         params = {
             'api-version': API_VERSION,
@@ -344,7 +349,8 @@ providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/
         return self.ms_client.http_request(
             method='DELETE',
             full_url=f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.\
-Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',
+Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}?',
+            params={'api-version': {API_VERSION}},
             resp_type='response'
         )
 
