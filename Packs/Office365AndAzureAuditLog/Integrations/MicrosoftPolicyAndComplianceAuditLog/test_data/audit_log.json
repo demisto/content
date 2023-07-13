@@ -1,7 +1,7 @@
 {
     "Actor": [
         {
-            "ID": "avishai@demistodev.onmicrosoft.com",
+            "ID": "someone@somecompany.onmicrosoft.com",
             "Type": 5
         },
         {
@@ -9,7 +9,7 @@
             "Type": 2
         }
     ],
-    "ActorContextId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+    "ActorContextId": "a1aa1a1a1a1a1a1a1a1",
     "AzureActiveDirectoryEventType": 1,
     "CreationTime": "2023-07-06T10:23:26",
     "ExtendedProperties": [
@@ -22,23 +22,23 @@
             "Value": "Group"
         }
     ],
-    "Id": "20f59fde-792d-4bb7-b49d-4177ae70636f",
-    "InterSystemsId": "66cf5fbf-a989-4f8e-ba90-3ce51b5d93a9",
-    "IntraSystemId": "2ea1409c-7c77-45f1-a932-665bc8c59904",
+    "Id": "a1aa1a1a1a1a1a1a1a1",
+    "InterSystemsId": "a1aa1a1a1a1a1a1a1a1",
+    "IntraSystemId": "a1aa1a1a1a1a1a1a1a1",
     "ModifiedProperties": [],
-    "ObjectId": "Group_dd6f53aa-f5a0-4d6a-922a-8a9e63423f04",
+    "ObjectId": "Group_dda1aa1a1a1a1a1a1a1a1",
     "Operation": "Delete group.",
-    "OrganizationId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+    "OrganizationId": "a1aa1a1a1a1a1a1a1a1",
     "RecordType": 8,
     "ResultStatus": "Success",
     "SupportTicketId": "",
     "Target": [
         {
-            "ID": "Group_dd6f53aa-f5a0-4d6a-922a-8a9e63423f04",
+            "ID": "Group_dda1aa1a1a1a1a1a1a1a1",
             "Type": 2
         },
         {
-            "ID": "dd6f53aa-f5a0-4d6a-922a-8a9e63423f04",
+            "ID": "a1aa1a1a1a1a1a1a1a1",
             "Type": 2
         },
         {
@@ -46,13 +46,13 @@
             "Type": 2
         },
         {
-            "ID": "TestTeamd34745c0-98c3-4f9a-81e1-e8b07e3900d8",
+            "ID": "TestTeama1aa1a1a1a1a1a1a1a1",
             "Type": 1
         }
     ],
-    "TargetContextId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
-    "UserId": "avishai@demistodev.onmicrosoft.com",
-    "UserKey": "100300009ABC2878@demistodev.onmicrosoft.com",
+    "TargetContextId": "a1aa1a1a1a1a1a1a1a1",
+    "UserId": "someone@somecompany.onmicrosoft.com",
+    "UserKey": "100300009ABC2878@somecompany.onmicrosoft.com",
     "UserType": 0,
     "Version": 1,
     "Workload": "AzureActiveDirectory"

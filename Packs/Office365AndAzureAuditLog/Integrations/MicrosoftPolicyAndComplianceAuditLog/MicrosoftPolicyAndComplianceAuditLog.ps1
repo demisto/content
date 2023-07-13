@@ -2,8 +2,6 @@ $script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
 Import-Module ExchangeOnlineManagement
-. "$PSScriptRoot/CommonServerPowerShell.ps1"
-
 
 class ExchangeOnlinePowershellV3Client
 {
@@ -121,16 +119,17 @@ function SearchAuditLogCommand {
             $end_date,
             $kwargs.free_text,
             $kwargs.record_type,
-                (ArgToList $kwargs.ip_addresses),
-                (ArgToList $kwargs.operations),
-                (ArgToList $kwargs.user_ids),
-                ($kwargs.result_size -as [int])
+            (ArgToList $kwargs.ip_addresses),
+            (ArgToList $kwargs.operations),
+            (ArgToList $kwargs.user_ids),
+            ($kwargs.result_size -as [int])
         )
         if ($raw_response) {
             $list = New-Object Collections.Generic.List[PSObject]
             foreach ($item in $raw_response) {
                 $list.add((ConvertFrom-Json $item.AuditData))
             }
+            # foreach ($item in ,@{AuditData = Get-Content "test_data/audit_log.json" -Raw}) {$list.add((ConvertFrom-Json $item.AuditData))}
             $context = @{
                 "$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)" = $list
             }
@@ -190,10 +189,10 @@ function Main {
         $demisto.Debug("Command being called is $command")
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $audit_log_client
+                $human_readable, $entry_context, $raw_response = TestModuleCommand $audit_log_client
             }
             "$script:COMMAND_PREFIX-search" {
-                ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $audit_log_client $command_arguments
+                $human_readable, $entry_context, $raw_response = SearchAuditLogCommand $audit_log_client $command_arguments
             }
             default {
                 throw "Command $command no implemented"

@@ -3,7 +3,7 @@
 # [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Ignore")]
 # Param()
 
-$AUDIT_LOG_JSON = Get-Content "test_data/audit_log.json" -Raw | ConvertFrom-Json
+# $AUDIT_LOG_JSON = (,@{AuditData = Get-Content "test_data/audit_log.json" -Raw})
 
 # BeforeAll {
 #     . "$PSScriptRoot/MicrosoftPolicyAndComplianceAuditLog.ps1"
@@ -39,23 +39,12 @@ $AUDIT_LOG_JSON = Get-Content "test_data/audit_log.json" -Raw | ConvertFrom-Json
 Describe "SearchAuditLogCommand Tests" {
     BeforeAll {
         . "$PSScriptRoot/MicrosoftPolicyAndComplianceAuditLog.ps1"
+        . "$PSScriptRoot/CommonServerPowerShell.ps1"
+        
         Mock Connect-ExchangeOnline
         Mock Disconnect-ExchangeOnline
-        Mock New-Object
-        function Search-UnifiedAuditLog {
-            param (
-                [string]$start_date,
-                [string]$end_date,
-                [string]$free_text,
-                [string]$record_type,
-                [String[]]$ip_addresses,
-                [String[]]$operations,
-                [String[]]$user_ids,
-                [int]$result_size
-            )
-            return $AUDIT_LOG_JSON
-        }
-        
+        Mock Get-Date {"Thursday, July 13, 2023 3:14:32 PM"}
+
         $mockedClient = [ExchangeOnlinePowershellV3Client]::new(
             "https://example.com",
             "app_id",
@@ -65,62 +54,74 @@ Describe "SearchAuditLogCommand Tests" {
                     "certificate")),
             (ConvertTo-SecureString "password" -AsPlainText -Force)
         )
-    }
-    
-    
-        Context "When the search returns results" {
-            It "Should output the audit log entries and context" {
-                # Arrange
-    
-                $command_arguments = @{
-                    start_date = "2023-01-01"
-                    end_date = "2023-01-31"
-                    free_text = "search query"
-                    record_type = "Type1"
-                    ip_addresses = @("192.168.0.1", "192.168.0.2")
-                    operations = @("Op1", "Op2")
-                    user_ids = @("user1", "user2")
-                    result_size = 100
-                }
-    
-                # Act
-                $result = SearchAuditLogCommand $mockedClient $command_arguments
-    
-                # Assert
-                $result[0] | Should -Be "Expected human-readable output"
-                $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][0].Id | Should -Be 1
-                $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][0].EventName | Should -Be "Event 1"
-                $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][1].Id | Should -Be 2
-                $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][1].EventName | Should -Be "Event 2"
-                $result[2][0].Id | Should -Be 1
-                $result[2][0].EventName | Should -Be "Event 1"
-                $result[2][1].Id | Should -Be 2
-                $result[2][1].EventName | Should -Be "Event 2"
-            }
-        }
-    
-        Context "When the search returns no results" {
-            It "Should output an empty audit log message" {
-    
-                $command_arguments = @{
-                    start_date = "2023-01-01"
-                    end_date = "2023-01-31"
-                }
-    
-                # Act
-                $result = SearchAuditLogCommand $mockedClient $command_arguments
-    
-                # Assert
-                $result[0] | Should -Be "Audit log from 2023-01-01 to 2023-01-31 is empty"
-                $result[1] | Should -BeNull
-                $result[2] | Should -BeNull
-            }
-        }
-    
-        Context "When an invalid start_date is provided" {
-            It "Should throw an error" {
-                    { SearchAuditLogCommand $mockedClient $command_arguments } | Should -Throw "start_date ('') is not a date range or a valid date "
-            }
+
+        $command_arguments = @{
+            start_date = "2023-01-01"
+            end_date = "2023-01-31"
+            free_text = "search query"
+            record_type = "Type1"
+            ip_addresses = @("192.168.0.1", "192.168.0.2")
+            operations = @("Op1", "Op2")
+            user_ids = @("user1", "user2")
+            result_size = 0
         }
     }
-    
+
+
+    Context "When the search returns results" {
+        It "Should output the audit log entries and context" {
+            function Search-UnifiedAuditLog {
+                param (
+                    [string]$StartDate,
+                    [string]$EndDate,
+                    [string]$RecordType,
+                    [string]$FreeText,
+                    [String[]]$Operations,
+                    [String[]]$IPAddresses,
+                    [String[]]$UserIds,
+                    [int]$ResultSize
+                )
+                
+                $StartDate | Should -Be "Thursday, July 13, 2023 3:14:32 PM"
+                $EndDate | Should -Be "Thursday, July 13, 2023 3:14:32 PM"
+                $RecordType | Should -Be "Type1"
+                $FreeText | Should -Be "search query"
+                $IPAddresses | Should -Be @("192.168.0.1", "192.168.0.2")
+                $operations | Should -Be @("Op1", "Op2")
+                $UserIds | Should -Be @("user1", "user2")
+                $ResultSize | Should -Be 5000
+
+                return ,@{AuditData = Get-Content "test_data/audit_log.json" -Raw}
+            }
+
+            $result = SearchAuditLogCommand $mockedClient $command_arguments
+
+            $result[0] | Should -Be "Expected human-readable output"
+            $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][0].Version | Should -Be 1
+            $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][0].EventName | Should -Be "AzureActiveDirectory"
+            $result[2][0].Version | Should -Be 1
+            $result[2][0].EventName | Should -Be "AzureActiveDirectory"
+        }
+    }
+
+    Context "When the search returns no results" {
+        It "Should output an empty audit log message" {
+            function Search-UnifiedAuditLog {}
+
+            $result = SearchAuditLogCommand $mockedClient $command_arguments
+
+            $result[0] | Should -Be "Audit log from $(Get-Date) to $(Get-Date) is empty"
+            $result[1] | Should -BeNull
+            $result[2] | Should -BeNull
+        }
+    }
+
+    Context "When an invalid start_date is provided" {
+        It "Should throw an error" {
+            $command_arguments.start_date = "gibberish"
+            
+            { SearchAuditLogCommand $mockedClient $command_arguments } |
+                Should -Throw "start_date ('gibberish') is not a date range or a valid date "
+        }
+    }
+}
