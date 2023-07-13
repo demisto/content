@@ -1601,29 +1601,6 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> Tuple[int, int
     return limit, (page - 1) * limit
 
 
-def pull_request_id_validation(client: Client, project: str, repository_id: str, pull_request_id: Optional[int]):
-    """
-    Ensure that the pull_request_id provided by the user exists in the given repository and in the given project.
-    """
-    response = client.pull_requests_list_request(project, repository_id)
-    pull_request_id_set = {pull_request.get('pullRequestId') for pull_request in response.get('value', [])}
-    if pull_request_id not in pull_request_id_set:
-        raise ValueError(f'Pull Request Id {pull_request_id} does not exist in repository={repository_id}, project={project}.\n'
-                         f'Here are the existing Pull Request IDs={pull_request_id_set}')
-
-
-def pull_request_id_preprocess(client: Client, args: Dict[str, Any], repository_id: str, project: str) -> int:
-    """
-    The pull_request_id is preprocessed by this function.
-    """
-
-    # validation required argument pull_request_id (check if exists in the given repo and in the given project)
-    pull_request_id = arg_to_number(args.get('pull_request_id'))
-    pull_request_id_validation(client, project, repository_id, pull_request_id)
-
-    return pull_request_id
-
-
 def organization_repository_project_preprocess(args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                                                project: Optional[str]) -> Tuple[str, str, str]:
     """
@@ -1641,15 +1618,15 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
     return organization, repository_id, project
 
 
-def pull_requests_reviewer_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
-                                        repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                       repository_id: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Retrieve the reviewers for a pull request.
     """
 
     # pre-processing inputs
     organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
-    pull_request_id = pull_request_id_preprocess(client, args, repository_id, project)
+    pull_request_id = arg_to_number(args.get('pull_request_id'))
 
     response = client.pull_requests_reviewer_list_request(organization, repository_id, project, pull_request_id)
     mapping = {'displayName': 'Reviewer(s)'}
@@ -1665,15 +1642,15 @@ def pull_requests_reviewer_list_command(client: Client, args: Dict[str, Any], or
     )
 
 
-def pull_requests_reviewer_create_command(client: Client, args: Dict[str, Any], organization: Optional[str],
-                                          repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+def pull_request_reviewer_create_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                         repository_id: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Add a reviewer to a pull request.
     """
 
     # pre-processing inputs
     organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
-    pull_request_id = pull_request_id_preprocess(client, args, repository_id, project)
+    pull_request_id = arg_to_number(args.get('pull_request_id'))
 
     reviewer_user_id = args.get('reviewer_user_id')  # reviewer_user_id is required
     is_required = args.get('is_required', False)
@@ -1692,14 +1669,14 @@ def pull_requests_reviewer_create_command(client: Client, args: Dict[str, Any], 
     )
 
 
-def pull_requests_commit_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
-                                      repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+def pull_request_commit_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                     repository_id: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Get the commits for the specified pull request.
     """
     # pre-processing inputs
     organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
-    pull_request_id = pull_request_id_preprocess(client, args, repository_id, project)
+    pull_request_id = arg_to_number(args.get('pull_request_id'))
 
     # pagination
     limit, offset = pagination_preprocess_and_validation(args)
@@ -1979,16 +1956,16 @@ def main() -> None:
                 return_results(update_remote_system_command(client, args))
 
         elif command == 'azure-devops-pull-request-reviewer-list':
-            return_results(pull_requests_reviewer_list_command(client, args, params.get('organization'),
-                                                               params.get('repository'), params.get('project')))
+            return_results(pull_request_reviewer_list_command(client, args, params.get('organization'),
+                                                              params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-pull-request-reviewer-create':
-            return_results(pull_requests_reviewer_create_command(client, args, params.get('organization'),
-                                                                 params.get('repository'), params.get('project')))
+            return_results(pull_request_reviewer_create_command(client, args, params.get('organization'),
+                                                                params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-pull-request-commit-list':
-            return_results(pull_requests_commit_list_command(client, args, params.get('organization'),
-                                                             params.get('repository'), params.get('project')))
+            return_results(pull_request_commit_list_command(client, args, params.get('organization'),
+                                                            params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-commit-list':
             return_results(commit_list_command(client, args, params.get('organization'),
