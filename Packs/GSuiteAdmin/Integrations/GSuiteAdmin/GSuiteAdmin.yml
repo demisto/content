@@ -1022,6 +1022,13 @@ script:
       Delete all access tokens issued by a user for an application.
     name: gsuite-token-revoke
   - arguments:
+      - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
+        name: user_key
+        required: true
+    description: |-
+        Signs a user out of all web and device sessions and reset their sign-in cookies.
+    name: gsuite-user-signout
+  - arguments:
     - description: Immutable ID of the G Suite account.
       name: customer_id
     - description: Destination user's profile ID.
