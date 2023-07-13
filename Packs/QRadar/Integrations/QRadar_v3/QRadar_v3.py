@@ -5,11 +5,9 @@ from ipaddress import ip_address
 from typing import Tuple, Set, Dict
 from urllib import parse
 import dateparser
-
 import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
