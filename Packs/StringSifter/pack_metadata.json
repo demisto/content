@@ -1,0 +1,16 @@
+{
+    "name": "StringSifter",
+    "description": "StringSifter is a machine learning tool that automatically ranks strings based on their relevance for malware analysis.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "categories": [
+        "Utilities"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
