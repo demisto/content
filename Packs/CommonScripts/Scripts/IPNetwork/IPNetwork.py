@@ -49,9 +49,9 @@ def cidr_command(args: Dict[str, str]) -> CommandResults:
                                t=ec,
                                removeNull=True)
     return CommandResults(
-        outputs_prefix = 'Network',
-        outputs = ec,
-        readable_output = markdown
+        outputs_prefix='Network',
+        outputs=ec,
+        readable_output=markdown
     )
 
 
