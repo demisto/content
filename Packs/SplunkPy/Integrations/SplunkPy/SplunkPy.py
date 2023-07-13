@@ -309,8 +309,7 @@ def build_fetch_query(params):
     fetch_query = params['fetchQuery']
 
     if (extract_fields := params.get('extractFields')):
-        extractFields = extract_fields
-        extra_raw_arr = extractFields.split(',')
+        extra_raw_arr = extract_fields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
             fetch_query = f'{fetch_query} | eval {field_trimmed}={field_trimmed}'
@@ -1667,10 +1666,10 @@ def get_current_splunk_time(splunk_service: client.Service):
 
     reader = results.JSONResultsReader(oneshotsearch_results)
     for item in reader:
-        if handle_message(item):
-            continue
         if isinstance(item, dict):
             return item["clock"]
+        if handle_message(item):
+            continue
 
     raise ValueError('Error: Could not fetch Splunk time')
 

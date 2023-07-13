@@ -8,6 +8,7 @@ from datetime import timedelta, datetime
 
 from splunklib.binding import AuthenticationError
 from splunklib import client
+from splunklib import results
 import SplunkPy as splunk
 
 
@@ -1542,7 +1543,6 @@ def test_module_message_object(mocker):
     Then:
         - Validate the test_module run successfully and the info method was called once.
     """
-    from splunklib import results
     # prepare
     message = results.Message("DEBUG", "There's something in that variable...")
     mocker.patch('splunklib.results.JSONResultsReader', return_value=[message])
@@ -1783,3 +1783,17 @@ def test_basic_authentication_param(mocker, username, expected_username, basic_a
 
     assert client.connect.call_args[1]['username'] == expected_username
     assert ('basic' in client.connect.call_args[1]) == basic_auth
+
+
+@pytest.mark.parametrize(
+    'item, expected',
+    [
+        ({'message': 'Test message'}, False),
+        (results.Message('INFO', 'Test message'), True)
+    ]
+)
+def test_handle_message(item: dict | results.Message, expected: bool):
+    """
+    Tests that passing a results.Message object returns True
+    """
+    assert splunk.handle_message(item) is expected
