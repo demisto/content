@@ -106,50 +106,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 80510248-159d-46fe-8cc7-0c2b70db3cc0
-    type: playbook
-    task:
-      id: 80510248-159d-46fe-8cc7-0c2b70db3cc0
-      version: -1
-      name: Detonate URL - JoeSecurity
-      description: |-
-        Detonates one or more URLs using the Joe Security sandbox integration.
-        Returns relevant reports to the War Room and URL reputations to the context data.
-      playbookName: Detonate URL - JoeSecurity
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      URL:
-        complex:
-          root: inputs.URL
-          accessor: Data
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 8dc00eec-3456-460b-8559-55713a961f59
@@ -799,7 +755,6 @@ tasks:
       - "17"
       - "16"
       - "15"
-      - "13"
       - "12"
       - "21"
       - "23"
@@ -810,6 +765,7 @@ tasks:
       - "28"
       - "32"
       - "35"
+      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -848,6 +804,42 @@ tasks:
       {
         "position": {
           "x": 40,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c632486e-cc63-404b-8bd7-b1d907b74e53
+    type: regular
+    task:
+      id: c632486e-cc63-404b-8bd7-b1d907b74e53
+      version: -1
+      name: Detonate URL - JoeSecurity
+      description: Submit an URL for sandbox analysis.
+      script: '|||joe-submit-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
           "y": 545
         }
       }
@@ -1266,4 +1258,4 @@ outputs:
   type: String
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
+fromversion: 6.8.0

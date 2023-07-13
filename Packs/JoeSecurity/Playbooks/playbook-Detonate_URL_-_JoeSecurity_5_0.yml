@@ -3,8 +3,9 @@ version: -1
 name: Detonate URL - JoeSecurity
 fromversion: 5.0.0
 toversion: 6.7.9
+deprecated: true
 description: |-
-  Use the joe-submit-url command instead.
+  Deprecated. Use the joe-submit-url command instead.
 starttaskid: "0"
 tasks:
   "0":
