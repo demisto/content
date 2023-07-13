@@ -490,6 +490,16 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
+    def work_item_get_request(self, organization, project, item_id):
+
+        params = {"api-version": 7.0}
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/wit/workitems/{item_id}'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='json')
+
 
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
     """
@@ -1757,6 +1767,37 @@ def commit_get_command(client: Client, args: Dict[str, Any], organization: Optio
     )
 
 
+def work_item_get_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                          project: Optional[str]) -> CommandResults:
+    """
+    Returns a single work item.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+    # a required argument
+    item_id = args.get('item_id')
+
+    response = client.work_item_get_request(organization, project, item_id)
+
+    response_for_hr = {"ID": response.get("id"),
+                       "Title": response.get("fields").get("System.Title"),
+                       "Assigned To": response.get("fields").get("System.AssignedTo").get("displayName"),
+                       "State": response.get("fields").get("System.State"),
+                       "Area Path": response.get("fields").get("System.AreaPath"),
+                       "Tags": response.get("fields").get("System.Tags"),
+                       "Activity Date": response.get("fields").get("System.ChangedDate")}
+
+    readable_output = tableToMarkdown('Work Item Details', response_for_hr, headers=["ID", "Title", "Assigned To", "State",
+                                                                                     "Area Path", "Tags", "Activity Date"])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.Commit',
+        outputs=response,
+        raw_response=response
+    )
+
+
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
     """
@@ -1955,7 +1996,11 @@ def main() -> None:
 
         elif command == 'azure-devops-commit-get':
             return_results(commit_get_command(client, args, params.get('organization'),
-                                               params.get('repository'), params.get('project')))
+                                              params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-work-item-get':
+            return_results(work_item_get_command(client, args, params.get('organization'),
+                                                 params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

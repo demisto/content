@@ -1091,6 +1091,181 @@ script:
     - type: Date
       contextPath: AzureDevOps.Commit.push.date
       description: Date of the push operation.
+  - name: azure-devops-work-item-get
+    description: Returns a single work item.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: item_id
+        description: The work item id.
+        required: true
+        isArray: false
+    outputs:
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.id
+        description: ''
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.rev
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AreaPath
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.TeamProject
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.IterationPath
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.WorkItemType
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.State
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Reason
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.displayName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.url
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo._links.avatar.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.id
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.uniqueName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.imageUrl
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.descriptor
+        description: ''
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedDate
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.displayName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.descriptor
+        description: ''
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.descriptor
+        description: ''
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.fields.System.CommentCount
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Title
+        description: ''
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate
+        description: ''
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedDate
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.descriptor
+        description: ''
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Description
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Tags
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.self.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemUpdates.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemRevisions.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemComments.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.html.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemType.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.fields.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.url
+        description: ''
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
