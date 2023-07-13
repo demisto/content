@@ -1117,30 +1117,31 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
 def main():  # pragma: no cover
     if not (ACCESS_KEY and SECRET_KEY):
         raise DemistoException('Access Key and Secret Key must be provided.')
-    if demisto.command() == 'test-module':
-        demisto.results(test_module())
-    elif demisto.command() == 'tenable-io-list-scans':
-        demisto.results(get_scans_command())
-    elif demisto.command() == 'tenable-io-launch-scan':
-        demisto.results(launch_scan_command())
-    elif demisto.command() == 'tenable-io-get-scan-report':
-        demisto.results(get_report_command())
-    elif demisto.command() == 'tenable-io-get-vulnerability-details':
-        demisto.results(get_vulnerability_details_command())
-    elif demisto.command() == 'tenable-io-get-vulnerabilities-by-asset':
-        demisto.results(get_vulnerabilities_by_asset_command())
-    elif demisto.command() == 'tenable-io-get-scan-status':
-        demisto.results(get_scan_status_command())
-    elif demisto.command() == 'tenable-io-pause-scan':
-        demisto.results(pause_scan_command())
-    elif demisto.command() == 'tenable-io-resume-scan':
-        demisto.results(resume_scan_command())
-    elif demisto.command() == 'tenable-io-get-asset-details':
-        return_results(get_asset_details_command())
-    elif demisto.command() == 'tenable-io-export-assets':
-        return_results(export_assets_command(demisto.args()))
-    elif demisto.command() == 'tenable-io-export-vulnerabilities':
-        return_results(export_vulnerabilities_command(demisto.args()))
+    match demisto.command():
+        case 'test-module':
+            demisto.results(test_module())
+        case 'tenable-io-list-scans':
+            demisto.results(get_scans_command())
+        case 'tenable-io-launch-scan':
+            demisto.results(launch_scan_command())
+        case 'tenable-io-get-scan-report':
+            demisto.results(get_report_command())
+        case 'tenable-io-get-vulnerability-details':
+            demisto.results(get_vulnerability_details_command())
+        case 'tenable-io-get-vulnerabilities-by-asset':
+            demisto.results(get_vulnerabilities_by_asset_command())
+        case 'tenable-io-get-scan-status':
+            demisto.results(get_scan_status_command())
+        case 'tenable-io-pause-scan':
+            demisto.results(pause_scan_command())
+        case 'tenable-io-resume-scan':
+            demisto.results(resume_scan_command())
+        case 'tenable-io-get-asset-details':
+            return_results(get_asset_details_command())
+        case 'tenable-io-export-assets':
+            return_results(export_assets_command(demisto.args()))
+        case 'tenable-io-export-vulnerabilities':
+            return_results(export_vulnerabilities_command(demisto.args()))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
