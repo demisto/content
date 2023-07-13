@@ -87,26 +87,24 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
 
     # Create a list of all packs that should be installed
     packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
-    logging.info('Packs to install before filtering by minServerVersion:' + ', '.join(packs_to_install))
+    logging.info(f'Packs to install before filtering by minServerVersion: {packs_to_install}')
 
     # Get packs with 'minServerVersion' that's higher than server's version
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_to_install,
         server_numeric_version=server_version
     )
-    logging.info('Packs with minServerVersion that is higher than server version: '
-                 + ', '.join(packs_with_higher_server_version))
+    logging.info(f'Packs with minServerVersion that is higher than server version: {packs_with_higher_server_version}')
 
     # Remove packs that 'minServerVersion' that's higher than server's version.
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
-    logging.info('Installing content packs: ' + ', '.join(pack_ids_with_valid_min_server_version))
+    logging.info(f'Installing content packs: {pack_ids_with_valid_min_server_version}')
 
     install_packs_from_content_packs_to_install_path(servers=servers,
                                                      pack_ids=list(pack_ids_with_valid_min_server_version),
                                                      marketplace_tag_name=XSOAR_MP)
     logging.success(
-        'Finished content packs: ' + ', '.join(pack_ids_with_valid_min_server_version)
-        + 'in ' + ', '.join([server.internal_ip for server in servers])
+        f'Finished content packs: {pack_ids_with_valid_min_server_version} in {[server.internal_ip for server in servers]}'
     )
 
 

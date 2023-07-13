@@ -343,7 +343,7 @@ class Build(ABC):
             bool: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
-        logging.info("Packs ids to install: " + ", ".join(pack_ids))
+        logging.info(f"IDs of packs to install: {pack_ids}")
         installed_content_packs_successfully = True
         for server in self.servers:
             try:

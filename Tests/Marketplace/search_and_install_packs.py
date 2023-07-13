@@ -419,7 +419,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
     if dependencies_data:
         dependencies_ids = [dependency['id'] for dependency in dependencies_data]
-        logging.debug(f"Found dependencies for '{pack_id}': " + ', '.join(dependencies_ids))
+        logging.debug(f"Found dependencies for '{pack_id}': {dependencies_ids}")
 
         for dependency in dependencies_data:
             dependency_id = dependency['id']
