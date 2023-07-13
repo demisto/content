@@ -112,11 +112,11 @@ def min_datetime(last_fetch_time, fetch_start_time_param):
 
 
 def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param):
-    if last_fetch_time and fetch_start_time_param:
+    if last_fetch_time:
         last_fetch_time = arg_to_datetime(last_fetch_time)
         if not isinstance(last_fetch_time, datetime):
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
-        return min_datetime(last_fetch_time, fetch_start_time_param)
+        return last_fetch_time.replace(tzinfo=None)
     else:
         return fetch_start_time_param
 
@@ -129,49 +129,37 @@ def dedup_threats(threats, threats_last_fetch_ids):
     return [threat for threat in threats if threat.get('activityUUID') not in threats_last_fetch_ids]
 
 
-def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param):
+def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param, log_types_to_fetch):
     events = []
-    demisto.debug('####### 1')
-    # calculate fetch start time for each event type
-    alerts_first_fetch_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
-    threats_first_fetch_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
-    demisto.debug('####### 2')
-    # calculate time_frame query parameter in seconds for each event type
     now = datetime.now()
-    alerts_fetch_start_time_in_seconds = int((now - alerts_first_fetch_time).total_seconds() + 1)
-    threats_fetch_start_time_in_seconds = int((now - threats_first_fetch_time).total_seconds() + 1)
-    demisto.debug('####### 3')
-    alerts_response = client.fetch_alerts(max_fetch=max_fetch, time_frame=alerts_fetch_start_time_in_seconds)
-    threats_response = client.fetch_threats(
-        max_fetch=max_fetch - int(alerts_response.get('data', {}).get('count', 0)),
-        time_frame=threats_fetch_start_time_in_seconds)
-    demisto.debug('####### 4')
-    # dedup events from last fetch
-    alerts = dedup_alerts(alerts_response.get('data', {}).get('results', []), last_run.get('alerts_last_fetch_ids', []))
-    threats = dedup_threats(threats_response.get('data', {}).get('results', []), last_run.get('threats_last_fetch_ids', []))
-    demisto.debug('####### 5')
-    events.extend(alerts)
-    events.extend(threats)
-    demisto.debug('####### 6')
+    next_run = {}
 
-    # determine last fetch time of each event type
-    alerts_last_fetch_time = alerts[-1].get('time') if alerts else last_run.get('alerts_last_fetch_time')
-    threats_last_fetch_time = threats[-1].get('time') if threats else last_run.get('threats_last_fetch_time')
+    if 'Alerts' in log_types_to_fetch:
+        alerts_first_fetch_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
+        alerts_fetch_start_time_in_seconds = int((now - alerts_first_fetch_time).total_seconds() + 1)
+        alerts_response = client.fetch_alerts(max_fetch=max_fetch, time_frame=alerts_fetch_start_time_in_seconds)
+        alerts = dedup_alerts(alerts_response.get('data', {}).get('results', []), last_run.get('alerts_last_fetch_ids', []))
+        events.extend(alerts)
+        alerts_last_fetch_time = alerts[-1].get('time') if alerts else last_run.get('alerts_last_fetch_time')
+        alerts_last_fetch_ids = [alert.get('alertId') for alert in alerts]
+        next_run['alerts_last_fetch_ids'] = alerts_last_fetch_ids
+        next_run['alerts_last_fetch_time'] = alerts_last_fetch_time
 
-    demisto.debug('####### 7')
-    alerts_last_fetch_ids = [alert.get('alertId') for alert in alerts]
-    threats_last_fetch_ids = [threat.get('activityUUID') for threat in threats]
-    demisto.debug('####### 8')
-    # set values for next fetch events
-    next_run = {
-        'alerts_last_fetch_ids': alerts_last_fetch_ids,
-        'threats_last_fetch_ids': threats_last_fetch_ids,
-        'alerts_last_fetch_time': alerts_last_fetch_time,
-        'threats_last_fetch_time': threats_last_fetch_time,
-        'access_token': client._access_token
-    }
-    demisto.debug('####### next_run: {next_run}')
-    demisto.debug('####### 9')
+    if 'Threats' in log_types_to_fetch:
+        threats_first_fetch_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
+        threats_fetch_start_time_in_seconds = int((now - threats_first_fetch_time).total_seconds() + 1)
+        threats_response = client.fetch_threats(max_fetch=max_fetch, time_frame=threats_fetch_start_time_in_seconds)
+        threats = dedup_threats(threats_response.get('data', {}).get('results', []), last_run.get('threats_last_fetch_ids', []))
+        events.extend(threats)
+        threats_last_fetch_time = threats[-1].get('time') if threats else last_run.get('threats_last_fetch_time')
+        threats_last_fetch_ids = [threat.get('activityUUID') for threat in threats]
+        next_run['threats_last_fetch_ids'] = threats_last_fetch_ids
+        next_run['threats_last_fetch_time'] = threats_last_fetch_time
+
+    next_run['access_token'] = client._access_token
+
+    demisto.debug(f'########## next_run: {next_run}')
+    demisto.debug(f'########## events: {events}')
     return events, next_run
 
 
@@ -209,6 +197,7 @@ def main() -> None:
     first_fetch = params.get('first_fetch', '3 days')
     fetch_start_time_param = arg_to_datetime(first_fetch)
     proxy = params.get('proxy', False)
+    log_types_to_fetch = argToList(params.get('log_types_to_fetch', []))
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -222,25 +211,13 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
 
-        elif command in 'armis-get-events':
-            ...
-            # should_push_events = argToBoolean(args.pop('should_push_events'))
-            # events, results = get_events(client)
-            # return_results(results)
-            # if should_push_events:
-            #     add_time_to_events(events)
-            #     send_events_to_xsiam(
-            #         events,
-            #         vendor=VENDOR,
-            #         product=PRODUCT
-            # )
-
         elif command in ('fetch-events', 'armis-get-events'):
             events, next_run = fetch_events(
                 client=client,
                 max_fetch=max_fetch,
                 last_run=last_run,
-                fetch_start_time_param=fetch_start_time_param
+                fetch_start_time_param=fetch_start_time_param,
+                log_types_to_fetch=log_types_to_fetch,
             )
 
             add_time_to_events(events)

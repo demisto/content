@@ -3,7 +3,7 @@ commonfields:
   id: ArmisEventCollector
   version: -1
 configuration:
-- defaultvalue: https://acme.armis.com/api/v1
+- defaultvalue: https://acme.armis.com/
   display: Server URL
   name: server_url
   required: true
@@ -32,6 +32,13 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+- display: Log types to fetch
+  name: log_types_to_fetch
+  section: Collect
+  type: 16
+  options:
+  - Alerts
+  - Threats
 description: 'Collects alerts & threat activities from Armis resources.'
 display: Armis Event Collector
 name: ArmisEventCollector
