@@ -143,8 +143,7 @@ ACCESS_KEY = demisto.params().get('credentials_access_key', {}).get('password') 
 SECRET_KEY = demisto.params().get('credentials_secret_key', {}).get('password') or demisto.params()['secret-key']
 USER_AGENT_HEADERS_VALUE = 'Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)'
 AUTH_HEADERS = {'X-ApiKeys': f"accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}"}
-NEW_HEADERS = {
-    'X-ApiKeys': f'accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}',
+NEW_HEADERS = AUTH_HEADERS | {
     'accept': "application/json",
     'content-type': "application/json"
 }
@@ -159,7 +158,7 @@ if not demisto.params()['proxy']:
 
 def flatten(d):
     r = {}  # type: ignore
-    for k, v in d.items():
+    for v in d.values():
         if isinstance(v, dict):
             r.update(flatten(v))
     d.update(r)
@@ -294,14 +293,14 @@ def get_scan_error_message(response, scan_id):
 def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, body=None, **kwargs):
     if endpoint:
         endpoint = '/' + endpoint
-    full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
+    full_url = f"{BASE_URL}scans/{scan_id!s}{endpoint}"
     try:
         res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, json=body, params=kwargs)
         res.raise_for_status()
         return res.json()
     except HTTPError:
         if ignore_license_error and res.status_code in (403, 500):
-            return
+            return None
         err_msg = get_scan_error_message(res, scan_id)
         if demisto.command() != 'test-module':
             return_error(err_msg)
@@ -318,6 +317,7 @@ def get_scan_info(scans_result_elem):
     if response:
         response['info'].update(scans_result_elem)
         return response['info']
+    return None
 
 
 def send_vuln_details_request(plugin_id, date_range=None):
@@ -555,10 +555,10 @@ def get_asset_details_command() -> CommandResults:
         info = send_asset_details_request(asset_id)
         attrs = send_asset_attributes_request(asset_id)
         if attrs:
-            attributes = []
-            for attr in attrs.get("attributes", []):
-                attributes.append({attr.get('name', ''): attr.get('value', '')})
-            info["info"]["attributes"] = attributes
+            info["info"]["attributes"] = [
+                {attr.get('name', ''): attr.get('value', '')}
+                for attr in attrs.get("attributes", [])
+            ]
 
     except DemistoException as e:
         return_error(f'Failed to include custom attributes. {e}')
@@ -595,6 +595,7 @@ def get_vulnerabilities_by_asset_command():
             'Hostname': indicator
         }
         return entry
+    return None
 
 
 def get_scan_status_command():
@@ -757,16 +758,16 @@ def export_assets_build_command_result(chunks_details_list: list[dict]) -> Comma
     for chunk_details in chunks_details_list:
         human_readable_to_append = {}
         if fqdns := chunk_details.get('fqdns'):
-            human_readable_to_append.update({'DNS NAME (FQDN)': fqdns[0]})
-        if tag := chunk_details.get("tags"):
-            if first_tag := tag[0]:
-                human_readable_to_append.update({'TAGS': f'{first_tag.get("key")}:{first_tag.get("value")}'})
-        if sources := chunk_details.get("sources"):
-            if first_source := sources[0]:
-                human_readable_to_append.update({'SOURCE': first_source.get('name')})
-        if network_interfaces := chunk_details.get('network_interfaces'):
-            if first_network_interfaces := network_interfaces[0]:
-                human_readable_to_append.update({'IPV4 ADDRESS': first_network_interfaces.get('ipv4s')})
+            human_readable_to_append['DNS NAME (FQDN)'] = fqdns[0]
+        if (tag := chunk_details.get("tags")) and (first_tag := tag[0]):
+            human_readable_to_append['TAGS'] = f'{first_tag.get("key")}:{first_tag.get("value")}'
+        if (sources := chunk_details.get("sources")) and (first_source := sources[0]):
+            human_readable_to_append['SOURCE'] = first_source.get('name')
+        if (
+            (network_interfaces := chunk_details.get('network_interfaces'))
+            and (first_network_interfaces := network_interfaces[0])
+        ):
+            human_readable_to_append['IPV4 ADDRESS'] = first_network_interfaces.get('ipv4s')
         human_readable_to_append.update(
             {'ASSET ID': chunk_details.get('id'),
              'SYSTEM TYPE': chunk_details.get('system_types'),
@@ -1114,9 +1115,62 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         return request_uuid_export_vulnerabilities(args)
 
 
+def list_scan_filters_request() -> dict:
+    response = requests.get(
+        f'{BASE_URL}filters/scans/reports',
+        headers=NEW_HEADERS, verify=USE_SSL)
+
+    if response.status_code == 429:
+        raise DemistoException('Too Many Requests')
+
+    return response.json()
+
+
+def scan_filters_human_readable(response_dict: dict) -> str:
+    return tableToMarkdown(
+        'Tenable IO Scan Filters',
+        list(map(flatten, response_dict.get('filters', []))),
+        headers=[
+            'name', 'readable_name', 'type', 'regex',
+            'readable_regex', 'operators', 'group_name'],
+        headerTransform={
+            'name': 'Filter name',
+            'readable_name': 'Filter Readable name',
+            'type': 'Filter Control type',
+            'regex': 'Filter regex',
+            'readable_regex': 'Readable regex',
+            'operators': 'Filter operators',
+            'group_name': 'Filter group name'
+        }.get
+    )
+
+
+def list_scan_filters() -> CommandResults:
+
+    response_dict = list_scan_filters_request()
+
+    return CommandResults(
+        outputs_prefix='TenableIO.ScanFilter',
+        outputs_key_field='name',
+        outputs=response_dict,
+        readable_output=scan_filters_human_readable(response_dict),
+    )
+
+
+def get_scan_history(args: dict[str, Any]) -> CommandResults:
+    pass
+
+
+def export_scan(args: dict[str, Any]) -> CommandResults:
+    pass
+
+
 def main():  # pragma: no cover
+
     if not (ACCESS_KEY and SECRET_KEY):
         raise DemistoException('Access Key and Secret Key must be provided.')
+
+    args = demisto.args()
     match demisto.command():
         case 'test-module':
             demisto.results(test_module())
@@ -1139,9 +1193,15 @@ def main():  # pragma: no cover
         case 'tenable-io-get-asset-details':
             return_results(get_asset_details_command())
         case 'tenable-io-export-assets':
-            return_results(export_assets_command(demisto.args()))
+            return_results(export_assets_command(args))
         case 'tenable-io-export-vulnerabilities':
-            return_results(export_vulnerabilities_command(demisto.args()))
+            return_results(export_vulnerabilities_command(args))
+        case 'tenable-io-list-scan-filters':
+            return_results(list_scan_filters())
+        case 'tenable-io-get-scan-history':
+            return_results(get_scan_history(args))
+        case 'tenable-io-export-scan':
+            return_results(export_scan(args))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
