@@ -1115,53 +1115,131 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         return request_uuid_export_vulnerabilities(args)
 
 
+def handle_errors(response: requests.models.Response):
+
+    if (code := response.status_code) not in range(200, 300):
+        code_messages = {
+            400:
+                'Possible reasons:\n'
+                ' - Your request message is missing a required parameter\n.'
+                ' - The "format" command argument specified an unsupported'
+                ' export format for scan results that are older than 60 days.'
+                ' Only Nessus and CSV formats are supported for scan results that are older than 60 days.'
+                ' - Your command arguments included filter query parameters for scan results that are older than 60 days.',
+            404: 'Tenable Vulnerability Management cannot find the specified scan.',
+            492: 'Too Many Requests',
+        }
+        raise DemistoException(
+            f'Error processing request. Got response status code: {code}' + (
+                f' - {code_messages[code]}'
+                if code in code_messages
+                else f'. Full Response:\n{response.text}'))
+
+
 def list_scan_filters_request() -> dict:
     response = requests.get(
         f'{BASE_URL}filters/scans/reports',
         headers=NEW_HEADERS, verify=USE_SSL)
-
-    if response.status_code == 429:
-        raise DemistoException('Too Many Requests')
-
+    handle_errors(response)
     return response.json()
 
 
-def scan_filters_human_readable(response_dict: dict) -> str:
+def scan_filters_human_readable(filters: list) -> str:
+    context_to_hr = {
+        'name': 'Filter name',
+        'readable_name': 'Filter Readable name',
+        'type': 'Filter Control type',
+        'regex': 'Filter regex',
+        'readable_regex': 'Readable regex',
+        'operators': 'Filter operators',
+        'group_name': 'Filter group name'
+    }
     return tableToMarkdown(
         'Tenable IO Scan Filters',
-        list(map(flatten, response_dict.get('filters', []))),
-        headers=[
-            'name', 'readable_name', 'type', 'regex',
-            'readable_regex', 'operators', 'group_name'],
-        headerTransform={
-            'name': 'Filter name',
-            'readable_name': 'Filter Readable name',
-            'type': 'Filter Control type',
-            'regex': 'Filter regex',
-            'readable_regex': 'Readable regex',
-            'operators': 'Filter operators',
-            'group_name': 'Filter group name'
-        }.get
+        list(map(flatten, filters)),
+        headers=list(context_to_hr.keys()),
+        headerTransform=context_to_hr.get,
     )
 
 
-def list_scan_filters() -> CommandResults:
+def list_scan_filters_command() -> CommandResults:
 
     response_dict = list_scan_filters_request()
+    filters = response_dict.get('filters', [])
 
     return CommandResults(
         outputs_prefix='TenableIO.ScanFilter',
         outputs_key_field='name',
-        outputs=response_dict,
-        readable_output=scan_filters_human_readable(response_dict),
+        outputs=filters,
+        readable_output=scan_filters_human_readable(filters),
+        raw_response=response_dict,
     )
 
 
-def get_scan_history(args: dict[str, Any]) -> CommandResults:
-    pass
+def get_scan_history_request(scan_id, params) -> dict:
+    remove_nulls_from_dictionary(params)
+    response = requests.get(
+        f'/scans/{scan_id}/history',
+        params=params,
+        headers=NEW_HEADERS,
+        verify=USE_SSL
+    )
+    handle_errors(response)
+    return response.json()
 
 
-def export_scan(args: dict[str, Any]) -> CommandResults:
+def scan_history_human_readable(history: list) -> str:
+    context_to_hr = {
+        'id': 'History id',
+        'scan_uuid': 'History uuid',
+        'status': 'Status',
+        'is_archived': 'Is archived',
+        'custom': 'Targets custom',
+        'default': 'Targets default',
+        'visibility': 'Visibility',
+        'time_start': 'Time start',
+        'time_end': 'Time end',
+    }
+    return tableToMarkdown(
+        'Tenable IO Scan History',
+        list(map(flatten, history)),
+        headers=list(context_to_hr.keys()),
+        headerTransform=context_to_hr.get,
+    )
+
+
+def scan_history_params(args: dict) -> dict:
+    return {
+        'sort':
+            '%2C'.join(
+                f'{field}%3A{args["sortOrder"]}'  # check if theres a default
+                for field in argToList(args.get('sortFields'))),
+        'exclude_rollover': args['excludeRollover'],
+        'limit': args['limit'],  # unknown if this is the actual name of the param
+        'offset': args['offset'],  # unknown if this is an arg
+    }
+    # 'page_size': args.get('pageSize'),
+    # 'page': args.get('page'),
+
+
+def get_scan_history_command(args: dict[str, Any]) -> CommandResults:
+
+    response_dict = get_scan_history_request(
+        args['scanId'],
+        scan_history_params(args))
+    history = response_dict.get('history', [])
+
+    return CommandResults(
+        outputs_prefix='TenableIO.ScanHistory',
+        outputs_key_field='id',
+        outputs=history,
+        readable_output=scan_history_human_readable(history),
+        raw_response=response_dict,
+    )
+
+
+@polling_function
+def export_scan_command(args: dict[str, Any]) -> CommandResults:
     pass
 
 
@@ -1197,11 +1275,11 @@ def main():  # pragma: no cover
         case 'tenable-io-export-vulnerabilities':
             return_results(export_vulnerabilities_command(args))
         case 'tenable-io-list-scan-filters':
-            return_results(list_scan_filters())
+            return_results(list_scan_filters_command())
         case 'tenable-io-get-scan-history':
-            return_results(get_scan_history(args))
+            return_results(get_scan_history_command(args))
         case 'tenable-io-export-scan':
-            return_results(export_scan(args))
+            return_results(export_scan_command(args))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
