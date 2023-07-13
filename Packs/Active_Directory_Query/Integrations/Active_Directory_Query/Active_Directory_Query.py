@@ -1806,8 +1806,7 @@ def get_auto_bind_value(secure_connection, unsecure) -> str:
     """
     if (
         secure_connection == START_TLS
-        or secure_connection == TLS
-        and not unsecure
+        or (secure_connection == TLS and not unsecure)
     ):
         return AUTO_BIND_TLS_BEFORE_BIND
 
