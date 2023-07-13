@@ -4454,8 +4454,9 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
             outputs=output
         )
     else:
-        return CommandResults(readable_output="""Unable to find asset with IP address.  If you are using an organization service account,
-                                                 please make sure the default_search_scope integration parameter is set.""")
+        return CommandResults(
+            readable_output='Unable to find asset with IP address.  If you are using an organization service account,'
+            'please make sure the default_search_scope integration parameter is set.')
 
 
 def add_networks_tag(args: Dict[str, Any]) -> CommandResults:
