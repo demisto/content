@@ -4,13 +4,14 @@ Agentless and passive security platform that sees, identifies, and classifies ev
 
 ## Configuring the Armis Event Collector Instance
 
+- This integration uses the Armis API v.1.0.
 - Allocate a unique name for the instance.
-- In *Server URL*, type in the URL of your Armis platform URL, for example: acme.armis.com/api/v1
-- Generate an API key via the Armis platform. Refer to [Obtaining an API key from Armis](#obtaining-an-api-key-from-Armis) for details.
+- In *Server URL*, type in the URL of your Armis platform URL, for example: acme.armis.com
+- Generate an API key via the Armis platform. Refer to [Obtaining an API key from Armis](https://docs.ic.armis.com/docs/introduction_api-keys) for details.
 - In *API Key*, type the generated API Key
 - Select *Trust any certificate*.
 - Choose *Fetch events* (for automatic ingestion of alerts from Armis into XSIAM).
-- Fetch Alerts AQL - see [Fetch Alert using an AQL](#fetch-alert-using-an-aql) for details.
+- Select which log types to fetch from the *Log types to fetch* drop down menu in the Collect section.
 
 ## Obtaining an API key from Armis
 
