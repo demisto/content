@@ -9254,7 +9254,7 @@ script:
       required: true
     - description: The device group that the tag will be part of.
       name: device-group
-    - description: Whether to disable overriding the tag.
+    - description: Whether to disable overriding the tag (Panorama instances).
       name: disable_override
       auto: PREDEFINED
       predefined:
@@ -9280,7 +9280,7 @@ script:
       name: new_name
     - description: The device group of the tag.
       name: device-group
-    - description: Whether to disable overriding the tag.
+    - description: Whether to disable overriding the tag (Panorama instances).
       name: disable_override
       auto: PREDEFINED
       predefined:
@@ -9296,7 +9296,7 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  dockerimage: demisto/pan-os-python:1.0.0.63723
+  dockerimage: demisto/pan-os-python:1.0.0.64668
   isfetch: true
   runonce: false
   script: ''
