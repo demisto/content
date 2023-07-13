@@ -425,7 +425,7 @@ def test_load_client_cert_and_key(mocker, cert_and_key):
     Given:
         Client cetifcates and private keys from the integration's parameters
     When:
-        Authenticating the client using SSL client certificate authentication 
+        Authenticating the client using SSL client certificate authentication
     Then:
         1. Validate that the SSLContext object, that is used for authentication,
         is given the correct file that holds the certificates
