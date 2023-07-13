@@ -1,5 +1,5 @@
 Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.
-This integration was integrated and tested with version xx of Forcepoint Security Management Center
+This integration was integrated and tested with version 6.10 of Forcepoint Security Management Center
 
 ## Configure Forcepoint Security Management Center on Cortex XSOAR
 

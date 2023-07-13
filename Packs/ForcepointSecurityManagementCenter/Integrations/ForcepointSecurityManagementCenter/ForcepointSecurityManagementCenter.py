@@ -19,6 +19,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_LIMIT = 50
+API_VERSION = '6.10'
 ''' CLIENT CLASS '''
 
 
@@ -41,7 +42,7 @@ class Client:
         """Logs into a session of smc
         """
         handle_proxy()
-        session.login(url=self.url, api_key=self.api_key, verify=self.verify)
+        session.login(url=self.url, api_key=self.api_key, verify=self.verify, api_version=API_VERSION)
 
     def logout(self):
         """logs out of a session in smc
@@ -191,7 +192,7 @@ def update_iplist_command(args: dict[str, Any]) -> CommandResults:
     is_override = argToBoolean(args.get('is_override', False))
 
     if not list(IPList.objects.filter(name=name, exact_match=True)):
-        raise DemistoException(f'IP List {name} was not found.')
+        return CommandResults(f'IP List {name} was not found.')
 
     ip_list = IPList.update_or_create(name=name, append_lists=not is_override, iplist=addresses)
 
@@ -208,7 +209,7 @@ def update_iplist_command(args: dict[str, Any]) -> CommandResults:
     )
 
 
-def list_iplist_command(args: dict[str, Any]) -> CommandResults:
+def list_iplist_command(args: dict[str, Any]) -> CommandResults: #noqa:
     """Lists the IP Lists in the system.
 
     Args:
@@ -327,7 +328,7 @@ def create_host_command(args: dict[str, Any]) -> CommandResults:
     comment = args.get('comment', '')
 
     if address and ipv6_address:
-        raise DemistoException('Both address and ipv6_address were provided, choose just one.')
+        return CommandResults('Both address and ipv6_address were provided, choose just one.')
 
     Host.create(name=name, address=address, ipv6_address=ipv6_address, secondary=secondary, comment=comment)
 
@@ -364,7 +365,7 @@ def update_host_command(args: dict[str, Any]) -> CommandResults:
     remove_nulls_from_dictionary(kwargs)
 
     if not list(Host.objects.filter(name=name, exact_match=True)):
-        raise DemistoException(f'Host {name} was not found.')
+        return CommandResults(f'Host {name} was not found.')
 
     host = Host.update_or_create(**kwargs)
 
@@ -641,18 +642,21 @@ def create_rule_command(args: dict[str, Any]) -> CommandResults:
     comment = args.get('comment', '')
 
     if not any([source_ip_list, source_host, source_domain, dest_ip_list, dest_host, dest_domain]):
-        raise DemistoException('No sources or destinations were provided, provide at least one.')
+        return CommandResults('No sources or destinations were provided, provide at least one.')
 
     firewall_policy = FirewallPolicy(policy_name)
     sources = handle_rule_entities(source_ip_list, source_host, source_domain)
     destinations = handle_rule_entities(dest_ip_list, dest_host, dest_domain)
 
+    firewall_policy.open()
     if ip_version == 'V4':
         rule = firewall_policy.fw_ipv4_access_rules.create(name=rule_name, sources=sources, destinations=destinations,
                                                            action=action, comment=comment)
     else:
         rule = firewall_policy.fw_ipv6_access_rules.create(name=rule_name, sources=sources, destinations=destinations,
                                                            action=action, comment=comment)
+    firewall_policy.save()
+    
     outputs = {'Name': rule.name,
                'ID': rule.tag,
                'Action': rule.action.action,
@@ -771,7 +775,7 @@ def delete_rule_command(args: dict[str, Any]) -> CommandResults:
     ip_version = args.get('ip_version', '')
 
     if not list(FirewallPolicy.objects.filter(name=policy_name, exact_match=True)):
-        raise DemistoException(f'Firewall policy {policy_name} was not found.')
+        return CommandResults(f'Firewall policy {policy_name} was not found.')
 
     policy = FirewallPolicy(policy_name)
     rule = get_rule_from_policy(policy, rule_name, ip_version)
@@ -817,41 +821,6 @@ def list_engine_command(args: dict[str, Any]) -> CommandResults:
         raw_response=outputs,
         outputs_key_field='Name',
         readable_output=tableToMarkdown(name='Engines:', t=outputs, removeNull=True, sort_headers=False),
-    )
-
-
-def commit_changes_command(args: dict[str, Any]) -> CommandResults:
-    """commits all of the changes in the system.
-
-    Args:
-        args (dict[str, Any]): The command args.
-
-    Returns:
-        CommandResults
-    """
-    engine_name = args.get('engine_name', '')
-
-    if not list(Engine.objects.filter(name=engine_name, exact_match=True)):
-        raise DemistoException(f'Engine {engine_name} was not found.')
-
-    engine = Engine(engine_name)
-    changes = []
-    for change in list(engine.pending_changes.all()):
-        changes.append({'Element_name': change.element_name,
-                        'Modifier': change.modifier,
-                        'Changed_on': change.changed_on})
-
-    if not changes:
-        return CommandResults(readable_output='No commit changes were found.')
-
-    engine.pending_changes.approve_all()
-
-    return CommandResults(
-        outputs_prefix='ForcepointSMC.CommitChanges',
-        outputs=changes,
-        raw_response=changes,
-        readable_output=tableToMarkdown(name='The following changes have been committed:',
-                                        t=changes, removeNull=True, sort_headers=False),
     )
 
 
@@ -925,8 +894,6 @@ def main():
             return_results(delete_rule_command(demisto.args()))
         elif command == 'forcepoint-smc-engine-list':
             return_results(list_engine_command(demisto.args()))
-        elif command == 'forcepoint-smc-commit-changes':
-            return_results(commit_changes_command(demisto.args()))
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
