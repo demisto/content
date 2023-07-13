@@ -3,11 +3,11 @@
 This pack includes XSIAM content.
 
 ​
-Note: The logs will be stored in the dataset named *microsoft_windows_raw*.
+**Notes:** 
+- The logs will be stored in the dataset called *microsoft_adfs_raw*.
+- The default content provided in this pack (including Winlogbeat templates) should be used as is.  We cannot support any changes made to this content.
 
-To view logs only from the Windows AD FS, apply the following filter to the datamodel query: *| filter xdm.observer.type="AD FS Auditing"*
 ## Configuration on Server Side
-​
 #### Validate that AD FS server role is enabled
 1. In the **Server Manager**, click **Manage** > **Add Roles and Features**.
 2. Click **Server Roles** in the left menu.
@@ -27,36 +27,41 @@ To view logs only from the Windows AD FS, apply the following filter to the data
     ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/cf0db92559e011d96f94ef21912f316f4b250b36/Packs/MicrosoftADFS/doc_imgs/ADFSEvent-Viewer.png)
 
 ## Collect Events from Vendor
-For the Filebeat collector, use the following option to collect events from the vendor:
+Use the following option to collect events from the vendor:
 ​
+- [Broker VM - Windows Event Collector (Recommended)](#broker-vm)
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
 ​
-You will need to configure the vendor and product for this specific collector.
 ​
+### Broker VM (Windows Event Collector)
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+
+
+To connect and use Windows Event Collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Activate-the-Windows-Event-Collector).
+
+When configuring the Windows Event Collector (WEC), use the following settings in the **Configurations** > **Broker VMs** > **WEC** > **Collection Configuration** section:
+- **Source**: "FederationServices Deployment"
+- **Min. Event Level**: "Verbose"
+- **Event IDs Group**: "All"
+
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/e02f705471d65a49f8c50115bf2cc828e47a5390/Packs/MicrosoftADFS/doc_imgs/ADFSWEC.png)
+
 ### XDRC (XDR Collector)
 ​
-Use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+To create or configure the Filebeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/XDR-Collectors).
 
-​
-You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *microsoft_windows_raw*.
+As Cortex XSIAM provides a YAML template for Microsoft AD FS Event Logs, you can use the following steps to create a collection profile:
 
-​
-When configuring the instance, use a yml file that configures the vendor and product, as shown in the configuration below for the Microsoft AD FS product.
+ 1. In Cortex XSIAM, select **Settings** → **Configurations** → **XDR Collectors** → **Profiles** → **+Add Profile** → **Windows**.
+ 2. Select **Winlogbeat**, then click **Next**.
+ 3. Configure the General Information parameters:
+   - Profile Name — Specify a unique Profile Name to identify the profile. The name can contain only letters, numbers, or spaces, and must be no more than 30 characters. The name you choose will be visible from the list of profiles when you configure a policy.
 
-​
-Copy and paste the following content in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profiles*).
-​
-#### Filebeat Configuration File
-​
+   - Add description here — (Optional) Provide additional context for the purpose or business reason that explains why you are creating the profile.
+
+ 4. Configure the settings for the profile selected in Step 2. To add the "Microsoft AD FS" template, select it and click **Add**.
+
+**Note:** The AD FS XDR Collector currently supports the following event IDs:
+```html
+510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207
 ```
-winlogbeat.event_logs:
-  - name: Security
-    event_id: 510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207
-    processors:
-      - add_fields:
-          fields:
-            vendor: microsoft
-            product: windows
-```
-​
-**Note**: The above configuration uses the default location of the logs. 
