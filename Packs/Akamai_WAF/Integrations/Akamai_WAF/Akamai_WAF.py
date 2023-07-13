@@ -4257,7 +4257,6 @@ def clone_security_policy_command(client: Client,
             removeNull=True,
         )
 
-
     return human_readable, context_entry, raw_response
 
 # Created by D.S.

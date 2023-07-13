@@ -3235,7 +3235,6 @@ def gcb_ioc_details_command(client_obj, args: dict[str, str]):
         hr += f'### For artifact: {artifact_value}\n'
         hr += MESSAGES["NO_RECORDS"]
 
-
     return hr, ec, response
 
 
@@ -3360,7 +3359,6 @@ def domain_command(client_obj, domain_name: str):
         ec = {
             'DBotScore': dbot_context
         }
-
 
     return hr, ec, response
 

@@ -400,7 +400,7 @@ class Client(BaseClient):
             message = error_entry.get('message', '')
             if 'items=x-y' in message:
                 message = 'Failed to parse Range argument. The syntax of the Range argument must follow this pattern:' \
-                              ' x-y'
+                    ' x-y'
             elif 'unauthorized to access' in err_msg or 'No SEC header present in request' in err_msg:
                 message = 'Authorization Error: make sure credentials are correct.'
             elif 'The specified encryption strength is not available' in err_msg:
@@ -408,9 +408,9 @@ class Client(BaseClient):
                 message = 'The specified encryption is not available, try using a weaker encryption (AES128).'
             elif 'User has insufficient capabilities to access this endpoint resource' in message:
                 message = 'The given credentials do not have the needed permissions to perform the call the endpoint' \
-                              f'\n{res.request.path_url}.\n' \
-                              'Please supply credentials with the needed permissions as can be seen in the integration ' \
-                              'description, or do not call or enrich offenses with the mentioned endpoint.'
+                    f'\n{res.request.path_url}.\n' \
+                    'Please supply credentials with the needed permissions as can be seen in the integration ' \
+                    'description, or do not call or enrich offenses with the mentioned endpoint.'
             err_msg += f'\n{message}'
             raise DemistoException(err_msg, res=res)
         except ValueError as e:

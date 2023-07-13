@@ -112,13 +112,13 @@ def pagination(
         """
 
         def inner(
-                    self,
-                    page: Optional[int],
-                    page_size: Optional[int],
-                    limit: Optional[int],
-                    *args,
-                    **kwarg
-                ) -> tuple[list | dict, list | dict]:
+            self,
+            page: Optional[int],
+            page_size: Optional[int],
+            limit: Optional[int],
+            *args,
+            **kwarg
+        ) -> tuple[list | dict, list | dict]:
             """
             Handle pagination arguments to return multiple response from an API.
 

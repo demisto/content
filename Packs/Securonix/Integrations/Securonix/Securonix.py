@@ -647,27 +647,27 @@ class Client(BaseClient):
 
         except requests.exceptions.ConnectTimeout as exception:
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                          ' is incorrect or that the Server is not accessible from your host.'
+                ' is incorrect or that the Server is not accessible from your host.'
             raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.SSLError as exception:
             err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                          ' the integration configuration.'
+                ' the integration configuration.'
             raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.ProxyError as exception:
             err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                          ' selected, try clearing the checkbox.'
+                ' selected, try clearing the checkbox.'
             raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.ConnectionError as exception:
             error_class = str(exception.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
             err_msg = f'Error Type: {err_type}\n' \
-                          f'Error Number: [{exception.errno}]\n' \
-                          f'Message: {exception.strerror}\n' \
-                          f'Verify that the tenant parameter is correct ' \
-                          f'and that you have access to the server from your host.'
+                f'Error Number: [{exception.errno}]\n' \
+                f'Message: {exception.strerror}\n' \
+                f'Verify that the tenant parameter is correct ' \
+                f'and that you have access to the server from your host.'
             raise Exception(f'{err_msg}\n{exception}') from exception
 
         except requests.exceptions.RetryError as exception:
@@ -676,13 +676,13 @@ class Client(BaseClient):
             except Exception:  # noqa: disable=broad-except
                 reason = ''
             err_msg = f'Max Retries Error: Request attempts with {self._securonix_retry_count} retries and with ' \
-                          f'{self._securonix_retry_delay} seconds {self._securonix_retry_delay_type} delay ' \
-                          f'failed.\n{reason}'
+                f'{self._securonix_retry_delay} seconds {self._securonix_retry_delay_type} delay ' \
+                f'failed.\n{reason}'
             if self._securonix_retry_delay_type == "Exponential":
                 # For Exponential delay we are dividing it by 2 so for error message make it to original value
                 err_msg = f'Max Retries Error: Request attempts with {self._securonix_retry_count} retries and with' \
-                              f' {self._securonix_retry_delay * 2} seconds {self._securonix_retry_delay_type} delay ' \
-                              f'failed.\n{reason}'
+                    f' {self._securonix_retry_delay * 2} seconds {self._securonix_retry_delay_type} delay ' \
+                    f'failed.\n{reason}'
             demisto.error(err_msg)
             raise Exception(f'{err_msg}\n{exception}') from exception
 
