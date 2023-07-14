@@ -2,24 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import asyncio
 import concurrent
 import logging.handlers
@@ -27,11 +9,8 @@ import ssl
 import threading
 from distutils.util import strtobool
 from typing import Tuple
-
 import aiohttp
-
 import slack_sdk
-
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -3042,13 +3021,4 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
-
-
-
-
-
-
-
-
-
 
