@@ -712,7 +712,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             # from demisto_client.demisto_api import DefaultApi
             result = client.generic_request(method="GET", path="/content/updating")
             logging.info(f'got from the api for /content/updating: {result}')
-            while result[0]:
+            while eval(result[0]):
                 logging.info('sleeping for 60 seconds as /content/updating returned True')
                 sleep(60)
                 result = client.generic_request(method="GET", path="/content/updating")
