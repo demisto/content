@@ -632,6 +632,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "3"    
       "yes":
       - "34"
     separatecontext: false
@@ -764,8 +766,8 @@ tasks:
       - "29"
       - "28"
       - "32"
-      - "35"
       - "36"
+      - "37"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -773,38 +775,6 @@ tasks:
         "position": {
           "x": 3500,
           "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 0ef30bf8-cac7-4ea4-817b-02976e3484f2
-    type: playbook
-    task:
-      id: 0ef30bf8-cac7-4ea4-817b-02976e3484f2
-      version: -1
-      name: Detonate File - ThreatGrid v2
-      playbookName: Detonate File - ThreatGrid v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 545
         }
       }
     note: false
@@ -850,6 +820,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: a86bad20-d1d3-404d-837c-1ca62ef5cd0e
+    type: playbook
+    task:
+      id: a86bad20-d1d3-404d-837c-1ca62ef5cd0e
+      version: -1
+      name: Detonate URL - ThreatGrid v2
+      description: Detonate one or more URLs using the ThreatGrid integration.
+      playbookName: Detonate URL - ThreatGrid v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+      interval:
+        simple: "10"
+      timeout:
+        simple: "60"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -858,8 +873,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 745,
-        "width": 7260,
-        "x": 40,
+        "width": 7270,
+        "x": 30,
         "y": 40
       }
     }
