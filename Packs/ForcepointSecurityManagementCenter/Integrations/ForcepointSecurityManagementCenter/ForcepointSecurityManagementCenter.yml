@@ -123,7 +123,7 @@ script:
       description: The list of addresses in the IP list.
       type: Unknown
     - contextPath: ForcepointSMC.IPList.Comment
-      description: 'The comment of the IPList'
+      description: The comment for the IP list.
       type: String
   - arguments:
     - default: false
@@ -696,7 +696,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/fp-smc:1.0.22.63061
+  dockerimage: devdemisto/fp-smc:1.0.22.63061
 fromversion: 6.8.0
 tests:
 - ForcepointSecurityManagementCenter_test
