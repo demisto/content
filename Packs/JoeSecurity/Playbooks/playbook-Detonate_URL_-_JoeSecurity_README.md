@@ -1,4 +1,4 @@
-Use the joe-submit-url command instead.
+Deprecated. Use the joe-submit-url command instead.
 
 ## Dependencies
 
