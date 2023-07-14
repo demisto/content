@@ -1661,7 +1661,7 @@ Return the detections for the specified version of a rule, the latest version of
                 "timeWindowEndTime": "2020-12-24T04:00:00Z",
                 "timeWindowStartTime": "2020-12-24T03:00:00Z",
                 "type": "RULE_DETECTION",
-                "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68&selectedTimestamp=2020-12-21T03:54:00Z"
+                "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68"
             },
             {
                 "alertState": "NOT_ALERTING",
@@ -1786,7 +1786,7 @@ Return the detections for the specified version of a rule, the latest version of
                 "timeWindowEndTime": "2020-12-24T04:00:00Z",
                 "timeWindowStartTime": "2020-12-24T03:00:00Z",
                 "type": "RULE_DETECTION",
-                "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_d6194710-acd4-c1de-e440-d1c6a7a50fc1&selectedTimestamp=2020-12-21T03:54:00Z"
+                "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_d6194710-acd4-c1de-e440-d1c6a7a50fc1"
             }
         ],
         "Token": {
@@ -1799,11 +1799,11 @@ Return the detections for the specified version of a rule, the latest version of
 
 ##### Human Readable Output
 
->### Detection(s) Details For Rule: [SampleRule](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline)
+>### Detection(s) Details For Rule: [SampleRule](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71)
 >|Detection ID|Detection Type|Detection Time|Events|Alert State|
 >|---|---|---|---|---|
->| [de_bea17243-d3b3-14bf-6b57-74e1a2422c68](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68&selectedTimestamp=2020-12-21T03:54:00Z) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:02.559Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:00:40.566Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
->| [de_d6194710-acd4-c1de-e440-d1c6a7a50fc1](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_d6194710-acd4-c1de-e440-d1c6a7a50fc1&selectedTimestamp=2020-12-21T03:54:00Z) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:11.959Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:01:43.953Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
+>| [de_bea17243-d3b3-14bf-6b57-74e1a2422c68](https://dummy-chronicle/alert?alertId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:02.559Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:00:40.566Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
+>| [de_d6194710-acd4-c1de-e440-d1c6a7a50fc1](https://dummy-chronicle/alert?alertId=de_d6194710-acd4-c1de-e440-d1c6a7a50fc1) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:11.959Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:01:43.953Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
 >
 >View all detections for this rule in Chronicle by clicking on SampleRule and to view individual detection in Chronicle click on its respective Detection ID.
 >
@@ -2984,7 +2984,7 @@ Lists all the aliases of a user in an enterprise for a specified user identifier
 | GoogleChronicleBackstory.UserAliases.user.aliases.relations.relationship | String | Relationship between entities in the relations. | 
 
 #### Command example
-```gcb-list-useraliases user_identifier_type="Product object ID" user_identifier="test_product_entity_id"```
+```!gcb-list-useraliases user_identifier_type="Product object ID" user_identifier="test_product_entity_id"```
 #### Context Example
 ```json
 {
@@ -3120,7 +3120,7 @@ Lists all the aliases of an asset in an enterprise for the specified asset ident
 | GoogleChronicleBackstory.AssetAliases.asset.aliases.entity.asset.attribute.labels.value | String | The value of an attribute label associated with the asset. | 
 
 #### Command example
-```gcb-list-assetaliases asset_identifier_type="Host Name" asset_identifier="windows-endpoint"```
+```!gcb-list-assetaliases asset_identifier_type="Host Name" asset_identifier="windows-endpoint"```
 #### Context Example
 ```json
 {
@@ -3206,7 +3206,7 @@ List curated rules.
 | GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of Rules. Absent if this is the last page. |
 
 #### Command example
-```gcb-list-curatedrules page_size="2"```
+```!gcb-list-curatedrules page_size="2"```
 #### Context Example
 ```json
 {
@@ -3744,7 +3744,7 @@ Return the detections for the specified curated rule identifier.
 | GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of detections. Absent if this is the last page. | 
 
 #### Command example
-```gcb-list-curatedrule-detections page_size="2"```
+```!gcb-list-curatedrule-detections page_size="2"```
 #### Context Example
 ```json
 {
@@ -3909,7 +3909,7 @@ Return the detections for the specified curated rule identifier.
                 "summary": "Rule Detection",
                 "description": "Identifies mass deletion of secrets in GCP Secret Manager.",
                 "severity": "LOW",
-                "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline&ruleSource=ruleSet&selectedDetectionId=de_50fd0957-0959-6410-0000-c6f8400006b1&selectedTimestamp=2023-06-14T17:28:00Z",
+                "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_50fd0957-0959-0000-d556-c6f8000016b1",
                 "ruleId": "ur_ttp_GCP__MassSecretDeletion",
                 "alertState": "ALERTING",
                 "ruleType": "MULTI_EVENT",
@@ -4115,7 +4115,7 @@ Return the detections for the specified curated rule identifier.
                 "summary": "Rule Detection",
                 "description": "Identifies mass deletion of secrets in GCP Secret Manager.",
                 "severity": "LOW",
-                "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline&ruleSource=ruleSet&selectedDetectionId=de_50fd0957-0959-6410-0000-c6f8400006b1&selectedTimestamp=2023-06-14T17:28:00Z",
+                "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_662d8ff5-8eea-deb8-274e-f3410c7b935a",
                 "ruleId": "ur_ttp_GCP__MassSecretDeletion",
                 "alertState": "ALERTING",
                 "ruleType": "MULTI_EVENT",
@@ -4173,11 +4173,11 @@ Return the detections for the specified curated rule identifier.
 
 #### Human Readable Output
 
->### Curated Detection(s) Details For Rule: [GCP Secret Manager Mass Deletion](https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline)
+>### Curated Detection(s) Details For Rule: [GCP Secret Manager Mass Deletion](https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion
 >|Detection ID|Description|Detection Type|Detection Time|Events|Alert State|Detection Severity|Detection Risk-Score|
 >|---|---|---|---|---|---|---|---|
->| [de_50fd0957-0959-0000-d556-c6f8000016b1](https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline&ruleSource=ruleSet&selectedDetectionId=de_50fd0957-0959-6410-0000-c6f8400006b1&selectedTimestamp=2023-06-14T17:28:00Z) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
->| [de_662d8ff5-8eea-deb8-274e-f3410c7b935a](https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion&selectedList=RuleDetectionsViewTimeline&ruleSource=ruleSet&selectedDetectionId=de_50fd0957-0959-6410-0000-c6f8400006b1&selectedTimestamp=2023-06-14T17:28:00Z) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
+>| [de_50fd0957-0959-0000-d556-c6f8000016b1](https://dummy-chronicle/alert?alertId=de_50fd0957-0959-0000-d556-c6f8000016b1) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
+>| [de_662d8ff5-8eea-deb8-274e-f3410c7b935a](https://dummy-chronicle/alert?alertId=de_662d8ff5-8eea-deb8-274e-f3410c7b935a) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
 
 >View all Curated Detections for this rule in Chronicle by clicking on GCP Secret Manager Mass Deletion and to view individual detection in Chronicle click on its respective Detection ID.
 >Maximum number of detections specified in page_size has been returned. To fetch the next set of detections, execute the command with the page token as next_page_token.
@@ -4628,7 +4628,7 @@ Lists the events for the specified UDM Search query.
 | GoogleChronicleBackstory.Events.securityResult.urlBackToProduct | String | URL to direct you to the source product console for this security event. | 
 
 #### Command example
-```gcb-udm-search limit="2"```
+```!gcb-udm-search query="ip=\"0.0.0.1\"" limit="2"```
 #### Context Example
 ```json
 {

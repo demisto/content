@@ -71,7 +71,7 @@ tasks:
       limit:
         simple: "10"
       start_time:
-        simple: 30 days
+        simple: 89 days
     separatecontext: false
     view: '{"position":{"x":50,"y":400}}'
     note: false
@@ -116,11 +116,6 @@ tasks:
           left:
             value:
               simple: GoogleChronicleBackstory.Events.ingestedTimestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GoogleChronicleBackstory.Events.collectedTimestamp
             iscontext: true
       - - operator: isNotEmpty
           left:

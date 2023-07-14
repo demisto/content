@@ -1659,10 +1659,9 @@ def get_list_detections_hr(detections: List[Dict[str, Any]], rule_or_version_id:
             'Alert State': detection_details[0].get('alertState', '')
         })
     rule_uri = detections[0].get('detection', {})[0].get('urlBackToProduct', '')
-    if rule_uri:
-        rule_uri = rule_uri.split('&', maxsplit=2)
-        rule_uri = '{}&{}'.format(rule_uri[0], rule_uri[1])
-    if rule_or_version_id:
+    if rule_uri and rule_or_version_id:
+        rule_uri = rule_uri.split('/')
+        rule_uri = '{}//{}/ruleDetections?ruleId={}'.format(rule_uri[0], rule_uri[2], rule_or_version_id)
         hr_title = 'Detection(s) Details For Rule: [{}]({})'. \
             format(detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
     else:
@@ -1701,12 +1700,11 @@ def get_list_curatedrule_detections_hr(detections: List[Dict[str, Any]], curated
             'Detection Risk-Score': detection_details[0].get('riskScore', ''),
         })
     rule_uri = detections[0].get('detection', {})[0].get('urlBackToProduct', '')
-    if rule_uri:
-        rule_uri = rule_uri.split('&', maxsplit=2)
-        rule_uri = '{}&{}'.format(rule_uri[0], rule_uri[1])
-    if curatedrule_id:
-        hr_title = 'Curated Detection(s) Details For Rule: [{}]({})'. \
-            format(detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
+    if rule_uri and curatedrule_id:
+        rule_uri = rule_uri.split('/')
+        rule_uri = '{}//{}/ruleDetections?ruleId={}'.format(rule_uri[0], rule_uri[2], curatedrule_id)
+        hr_title = 'Curated Detection(s) Details For Rule: [{}]({})'.format(
+            detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
     else:
         hr_title = 'Curated Detection(s)'
     hr = tableToMarkdown(hr_title, hr_dict,
