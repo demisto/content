@@ -323,92 +323,6 @@
                 "type": "custom"
             },
             {
-                "hidden": true,
-                "id": "psvkrie7fh",
-                "name": "Alert Info",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-psvkrie7fh-field-changed-psvkrie7fh-caseinfoid-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "xdralerts",
-                                "height": 106,
-                                "id": "1b6eb1e0-cc9a-11e9-afca-8792f3871db0",
-                                "index": 0,
-                                "listId": "swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "XDR Alerts",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "h": 4,
-                        "hideName": true,
-                        "i": "caseinfoid-psvkrie7fh-field-changed-psvkrie7fh-caseinfoid-e9e2edb0-3af3-11ec-b014-a9a9af2fb426",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Additional alert information",
-                        "query": "CortexXDRAdditionalAlertInformationWidget",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 2
-                    },
-                    {
-                        "h": 3,
-                        "hideName": true,
-                        "i": "caseinfoid-psvkrie7fh-field-changed-psvkrie7fh-caseinfoid-0a9a5340-3af4-11ec-b014-a9a9af2fb426",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Identity Information",
-                        "query": "CortexXDRIdentityInformationWidget",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 1,
-                        "x": 0,
-                        "y": 6
-                    },
-                    {
-                        "h": 3,
-                        "hideName": true,
-                        "i": "caseinfoid-psvkrie7fh-field-changed-psvkrie7fh-caseinfoid-25b394c0-3af4-11ec-b014-a9a9af2fb426",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Remediation Actions",
-                        "query": "CortexXDRRemediationActionsWidget",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 2,
-                        "x": 1,
-                        "y": 6
-                    }
-                ],
-                "type": "custom"
-            },
-            {
                 "hidden": false,
                 "id": "xmrrsnmlfj",
                 "name": "Security Posture",
@@ -1052,14 +966,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_indicatorstype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_indicatortypes",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_investigationstage",
                         "isVisible": true
                     },
@@ -1348,14 +1254,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_stringsifter",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_stringssimilarity",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_subcategory",
                         "isVisible": true
                     },
@@ -1491,5 +1389,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
+    "marketplaces": ["xsoar"],
     "description": ""
 }
