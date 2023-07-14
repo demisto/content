@@ -25,14 +25,16 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### asm-list-external-service
+
 ***
 Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
-
 
 #### Base Command
 
 `asm-list-external-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -40,8 +42,7 @@ Get a list of all your external services filtered by business units, externally 
 | ip_address | IP address on which to search. | Optional | 
 | domain | Domain on which to search. | Optional | 
 | is_active | Whether the service is active. Possible values are: yes, no. | Optional | 
-| discovery_type | How the service was discovered. Possible values are: colocated_on_ip, directly_discovery, unknown. | Optional | 
-
+| discovery_type | How service was discovered. Possible values are: colocated_on_ip, directly_discovery, unknown. | Optional | 
 
 #### Context Output
 
@@ -51,7 +52,7 @@ Get a list of all your external services filtered by business units, externally 
 | ASM.ExternalService.service_name | String | Name of the external service. | 
 | ASM.ExternalService.service_type | String | Type of the external service. | 
 | ASM.ExternalService.ip_address | String | IP address of the external service. | 
-| ASM.ExternalService.externally_detected_providers | String | Providers of the external service. | 
+| ASM.ExternalService.externally_detected_providers | String | Providers of external service. | 
 | ASM.ExternalService.is_active | String | Whether the external service is active. | 
 | ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. | 
 | ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. | 
@@ -192,19 +193,19 @@ Get a list of all your external services filtered by business units, externally 
 
 
 ### asm-get-external-service
+
 ***
 Get service details according to the service ID.
-
 
 #### Base Command
 
 `asm-get-external-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | service_id | A string representing the service ID you want to get details for. | Required | 
-
 
 #### Context Output
 
@@ -1063,26 +1064,29 @@ Get internet exposure asset details according to the asset ID.
 
 
 ### asm-list-alerts
+
 ***
 Get a list of all your ASM alerts filtered by alert IDs, severity and/or creation time. Can also sort by creation time or severity. Maximum result limit is 100 assets.
-
 
 #### Base Command
 
 `asm-list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
 | severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational). | Optional | 
+| tags | Comma-separated list of strings of alert tags. | Optional | 
+| status | Comma separated list of strings of the Alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
+| business_units_list | Comma-separated list of strings of the business units. | Optional | 
 | lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
 | gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
 | sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
-
 
 #### Context Output
 
@@ -1434,7 +1438,7 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 ### asm-list-attack-surface-rules
 
 ***
-Fetches Attack Surface Rules related to how Xpanse does assessment.
+Fetches attack surface rules related to how Cortex Xpanse does assessment.
 
 #### Base Command
 
@@ -1445,24 +1449,24 @@ Fetches Attack Surface Rules related to how Xpanse does assessment.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | enabled_status | Enablement status to search rules with. Valid values are  "On" and "Off". | Optional | 
-| category | Comma separated list of strings attack surface rule categories. | Optional | 
-| priority | Comma separated list of strings attack surface rule priorities. | Optional | 
-| attack_surface_rule_ids | Comma separated list of strings attack surface rule ids. | Optional | 
-| limit | Number of results to return. | Optional | 
+| category | Comma-separated list of strings attack surface rule categories. | Optional | 
+| priority | Comma-separated list of strings attack surface rule priorities. | Optional | 
+| attack_surface_rule_ids | Comma-separated list of strings attack surface rule IDs. | Optional | 
+| limit | Maximum number of results to return. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.AttackSurfaceRules.priority | unknown | Priority level for the different rules. Low, Medium, High, Critical | 
-| ASM.AttackSurfaceRules.attack_surface_rule_name | unknown | Name of the Attack Surface Rule | 
-| ASM.AttackSurfaceRules.attack_surface_rule_id | unknown | ID of the Attack Surface Rule | 
-| ASM.AttackSurfaceRules.description | unknown | Description of the Attack Surface Rule | 
-| ASM.AttackSurfaceRules.category | unknown | Category of the Attack Surface Rule | 
-| ASM.AttackSurfaceRules.remediation_guidance | unknown | Guidance for how to address various ASM risks | 
-| ASM.AttackSurfaceRules.enabled_status | unknown | Enablement Status of the Attack Surface Rule | 
-| ASM.AttackSurfaceRules.created | unknown | Creation date of the Attack Surface Rule | 
-| ASM.AttackSurfaceRules.modified | unknown | Last modification of the Attack Surface Rule | 
+| ASM.AttackSurfaceRules.priority | unknown | Priority level for the different rules. Low, Medium, High, Critical. | 
+| ASM.AttackSurfaceRules.attack_surface_rule_name | unknown | Name of the attack surface rule. | 
+| ASM.AttackSurfaceRules.attack_surface_rule_id | unknown | ID of the attack surface rule. | 
+| ASM.AttackSurfaceRules.description | unknown | Description of the attack surface rule. | 
+| ASM.AttackSurfaceRules.category | unknown | Category of the attack surface rule. | 
+| ASM.AttackSurfaceRules.remediation_guidance | unknown | Guidance for how to address various ASM risks. | 
+| ASM.AttackSurfaceRules.enabled_status | unknown | Enablement status of the attack surface rule. | 
+| ASM.AttackSurfaceRules.created | unknown | Creation date of the attack surface rule. | 
+| ASM.AttackSurfaceRules.modified | unknown | Last modification of the attack surface rule. | 
 
 #### Command example
 ```!asm-list-attack-surface-rules enabled_status=On limit=1```
@@ -1497,7 +1501,7 @@ Fetches Attack Surface Rules related to how Xpanse does assessment.
 ### asm-tag-asset-assign
 
 ***
-Assigns tags to a list of assets
+Assigns tags to a list of assets.
 
 #### Base Command
 
@@ -1507,8 +1511,8 @@ Assigns tags to a list of assets
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asm_id_list | Comma separated list of asset ids to add tags to. | Required | 
-| tags | The name of the tags to apply to supplied assets. . | Required | 
+| asm_id_list | Comma-separated list of asset IDs to add tags to. | Required | 
+| tags | The name of the tags to apply to supplied assets. | Required | 
 
 #### Context Output
 
@@ -1531,7 +1535,7 @@ There is no context output for this command.
 ### asm-tag-asset-remove
 
 ***
-Removes tags from a list of assets
+Removes tags from a list of assets.
 
 #### Base Command
 
@@ -1541,8 +1545,8 @@ Removes tags from a list of assets
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asm_id_list | Comma separated list of asset ids to remove tags from. | Optional | 
-| tags | The name of the tags to remove from supplied assets. . | Optional | 
+| asm_id_list | Comma-separated list of asset IDs to remove tags from. | Optional | 
+| tags | The name of the tags to remove from supplied assets. | Optional | 
 
 #### Context Output
 
@@ -1565,7 +1569,7 @@ There is no context output for this command.
 ### asm-tag-range-assign
 
 ***
-Assigns tags to a list of IP Ranges
+Assigns tags to a list of IP ranges.
 
 #### Base Command
 
@@ -1575,8 +1579,8 @@ Assigns tags to a list of IP Ranges
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range_id_list | Comma separated list of range ids to add tags to. | Optional | 
-| tags | The name of the tags to apply to supplied assets. . | Optional | 
+| range_id_list | Comma-separated list of range IDs to add tags to. | Optional | 
+| tags | The name of the tags to apply to supplied assets. | Optional | 
 
 #### Context Output
 
@@ -1599,7 +1603,7 @@ There is no context output for this command.
 ### asm-tag-range-remove
 
 ***
-Removes tags from a list of IP Ranges
+Removes tags from a list of IP ranges.
 
 #### Base Command
 
@@ -1609,8 +1613,8 @@ Removes tags from a list of IP Ranges
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range_id_list | Comma separated list of range ids to remove tags from. | Optional | 
-| tags | The name of the tags to remove from supplied IP Ranges. . | Optional | 
+| range_id_list | Comma-separated list of range IDs to remove tags from. | Optional | 
+| tags | The name of the tags to remove from supplied IP ranges. | Optional | 
 
 #### Context Output
 
@@ -1649,7 +1653,7 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 | lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
 | gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
-| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
+| sort_by_severity | Sorts returned incidents by the severity of the incident. | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
 
@@ -1657,31 +1661,31 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Incident.alert_count | Number | Number of alerts included in the incident | 
-| ASM.Incident.alerts_grouping_status | String | Whether alert grouping is enabled | 
-| ASM.Incident.assigned_user_mail | Unknown | Email of the assigned user | 
-| ASM.Incident.assigned_user_pretty_name | Unknown | Friendly name of the assigned user | 
-| ASM.Incident.creation_time | Date | Creation timestamp | 
-| ASM.Incident.critical_severity_alert_count | Number | Number of critical alerts | 
-| ASM.Incident.description | String | Description of the incident | 
-| ASM.Incident.high_severity_alert_count | Number | Number of high alerts | 
-| ASM.Incident.incident_id | String | ID of the incident | 
-| ASM.Incident.incident_name | Unknown | Incident Name | 
-| ASM.Incident.incident_sources | String | Incident Source | 
-| ASM.Incident.low_severity_alert_count | Number | Number of low alerts | 
-| ASM.Incident.manual_severity | Unknown | Severity override | 
-| ASM.Incident.med_severity_alert_count | Number | Number of medium alerts | 
-| ASM.Incident.modification_time | Date | Modification timestamp | 
-| ASM.Incident.notes | Unknown | Incident notes | 
-| ASM.Incident.original_tags | Unknown | Tags on the incident at creation time | 
-| ASM.Incident.resolve_comment | Unknown | Resolution comment. This is optional | 
-| ASM.Incident.resolved_timestamp | Unknown | Resolution timestamp | 
-| ASM.Incident.severity | String | Severity of the incident | 
-| ASM.Incident.starred | Boolean | Whether the incident has been starred | 
-| ASM.Incident.status | String | Status of the incident | 
-| ASM.Incident.tags | String | Tags on the incident | 
-| ASM.Incident.xdr_url | String | Link to navigate to the incident | 
-| ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident |
+| ASM.Incident.alert_count | Number | Number of alerts included in the incident. | 
+| ASM.Incident.alerts_grouping_status | String | Whether alert grouping is enabled. | 
+| ASM.Incident.assigned_user_mail | Unknown | Email of the assigned user. | 
+| ASM.Incident.assigned_user_pretty_name | Unknown | Friendly name of the assigned user. | 
+| ASM.Incident.creation_time | Date | Creation timestamp. | 
+| ASM.Incident.critical_severity_alert_count | Number | Number of critical alerts. | 
+| ASM.Incident.description | String | Description of the incident. | 
+| ASM.Incident.high_severity_alert_count | Number | Number of high alerts. | 
+| ASM.Incident.incident_id | String | ID of the incident. | 
+| ASM.Incident.incident_name | Unknown | Incident name. | 
+| ASM.Incident.incident_sources | String | Incident source. | 
+| ASM.Incident.low_severity_alert_count | Number | Number of low alerts. | 
+| ASM.Incident.manual_severity | Unknown | Severity override. | 
+| ASM.Incident.med_severity_alert_count | Number | Number of medium alerts. | 
+| ASM.Incident.modification_time | Date | Modification timestamp. | 
+| ASM.Incident.notes | Unknown | Incident notes. | 
+| ASM.Incident.original_tags | Unknown | Tags on the incident at creation time. | 
+| ASM.Incident.resolve_comment | Unknown | Resolution comment \(optional\). | 
+| ASM.Incident.resolved_timestamp | Unknown | Resolution timestamp. | 
+| ASM.Incident.severity | String | Severity of the incident. | 
+| ASM.Incident.starred | Boolean | Whether the incident has been starred. | 
+| ASM.Incident.status | String | Status of the incident. | 
+| ASM.Incident.tags | String | Tags on the incident. | 
+| ASM.Incident.xdr_url | String | Link to navigate to the incident. | 
+| ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident. | 
 
 #### Command example
 ```!asm-get-incidents limit=1 status=new```
@@ -1768,7 +1772,7 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.IncidentUpdate | unknown | Whether the incident update was successful | 
+| ASM.IncidentUpdate | unknown | Whether the incident update was successful. | 
 
 
 #### Command example
@@ -1788,7 +1792,7 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 ### asm-update-alerts
 
 ***
-Updates the state of one or more alerts
+Updates the state of one or more alerts.
 
 #### Base Command
 
@@ -1798,7 +1802,7 @@ Updates the state of one or more alerts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id_list | Comma separated list of integers of the alert ID. | Optional | 
+| alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
 | status | Updated alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
 
@@ -1806,7 +1810,7 @@ Updates the state of one or more alerts
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.UpdatedAlerts | unknown | IDs of the updated alerts | 
+| ASM.UpdatedAlerts | unknown | IDs of the updated alerts. |
 
 #### Command example
 ```!asm-update-alerts alert_id_list=602 status=new```
