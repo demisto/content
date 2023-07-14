@@ -27,7 +27,7 @@
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "SampleIncidentGenerator": {
+        "sampleSiem": {
             "mandatory": true,
             "display_name": "Sample Incident Generator"
         },
