@@ -836,18 +836,15 @@ def main():
     port = params.get('port')
     verify = not argToBoolean(params.get('insecure', False))
     proxy = argToBoolean(params.get('proxy', False))
+    client = Client(url=url,
+                    api_key=api_key,
+                    verify=verify,
+                    proxy=proxy,
+                    port=port)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
-
-        client = Client(
-            url=url,
-            api_key=api_key,
-            verify=verify,
-            proxy=proxy,
-            port=port)
-
         if command == 'test-module':
             result = test_module(client)
             return_results(result)

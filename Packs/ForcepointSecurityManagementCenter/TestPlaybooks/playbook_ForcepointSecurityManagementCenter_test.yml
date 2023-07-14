@@ -551,7 +551,7 @@ tasks:
           right:
             value:
               simple: 1.1.1.1
-      - - operator: notContainsGeneral
+      - - operator: ContainsGeneral
           left:
             value:
               simple: ForcepointSMC.IPList.Addresses
