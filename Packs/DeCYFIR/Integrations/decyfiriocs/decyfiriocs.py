@@ -421,7 +421,7 @@ class Client(BaseClient):
 
             ioc_labels = ioc.get("labels")
             if ioc_labels is not None:
-                for label in list(ioc_labels):
+                for label in ioc_labels:
                     if label.get("geographies"):
                         ioc_data['fields']['geocountry'] = label.get("geographies")
                     if label.get("tags"):
@@ -459,32 +459,37 @@ class Client(BaseClient):
 
     def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str],
                          feed_tags: Optional[List], is_data_save: bool) -> List[Dict]:
+        try:
+            # Indicators from DeCYFIR
+            iocs_data = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
 
-        # Indicators from DeCYFIR
-        iocs_data = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
+            # Threat Intel Data from DeCYFIR
+            tas_data = self.get_decyfir_api_iocs_ti_data(TA_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
 
-        # Threat Intel Data from DeCYFIR
-        tas_data = self.get_decyfir_api_iocs_ti_data(TA_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
+            if not is_data_save:
+                if iocs_data:
+                    iocs_data = iocs_data[:2]
 
-        if not is_data_save:
-            if iocs_data:
-                iocs_data = iocs_data[:2]
+            return_data = []
 
-        return_data = []
+            # Converting indicators data to XSOAR indicators format
+            ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color,
+                                                                            feed_tags)
+            return_data.extend(ioc_indicators)
 
-        # Converting indicators data to XSOAR indicators format
-        ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color,
-                                                                        feed_tags)
-        return_data.extend(ioc_indicators)
+            if not is_data_save:
+                return return_data
 
-        if not is_data_save:
+            # Converting threat intel data to XSOAR indicators format
+            ta_indicators = self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags,
+                                                                          ThreatIntel.ObjectsNames.THREAT_ACTOR)
+            return_data.extend(ta_indicators)
             return return_data
 
-        # Converting threat intel data to XSOAR indicators format
-        ta_indicators = self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags,
-                                                                      ThreatIntel.ObjectsNames.THREAT_ACTOR)
-        return_data.extend(ta_indicators)
-        return return_data
+        except Exception as e:
+            err = f'Failed to fetch the feed data. DeCYFIR error: {e}'
+            demisto.debug(err)
+            return_error(err)
 
 
 def test_module_command(client, decyfir_api_key):
@@ -519,7 +524,7 @@ def decyfir_get_indicators_command(client: Client, decyfir_api_key: str, tlp_col
     )
 
 
-def main():
+def main():  # pragma: no cover
     try:
         params = demisto.params()
         decyfir_url = params['url'].rstrip('/')
