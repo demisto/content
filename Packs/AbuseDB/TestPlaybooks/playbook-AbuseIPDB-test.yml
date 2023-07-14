@@ -4,7 +4,7 @@ contentitemfields:
   propagationLabels: []
 name: AbuseIPDB Test
 starttaskid: "0"
-description: ""
+description: "aaa"
 tasks:
   "0":
     id: "0"
