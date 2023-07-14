@@ -2802,6 +2802,209 @@ script:
     - contextPath: RecordedFuture.Malware.intelCard
       description: Recorded Future intelligence card URL.
       type: date
+  - name: recordedfuture-threat-map
+    description: Get threat actors map.
+    arguments:
+      - name: actors_ids
+        required: false
+        isArray: true
+        description: Actors IDs for which to get the threat map.
+      - name: actor_name
+        required: false
+        description: Actors name for which to get the threat map.
+      - name: include_links
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - true
+          - false
+        description: Fetch links to threat actor or not.
+
+    outputs:
+      - contextPath: RecordedFuture.ThreatMap.id
+        description: Recorded Future threat actor ID.
+        type: string
+      - contextPath: RecordedFuture.ThreatMap.name
+        description: Recorded Future entity name.
+        type: string
+      - contextPath: RecordedFuture.ThreatMap.alias
+        description: Recorded Future threat actor alias.
+        type: array
+      - contextPath: RecordedFuture.ThreatMap.intent
+        description: Recorded Future threat actor intent.
+        type: number
+      - contextPath: RecordedFuture.ThreatMap.opportunity
+        description: Recorded Future threat actor opportunity.
+        type: number
+      - contextPath: RecordedFuture.ThreatMap.log_entries.watchlist.id
+        description: Recorded Future threat actor watchlist id.
+        type: string
+      - contextPath: RecordedFuture.ThreatMap.log_entries.watchlist.name
+        description: Recorded Future threat actor watchlist name.
+        type: string
+      - contextPath: RecordedFuture.ThreatMap.log_entries.entity.id
+        description: Recorded Future threat actor entity id.
+        type: string
+      - contextPath: RecordedFuture.ThreatMap.log_entries.entity.name
+        description: Recorded Future threat actor entity name.
+        type: string
+      - contextPath: RecordedFuture.ThreatMap.log_entries.severity
+        description: Recorded Future threat actor log severity.
+        type: number
+      - contextPath: RecordedFuture.ThreatMap.log_entries.axis
+        description: Recorded Future threat actor log axis.
+        type: string
+      - contextPath: RecordedFuture.ThreatMap.log_entries.date
+        description: Recorded Future threat actor log date.
+        type: datetime
+      - contextPath: RecordedFuture.ThreatMap.links
+        description: Recorded Future threat actor links by type.
+        type: string
+  - name: recordedfuture-threat-links
+    description: Search links
+    arguments:
+      - name: entity_type
+        required: false
+        description: The type of entity for which to fetch context. Should be provided with its value in entity name argument. Can be "domain", "ip", "file", "url", "cve", or "malware".
+        auto: PREDEFINED
+        predefined:
+          - IpAddress
+          - URL
+          - InternetDomainName
+          - Hash
+          - CyberVulnerability
+          - CyberThreatActorCategory
+          - AttackVector
+          - Company
+          - FileContent
+          - Malware
+          - MalwareCategory
+          - MalwareSignature
+          - MitreAttackIdentifier
+          - Organization
+          - Person
+          - Username
+      - name: entity_name
+        required: false
+        description: Entity name
+      - name: entity_id
+        required: false
+        description: Entity id
+      - name: source_type
+        required: false
+        description: Source type
+        auto: PREDEFINED
+        predefined:
+          - technical
+          - insikt
+      - name: timeframe
+        required: false
+        description: Timeframe
+      - name: technical_type
+        required: false
+        description: Technical type
+    outputs:
+      - contextPath: RecordedFuture.Links.entity.id
+        description: Recorded Future Entity id.
+        type: String
+      - contextPath: RecordedFuture.Links.entity.type
+        description: Recorded Future Entity type.
+        type: String
+      - contextPath: RecordedFuture.Links.links.type
+        description: Recorded Future link type.
+        type: String
+      - contextPath: RecordedFuture.Links.links.id
+        description: Recorded Future link id.
+      - contextPath: RecordedFuture.Links.links.name
+        description: Recorded Future link name.
+      - contextPath: RecordedFuture.Links.links.source
+        description: Recorded Future link source.
+      - contextPath: RecordedFuture.Links.links.section
+        description: Recorded Future link section.
+      - contextPath: RecordedFuture.Links.links.attributes
+        description: Recorded Future link attributes.
+  - name: recordedfuture-detection-rules
+    description: Search detection rules.
+    arguments:
+      - name: entity_type
+        required: false
+        description: The type of entity for which to fetch context. Should be provided with its value in entity name argument. Can be "domain", "ip", "file", "url", "cve", or "malware".
+        auto: PREDEFINED
+        predefined:
+          - IpAddress
+          - URL
+          - InternetDomainName
+          - Hash
+          - CyberVulnerability
+          - CyberThreatActorCategory
+          - AttackVector
+          - Company
+          - FileContent
+          - Malware
+          - MalwareCategory
+          - MalwareSignature
+          - MitreAttackIdentifier
+          - Organization
+          - Person
+          - Username
+      - name: entity_name
+        required: false
+        description: Entity name
+      - name: entity_id
+        required: false
+        description: Entity id
+      - name: rule_types
+        required: false
+        isArray: true
+        description: Rule type
+        auto: PREDEFINED
+        predefined:
+          - yara
+          - sigma
+          - snort
+      - name: title
+        required: false
+        description: Rule title
+    outputs:
+      - contextPath: RecordedFuture.DetectionRules.id
+        description: Recorded Future Detection rule id.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.type
+        description: Recorded Future Detection rule type.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.title
+        description: Recorded Future Detection rule title.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.description
+        description: Recorded Future Detection rule description.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.created
+        description: Recorded Future Detection rule created at.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.updated
+        description: Recorded Future Detection rule updated at.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.rules
+        description: Recorded Future Detection rules.
+        type: array
+      - contextPath: RecordedFuture.DetectionRules.rules.entities
+        description: Recorded Future Detection rule entities.
+        type: array
+      - contextPath: RecordedFuture.DetectionRules.rules.entities.id
+        description: Recorded Future Detection rule entity id.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.rules.entities.type
+        description: Recorded Future Detection rule entity type.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.rules.entities.name
+        description: Recorded Future Detection rule entity name.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.rules.content
+        description: Recorded Future Detection rules content.
+        type: String
+      - contextPath: RecordedFuture.DetectionRules.rules.file_name
+        description: Recorded Future Detection rules file_name.
+        type: String
 
   isfetch: true
 tests:

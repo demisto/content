@@ -245,9 +245,7 @@ class Client(BaseClient):
         """Get a single alert"""
         return self._call(url_suffix='/v2/alert/lookup')
 
-    def get_alerts(
-        self,
-    ) -> Dict[str, Any]:
+    def get_alerts(self) -> Dict[str, Any]:
         """Get alerts."""
         return self._call(url_suffix='/v2/alert/search')
 
@@ -283,6 +281,14 @@ class Client(BaseClient):
         """SOAR triage lookup."""
         return self._call(url_suffix='/v2/lookup/triage')
 
+    def get_threat_map(self) -> Dict[str, Any]:
+        return self._call(url_suffix='/v2/threat/actors')
+
+    def get_threat_links(self) -> Dict[str, Any]:
+        return self._call(url_suffix='/v2/links/search')
+
+    def get_detection_rules(self) -> Dict[str, Any]:
+        return self._call(url_suffix='/v2/detection_rules/search')
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === ACTIONS === === === === === === ===
@@ -404,6 +410,17 @@ class Actions:
         response = self.client.get_triage()
         return self._process_result_actions(response=response)
 
+    def threat_actors_command(self) -> List[CommandResults]:
+        response = self.client.get_threat_map()
+        return self._process_result_actions(response=response)
+
+    def threat_links_command(self) -> List[CommandResults]:
+        response = self.client.get_threat_links()
+        return self._process_result_actions(response=response)
+
+    def detection_rules_command(self) -> List[CommandResults]:
+        response = self.client.get_detection_rules()
+        return self._process_result_actions(response=response)
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === === MAIN === === === === === === ==
@@ -487,6 +504,13 @@ def main() -> None:
 
         elif command == 'recordedfuture-threat-assessment':
             return_results(actions.triage_command())
+
+        elif command == 'recordedfuture-threat-map':
+            return_results(actions.threat_actors_command())
+        elif command == 'recordedfuture-threat-links':
+            return_results(actions.threat_links_command())
+        elif command == 'recordedfuture-detection-rules':
+            return_results(actions.detection_rules_command())
 
     except Exception as e:
         return_error(message=f'Failed to execute {demisto.command()} command: {str(e)}')
