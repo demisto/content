@@ -2678,61 +2678,49 @@ def conversation_history():
     if type(messages) == list:
         context = []
         for message in messages:
+            thread_ts = 'N/A'
+            has_replies = 'No'
+            name = 'N/A'
+            full_name = 'N/A'
+
             if 'subtype' not in message:
                 user_id = message['user']
                 body = {
                     'user':user_id
                 }
+
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
+
+                full_name = user_details['real_name']
+                name = user_details['name']
+
                 if 'thread_ts' in message:
-                    entry = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['user'],
-                        'Name': user_details['name'],
-                        'FullName': user_details['real_name'],
-                        'TimeStamp': message['ts'],
-                        'HasReplies': 'Yes',
-                        'ThreadTimeStamp': message['thread_ts']
-                    }
-                    context.append(entry)
-                else:
-                    entry = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['user'],
-                        'Name': user_details['name'],
-                        'FullName': user_details['real_name'],
-                        'TimeStamp': message['ts'],
-                        'HasReplies': 'No',
-                        'ThreadTimeStamp': 'N/A'
-                    }
-                    context.append(entry)
+                    thread_ts = message['thread_ts']
+                    has_replies = 'Yes'
+
+
             elif 'subtype' in message and 'thread_ts' in message:
-                entry = {
-                    'Type': message['type'],
-                    'Text': message['text'],
-                    'UserId': message['username'],
-                    'Name': message['username'],
-                    'FullName': message['username'],
-                    'TimeStamp': message['ts'],
-                    'HasReplies': 'Yes',
-                    'ThreadTimeStamp': message['thread_ts']
-                }
-                context.append(entry)
-            else:
-                entry ={
-                    'Type': message['type'],
-                    'Text': message['text'],
-                    'UserId': message['username'],
-                    'Name': message['username'],
-                    'FullName': message['username'],
-                    'TimeStamp': message['ts'],
-                    'HasReplies': 'No',
-                    'ThreadTimeStamp': "N/A"
-                }
-                context.append(entry)
+                thread_ts = message['thread_ts']
+                has_replies = 'Yes'
+                full_name = message['username']
+                name = message['username']
+
+                if 'thread_ts' in message:
+                    thread_ts = message['thread_ts']
+                    has_replies = 'Yes'
+
+            entry ={
+                'Type': message['type'],
+                'Text': message['text'],
+                'UserId': message['user'],
+                'Name': name,
+                'FullName': full_name,
+                'TimeStamp': message['ts'],
+                'HasReplies': has_replies,
+                'ThreadTimeStamp': thread_ts
+            }
+            context.append(entry)
 
 
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
@@ -2789,6 +2777,11 @@ def conversation_replies():
     if type(messages) == list:
         context = []
         for message in messages:
+            reply_count = 'No'
+            name = 'N/A'
+            full_name = 'N/A'
+
+
             if 'subtype' not in message:
                 user_id = message['user']
                 body = {
@@ -2796,54 +2789,28 @@ def conversation_replies():
                 }
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
-                if 'reply_count' not in message:
-                    entry = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['user'],
-                        'Name': user_details['name'],
-                        'FullName': user_details['real_name'],
-                        'TimeStamp': message['ts'],
-                        'ThreadTimeStamp': message['thread_ts'],
-                        'IsParent': 'No'
-                    }
-                    context.append(entry)
-                else:
-                    entry = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['user'],
-                        'Name': user_details['name'],
-                        'FullName': user_details['real_name'],
-                        'TimeStamp': message['ts'],
-                        'ThreadTimeStamp': message['thread_ts'],
-                        'IsParent': 'Yes'
-                    }
-                    context.append(entry)
+                name = user_details['name']
+                full_name = user_details['real_name']
+
+                if 'reply_count' in message:
+                    reply_count = 'Yes'
+
             else:
-                if 'reply_count' not in message:
-                    entry = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['username'],
-                        'Name': message['username'],
-                        'FullName': message['username'],
-                        'TimeStamp': message['ts'],
-                        'ThreadTimeStamp': message['thread_ts'],
-                        'IsParent': 'No'
-                    }
-                else:
-                    entry = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['username'],
-                        'Name': message['username'],
-                        'FullName': message['username'],
-                        'TimeStamp': message['ts'],
-                        'ThreadTimeStamp': message['thread_ts'],
-                        'IsParent': 'Yes'
-                    }
-                    context.append(entry)
+                if 'reply_count' in message:
+                    reply_count = 'Yes'
+
+            entry = {
+                'Type': message['type'],
+                'Text': message['text'],
+                'UserId': message['user'],
+                'Name': name,
+                'FullName': full_name,
+                'TimeStamp': message['ts'],
+                'ThreadTimeStamp': message['thread_ts'],
+                'IsParent': reply_count
+            }
+            context.append(entry)
+
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
 
     else:
