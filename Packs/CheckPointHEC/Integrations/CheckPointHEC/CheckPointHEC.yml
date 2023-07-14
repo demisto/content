@@ -1,6 +1,6 @@
 category: Email
 commonfields:
-  id: CheckPointHEC
+  id: Check Point Harmony Email and Collaboration (HEC)
   version: -1
 configuration:
 - section: Connect
@@ -55,8 +55,8 @@ configuration:
   defaultvalue: "1"
   type: 19
 description: The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-display: 'CheckPointHEC'
-name: CheckPointHEC
+display: 'Check Point Harmony Email and Collaboration (HEC)'
+name: Check Point Harmony Email and Collaboration (HEC)
 script:
   commands:
   - name: checkpointhec-get-entity
