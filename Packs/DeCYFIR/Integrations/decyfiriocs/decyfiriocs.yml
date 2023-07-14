@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: decyfiriocs
+  id: DeCYFIR Feed
   version: -1
 configuration:
 - display: DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com)
@@ -107,8 +107,8 @@ script:
     description: Gets indicators from the feed.
     name: decyfir-get-indicators
 description: DeCYFIR API's provides External Threat Landscape Management insights.
-display: DeCYFIR Indicators & Threat Intelligence
-name: decyfiriocs
+display: DeCYFIR Indicators & Threat Intelligence Feed
+name: DeCYFIR Feed
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
