@@ -22,7 +22,7 @@ echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
 echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
-TEST_CONF_BRANCH="$UNDERSCORE_BRANCH"
+TEST_CONF_BRANCH="test-fail-build"
 
 # download configuration files from Gitlab repo
 echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
