@@ -1,5 +1,3 @@
-from sqlalchemy.exc import ResourceClosedError
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -13,6 +11,7 @@ from sqlalchemy.sql import text
 from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
+
 FETCH_DEFAULT_LIMIT = '50'
 
 try:
@@ -20,7 +19,6 @@ try:
     from expiringdict import ExpiringDict  # pylint: disable=E0401
 except Exception:  # noqa: S110
     pass
-
 
 # In order to use and convert from pymysql to MySQL this line is necessary
 pymysql.install_as_MySQLdb()
@@ -143,7 +141,8 @@ class Client:
                                               poolclass=sqlalchemy.pool.NullPool)
         return engine.connect()
 
-    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> Tuple[Dict, List]:
+    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0, commit: bool = False) -> Tuple[
+        Dict, List]:
         """Execute query in DB via engine
         :param bind_vars: in case there are names and values - a bind_var dict, in case there are only values - list
         :param sql_query: the SQL query
@@ -152,21 +151,19 @@ class Client:
         """
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
-
-        result = self.connection.execute(sql_query, bind_vars)
-        self.connection.commit()
-        try:
-            # For avoiding responses with lots of records
-            results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
-        except ResourceClosedError:
-            pass
+        if commit:
+            self.connection.commit()
+            return 'Command executed', []
+        else:
+            result = self.connection.execute(sql_query, bind_vars)
+        # For avoiding responses with lots of records
+        # results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
         headers = []
+        results = []
         if results:
             # if the table isn't empty
-            headers = list(results[0]._fields if results[0]._fields else '')
+            headers = list(result.keys())
         return results, headers
-
-
 
 
 def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
@@ -285,13 +282,16 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         sql_query = str(args.get('query'))
         limit = int(args.get('limit', 50))
         skip = int(args.get('skip', 0))
+        commit = argToBoolean(args.get('commit', 'false'))
         bind_variables_names = args.get('bind_variables_names', "")
         bind_variables_values = args.get('bind_variables_values', "")
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
-        result, headers = client.sql_query_execute_request(sql_query, bind_variables)
+        result, headers = client.sql_query_execute_request(sql_query, bind_variables, commit)
+        if result == 'Command executed':
+            return result, {}, []
         # converting an sqlalchemy object to a table
-        converted_table = [dict(row) for row in result]
+        converted_table = [row._mapping for row in result]
         # converting b'' and datetime objects to readable ones
         table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
         table = table[skip:skip + limit]
