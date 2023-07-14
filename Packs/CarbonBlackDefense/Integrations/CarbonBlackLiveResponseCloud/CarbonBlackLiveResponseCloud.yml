@@ -307,5 +307,5 @@ script:
     description: Performs a memory dump operation on the remote machine.
     execution: true
     outputs: []
-  dockerimage: demisto/carbon-black-cloud:1.0.0.63664
+  dockerimage: demisto/carbon-black-cloud:1.0.0.64437
   subtype: python3
