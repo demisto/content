@@ -391,7 +391,7 @@ script:
         - resolved_-_contested_asset
         - resolved_-_remediated_automatically
         - resolved
-      description: Comma separated list of strings of the Alert status.
+      description: Comma-separated list of strings of the alert status.
     - name: business_units_list
       description: Comma-separated list of strings of the business units
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
