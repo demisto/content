@@ -182,7 +182,7 @@ tasks:
       page_size:
         simple: "10"
       start_time:
-        simple: 90 days
+        simple: 1 year
     separatecontext: false
     view: '{"position":{"x":50,"y":800}}'
     note: false
