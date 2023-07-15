@@ -80,8 +80,11 @@ RELATIONSHIPS_MAPPING_TYPES = {
 
 
 class Client(BaseClient):
+
     def get_indicator_or_threatintel_type(self, data):
-        if data is None: return None
+        if data is None:
+            return None
+
         for key, value in INDICATOR_AND_TI_TYPES.items():
             if key in data:
                 return value
@@ -291,7 +294,7 @@ class Client(BaseClient):
                             raw_ta_obj = ta_rel_data
                             ta_source_obj = self.build_threat_intel_indicator_obj(ta_rel_data, tlp_color, feed_tags)
 
-                        if ta_rel_data.get(LABEL_TYPE) == LABEL_RELATIONSHIP:
+                        elif ta_rel_data.get(LABEL_TYPE) == LABEL_RELATIONSHIP:
                             raw_ta_rels.append(ta_rel_data)
                         else:
                             if raw_ta_obj.get(LABEL_ID) != ta_rel_data.get(LABEL_ID):
@@ -459,6 +462,7 @@ class Client(BaseClient):
 
     def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str],
                          feed_tags: Optional[List], is_data_save: bool) -> List[Dict]:
+        return_data = []
         try:
             # Indicators from DeCYFIR
             iocs_data = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
@@ -466,11 +470,8 @@ class Client(BaseClient):
             # Threat Intel Data from DeCYFIR
             tas_data = self.get_decyfir_api_iocs_ti_data(TA_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
 
-            if not is_data_save:
-                if iocs_data:
-                    iocs_data = iocs_data[:2]
-
-            return_data = []
+            if not is_data_save and iocs_data:
+                iocs_data = iocs_data[:2]
 
             # Converting indicators data to XSOAR indicators format
             ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color,
@@ -489,7 +490,8 @@ class Client(BaseClient):
         except Exception as e:
             err = f'Failed to fetch the feed data. DeCYFIR error: {e}'
             demisto.debug(err)
-            return_error(err)
+
+        return return_data
 
 
 def test_module_command(client, decyfir_api_key):

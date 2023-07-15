@@ -44,7 +44,7 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 4,
                         "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
@@ -166,7 +166,7 @@
                         "type": "notes",
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -179,7 +179,7 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -193,7 +193,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -206,11 +206,11 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "maxW": 3,
                         "moved": false,
@@ -219,7 +219,7 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -248,7 +248,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 1,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -307,7 +307,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -349,33 +349,31 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 10
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 2,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
-                                "endCol": 4,
-                                "fieldId": "decyfirdatadetails",
-                                "height": 106,
-                                "id": "87357ad0-1575-11ee-bf4a-1f3b02a9b840",
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
                                 "index": 0,
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289"
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
-                        "w": 2,
-                        "x": 1,
-                        "y": 0
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "h": 2,
@@ -399,8 +397,8 @@
                         "static": false,
                         "type": "labels",
                         "w": 1,
-                        "x": 0,
-                        "y": 3
+                        "x": 1,
+                        "y": 2
                     }
                 ],
                 "type": "custom"
@@ -483,6 +481,10 @@
                     },
                     {
                         "fieldId": "incident_attachment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incidentsubcategory",
                         "isVisible": true
                     }
                 ],
@@ -818,6 +820,10 @@
                     },
                     {
                         "fieldId": "incident_incidentlink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incidentsubcategory",
                         "isVisible": true
                     },
                     {
@@ -1629,6 +1635,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_incidentsubcategory",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "incident_incomingmirrorerror",
                         "isVisible": true
                     },
@@ -2040,5 +2050,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.2.0",
+    "marketplaces": [
+        "xsoar"
+    ],
     "description": ""
 }
