@@ -417,3 +417,36 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
                                            ' 2023-08-15T15:56:18.852Z | 2023-08-15T15:56:18.852Z |' \
                                            ' some_description | solution. |\n'
         assert response.raw_response == export_vulnerabilities_response
+
+
+def test_safe_get_json(mocker):
+    #mock demisto debug
+    response = requests.models.Response()
+    response.status_code = 200
+    response._content = b'{"key": "value"}'
+    assert safe_get_json(response) == {'key': 'value'}
+
+
+@pytest.mark.parametrize(
+    'status_code, error_message',
+    (
+        (400, 'Got response status code: 400 - Possible reasons:\n'),
+        (404, 'Got response status code: 404 - Tenable Vulnerability Management cannot find the specified scan.'),
+        (429, 'Got response status code: 429 - Too Many Requests'),
+        (500, '. Full Response:\n'),
+    )
+)
+def test_safe_get_json_with_error_codes(mocker, status_code, error_message):
+    #mock demisto debug
+    response = requests.models.Response()
+    response.status_code = status_code
+    with pytest.raises(DemistoException, match=error_message):
+        safe_get_json(response)
+    
+def test_safe_get_json_decode_error(mocker):
+    #mock demisto debug
+    response = requests.models.Response()
+    response.status_code = 200
+    response._content = b'blabla'
+    with pytest.raises(DemistoException, match='Error processing request.'):
+        safe_get_json(response)

@@ -147,6 +147,7 @@ NEW_HEADERS = AUTH_HEADERS | {
     'accept': "application/json",
     'content-type': "application/json"
 }
+HEADERS = NEW_HEADERS | {'User-Agent': USER_AGENT_HEADERS_VALUE}
 USE_SSL = not demisto.params()['unsecure']
 
 if not demisto.params()['proxy']:
@@ -1115,33 +1116,39 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         return request_uuid_export_vulnerabilities(args)
 
 
-def handle_errors(response: requests.models.Response):
+def safe_get_json(response: requests.models.Response) -> dict:
 
     if (code := response.status_code) not in range(200, 300):
+        demisto.debug(response.text)
         code_messages = {
             400:
                 'Possible reasons:\n'
                 ' - Your request message is missing a required parameter\n.'
                 ' - The "format" command argument specified an unsupported'
-                ' export format for scan results that are older than 60 days.'
-                ' Only Nessus and CSV formats are supported for scan results that are older than 60 days.'
+                ' export format for scan results that are older than 60 days.\n'
+                '   Only Nessus and CSV formats are supported for scan results that are older than 60 days.'
                 ' - Your command arguments included filter query parameters for scan results that are older than 60 days.',
             404: 'Tenable Vulnerability Management cannot find the specified scan.',
-            492: 'Too Many Requests',
-        }
+            492: 'Too Many Requests'}
         raise DemistoException(
             f'Error processing request. Got response status code: {code}' + (
                 f' - {code_messages[code]}'
                 if code in code_messages
                 else f'. Full Response:\n{response.text}'))
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError as e:
+        demisto.debug(str(e))
+        raise DemistoException(
+            'Error processing request. '
+            f'Unexpected response from Tenable IO:\n{response.text}')
 
 
 def list_scan_filters_request() -> dict:
     response = requests.get(
         f'{BASE_URL}filters/scans/reports',
-        headers=NEW_HEADERS, verify=USE_SSL)
-    handle_errors(response)
-    return response.json()
+        headers=HEADERS, verify=USE_SSL)
+    return safe_get_json(response)
 
 
 def scan_filters_human_readable(filters: list) -> str:
@@ -1152,14 +1159,12 @@ def scan_filters_human_readable(filters: list) -> str:
         'regex': 'Filter regex',
         'readable_regex': 'Readable regex',
         'operators': 'Filter operators',
-        'group_name': 'Filter group name'
-    }
+        'group_name': 'Filter group name'}
     return tableToMarkdown(
         'Tenable IO Scan Filters',
         list(map(flatten, filters)),
         headers=list(context_to_hr.keys()),
-        headerTransform=context_to_hr.get,
-    )
+        headerTransform=context_to_hr.get)
 
 
 def list_scan_filters_command() -> CommandResults:
@@ -1172,8 +1177,7 @@ def list_scan_filters_command() -> CommandResults:
         outputs_key_field='name',
         outputs=filters,
         readable_output=scan_filters_human_readable(filters),
-        raw_response=response_dict,
-    )
+        raw_response=response_dict)
 
 
 def get_scan_history_request(scan_id, params) -> dict:
@@ -1181,11 +1185,9 @@ def get_scan_history_request(scan_id, params) -> dict:
     response = requests.get(
         f'{BASE_URL}/scans/{scan_id}/history',
         params=params,
-        headers=NEW_HEADERS,
-        verify=USE_SSL
-    )
-    handle_errors(response)
-    return response.json()
+        headers=HEADERS,
+        verify=USE_SSL)
+    return safe_get_json(response)
 
 
 def scan_history_human_readable(history: list) -> str:
@@ -1210,10 +1212,9 @@ def scan_history_human_readable(history: list) -> str:
 
 def scan_history_params(args: dict) -> dict:
     return {
-        'sort':
-            '%2C'.join(
-                f'{field}%3A{args["sortOrder"]}'  # check if theres a default
-                for field in argToList(args.get('sortFields'))),
+        'sort': '%2C'.join(
+            f'{field}%3A{args["sortOrder"]}'  # check if theres a default
+            for field in argToList(args.get('sortFields'))),
         'exclude_rollover': args['excludeRollover'],
         'limit': args['limit'],  # unknown if this is the actual name of the param
         'offset': args['offset'],  # unknown if this is an arg
@@ -1234,46 +1235,96 @@ def get_scan_history_command(args: dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=history,
         readable_output=scan_history_human_readable(history),
-        raw_response=response_dict,
-    )
+        raw_response=response_dict)
 
 
-def initiate_export_scan(scan_id: str, args: dict) -> str:
-    pass
+def export_scan_request_args(
+        scanId: str, historyId=None, historyUuid=None, chapters=None,
+        filterSearchType=None, assetId=None, filterName=None,
+        filterQuality=None, filterValue=None, **args) -> dict:
+
+    if chapters:
+        chapters = chapters.replace(',', ';')
+    elif args['format'] in ('PDF', 'HTML'):
+        raise DemistoException('The "chapters" field must be provided for PDF or HTML formats.')
+
+    url = f'{BASE_URL}scans/{scanId}/export'
+    params = {
+        'history_id': historyId,
+        'history_uuid': historyUuid}
+    body = {
+        'format': args['format'],
+        'chapters': chapters,
+        'filter.search_type': filterSearchType,
+        'asset_id': assetId}
+    for i, (name, quality, value)\
+            in enumerate(zip(*map(argToList, (filterName, filterQuality, filterValue)))):
+        body |= {
+            f'filter.{i}.filter': name,
+            f'filter.{i}.quality': quality,
+            f'filter.{i}.value': value}
+    remove_nulls_from_dictionary(params)
+    remove_nulls_from_dictionary(body)
+    return {'url': url, 'params': params, 'json': body}
+
+
+def initiate_export_scan(args: dict) -> dict:
+    response = requests.post(
+        **export_scan_request_args(**args),
+        headers=HEADERS, verify=USE_SSL)
+    return safe_get_json(response)
 
 
 def check_export_scan_status(scan_id: str, file_id: str) -> str:
     response = requests.get(
-        f'{BASE_URL}scans/{scan_id}/export',
-        headers=NEW_HEADERS, verify=USE_SSL)
-    handle_errors(response)
-    return response.json().get('status', '')
+        f'{BASE_URL}scans/{scan_id}/export/{file_id}/status',
+        headers=HEADERS, verify=USE_SSL)
+    return safe_get_json(response).get('status', '')
 
 
 def download_export_scan(scan_id: str, file_id: str):
+    # NEEDS RESEARCH
     pass
 
 
 @polling_function(
     'tenable-io-export-scan',
     poll_message='Preparing scan report:',
-    requires_polling_arg=False,
-)
+    requires_polling_arg=False)
 def export_scan_command(args: dict[str, Any]) -> PollResult:
+
     scan_id = args['scanId']
-    file_id = args.get('file_id') or initiate_export_scan(scan_id, args)
+    if not (file_id := args.get('fileId')):
+        return PollResult(
+            CommandResults(
+                outputs_prefix='InfoFile',
+                outputs_key_field='file',
+                outputs=initiate_export_scan(args)),
+            continue_to_poll=True,
+            args_for_next_run={
+                'fileId': file_id, 'scanId': scan_id})
 
     match check_export_scan_status(scan_id, file_id):
-        case 'ready':
-            download_export_scan(scan_id, file_id)
-        case 'error':
-            pass
-        case 'loading':
-            pass
-        case default:
-            pass
 
-    return PollResult(None, None, None, None)
+        case 'ready':
+            return PollResult(
+                download_export_scan(scan_id, file_id),
+                continue_to_poll=False)
+
+        case 'error':
+            raise DemistoException(
+                'Tenable IO encountered an error while exporting the scan report file.\n'
+                f'Scan ID: {scan_id}\n'
+                f'File ID: {file_id}\n')
+
+        case 'loading':
+            return PollResult(
+                None,
+                continue_to_poll=True)
+
+        case default:
+            raise DemistoException(
+                f'Got unexpected status while exporting the scan report file: {default!r}')
 
 
 def main():  # pragma: no cover

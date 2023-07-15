@@ -1082,6 +1082,34 @@ script:
     - contextPath: TenableIO.Vulnerability.indexed
       description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
       type: Date
+  - arguments: []
+    description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints/commands that support them.
+    name: tenable-io-list-scan-filters
+    outputs:
+    - contextPath: TenableIO.ScanFilter.filters.name
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanFilter.filters.readable_name
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanFilter.filters.control.type
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanFilter.filters.control.regex
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanFilter.filters.control.readable_regex
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanFilter.filters.operators
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanFilter.filters.group_name
+      description: ''
+      type: Unknown
+    - contextPath: TenableIO.ScanFilter.filters.control.list
+      description: ''
+      type: String
   runonce: false
   script: '-'
   subtype: python3
