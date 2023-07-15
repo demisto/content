@@ -156,12 +156,11 @@ class Client:
             self.connection.commit()
             return 'Command executed', []
         else:
+            # For avoiding responses with lots of records
             results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
-        # For avoiding responses with lots of records
-        # results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
         headers = []
+        # if the table isn't empty
         if results:
-            # if the table isn't empty
             headers = list(result.keys())
         return results, headers
 
