@@ -40,12 +40,11 @@ def common_elements(left_list: list[str], right_list: list[str]) -> list[str]:
     """
     left_list = argToList(left_list)
     right_list = argToList(right_list)
-    all_results: list = []
     for l_item in left_list:
-        all_results.extend(
-            r_item for r_item in right_list if l_item.lower() in r_item.lower()
-        )
-    return all_results
+        for r_item in right_list:
+            if l_item.lower() in r_item.lower():
+                return True
+    return False
 
 
 def main():
@@ -57,18 +56,10 @@ def main():
 
     res = common_elements(leftArg, rightArg)
 
-    # remove duplicates
-    res = [*set(res)]
-    my_dict = {
-        'CommonElements': res
-    }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': json.dumps(my_dict),
-        'HumanReadable': 'Set comparisons in Context.',
-        'EntryContext': my_dict
-    })
+    for lval in left_list:
+
+        in_range = any(lval.lower() in r.lower() for r in right_list)
+        demisto.results(in_range)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
