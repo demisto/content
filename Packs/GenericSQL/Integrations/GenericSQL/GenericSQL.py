@@ -142,7 +142,7 @@ class Client:
         return engine.connect()
 
     def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0, commit: bool = False) -> Tuple[
-        Dict, List]:
+            Dict, List]:
         """Execute query in DB via engine
         :param bind_vars: in case there are names and values - a bind_var dict, in case there are only values - list
         :param sql_query: the SQL query
@@ -151,15 +151,15 @@ class Client:
         """
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
+        result = self.connection.execute(sql_query, bind_vars)
         if commit:
             self.connection.commit()
             return 'Command executed', []
         else:
-            result = self.connection.execute(sql_query, bind_vars)
+            results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
         # For avoiding responses with lots of records
         # results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
         headers = []
-        results = []
         if results:
             # if the table isn't empty
             headers = list(result.keys())
@@ -287,7 +287,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         bind_variables_values = args.get('bind_variables_values', "")
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
-        result, headers = client.sql_query_execute_request(sql_query, bind_variables, commit)
+        result, headers = client.sql_query_execute_request(sql_query, bind_variables, commit=commit)
         if result == 'Command executed':
             return result, {}, []
         # converting an sqlalchemy object to a table
