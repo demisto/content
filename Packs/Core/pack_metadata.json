@@ -2,13 +2,19 @@
     "name": "Core - Investigation and Response",
     "description": "Automates incident response",
     "support": "xsoar",
-    "currentVersion": "1.4.4",
+    "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Endpoint"
     ],
+    "dependencies": {
+        "CloudIncidentResponse": {
+            "mandatory": true,
+            "display_name": "Cloud Incident Response"
+        }
+    },
     "excludedDependencies": [
         "Dropbox"
     ],
