@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"**Important Note**:The following playbooks have been moved to the 'Cloud Incident Response' pack. The 'Cloud Incident Resopnse' pack will be installed as a dependency of the 'Core' pack."}
