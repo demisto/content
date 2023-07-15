@@ -44,6 +44,7 @@ Describe "SearchAuditLogCommand Tests" {
         Mock Connect-ExchangeOnline
         Mock Disconnect-ExchangeOnline
         Mock Get-Date {"Thursday, July 13, 2023 3:14:32 PM"}
+        Mock New-Object
 
         $mockedClient = [ExchangeOnlinePowershellV3Client]::new(
             "https://example.com",
@@ -94,13 +95,13 @@ Describe "SearchAuditLogCommand Tests" {
                 return ,@{AuditData = Get-Content "test_data/audit_log.json" -Raw}
             }
 
-            $result = SearchAuditLogCommand $mockedClient $command_arguments
+            $human_readable, $entry_context, $raw_response = SearchAuditLogCommand $mockedClient $command_arguments
 
-            $result[0] | Should -Be "Expected human-readable output"
-            $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][0].Version | Should -Be 1
-            $result[1]["$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)"][0].EventName | Should -Be "AzureActiveDirectory"
-            $result[2][0].Version | Should -Be 1
-            $result[2][0].EventName | Should -Be "AzureActiveDirectory"
+            $human_readable | Should -Be (Get-Content "test_data/human_readable.md" -Raw)
+            $entry_context["O365AuditLog(val.Id === obj.Id)"][0].Workload | Should -Be "AzureActiveDirectory"
+            $entry_context["O365AuditLog(val.Id === obj.Id)"][0].UserId | Should -Be "someone@somecompany.onmicrosoft.com"
+            $raw_response[0].Workload | Should -Be "AzureActiveDirectory"
+            $raw_response[0].UserId | Should -Be "someone@somecompany.onmicrosoft.com"
         }
     }
 

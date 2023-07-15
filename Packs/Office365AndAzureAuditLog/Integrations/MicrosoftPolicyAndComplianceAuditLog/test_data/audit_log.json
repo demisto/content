@@ -15,7 +15,7 @@
     "ExtendedProperties": [
         {
             "Name": "additionalDetails",
-            "Value": "{\"User-Agent\":\"python-requests/2.31.0\"}"
+            "Value": "some_value"
         },
         {
             "Name": "extendedAuditEventCategory",

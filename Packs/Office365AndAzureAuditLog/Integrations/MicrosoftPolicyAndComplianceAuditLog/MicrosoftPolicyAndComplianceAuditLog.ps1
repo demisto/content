@@ -125,7 +125,7 @@ function SearchAuditLogCommand {
             ($kwargs.result_size -as [int])
         )
         if ($raw_response) {
-            $list = New-Object Collections.Generic.List[PSObject]
+            $list = [System.Collections.Generic.List[object]]::new()
             foreach ($item in $raw_response) {
                 $list.add((ConvertFrom-Json $item.AuditData))
             }
