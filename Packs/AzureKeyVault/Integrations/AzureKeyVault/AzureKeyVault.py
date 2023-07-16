@@ -1420,7 +1420,8 @@ def main() -> None:     # pragma: no cover
     demisto.debug(f'Command being called is {command}')
     try:
         client_secret = params.get('credentials', {}).get('password', '')
-        certificate_thumbprint = params.get('certificate_thumbprint')
+        certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+            'password') or params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Client Secret or Certificate Thumbprint and Private Key must be provided. For further information see https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
