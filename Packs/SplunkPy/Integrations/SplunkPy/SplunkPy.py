@@ -564,7 +564,7 @@ class Notable:
             'mirror_tags': [comment_tag_from_splunk, comment_tag_to_splunk]
         })
         incident["rawJSON"] = json.dumps(notable_data)
-
+        comment_entries = []
         labels = []
         if params.get('parseNotableEventsRaw'):
             for key, value in rawToDict(notable_data['_raw']).items():
@@ -573,8 +573,32 @@ class Notable:
                 labels.append({'type': key, 'value': value})
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
+        if demisto.get(notable_data, 'comment'):
+            comments = notable_data.get('comment')
+            reviewers = notable_data.get('reviewer')
+            review_times = notable_data.get('review_time')
+
+            if not isinstance(comments, list):
+                comments = [comments]
+            if not isinstance(reviewers, list):
+                reviewers = [reviewers]
+            if not isinstance(review_times, list):
+                review_times = [review_times]
+
+            demisto.debug(f"data to update comment= {comments}, review=  {reviewers}, time= {review_times}")
+            for comment, reviewer, review_time in zip(comments, reviewers, review_times):
+                # Creating a comment
+                comment_entries.append({
+                    'Comment': comment,
+                    'Comment time': review_time,
+                    'Reviwer': reviewer
+                })
+        labels.append({'type': 'SplunkComments', 'value': str(comment_entries)})
         incident['labels'] = labels
         incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
+        notable_data['SplunkComments'] = comment_entries
+        incident["rawJSON"] = json.dumps(notable_data)
+        incident['SplunkComments'] = comment_entries
 
         return incident
 
@@ -2787,7 +2811,7 @@ def main():  # pragma: no cover
         get_modified_remote_data_command(service, args)
     elif command == 'update-remote-system':
         demisto.info('########### MIRROR OUT #############')
-        update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk)
+        return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))
     elif command == 'splunk-get-username-by-xsoar-user':
         return_results(mapper.get_splunk_user_by_xsoar_command(args))
     else:
