@@ -1437,7 +1437,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
             demisto.debug(f'Got the entry tags: {entry_tags}')
             if comment_tag_to_splunk in entry_tags:
                 demisto.debug('Add new comment')
-                comment_body = f'{entry.get("contents", "")}\n mirrored from XSOAR'
+                comment_body = f'{entry.get("contents", "")}\n {COMMENT_MIRRORED_FROM_XSOAR}'
                 demisto.debug(f"will update comment: {comment_body}")
                 base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
                 try:
