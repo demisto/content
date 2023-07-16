@@ -144,7 +144,7 @@ def copy_markdown_images(
                     )
                     continue
 
-                folder_names = list(map(lambda member: member.value, ImagesFolderNames))
+                folder_names = [member.value for member in ImagesFolderNames]
                 if readme_desc_folder not in folder_names:
                     logging.error(f'The folder is not one of {folder_names}')
                     continue
