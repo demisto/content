@@ -1530,7 +1530,8 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 300
+            "timeout": 300,
+            "memory_threshold": 300
         },
         {
             "integrations": "PagerDuty v2",

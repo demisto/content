@@ -1,4 +1,3 @@
-# type: ignore
 from CommonServerPython import *
 from typing import Any
 import requests

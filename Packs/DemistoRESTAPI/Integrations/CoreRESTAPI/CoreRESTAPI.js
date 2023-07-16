@@ -73,7 +73,7 @@ getRequestURL = function (uri) {
     if (params.use_tenant){
         requestUrl += '/' + getTenantAccountName();
     }
-    if (uri.slice(0, 1) !== '/') {
+    if (uri && uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
     requestUrl += uri;
