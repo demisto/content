@@ -1213,14 +1213,11 @@ def scan_history_human_readable(history: list) -> str:
 def scan_history_params(args: dict) -> dict:
     return {
         'sort': '%2C'.join(
-            f'{field}%3A{args["sortOrder"]}'  # check if theres a default
+            f'{field}%3A{args["sortOrder"]}'
             for field in argToList(args.get('sortFields'))),
         'exclude_rollover': args['excludeRollover'],
-        'limit': args['limit'],  # unknown if this is the actual name of the param
-        'offset': args['offset'],  # unknown if this is an arg
-    }
-    # 'page_size': args.get('pageSize'),
-    # 'page': args.get('page'),
+        'limit': args.get('pageSize') or args['limit'],
+        'offset': int(args.get('pageSize', 0)) * int(args.get('page', 0))}
 
 
 def get_scan_history_command(args: dict[str, Any]) -> CommandResults:
@@ -1244,7 +1241,7 @@ def export_scan_request_args(
         filterQuality=None, filterValue=None, **args) -> dict:
 
     if chapters:
-        chapters = chapters.replace(',', ';')
+        chapters = ';'.join(argToList(chapters))
     elif args['format'] in ('PDF', 'HTML'):
         raise DemistoException('The "chapters" field must be provided for PDF or HTML formats.')
 
@@ -1253,7 +1250,7 @@ def export_scan_request_args(
         'history_id': historyId,
         'history_uuid': historyUuid}
     body = {
-        'format': args['format'],
+        'format': args['format'].lower(),
         'chapters': chapters,
         'filter.search_type': filterSearchType,
         'asset_id': assetId}
@@ -1290,9 +1287,13 @@ def check_export_scan_status(scan_id: str, file_id: str) -> str:
     return safe_get_json(response).get('status', '')
 
 
-def download_export_scan(scan_id: str, file_id: str):
-    # NEEDS RESEARCH
-    pass
+def download_export_scan(scan_id: str, file_id: str, args: dict) -> dict:
+    data = requests.get(
+        f'{BASE_URL}scans/{scan_id}/export/{file_id}/download',
+        headers=HEADERS, verify=USE_SSL)
+    return fileResult(
+        f'scan_{scan_id}_{file_id}.{args["format"].lower()}',
+        data, EntryType.ENTRY_INFO_FILE)
 
 
 @polling_function(
@@ -1309,7 +1310,7 @@ def export_scan_command(args: dict[str, Any]) -> PollResult:
     match check_export_scan_status(scan_id, file_id):
         case 'ready':
             return PollResult(
-                download_export_scan(scan_id, file_id),
+                download_export_scan(scan_id, file_id, args),
                 continue_to_poll=False)
 
         case 'error':

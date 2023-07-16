@@ -1086,28 +1086,141 @@ script:
     description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints/commands that support them.
     name: tenable-io-list-scan-filters
     outputs:
-    - contextPath: TenableIO.ScanFilter.filters.name
+    - contextPath: TenableIO.ScanFilter.name
       description: ''
       type: String
-    - contextPath: TenableIO.ScanFilter.filters.readable_name
+    - contextPath: TenableIO.ScanFilter.readable_name
       description: ''
       type: String
-    - contextPath: TenableIO.ScanFilter.filters.control.type
+    - contextPath: TenableIO.ScanFilter.control.type
       description: ''
       type: String
-    - contextPath: TenableIO.ScanFilter.filters.control.regex
+    - contextPath: TenableIO.ScanFilter.control.regex
       description: ''
       type: String
-    - contextPath: TenableIO.ScanFilter.filters.control.readable_regex
+    - contextPath: TenableIO.ScanFilter.control.readable_regex
       description: ''
       type: String
-    - contextPath: TenableIO.ScanFilter.filters.operators
+    - contextPath: TenableIO.ScanFilter.operators
       description: ''
       type: String
-    - contextPath: TenableIO.ScanFilter.filters.group_name
+    - contextPath: TenableIO.ScanFilter.group_name
       description: ''
       type: Unknown
-    - contextPath: TenableIO.ScanFilter.filters.control.list
+    - contextPath: TenableIO.ScanFilter.control.list
+      description: ''
+      type: String
+  - arguments:
+    - name: scanId
+      description: The ID of the scan to get the runs of.
+      required: true
+    - name: sortFields
+      description: 'The fields by which to sort, in the order defined by "sortOrder". Possible values: start_date, end_date, status.'
+      isArray: true
+    - name: sortOrder
+      description: The direction in which to sort the fields defined by "sortFields".
+      defaultValue: asc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: excludeRollover
+      description: Whether or not to exclude rollover scans from the scan history.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: page
+      description: The page number of scan records to retrieve (used for pagination). The page size is defined by the "pageSize" argument.
+    - name: pageSize
+      description: The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument. 
+    - name: limit
+      description: The number of records to retrieve. If "pageSize" is defined, this argument is ignored.
+      defaultValue: '50'
+    description: Lists the individual runs of the specified scan.
+    name: tenable-io-get-scan-history
+    outputs:
+    - contextPath: TenableIO.ScanHistory.time_end
+      description: ''
+      type: Number
+    - contextPath: TenableIO.ScanHistory.scan_uuid
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanHistory.id
+      description: ''
+      type: Number
+    - contextPath: TenableIO.ScanHistory.is_archived
+      description: ''
+      type: Boolean
+    - contextPath: TenableIO.ScanHistory.time_start
+      description: ''
+      type: Number
+    - contextPath: TenableIO.ScanHistory.visibility
+      description: ''
+      type: String
+    - contextPath: TenableIO.ScanHistory.targets.custom
+      description: ''
+      type: Boolean
+    - contextPath: TenableIO.ScanHistory.targets.default
+      description: ''
+      type: Unknown
+    - contextPath: TenableIO.ScanHistory.status
+      description: ''
+      type: String
+  - arguments:
+    - name: scanId
+      description: The identifier for the scan to export. Run the "tenable-io-list-scans" command to get all available scans.
+      required: true
+    - name: historyId
+      description: The unique identifier of the historical data to export. Run the "tenable-io-get-scan-history" command to get history IDs.
+    - name: historyUuid
+      description: The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs.
+    - name: format
+      description: The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 60 days. For scans that are older than 60 days, only the Nessus and CSV formats are supported.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Nessus
+      - HTML
+      - PDF
+      - CSV
+    - name: chapters
+      description: | 
+        A list of chapters to include in the export.
+         Chapters can be any of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance.
+         This argument is required if the file format is PDF or HTML.
+      isArray: true
+    - name: filterName
+      description: |
+        A list of filters to apply to the exported scan report.
+         Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).
+         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to make individual filters.
+      isArray: true
+    - name: filterQuality
+      description: |
+        A list of operators for the filter to apply to the exported scan report.
+         Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).
+         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to make individual filters.
+      isArray: true
+    - name: filterValue
+      description: |
+        A list of values for the filter to apply to the exported scan report.
+         Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).
+         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to make individual filters.
+      isArray: true
+    - name: filterSearchType
+      description: For multiple filters, specifies whether to use the AND or the OR logical operator.
+    - name: assetId
+      description: The ID of the asset scanned.
+    polling: true
+    description: Export and download a scan report.
+    name: tenable-io-export-scan
+    outputs:
+    - contextPath: InfoFile.file
+      description: ''
+      # type: Number
+    - contextPath: InfoFile.temp_token
       description: ''
       type: String
   runonce: false
