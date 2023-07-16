@@ -1,17 +1,17 @@
-Okta Auth0 logs event collector integration for XSIAM.
-This integration was integrated and tested with version 2.0 of Okta Auth0
+Okta Auth0 logs event collector integration for Cortex XSIAM.
+This integration was integrated and tested with version 2.0 of Okta Auth0.
 Please see the [Okta Auth0 rate limit policy](https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy).
 
 ## Configure Okta Auth0 Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Okta Auth0 Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | Client ID | The API Key to use for connection. | True |
+    | Client ID | The API key to use for connection. | True |
     | Client Secret |  | True |
     | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | The maximum number of events per fetch |  | False |
@@ -39,7 +39,7 @@ Manual command to fetch events and display them.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Number of results to return. Maximum is 2000. Default is 10. | Optional | 
+| limit | Maximum number of results to return. Maximum is 2000. Default is 10. | Optional | 
 | since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional | 
 
 #### Context Output

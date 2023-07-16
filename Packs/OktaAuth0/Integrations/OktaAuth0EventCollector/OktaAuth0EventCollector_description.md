@@ -1,13 +1,13 @@
-To start fetch events from Okta Auth0 API you need to have a machine to machine (M2M) application in your Auth0 UI and there you can find your client ID and secret to configure the instance.
+To begin fetching events from Okta Auth0 API you need to have a machine to machine (M2M) application in your Auth0 UI. In the M2M application you can find your client ID and secret to configure the instance.
 
 ### Create an Okta Auth0 API M2M application
 1. Access OneLogin as an account owner or administrator.
 2. In the side bar go to **Applications** > **Applications**.
-3. Click on **Create Application**, choose **Machine to Machine Applications** and click **Create**.
+3. Click **Create Application**, choose **Machine to Machine Applications** and click **Create**.
 4. Select the authorized API URL you want to use in the instance.
-5. To fetch the logs you need to choose the permission `read:logs`.
+5. To fetch the logs, choose the permission `read:logs`.
 6. Click **Authorize**.
-7. In the created application under the **Quick Start** tab you can find the client credentials to configure an integration instance with.
+7. In the created application under the **Quick Start** tab locate the client credentials to use to configure the integration instance.
 
 **Note**: To fetch the Auth0 logs you need to set the permission `read:logs` in the M2M application.
 
@@ -15,7 +15,7 @@ For more information about how to register M2M apps, see the [Auth0 documentatio
 
 
 ### Log Data Retention
-Important: Your Auth0 log retention period depends your subscription level.
+Important: Your Auth0 log retention period depends on your subscription level.
 
 | Plan | Log Retention |
 | --- | --- |

@@ -10,7 +10,7 @@ configuration:
   type: 0
 - displaypassword: Client Secret
   display: Client ID
-  additionalinfo: The API Key to use for connection.
+  additionalinfo: The API key to use for connection.
   name: credentials
   required: true
   type: 9
@@ -34,7 +34,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Okta Auth0 logs event collector integration for XSIAM.
+description: Okta Auth0 logs event collector integration for Cortex XSIAM.
 display: Okta Auth0 Event Collector
 name: OktaAuth0EventCollector
 script:
@@ -52,7 +52,7 @@ script:
       - 'false'
       required: true
     - default: false
-      description: Number of results to return. Maximum is 2000.
+      description: Maximum number of results to return. Maximum is 2000.
       isArray: false
       name: limit
       defaultValue: 10
