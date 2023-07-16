@@ -16,6 +16,7 @@ from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
+# Replace the Github Users of the reviewers and security reviewer according to the current contributions team 
 SECURITY_REVIEWER = "efelmandar"
 REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
@@ -258,7 +259,7 @@ def main():
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 
-    # Add security reviewer if the PR contains
+    # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
         reviewers.append(SECURITY_REVIEWER)
         pr.add_to_assignees(SECURITY_REVIEWER)
