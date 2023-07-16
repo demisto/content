@@ -570,6 +570,7 @@ switch (command) {
         if (res.response.id == undefined){
             throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
         }
+        return 'ok';
     case 'demisto-api-post':
     case 'core-api-post':
         if(args.body)
