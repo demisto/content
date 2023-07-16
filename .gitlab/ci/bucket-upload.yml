@@ -475,7 +475,7 @@ force-pack-upload-xsoar:
     - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO == "xsoar"'
 
 
-force-pack-upload-v2:
+force-pack-upload-marketplace-v2:
   needs: [ "mpv2-prepare-testing-bucket-upload-flow" ]
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -485,6 +485,17 @@ force-pack-upload-v2:
   extends: .force-pack-upload
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO == "marketplacev2"'
+
+force-pack-upload-xpanse:
+  needs: [ "xpanse-prepare-testing-bucket-upload-flow" ]
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    GCS_MARKET_BUCKET_G: $GCS_MARKET_XPANSE_BUCKET
+    MARKETPLACE: "xpanse"
+    GCS_PRODUCTION_BUCKET_G: $GCS_PRODUCTION_XPANSE_BUCKET
+  extends: .force-pack-upload
+  rules:
+    - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO == "xpanse"'
 
 
 .force-pack-upload:
