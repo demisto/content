@@ -1110,7 +1110,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "test_modeling_rules_schema_e2e_validations"
-resolved_reference = "061718c21df7dd5a18fc8b6a54ecb7f2a9cd1b41"
+resolved_reference = "2806e84f9f4c9a8edc9e80a13849134302f843a3"
 
 [[package]]
 name = "deprecated"
