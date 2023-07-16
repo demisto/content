@@ -1,6 +1,6 @@
 category: Email
 commonfields:
-  id: Check Point Harmony Email and Collaboration (HEC)
+  id: CheckPointHEC
   version: -1
 configuration:
 - section: Connect
