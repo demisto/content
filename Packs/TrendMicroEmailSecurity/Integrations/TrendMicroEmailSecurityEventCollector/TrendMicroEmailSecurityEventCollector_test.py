@@ -21,11 +21,27 @@ def mock_client() -> Client:
 
 @pytest.mark.parametrize("first_fetch", [("3 days"), ("32 hours")])
 def test_order_first_fetch(first_fetch: str):
+    """
+    Given:
+        - Valid start time of fetch
+    When:
+        - run order_first_fetch function
+    Then:
+        - Ensure the function does not throw an error
+    """
     assert order_first_fetch(first_fetch)
 
 
 @pytest.mark.parametrize("first_fetch", [("7 days"), ("4321 minutes")])
 def test_order_first_fetch_failure(first_fetch: str):
+    """
+    Given:
+        - Invalid start time of fetch (earlier than 72 hours ago)
+    When:
+        - run order_first_fetch function
+    Then:
+        - Ensure that the function throws the expected error
+    """
     with pytest.raises(
         ValueError,
         match="The request retrieves logs created within 72 hours at most before sending the request\n"
@@ -35,6 +51,14 @@ def test_order_first_fetch_failure(first_fetch: str):
 
 
 def test_handle_error_no_content(mock_client: Client):
+    """
+    Given:
+        - A Response object with status code 204
+    When:
+        - run `handle_error_no_content` method
+    Then:
+        - Ensure that the function throws a `NoContentException` error
+    """
     class Response:
         status_code = 204
 
@@ -43,6 +67,14 @@ def test_handle_error_no_content(mock_client: Client):
 
 
 def test_handle_error_no_content_with_other_errors(mock_client: Client):
+    """
+    Given:
+        - A Response object with status code 404
+    When:
+        - run `handle_error_no_content` method
+    Then:
+        - Ensure the function throws an error that is not a `NoContentException`
+    """
     class Response:
         status_code = 404
         reason = "test"
@@ -69,11 +101,28 @@ def test_handle_error_no_content_with_other_errors(mock_client: Client):
     ],
 )
 def test_remove_sensitive_from_events(event: dict, expected_results: dict):
+    """
+    Given:
+        - Events that contain `subject` or `attachments`
+    When:
+        - run `remove_sensitive_from_events` function
+    Then:
+        - Ensure that the keys with the subject or fileName values inside
+          the attachments object have been deleted if those values are present in the event
+    """
     remove_sensitive_from_events(event)
     assert event == expected_results
 
 
 def test__encode_authorization(mock_client: Client):
+    """
+    Given:
+        - Dummy username and dummy API key
+    When:
+        - run `_encode_authorization` method
+    Then:
+        - Ensure the username and api key are encoded and the expected value is returned
+    """
     authorization_encoded = mock_client._encode_authorization("test", "test_api_key")
     assert authorization_encoded == "dGVzdDp0ZXN0X2FwaV9rZXk="
 
@@ -144,6 +193,17 @@ def test_managing_set_last_run(
     mock_exception: NoContentException,
     mock_api: dict,
 ):
+    """
+    Given:
+        - The arguments needed for the `managing_set_last_run` function
+    When:
+        - run `managing_set_last_run` function
+    Then:
+        - Ensure that the `last_run` object returns with the `from_time`
+          that matches the `event_type` when the API call returns an event with `genTime`
+        - Ensure the `time_to` argument is set to be the `from_time`
+          when no event returns from the api call
+    """
     time_to = datetime.now()
     mocker.patch.object(
         mock_client,
@@ -341,6 +401,15 @@ def test_fetch_events_command(
     last_run: dict[str, str],
     expected_calls: list,
 ):
+    """
+    Given:
+        - Fetch start time and last_run object and other arguments
+    When:
+        - run `fetch_events_command` function
+    Then:
+        - Ensure the `fetch_by_event_type` function is called 3 times,
+          each call with the start time and limit that match the event_type
+    """
     mock_func = mocker.patch(
         "TrendMicroEmailSecurityEventCollector.fetch_by_event_type",
         return_value=([{"_time": "test", "logType": "test"}], "test"),
