@@ -327,8 +327,8 @@ def main() -> None:  # pragma: no cover
     base_url = params["url"].strip("/")
     username = params["credentials"]["identifier"]
     api_key = params["credentials"]["password"]
-    verify = argToBoolean(params.get("verify", "false"))
-    proxy = argToBoolean(params.get("proxy", "false"))
+    verify = not params.get('insecure', False)
+    proxy = params.get("proxy", False)
     first_fetch = order_first_fetch(params.get("first_fetch") or "3 days")
 
     should_push_events = argToBoolean(args.get("should_push_events", False))
