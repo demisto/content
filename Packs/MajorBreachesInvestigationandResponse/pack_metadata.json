@@ -98,6 +98,10 @@
             "mandatory": false,
             "display_name": "CVE-2023-34362 - MOVEit Transfer SQL Injection"
         },
+        "CloakedUrsaPhishingCampaign": {
+            "mandatory": false,
+            "display_name": "Cloaked Ursa Diplomatic Phishing Campaign"
+        },
         "ServiceNow": {
             "mandatory": false,
             "display_name": "ServiceNow"
