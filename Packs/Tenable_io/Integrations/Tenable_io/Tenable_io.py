@@ -1268,11 +1268,19 @@ def export_scan_request_args(
     return {'url': url, 'params': params, 'json': body}
 
 
-def initiate_export_scan(args: dict) -> dict:
+def initiate_export_scan(scan_id: str, args: dict) -> PollResult:
     response = requests.post(
         **export_scan_request_args(**args),
         headers=HEADERS, verify=USE_SSL)
-    return safe_get_json(response)
+    response_json = safe_get_json(response)
+    return PollResult(
+        None, True,
+        {'fileId': response_json['file'],
+         'scanId': scan_id},
+        CommandResults(
+            outputs_prefix='InfoFile',
+            outputs_key_field='file',
+            outputs=response_json))
 
 
 def check_export_scan_status(scan_id: str, file_id: str) -> str:
@@ -1293,19 +1301,12 @@ def download_export_scan(scan_id: str, file_id: str):
     requires_polling_arg=False)
 def export_scan_command(args: dict[str, Any]) -> PollResult:
 
-    scan_id = args['scanId']
-    if not (file_id := args.get('fileId')):
-        return PollResult(
-            CommandResults(
-                outputs_prefix='InfoFile',
-                outputs_key_field='file',
-                outputs=initiate_export_scan(args)),
-            continue_to_poll=True,
-            args_for_next_run={
-                'fileId': file_id, 'scanId': scan_id})
+    scan_id, file_id = args['scanId'], args.get('fileId')
+
+    if not file_id:
+        return initiate_export_scan(scan_id, args)
 
     match check_export_scan_status(scan_id, file_id):
-
         case 'ready':
             return PollResult(
                 download_export_scan(scan_id, file_id),
@@ -1319,8 +1320,7 @@ def export_scan_command(args: dict[str, Any]) -> PollResult:
 
         case 'loading':
             return PollResult(
-                None,
-                continue_to_poll=True)
+                None, continue_to_poll=True)
 
         case default:
             raise DemistoException(
