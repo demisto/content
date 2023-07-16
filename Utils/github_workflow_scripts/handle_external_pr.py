@@ -17,7 +17,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 
-# Replace the Github Users of the reviewers and security reviewer according to the current contributions team 
+# Replace the Github Users of the reviewers and security reviewer according to the current contributions team
 SECURITY_REVIEWER = "efelmandar"
 REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
