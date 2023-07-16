@@ -5181,7 +5181,8 @@
                 "ewso365_dev_team"
             ],
             "fromversion": "6.5.0",
-            "timeout": 600
+            "timeout": 600,
+            "memory_threshold": 300
         },
         {
             "integrations": "OpsGenieV3",
