@@ -1315,7 +1315,7 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
     if indicators:
         table = {
             'Value': indicators[0]['value'],
-            'MScore': indicators[0]['score'],
+            'MScore': indicators[0]["rawJSON"].get("mscore", ''),
             'Last Seen': indicators[0]["rawJSON"].get("last_seen", '')
         }
         indicator_type = indicators[0]["rawJSON"]["type"].lower()
