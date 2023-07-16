@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
 
 import io
@@ -14,7 +15,6 @@ from googleapiclient.http import MediaIoBaseDownload
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 
@@ -214,7 +214,7 @@ def prepare_params_for_drive_changes_list(args: Dict[str, str]) -> Dict[str, Any
 
 
 def prepare_drive_changes_output(response: Dict[str, Any], drive_id: str, user_id: str) -> \
-        Tuple[Dict[str, Any], List[Dict[str, Optional[Any]]], List[Dict[str, Optional[Any]]]]:
+    Tuple[Dict[str, Any], List[Dict[str, Optional[Any]]], List[Dict[str, Optional[Any]]]]:
     """
     Prepares context output and human readable for google-drive-changes-list command.
 
@@ -627,7 +627,7 @@ def prepare_args_for_fetch_incidents(last_fetch: int, args: Dict[str, Any]) -> D
     :return: Prepared request body for fetch-incident.
     """
     if (args.get('drive_item_search_value') and not args.get('drive_item_search_field')) or (
-            not args.get('drive_item_search_value') and args.get('drive_item_search_field')):
+        not args.get('drive_item_search_value') and args.get('drive_item_search_field')):
         raise ValueError(MESSAGES['FETCH_INCIDENT_REQUIRED_ARGS'])
 
     action_detail_case_include = [action.upper() for action in args.get('action_detail_case_include', [])]
@@ -662,7 +662,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
 
     # Check for depended required parameters.
     if (params.get('drive_item_search_value') and not params.get('drive_item_search_field')) or (
-            not params.get('drive_item_search_value') and params.get('drive_item_search_field')):
+        not params.get('drive_item_search_value') and params.get('drive_item_search_field')):
         raise ValueError(MESSAGES['FETCH_INCIDENT_REQUIRED_ARGS'])
 
     params['max_fetch'] = GSuiteClient.validate_get_int(params.get('max_fetch', 10), limit=100,
@@ -846,7 +846,6 @@ def drive_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandRe
 
 
 def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
-
     outputs_context = []
     readable_output = ''
 
@@ -998,7 +997,6 @@ def file_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandRes
 
 
 def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
-
     outputs_context = []
     readable_output = ''
 
@@ -1236,7 +1234,6 @@ def file_delete_command(client: 'GSuiteClient', args: Dict[str, str]) -> Command
 
 
 def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
-
     readable_output = ''
 
     outputs_context = prepare_file_single_output(response)
@@ -1312,6 +1309,7 @@ def prepare_file_permission_request(client: 'GSuiteClient', args: Dict[str, str]
         fileId=args.get('file_id'),
         supportsAllDrives=args.get('supports_all_drives'),
         fields='*',
+        useDomainAdminAccess=('true' if argToBoolean(args.get('use_domain_admin_access')) else 'false')
     )
 
     return {
@@ -1448,7 +1446,6 @@ def file_permission_delete_command(client: 'GSuiteClient', args: Dict[str, str])
 
 
 def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
-
     outputs_context = []
     readable_output = ''
 
@@ -1494,7 +1491,6 @@ def prepare_permissions_human_readable(outputs_context: List[Dict[str, Any]], ar
 
 
 def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
-
     readable_output = ''
 
     outputs_context = prepare_permission_output(response)
@@ -1590,7 +1586,7 @@ def drive_activity_list_command(client: 'GSuiteClient', args: Dict[str, str]) ->
 
 
 def fetch_incidents(client: 'GSuiteClient', last_run: Dict, params: Dict, is_test: bool = False) -> \
-        Tuple[Optional[list], Optional[dict]]:
+    Tuple[Optional[list], Optional[dict]]:
     """
     Prepares incidents from past activity in Google Drive.
 
