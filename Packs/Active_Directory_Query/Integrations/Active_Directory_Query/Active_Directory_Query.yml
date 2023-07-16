@@ -21,12 +21,13 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
   section: Connect
+  displaypassword: Password 
 - display: NTLM authentication
   name: ntlm
   type: 8
