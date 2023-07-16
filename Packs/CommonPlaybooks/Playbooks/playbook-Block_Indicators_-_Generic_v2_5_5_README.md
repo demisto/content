@@ -1,3 +1,4 @@
+Deprecated. Use the `Block Indicators - Generic V3` playbook instead.
 This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
 - Block URL - Generic
@@ -10,26 +11,32 @@ This playbook blocks malicious Indicators using all integrations that are enable
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
+* Block Domain - Generic
 * Block File - Generic v2
-* Block Email - Generic
-* Block URL - Generic
 * Block Account - Generic
 * Block IP - Generic v2
-* Block Domain - Generic
+* Block URL - Generic
+* Block Email - Generic
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -58,6 +65,7 @@ This playbook does not use any commands.
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -91,5 +99,7 @@ This playbook does not use any commands.
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
 
 ## Playbook Image
+
 ---
-![Block Indicators - Generic v2](https://raw.githubusercontent.com/demisto/content/1077ac4f6a51a75ab0aa149785095aad3a8757fa/Packs/CommonPlaybooks/doc_files/Block_Indicators_-_Generic_v2_5_5.png)
+
+![Block Indicators - Generic v2](../doc_files/Block_Indicators_-_Generic_v2.png)
