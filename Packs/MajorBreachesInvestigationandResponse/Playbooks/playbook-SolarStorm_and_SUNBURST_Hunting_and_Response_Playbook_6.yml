@@ -974,95 +974,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "51":
-    id: "51"
-    taskid: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
-    type: playbook
-    task:
-      id: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
-      version: -1
-      name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-
-      playbookName: Block Indicators - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "83"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: PANWHunting
-          accessor: DetectedExternalIPs
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IP.Address
-                iscontext: true
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-      StaticAddressGroup: {}
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-      URLBlacklistMiner: {}
-      URLListName:
-        simple: Demisto Remediation - URL EDL
-      Username: {}
-      categories: {}
-      device-group:
-        complex:
-          root: inputs.DeviceGroup
-      type: {}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2510,
-          "y": 2310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
     taskid: f5255969-e3b5-4dbb-808d-28d7093ac2be
@@ -1476,7 +1389,7 @@ tasks:
       '#default#':
       - "56"
       "yes":
-      - "51"
+      - "116"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2086,129 +1999,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "77":
-    id: "77"
-    taskid: 17ac7616-1163-4f67-8062-0728c1b00d73
-    type: regular
-    task:
-      id: 17ac7616-1163-4f67-8062-0728c1b00d73
-      version: -1
-      name: Expanse Search for SolarStorm C2 traffic
-      description: Search Expanse risky flows for SolarStorm C2 traffic.
-      script: '|||expanse-list-risk-rules'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "78"
-    scriptarguments:
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4030,
-          "y": 1150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "78":
-    id: "78"
-    taskid: efb2c07f-c31b-478d-8074-460011014ec8
-    type: condition
-    task:
-      id: efb2c07f-c31b-478d-8074-460011014ec8
-      version: -1
-      name: Were risky flows related to SolarWinds found?
-      description: Checks if any risky flows related to SolarWinds were found.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "79"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Expanse.RiskRule
-                accessor: abbreviatedName
-            iscontext: true
-          right:
-            value:
-              simple: SolarWinds C2
-    view: |-
-      {
-        "position": {
-          "x": 4030,
-          "y": 1320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "79":
-    id: "79"
-    taskid: a62664df-12a1-49a3-80ac-9004746db107
-    type: regular
-    task:
-      id: a62664df-12a1-49a3-80ac-9004746db107
-      version: -1
-      name: Expanse get SolarWinds risky flows
-      description: Retrieve risky flows detected by Expanse Behavior.
-      script: '|||expanse-get-risky-flows'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "89"
-    scriptarguments:
-      created_after: {}
-      created_before: {}
-      internal_ip_range: {}
-      limit: {}
-      risk_rule:
-        complex:
-          root: Expanse.RiskRule
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: Expanse.RiskRule.abbreviatedName
-                iscontext: true
-              right:
-                value:
-                  simple: SolarWinds C2
-          accessor: id
-      tag_names: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4140,
-          "y": 1520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "81":
     id: "81"
     taskid: dc0d9da2-ba62-4849-87f6-7b2353a410ce
@@ -2322,7 +2114,7 @@ tasks:
       '#default#':
       - "86"
       "yes":
-      - "87"
+      - "115"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2378,107 +2170,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "87":
-    id: "87"
-    taskid: 486960ff-baab-4c17-8bff-d6193d4a5264
-    type: playbook
-    task:
-      id: 486960ff-baab-4c17-8bff-d6193d4a5264
-      version: -1
-      name: Block IP - Generic v2
-      description: |-
-        This playbook blocks malicious IPs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Check Point Firewall
-        * Palo Alto Networks Minemeld
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-        * FortiGate
-      playbookName: Block IP - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: Expanse.Issue
-          accessor: ip
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      StaticAddressGroup: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2250,
-          "y": 3220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "89":
-    id: "89"
-    taskid: 5ed59e1a-0df7-41bc-84f2-fd5813f3d845
-    type: regular
-    task:
-      id: 5ed59e1a-0df7-41bc-84f2-fd5813f3d845
-      version: -1
-      name: 'Add SolarStorm C2 indicators '
-      description: commands.local.cmd.extract.indicators
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      entryID: {}
-      filePath: {}
-      investigationID: {}
-      text:
-        complex:
-          root: Expanse.RiskyFlow
-          accessor: externalAddress
-          transformers:
-          - operator: uniq
-    reputationcalc: 2
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4140,
-          "y": 1660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "90":
     id: "90"
     taskid: 9b7aec71-0f58-4d7c-8d61-b85d8f52f681
@@ -2496,7 +2189,6 @@ tasks:
       - "19"
       "yes":
       - "76"
-      - "77"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -3273,6 +2965,134 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: ad875fde-1810-41d3-82be-65797bef15ac
+    type: playbook
+    task:
+      id: ad875fde-1810-41d3-82be-65797bef15ac
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: Expense.Issue
+          accessor: ip
+      InputEnrichment:
+        simple: "False"
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 2270,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: d4fa735e-1184-45e8-84c6-bd389ff8ae0e
+    type: playbook
+    task:
+      id: d4fa735e-1184-45e8-84c6-bd389ff8ae0e
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -3283,8 +3103,6 @@ view: |-
       "50_57_#default#": 0.51,
       "75_45_#default#": 0.15,
       "75_70_yes": 0.65,
-      "78_19_#default#": 0.1,
-      "78_79_yes": 0.58,
       "84_24_#default#": 0.35,
       "84_85_yes": 0.28,
       "90_19_#default#": 0.22,
@@ -3295,7 +3113,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 6035,
-        "width": 5610,
+        "width": 5060,
         "x": -1090,
         "y": -990
       }
@@ -3415,3 +3233,4 @@ outputs: []
 tests:
 - No tests
 fromversion: 6.0.0
+toversion: 6.4.9
