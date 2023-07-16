@@ -472,7 +472,7 @@ force-pack-upload-xsoar:
     GCS_PRODUCTION_BUCKET_G: $GCS_PRODUCTION_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO == *"xsoar"*'
+    - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO =~ *"xsoar".*'
 
 
 force-pack-upload-v2:
@@ -484,7 +484,7 @@ force-pack-upload-v2:
     GCS_PRODUCTION_BUCKET_G: $GCS_PRODUCTION_V2_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO == *"marketplacev2"*'
+    - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO =~ *"marketplacev2".*'
 
 
 .force-pack-upload:
