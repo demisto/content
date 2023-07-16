@@ -40,15 +40,7 @@
         "type": "string",
         "is_array": false
       },
-      "_product": {
-        "type": "string",
-        "is_array": false
-      },
       "cat": {
-        "type": "string",
-        "is_array": false
-      },
-      "_vendor": {
         "type": "string",
         "is_array": false
       },
@@ -112,27 +104,19 @@
         "type": "string",
         "is_array": false
       },
-      "cefVersion": {
+      "FTNTFGTlogdesc": {
         "type": "string",
         "is_array": false
       },
-      "cefDeviceVendor": {
+      "FTNTFGTrcvdpkt": {
         "type": "string",
         "is_array": false
       },
-      "cefDeviceProduct": {
+      "FTNTFGTsentpkt": {
         "type": "string",
         "is_array": false
       },
-      "cefDeviceVersion": {
-        "type": "string",
-        "is_array": false
-      },
-      "cefDeviceEventClassId": {
-        "type": "string",
-        "is_array": false
-      },
-      "cefName": {
+      "FTNTFGTduration": {
         "type": "string",
         "is_array": false
       },
@@ -140,7 +124,7 @@
         "type": "string",
         "is_array": false
       },
-      "FTNTFGTlogid": {
+      "cefDeviceVersion": {
         "type": "string",
         "is_array": false
       },
@@ -155,218 +139,6 @@
       "FTNTFGTvd": {
         "type": "string",
         "is_array": false
-      },
-      "deviceInboundInterface": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsrcintfrole": {
-        "type": "string",
-        "is_array": false
-      },
-      "deviceOutboundInterface": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTdstintfrole": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTpoluuid": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTpolicyid": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTpolicytype": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTdstcountry": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsrccountry": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTtrandisp": {
-        "type": "string",
-        "is_array": false
-      },
-      "sourceTranslatedAddress": {
-        "type": "string",
-        "is_array": false
-      },
-      "sourceTranslatedPort": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTappid": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTapp": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTappcat": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTapprisk": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTapplist": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTduration": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTsentpkt": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTrcvdpkt": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTutmaction": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTcountapp": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTeventtime": {
-        "type": "int",
-        "is_array": false
-      },
-      "eventName": {
-        "type": "string",
-        "is_array": false
-      },
-      "Name": {
-        "type": "string",
-        "is_array": false
-      },
-      "Severity": {
-        "type": "string",
-        "is_array": false
-      },
-      "leefVersion": {
-        "type": "string",
-        "is_array": false
-      },
-      "leefDeviceVendor": {
-        "type": "string",
-        "is_array": false
-      },
-      "leefProduct": {
-        "type": "string",
-        "is_array": false
-      },
-      "leefProductVersion": {
-        "type": "string",
-        "is_array": false
-      },
-      "leefEventID": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsrcip": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsrcname": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsrcport": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTsrcintf": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTdstip": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTdstname": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTdstport": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTdstintf": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsessionid": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTaction": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTpolicymode": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTservice": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTtransip": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTtransport": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsentbyte": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTrcvdbyte": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTdevtype": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTosname": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTmastersrcmac": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsrcmac": {
-        "type": "string",
-        "is_array": false
-      },
-      "FTNTFGTsrcserver": {
-        "type": "int",
-        "is_array": false
-      },
-      "FTNTFGTutmref": {
-        "type": "string",
-        "is_array": false
-      }
+      }                                                     
     }
   }
