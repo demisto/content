@@ -454,7 +454,7 @@ script:
       description: Comma-separated list of strings attack surface rule categories.
     - name: priority
       description: Comma-separated list of strings attack surface rule priorities.
-    - name: attack_surface_rule_ids
+    - name: attack_surface_rule_id
       description: Comma-separated list of strings attack surface rule IDs.
     - name: limit
       description: Maximum number of results to return.

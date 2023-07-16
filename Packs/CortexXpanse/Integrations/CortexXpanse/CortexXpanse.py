@@ -588,7 +588,7 @@ def list_attack_surface_rules_command(client: Client, args: dict[str, Any]) -> C
             ``args['enabled_status']`` Enablement status to search rules with.
             ``args['category']`` Category of rule to search on.
             ``args['priority']`` Priority of rule to search on.
-            ``args['attack_surface_rule_ids']`` ID of attack surface rule.
+            ``args['attack_surface_rule_id']`` ID of attack surface rule.
             ``args['limit']`` How many rules to return.
 
     Returns:
@@ -598,7 +598,7 @@ def list_attack_surface_rules_command(client: Client, args: dict[str, Any]) -> C
     enabled_status = argToList(args.get('enabled_status'))
     category = argToList(args.get('category'))
     priority = argToList(args.get('priority'))
-    attack_surface_rule_ids = argToList(args.get('attack_surface_rule_ids'))
+    attack_surface_rule_id = argToList(args.get('attack_surface_rule_id'))
     limit = int(args.get('limit', DEFAULT_SEARCH_LIMIT))
     # create list of search parameters or pass empty list.
     search_params = []
@@ -608,8 +608,8 @@ def list_attack_surface_rules_command(client: Client, args: dict[str, Any]) -> C
         search_params.append({"field": "category", "operator": "in", "value": category})
     if priority:
         search_params.append({"field": "priority", "operator": "in", "value": priority})
-    if attack_surface_rule_ids:
-        search_params.append({"field": "attack_surface_rule_ids", "operator": "in", "value": attack_surface_rule_ids})
+    if attack_surface_rule_id:
+        search_params.append({"field": "attack_surface_rule_id", "operator": "in", "value": attack_surface_rule_id})
 
     response = client.list_attack_surface_rules_request(search_params=search_params, limit=limit)
     formatted_response = response.get('reply', {}).get('attack_surface_rules')
