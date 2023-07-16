@@ -90,12 +90,13 @@ script:
       - private
       - projectPrivate
       - publicRead
-    - defaultValue: us
-      description: The location of the bucket. Object data for objects in the bucket resides in physical storage within this region or multi-region.
+    - defaultValue: US
+      description: The location of the bucket. The default value is US.
       name: location
     - auto: PREDEFINED
-      description: Whether the bucket is configured to allow only IAM.
+      description: Whether the bucket is configured to allow only IAM. The default value is false.
       name: uniform_bucket_level_access
+      defaultValue: 'false'
       predefined:
       - 'false'
       - 'true'
