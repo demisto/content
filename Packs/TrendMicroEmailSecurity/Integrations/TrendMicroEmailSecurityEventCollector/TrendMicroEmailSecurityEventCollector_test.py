@@ -1,4 +1,5 @@
 import pytest
+from freezegun import freeze_time
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from TrendMicroEmailSecurityEventCollector import (
     Client,
@@ -130,6 +131,7 @@ def test__encode_authorization(mock_client: Client):
     assert authorization_encoded == "dGVzdDp0ZXN0X2FwaV9rZXk="
 
 
+@freeze_time("2023-07-06T15:04:05 UTC")
 @pytest.mark.parametrize(
     "args, mock_exception, mock_api",
     [
