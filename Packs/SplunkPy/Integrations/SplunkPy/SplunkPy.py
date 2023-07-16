@@ -1014,7 +1014,9 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
     return job
 
 
-def handle_submitted_notables(service: client.Service, incidents, cache_object: Cache, mapper: UserMappingObject):
+def handle_submitted_notables(service: client.Service, incidents, cache_object: Cache, mapper: UserMappingObject,
+                              comment_tag_to_splunk: str,
+                              comment_tag_from_splunk: str):
     """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
      it moves to the next submitted notable.
 
@@ -1034,7 +1036,7 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object: 
         if handle_submitted_notable(
             service, notable, enrichment_timeout
         ):
-            incidents.append(notable.to_incident(mapper))
+            incidents.append(notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk))
             handled_notables.append(notable)
 
     cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
@@ -1090,7 +1092,8 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
     return task_status
 
 
-def submit_notables(service: client.Service, incidents: list, cache_object: Cache, mapper: UserMappingObject):
+def submit_notables(service: client.Service, incidents: list, cache_object: Cache, mapper: UserMappingObject,
+                    comment_tag_to_splunk: str, comment_tag_from_splunk: str):
     """ Submits fetched notables to Splunk for an enrichment.
 
     Args:
@@ -1113,7 +1116,7 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
             submitted_notables.append(notable)
             demisto.debug(f'Submitted enrichment request to Splunk for notable {notable.id}')
         else:
-            incidents.append(notable.to_incident(mapper))
+            incidents.append(notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk))
             failed_notables.append(notable)
             demisto.debug(f'Created incident from notable {notable.id} as each enrichment submission failed')
 
@@ -1175,12 +1178,12 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
     cache_object = Cache.load_from_integration_context(integration_context)
 
     try:
-        handle_submitted_notables(service, incidents, cache_object, mapper)
+        handle_submitted_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper,
                            comment_tag_to_splunk=comment_tag_to_splunk,
                            comment_tag_from_splunk=comment_tag_from_splunk)
-        submit_notables(service, incidents, cache_object, mapper)
+        submit_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
 
     except Exception as e:
         err = f'Caught an exception while executing the enriching fetch mechanism. Additional Info: {str(e)}'
@@ -1193,7 +1196,8 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
         store_incidents_for_mapping(incidents, integration_context)
         handled_but_not_created_incidents = cache_object.organize()
         cache_object.dump_to_integration_context(integration_context)
-        incidents += [notable.to_incident(mapper) for notable in handled_but_not_created_incidents]
+        incidents += [notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+                      for notable in handled_but_not_created_incidents]
         demisto.incidents(incidents)
 
 
