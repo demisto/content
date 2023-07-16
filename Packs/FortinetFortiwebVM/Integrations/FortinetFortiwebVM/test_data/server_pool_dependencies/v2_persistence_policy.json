@@ -1,0 +1,25 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 0,
+            "q_ref": 2,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test",
+            "type": "source-ip",
+            "type_val": "1",
+            "cookie-name": "",
+            "timeout": 300,
+            "uuid": "test",
+            "ipv4-netmask": "test",
+            "ipv6-mask-length": 128,
+            "http-header": "",
+            "url-parameter": "",
+            "cookie-path": "/",
+            "cookie-domain": "",
+            "secure-cookie": "disable",
+            "secure-cookie_val": "0"
+        }
+    ]
+}
