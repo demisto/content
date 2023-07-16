@@ -471,6 +471,8 @@ force-pack-upload-xsoar:
     MARKETPLACE: "xsoar"
     GCS_PRODUCTION_BUCKET_G: $GCS_PRODUCTION_BUCKET
   extends: .force-pack-upload
+  rules:
+    - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO =~ "xsoar"'
 
 
 force-pack-upload-v2:
@@ -481,14 +483,14 @@ force-pack-upload-v2:
     MARKETPLACE: "marketplacev2"
     GCS_PRODUCTION_BUCKET_G: $GCS_PRODUCTION_V2_BUCKET
   extends: .force-pack-upload
+  rules:
+    - if: '$FORCE_BUCKET_UPLOAD == "true" && $UPLOAD_TO =~ "marketplacev2"'
 
 
 .force-pack-upload:
   tags:
     - gke
   stage: upload-to-marketplace
-  rules:
-    - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends:
     - .default-job-settings
   script:
