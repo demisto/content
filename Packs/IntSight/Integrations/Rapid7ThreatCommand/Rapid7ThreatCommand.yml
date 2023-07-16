@@ -49,7 +49,7 @@ configuration:
   - Phishing
   - BrandSecurity
   - ExploitableData
-  - VIP
+  - vip
   type: 16
 - display: Minimum Alert Severity Level
   name: alert_severity
