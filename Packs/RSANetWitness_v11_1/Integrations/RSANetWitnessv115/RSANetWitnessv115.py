@@ -398,6 +398,7 @@ def paging_command(limit: int | None, page_size: Union[str, None, int], page_num
 
 
 def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    print("--test--skipping--", args)
     limit = arg_to_number(args.get('limit'))
     # we always supply 'until' argument to prevent duplications due to paging
     until = create_time(args.get('until')) or get_now_time()
@@ -406,18 +407,21 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
     page_number = args.get('page_number')
 
     if inc_id := args.get('id'):
+        print(f'before get_incident_request {inc_id=}')
         response = client.get_incident_request(inc_id)
         items = [response]
         context_data = {'RSANetWitness115.Incidents(val.id === obj.id)': response}
         text = f'Incident {inc_id} retrieved-'
+        print(f'after get_incident_request {inc_id=}')
     else:
+        print(f'before paging_command')
         response, items = paging_command(limit, page_size, page_number, client.list_incidents_request, until=until,
                                          since=since)
         context_data = prepare_paging_context_data(response, items, 'Incidents')
         page_number = response.get('pageNumber')
         total_pages = response.get('totalPages')
         text = f'Total Retrieved Incidents : {len(items)}\n Page number {page_number} out of {total_pages} '
-
+        print(f'after paging_command')
     output = prepare_incidents_readable_items(items)
     humanReadable = tableToMarkdown(text, output, ['Id', 'Title', 'Summary', 'Priority', 'RiskScore', 'Status',
                                                    'AlertCount', 'Created', 'LastUpdated', 'Assignee', 'Sources',
