@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 31e6e4af-c757-4aa2-8647-e87ba896886a
+    taskid: f311b1c7-487b-46a0-8140-4171b1904bc8
     type: start
     task:
-      id: 31e6e4af-c757-4aa2-8647-e87ba896886a
+      id: f311b1c7-487b-46a0-8140-4171b1904bc8
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c257537b-db21-4714-8a54-3ca77d7e4ff5
+    taskid: ea9d91e9-a771-41c1-836e-bb5bae7372ec
     type: regular
     task:
-      id: c257537b-db21-4714-8a54-3ca77d7e4ff5
+      id: ea9d91e9-a771-41c1-836e-bb5bae7372ec
       version: -1
       name: forcepoint-smc-domain-create
       description: Creates a new Domain.
@@ -51,7 +51,7 @@ tasks:
       - "2"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_domain
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 16b125ad-8a9f-4eda-8bf2-19ab7487e3f8
+    taskid: 65a9c963-1d55-44ae-84f1-9d1af7c2ba9f
     type: regular
     task:
-      id: 16b125ad-8a9f-4eda-8bf2-19ab7487e3f8
+      id: 65a9c963-1d55-44ae-84f1-9d1af7c2ba9f
       version: -1
       name: forcepoint-smc-domain-list
       description: Lists the Domains in the system.
@@ -86,7 +86,7 @@ tasks:
       - "3"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_domain
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -105,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4ebd3fd1-280a-4401-8081-41b81fe8e439
+    taskid: c640251a-d59e-435a-8609-91edd77f4e4c
     type: regular
     task:
-      id: 4ebd3fd1-280a-4401-8081-41b81fe8e439
+      id: c640251a-d59e-435a-8609-91edd77f4e4c
       version: -1
       name: forcepoint-smc-domain-delete
       description: Deletes a domain.
@@ -121,7 +121,7 @@ tasks:
       - "12"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_domain
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -140,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5304dced-bb3a-40d5-8367-d5e09f3474ec
+    taskid: 9c931b6c-de56-441f-8f30-8ac6e97ac6f4
     type: title
     task:
-      id: 5304dced-bb3a-40d5-8367-d5e09f3474ec
+      id: 9c931b6c-de56-441f-8f30-8ac6e97ac6f4
       version: -1
       name: Domain
       type: title
@@ -171,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 803dc823-8692-4b5b-8a84-263db0f7c889
+    taskid: 7ee4c52e-fffb-4483-84b8-347abeaeb2da
     type: regular
     task:
-      id: 803dc823-8692-4b5b-8a84-263db0f7c889
+      id: 7ee4c52e-fffb-4483-84b8-347abeaeb2da
       version: -1
       name: forcepoint-smc-host-create
       description: Creates a new Host.
@@ -187,9 +187,9 @@ tasks:
       - "9"
     scriptarguments:
       address:
-        simple: 1.1.1.1
+        simple: 1.2.4.5
       name:
-        simple: playbook_test
+        simple: playbook_test_host
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -208,10 +208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: cc155741-906a-4d66-863b-a66b6e9b77d4
+    taskid: 026bf98a-f355-43ba-81c1-7f6f06f4fcd3
     type: regular
     task:
-      id: cc155741-906a-4d66-863b-a66b6e9b77d4
+      id: 026bf98a-f355-43ba-81c1-7f6f06f4fcd3
       version: -1
       name: forcepoint-smc-host-list
       description: Lists the Hosts in the system.
@@ -224,7 +224,7 @@ tasks:
       - "10"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_host
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -243,10 +243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 209dc00c-81f5-4222-8937-a4ee253d0f30
+    taskid: 8ae3bd7a-7b4d-4421-8bf1-286684a7b5f6
     type: regular
     task:
-      id: 209dc00c-81f5-4222-8937-a4ee253d0f30
+      id: 8ae3bd7a-7b4d-4421-8bf1-286684a7b5f6
       version: -1
       name: forcepoint-smc-host-update
       description: Updates a host.
@@ -263,7 +263,7 @@ tasks:
       comment:
         simple: test
       name:
-        simple: playbook_test
+        simple: playbook_test_host
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -282,10 +282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 54414cc9-f0d5-4aca-82c8-686f79ff474f
+    taskid: f0939bdd-2dd2-4a61-87bb-a47a93b7b8d8
     type: regular
     task:
-      id: 54414cc9-f0d5-4aca-82c8-686f79ff474f
+      id: f0939bdd-2dd2-4a61-87bb-a47a93b7b8d8
       version: -1
       name: forcepoint-smc-host-delete
       description: Deletes a host.
@@ -298,7 +298,7 @@ tasks:
       - "13"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_host
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -317,10 +317,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 76b2f10c-de8b-4397-8f5d-959d1ab6de5d
+    taskid: a24d353d-0ba2-48ca-8b63-69f23db90450
     type: title
     task:
-      id: 76b2f10c-de8b-4397-8f5d-959d1ab6de5d
+      id: a24d353d-0ba2-48ca-8b63-69f23db90450
       version: -1
       name: Host
       type: title
@@ -348,10 +348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6c5ba304-611e-4fa5-8fdf-349f42895a9a
+    taskid: 32d67435-a011-4c25-8b6b-3083a20bdcc5
     type: title
     task:
-      id: 6c5ba304-611e-4fa5-8fdf-349f42895a9a
+      id: 32d67435-a011-4c25-8b6b-3083a20bdcc5
       version: -1
       name: IP List
       type: title
@@ -379,10 +379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: e74cc137-8cd8-469f-83dd-c3c1cea0145c
+    taskid: b20fb35d-c2fb-4633-8116-720794ae3788
     type: regular
     task:
-      id: e74cc137-8cd8-469f-83dd-c3c1cea0145c
+      id: b20fb35d-c2fb-4633-8116-720794ae3788
       version: -1
       name: forcepoint-smc-ip-list-create
       description: Creates an IP List.
@@ -397,7 +397,7 @@ tasks:
       addresses:
         simple: 1.1.1.1
       name:
-        simple: playbook_test
+        simple: playbook_test_iplist
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 76ee755e-5d7c-4b4f-8a5b-0e8e4064c37c
+    taskid: 7d49786c-7950-4ff9-8228-2be381af8c91
     type: regular
     task:
-      id: 76ee755e-5d7c-4b4f-8a5b-0e8e4064c37c
+      id: 7d49786c-7950-4ff9-8228-2be381af8c91
       version: -1
       name: forcepoint-smc-ip-list-list
       description: Lists the IP Lists in the system.
@@ -432,7 +432,7 @@ tasks:
       - "18"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_iplist
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -451,10 +451,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 9f594425-8113-4d40-89ec-4679883f84f5
+    taskid: 7afd2255-4971-44f5-8b92-d35297ced619
     type: regular
     task:
-      id: 9f594425-8113-4d40-89ec-4679883f84f5
+      id: 7afd2255-4971-44f5-8b92-d35297ced619
       version: -1
       name: forcepoint-smc-ip-list-update
       description: Updates an IP List.
@@ -467,13 +467,13 @@ tasks:
       - "15"
     scriptarguments:
       addresses:
-        simple: 1.1.1.1
+        simple: 1.2.4.5
       comment:
         simple: test
       is_overwrite:
         simple: "True"
       name:
-        simple: playbook_test
+        simple: playbook_test_iplist
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -492,10 +492,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 9c1e6cb4-a762-4264-82bc-63dcbc391217
+    taskid: 547560c0-a857-4d48-8660-ab7736127406
     type: regular
     task:
-      id: 9c1e6cb4-a762-4264-82bc-63dcbc391217
+      id: 547560c0-a857-4d48-8660-ab7736127406
       version: -1
       name: forcepoint-smc-ip-list-delete
       description: Deletes an IP List.
@@ -508,7 +508,7 @@ tasks:
       - "28"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_iplist
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -527,10 +527,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b5c01805-6020-41b7-8abf-49d7b5796947
+    taskid: 614b65e0-e26b-4933-887c-1053009d1f62
     type: condition
     task:
-      id: b5c01805-6020-41b7-8abf-49d7b5796947
+      id: 614b65e0-e26b-4933-887c-1053009d1f62
       version: -1
       name: Verify Outputs
       type: condition
@@ -550,8 +550,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1.1.1.1
-      - - operator: ContainsGeneral
+              simple: 1.2.4.5
+      - - operator: containsGeneral
           left:
             value:
               simple: ForcepointSMC.IPList.Addresses
@@ -576,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 28cff665-8561-4897-85c3-db1935cfbf2c
+    taskid: 7979af03-2a86-4556-86c8-d9f5d0177c2a
     type: condition
     task:
-      id: 28cff665-8561-4897-85c3-db1935cfbf2c
+      id: 7979af03-2a86-4556-86c8-d9f5d0177c2a
       version: -1
       name: Verify Outputs
       type: condition
@@ -617,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 8fed7c87-adf7-4b64-83d0-c781e3710bcf
+    taskid: e72d0e38-f8f7-46cb-89a3-1a00349ac30a
     type: regular
     task:
-      id: 8fed7c87-adf7-4b64-83d0-c781e3710bcf
+      id: e72d0e38-f8f7-46cb-89a3-1a00349ac30a
       version: -1
       name: forcepoint-smc-policy-template-list
       description: Lists the policy templates in the system.
@@ -652,10 +652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 9bc99029-72f7-4405-8ddf-f2fefacccf69
+    taskid: 52482404-3907-4920-80f7-ce05c60071d7
     type: regular
     task:
-      id: 9bc99029-72f7-4405-8ddf-f2fefacccf69
+      id: 52482404-3907-4920-80f7-ce05c60071d7
       version: -1
       name: forcepoint-smc-firewall-policy-create
       description: Creates a firewall policy.
@@ -668,7 +668,7 @@ tasks:
       - "22"
     scriptarguments:
       name:
-        simple: playbook_test
+        simple: playbook_test_policy
       template:
         simple: ${ForcepointSMC.PolicyTemplate.Name}
     separatecontext: false
@@ -689,10 +689,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 10e75513-3f6a-45a4-80fe-657d9a19ac20
+    taskid: cd691755-80ca-4c79-8edf-c66bc726cc68
     type: regular
     task:
-      id: 10e75513-3f6a-45a4-80fe-657d9a19ac20
+      id: cd691755-80ca-4c79-8edf-c66bc726cc68
       version: -1
       name: forcepoint-smc-firewall-policy-list
       description: Lists the firewall policies in the system.
@@ -724,10 +724,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 16e2c490-287d-40b0-8136-b313c226a155
+    taskid: 0519695b-bc40-45f0-86cc-8c26c859599a
     type: regular
     task:
-      id: 16e2c490-287d-40b0-8136-b313c226a155
+      id: 0519695b-bc40-45f0-86cc-8c26c859599a
       version: -1
       name: forcepoint-smc-rule-create
       description: Creates a rule.
@@ -746,7 +746,7 @@ tasks:
       policy_name:
         simple: ${ForcepointSMC.Policy.Name}
       rule_name:
-        simple: playbook_test
+        simple: playbook_test_rule
       source_ip_list:
         simple: ${ForcepointSMC.IPList.Name}
     separatecontext: false
@@ -767,10 +767,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 07447258-bbd1-4c89-888d-cfdb67e5e42d
+    taskid: 12b957b7-35df-4e84-84f4-05a720536db3
     type: regular
     task:
-      id: 07447258-bbd1-4c89-888d-cfdb67e5e42d
+      id: 12b957b7-35df-4e84-84f4-05a720536db3
       version: -1
       name: forcepoint-smc-ip-list-list
       description: Lists the IP Lists in the system.
@@ -802,10 +802,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 45f72e2e-ec2e-4e87-8099-3a5d99e96986
+    taskid: 5b235a51-ca2c-46df-87c1-55604cd5e496
     type: regular
     task:
-      id: 45f72e2e-ec2e-4e87-8099-3a5d99e96986
+      id: 5b235a51-ca2c-46df-87c1-55604cd5e496
       version: -1
       name: forcepoint-smc-rule-update
       description: Updates a rule.
@@ -847,10 +847,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 333058f0-183b-4b5d-8353-fb6881f609ab
+    taskid: b319723c-805d-4399-8398-750411649b1e
     type: regular
     task:
-      id: 333058f0-183b-4b5d-8353-fb6881f609ab
+      id: b319723c-805d-4399-8398-750411649b1e
       version: -1
       name: forcepoint-smc-rule-delete
       description: Deletes a rule.
@@ -890,10 +890,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: d53d8081-ce75-40fe-8771-30908d19db42
+    taskid: d4f9b360-dade-4e51-85ab-5d4f4e3d475b
     type: title
     task:
-      id: d53d8081-ce75-40fe-8771-30908d19db42
+      id: d4f9b360-dade-4e51-85ab-5d4f4e3d475b
       version: -1
       name: Policy and Rule
       type: title
@@ -921,10 +921,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 1979bdb9-c065-4683-83c0-ac2fc5e9a82b
+    taskid: 849a9620-3254-475f-8c46-6931a008d305
     type: regular
     task:
-      id: 1979bdb9-c065-4683-83c0-ac2fc5e9a82b
+      id: 849a9620-3254-475f-8c46-6931a008d305
       version: -1
       name: forcepoint-smc-firewall-policy-delete
       description: Deletes a firewall policy.
@@ -953,10 +953,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 0427fb50-a246-49cc-868d-b52973385b86
+    taskid: 47acf2dc-1bf3-411c-8851-5b2fcdc36c78
     type: regular
     task:
-      id: 0427fb50-a246-49cc-868d-b52973385b86
+      id: 47acf2dc-1bf3-411c-8851-5b2fcdc36c78
       version: -1
       name: DeleteContext
       description: |-
