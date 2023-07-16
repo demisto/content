@@ -1,4 +1,4 @@
-## CVE-2023-36884 - Office and Windows HTML RCE
+## CVE-2023-36884 - Microsoft Office and Windows HTML RCE
 
 Microsoft recently detected a sophisticated phishing campaign orchestrated by a threat actor called Storm-0978. The targets of this campaign were defense and government organizations in Europe and North America. The attackers exploited the previously undisclosed CVE-2023-36884, introduced in July's recent Patch Tuesday release.
 
