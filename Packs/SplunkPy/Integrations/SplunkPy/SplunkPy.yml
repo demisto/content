@@ -238,6 +238,18 @@ configuration:
   type: 19
   section: Collect
   advanced: true
+- display: Comment tag from Splunk
+  name: comment_tag_from_splunk
+  defaultvalue: FROM SPLUNK
+  type: 0
+  required: false
+  additionalinfo: Add this tag to an entry to mirror it as a comment from Splunk
+- display: Comment tag to Splunk
+  name: comment_tag_to_splunk
+  defaultvalue: FROM XSOAR
+  type: 0
+  required: false
+  additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
