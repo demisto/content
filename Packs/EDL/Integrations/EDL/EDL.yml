@@ -12,7 +12,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- additionalinfo: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
+- additionalinfo: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators.
   display: Indicator Query
   name: indicators_query
   type: 0
@@ -306,7 +306,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
   - name: export-indicators-list-update
     arguments:
-    - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
+    - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators.
       name: query
     - auto: PREDEFINED
       defaultValue: PAN-OS (text)
@@ -386,7 +386,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.63817
+  dockerimage: demisto/flask-nginx:1.0.0.65013
   longRunning: true
   longRunningPort: true
   script: '-'
