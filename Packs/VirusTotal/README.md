@@ -1,4 +1,9 @@
-Note: Support for this pack moved to the partner on Oct 1, 2021. Please contact the partner directly via the support link on the right.
+<~XSOAR> This text is supposed to be in all xsoar marketplaces </~XSOAR>
+<~XSOAR_SAAS> This will appear only in xsoar_saas.</~XSOAR_SAAS>
+<~XSIAM> This will appear only in XSIAM. </~XSIAM>
+
+![Retrieve Asset Details - Lansweeper](https://raw.githubusercontent.com/crestdatasystems/content/4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/Retrieve_Asset_Details_-_Lansweeper.png)
+
 
 **What**. VirusTotal is the richest and most actionable **_crowdsourced_** threat intelligence platform on the planet. It equips security teams with comprehensive context and cutting edge functionality to proactively protect their networks from cybersecurity threats.
 

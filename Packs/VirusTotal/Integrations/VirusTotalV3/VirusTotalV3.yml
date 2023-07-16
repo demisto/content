@@ -37,14 +37,20 @@ configuration:
   name: ipThreshold
   defaultvalue: '10'
   type: 0
+  hidden:
+  - xsoar_on_prem
 - display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: '10'
   type: 0
+  hidden:
+    - xsoar
 - display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   defaultvalue: '10'
   type: 0
+  hidden:
+    - xsoar_saas
 - display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ''
