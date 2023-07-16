@@ -163,5 +163,4 @@ curl --request POST \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
   --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
   --form "variables[UPLOAD_TO]=${_force_to_marketplace}" \
-
   "$BUILD_TRIGGER_URL"
