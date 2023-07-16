@@ -11,7 +11,7 @@
     ],
     "dependencies": {
         "CloudIncidentResponse": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Cloud Incident Response"
         }
     },
