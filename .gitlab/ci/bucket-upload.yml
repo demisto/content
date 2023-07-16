@@ -462,11 +462,31 @@ upload-packs-to-xpanse-marketplace:
     - section_end "Zip Content Packs From GCS"
     - job-done
 
-force-pack-upload:
+
+force-pack-upload-xsoar:
+  needs: [ "xsoar-prepare-testing-bucket-upload-flow" ]
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    GCS_MARKET_BUCKET_G: $GCS_MARKET_BUCKET
+    MARKETPLACE: "xsoar"
+    GCS_PRODUCTION_BUCKET_G: $GCS_PRODUCTION_BUCKET
+  extends: .force-pack-upload
+
+
+force-pack-upload-v2:
+  needs: [ "mpv2-prepare-testing-bucket-upload-flow" ]
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    GCS_MARKET_BUCKET_G: $GCS_MARKET_V2_BUCKET
+    MARKETPLACE: "marketplacev2"
+    GCS_PRODUCTION_BUCKET_G: $GCS_PRODUCTION_V2_BUCKET
+  extends: .force-pack-upload
+
+
+.force-pack-upload:
   tags:
     - gke
   stage: upload-to-marketplace
-  needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends:
@@ -479,15 +499,15 @@ force-pack-upload:
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
     - GCS_BUILD_BUCKET="marketplace-ci-build"
     - |
-      if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+      if [[ $GCS_MARKET_BUCKET_G == $GCS_PRODUCTION_BUCKET_G ]] && [[ -z $STORAGE_BASE_PATH ]]; then
         STORAGE_BASE_PATH="content"
       fi
 
-      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+      if [[ $GCS_MARKET_BUCKET_G != $GCS_PRODUCTION_BUCKET_G ]] && [[ -z $STORAGE_BASE_PATH ]]; then
        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
       fi
 
-    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs"
+    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET_G" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace $MARKETPLACE
 
 
 fan-in-bucket-upload:
