@@ -6,7 +6,6 @@ from ForcepointSecurityManagementCenter import (create_iplist_command, update_ip
                                                 list_firewall_policy_command, create_firewall_policy_command,
                                                 delete_firewall_policy_command, update_rule_command, list_engine_command,
                                                 list_rule_command, delete_rule_command, create_rule_command,
-                                                commit_changes_command,
                                                 IPList, Host, DomainName, FirewallPolicy, DemistoException)
 from smc.api.exceptions import ElementNotFound
 from smc.base.collection import CollectionManager
@@ -85,6 +84,12 @@ class mock_Policy:
         self.comment = comment
         self.fw_ipv4_access_rules = mock_Rule()
         self.fw_ipv6_access_rules = mock_Rule()
+
+    def open(self):
+        return
+
+    def save(self):
+        return
 
 
 class mock_Engine:
@@ -534,8 +539,8 @@ def test_delete_rule_command_no_policy(mocker):
 
     mocker.patch.object(CollectionManager, 'filter', return_value=[])
     args = {'policy_name': 'name', 'rule_id': 'id'}
-    with pytest.raises(DemistoException, match='Firewall policy name was not found.'):
-        delete_rule_command(args)
+    response = delete_rule_command(args)
+    assert 'Firewall policy name was not found.' in response.readable_output
 
 
 def test_delete_rule_command_no_rule(mocker):
@@ -608,8 +613,8 @@ def test_create_rule_command_no_sources_or_destinations(mocker):
     policy = mock_Policy('name', 'comment')
     mocker.patch('ForcepointSecurityManagementCenter.FirewallPolicy', return_value=policy)
 
-    with pytest.raises(DemistoException, match='No sources or destinations were provided, provide at least one.'):
-        create_rule_command(args)
+    response = create_rule_command(args)
+    assert 'No sources or destinations were provided, provide at least one.' in response.readable_output
 
 
 def test_update_rule_command(mocker):
@@ -640,23 +645,3 @@ def test_update_rule_command(mocker):
     response = update_rule_command(args)
 
     assert 'The rule name to the policy name was updated successfully.' in response.readable_output
-
-
-def test_commit_changes_command(mocker):
-    """
-    Given:
-        - demisto args:
-    When:
-        - Calling function commit_changes_command
-    Then:
-        - Ensure the results holds the expected data
-    """
-    engine = mock_Engine('name', 'comment')
-    args = {
-        'engine_name': 'name',
-    }
-
-    mocker.patch('ForcepointSecurityManagementCenter.Engine', return_value=engine)
-
-    with pytest.raises(DemistoException, match='Engine name was not found.'):
-        commit_changes_command(args)

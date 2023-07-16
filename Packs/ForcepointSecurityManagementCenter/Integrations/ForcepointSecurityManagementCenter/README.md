@@ -939,33 +939,3 @@ Lists the engines in the system.
 >|Name|Comment|
 >|---|---|
 >| Forcepoint Engine | Forcepoint Engine element pre-populated by installer |
-
-
-### forcepoint-smc-commit-changes
-
-***
-Commits the current changes.
-
-#### Base Command
-
-`forcepoint-smc-commit-changes`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| engine_name | The name of the engine to commit its changes to. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ForcepointSMC.Changes.Element_name | String | The element name of the commit change. | 
-| ForcepointSMC.Changes.Modifier | String | The modifier of the commit change. | 
-| ForcepointSMC.Changes.Changed_on | Date | When was the change made. | 
-
-#### Command example
-```!forcepoint-smc-commit-changes engine_name="Forcepoint Engine"```
-#### Human Readable Output
-
->No commit changes were found.

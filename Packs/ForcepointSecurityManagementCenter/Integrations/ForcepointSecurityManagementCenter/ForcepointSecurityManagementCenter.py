@@ -192,7 +192,7 @@ def update_iplist_command(args: dict[str, Any]) -> CommandResults:
     is_override = argToBoolean(args.get('is_override', False))
 
     if not list(IPList.objects.filter(name=name, exact_match=True)):
-        return CommandResults(f'IP List {name} was not found.')
+        return CommandResults(readable_output=f'IP List {name} was not found.')
 
     ip_list = IPList.update_or_create(name=name, append_lists=not is_override, iplist=addresses)
 
@@ -209,7 +209,7 @@ def update_iplist_command(args: dict[str, Any]) -> CommandResults:
     )
 
 
-def list_iplist_command(args: dict[str, Any]) -> CommandResults: #noqa:
+def list_iplist_command(args: dict[str, Any]) -> CommandResults:  # noqa:
     """Lists the IP Lists in the system.
 
     Args:
@@ -328,7 +328,7 @@ def create_host_command(args: dict[str, Any]) -> CommandResults:
     comment = args.get('comment', '')
 
     if address and ipv6_address:
-        return CommandResults('Both address and ipv6_address were provided, choose just one.')
+        return CommandResults(readable_output='Both address and ipv6_address were provided, choose just one.')
 
     Host.create(name=name, address=address, ipv6_address=ipv6_address, secondary=secondary, comment=comment)
 
@@ -365,7 +365,7 @@ def update_host_command(args: dict[str, Any]) -> CommandResults:
     remove_nulls_from_dictionary(kwargs)
 
     if not list(Host.objects.filter(name=name, exact_match=True)):
-        return CommandResults(f'Host {name} was not found.')
+        return CommandResults(readable_output=f'Host {name} was not found.')
 
     host = Host.update_or_create(**kwargs)
 
@@ -642,7 +642,7 @@ def create_rule_command(args: dict[str, Any]) -> CommandResults:
     comment = args.get('comment', '')
 
     if not any([source_ip_list, source_host, source_domain, dest_ip_list, dest_host, dest_domain]):
-        return CommandResults('No sources or destinations were provided, provide at least one.')
+        return CommandResults(readable_output='No sources or destinations were provided, provide at least one.')
 
     firewall_policy = FirewallPolicy(policy_name)
     sources = handle_rule_entities(source_ip_list, source_host, source_domain)
@@ -656,7 +656,7 @@ def create_rule_command(args: dict[str, Any]) -> CommandResults:
         rule = firewall_policy.fw_ipv6_access_rules.create(name=rule_name, sources=sources, destinations=destinations,
                                                            action=action, comment=comment)
     firewall_policy.save()
-    
+
     outputs = {'Name': rule.name,
                'ID': rule.tag,
                'Action': rule.action.action,
@@ -676,7 +676,7 @@ def create_rule_command(args: dict[str, Any]) -> CommandResults:
 
 
 def update_rule_command(args: dict[str, Any]) -> CommandResults:
-    """Creating a Rule.
+    """Updating a Rule.
 
     Args:
         args (dict[str, Any]): The command args.
@@ -728,7 +728,7 @@ def update_rule_command(args: dict[str, Any]) -> CommandResults:
 
 
 def list_rule_command(args: dict[str, Any]) -> CommandResults:
-    """Lists the policy templates in the system.
+    """Lists the rules in a policy.
 
     Args:
         args (dict[str, Any]): The command args.
@@ -762,7 +762,7 @@ def list_rule_command(args: dict[str, Any]) -> CommandResults:
 
 
 def delete_rule_command(args: dict[str, Any]) -> CommandResults:
-    """Deleting domain.
+    """Deleting a rule.
 
     Args:
         args (dict[str, Any]): The command args.
@@ -775,7 +775,7 @@ def delete_rule_command(args: dict[str, Any]) -> CommandResults:
     ip_version = args.get('ip_version', '')
 
     if not list(FirewallPolicy.objects.filter(name=policy_name, exact_match=True)):
-        return CommandResults(f'Firewall policy {policy_name} was not found.')
+        return CommandResults(readable_output=f'Firewall policy {policy_name} was not found.')
 
     policy = FirewallPolicy(policy_name)
     rule = get_rule_from_policy(policy, rule_name, ip_version)
