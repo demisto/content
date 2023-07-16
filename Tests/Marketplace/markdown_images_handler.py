@@ -14,9 +14,10 @@ def download_markdown_images_from_artifacts(
     """
     Iterates over the readme_url_data_list and calls the download_markdown_image_from_url_and_upload_to_gcs
     Args:
-        readme_urls_data_list (list): A list containing the data on all the images that need to be downloaded,
-                                        and then uplaoded to storage.
+        readme_urls_data_dict_path (Path): A path to a json file generate in SDK prepare-content of all markdown images
+                                            that need to be uploaded to GCS.
         storage_bucket: The storage bucket to upload the images to.
+        storge_base_path: The path to the Pack dir in the storage.
     """
     with open(readme_urls_data_dict_path) as f:
         # reading the file generated in the sdk of all the packs readme images data.
@@ -28,7 +29,7 @@ def download_markdown_images_from_artifacts(
         pack_images_names[pack_name] = {}
         for readme_desc_data, images_data in readme_description_images_data.items():
             for readme_url_data in images_data:
-                readme_original_url = readme_url_data.get("original_markdown_url")
+                original_markdown_url = readme_url_data.get("original_markdown_url")
                 final_dst_image_path = str(readme_url_data.get("final_dst_image_path"))
                 image_name = str(readme_url_data.get("image_name"))
                 relative_image_path = str(readme_url_data.get("relative_image_path"))
@@ -36,7 +37,7 @@ def download_markdown_images_from_artifacts(
                 logging.info(f"image_final_storage_des ={final_dst_image_path}")
 
                 download_markdown_image_from_url_and_upload_to_gcs(
-                    readme_original_url,
+                    original_markdown_url,
                     relative_image_path,
                     image_name,
                     storge_base_path,
@@ -51,7 +52,7 @@ def download_markdown_images_from_artifacts(
 
 
 def download_markdown_image_from_url_and_upload_to_gcs(
-    readme_original_url: str,
+    original_markdown_url: str,
     relative_image_path: str,
     image_name: str,
     storage_base_path,
@@ -64,7 +65,7 @@ def download_markdown_image_from_url_and_upload_to_gcs(
     Remove the Temp file.
 
     Args:
-         readme_original_url (str): The original url that was in the readme file
+         original_markdown_url (str): The original url that was in the readme file
          gcs_storage_path (str): The path to save the image on gcp (was calculated in collect_images_from_readme_
          and_replace_with_storage_path)
          image_name(str): The name of the image we want to save
@@ -72,10 +73,10 @@ def download_markdown_image_from_url_and_upload_to_gcs(
 
     """
     # Open the url image, set stream to True, this will return the stream content.
-    readme_original_url_parsed = urllib.parse.urlparse(readme_original_url)
+    original_markdown_url_parsed = urllib.parse.urlparse(original_markdown_url)
     try:
-        logging.info(f"trying to download {readme_original_url_parsed.geturl()}")
-        r = requests.get(readme_original_url_parsed.geturl(), stream=True)
+        logging.info(f"trying to download {original_markdown_url_parsed.geturl()}")
+        r = requests.get(original_markdown_url_parsed.geturl(), stream=True)
 
         # Check if the image was retrieved successfully
         if r.status_code == 200:
@@ -103,7 +104,7 @@ def download_markdown_image_from_url_and_upload_to_gcs(
         return False
     except Exception as e:
         logging.error(
-            f"Failed downloading the image in url {readme_original_url_parsed}. "
+            f"Failed downloading the image in url {original_markdown_url_parsed}. "
             f"or failed uploading it to GCP error message {e}"
         )
         return False
