@@ -13,7 +13,7 @@ MINIMUM_BUILD_NUMBER_XSOAR = 309463
 # Possible inputs: null, int, str, bytes, ["","",...], [int, int], 'a,b,...', '"a","b",...', '["","",...]'
 def parseIds(idsArg):
     if idsArg is None:
-        return
+        return None
     if isinstance(idsArg, list):
         return ','.join(map(str, idsArg))
     if isinstance(idsArg, str):
