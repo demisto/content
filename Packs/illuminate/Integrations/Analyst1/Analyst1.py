@@ -155,13 +155,16 @@ class Client(BaseClient):
 
         evidence_to_submit = None
         if fileContent is not None and fileContent and str(fileContent):
-            evidence_to_submit = {'evidenceFile': (fileName, str(fileContent))}
+            # encode as UTF-8 to follow Python coding best practices; it works without the encode command
+            evidence_to_submit = {'evidenceFile': (fileName, str(fileContent).encode('utf-8'))}
         elif fileEntryId is not None and fileEntryId:
             try:
                 filePathToUploadToA1 = demisto.getFilePath(fileEntryId)
                 evidenceOpened = open(filePathToUploadToA1['path'], 'rb')
                 # rb for read binary is default
                 evidence_to_submit = {'evidenceFile': (fileName, evidenceOpened.read())}
+                # close what was read into the submission to allow good file system management
+                evidenceOpened.close()
             except ValueError as vale:
                 raise DemistoException('Possibly invalid File.EntryID provided to submission: ' + fileEntryId, vale)
 
