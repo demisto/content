@@ -1,4 +1,4 @@
-This script runs the StringSifter ML tool for malware anlisys and ranking of words. You can enter an entryID or string_text as input.
+This script runs the StringSifter ML tool for malware analysis and ranking of words. You can enter an entryID or string_text as input.
 
 ## Script Data
 ---
