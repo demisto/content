@@ -308,11 +308,35 @@ def main():
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
 
                     if indicator_type == 'report':
+                        # raise ValueError(xsoar_indicator)
                         kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
-                        relationships = demisto.searchRelationships({"filter": {"entities": [value]}}).get("data", [])
-                        kwargs['object_refs'] = [res.get("EntityB") if value.lower(
-                        ) == res.get("EntityA", '').lower() else res.get("EntityA") for res in relationships]
 
+                        relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
+                        query = ""
+                        # raise ValueError(relationships)
+                        for rel in relationships:
+
+                            if rel.get("entityA") == value:
+                                query += rel.get("entityB") or ""
+                            else:
+                                query += rel.get("entityA") or ""
+                            query += " or "
+                        # raise ValueError(query)
+                        demisto_indicators = demisto.searchIndicators(query=query).get("iocs", [])
+                        stix_uids = []
+                        for indicator in demisto_indicators:
+                            stix_type = XSOAR_TYPES_TO_STIX_SDO.get(indicator.get("indicator_type"), 'indicator')
+
+                            if indicator_type in SDOs:
+                                stix_uid = create_sdo_stix_uuid(indicator, stix_type, indicator.get("value"))
+                            elif indicator_type in SCOs:
+                                stix_uid = create_sco_stix_uuid(indicator, stix_type, indicator.get("value"))
+                            else:
+                                demisto.info(f"Indicator type: {indicator_type}, with the value: {value} is unknown.")
+                                continue
+                            stix_uids.append(stix_uid)
+                        # raise ValueError(stix_uids)
+                        kwargs["object_refs"] = stix_uids
                     demisto.debug(f"Creating {indicator_type} indicator: {value}, with the following kwargs: {kwargs}")
                     indicator = SDOs[indicator_type](
                         name=value,
@@ -335,9 +359,11 @@ def main():
                         f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
                     # for testing purposes
-                    raise Exception(traceback.format_exc())
+                    raise Exception(
+                        f"Indicator type: {demisto_indicator_type}, with the value: {value}\n\n{traceback.format_exc()}")
                     continue
     if len(indicators) > 1:
+        raise ValueError(indicators)
         bundle = Bundle(indicators, allow_custom=True)
         context = {
             'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))

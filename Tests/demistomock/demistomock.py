@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import json
 import logging
@@ -547,7 +546,7 @@ def setLastRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def info(msg, *args):
@@ -628,7 +627,7 @@ def results(results):
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
-    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
+    log(f"demisto results: {json.dumps(results, indent=4, sort_keys=True)}")
 
 
 def credentials(credentials):
@@ -642,7 +641,7 @@ def credentials(credentials):
       None: No data returned
 
     """
-    log("credentials: {}".format(credentials))
+    log(f"credentials: {credentials}")
 
 
 def getFilePath(id):
@@ -1198,7 +1197,7 @@ def setLastMirrorRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def searchRelationships(args):
@@ -1206,7 +1205,7 @@ def searchRelationships(args):
     Retrieves Indicators Relationship data according to given filters.
     Args:
       args (dict): The relationships filter object.
-        Should contain a "filter" item, holding any of the relationship filters, E.g.:
+        A dictionary with the following keys:
         - size (int)
         - relationshipNames (List[str])
         - entities (List[str])
@@ -1224,7 +1223,7 @@ def searchRelationships(args):
 
     Example (partial results):
     ```
-    >>> demisto.searchRelationships({"filter": {"entities": ["8.8.8.8", "google.com"], "size": 2}})
+    >>> demisto.searchRelationships({"entities": ["8.8.8.8", "google.com"], "size": 2})
         {
         "total": 2,
         "data": [
