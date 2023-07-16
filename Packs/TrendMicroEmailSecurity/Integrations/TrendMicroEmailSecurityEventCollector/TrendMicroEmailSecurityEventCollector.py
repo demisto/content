@@ -1,3 +1,4 @@
+from enum import Enum
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -13,12 +14,20 @@ VENDOR = "trend_micro"
 PRODUCT = "email_security"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+class EventType(str, Enum):
+    ACCEPTED_TRAFFIC = "accepted_traffic"
+    BLOCKED_TRAFFIC = "blocked_traffic"
+    POLICY_LOGS = "policy_logs"
+
+
 URL_SUFFIX = {
-    "accepted_traffic": "/api/v1/log/mailtrackinglog",
-    "blocked_traffic": "/api/v1/log/mailtrackinglog",
-    "policy_logs": "/api/v1/log/policyeventlog",
+    EventType.ACCEPTED_TRAFFIC: "/api/v1/log/mailtrackinglog",
+    EventType.BLOCKED_TRAFFIC: "/api/v1/log/mailtrackinglog",
+    EventType.POLICY_LOGS: "/api/v1/log/policyeventlog",
 }
-EVENT_TYPES = ("accepted_traffic", "blocked_traffic", "policy_logs")
+
 
 """ CLIENT CLASS """
 
@@ -55,7 +64,7 @@ class Client(BaseClient):
         authorization_bytes = f"{username}:{api_key}".encode()
         return base64.b64encode(authorization_bytes).decode()
 
-    def get_logs(self, event_type: str, params: dict):
+    def get_logs(self, event_type: EventType, params: dict):
         return self._http_request(
             "GET",
             url_suffix=URL_SUFFIX[event_type],
@@ -80,7 +89,7 @@ def managing_set_last_run(
     last_run: dict,
     time_from: str,
     time_to: datetime,
-    event_type: str,
+    event_type: EventType,
     next_token: str | None,
 ) -> dict:
     """
@@ -118,7 +127,7 @@ def managing_set_last_run(
             end=time_to.strftime(DATE_FORMAT_EVENT),
             limit=1,
             token=urllib.parse.unquote(next_token),
-            type=event_type,
+            type=event_type.value,
         )
 
         try:
@@ -135,12 +144,12 @@ def managing_set_last_run(
         )
 
         # removing the `next_token` for a specific `event_type` from the `last_run`
-        last_run.pop(f"next_token_{event_type}", None)
+        last_run.pop(f"next_token_{event_type.value}", None)
         return last_run
 
     # In case returned log from the API call
-    last_run[f"time_{event_type}_from"] = event.get("logs")[0]["genTime"]
-    last_run[f"next_token_{event_type}"] = next_token
+    last_run[f"time_{event_type.value}_from"] = event.get("logs")[0]["genTime"]
+    last_run[f"next_token_{event_type.value}"] = next_token
 
     return last_run
 
@@ -178,7 +187,7 @@ def test_module(client: Client):
     """
     try:
         client.get_logs(
-            "policy_logs",
+            EventType.POLICY_LOGS,
             {
                 "limit": 1,
                 "start": order_first_fetch("2 days"),
@@ -216,19 +225,19 @@ def fetch_events_command(
 
     events: list[dict] = []
     new_last_run: dict[str, str] = {}
-    for event_type in EVENT_TYPES:
-        time_from = last_run.get(f"time_{event_type}_from") or first_fetch
+    for event_type in EventType:
+        time_from = last_run.get(f"time_{event_type.value}_from") or first_fetch
 
         events_by_type, next_token = fetch_by_event_type(
             client=client,
             start=time_from,
             end=time_to.strftime(DATE_FORMAT_EVENT),
             limit=limit,
-            token=last_run.get(f"next_token_{event_type}"),
+            token=last_run.get(f"next_token_{event_type.value}"),
             event_type=event_type,
             hide_sensitive=hide_sensitive,
         )
-        
+
         events.extend(events_by_type)
 
         last_run_for_type = managing_set_last_run(
@@ -253,7 +262,7 @@ def fetch_by_event_type(
     end: str,
     limit: int,
     token: str | None,
-    event_type: str,
+    event_type: EventType,
     hide_sensitive: bool,
 ) -> tuple[list[dict], str | None]:
     """
@@ -268,7 +277,7 @@ def fetch_by_event_type(
         start (str), end (str): Start and end time period to retrieve logs.
         limit (int): Maximum number of log items to return.
         token (str | None): Token for retrieve the next set of log items.
-        event_type (str): The type of event log to return.
+        event_type (EventType): The type of event log to return.
 
     Returns:
         tuple[list[dict], str | None]: List of the logs returned from trend micro,
@@ -281,7 +290,7 @@ def fetch_by_event_type(
         start=start,
         end=end,
         token=token,
-        type=event_type,
+        type=event_type.value,
     )
 
     next_token: str | None = None
@@ -293,13 +302,17 @@ def fetch_by_event_type(
             res = client.get_logs(event_type, params)
         except NoContentException:
             next_token = None
-            demisto.debug(f"No content returned from api, {start=}, {end=}, {token=}, {event_type=}")
+            demisto.debug(
+                f"No content returned from api, {start=}, {end=}, {token=}, {event_type.value=}"
+            )
             break
 
         if res.get("logs"):
             # Iterate over each event log, update their `type` and `_time` fields
             for event in res.get("logs"):
-                event.update({"_time": event.get("timestamp"), "logType": event_type})
+                event.update(
+                    {"_time": event.get("timestamp"), "logType": event_type.value}
+                )
                 if hide_sensitive:
                     remove_sensitive_from_events(event)
 
@@ -313,10 +326,10 @@ def fetch_by_event_type(
             params["token"] = urllib.parse.unquote(next_token)
         else:
             next_token = None
-            demisto.debug(f"No `nextToken` for {event_type=}")
+            demisto.debug(f"No `nextToken` for {event_type.value=}")
             break
 
-    demisto.debug(f"Done fetching {event_type=}, got {len(events_res)} events")
+    demisto.debug(f"Done fetching {event_type.value=}, got {len(events_res)} events")
     return events_res, next_token
 
 
@@ -327,7 +340,7 @@ def main() -> None:  # pragma: no cover
     base_url = params["url"].strip("/")
     username = params["credentials"]["identifier"]
     api_key = params["credentials"]["password"]
-    verify = not params.get('insecure', False)
+    verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     first_fetch = order_first_fetch(params.get("first_fetch") or "3 days")
 

@@ -9,6 +9,7 @@ from TrendMicroEmailSecurityEventCollector import (
     remove_sensitive_from_events,
     NoContentException,
     DATE_FORMAT_EVENT,
+    EventType,
 )
 
 
@@ -59,6 +60,7 @@ def test_handle_error_no_content(mock_client: Client):
     Then:
         - Ensure that the function throws a `NoContentException` error
     """
+
     class Response:
         status_code = 204
 
@@ -75,6 +77,7 @@ def test_handle_error_no_content_with_other_errors(mock_client: Client):
     Then:
         - Ensure the function throws an error that is not a `NoContentException`
     """
+
     class Response:
         status_code = 404
         reason = "test"
@@ -130,59 +133,57 @@ def test__encode_authorization(mock_client: Client):
 @pytest.mark.parametrize(
     "args, mock_exception, mock_api",
     [
-        # In case the len of the event list is smaller than the limit
-        (
+        pytest.param(
             {
                 "last_run": {},
                 "len_events": 1,
                 "limit": 2,
                 "time_from": "2023-07-05T15:04:05Z",
-                "event_type": "accepted_traffic",
+                "event_type": EventType.ACCEPTED_TRAFFIC,
                 "next_token": "test_test",
             },
             None,
             {},
+            id="len(events) < limit",
         ),
-        # In case there is no nextToken
-        (
+        pytest.param(
             {
                 "last_run": {},
                 "len_events": 2,
                 "limit": 2,
                 "time_from": "2023-07-05T15:04:05Z",
-                "event_type": "accepted_traffic",
+                "event_type": EventType.ACCEPTED_TRAFFIC,
                 "next_token": None,
             },
             None,
             {},
+            id="no nextToken",
         ),
-        # In case the len of the event list is equal the limit
-        # and when calling the api for the next event, No Content returns.
-        (
+        pytest.param(
             {
                 "last_run": {"next_token_accepted_traffic": "test_1"},
                 "len_events": 2,
                 "limit": 2,
                 "time_from": "2023-07-05T15:04:05Z",
-                "event_type": "accepted_traffic",
+                "event_type": EventType.ACCEPTED_TRAFFIC,
                 "next_token": "test_token",
             },
             NoContentException("No content"),
             {},
+            id="len(events) == limit, returned No Content from next API call",
         ),
-        # In case the len of the event list is equal the limit
-        # and when calling the api for the next event, event returns.
-        (
+        pytest.param(
             {
                 "last_run": {},
                 "len_events": 2,
                 "limit": 2,
                 "time_from": "2023-07-05T15:04:05Z",
-                "event_type": "accepted_traffic",
+                "event_type": EventType.ACCEPTED_TRAFFIC,
                 "next_token": "test_token",
             },
             None,
             {"nextToken": "test", "logs": [{"genTime": "2023-07-05T16:04:05Z"}]},
+            id="len(events) == limit, event returned from the API call",
         ),
     ],
 )
@@ -246,10 +247,10 @@ def test_fetch_by_event_type_token_unquote(
     Then:
         - Ensure that the next_token argument sent to the API request is unquoted
     """
-    mock_api = mocker.patch.object(
-        mock_client, "get_logs", side_effect=event_mock
+    mock_api = mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
+    fetch_by_event_type(
+        mock_client, "", "", limit, next_token, EventType.ACCEPTED_TRAFFIC, False
     )
-    fetch_by_event_type(mock_client, "", "", limit, next_token, "", False)
     assert mock_api.call_args[0][1]["token"] == "abc abc"
 
 
@@ -278,7 +279,9 @@ def test_fetch_by_event_type_returned_next_token_none(
           in the second iteration the function returns `next_token == None`
     """
     mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
-    _, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "", False)
+    _, next_token = fetch_by_event_type(
+        mock_client, "", "", limit, None, EventType.ACCEPTED_TRAFFIC, False
+    )
 
     assert not next_token
 
@@ -286,28 +289,47 @@ def test_fetch_by_event_type_returned_next_token_none(
 @pytest.mark.parametrize(
     "event_mock, limit, expected_results",
     [
-        (({},), 1, {"len_events": 0, "call_count": 1}),
-        (
+        pytest.param(
+            ({},),
+            1,
+            {"len_events": 0, "call_count": 1},
+            id="No logs and nextToken were returned",
+        ),
+        pytest.param(
             ({"nextToken": "test", "logs": [{}]}, {}),
             2,
             {"len_events": 1, "call_count": 2},
+            id="No logs and nextToken were returned (second iteration)",
         ),
-        (({"logs": [{}]},), 1, {"len_events": 1, "call_count": 1}),
-        (
+        pytest.param(
+            ({"logs": [{}]},),
+            1,
+            {"len_events": 1, "call_count": 1},
+            id="no nextToken returned",
+        ),
+        pytest.param(
             ({"nextToken": "test", "logs": [{}]}, {"logs": [{}]}),
             2,
             {"len_events": 2, "call_count": 2},
+            id="no nextToken returned (second iteration)",
         ),
-        ((NoContentException(),), 1, {"len_events": 0, "call_count": 1}),
-        (
+        pytest.param(
+            (NoContentException(),),
+            1,
+            {"len_events": 0, "call_count": 1},
+            id="NoContentException returned",
+        ),
+        pytest.param(
             ({"nextToken": "test", "logs": [{}]}, NoContentException()),
             2,
             {"len_events": 1, "call_count": 2},
+            id="NoContentException returned (second iteration)",
         ),
-        (
+        pytest.param(
             ({"nextToken": "test", "logs": [{}]}, {"nextToken": "test", "logs": [{}]}),
             2,
             {"len_events": 2, "call_count": 2, "next_token": "test"},
+            id="len(events) == limit",
         ),
     ],
 )
@@ -339,10 +361,10 @@ def test_fetch_by_event_type(
         - Ensure that when the number of events returned from the API is equal to the `limit`
           it exits the while loop and returns the returned events and the `nextToken`.
     """
-    mock_api = mocker.patch.object(
-        mock_client, "get_logs", side_effect=event_mock
+    mock_api = mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
+    events, next_token = fetch_by_event_type(
+        mock_client, "", "", limit, None, EventType.ACCEPTED_TRAFFIC, False
     )
-    events, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "", False)
 
     assert len(events) == expected_results["len_events"]
     assert mock_api.call_count == expected_results["call_count"]
@@ -368,9 +390,9 @@ def test_fetch_by_event_type(
             },
             "2023-02-11T15:47:25Z",
             {
-                "time_policy_logs_from": "2023-07-11T15:47:25Z",
-                "time_accepted_traffic_from": "2023-08-11T15:47:25Z",
-                "time_blocked_traffic_from": "2023-09-11T15:47:25Z",
+                f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-11T15:47:25Z",
+                f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-08-11T15:47:25Z",
+                f"time_{EventType.BLOCKED_TRAFFIC.value}_from": "2023-09-11T15:47:25Z",
             },
             [
                 {"limit": 1, "start": "2023-08-11T15:47:25Z"},
@@ -382,8 +404,8 @@ def test_fetch_by_event_type(
             {},
             "2023-02-11T15:47:25Z",
             {
-                "time_accepted_traffic_from": "2023-08-11T15:47:25Z",
-                "time_blocked_traffic_from": "2023-09-11T15:47:25Z",
+                f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-08-11T15:47:25Z",
+                f"time_{EventType.BLOCKED_TRAFFIC.value}_from": "2023-09-11T15:47:25Z",
             },
             [
                 {"limit": 1000, "start": "2023-08-11T15:47:25Z"},
