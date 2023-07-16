@@ -10,7 +10,7 @@ import requests
 # disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBALS vv '''
+''' GLOBALS vvv '''
 VERBOSE = True
 SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
