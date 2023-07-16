@@ -147,7 +147,7 @@ def test_managing_set_last_run(
     time_to = datetime.now()
     mocker.patch.object(
         mock_client,
-        "get_logs_request",
+        "get_logs",
         side_effect=mock_exception,
         return_value=mock_api,
     )
@@ -187,7 +187,7 @@ def test_fetch_by_event_type_token_unquote(
         - Ensure that the next_token argument sent to the API request is unquoted
     """
     mock_api = mocker.patch.object(
-        mock_client, "get_logs_request", side_effect=event_mock
+        mock_client, "get_logs", side_effect=event_mock
     )
     fetch_by_event_type(mock_client, "", "", limit, next_token, "", False)
     assert mock_api.call_args[0][1]["token"] == "abc abc"
@@ -217,7 +217,7 @@ def test_fetch_by_event_type_returned_next_token_none(
           or the "nextToken" key or returned a NoContentException even if ift occurs
           in the second iteration the function returns `next_token == None`
     """
-    mocker.patch.object(mock_client, "get_logs_request", side_effect=event_mock)
+    mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
     _, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "", False)
 
     assert not next_token
@@ -280,7 +280,7 @@ def test_fetch_by_event_type(
           it exits the while loop and returns the returned events and the `nextToken`.
     """
     mock_api = mocker.patch.object(
-        mock_client, "get_logs_request", side_effect=event_mock
+        mock_client, "get_logs", side_effect=event_mock
     )
     events, next_token = fetch_by_event_type(mock_client, "", "", limit, None, "", False)
 

@@ -24,6 +24,12 @@ EVENT_TYPES = ("accepted_traffic", "blocked_traffic", "policy_logs")
 
 
 class NoContentException(Exception):
+    """
+    Error definition for API response with status code 204
+    Makes it possible to identify a specific exception
+    that arises from the API and to handle this case correctly
+    see `handle_error_no_content` method
+    """
     ...
 
 
@@ -49,7 +55,7 @@ class Client(BaseClient):
         authorization_bytes = f"{username}:{api_key}".encode()
         return base64.b64encode(authorization_bytes).decode()
 
-    def get_logs_request(self, event_type: str, params: dict):
+    def get_logs(self, event_type: str, params: dict):
         return self._http_request(
             "GET",
             url_suffix=URL_SUFFIX[event_type],
@@ -116,7 +122,7 @@ def managing_set_last_run(
         )
 
         try:
-            event = client.get_logs_request(event_type, params)
+            event = client.get_logs(event_type, params)
         except NoContentException:
             # there are no more logs in current range time
             no_more_events_in_current_range_time = True
@@ -171,7 +177,7 @@ def test_module(client: Client):
     Testing we have a valid connection to trend_micro.
     """
     try:
-        client.get_logs_request(
+        client.get_logs(
             "policy_logs",
             {
                 "limit": 1,
@@ -284,10 +290,10 @@ def fetch_by_event_type(
         params["limit"] = min(limit - len(events_res), 500)
 
         try:
-            res = client.get_logs_request(event_type, params)
+            res = client.get_logs(event_type, params)
         except NoContentException:
             next_token = None
-            demisto.debug(f"No content returned from api, {params=}")
+            demisto.debug(f"No content returned from api, {start=}, {end=}, {token=}, {event_type=}")
             break
 
         if res.get("logs"):
