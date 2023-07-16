@@ -16,6 +16,7 @@ from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
+
 # Replace the Github Users of the reviewers and security reviewer according to the current contributions team 
 SECURITY_REVIEWER = "efelmandar"
 REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
