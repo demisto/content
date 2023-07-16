@@ -26,7 +26,7 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
-from Tests.Marketplace.pack_readme_handler import download_readme_images_from_artifacts
+from Tests.Marketplace.markdown_images_handler import download_markdown_images_from_artifacts
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -888,7 +888,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         return False, [], []
 
 
-def get_images_data(packs_list: list, readme_images_dict: dict):
+def get_images_data(packs_list: list, markdown_images_dict: dict):
     """ Returns a data structure of all packs that an integration/author image of them was uploaded
 
     Args:
@@ -911,7 +911,7 @@ def get_images_data(packs_list: list, readme_images_dict: dict):
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
-    images_data[BucketUploadFlow.README_IMAGES] = readme_images_dict
+    images_data[BucketUploadFlow.MARKDOWN_IMAGES] = markdown_images_dict
     logging.info(f'{images_data=}')
     return images_data
 
@@ -1205,7 +1205,7 @@ def main():
     storage_bucket = storage_client.bucket(storage_bucket_name)
     artifact_folder_path = Path(packs_artifacts_path).parent
     uploaded_packs_dir = Path(artifact_folder_path / f'uploaded_packs-{"id_set" if id_set else "graph"}')
-    readme_images_data = Path(artifact_folder_path / 'readme_images.json')
+    markdown_images_data = Path(artifact_folder_path / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME)
 
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow
@@ -1453,10 +1453,10 @@ def main():
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            packs_for_current_marketplace_dict)
 
-    readme_images_dict = download_readme_images_from_artifacts(readme_images_data, storage_bucket=storage_bucket,
-                                                               storge_base_path=storage_base_path)
+    markdown_images_dict = download_markdown_images_from_artifacts(markdown_images_data, storage_bucket=storage_bucket,
+                                                                storge_base_path=storage_base_path)
 
-    logging.info(f'{readme_images_dict=}')
+    logging.info(f'{markdown_images_dict=}')
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
@@ -1465,7 +1465,7 @@ def main():
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data(packs_list, readme_images_dict=readme_images_dict)
+        images_data=get_images_data(packs_list, markdown_images_dict=markdown_images_dict)
     )
 
     # summary of packs status

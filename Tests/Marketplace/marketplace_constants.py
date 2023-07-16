@@ -67,6 +67,13 @@ class BucketUploadFlow:
     UPLOAD_JOB_NAMES = ["Upload Packs To Marketplace", "upload-packs-to-marketplace"]
     LATEST_VERSION = 'latest_version'
     INTEGRATION_DIR_REGEX = r"^integration-(.+).yml$"
+    MARKDOWN_IMAGES_ARTIFACT_FILE_NAME = "markdown_images.json"
+    MARKDOWN_IMAGES = 'markdown_images'
+
+
+class ImagesFolderNames(enum.Enum):
+    README_IMAGES = "readme_images"
+    INTEGRATION_DESCRIPTION_IMAGES = "integration_description_images"
 
 
 class GCPConfig:
