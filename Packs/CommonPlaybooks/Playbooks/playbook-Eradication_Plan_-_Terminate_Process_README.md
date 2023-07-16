@@ -20,8 +20,8 @@ This playbook does not use any integrations.
 ### Commands
 
 * setParentIncidentContext
-* core-run-script-kill-process
 * core-get-script-execution-results
+* core-run-script-kill-process
 
 ## Playbook Inputs
 
@@ -36,7 +36,10 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| TerminatedProcessFromEndpoints | The terminated process from endpoint | unknown |
 
 ## Playbook Image
 

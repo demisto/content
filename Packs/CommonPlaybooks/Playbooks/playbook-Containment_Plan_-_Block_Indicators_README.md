@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-Block Indicators - Generic v3
+* Block Indicators - Generic v3
 
 ### Integrations
 
@@ -15,12 +15,12 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-CompareLists
+* CompareLists
 
 ### Commands
 
-* core-blocklist-files
 * setParentIncidentContext
+* core-blocklist-files
 
 ## Playbook Inputs
 
@@ -41,7 +41,10 @@ CompareLists
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Core.blocklist.added_hashes | The file Hash that was added to the blocklist. | unknown |
 
 ## Playbook Image
 

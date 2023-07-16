@@ -20,8 +20,8 @@ This playbook does not use any scripts.
 ### Commands
 
 * core-get-quarantine-status
-* core-quarantine-files
 * setParentIncidentContext
+* core-quarantine-files
 
 ## Playbook Inputs
 
@@ -38,7 +38,10 @@ This playbook does not use any scripts.
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| QuarantinedFilesFromEndpoints | The quarantined files from endpoint. | unknown |
 
 ## Playbook Image
 

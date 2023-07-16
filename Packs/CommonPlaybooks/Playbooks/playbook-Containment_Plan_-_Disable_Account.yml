@@ -388,7 +388,10 @@ inputs:
   required: false
   description: The username to disable.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: Blocklist.Final
+  description: Blocked accounts
+  type: unknown
 quiet: true
 tests:
 - No tests (auto formatted)

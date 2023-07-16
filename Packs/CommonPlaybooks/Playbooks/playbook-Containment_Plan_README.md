@@ -5,7 +5,7 @@ This playbook handles all the containment actions available with Cortex XSIAM, i
 * Containment Plan - Block indicators
 * Containment Plan - Clear user session (currently, the playbook supports only Okta)
 
-Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details.
 
 ## Dependencies
 
@@ -13,11 +13,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan - Disable Account
 * Containment Plan - Block Indicators
-* Containment Plan - Clear User Sessions
-* Containment Plan - Quarantine File
 * Containment Plan - Isolate Device
+* Containment Plan - Quarantine File
+* Containment Plan - Clear User Sessions
+* Containment Plan - Disable Account
 
 ### Integrations
 
@@ -51,14 +51,20 @@ This playbook does not use any scripts.
 | Domain | The domain indicators. |  | Optional |
 | URL | The URL indicator. |  | Optional |
 | FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine. | Quarantine | Optional |
-| IAMUserDomain | The Okta IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain. |  | Optional |
+| IAMUserDomain | The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain. |  | Optional |
 | UserVerification | Possible values: True/False.<br/>Whether to provide user verification for blocking those IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 | AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
 
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Blocklist.Final | The blocked accounts. | unknown |
+| QuarantinedFilesFromEndpoints | The quarantined files from endpoint. | unknown |
+| Core.blocklist.added_hashes | The file Hash that was added to the blocklist. | unknown |
+| Core.Isolation.endpoint_id | The isolated endpoint ID. | unknown |
 
 ## Playbook Image
 

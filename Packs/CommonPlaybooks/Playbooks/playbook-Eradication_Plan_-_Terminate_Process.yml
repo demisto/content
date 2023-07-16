@@ -396,7 +396,10 @@ inputs:
   required: false
   description: The file path for the process termination.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: TerminatedProcessFromEndpoints
+  description: The terminated process from endpoint
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0

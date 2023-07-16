@@ -734,7 +734,9 @@ inputs:
   required: false
   description: The path of the file to block.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: Core.blocklist.added_hashes
+  description: The file Hash that was added to the blocklist.
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0

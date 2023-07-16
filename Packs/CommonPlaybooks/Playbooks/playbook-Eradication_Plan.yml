@@ -637,7 +637,10 @@ inputs:
   required: false
   description: Set to 'True' to terminate the process by path.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: TerminatedProcessFromEndpoints
+  description: The terminated process from endpoint
+  type: unknown
 tests:
 - No tests (auto formatted)
 marketplaces:

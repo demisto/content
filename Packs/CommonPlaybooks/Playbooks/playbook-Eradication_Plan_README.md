@@ -3,7 +3,7 @@ This playbook handles all the eradication actions available with Cortex XSIAM, i
 * Eradication Plan - Delete file
 * Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  
 
-Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details.
 
 ## Dependencies
 
@@ -11,8 +11,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Eradication Plan - Reset Password
 * Eradication Plan - Terminate Process
+* Eradication Plan - Reset Password
 * Eradication Plan - Delete File
 
 ### Integrations
@@ -44,7 +44,10 @@ This playbook does not use any commands.
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| TerminatedProcessFromEndpoints | The terminated process from endpoint | unknown |
 
 ## Playbook Image
 
