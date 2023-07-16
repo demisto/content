@@ -14,33 +14,26 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - defaultvalue: 7 days
   display: The initial time to fetch from
   name: fetch_time
-  required: false
   type: 0
 - display: Max per page
   name: max_fetch
-  required: false
   type: 0
   defaultvalue: '10'
 - display: Minimal severity to fetch by
   name: severity
-  required: false
   type: 15
   options:
   - Low
@@ -49,16 +42,13 @@ configuration:
   - Critical
 - display: Site ID to fetch by
   name: site_id
-  required: false
   type: 0
   additionalinfo: All sites if none selected
 - display: Fetch by alert type
   name: alert_type
-  required: false
   type: 0
 - display: Exclude resolved alerts
   name: exclude_resolved_alerts
-  required: false
   type: 8
 description: Use the Claroty CTD integration to manage assets and alerts.
 display: Claroty
@@ -67,10 +57,8 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: Asset fields to return. The default value is "all".
-      isArray: false
       name: fields
       predefined:
       - all
@@ -90,54 +78,30 @@ script:
       - risk_level
       - firmware_version
       - site_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Returns assets with this criticality. Can be "Low", "Medium", or "High".
-      isArray: false
       name: criticality
       predefined:
       - Low
       - Medium
       - High
-      required: false
-      secret: false
-    - default: false
-      description: Get assets with that include the given insight name
-      isArray: false
+    - description: Get assets with that include the given insight name
       name: insight_name
       predefined:
       - ''
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Add aditional value for the asset CVEs.
-      isArray: false
       name: should_enrich_assets
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Maximal value of assets to query at once.
-      isArray: false
       name: asset_limit
-      required: false
-      secret: false
-    - default: false
-      description: Get all assets seen last from the given date. Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      isArray: false
+    - description: Get all assets seen last from the given date. Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       name: assets_last_seen
-      required: false
-      secret: false
-    deprecated: false
     description: Gets all assets from CTD. You can apply one or more filters.
-    execution: false
     name: claroty-get-assets
     outputs:
     - contextPath: Claroty.Asset.AssetID
@@ -226,10 +190,8 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: Alert fields to return.
-      isArray: false
       name: fields
       predefined:
       - all
@@ -242,15 +204,11 @@ script:
       - alert_indicators
       - actionable_assets
       - category
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: timestamp
       description: |-
         The field by which to sort the results. The default value is "timestamp".
         Default sort order is ascending
-      isArray: false
       name: sort_by
       predefined:
       - resource_id
@@ -263,58 +221,30 @@ script:
       - actionable_assets
       - id
       - timestamp
-      required: false
-      secret: false
-    - default: false
-      description: Returns alerts that match this alert type.
-      isArray: false
+    - description: Returns alerts that match this alert type.
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: The start date from which to get alerts. Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
-      isArray: false
+    - description: The start date from which to get alerts. Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       name: date_from
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: asc
       description: The sorting order of the alerts - descending or ascending
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of alerts to query.
-      isArray: false
+    - description: The maximum number of alerts to query.
       name: alert_limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set minimal severity to query by.
-      isArray: false
       name: minimal_severity
       predefined:
       - Low
       - Medium
       - High
       - Critical
-      required: false
-      secret: false
-    - default: false
-      description: Returns only unresloved alerts.
-      isArray: false
+    - description: Returns only unresloved alerts.
       name: exclude_resolved_alerts
-      required: false
-      secret: false
-    deprecated: false
     description: Gets alerts from CTD.
-    execution: false
     name: claroty-query-alerts
     outputs:
     - contextPath: Claroty.Alert.AlertType
@@ -399,31 +329,19 @@ script:
       description: The alert category.
       type: String
   - arguments:
-    - default: false
-      description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id> format)
-      isArray: false
+    - description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id> format)
       name: selected_alerts
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: resolve
       description: How to resolve the alert. Can be "archive" or "resolve". The default value is "resolve".
-      isArray: false
       name: resolve_as
       predefined:
       - archive
       - resolve
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Resolved by Demisto
+    - defaultValue: Resolved by Demisto
       description: A comment to add when resolving an alert.
-      isArray: false
       name: resolve_comment
-      required: false
-      secret: false
-    deprecated: false
     description: Resolves alerts.
     execution: true
     name: claroty-resolve-alert
@@ -433,10 +351,8 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: Asset fields to return. The default value is "all".
-      isArray: false
       name: fields
       predefined:
       - all
@@ -448,17 +364,10 @@ script:
       - description
       - alert_indicators
       - actionable_assets
-      required: false
-      secret: false
-    - default: false
-      description: Resource ID of the desired alert. Expected value - <alert_id>-<site_id>
-      isArray: false
+    - description: Resource ID of the desired alert. Expected value - <alert_id>-<site_id>
       name: alert_rid
       required: true
-      secret: false
-    deprecated: false
     description: Get a single alert from CTD.
-    execution: false
     name: claroty-get-single-alert
     outputs:
     - contextPath: Claroty.Alert.AlertType
@@ -488,11 +397,8 @@ script:
     - contextPath: Claroty.Alert.Severity
       description: The alert severity.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

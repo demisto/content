@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import json
 from typing import Any, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import urllib3
 
 

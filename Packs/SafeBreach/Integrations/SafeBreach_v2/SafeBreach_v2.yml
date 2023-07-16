@@ -28,7 +28,6 @@ configuration:
   - Email
   - Web
   - Data Leak
-  required: false
   type: 16
 - defaultvalue: Hash,Domain,URI,Command,Port,Protocol
   display: Insight Data Type
@@ -40,7 +39,6 @@ configuration:
   - Command
   - Port
   - Protocol
-  required: false
   type: 16
 - additionalinfo: Non-Behavioral Indicator from this integration instance will be marked with this reputation
   display: Non Behavioral Indicator Reputation
@@ -51,7 +49,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 15
 - additionalinfo: Behavioral Indicator from this integration instance will be marked with this reputation
   display: Behavioral Reputation
@@ -62,17 +59,14 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 15
 - additionalinfo: The maximum number of indicators to generate. The default is 1000.
   defaultvalue: '1000'
   display: Indicators Limit
   name: indicatorLimit
-  required: false
   type: 0
 - display: Fetch indicators
   name: feed
-  required: false
   type: 8
   defaultvalue: 'true'
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -95,7 +89,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
 - name: feedExpirationPolicy
   options:
@@ -103,29 +96,23 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
   display: ''
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
 - name: feedExpirationInterval
-  required: false
   type: 1
   display: ''
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
@@ -136,12 +123,10 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
 description: SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
 display: SafeBreach v2
@@ -149,15 +134,10 @@ name: SafeBreach v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: Array of insight IDs to fetch.
+    - description: Array of insight IDs to fetch.
       isArray: true
       name: insightIds
-      required: false
-      secret: false
-    deprecated: false
     description: Gets SafeBreach Insights for all security control categories.
-    execution: false
     name: safebreach-get-insights
     outputs:
     - contextPath: SafeBreach.Insight.Name
@@ -218,15 +198,10 @@ script:
       description: SafeBreach Attack Ids
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the insight for which to fetch remediation data.
-      isArray: false
+    - description: The ID of the insight for which to fetch remediation data.
       name: insightId
       required: true
-      secret: false
-    deprecated: false
     description: Gets remediation data for a specific SafeBreach Insight.
-    execution: false
     name: safebreach-get-remediation-data
     outputs:
     - contextPath: SafeBreach.Insight.Id
@@ -296,15 +271,10 @@ script:
       description: Remediation data in a form of a Splunk query
       type: String
   - arguments:
-    - default: false
-      description: Array of insight IDs to rerun.
+    - description: Array of insight IDs to rerun.
       isArray: true
       name: insightIds
-      required: false
-      secret: false
-    deprecated: false
     description: Reruns a specific SafeBreach Insight related simulations in your environment.
-    execution: false
     name: safebreach-rerun-insight
     outputs:
     - contextPath: SafeBreach.Insight.Id
@@ -335,47 +305,30 @@ script:
       description: Time when the test was triggered.
       type: Date
   - arguments:
-    - default: false
-      defaultValue: '1000'
+    - defaultValue: '1000'
       description: The maximum number of indicators to generate. The default is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Multi-select option for the category of the insights to get remediation data for:
         Network Access, Network Inspection, Endpoint, Email, Web, Data Leak
-      isArray: false
       name: insightCategory
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Multi-select option for the remediation data type to get:
         Hash, Domain, URI, Command, Port, Protocol, Registry
       isArray: true
       name: insightDataType
       predefined:
       - ''
-      required: false
-      secret: false
-    deprecated: false
     description: Fetches SafeBreach Insights from which indicators are extracted, creating new indicators or updating existing indicators.
-    execution: false
     name: safebreach-get-indicators
   - arguments:
-    - default: false
-      description: The ID of the test to track.
+    - description: The ID of the test to track.
       isArray: true
       name: testId
       required: true
-      secret: false
-    deprecated: false
     description: Gets the status of a SafeBreach test for tracking progress of a run.
-    execution: false
     name: safebreach-get-test-status
     outputs:
     - contextPath: SafeBreach.Test.Id
@@ -397,15 +350,10 @@ script:
       description: Number of simulations for the test.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the simulation. By default, taken from the incident.
-      isArray: false
+    - description: The ID of the simulation. By default, taken from the incident.
       name: simulationId
       required: true
-      secret: false
-    deprecated: false
     description: Get SafeBreach simulation
-    execution: false
     name: safebreach-get-simulation
     outputs:
     - contextPath: SafeBreach.Simulation.Id
@@ -517,15 +465,10 @@ script:
       description: Parameters of the simulation.
       type: JSON
   - arguments:
-    - default: false
-      description: The ID of the simulation to rerun.
-      isArray: false
+    - description: The ID of the simulation to rerun.
       name: simulationId
       required: true
-      secret: false
-    deprecated: false
     description: Reruns a specific SafeBreach simulation in your environment.
-    execution: false
     name: safebreach-rerun-simulation
     outputs:
     - contextPath: SafeBreach.Simulation.Id
@@ -557,9 +500,6 @@ script:
       type: Datetime
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

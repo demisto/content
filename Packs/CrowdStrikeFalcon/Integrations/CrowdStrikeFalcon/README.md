@@ -45,6 +45,10 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 - Spotlight Vulnerabilities - Read
 - User Management - Read
 - On-Demand Scans (ODS) - Read and Write
+- Identity Protection Entities - Read and Write
+- Identity Protection Detections - Read and Write
+- Identity Protection Timeline - Read
+- Identity Protection Assessment - Read
 
 ### Incident Mirroring
  
@@ -516,6 +520,7 @@ Sends commands to hosts.
 | scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
 | target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
 | queue_offline | Any commands run against an offline-queued session will be queued up and executed when the host comes online. | Optional | 
+| timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
 
 
 #### Context Output
@@ -3681,6 +3686,7 @@ Uploads a batch of indicators.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required | 
+| timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
 
 
 #### Context Output
@@ -4525,7 +4531,8 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Required |
+| cve_id | Deprecated. Use cve instead. | Optional |
+| cve | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Optional |
 
 #### Command example
 
@@ -6133,3 +6140,46 @@ There is no context output for this command.
 >|Scan ID|
 >|---|
 >| 9acf0c069d3d4a5b82badb170966e77c |
+
+### cs-falcon-list-identity-entities
+
+***
+List identity entities.
+
+#### Base Command
+
+`cs-falcon-list-identity-entities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | API type. Possible values are: USER, ENDPOINT. | Required | 
+| sort_key | The key to sort by. Possible values are: RISK_SCORE, PRIMARY_DISPLAY_NAME, SECONDARY_DISPLAY_NAME, MOST_RECENT_ACTIVITY, ENTITY_ID. | Optional |
+| sort_order | The sort order. Possible values are: DESCENDING, ASCENDING. Default is ASCENDING. | Optional | 
+| entity_id | Comma separated list of entity IDs to look for. | Optional | 
+| primary_display_name | Primary display name to filter by. | Optional | 
+| secondary_display_name | Secondary display name to filter by. | Optional | 
+| max_risk_score_severity | The maximum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional | 
+| min_risk_score_severity | The minimum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional | 
+| enabled | Whether to get only enabled or disabled identity entities. Possible values are: true, false. | Optional | 
+| email | Filter by email. | Optional | 
+| next_token | The hash for the next page. | Optional | 
+| page_size |  The page size. The limit is 1000. Default is 50. | Optional | 
+| page | The page number. Default is 1.  | Optional | 
+| limit | The maximum number of identity entities to list. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IDPEntity.IsHuman | Boolean | Whether the identity entity is human made. | 
+| CrowdStrike.IDPEntity.IsProgrammatic | Boolean | Whether the identity entity is programmatic made. | 
+| CrowdStrike.IDPEntity.IsAdmin | String | Whether the identity entity is admin made. | 
+| CrowdStrike.IDPEntity.PrimaryDisplayName | String | The identity entity primary display name. | 
+| CrowdStrike.IDPEntity.RiskFactors.Type | Unknown | The identity entity risk factor type. | 
+| CrowdStrike.IDPEntity.RiskFactors.Severity | Unknown | The identity entity risk factor severity. | 
+| CrowdStrike.IDPEntity.RiskScore | Number | The identity entity risk score. | 
+| CrowdStrike.IDPEntity.RiskScoreSeverity | String | The identity entity risk score severity. | 
+| CrowdStrike.IDPEntity.SecondaryDisplayName | String | The identity entity secondary display name. | 
+| CrowdStrike.IDPEntity.EmailAddresses | String | The identity entity email address. | 

@@ -2,9 +2,7 @@ args:
 - description: 'Forensic file EntryID '
   name: ForensicFileEntry
   required: true
-comment: Analyzes the forensic data to detect brand impersonation attacks. 
-  This script uses the HMRC brand as an example, please modify the attributes 
-  associated with your company’s brand.
+comment: Analyzes the forensic data to detect brand impersonation attacks. This script uses the HMRC brand as an example, please modify the attributes associated with your company’s brand.
 commonfields:
   id: BrandImpersonationDetection
   version: -1
@@ -16,7 +14,6 @@ outputs:
   description: Target brand of phishing URL
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

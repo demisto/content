@@ -38,13 +38,11 @@ configuration:
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -53,21 +51,16 @@ display: CyberArk Identity Event Collector
 name: CyberArk Identity Event Collector
 script:
   commands:
-  - deprecated: false
-    description: 'Returns a list of events'
-    execution: false
+  - description: 'Returns a list of events'
     name: cyberarkidentity-get-events
     arguments:
     - description: The maximum number of events per fetch. Default is 1000.
       defaultValue: 1000
       isArray: true
       name: limit
-      required: false
-      secret: false
     - description: Set this argument to True to create events, otherwise events will only be displayed.
       auto: PREDEFINED
       defaultValue: 'False'
-      isArray: false
       name: should_push_events
       predefined:
       - 'True'
@@ -76,14 +69,12 @@ script:
     - description: First fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: from
-      required: false
-      secret: false
   runonce: false
   script: '-'
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:1.0.0.61475
+  dockerimage: demisto/fastapi:1.0.0.64153
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0

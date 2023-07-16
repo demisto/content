@@ -21,6 +21,25 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE SIEM ingestion - Get Incident Data",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": " Test Playbook - MDE - Retrieve File",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
         },
@@ -4347,7 +4366,8 @@
         {
             "playbookID": "Test-GitLab-v2",
             "fromversion": "6.5.0",
-            "integrations": "GitLabv2"
+            "integrations": "GitLabv2",
+            "is_mockable": false
         },
         {
             "playbookID": "LGTM-test-playbook",
@@ -5446,6 +5466,10 @@
             "integrations": "CIRCL CVE Search",
             "playbookID": "CIRCL CVE Search - Test",
             "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Kaspersky Security Center",
+            "playbookID": "Kaspersky Security Center - Test"
         }
     ],
     "skipped_tests": {
@@ -5752,7 +5776,8 @@
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
-        "SentinelOne V2": "No instance - developed by partner"
+        "SentinelOne V2": "No instance - developed by partner",
+        "CheckPhish": "Issue CRTX-86562"
     },
     "nightly_packs": [
         "CommonScripts",
@@ -5992,8 +6017,9 @@
             "demisto/pytan": {
                 "pid_threshold": 11
             },
-            "demisto/google-k8s-engine:1.0.0.9467": {
-                "pid_threshold": 11
+            "demisto/google-k8s-engine1.0.0.64696": {
+                "pid_threshold": 11,
+                "memory_threshold": 110
             },
             "demisto/threatconnect-tcex": {
                 "pid_threshold": 11

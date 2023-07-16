@@ -7,7 +7,6 @@ configuration:
   name: service_account_json
   type: 4
   hidden: true
-  required: false
 - displaypassword: Service Account Private Key file contents (JSON)
   name: credentials_service_account_json
   hiddenusername: true

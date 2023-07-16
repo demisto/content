@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from collections import namedtuple
 from typing import Any, Callable, Dict, Tuple, Optional, List, Union
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import requests
 import base64
 

@@ -1,8 +1,8 @@
 {
-    "name": "OPSWAT Filescan",
+    "name": "OPSWAT Filescan Sandbox",
     "description": "Unique adaptive threat analysis technology",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "OPSWAT",
     "url": "https://docs.opswat.com/filescan",
     "email": "threatintel@opswat.com",

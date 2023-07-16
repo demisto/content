@@ -1,11 +1,13 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
-from RankServiceOwners import score, main, rank, _canonicalize, aggregate
+from RankServiceOwners import score, main, rank, _canonicalize, aggregate, _get_k
+from contextlib import nullcontext as does_not_raise
 
 
 @pytest.mark.parametrize('owners,expected_out', [
     (
+        # returned in sorted order
         [
             {
                 'Name': 'bob', 'Email': 'bob@example.com', 'Source': '',
@@ -24,6 +26,61 @@ from RankServiceOwners import score, main, rank, _canonicalize, aggregate
             {
                 'Name': 'bob', 'Email': 'bob@example.com', 'Source': '',
                 'Timestamp': '', 'Ranking Score': 0.5, 'Justification': ''
+            },
+        ]
+    ),
+    (
+        # wraps one test case from _get_k
+        [
+            {
+                'Name': 'a', 'Email': 'a@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 10, 'Justification': ''
+            },
+            {
+                'Name': 'b', 'Email': 'b@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'c', 'Email': 'c@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'd', 'Email': 'd@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'e', 'Email': 'e@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'f', 'Email': 'f@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+        ],
+        [
+            {
+                'Name': 'a', 'Email': 'a@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 10, 'Justification': ''
+            },
+            {
+                'Name': 'b', 'Email': 'b@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'c', 'Email': 'c@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'd', 'Email': 'd@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'e', 'Email': 'e@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'f', 'Email': 'f@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
             },
         ]
     ),
@@ -395,3 +452,76 @@ def test_main(mocker, owners, expected_out, capfd):
     # Verify the output value was set
     expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmserviceowner': expected_out})]
     assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
+
+
+def test_get_k():
+    """
+    These cases are designed to specify the intuition we are trying to implement with the algorithm
+    and verify its default hyperparameters.
+    We assert that if the algorithm matches our intuition at least 80% of the time, it's probably fine.
+
+    See function documentation for explanation of hyperparameters and their defaults.
+    """
+
+    # The first value in each cases is the list of scores output by the model (one per owner)
+    # and the second value is the expected k
+    cases = [
+        # If smallish set of owners, return all or find obvious cutoff
+        ([1], 1),
+        ([1, 1], 2),
+        ([1, 1, 1], 3),
+        ([10, 1, 1], 3),
+        ([1, 1, 1, 1], 4),
+        ([10, 1, 1, 1], 4),
+        ([10, 10, 1, 1], 4),  # or 2; either seems fine
+        ([10, 10, 1, 1], 2),  # or 4; either seems fine
+        ([1, 1, 1, 1, 1], 5),
+        ([10, 1, 1, 1, 1], 5),
+        ([10, 10, 1, 1, 1], 2),
+        ([1, 1, 1, 1, 1, 1], 6),
+        ([1, 1, 1, 1, 1, 1, 1], 7),
+
+        # If larger set of owners, return top handful or find obvious cutoff
+        ([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 5),  # or 2; either seems fine
+        ([10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 2),  # or 5; either seems fine
+        ([10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1], 3),
+        ([10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1], 4),
+        ([10, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([100, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([100, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1], 6),
+
+        # Do something reasonable for non-obvious cutoffs
+        ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1], 5),
+        ([19, 17, 15, 13, 11, 9, 7, 5, 3, 1], 5),
+
+        # Do something reasonable for larger scales
+        ([500, 200, 100, 50, 25, 10, 1], 3),
+    ]
+    num_correct = 0
+    for scores, expected_k in cases:
+        if _get_k(scores) == expected_k:
+            num_correct += 1
+
+    assert (num_correct / len(cases)) >= 0.8
+
+
+@pytest.mark.parametrize('target_k, k_tol, a_tol, min_score_proportion, expected_raises', [
+    (-1, 2, 1.0, 0.75, pytest.raises(ValueError, match="target_k must be non-negative")),
+    (5, -1, 1.0, 0.75, pytest.raises(ValueError, match="k_tol must be non-negative")),
+    (5, 2, -1, 0.75, pytest.raises(ValueError, match="a_tol must be non-negative")),
+    (5, 2, 1.0, -1, pytest.raises(ValueError, match="min_score_proportion must be a value between 0 and 1")),
+    (5, 2, 1.0, 1.1, pytest.raises(ValueError, match="min_score_proportion must be a value between 0 and 1")),
+    (5, 2, 1.0, 0.75, does_not_raise()),
+])
+def test_get_k_bad_values(target_k, k_tol, a_tol, min_score_proportion, expected_raises):
+    scores = [1, 1, 1]
+    with expected_raises:
+        assert _get_k(
+            scores,
+            target_k=target_k,
+            k_tol=k_tol,
+            a_tol=a_tol,
+            min_score_proportion=min_score_proportion,
+        )

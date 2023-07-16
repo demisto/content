@@ -5,7 +5,7 @@ ignore=RM104
 ignore=BA101
 
 [file:UnifiVideo.yml]
-ignore=IN145,RM110
+ignore=RM110
 
 [file:pack_metadata.json]
 ignore=PA129

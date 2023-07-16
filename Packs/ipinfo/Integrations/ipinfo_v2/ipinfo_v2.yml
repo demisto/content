@@ -10,7 +10,6 @@ configuration:
   additionalinfo: The API key to use for the connection.
   hiddenusername: true
   displaypassword: API Token
-  required: false
   type: 9
   section: Connect
 - name: integrationReliability
@@ -36,13 +35,11 @@ configuration:
   section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -57,10 +54,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds.
-    execution: false
     name: ip
     outputs:
     - contextPath: IPinfo.IP.Address
@@ -170,10 +164,6 @@ script:
       description: The vendor used to calculate the score.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
