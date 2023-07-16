@@ -182,9 +182,9 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     Returns: `bool` whether a security engineer should be assigned
     """
 
-    for f in pr_files:
+    for pr_file in pr_files:
         for item in SECURITY_CONTENT_ITEMS:
-            if item in f:
+            if item in pr_file:
                 return True
 
     return False
@@ -226,7 +226,10 @@ def main():
     if support_label := get_packs_support_level_label(pr_files, pr.head.ref):
         labels_to_add.append(support_label)
 
-    # Add 'Contribution' + support Label to the external PR
+    # Add the initial labels to PR:
+    # - Contribution
+    # - External PR
+    # - Support Label
     for label in labels_to_add:
         pr.add_to_labels(label)
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
