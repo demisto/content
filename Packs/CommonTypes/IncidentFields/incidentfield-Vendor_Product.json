@@ -28,7 +28,8 @@
    "Traps",
    "FireEye NX Alert",
    "FireEye NX IPS Event",
-   "Microsoft Sentinel Incident"
+   "Microsoft Sentinel Incident",
+   "CrowdStrike Falcon IDP Detection"
   ],
   "associatedToAll": false,
   "unmapped": false,
