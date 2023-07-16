@@ -177,8 +177,12 @@ references:
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
         python3 --version | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
         python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
+        pip install git+https://github.com/tangentlabs/django-oscar-paypal.git@issue/34/oscar-0.6
         node --version
         npm --version
+        demisto-sdk --version
+        python3 -m pip uninstall demisto-sdk
+        python3 -m pip install https://github.com/user/repository/archive/run_on_local_docker_if_exist.zip
         demisto-sdk --version
 
   remote_docker: &remote_docker
