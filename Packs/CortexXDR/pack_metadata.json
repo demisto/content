@@ -72,7 +72,7 @@
             "display_name": "Atlassian Jira"
         },
         "CloudIncidentResponse": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Cloud Incident Response"
         }
     },
