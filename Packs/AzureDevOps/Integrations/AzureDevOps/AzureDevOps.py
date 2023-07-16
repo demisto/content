@@ -718,8 +718,7 @@ def pull_request_create_command(client: Client, args: Dict[str, Any]) -> Command
 
     outputs = copy.deepcopy(response)
     created_date = arg_to_datetime(response.get('creationDate'))
-    outputs['creationDate'] = created_date.isoformat() if created_date is not None else created_date
-
+    outputs['creationDate'] = created_date.isoformat() if created_date else created_date
     readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
@@ -764,8 +763,7 @@ def pull_request_update_command(client: Client, args: Dict[str, Any]) -> Command
 
     outputs = copy.deepcopy(response)
     created_date = arg_to_datetime(response.get('creationDate'))
-    outputs['creationDate'] = created_date.isoformat() if created_date is not None else created_date
-
+    outputs['creationDate'] = created_date.isoformat() if created_date else created_date
     readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
@@ -798,8 +796,7 @@ def pull_request_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     outputs = copy.deepcopy(response)
     created_date = arg_to_datetime(response.get('creationDate'))
-    outputs['creationDate'] = created_date.isoformat() if created_date is not None else created_date
-
+    outputs['creationDate'] = created_date.isoformat() if created_date else created_date
     readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
@@ -842,7 +839,7 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     outputs = copy.deepcopy(response.get('value', []))
     for pr in outputs:
         created_date = arg_to_datetime(pr.get('creationDate'))
-        pr['creationDate'] = created_date.isoformat() if created_date is not None else created_date
+        pr['creationDate'] = created_date.isoformat() if created_date else created_date
 
     readable_output = generate_pull_request_readable_information(outputs, message=readable_message)
 
@@ -1392,12 +1389,12 @@ def count_active_pull_requests(project: str, repository: str, client: Client, fi
         if first_fetch:
             last_pr_date_str = response.get("value", [])[response.get("count", 0) - 1].get('creationDate').replace('Z', '')
             last_pr_date = arg_to_datetime(last_pr_date_str) if last_pr_date_str else None
-            if last_pr_date is not None and isinstance(first_fetch, datetime) and last_pr_date < first_fetch:
+            if last_pr_date and isinstance(first_fetch, datetime) and last_pr_date < first_fetch:
                 # If the oldest pr in the result is older than 'first_fetch' argument.
                 for pr in response.get("value", []):
                     creation_date_str = pr.get('creationDate', '').replace('Z', '')
                     creation_date = arg_to_datetime(creation_date_str) if creation_date_str else None
-                    if creation_date is not None and isinstance(first_fetch, datetime) and creation_date > first_fetch:
+                    if creation_date and isinstance(first_fetch, datetime) and creation_date > first_fetch:
                         count += 1
                     else:  # Stop counting
                         max_iterations = -1
