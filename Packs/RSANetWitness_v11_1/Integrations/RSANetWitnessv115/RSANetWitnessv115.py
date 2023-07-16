@@ -803,7 +803,7 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
     alerts: list[dict] = []
     has_next = True
     page_number = 0
-    while has_next and len(alerts) <= max_alerts:
+    while has_next and len(alerts) < max_alerts:
         try:
             response_body = client.incident_list_alerts_request(
                 page_number=str(page_number),
