@@ -1026,6 +1026,42 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
     assert results == expected_results
 
 
+@pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
+                         [({'status_label': 'New', 'event_id': 'id', 'status_end': 'false',
+                            'comment': 'new comment Mirrored from Cortex XSOAR', 'reviewer': 'admin',
+                            'review_time': '1689498539.413514'},
+                           {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
+                           None,
+                           )])
+def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
+                                             func_call_kwargs: dict, expected_closure_data: dict):
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: notable_data
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
+    mocker.patch.object(demisto, 'results')
+    service = Service()
+    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
+                                   comment_tag_from_splunk='from_splunk', **func_call_kwargs)
+    results = demisto.results.call_args[0][0]
+    notable_data.update({'SplunkComments': [{'Comment': 'new comment Mirrored from Cortex XSOAR',
+                        'Comment time': '1689498539.413514', 'Reviwer': 'admin'}]})
+
+    expected_results = [notable_data]
+
+    assert demisto.results.call_count == 1
+    assert results == expected_results
+
+
 def test_get_modified_remote_data_command(mocker):
     updated_incidet_review = {'rule_id': 'id'}
 
