@@ -1,4 +1,5 @@
 [INGEST:vendor="cisco", product="ise", target_dataset="cisco_ise_raw", no_hit=keep]
+// Support only date time of format: MMM dd hh:mm:ss or format: yyyy-MM-dd hh:mm:ss.nnn [+|-]nn:nn or format: yyyy-MM-dd hh:mm:ss.nnn [+|-]nnnn. For example: "Jan 01 10:00:00" or "2022-01-01 10:00:00.123 +03:00" or "2022-01-01 10:00:00.123 +0300".
 filter _raw_log ~= "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s" or _raw_log ~= "\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3}\s[+|-]\d+:?\d+\s"
 | alter
         tmp_time2 = arrayindex(regextract(_raw_log,"<\d+>(\w+\s*\d+\s\d+:\d+:\d+)\s"),0),
