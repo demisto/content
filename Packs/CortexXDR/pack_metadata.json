@@ -70,6 +70,10 @@
         "Jira": {
             "mandatory": false,
             "display_name": "Atlassian Jira"
+        },
+        "CloudIncidentResponse": {
+            "mandatory": true,
+            "display_name": "Cloud Incident Response"
         }
     },
     "marketplaces": [
