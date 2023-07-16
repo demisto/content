@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a93aec8d-b0e9-4e64-8980-247d16e74bac
+    taskid: 8bb8b32b-e4f9-4d14-890e-18a3a5582c95
     type: start
     task:
-      id: a93aec8d-b0e9-4e64-8980-247d16e74bac
+      id: 8bb8b32b-e4f9-4d14-890e-18a3a5582c95
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 01ad3f23-0a0b-4a41-8018-5df9217cdbde
+    taskid: 2a16155d-76ff-4dae-89ae-f811a27a20ae
     type: regular
     task:
-      id: 01ad3f23-0a0b-4a41-8018-5df9217cdbde
+      id: 2a16155d-76ff-4dae-89ae-f811a27a20ae
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -69,13 +69,13 @@ tasks:
     continueonerrortype: ""
   "2":
     id: "2"
-    taskid: fa3ecfa7-88a5-41c5-873d-dc373111fc36
+    taskid: cfedeeff-329b-447a-86bb-8ca9615cba3f
     type: regular
     task:
-      id: fa3ecfa7-88a5-41c5-873d-dc373111fc36
+      id: cfedeeff-329b-447a-86bb-8ca9615cba3f
       version: -1
       name: rsa-nw-list-incidents
-      script: RSANetWitnessv115|||rsa-nw-list-incidents
+      script: '|||rsa-nw-list-incidents'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -104,10 +104,10 @@ tasks:
     continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 40aed6ff-47f0-4cdf-834e-f28fc100322a
+    taskid: 2d7408a2-d68e-488b-883a-8ed5f88ff67c
     type: condition
     task:
-      id: 40aed6ff-47f0-4cdf-834e-f28fc100322a
+      id: 2d7408a2-d68e-488b-883a-8ed5f88ff67c
       version: -1
       name: Verify Outputs
       type: condition
@@ -146,10 +146,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 70c63ccb-3671-42b5-879c-9138c4a77339
+    taskid: 95ffbc8b-c20e-4afe-814f-4216feb726c8
     type: regular
     task:
-      id: 70c63ccb-3671-42b5-879c-9138c4a77339
+      id: 95ffbc8b-c20e-4afe-814f-4216feb726c8
       version: -1
       name: rsa-nw-update-incident
       script: RSANetWitnessv115|||rsa-nw-update-incident
@@ -196,10 +196,10 @@ tasks:
     continueonerrortype: ""
   "5":
     id: "5"
-    taskid: eccba450-2eea-48c2-8bff-1120a39ab486
+    taskid: a6d62256-57e9-4dd8-80f5-4af2d06f0e2f
     type: condition
     task:
-      id: eccba450-2eea-48c2-8bff-1120a39ab486
+      id: a6d62256-57e9-4dd8-80f5-4af2d06f0e2f
       version: -1
       name: Verify Outputs
       type: condition
@@ -239,13 +239,13 @@ tasks:
     continueonerrortype: ""
   "7":
     id: "7"
-    taskid: c84d18e3-2f3d-4771-8cf9-751059e77508
+    taskid: 0b2f73d0-962a-4c89-8c26-cc39bb604ee5
     type: regular
     task:
-      id: c84d18e3-2f3d-4771-8cf9-751059e77508
+      id: 0b2f73d0-962a-4c89-8c26-cc39bb604ee5
       version: -1
       name: rsa-nw-incident-add-journal-entry
-      script: RSANetWitnessv115|||rsa-nw-incident-add-journal-entry
+      script: '|||rsa-nw-incident-add-journal-entry'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -276,13 +276,13 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: 704d7de4-d640-41b6-807e-f202e0173dde
+    taskid: 1252eab9-265c-44a7-8722-fea0f8b8dc5e
     type: regular
     task:
-      id: 704d7de4-d640-41b6-807e-f202e0173dde
+      id: 1252eab9-265c-44a7-8722-fea0f8b8dc5e
       version: -1
       name: rsa-nw-incident-list-alerts
-      script: RSANetWitnessv115|||rsa-nw-incident-list-alerts
+      script: '|||rsa-nw-incident-list-alerts'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -311,10 +311,10 @@ tasks:
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 0375174d-51d1-434b-82e2-3da20a2ac761
+    taskid: b9595f60-90a9-4a47-8c8e-3bf2a19abfcf
     type: condition
     task:
-      id: 0375174d-51d1-434b-82e2-3da20a2ac761
+      id: b9595f60-90a9-4a47-8c8e-3bf2a19abfcf
       version: -1
       name: Verify Outputs
       type: condition
@@ -349,13 +349,13 @@ tasks:
     continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 79b2fcc2-4ade-4668-8cde-c4daa5133288
+    taskid: 08e8d3a4-cd5f-4336-8d25-81e5d479c42d
     type: regular
     task:
-      id: 79b2fcc2-4ade-4668-8cde-c4daa5133288
+      id: 08e8d3a4-cd5f-4336-8d25-81e5d479c42d
       version: -1
       name: rsa-nw-services-list
-      script: RSANetWitnessv115|||rsa-nw-services-list
+      script: '|||rsa-nw-services-list'
       type: regular
       iscommand: true
       brand: ""
@@ -381,10 +381,10 @@ tasks:
     continueonerrortype: ""
   "11":
     id: "11"
-    taskid: a357285c-0dfc-4284-8a0b-9b4fabb9ea03
+    taskid: 10219324-a6e9-4e49-8f37-ac394ba3a258
     type: condition
     task:
-      id: a357285c-0dfc-4284-8a0b-9b4fabb9ea03
+      id: 10219324-a6e9-4e49-8f37-ac394ba3a258
       version: -1
       name: Verify Outputs
       type: condition
@@ -419,13 +419,13 @@ tasks:
     continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 26dd1eca-66e4-4469-8adf-fd538a07ac76
+    taskid: ba20b42f-71ad-41ef-8186-28d957bda5ae
     type: regular
     task:
-      id: 26dd1eca-66e4-4469-8adf-fd538a07ac76
+      id: ba20b42f-71ad-41ef-8186-28d957bda5ae
       version: -1
       name: rsa-nw-hosts-list
-      script: RSANetWitnessv115|||rsa-nw-hosts-list
+      script: '|||rsa-nw-hosts-list'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -454,10 +454,10 @@ tasks:
     continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 5570bcac-5d37-406a-8b29-bae157e08eff
+    taskid: 4f6506ee-78ca-4066-86a4-02438701fe05
     type: condition
     task:
-      id: 5570bcac-5d37-406a-8b29-bae157e08eff
+      id: 4f6506ee-78ca-4066-86a4-02438701fe05
       version: -1
       name: Verify Outputs
       type: condition
@@ -492,17 +492,17 @@ tasks:
     continueonerrortype: ""
   "14":
     id: "14"
-    taskid: f18d29c2-c1d6-445b-880d-19bbe9dda509
+    taskid: 5dd23b3a-59e7-4d7e-88b2-dbc7f672bec4
     type: regular
     task:
-      id: f18d29c2-c1d6-445b-880d-19bbe9dda509
+      id: 5dd23b3a-59e7-4d7e-88b2-dbc7f672bec4
       version: -1
       name: endpoint
-      script: RSANetWitnessv115|||endpoint
+      script: '|||endpoint'
       type: regular
       iscommand: true
       brand: "RSANetWitnessv115"
-      description: Retrieves host information for a specific endpoint. To use this command, service ID must be set in the integration configuration.
+      description: Returns information about an endpoint.
     nexttasks:
       '#none#':
       - "15"
@@ -524,10 +524,10 @@ tasks:
     continueonerrortype: ""
   "15":
     id: "15"
-    taskid: ce983162-2ed3-44a4-86c6-69733d4ff6c5
+    taskid: 4b5f4461-2166-4f70-8474-4dd4ac959bf3
     type: condition
     task:
-      id: ce983162-2ed3-44a4-86c6-69733d4ff6c5
+      id: 4b5f4461-2166-4f70-8474-4dd4ac959bf3
       version: -1
       name: Verify Outputs
       type: condition
@@ -562,13 +562,13 @@ tasks:
     continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 0cf7aecc-1812-4b76-8f23-74ecd1f51a45
+    taskid: a2204883-cf63-491a-874d-fbf45b164df9
     type: regular
     task:
-      id: 0cf7aecc-1812-4b76-8f23-74ecd1f51a45
+      id: a2204883-cf63-491a-874d-fbf45b164df9
       version: -1
       name: rsa-nw-snapshots-list-for-host
-      script: RSANetWitnessv115|||rsa-nw-snapshots-list-for-host
+      script: '|||rsa-nw-snapshots-list-for-host'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -597,10 +597,10 @@ tasks:
     continueonerrortype: ""
   "17":
     id: "17"
-    taskid: dda17319-524c-4906-8788-2fada2248ff8
+    taskid: 22e7859a-de43-4859-8e37-4eea25690f5a
     type: condition
     task:
-      id: dda17319-524c-4906-8788-2fada2248ff8
+      id: 22e7859a-de43-4859-8e37-4eea25690f5a
       version: -1
       name: Verify Outputs
       type: condition
@@ -637,13 +637,13 @@ tasks:
     continueonerrortype: ""
   "18":
     id: "18"
-    taskid: 4da9f83b-7640-48d0-843b-884aa6e0e4f5
+    taskid: 150d7c8c-6a50-46aa-88e5-5eef9ec71016
     type: regular
     task:
-      id: 4da9f83b-7640-48d0-843b-884aa6e0e4f5
+      id: 150d7c8c-6a50-46aa-88e5-5eef9ec71016
       version: -1
       name: rsa-nw-snapshot-details-get
-      script: RSANetWitnessv115|||rsa-nw-snapshot-details-get
+      script: '|||rsa-nw-snapshot-details-get'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -678,10 +678,10 @@ tasks:
     continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 6b7cd4ef-316b-4c5a-8b15-666f4479d17f
+    taskid: 417fa999-855c-4749-82cf-c4a5b18b855d
     type: condition
     task:
-      id: 6b7cd4ef-316b-4c5a-8b15-666f4479d17f
+      id: 417fa999-855c-4749-82cf-c4a5b18b855d
       version: -1
       name: Verify Outputs
       type: condition
@@ -716,13 +716,13 @@ tasks:
     continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 624be1b1-441f-4143-8860-f642461622d4
+    taskid: 54d15f78-dda7-4a41-85ac-171cae107afa
     type: regular
     task:
-      id: 624be1b1-441f-4143-8860-f642461622d4
+      id: 54d15f78-dda7-4a41-85ac-171cae107afa
       version: -1
       name: rsa-nw-files-list
-      script: RSANetWitnessv115|||rsa-nw-files-list
+      script: '|||rsa-nw-files-list'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -751,10 +751,10 @@ tasks:
     continueonerrortype: ""
   "21":
     id: "21"
-    taskid: 9cff4081-8451-44a3-8595-b2bcfafd777a
+    taskid: a73ef93b-77f4-4b86-82ca-7ab92c43442d
     type: condition
     task:
-      id: 9cff4081-8451-44a3-8595-b2bcfafd777a
+      id: a73ef93b-77f4-4b86-82ca-7ab92c43442d
       version: -1
       name: Verify Outputs
       type: condition
@@ -789,13 +789,13 @@ tasks:
     continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 2f9f6930-a039-4bea-8db6-33840e652301
+    taskid: 99b690b1-db22-4b1b-8a8e-6a76333080fc
     type: regular
     task:
-      id: 2f9f6930-a039-4bea-8db6-33840e652301
+      id: 99b690b1-db22-4b1b-8a8e-6a76333080fc
       version: -1
       name: rsa-nw-host-alerts-list
-      script: RSANetWitnessv115|||rsa-nw-host-alerts-list
+      script: '|||rsa-nw-host-alerts-list'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -824,10 +824,10 @@ tasks:
     continueonerrortype: ""
   "25":
     id: "25"
-    taskid: ae8544c0-0898-41f5-8eca-ff1dbf6670bb
+    taskid: 22f3570d-01cd-43cf-88ec-1a0050fc6354
     type: condition
     task:
-      id: ae8544c0-0898-41f5-8eca-ff1dbf6670bb
+      id: 22f3570d-01cd-43cf-88ec-1a0050fc6354
       version: -1
       name: Verify Outputs
       type: condition
@@ -862,13 +862,13 @@ tasks:
     continueonerrortype: ""
   "26":
     id: "26"
-    taskid: e00f67d3-ceab-4e6c-806a-4e77140475a9
+    taskid: 6d96937a-eb0f-49e3-8aea-3da311857279
     type: regular
     task:
-      id: e00f67d3-ceab-4e6c-806a-4e77140475a9
+      id: 6d96937a-eb0f-49e3-8aea-3da311857279
       version: -1
       name: rsa-nw-file-alerts-list
-      script: RSANetWitnessv115|||rsa-nw-file-alerts-list
+      script: '|||rsa-nw-file-alerts-list'
       type: regular
       iscommand: true
       brand: RSANetWitnessv115
@@ -897,10 +897,10 @@ tasks:
     continueonerrortype: ""
   "27":
     id: "27"
-    taskid: a2d5f3b1-9c25-4a19-85a2-469d8b4b860d
+    taskid: be553f89-872f-48a5-88aa-c2bf4d191e38
     type: condition
     task:
-      id: a2d5f3b1-9c25-4a19-85a2-469d8b4b860d
+      id: be553f89-872f-48a5-88aa-c2bf4d191e38
       version: -1
       name: Verify Outputs
       type: condition
@@ -935,10 +935,10 @@ tasks:
     continueonerrortype: ""
   "35":
     id: "35"
-    taskid: b2b08eff-11a3-4471-80d4-1df6dedd2e53
+    taskid: 389cca83-7ed6-4761-8d53-5741f1983505
     type: title
     task:
-      id: b2b08eff-11a3-4471-80d4-1df6dedd2e53
+      id: 389cca83-7ed6-4761-8d53-5741f1983505
       version: -1
       name: Test Done
       type: title
@@ -963,10 +963,10 @@ tasks:
     continueonerrortype: ""
   "37":
     id: "37"
-    taskid: 6db9e11d-0312-4b28-8e05-91bacc3e7c0d
+    taskid: f8cb1a78-c2c2-459d-8b8f-99ba4192596f
     type: condition
     task:
-      id: 6db9e11d-0312-4b28-8e05-91bacc3e7c0d
+      id: f8cb1a78-c2c2-459d-8b8f-99ba4192596f
       version: -1
       name: is there new incident
       type: condition
@@ -1014,14 +1014,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: dc0362a9-add6-4a2c-83b3-3de083184ec5
+    taskid: 88cec475-0fbe-4837-825a-c9f2d619c35e
     type: regular
     task:
-      id: dc0362a9-add6-4a2c-83b3-3de083184ec5
+      id: 88cec475-0fbe-4837-825a-c9f2d619c35e
       version: -1
       name: get all incidents
       description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
-      script: "|||rsa-nw-list-incidents"
+      script: '|||rsa-nw-list-incidents'
       type: regular
       iscommand: true
       brand: ""
@@ -1046,10 +1046,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 307e6b38-e0da-40e6-8c70-d6c4b8cedfb3
+    taskid: 28c49d88-d832-462a-8697-df0d4650522e
     type: regular
     task:
-      id: 307e6b38-e0da-40e6-8c70-d6c4b8cedfb3
+      id: 28c49d88-d832-462a-8697-df0d4650522e
       version: -1
       name: delete context
       description: |-
