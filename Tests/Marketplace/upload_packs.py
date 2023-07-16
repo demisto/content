@@ -1453,8 +1453,8 @@ def main():
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            packs_for_current_marketplace_dict)
 
-    markdown_images_dict = download_markdown_images_from_artifacts(markdown_images_data, storage_bucket=storage_bucket,
-                                                                storge_base_path=storage_base_path)
+    markdown_images_dict = download_markdown_images_from_artifacts(
+        markdown_images_data, storage_bucket=storage_bucket, storge_base_path=storage_base_path)
 
     logging.info(f'{markdown_images_dict=}')
     # get the lists of packs divided by their status
