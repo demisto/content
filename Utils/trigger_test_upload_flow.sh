@@ -15,6 +15,7 @@ if [ "$#" -lt "1" ]; then
   [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like upload-flow/builds/branch_name/build_number/content.
   [-dz, --create_dependencies_zip] Upload packs with dependencies zip
   [-o, --override_all_packs]  Whether to override all packs, and not just modified packs.
+  [-fmp, --force_to_marketplace] The name of the marketplace to force upload, Mandatory when the --force flag is on.
   "
   exit 1
 fi
@@ -75,6 +76,10 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -fmp|--force_to_marketplace) _force_to_marketplace="$2"
+    shift
+    shift;;
+
   -ch|--slack-channel) _slack_channel="$2"
     shift
     shift;;
@@ -102,6 +107,11 @@ fi
 
 if [ -n "$_force" ] && [ -z "$_packs" ]; then
     echo "You must provide a csv list of packs to force upload."
+    exit 1
+fi
+
+if [ -n "$_force" ] && [ -z "$_force_to_marketplace" ]; then
+    echo "You must provide a name of marketplace to force upload."
     exit 1
 fi
 
@@ -152,4 +162,6 @@ curl --request POST \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
   --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
+  --form "variables[UPLOAD_TO]=${_force_to_marketplace}" \
+
   "$BUILD_TRIGGER_URL"
