@@ -12,7 +12,7 @@ from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoEx
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
-    change_user_role_command, list_risky_users_or_host_command
+    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -138,7 +138,7 @@ def test_endpoint_command(requests_mock):
                                         'IsIsolated': 'No'}]}
 
     results = outputs[0].to_context()
-    for key, val in results.get("EntryContext").items():
+    for key, _val in results.get("EntryContext").items():
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
 
@@ -3592,3 +3592,26 @@ def test_get_script_execution_result_files(mocker):
                                        })
     test_client.get_script_execution_result_files(action_id="1", endpoint_id="1")
     http_request.assert_called_with(method='GET', url_suffix="download/test", resp_type="response")
+
+
+@pytest.mark.parametrize(
+    'error_message, expected_error_message',
+    ("id 'test' was not found", "Error: id test was not found. Full error message: id 'test' was not found"),
+    ("some error", "Full error message: some error")
+)
+def test_enrich_error_message_id_group_role(error_message, expected_error_message):
+    """
+    Given:
+    - no arguments
+    When:
+    - executing the enrich_error_message_id_group_role command
+    Then:
+    - Validate that the error message is enriched correctly
+    """
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    error_response = enrich_error_message_id_group_role(DemistoException(
+        message=error_message, res=MockException(500)), "test", "test")
+    assert error_response == expected_error_message
