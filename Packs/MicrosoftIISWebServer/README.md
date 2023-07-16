@@ -4,10 +4,17 @@ This pack includes XSIAM content.
 
 ## Configuration on the Server Side
 
-1. Open the IIS Manager.
-2. Click the site.
-3. In the window on the right, click **Logging**.
-4. Ensure the format is set to W3C.
+1. Click **Tools** > **Internet Information Services (IIS) Manager**.
+   ![IIS Manager](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/iis-manager.png)
+2. In the left pane, expand the **Sites** folder and click the designated site.
+   ![Designated Site](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/iis-designated-site.png)
+3. In the main window, click **Logging**.  
+4. In the Log File section, ensure the format is set to **W3C**
+   ![Format W3C](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/iis-w3c.png)
+5. Cick **Select Fields**
+6. Ensure all the fields are checked.
+   ![Select Fields](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/iis-select-fields.png)
+   
 ## Collect Events from Vendor
 In order to use the collector, you need to use the following option to collect events from the vendor:
 
