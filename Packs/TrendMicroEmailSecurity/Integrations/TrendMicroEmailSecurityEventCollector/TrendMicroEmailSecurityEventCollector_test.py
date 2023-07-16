@@ -73,8 +73,8 @@ def test_remove_sensitive_from_events(event: dict, expected_results: dict):
     assert event == expected_results
 
 
-def test_generate_authorization_encoded(mock_client: Client):
-    authorization_encoded = mock_client.generate_authorization_encoded("test", "test_api_key")
+def test__encode_authorization(mock_client: Client):
+    authorization_encoded = mock_client._encode_authorization("test", "test_api_key")
     assert authorization_encoded == "dGVzdDp0ZXN0X2FwaV9rZXk="
 
 

@@ -40,12 +40,12 @@ class Client(BaseClient):
     def __init__(
         self, base_url: str, username: str, api_key: str, verify: bool, proxy: bool
     ):
-        authorization_encoded = self.generate_authorization_encoded(username, api_key)
+        authorization_encoded = self._encode_authorization(username, api_key)
         headers = {"Authorization": f"Basic {authorization_encoded}"}
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def generate_authorization_encoded(self, username: str, api_key: str) -> str:
+    def _encode_authorization(self, username: str, api_key: str) -> str:
         authorization_bytes = f"{username}:{api_key}".encode()
         return base64.b64encode(authorization_bytes).decode()
 
@@ -121,7 +121,7 @@ def managing_set_last_run(
             # there are no more logs in current range time
             no_more_events_in_current_range_time = True
 
-    if no_more_events_in_current_range_time:
+    if no_more_events_in_current_range_time or not event.get("logs"):
         # save the time_from for a specific `event_type` for the next fetch
         # the `start` time of the next fetch is time_to + 1 second
         last_run[f"time_{event_type}_from"] = (time_to + timedelta(seconds=1)).strftime(
@@ -143,6 +143,7 @@ def order_first_fetch(first_fetch: str) -> str:
     """
     Checks the first_fetch which is not older than 3 days
     """
+
     if arg_to_datetime(first_fetch) <= arg_to_datetime("4321 minutes"):  # type: ignore[operator]
         raise ValueError(
             "The request retrieves logs created within 72 hours at most before sending the request\n"
@@ -152,12 +153,12 @@ def order_first_fetch(first_fetch: str) -> str:
 
 
 def remove_sensitive_from_events(event: dict) -> dict:
-    if "subject" in event:
-        del event['subject']
+    event.pop("subject", None)
 
     if (attachments := event.get("attachments")) and isinstance(attachments, list):
-        attachments = [{k: v for k, v in attachment.items() if k != "fileName"} for attachment in attachments]
-        event.update({"attachments": attachments})
+        for attachment in attachments:
+            if isinstance(attachment, dict):
+                attachment.pop("fileName", None)
 
     return event
 
@@ -169,18 +170,20 @@ def test_module(client: Client):
     """
     Testing we have a valid connection to trend_micro.
     """
-    first_fetch = order_first_fetch("2 days")
     try:
         client.get_logs_request(
             "policy_logs",
             {
                 "limit": 1,
-                "start": first_fetch,
+                "start": order_first_fetch("2 days"),
                 "end": datetime.now().strftime(DATE_FORMAT_EVENT),
             },
         )
     except NoContentException:
+        # This type of error is raised when events are not returned, but the API call was successful,
+        # therefore `ok` will be returned
         pass
+
     return "ok"
 
 
@@ -219,8 +222,9 @@ def fetch_events_command(
             event_type=event_type,
             hide_sensitive=hide_sensitive,
         )
-
+        
         events.extend(events_by_type)
+
         last_run_for_type = managing_set_last_run(
             client=client,
             len_events=len(events_by_type),
@@ -232,9 +236,7 @@ def fetch_events_command(
             event_type=event_type,
         )
         new_last_run.update(last_run_for_type)
-    demisto.debug(
-        f"The fetch process has ended, the amount of logs for this {len(events)}"
-    )
+    demisto.debug(f"Done fetching, got {len(events)} events.")
 
     return events, new_last_run
 
@@ -267,7 +269,6 @@ def fetch_by_event_type(
                                        The token that returned for the next fetch.
     """
     if token:
-        # The unquoting  is must for the api call
         token = urllib.parse.unquote(token)
 
     params = assign_params(
@@ -297,7 +298,8 @@ def fetch_by_event_type(
                     remove_sensitive_from_events(event)
 
             events_res.extend(res.get("logs"))
-        else:
+
+        else:  # no logs
             next_token = None
             break
 
@@ -305,13 +307,10 @@ def fetch_by_event_type(
             params["token"] = urllib.parse.unquote(next_token)
         else:
             next_token = None
-            demisto.debug(f"No returned `nextToken` for the {event_type} type")
+            demisto.debug(f"No `nextToken` for {event_type=}")
             break
 
-    demisto.debug(
-        f"The fetch process of the type {event_type} has ended,"
-        f" the amount of logs for this type: {len(events_res)}"
-    )
+    demisto.debug(f"Done fetching {event_type=}, got {len(events_res)} events")
     return events_res, next_token
 
 
@@ -320,8 +319,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     base_url = params["url"].strip("/")
-    username = params.get("credentials")["identifier"]
-    api_key = params.get("credentials")["password"]
+    username = params["credentials"]["identifier"]
+    api_key = params["credentials"]["password"]
     verify = argToBoolean(params.get("verify", "false"))
     proxy = argToBoolean(params.get("proxy", "false"))
     first_fetch = order_first_fetch(params.get("first_fetch") or "3 days")
@@ -330,7 +329,6 @@ def main() -> None:  # pragma: no cover
     last_run = demisto.getLastRun()
 
     command = demisto.command()
-    demisto.info(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
@@ -363,7 +361,7 @@ def main() -> None:  # pragma: no cover
 
                 if should_update_last_run:
                     demisto.setLastRun(last_run)
-                    demisto.debug("The last_run updated")
+                    demisto.debug(f"set {last_run=}")
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
