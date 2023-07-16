@@ -93,7 +93,7 @@
          "is_array":false
       },
       "dpt":{
-         "type":"string",
+         "type":"int",
          "is_array":false
       },
       "dst":{
@@ -137,7 +137,7 @@
          "is_array":false
       },
       "fileSize":{
-         "type":"string",
+         "type":"int",
          "is_array":false
       },
       "hostName":{
@@ -208,14 +208,6 @@
          "type":"string",
          "is_array":false
       },
-      "processFileHashMd5":{
-         "type":"string",
-         "is_array":false
-      },
-      "processFileHashSha256":{
-         "type":"string",
-         "is_array":false
-      },
       "processFilePath":{
          "type":"string",
          "is_array":false
@@ -245,11 +237,11 @@
          "is_array":false
       },
       "rt_utc":{
-         "type":"string",
+         "type":"datetime",
          "is_array":false
       },
       "spt":{
-         "type":"string",
+         "type":"int",
          "is_array":false
       },
       "src":{
