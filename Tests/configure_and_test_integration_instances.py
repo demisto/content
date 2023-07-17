@@ -1165,6 +1165,11 @@ def set_integration_params(build,
     Returns:
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
+    logging.info(f'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+    logging.info(f'{integrations=}')
+    logging.info(f'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+    logging.info(f'{secret_params=}')
+    logging.info(f'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
