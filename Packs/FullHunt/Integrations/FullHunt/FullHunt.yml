@@ -21,12 +21,14 @@ configuration:
   name: insecure
   section: Connect
   type: 8
+  required: false
 - advanced: true
   defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   section: Connect
   type: 8
+  required: false
 description: Cortex XSOAR integration with FullHunt.io API
 display: FullHunt
 name: FullHunt
