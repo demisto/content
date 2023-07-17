@@ -7,17 +7,21 @@ configuration:
   name: service
   type: 4
   hidden: true
+  required: false
 - displaypassword: Service Account Private Key file contents (JSON)
   name: credentials_service_account_json
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: What is the top level object to search in (usually a project or organization in format of organization/XX).
   display: Default Search Scope
   name: default_search_scope
   type: 0
+  required: false
 description: Google Compute Engine delivers virtual machines running in Google's innovative data centers and worldwide fiber network. Compute Engine's tooling and workflow support enable scaling from single instances to global, load-balanced cloud computing.
 display: Google Cloud Compute
 name: Google Cloud Compute

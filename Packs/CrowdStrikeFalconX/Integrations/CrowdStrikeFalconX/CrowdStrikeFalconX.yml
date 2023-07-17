@@ -11,6 +11,7 @@ configuration:
   name: base_url
   type: 0
   section: Connect
+  required: false
 - display: Client ID
   name: credentials
   required: true
@@ -21,11 +22,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -40,6 +43,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   section: Collect
+  required: false
 description: Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon Intelligence Sandbox
 name: CrowdStrike Falcon X
