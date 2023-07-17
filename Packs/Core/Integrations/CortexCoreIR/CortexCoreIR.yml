@@ -177,8 +177,9 @@ script:
       - asc
       - desc
     - auto: PREDEFINED
-      description: The status of the endpoint to filter.
+      description: A comma-separated list of endpoints statuses to filter.
       name: status
+      isArray: true
       predefined:
       - connected
       - disconnected
