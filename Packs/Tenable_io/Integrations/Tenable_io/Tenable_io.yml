@@ -1214,6 +1214,11 @@ script:
       isArray: true
     - name: filterSearchType
       description: For multiple filters, specifies whether to use the AND or the OR logical operator.
+      defaultValue: and
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
     - name: assetId
       description: The ID of the asset scanned.
     - name: fileId

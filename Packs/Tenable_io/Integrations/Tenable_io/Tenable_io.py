@@ -1129,7 +1129,8 @@ def safe_get_json(response: requests.models.Response) -> dict:
                 '   Only Nessus and CSV formats are supported for scan results that are older than 60 days.'
                 ' - Your command arguments included filter query parameters for scan results that are older than 60 days.',
             404: 'Tenable Vulnerability Management cannot find the specified scan.',
-            492: 'Too Many Requests'}
+            492: 'Too Many Requests',
+        }
         raise DemistoException(
             f'Error processing request. Got response status code: {code}' + (
                 f' - {code_messages[code]}'
@@ -1160,7 +1161,8 @@ def scan_filters_human_readable(filters: list) -> str:
         'regex': 'Filter regex',
         'readable_regex': 'Readable regex',
         'operators': 'Filter operators',
-        'group_name': 'Filter group name'}
+        'group_name': 'Filter group name',
+    }
     return tableToMarkdown(
         'Tenable IO Scan Filters',
         list(map(flatten, filters)),
@@ -1207,8 +1209,7 @@ def scan_history_human_readable(history: list) -> str:
         'Tenable IO Scan History',
         list(map(flatten, history)),
         headers=list(context_to_hr.keys()),
-        headerTransform=context_to_hr.get,
-    )
+        headerTransform=context_to_hr.get)
 
 
 def scan_history_params(args: dict) -> dict:
@@ -1218,7 +1219,8 @@ def scan_history_params(args: dict) -> dict:
             for field in argToList(args.get('sortFields'))),
         'exclude_rollover': args['excludeRollover'],
         'limit': args.get('pageSize') or args['limit'],
-        'offset': int(args.get('pageSize', 0)) * int(args.get('page', 0))}
+        'offset': int(args.get('pageSize', 0)) * int(args.get('page', 0)),
+    }
 
 
 def get_scan_history_command(args: dict[str, Any]) -> CommandResults:
@@ -1249,18 +1251,21 @@ def export_scan_request_args(
     url = f'{BASE_URL}scans/{scanId}/export'
     params = {
         'history_id': historyId,
-        'history_uuid': historyUuid}
+        'history_uuid': historyUuid,
+    }
     body = {
         'format': args['format'].lower(),
         'chapters': chapters,
         'filter.search_type': filterSearchType,
-        'asset_id': assetId}
+        'asset_id': assetId,
+    }
     for i, (name, quality, value)\
             in enumerate(zip(*map(argToList, (filterName, filterQuality, filterValue)))):
         body |= {
             f'filter.{i}.filter': name,
             f'filter.{i}.quality': quality,
-            f'filter.{i}.value': value}
+            f'filter.{i}.value': value,
+        }
     remove_nulls_from_dictionary(params)
     remove_nulls_from_dictionary(body)
     return {'url': url, 'params': params, 'json': body}
@@ -1280,7 +1285,7 @@ def initiate_export_scan(scan_id: str, args: dict) -> PollResult:
         None, True,
         {'fileId': file_id,
          'scanId': scan_id,
-         'format': args['format']},
+         'format': args['format']},  # not necessary but avoids confusion
         CommandResults(
             outputs_prefix='InfoFile',
             outputs_key_field='file',
