@@ -3,7 +3,7 @@ from CommonServerPython import *
 import xmltodict
 
 
-def convert_file(entry_id: str, verbose: bool, context_key: str | None) ->  None:
+def convert_file(entry_id: str, verbose: bool, context_key: str | None) -> None:
     """
     Converts file content from XML to Json
     Args:
