@@ -20,7 +20,7 @@ def convert_file(entry_id: str, verbose: bool, context_key: str | None) -> None:
         appendContext(key=context_key, data=xml_json)
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
     entry_id = args.get("entryID", "")
     verbose = argToBoolean(args.get("verbose", False))
