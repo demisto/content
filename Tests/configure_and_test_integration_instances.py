@@ -1168,11 +1168,18 @@ def set_integration_params(build,
     logging.info(f'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     logging.info(f'{integrations=}')
     logging.info(f'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-    logging.info(f'{secret_params=}')
-    logging.info(f'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     for integration in integrations:
-        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
-                              in secret_params if item['name'] == integration['name']]
+        # integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+        #                       in secret_params if item['name'] == integration['name']]
+        integration_params = []
+
+        for item in secret_params:
+            try:
+                if item['name'] == integration['name']:
+                    integration_params.append([change_placeholders_to_values(placeholders_map, item)])
+            except Exception as e:
+                logging.info(f'EEEEEEEsi={item}, i={integration}EEEEE')
+
         if integration['name'] == "Core REST API" and build.is_cloud:
             integration_params[0]['params'] = {  # type: ignore
                 "url": build.base_url,
