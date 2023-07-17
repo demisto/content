@@ -3349,7 +3349,7 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
     "test_data, excepted_error",
     [
         ({"group_names": "test"}, "Error: Group test was not found. Full error message: Group 'test' was not found"),
-        ({"group_names": "test, test2"}, "Error: Group test was not found, Note: If you sent more than one group name, "
+        ({"group_names": "test, test2"}, "Error: Group test was not found. Note: If you sent more than one group name, "
          "they may not exist either. Full error message: Group 'test' was not found")
     ]
 )
@@ -3548,7 +3548,7 @@ def test_endpoint_command_fails(requests_mock):
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
-    args = {}
+    args: dict = {}
     with pytest.raises(DemistoException) as e:
         endpoint_command(client, args)
     assert 'In order to run this command, please provide a valid id, ip or hostname' in str(e)
@@ -3595,23 +3595,32 @@ def test_get_script_execution_result_files(mocker):
 
 
 @pytest.mark.parametrize(
-    'error_message, expected_error_message',
-    ("id 'test' was not found", "Error: id test was not found. Full error message: id 'test' was not found"),
-    ("some error", "Full error message: some error")
+    "error_message, expected_error_message",
+    [
+        (
+            "id 'test' was not found",
+            ["Error: id test was not found. Full error message: id 'test' was not found"],
+        ),
+        ("some error", [None]),
+    ],
 )
-def test_enrich_error_message_id_group_role(error_message, expected_error_message):
+def test_enrich_error_message_id_group_role(error_message: str, expected_error_message: list):
     """
-    Given:
-    - no arguments
-    When:
-    - executing the enrich_error_message_id_group_role command
-    Then:
-    - Validate that the error message is enriched correctly
+    Test case for the enrich_error_message_id_group_role function.
+
+    Args:
+        error_message (str): The error message to be passed to the function.
+        expected_error_message (str): The expected error message after enriching.
+
+    Raises:
+        AssertionError: If the error response from the function does not match the expected error message.
     """
+
     class MockException:
         def __init__(self, status_code) -> None:
             self.status_code = status_code
 
-    error_response = enrich_error_message_id_group_role(DemistoException(
-        message=error_message, res=MockException(500)), "test", "test")
-    assert error_response == expected_error_message
+    error_response = enrich_error_message_id_group_role(
+        DemistoException(message=error_message, res=MockException(500)), "test", "test"
+    )
+    assert error_response == expected_error_message[0]
