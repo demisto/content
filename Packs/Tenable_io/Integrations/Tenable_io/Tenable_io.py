@@ -1117,7 +1117,8 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         return request_uuid_export_vulnerabilities(args)
 
 
-def safe_get_json(response: requests.models.Response) -> dict:
+def get_json(response: requests.models.Response) -> dict:
+    '''Handles error status codes and returns the json from response'''
 
     try:
         response.raise_for_status()
@@ -1154,7 +1155,7 @@ def list_scan_filters_request() -> dict:
     response = requests.get(
         f'{BASE_URL}filters/scans/reports',
         headers=HEADERS, verify=USE_SSL)
-    return safe_get_json(response)
+    return get_json(response)
 
 
 def scan_filters_human_readable(filters: list) -> str:
@@ -1194,7 +1195,7 @@ def get_scan_history_request(scan_id, params) -> dict:
         params=params,
         headers=HEADERS,
         verify=USE_SSL)
-    return safe_get_json(response)
+    return get_json(response)
 
 
 def scan_history_human_readable(history: list) -> str:
@@ -1279,7 +1280,7 @@ def initiate_export_scan(scan_id: str, args: dict) -> PollResult:
     response = requests.post(
         **export_scan_request_args(**args),
         headers=HEADERS, verify=USE_SSL)
-    response_json = safe_get_json(response)
+    response_json = get_json(response)
 
     if not (file_id := response_json.get('file')):
         raise DemistoException(
@@ -1301,7 +1302,7 @@ def check_export_scan_status(scan_id: str, file_id: str) -> str:
     response = requests.get(
         f'{BASE_URL}scans/{scan_id}/export/{file_id}/status',
         headers=HEADERS, verify=USE_SSL)
-    return safe_get_json(response).get('status', '')
+    return get_json(response).get('status', '')
 
 
 def download_export_scan(scan_id: str, file_id: str, args: dict) -> dict:
