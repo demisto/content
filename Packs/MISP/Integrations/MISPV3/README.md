@@ -3847,6 +3847,75 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
 
 >Object has been added to MISP event ID 1655
 
+### misp-add-user
+
+***
+Add a new user to MISP.
+
+#### Base Command
+
+`misp-add-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | The email address of the new user to be added. | Required | 
+| org_id | ID number indicating which organization the new user will be added to. In order to get the org_id, use the command misp-get-organization-info. | Required | 
+| role_id | Role of the new user to be added. In order to get the role_id, use the command misp-get-role-info. | Required | 
+| password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, and at least one lower-case character. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.User.id | string | MISP user ID. | 
+| MISP.User.password | string | MISP user password. | 
+| MISP.User.org_id | string | MISP user organisation ID. | 
+| MISP.User.server_id | string | MISP user server ID. | 
+| MISP.User.email | string | MISP user email. | 
+| MISP.User.autoalert | boolean | MISP user auto alert. | 
+| MISP.User.authkey | string | MISP User auth key. | 
+| MISP.User.invited_by | string | MISP user invited by. | 
+| MISP.User.gpgkey | string | MISP user GPG key. | 
+| MISP.User.certif_public | string | MISP User public certificate. | 
+| MISP.User.nids_sid | string | MISP user Network Intrusion Detection System \(NIDS\) Signature ID \(SID\). | 
+| MISP.User.termsaccepted | boolean | Whether MISP user terms were accepted. | 
+| MISP.User.newsread | string | MISP user news read. | 
+| MISP.User.role_id | string | MISP user role ID. | 
+| MISP.User.change_pw | boolean | Whether the MISP user password was changed. | 
+| MISP.User.contactalert | boolean | MISP user contact alert. | 
+| MISP.User.disabled | boolean | Whether the MISP user was disabled. | 
+| MISP.User.expiration | string | MISP user expiration. | 
+| MISP.User.current_login | string | MISP user current login. | 
+| MISP.User.last_login | string | MISP user last login. | 
+| MISP.User.force_logout | boolean | MISP user force logout. | 
+| MISP.User.date_created | string | MISP user created date. | 
+| MISP.User.date_modified | string | MISP user modified date. | 
+
+### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | The email address of the new user to be added | Required | 
+| org_id | ID number indicating which organization the new user will be added to. | Required | 
+| role_id | Role of the new user to be added. | Required | 
+| password | A password for the new user | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.User.email | string | MISP User Email. | 
+
+#### Command Example
+
+```!misp-add-user email="example@example.com" org_id=1 role_id=1 password=123456789++Qq!```
+
+#### Human Readable Output
+
+> MISP add user New user was added to MISP. Email:example@example.com
+
 ### misp-search-attributes
 
 ***
@@ -4231,3 +4300,56 @@ Check a list of indicator values against the MISP warninglist.
 | MISP.Warninglist.Count | number | Count on how many warninglists the value was found. | 
 | MISP.Warninglist.Value | string | Value checked. | 
 | MISP.Warninglist.Lists | string | Name of warninglists where the value was found. | 
+
+### misp-get-organization-info
+
+***
+Display the organization IDs and names.
+
+#### Base Command
+
+`misp-get-organization-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Organization.org_id | string | MISP organization ID. | 
+| MISP.Organization.org_name | string | MISP organization name. | 
+
+### misp-get-role-info
+
+***
+Display role names and role ids.
+
+#### Base Command
+
+`misp-get-role-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Role.role_id | string | MISP role ID. | 
+| MISP.Role.role_name | string | MISP role name. | 
+
+#### Command Example
+
+```!misp-get-role-info```
+
+#### Human Readable Output
+
+>### MISP Roles
+>|id|name|
+>|---|---|
+>| 1 | rolename |
