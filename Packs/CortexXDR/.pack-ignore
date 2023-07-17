@@ -95,7 +95,7 @@ ignore=BA124
 ignore=BA124
 
 [file:DBotGroupXDRIncidents.yml]
-ignore=BA124,CJ105,RM109
+ignore=BA124,CJ105
 
 [file:EntryWidgetNumberRegionsXCLOUD.yml]
 ignore=BA124
