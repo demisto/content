@@ -29,14 +29,17 @@ configuration:
   defaultvalue:
   type: 0
   additionalinfo:
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
+  required: false
 script:
   commands:
   - name: bitbucket-project-list
