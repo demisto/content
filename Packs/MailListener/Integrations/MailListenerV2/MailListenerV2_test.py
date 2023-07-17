@@ -533,6 +533,14 @@ text1 text2'''
     ),
 ])
 def test_replace_spaces_in_credentials(input_credentials, output_credentials):
+    """
+    Given:
+        Client cetifcates and private keys
+    When:
+        Authenticating the client
+    Then:
+        Check that the spaces in the credentials are replaced with new lines if they are in the correct format.
+    """
     from MailListenerV2 import replace_spaces_in_credentials
     import json
 
