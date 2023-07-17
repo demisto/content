@@ -1,4 +1,6 @@
 import demistomock as demisto
+
+
 def test_convert_file(mocker):
     from ConvertXmlFileToJson import convert_file
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/input.xml'})
