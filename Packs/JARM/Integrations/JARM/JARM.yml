@@ -6,6 +6,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: 'Active TLS fingerprinting using JARM'
 display: JARM
 name: JARM
