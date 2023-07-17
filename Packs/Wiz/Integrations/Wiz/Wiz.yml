@@ -205,6 +205,10 @@ script:
       - WONT_FIX
       - EXCEPTION
       - FALSE_POSITIVE
+      - CONTROL_CHANGED
+      - CONTROL_DISABLED
+      - CONTROL_DELETED
+      - DETECTION_EXPIRED
     - name: reject_note
       description: rejection note
       required: true
