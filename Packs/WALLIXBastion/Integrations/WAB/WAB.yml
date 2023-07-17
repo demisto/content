@@ -28,14 +28,17 @@ configuration:
   display: Trust any certificate (not secure)
   defaultvalue: "false"
   type: 8
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
   type: 8
+  required: false
 - name: api_version
   display: API version to use. Leave the field empty to use the latest API version available.
   defaultvalue: "3.12"
   type: 0
+  required: false
 script:
   script: ""
   type: python
