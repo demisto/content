@@ -1,3 +1,4 @@
+from collections import defaultdict
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -23,6 +24,12 @@ DATEPARSER_SETTINGS = {
 
 
 """ CLIENT CLASS """
+
+def to_str_time(t: datetime) -> str:
+    return t.strftime("%m/%d/%Y %H:%M:%S")
+
+def from_str_time(s: str) -> datetime:
+    return datetime.strptime(s, "%m/%d/%Y %H:%M:%S")
 
 
 class Client(BaseClient):
@@ -112,8 +119,8 @@ class Client(BaseClient):
             method="POST",
             json_data={
                 "type": "INCIDENTS",
-                "from_date": from_date,
-                "to_date": to_date,
+                "from_date": to_str_time(from_date),
+                "to_date": to_str_time(to_date),
             },
             url_suffix="/incidents",
         )
@@ -158,91 +165,117 @@ def get_events_command(
     client: Client,
     args: dict[str, Any]
 ) -> tuple[CommandResults, List[dict[str, Any]]]:
-    # limit: int = arg_to_number(args.get('limit')) or DEFAULT_MAX_FETCH
-    # since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
-    # assert isinstance(since_time, datetime)
-    # events, _ = fetch_events_command(client, since_time, limit)
-    #
-    # result = CommandResults(
-    #     readable_output=tableToMarkdown("Open Incidents", events),
-    #     raw_response=events,
-    # )
-    # return result, events
-    pass  # FIXME
+    limit: int = arg_to_number(args.get('limit')) or DEFAULT_MAX_FETCH
+    since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
+    assert isinstance(since_time, datetime)
+    events, _, _ = fetch_events_command_sub(client, limit, datetime.utcnow(), since_time)
 
-def filter_incidents_by_type(events, event_type="INCIDENTS"):
-    return list(filter(lambda event: event["type"] == event_type, events))
+    result = CommandResults(
+        readable_output=tableToMarkdown("Incidents", events),
+        raw_response=events,
+    )
+    return result, events
 
-def chunks(l, n):
-    # looping till length l
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
 
-def fetch_events_command(
+def fetch_events_command_sub(
     client: Client,
-    first_fetch: datetime,
     max_fetch: int,
+    to_time: datetime,
     last_fetch_time: datetime | None,
-    last_id: int | None = None,
-    until_time: datetime | None = None,
-    time_interval: int = 60,  # Time interval 60 seconds.
-) -> tuple[list[dict[str, Any]], int, datetime]:
+    last_run_ids: list[int] | None = None,
+) -> tuple[list[dict[str, Any]], list[int], datetime]:
     """
     Fetches Forcepoint DLP incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
     """
+    from_time = last_fetch_time
     events = []
-    reached_until_time = False
-    from_time = last_fetch_time or first_fetch
-    to_time = from_time + timedelta(seconds=time_interval)
-    until_time = until_time or client.utc_now
-    while not len(events) >= max_fetch and not reached_until_time:
+    last_run_ids = set(last_run_ids or set())
+    new_last_run_ids: dict[datetime, set] = defaultdict(set)
+    incidents_response = client.get_incidents(from_time, to_time)
+    incidents = incidents_response["incidents"]
+    for incident in incidents:
+        if incident["id"] not in last_run_ids:
+            events.append(incident)
+            new_last_run_ids[incident["event_time"]].add(incident["id"])
+            if len(events) == max_fetch:
+                break
 
-        incidents_response = client.get_incidents(from_time, to_time)
-        incidents = incidents_response["incidents"]
-        if incidents:
-            if incidents_response["total_count"] > client.api_limit and time_interval > 1:
-                # recurse in smaller time interval.
-                recurse_until_time = min(to_time, client.utc_now)
-                recuse_time_interval = time_interval // 60
-                recurse_events, last_id, recuse_last_fetch_time = fetch_events_command(client,
-                                                                                       first_fetch=first_fetch,
-                                                                                       max_fetch=max_fetch - len(events),
-                                                                                       last_fetch_time=from_time,
-                                                                                       last_id=last_id,
-                                                                                       until_time=recurse_until_time,
-                                                                                       time_interval=recuse_time_interval)
-                events.extend(recurse_events)
-                events = events[:max_fetch]
-                if len(events) == max_fetch:
-                    return events, last_id, recuse_last_fetch_time
-            else:
-                min_incident_id = incidents[0]["id"]
-                # Get incidents in chunks from Get Incidents
-                if last_id is not None:
-                    for event_ids_chunk in chunks(range(last_id, min_incident_id - 1), MAX_GET_IDS_CHUNK_SIZE):
-                        chunk_incidents_response = client.get_incident_ids(event_ids_chunk)
-                        events.extend(filter_incidents_by_type(chunk_incidents_response["incidents"]))
-                        events = events[:max_fetch]
-                        if len(events) == max_fetch:
-                            break
+    if not events and incidents:
+        # Anti-starvation protection, we've exhausted all events for this second, but they're all duplicated.
+        # This means that we've more events in the minimal epoch, that we're able to get in a single fetch.
+        next_fetch_time = from_time + timedelta(seconds=1)
+        demisto.log(f"Moving the fetch to the next second, this means that any additional events in this second will be lost!")
+        return [], [], next_fetch_time
 
-                # Append current batch.
-                events.extend(incidents)
-                events = events[:max_fetch]
+    if events:
+        # Use the last event time
+        next_fetch_time = events[-1]["event_time"]
+    else:
+        # We've got events for this time span, so start from the to time in the next fetch.
+        next_fetch_time = to_time
 
-                last_id = events[-1]["id"]
-
-        reached_until_time = to_time == until_time
-        from_time = to_time
-        to_time = min(from_time + timedelta(seconds=time_interval), until_time)
-
-    return events, last_id, from_time
+    return events, list(new_last_run_ids[next_fetch_time]), next_fetch_time
 
 
 def test_module_command(client: Client, first_fetch: datetime) -> str:
-    fetch_events_command(client, first_fetch, max_fetch=1)
+    fetch_events_command_sub(client, 1, datetime.utcnow(), first_fetch)
     return "ok"
+
+
+def fetch_events(client, first_fetch, max_fetch):
+    forward = demisto.getLastRun().get("forward")
+    events = []
+    if forward:
+        to_time = datetime.utcnow()
+        from_time = from_str_time(forward["last_fetch"])
+        logging.debug(f"looking for backward events from:{from_time} to:{to_time}")
+        forward_events, last_events_ids, next_fetch_time = fetch_events_command_sub(client, max_fetch, to_time,
+                                                                                    from_time,
+                                                                                    forward["last_events_ids"])
+        forward = {
+            "last_fetch": to_str_time(next_fetch_time),
+            "last_events_ids": last_events_ids,
+        }
+        events.extend(forward_events)
+    else:
+        forward = {
+            "last_fetch": to_str_time(datetime.utcnow() + timedelta(seconds=1)),
+            "last_events_ids": [],
+        }
+
+    backward = demisto.getLastRun().get("backward")
+    if backward:
+        if not backward["done"] and max_fetch - len(events):
+            from_time = from_str_time(backward["last_fetch"])
+            to_time = from_str_time(backward["to_time"])
+            logging.debug(f"looking for backward events from:{from_time} to:{to_time}")
+            backward_events, last_events_ids, next_fetch_time = fetch_events_command_sub(client, max_fetch - len(events),
+                                                                                         to_time,
+                                                                                         from_time,
+                                                                                         backward["last_events_ids"])
+            done = next_fetch_time > backward["to_time"]
+            backward = {
+                "last_fetch": to_str_time(next_fetch_time),
+                "last_events_ids": [] if done else last_events_ids,
+                "done": done,
+                "to_time": backward["to_time"],
+            }
+            events.extend(backward_events)
+            if done:
+                demisto.info(f"Finished pulling all backward events")
+    else:
+        backward = {
+            "last_fetch": first_fetch,
+            "last_events_ids": [],
+            "to_time": datetime.utcnow(),
+            "done": False,
+        }
+    send_events_to_xsiam(events, VENDOR, PRODUCT)  # noqa
+    demisto.setLastRun({
+        "backward": backward,
+        "forward": forward,
+    })
 
 
 def main():
@@ -273,30 +306,10 @@ def main():
             results, events = get_events_command(client, args)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
-                send_events_to_xsiam(events, VENDOR, PRODUCT)
+                send_events_to_xsiam(events, VENDOR, PRODUCT)  # noqa
 
         elif command == "fetch-events":
-            # def fetch_events_command(
-            #     client: Client,
-            #     first_fetch: datetime,
-            #     max_fetch: int,
-            #     utc_now: datetime,
-            #     last_fetch_time: datetime,
-            #     last_id: int | None = None,
-            #     events: list[dict[str, Any]] | None = None,
-            #     time_interval: int = 60,  # Time interval 60 seconds.
-            # ) -> tuple[List[dict[str, Any]], int, datetime]:
-            events = []
-            last_id, last_fetch_time = fetch_events_command(
-                client=client,
-                first_fetch=first_fetch,
-                max_fetch=max_fetch,
-                last_fetch_time=demisto.getLastRun().get("last_fetch_time"),
-                last_id=demisto.getLastRun().get("last_id"),
-                events=events,
-            )
-            send_events_to_xsiam(events, VENDOR, PRODUCT)
-            demisto.setLastRun({"last_id": last_id, "last_fetch_time": last_fetch_time})
+            fetch_events(client, first_fetch, max_fetch)
 
     # Log exceptions
     except Exception as e:
