@@ -1,5 +1,4 @@
 Palo Alto Networks Trend Micro Email Security Event Collector integration for XSIAM.
-This integration was integrated and tested with version xx of Trend Micro Email Security Event Collector
 
 ## Configure Trend Micro Email Security Event Collector on Cortex XSOAR
 
