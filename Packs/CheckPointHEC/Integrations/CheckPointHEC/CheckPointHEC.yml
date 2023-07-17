@@ -56,7 +56,7 @@ configuration:
   type: 19
 description: The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
 display: 'Check Point Harmony Email and Collaboration (HEC)'
-name: Check Point Harmony Email and Collaboration (HEC)
+name: CheckPointHEC
 script:
   commands:
   - name: checkpointhec-get-entity
