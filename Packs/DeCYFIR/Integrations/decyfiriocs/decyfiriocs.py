@@ -269,7 +269,8 @@ class Client(BaseClient):
         return ti_data_obj
 
     def convert_decyfir_ti_to_indicator_format(self, decyfir_api_key: str, data: Dict, tlp_color: Optional[str],
-                                               feed_tags: Optional[List], threat_intel_type: str, is_data_save: bool) -> List[Dict]:
+                                               feed_tags: Optional[List], threat_intel_type: str,
+                                               is_data_save: bool) -> List[Dict]:
 
         return_data = []
         ta_source_obj = {}
@@ -358,17 +359,20 @@ class Client(BaseClient):
         return return_data
 
     def convert_decyfir_ti_to_indicators_formats(self, decyfir_api_key: str, ti_data: List[Dict], tlp_color: Optional[str],
-                                                 feed_tags: Optional[List], threat_intel_type: str, is_data_save: bool) -> List[Dict]:
+                                                 feed_tags: Optional[List], threat_intel_type: str,
+                                                 is_data_save: bool) -> List[Dict]:
 
         return_data = []
         for data in ti_data:
-            tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, data, tlp_color, feed_tags, threat_intel_type, is_data_save)
+            tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, data, tlp_color, feed_tags, threat_intel_type,
+                                                                   is_data_save)
             return_data.extend(tis_data)
 
         return return_data
 
     def convert_decyfir_ioc_to_indicators_formats(self, decyfir_api_key: str, decyfir_iocs: List[Dict], reputation: Optional[str],
-                                                  tlp_color: Optional[str], feed_tags: Optional[List],is_data_save: bool) -> List[Dict]:
+                                                  tlp_color: Optional[str], feed_tags: Optional[List],
+                                                  is_data_save: bool) -> List[Dict]:
 
         return_data = []
 
@@ -446,9 +450,11 @@ class Client(BaseClient):
                         if ioc_rel.get(LABEL_TYPE) != LABEL_INDICATOR and ioc_rel.get(LABEL_TYPE) != LABEL_RELATIONSHIP:
                             in_rel_ti_data_ = self.build_threat_intel_indicator_obj(ioc_rel, tlp_color, feed_tags)
                             if in_rel_ti_data_.get(LABEL_TYPE) == ThreatIntel.ObjectsNames.THREAT_ACTOR:
-                                tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, in_rel_ti_data_, tlp_color,
+                                tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, in_rel_ti_data_,
+                                                                                       tlp_color,
                                                                                        feed_tags,
-                                                                                       ThreatIntel.ObjectsNames.THREAT_ACTOR)
+                                                                                       ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                                                                       is_data_save)
                                 for t_rel_d in tis_data:
                                     return_data.append(t_rel_d)
                                     if t_rel_d.get(LABEL_TYPE) == ThreatIntel.ObjectsNames.THREAT_ACTOR:
