@@ -45,7 +45,7 @@ configuration:
   hidden: false
 description: DeCYFIR API's provides External Threat Landscape Management insights.
 display: DeCYFIR
-name: DeCYFIR
+name: decyfir
 script:
   commands: []
   dockerimage: demisto/python3:3.10.12.63474
