@@ -648,14 +648,12 @@ def create_rule_command(args: dict[str, Any]) -> CommandResults:
     sources = handle_rule_entities(source_ip_list, source_host, source_domain)
     destinations = handle_rule_entities(dest_ip_list, dest_host, dest_domain)
 
-    firewall_policy.open()
     if ip_version == 'V4':
         rule = firewall_policy.fw_ipv4_access_rules.create(name=rule_name, sources=sources, destinations=destinations,
                                                            action=action, comment=comment)
     else:
         rule = firewall_policy.fw_ipv6_access_rules.create(name=rule_name, sources=sources, destinations=destinations,
                                                            action=action, comment=comment)
-    firewall_policy.save()
 
     outputs = {'Name': rule.name,
                'ID': rule.tag,
