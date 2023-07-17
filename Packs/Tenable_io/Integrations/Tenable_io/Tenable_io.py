@@ -1276,7 +1276,7 @@ def export_scan_request_args(
     return {'url': url, 'params': params, 'json': body}
 
 
-def initiate_export_scan(scan_id: str, args: dict) -> PollResult:
+def initiate_export_scan(args: dict) -> str:
     response = requests.post(
         **export_scan_request_args(**args),
         headers=HEADERS, verify=USE_SSL)
@@ -1286,16 +1286,7 @@ def initiate_export_scan(scan_id: str, args: dict) -> PollResult:
         raise DemistoException(
             f'Unexpected response from Tenable IO: {response_json}')
 
-    return PollResult(
-        None, True,
-        {'fileId': file_id,
-         'scanId': scan_id,
-         'format': args['format']},  # not necessary but avoids confusion
-        CommandResults(
-            outputs_prefix='InfoFile',
-            outputs_key_field='file',
-            outputs=response_json,
-            readable_output=f'Exporting File. ID: {file_id}'))
+    return file_id
 
 
 def check_export_scan_status(scan_id: str, file_id: str) -> str:
@@ -1321,10 +1312,8 @@ def download_export_scan(scan_id: str, file_id: str, args: dict) -> dict:
     requires_polling_arg=False)
 def export_scan_command(args: dict[str, Any]) -> PollResult:
 
-    scan_id, file_id = args['scanId'], args.get('fileId')
-
-    if not file_id:
-        return initiate_export_scan(scan_id, args)
+    file_id = args.get('fileId') or initiate_export_scan(args)
+    scan_id = args['scanId']
 
     match check_export_scan_status(scan_id, file_id):
         case 'ready':
@@ -1340,7 +1329,14 @@ def export_scan_command(args: dict[str, Any]) -> PollResult:
 
         case 'loading':
             return PollResult(
-                None, continue_to_poll=True)
+                None,
+                continue_to_poll=True,
+                args_for_next_run={
+                    'fileId': file_id,
+                    'scanId': scan_id,
+                    'format': args['format'],  # not necessary but avoids confusion
+                    'hide_polling_output': True
+                })
 
         case default:
             raise DemistoException(

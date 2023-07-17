@@ -1093,29 +1093,26 @@ script:
     name: tenable-io-list-scan-filters
     outputs:
     - contextPath: TenableIO.ScanFilter.name
-      description: ''
+      description: The name of the scan filter.
       type: String
     - contextPath: TenableIO.ScanFilter.readable_name
-      description: ''
+      description: The readable name of the scan filter.
       type: String
     - contextPath: TenableIO.ScanFilter.control.type
-      description: ''
+      description: The type of control associated with the scan filter.
       type: String
     - contextPath: TenableIO.ScanFilter.control.regex
-      description: ''
+      description: The regular expression used by the scan filter.
       type: String
     - contextPath: TenableIO.ScanFilter.control.readable_regex
-      description: ''
+      description: An example expression that filter's regular expression would match.
       type: String
     - contextPath: TenableIO.ScanFilter.operators
-      description: ''
+      description: The operators available for the scan filter.
       type: String
     - contextPath: TenableIO.ScanFilter.group_name
-      description: ''
+      description: The group name associated with the scan filter.
       type: Unknown
-    - contextPath: TenableIO.ScanFilter.control.list
-      description: ''
-      type: String
   - arguments:
     - name: scanId
       description: The ID of the scan of which to get the runs.
@@ -1153,31 +1150,31 @@ script:
     name: tenable-io-get-scan-history
     outputs:
     - contextPath: TenableIO.ScanHistory.time_end
-      description: ''
+      description: The end time of the scan.
       type: Number
     - contextPath: TenableIO.ScanHistory.scan_uuid
-      description: ''
+      description: The UUID (Universally Unique Identifier) of the scan.
       type: String
     - contextPath: TenableIO.ScanHistory.id
-      description: ''
+      description: The ID of the scan history.
       type: Number
     - contextPath: TenableIO.ScanHistory.is_archived
-      description: ''
+      description: Indicates whether the scan history is archived or not.
       type: Boolean
     - contextPath: TenableIO.ScanHistory.time_start
-      description: ''
+      description: The start time of the scan.
       type: Number
     - contextPath: TenableIO.ScanHistory.visibility
-      description: ''
+      description: The visibility of the scan.
       type: String
     - contextPath: TenableIO.ScanHistory.targets.custom
-      description: ''
+      description: Indicates whether custom targets were used in the scan.
       type: Boolean
     - contextPath: TenableIO.ScanHistory.targets.default
-      description: ''
-      type: Unknown
+      description: Indicates whether the default targets were used in the scan.
+      type: Boolean
     - contextPath: TenableIO.ScanHistory.status
-      description: ''
+      description: The status of the scan.
       type: String
   - arguments:
     - name: scanId
@@ -1242,16 +1239,27 @@ script:
       description: The ID of the asset scanned.
     - name: fileId
       hidden: true
-    - name: hide_polling_output
-      defaultValue: true
-      hidden: true
     polling: true
     description: Export and download a scan report.
     name: tenable-io-export-scan
     outputs:
-    - contextPath: InfoFile.file
-      description: ''
-      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: number
+    - contextPath: File.Name
+      description: The name of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: The War Room entry ID of the file.
+      type: string
+    - contextPath: File.Info
+      description: The Format of the file.
+      type: string
+    - contextPath: File.Type
+      description: The type of the file.
+      type: string
+    - contextPath: File.Extension
+      description: The file extension of the file.
   runonce: false
   script: '-'
   subtype: python3
