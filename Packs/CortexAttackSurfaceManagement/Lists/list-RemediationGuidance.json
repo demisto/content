@@ -20,5 +20,6 @@
 	"toServerVersion": "",
 	"truncated": false,
 	"type": "json",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.5.0"
 }
