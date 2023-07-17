@@ -905,7 +905,7 @@ def test_organization_repository_project_preprocess_function(args, organization,
 def test_azure_devops_pull_request_reviewer_create_command(requests_mock, pull_request_id, mock_response_path):
     """
     Given:
-     - all parameters
+     - all arguments
     When:
      - executing azure-devops-pull-request-reviewer-create command
     Then:
@@ -952,7 +952,7 @@ def test_azure_devops_pull_request_reviewer_create_command(requests_mock, pull_r
 def test_pull_request_commit_list_command(requests_mock, pull_request_id, mock_response_path):
     """
     Given:
-     - all parameters
+     - all arguments
     When:
      - executing azure-devops-pull-request-commit-list command
     Then:
@@ -1008,7 +1008,7 @@ def test_pagination_preprocess_and_validation(args, expected_limit, expected_off
 def test_commit_list_command(requests_mock):
     """
     Given:
-     - all parameters, limit = 1
+     - all arguments, limit = 1
     When:
      - executing azure-devops-commit-list command
     Then:
@@ -1041,10 +1041,10 @@ def test_commit_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Commit'
 
 
-def test_commit_get(requests_mock):
+def test_commit_get_command(requests_mock):
     """
     Given:
-     - all parameters include commit_id (required)
+     - all arguments include commit_id (required)
     When:
      - executing azure-devops-commit-get command
     Then:
@@ -1076,3 +1076,132 @@ def test_commit_get(requests_mock):
 
     assert result.readable_output.startswith('### Commit Details')
     assert result.outputs_prefix == 'AzureDevOps.Commit'
+
+
+def test_work_item_get_command(requests_mock):
+    """
+    Given:
+     - all arguments include item_id (required)
+    When:
+     - executing azure-devops-work-item-get command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, work_item_get_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+    item_id = '12'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/wit/workitems/{item_id}'
+
+    mock_response = json.loads(load_mock_response('work_item_get.json'))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = work_item_get_command(client, {'item_id': '12'}, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith('### Work Item Details\n|ID|Title|Assigned To|State|Area Path|Tags|Activity Date|\n')
+    assert result.outputs_prefix == 'AzureDevOps.WorkItem'
+
+
+def test_work_item_create_command(requests_mock):
+    """
+    Given:
+     - type and title arguments (required)
+    When:
+     - executing azure-devops-work-item-create command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, work_item_create_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+    work_item_type = "Epic"
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/wit/workitems/${work_item_type}'
+
+    mock_response = json.loads(load_mock_response('work_item_create.json'))
+    requests_mock.post(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = work_item_create_command(client, {"type": "Epic", "title": "Test"}, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith(f'Work Item {result.outputs.get("id")} was created successfully.')
+    assert result.outputs_prefix == 'AzureDevOps.WorkItem'
+
+
+def test_work_item_update_command(requests_mock):
+    """
+    Given:
+     - item_id (required) and title
+    When:
+     - executing azure-devops-work-item-update command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, work_item_update_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+    item_id = "21"
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/wit/workitems/{item_id}'
+
+    mock_response = json.loads(load_mock_response('work_item_update.json'))
+    requests_mock.patch(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = work_item_update_command(client, {"item_id": "21", "title": "Test"}, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith(f'Work Item 21 was updated successfully.')
+    assert result.outputs_prefix == 'AzureDevOps.WorkItem'
+
+
+EXPECTED_RESULT = [{'op': 'add', 'path': '/fields/System.Title', 'from': None, 'value': 'zzz'},
+                   {'op': 'add', 'path': '/fields/System.IterationPath', 'from': None, 'value': 'test'},
+                   {'op': 'add', 'path': '/fields/System.Description', 'from': None, 'value': 'test'},
+                   {'op': 'add', 'path': '/fields/Microsoft.VSTS.Common.Priority', 'from': None, 'value': '4'},
+                   {'op': 'add', 'path': '/fields/System.Tags', 'from': None, 'value': 'test'}]
+ARGUMENTS_LIST = ['title', 'iteration_path', 'description', 'priority', 'tag']
+ARGS = {"title": "zzz",  "iteration_path": "test",  "description": "test", "priority": "4", "tag": "test"}
+@pytest.mark.parametrize('args, arguments_list, expected_result',
+                         [(ARGS, ARGUMENTS_LIST, EXPECTED_RESULT)])
+def test_work_item_pre_process_data(args, arguments_list, expected_result):
+    """
+    Ensure work_item_pre_process_data function generates the data (body) for the request as expected.
+    """
+    from AzureDevOps import work_item_pre_process_data
+    data = work_item_pre_process_data(args, arguments_list)
+    assert data == expected_result

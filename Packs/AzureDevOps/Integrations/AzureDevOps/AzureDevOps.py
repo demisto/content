@@ -500,6 +500,38 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
+    def work_item_create_request(self, organization, project, args):
+        arguments_list = ['title', 'iteration_path', 'description', 'priority', 'tag']
+
+        data = work_item_pre_process_data(args, arguments_list)
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/wit/workitems/${args.get("type")}'
+
+        return self.ms_client.http_request(method='POST',
+                                           headers={"Content-Type": "application/json-patch+json"},
+                                           full_url=full_url,
+                                           params=params,
+                                           json_data=data,
+                                           resp_type='json')
+
+    def work_item_update_request(self, organization, project, args):
+        arguments_list = ['title', 'assignee_display_name', 'state', 'iteration_path', 'description', 'priority', 'tag']
+
+        data = work_item_pre_process_data(args, arguments_list)
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/wit/workitems/{args.get("item_id")}'
+
+        return self.ms_client.http_request(method='PATCH',
+                                           headers={"Content-Type": "application/json-patch+json"},
+                                           full_url=full_url,
+                                           params=params,
+                                           json_data=data,
+                                           resp_type='json')
+
 
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
     """
@@ -1757,19 +1789,85 @@ def work_item_get_command(client: Client, args: Dict[str, Any], organization: Op
     response = client.work_item_get_request(organization, project, item_id)
 
     response_for_hr = {"ID": response.get("id"),
-                       "Title": response.get("fields").get("System.Title"),
-                       "Assigned To": response.get("fields").get("System.AssignedTo").get("displayName"),
-                       "State": response.get("fields").get("System.State"),
-                       "Area Path": response.get("fields").get("System.AreaPath"),
-                       "Tags": response.get("fields").get("System.Tags"),
-                       "Activity Date": response.get("fields").get("System.ChangedDate")}
+                       "Title": response.get("fields", {}).get("System.Title"),
+                       "Assigned To": response.get("fields", {}).get("System.AssignedTo", {}).get("displayName"),
+                       "State": response.get("fields", {}).get("System.State"),
+                       "Area Path": response.get("fields", {}).get("System.AreaPath"),
+                       "Tags": response.get("fields", {}).get("System.Tags"),
+                       "Activity Date": response.get("fields", {}).get("System.ChangedDate")}
 
     readable_output = tableToMarkdown('Work Item Details', response_for_hr, headers=["ID", "Title", "Assigned To", "State",
                                                                                      "Area Path", "Tags", "Activity Date"])
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Commit',
+        outputs_prefix='AzureDevOps.WorkItem',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def work_item_pre_process_data(args: Dict[str, Any], arguments_list: List[str]) -> List[dict]:
+    """
+    This function pre-processes the data before sending it to the body.
+    """
+    mapping = {"title": "System.Title",
+               "iteration_path": "System.IterationPath",
+               "description": "System.Description",
+               "priority": "Microsoft.VSTS.Common.Priority",
+               "tag": "System.Tags",
+               "assignee_display_name": "System.AssignedTo",
+               "state": "System.State"}
+
+    data = []
+
+    for argument in arguments_list:
+        if args.get(argument):
+            arg_json_to_data = {"op": "add",
+                                "path": f'/fields/{mapping[argument]}',
+                                "from": None,
+                                "value": f'{args.get(argument)}'}
+
+            data.append(arg_json_to_data)
+
+    return data
+
+
+def work_item_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                             project: Optional[str]) -> CommandResults:
+    """
+    Creates a single work item.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.work_item_create_request(organization, project, args)
+
+    readable_output = f'Work Item {response.get("id")} was created successfully.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.WorkItem',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def work_item_update_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                             project: Optional[str]) -> CommandResults:
+    """
+    Updates a single work item.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.work_item_update_request(organization, project, args)
+
+    readable_output = f'Work Item {response.get("id")} was updated successfully.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.WorkItem',
         outputs=response,
         raw_response=response
     )
@@ -1978,6 +2076,14 @@ def main() -> None:
         elif command == 'azure-devops-work-item-get':
             return_results(work_item_get_command(client, args, params.get('organization'),
                                                  params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-work-item-create':
+            return_results(work_item_create_command(client, args, params.get('organization'),
+                                                    params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-work-item-update':
+            return_results(work_item_update_command(client, args, params.get('organization'),
+                                                    params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

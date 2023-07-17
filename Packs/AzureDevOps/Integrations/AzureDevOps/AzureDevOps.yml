@@ -1109,139 +1109,139 @@ script:
     outputs:
       - type: Number
         contextPath: AzureDevOps.WorkItem.id
-        description: ''
+        description: The work item ID.
       - type: Number
         contextPath: AzureDevOps.WorkItem.rev
-        description: ''
+        description: Revision number of the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AreaPath
-        description: ''
+        description: The work item AreaPath. Area paths allow you to group work items by team, product, or feature area.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.TeamProject
-        description: ''
+        description: The work item TeamProject. A group of project members focused on specific products, services, or feature areas.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.IterationPath
-        description: ''
+        description: The work item IterationPath. Iteration paths allow you to group work into sprints, milestones, or other event-specific or time-related period.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.WorkItemType
-        description: ''
+        description: The work item type. Epic, Feature, User Story and Task/Bug.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.State
-        description: ''
+        description: Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.Reason
-        description: ''
+        description: This field requires a state to determine what values are allowed.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.displayName
-        description: ''
+        description: Display name of user assigned to the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.url
-        description: ''
+        description: The work item url.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo._links.avatar.href
-        description: ''
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.id
-        description: ''
+        description: ID of user assigned to the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.uniqueName
-        description: ''
+        description: The unique name of user assigned to the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.imageUrl
-        description: ''
+        description: Link to the user (assigned to the work item) image.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.descriptor
-        description: ''
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
       - type: Date
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedDate
-        description: ''
+        description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.displayName
-        description: ''
+        description: Display name of user created the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
-        description: ''
+        description: The work item url.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
-        description: ''
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
-        description: ''
+        description: ID of user created the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
-        description: ''
+        description: The unique name of user created the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl
-        description: ''
+        description: Link to the user (created the work item) image.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.descriptor
-        description: ''
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
       - type: Date
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
-        description: ''
+        description: 'The run changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
-        description: ''
+        description: Display name of user changed the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
-        description: ''
+        description: The work item url.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href
-        description: ''
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
-        description: ''
+        description: ID of user changed the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
-        description: ''
+        description: The unique name of user changed the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl
-        description: ''
+        description: Link to the user (changed the work item) image.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.descriptor
-        description: ''
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
       - type: Number
         contextPath: AzureDevOps.WorkItem.fields.System.CommentCount
-        description: ''
+        description: Count of the work item comments.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.Title
-        description: ''
+        description: The work item title.
       - type: Date
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate
-        description: ''
+        description: 'The state changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       - type: Date
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedDate
-        description: ''
+        description: 'The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName
-        description: ''
+        description: Display name of user activated the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url
-        description: ''
+        description: The work item url.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href
-        description: ''
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id
-        description: ''
+        description: ID of user activated the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName
-        description: ''
+        description: The unique name of user activated the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl
-        description: ''
+        description: Link to the user (activated the work item) image.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.descriptor
-        description: ''
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
       - type: Number
         contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority
-        description: ''
+        description: This field specifies which work the team should do first.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.Description
-        description: ''
+        description: The work item description.
       - type: String
         contextPath: AzureDevOps.WorkItem.fields.System.Tags
-        description: ''
+        description: Tags related to the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.self.href
         description: ''
@@ -1265,7 +1265,390 @@ script:
         description: ''
       - type: String
         contextPath: AzureDevOps.WorkItem.url
+        description: Link to the work item.
+  - name: azure-devops-work-item-create
+    description: Creates a single work item.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - auto: PREDEFINED
+        predefined:
+          - Task
+          - Epic
+          - Issue
+        name: type
+        description: The work item type of the work item to create.
+        required: true
+        isArray: false
+      - name: title
+        description: The work item title of the work item to create.
+        required: true
+        isArray: false
+      - name: iteration_path
+        description: The path for the operation.
+        required: false
+        isArray: false
+      - name: description
+        description: Describes the work item.
+        required: false
+        isArray: false
+      - auto: PREDEFINED
+        predefined:
+          - 1
+          - 2
+          - 3
+          - 4
+        name: priority
+        description: Specifies which work the team should do first.
+        required: false
+        isArray: false
+      - name: tag
+        description: Tag related to the work item.
+        required: false
+        isArray: false
+    outputs:
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.id
+        description: The work item ID.
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.rev
+        description: Revision number of the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AreaPath
+        description: The work item AreaPath. Area paths allow you to group work items by team, product, or feature area.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.TeamProject
+        description: The work item TeamProject. A group of project members focused on specific products, services, or feature areas.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.IterationPath
+        description: The work item IterationPath. Iteration paths allow you to group work into sprints, milestones, or other event-specific or time-related period.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.WorkItemType
+        description: The work item type. Epic, Feature, User Story and Task/Bug.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.State
+        description: Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Reason
+        description: This field requires a state to determine what values are allowed.
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedDate
+        description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.displayName
+        description: Display name of user created the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
+        description: The work item url.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
+        description: ID of user created the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
+        description: The unique name of user created the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl
+        description: Link to the user (created the work item) image.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
+        description: 'The run changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
+        description: Display name of user changed the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
+        description: The work item url.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
+        description: ID of user changed the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
+        description: The unique name of user changed the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl
+        description: Link to the user (changed the work item) image.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.fields.System.CommentCount
+        description: Count of the work item comments.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Title
+        description: The work item title.
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate
+        description: 'The state changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority
+        description: This field specifies which work the team should do first.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Description
+        description: The work item description.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Tags
+        description: Tags related to the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.self.href
         description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemUpdates.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemRevisions.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemComments.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.html.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemType.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.fields.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.url
+        description: Link to the work item.
+  - name: azure-devops-work-item-update
+    description: Updates a single work item.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: item_id
+        description: The work item id to update.
+        required: true
+        isArray: false
+      - name: title
+        description: A new title for the work item.
+        required: false
+        isArray: false
+      - name: assignee_display_name
+        description: Display name of user assigned to the work item. This argument can be obtained by running the 'azure-devops-user-list' command.
+        required: false
+        isArray: false
+      - auto: PREDEFINED
+        predefined:
+          - To Do
+          - Doing
+          - Done
+        name: state
+        description: A new state for the work item.
+        required: false
+        isArray: false
+      - name: iteration_path
+        description: a new path for the operation.
+        required: false
+        isArray: false
+      - name: description
+        description: A new description for the work item.
+        required: false
+        isArray: false
+      - auto: PREDEFINED
+        predefined:
+          - 1
+          - 2
+          - 3
+          - 4
+        name: priority
+        description: A new priority for the work item.
+        required: false
+        isArray: false
+      - name: tag
+        description: A new priority for the work item.
+        required: false
+        isArray: false
+    outputs:
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.id
+        description: The work item ID.
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.rev
+        description: Revision number of the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AreaPath
+        description: The work item AreaPath. Area paths allow you to group work items by team, product, or feature area.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.TeamProject
+        description: The work item TeamProject. A group of project members focused on specific products, services, or feature areas.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.IterationPath
+        description: The work item IterationPath. Iteration paths allow you to group work into sprints, milestones, or other event-specific or time-related period.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.WorkItemType
+        description: The work item type. Epic, Feature, User Story and Task/Bug.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.State
+        description: Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Reason
+        description: This field requires a state to determine what values are allowed.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.displayName
+        description: Display name of user assigned to the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.url
+        description: The work item url.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.id
+        description: ID of user assigned to the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.uniqueName
+        description: The unique name of user assigned to the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.imageUrl
+        description: Link to the user (assigned to the work item) image.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedDate
+        description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.displayName
+        description: Display name of user created the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
+        description: The work item url.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
+        description: ID of user created the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
+        description: The unique name of user created the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl
+        description: Link to the user (created the work item) image.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
+        description: 'The run changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
+        description: Display name of user changed the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
+        description: The work item url.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
+        description: ID of user changed the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
+        description: The unique name of user changed the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl
+        description: Link to the user (changed the work item) image.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.fields.System.CommentCount
+        description: Count of the work item comments.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Title
+        description: The work item title.
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate
+        description: 'The state changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: Date
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedDate
+        description: 'The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName
+        description: Display name of user activated the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url
+        description: The work item url.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id
+        description: ID of user activated the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName
+        description: The unique name of user activated the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl
+        description: Link to the user (activated the work item) image.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Number
+        contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority
+        description: This field specifies which work the team should do first.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Description
+        description: The work item description.
+      - type: String
+        contextPath: AzureDevOps.WorkItem.fields.System.Tags
+        description: Tags related to the work item.
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.self.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemUpdates.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemRevisions.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemComments.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.html.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.workItemType.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem._links.fields.href
+        description: ''
+      - type: String
+        contextPath: AzureDevOps.WorkItem.url
+        description: Link to the work item.
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
