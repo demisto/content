@@ -347,11 +347,13 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
 def extract_server_numeric_version(instances_ami_name, default_version):
     try:
-        server_numeric_version = re.match(
+        server_numeric_version = re.search(
             r'server-image-(?:ga-)?(?P<version>[a-z0-9\-]+)-(?P<build_number>\d+)-(?P<creation_date>\d{4}-\d{2}-\d{2})',
             instances_ami_name
         ).group('version')
-    except (AttributeError, IndexError):
+    except (AttributeError, IndexError) as e:
+        logging.info(f'Got exception when trying to get the server version. Setting server version to {default_version=}.'
+                     f' Given {instances_ami_name=}. Exact error is {str(e)}')
         return default_version
 
     if server_numeric_version == 'master':
