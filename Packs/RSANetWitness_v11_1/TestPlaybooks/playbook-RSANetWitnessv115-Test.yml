@@ -78,7 +78,7 @@ tasks:
       script: '|||rsa-nw-list-incidents'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
     nexttasks:
       '#none#':
@@ -248,7 +248,7 @@ tasks:
       script: '|||rsa-nw-incident-add-journal-entry'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Add a journal entry to an existing incident.
     nexttasks:
       '#none#':
@@ -285,7 +285,7 @@ tasks:
       script: '|||rsa-nw-incident-list-alerts'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Retrieves all the alerts that are associated with an incident based on the incident ID. you can limit the results using the limit argument or the page size argument.
     nexttasks:
       '#none#':
@@ -428,7 +428,7 @@ tasks:
       script: '|||rsa-nw-hosts-list'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Lists all host information from a specific endpoint server. Filter the results using the supplied arguments (can be a list) or use the 'filter' argument. You can limit the results using the limit argument or the page size argument.
     nexttasks:
       '#none#':
@@ -501,7 +501,7 @@ tasks:
       script: '|||endpoint'
       type: regular
       iscommand: true
-      brand: "RSANetWitnessv115"
+      brand: ""
       description: Returns information about an endpoint.
     nexttasks:
       '#none#':
@@ -571,7 +571,7 @@ tasks:
       script: '|||rsa-nw-snapshots-list-for-host'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Retrieve a list os snapshot IDs for a given host.
     nexttasks:
       '#none#':
@@ -646,7 +646,7 @@ tasks:
       script: '|||rsa-nw-snapshot-details-get'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Provides snapshot details of the given host for the specified snapshot time. It is recommended to use categories to filter the results since this command returns a large amount of data.
     nexttasks:
       '#none#':
@@ -725,7 +725,7 @@ tasks:
       script: '|||rsa-nw-files-list'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Lists all related file information from a specific endpoint server. You can limit the results using the limit argument or the page size argument.
     nexttasks:
       '#none#':
@@ -798,7 +798,7 @@ tasks:
       script: '|||rsa-nw-host-alerts-list'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Gets all alerts triggered for a given host.
     nexttasks:
       '#none#':
@@ -871,7 +871,7 @@ tasks:
       script: '|||rsa-nw-file-alerts-list'
       type: regular
       iscommand: true
-      brand: RSANetWitnessv115
+      brand: ""
       description: Gets all alerts triggered for a given file.
     nexttasks:
       '#none#':
@@ -1014,10 +1014,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 88cec475-0fbe-4837-825a-c9f2d619c35e
+    taskid: 1a45599e-95a5-4249-8e8d-9c6f31dc270d
     type: regular
     task:
-      id: 88cec475-0fbe-4837-825a-c9f2d619c35e
+      id: 1a45599e-95a5-4249-8e8d-9c6f31dc270d
       version: -1
       name: get all incidents
       description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
@@ -1028,6 +1028,9 @@ tasks:
     nexttasks:
       '#none#':
       - "37"
+    scriptarguments:
+      limit:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
