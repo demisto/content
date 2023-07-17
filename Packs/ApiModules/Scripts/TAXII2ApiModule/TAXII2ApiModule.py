@@ -282,7 +282,8 @@ class Taxii2FeedClient:
         )
         if self.auth_header:
             # add auth_header to the session object
-            self._conn.session.headers = merge_setting(self._conn.session.headers, {self.auth_header: self.auth_key},
+            self._conn.session.headers = merge_setting(self._conn.session.headers,    # type: ignore[attr-defined]
+                                                       {self.auth_header: self.auth_key},
                                                        dict_class=CaseInsensitiveDict)
 
         if version is TAXII_VER_2_0:
