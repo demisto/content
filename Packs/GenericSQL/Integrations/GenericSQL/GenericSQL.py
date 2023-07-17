@@ -159,7 +159,6 @@ class Client:
             result = connection.execute(sql_query, bind_vars)
             # For avoiding responses with lots of records
             results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
-            connection.commit()
 
         headers = []
         # if the table isn't empty
