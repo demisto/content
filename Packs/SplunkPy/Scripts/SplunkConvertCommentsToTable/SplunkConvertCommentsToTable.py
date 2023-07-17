@@ -11,7 +11,7 @@ def main():
                          "from context but returned None")
     fields = incident.get('CustomFields', [])
     if fields:
-        splunkComments_str = fields.get('SplunkComments', [])
+        splunkComments_str = fields.get('splunkcomments', [])
         for data in splunkComments_str:
             parsed_data = json.loads(data)
             splunkComments.append(parsed_data)

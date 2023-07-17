@@ -4,7 +4,7 @@
         "Splunk Notable Generic"
     ],
     "caseInsensitive": true,
-    "cliName": "SplunkComments",
+    "cliName": "splunkcomments",
     "closeForm": false,
     "content": true,
     "description": "the notable comments",

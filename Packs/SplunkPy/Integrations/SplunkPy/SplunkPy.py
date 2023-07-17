@@ -1298,6 +1298,7 @@ def get_remote_data_command(service: client.Service, args: dict,
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
+        demisto.debug(f"get_remote_data results: {item}")
         updated_notable = parse_notable(item, to_dict=True)
 
     if updated_notable.get('owner'):
