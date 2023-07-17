@@ -449,11 +449,16 @@ script:
   - name: asm-list-attack-surface-rules
     arguments:
     - name: enabled_status
-      description: Enablement status to search rules with. Valid values are  "On" and "Off".
+      auto: PREDEFINED
+      predefined:
+      - "On"
+      - "Off"
+      description: Enablement status to search rules with.
     - name: category
-      description: Comma-separated list of strings attack surface rule categories.
+      description: Comma separated list of strings attack surface rule categories.
     - name: priority
-      description: Comma-separated list of strings attack surface rule priorities.
+      description: Comma separated list of strings attack surface rule priorities.
+        Options include Low, Medium, High, and Critical.
     - name: attack_surface_rule_id
       description: Comma-separated list of strings attack surface rule IDs.
     - name: limit
