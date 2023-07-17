@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: Password
+- displaypassword: Certificate Password
   display: Certificate
   additionalinfo: A pfx certificate encoded in Base64.
   name: certificate
