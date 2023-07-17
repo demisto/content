@@ -1,0 +1,19 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test",
+            "comment": "",
+            "rsa-cert": "",
+            "rsa-cert_val": "0",
+            "dsa-cert": "",
+            "dsa-cert_val": "0",
+            "ecc-cert": "",
+            "ecc-cert_val": "0"
+        }
+    ]
+}

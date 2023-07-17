@@ -1,0 +1,16 @@
+[
+    {
+        "_id": "test",
+        "id": 1,
+        "name": "test",
+        "ngid": 602,
+        "count": 0,
+        "action": 4,
+        "disaction": "Deny (no log)",
+        "host": "test",
+        "hostStatus": true,
+        "severity": 3,
+        "triggerPolicy": "",
+        "can_delete": true
+    }
+]

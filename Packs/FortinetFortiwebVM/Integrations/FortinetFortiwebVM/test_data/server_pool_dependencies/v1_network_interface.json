@@ -1,0 +1,48 @@
+[
+    {
+        "_id": "port1",
+        "name": "port1",
+        "can_edit": true,
+        "can_del": false,
+        "editName": "port1 (00:50:56:A6:41:F3)",
+        "column_name": "port1()",
+        "ipv4Netmask": "test",
+        "addressingMode": "0",
+        "addressing6Mode": "0",
+        "ipv4Access": "HTTPS,PING,SSH,HTTP,FortiWeb Manager",
+        "ipv4AdministrativeAccess": [
+            "https"
+        ],
+        "ipv6Netmask": "::/0",
+        "ipv6Access": "",
+        "ipv6AdministrativeAccess": [],
+        "status": "up",
+        "linkStatus": "up",
+        "type": "Physical",
+        "ref": 1,
+        "de": "",
+        "portId": 0
+    },
+    {
+        "_id": "port2",
+        "name": "port2",
+        "can_edit": true,
+        "can_del": false,
+        "editName": "port2 (00:50:56:A6:EA:8C)",
+        "column_name": "port2()",
+        "ipv4Netmask": "test",
+        "addressingMode": "0",
+        "addressing6Mode": "0",
+        "ipv4Access": "",
+        "ipv4AdministrativeAccess": [],
+        "ipv6Netmask": "::/0",
+        "ipv6Access": "",
+        "ipv6AdministrativeAccess": [],
+        "status": "up",
+        "linkStatus": "up",
+        "type": "Physical",
+        "ref": 1,
+        "de": "",
+        "portId": 0
+    }
+]

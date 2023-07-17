@@ -26,6 +26,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: User DN (e.g., cn=admin,ou=users,dc=domain,dc=com)
   name: credentials
   required: true
@@ -42,6 +43,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: posixGroup
   display: Groups Object Class
   name: group_filter_class
@@ -49,6 +51,7 @@ configuration:
   additionalinfo: Relevant for OpenLDAP.
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: gidNumber
   display: Groups Unique Identifier Attribute
   name: group_identifier_attribute
@@ -56,6 +59,7 @@ configuration:
   additionalinfo: Relevant for OpenLDAP.
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: memberUid
   display: Group Membership Identifier Attribute
   name: member_identifier_attribute
@@ -63,6 +67,7 @@ configuration:
   additionalinfo: Relevant for OpenLDAP.
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: posixAccount
   display: User Object Class
   name: user_filter_class
@@ -70,12 +75,14 @@ configuration:
   additionalinfo: Relevant for OpenLDAP.
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: User attributes will be added to the user filter in 'ad-authenticate-and-roles'. Attributes should be in the format "attrA=valA,attrB=valB,..." (Relevant for OpenLDAP).
   display: User Defined Attributes
   name: custom_attributes
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: uid
   display: User Unique Identifier Attribute
   name: user_identifier_attribute
@@ -83,11 +90,13 @@ configuration:
   additionalinfo: Relevant for OpenLDAP.
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '500'
   display: Page size
   name: page_size
   type: 0
   section: Collect
+  required: false
 - defaultvalue: None
   display: Connection Type
   name: connection_type
@@ -112,16 +121,19 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Authenticate using OpenLDAP or Active Directory.
 display: LDAP Authentication
 name: OpenLDAP
