@@ -2674,7 +2674,7 @@ script:
       predefined:
       - "true"
       - "false"
-  dockerimage: demisto/googleapi-python3:1.0.0.64222
+  dockerimage: demisto/googleapi-python3:1.0.0.65068
   isfetch: true
   runonce: false
   script: "-"
