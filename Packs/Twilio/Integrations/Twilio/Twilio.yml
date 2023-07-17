@@ -16,16 +16,19 @@ configuration:
   defaultvalue: ""
   type: 0
   hidden: true
+  required: false
 - display: Auth token
   name: token
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - display: Account SID
   name: credentials_token
   type: 9
   displaypassword: Auth token
   section: Connect
+  required: false
 - display: Default sending number (e.g. +123456789101)
   name: from
   defaultvalue: ""
@@ -34,9 +37,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: javascript
