@@ -92,5 +92,92 @@
             ],
             "primary_motivation": "personal-gain"
         }
+    ],
+    "intrusion_set": [
+        {
+            "name": "Gamaredon Group",
+            "description": "[Gamaredon Group](https://attack.mitre.org/groups/G0047) is a suspected Russian cyber espionage threat group that has targeted military, NGO, judiciary, law enforcement, and non-profit organizations in Ukraine since at least 2013. The name [Gamaredon Group](https://attack.mitre.org/groups/G0047) comes from a misspelling of the word \"Armageddon\", which was detected in the adversary's early campaigns.(Citation: Palo Alto Gamaredon Feb 2017)(Citation: TrendMicro Gamaredon April 2020)(Citation: ESET Gamaredon June 2020)(Citation: Symantec Shuckworm January 2022)(Citation: Microsoft Actinium February 2022)\n\nIn November 2021, the Ukrainian government publicly attributed [Gamaredon Group](https://attack.mitre.org/groups/G0047) to Russia's Federal Security Service (FSB) Center 18.(Citation: Bleepingcomputer Gamardeon FSB November 2021)(Citation: Microsoft Actinium February 2022)",
+            "external_references": [
+                {
+                    "url": "https://attack.mitre.org/groups/G0047",
+                    "source_name": "mitre-attack",
+                    "external_id": "G0047"
+                },
+                {
+                    "source_name": "ACTINIUM"
+                },
+                {
+                    "source_name": "DEV-0157"
+                },
+                {
+                    "source_name": "Gamaredon Group"
+                },
+                {
+                    "source_name": "IRON TILDEN"
+                },
+                {
+                    "source_name": "Armageddon"
+                },
+                {
+                    "source_name": "Shuckworm"
+                },
+                {
+                    "source_name": "Primitive Bear"
+                },
+                {
+                    "url": "https://www.welivesecurity.com/2020/06/11/gamaredon-group-grows-its-game/",
+                    "source_name": "ESET Gamaredon June 2020"
+                },
+                {
+                    "url": "https://blog.trendmicro.com/trendlabs-security-intelligence/gamaredon-apt-group-use-covid-19-lure-in-campaigns/",
+                    "source_name": "TrendMicro Gamaredon April 2020"
+                },
+                {
+                    "url": "https://researchcenter.paloaltonetworks.com/2017/02/unit-42-title-gamaredon-group-toolset-evolution/",
+                    "source_name": "Palo Alto Gamaredon Feb 2017"
+                },
+                {
+                    "url": "https://www.microsoft.com/security/blog/2022/02/04/actinium-targets-ukrainian-organizations/",
+                    "source_name": "Microsoft Actinium February 2022"
+                },
+                {
+                    "url": "https://www.secureworks.com/research/threat-profiles/iron-tilden",
+                    "source_name": "Secureworks IRON TILDEN Profile"
+                },
+                {
+                    "url": "https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/shuckworm-gamaredon-espionage-ukraine",
+                    "source_name": "Symantec Shuckworm January 2022"
+                },
+                {
+                    "url": "https://www.bleepingcomputer.com/news/security/ukraine-links-members-of-gamaredon-hacker-group-to-russian-fsb/",
+                    "source_name": "Bleepingcomputer Gamardeon FSB November 2021"
+                },
+                {
+                    "url": "https://unit42.paloaltonetworks.com/gamaredon-primitive-bear-ukraine-update-2021/",
+                    "source_name": "Unit 42 Gamaredon February 2022"
+                }
+            ],
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "id": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
+            "created": "2017-05-31T21:32:09.849Z",
+            "modified": "2022-04-15T13:46:34.474Z",
+            "type": "intrusion-set",
+            "objectMarkingRefs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "xMitreDomains": [
+                "enterprise-attack"
+            ],
+            "aliases": [
+                "Gamaredon Group",
+                "IRON TILDEN",
+                "Primitive Bear",
+                "ACTINIUM",
+                "Armageddon",
+                "Shuckworm",
+                "DEV-0157"
+            ],
+            "isDeprecated": false
+        }
     ]
 }
