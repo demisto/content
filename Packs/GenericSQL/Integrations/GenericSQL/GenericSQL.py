@@ -139,10 +139,9 @@ class Client:
             demisto.debug('Initializing engine with no pool (NullPool)')
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
                                               poolclass=sqlalchemy.pool.NullPool)
-        return engine.connect()
+        return engine
 
-    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0, commit: bool = False) -> Tuple[
-            Dict, List]:
+    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> Tuple[Dict, List]:
         """Execute query in DB via engine
         :param bind_vars: in case there are names and values - a bind_var dict, in case there are only values - list
         :param sql_query: the SQL query
@@ -151,13 +150,17 @@ class Client:
         """
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
-        result = self.connection.execute(sql_query, bind_vars)
-        if commit:
-            self.connection.commit()
-            return 'Command executed', []
-        else:
+
+        with self.connection.connect() as connection:
+            # execute the commit query
+            connection.execute(sql_query, bind_vars)
+            connection.commit()
+            # execute to get results
+            result = connection.execute(sql_query, bind_vars)
             # For avoiding responses with lots of records
             results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+            connection.commit()
+
         headers = []
         # if the table isn't empty
         if results:
@@ -281,12 +284,11 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         sql_query = str(args.get('query'))
         limit = int(args.get('limit', 50))
         skip = int(args.get('skip', 0))
-        commit = argToBoolean(args.get('commit', 'false'))
         bind_variables_names = args.get('bind_variables_names', "")
         bind_variables_values = args.get('bind_variables_values', "")
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
-        result, headers = client.sql_query_execute_request(sql_query, bind_variables, commit=commit)
+        result, headers = client.sql_query_execute_request(sql_query, bind_variables)
         if result == 'Command executed':
             return result, {}, []
         # converting an sqlalchemy object to a table
