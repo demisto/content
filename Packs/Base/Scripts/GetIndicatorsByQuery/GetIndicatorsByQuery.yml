@@ -1,49 +1,22 @@
 args:
-- default: false
-  description: The indicators query.
-  isArray: false
+- description: The indicators query.
   name: query
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of fields in the object to ignore.
-  isArray: false
+- description: A comma-separated list of fields in the object to ignore.
   name: dontPopulateFields
-  required: false
-  secret: false
-- default: false
-  defaultValue: '10000'
+- defaultValue: '10000'
   description: The maximum number of indicators to fetch.
-  isArray: false
   name: limit
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: The results offset page. Only change when the number of the results exceed the limit.
-  isArray: false
   name: offset
-  required: false
-  secret: false
-- default: false
-  description: Salt for the hash function.
-  isArray: false
+- description: Salt for the hash function.
   name: addRandomSalt
-  required: false
   secret: true
-- default: false
-  description: A comma-separated list of fields to hash. Supports wildcard "*".
-  isArray: false
+- description: A comma-separated list of fields to hash. Supports wildcard "*".
   name: fieldsToHash
-  required: false
-  secret: false
-- default: false
-  defaultValue: id,score,investigationIDs
+- defaultValue: id,score,investigationIDs
   description: A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs.
-  isArray: false
   name: populateFields
-  required: false
-  secret: false
 comment: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
 commonfields:
   id: GetIndicatorsByQuery
@@ -52,14 +25,12 @@ enabled: true
 name: GetIndicatorsByQuery
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.11.61265
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
-runonce: false
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

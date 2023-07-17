@@ -26,7 +26,7 @@
             "mandatory": false,
             "display_name": "Barracuda Reputation Block List (BRBL)"
         },
-        "CIRCL hashlookup (hashlookup.circl.lu)": {
+        "CIRCLHashlookup": {
             "mandatory": false,
             "display_name": "CIRCL hash lookup is a public API to lookup hash values against known database of files."
         },
@@ -58,7 +58,7 @@
             "mandatory": false,
             "display_name": "SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address"
         },
-        "Team Cymru": {
+        "TeamCymru": {
             "mandatory": false,
             "display_name": "Team Cymru is an internet security firm that offers research services making the internet a more secure place."
         },

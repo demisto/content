@@ -130,7 +130,8 @@ def copy_from_build_to_prod(build_bucket, build_index_blob, production_bucket, p
 
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
-                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
+                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str,
+                             marketplace: str = 'xsoar'):
     """Uploads the corepacks.json file to the target bucket. This files contains all of the server's core packs, under
      the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
 
@@ -141,45 +142,91 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
         storage_base_path (str): the path to upload the corepacks.json to.
         build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
 
     """
-    # download the corepacks.json stored in the build bucket to temp dir
-    build_corepacks_file_path = os.path.join(build_bucket_base_path, GCPConfig.CORE_PACK_FILE_NAME)
-    build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
+    corepacks_files = [GCPConfig.CORE_PACK_FILE_NAME]
+    corepacks_files.extend(GCPConfig.get_core_packs_unlocked_files(marketplace))
+    logging.debug(f"Updating the following corepacks files: {corepacks_files}")
+    for corepacks_file in corepacks_files:
+        build_corepacks_file_path = os.path.join(build_bucket_base_path, corepacks_file)
+        build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
 
-    if not build_corepacks_blob.exists():
-        logging.critical(f"{GCPConfig.CORE_PACK_FILE_NAME} is missing in {build_bucket.name} bucket, exiting...")
+        if not build_corepacks_blob.exists():
+            logging.critical(f"{corepacks_file} is missing in {build_bucket.name} bucket, exiting...")
+            sys.exit(1)
+
+        logging.info(f"Uploading corepacks file {corepacks_file} to bucket.")
+
+        if corepacks_file == GCPConfig.CORE_PACK_FILE_NAME:
+            # change the storage paths to the prod bucket
+            temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
+            build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
+            corepacks_file_content = load_json(temp_corepacks_file_path)
+
+            corepacks_list = corepacks_file_content.get('corePacks', [])
+            try:
+                bucket_corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, storage_base_path,
+                                                      LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in
+                                         corepacks_list]
+            except IndexError:
+                corepacks_list_str = '\n'.join(corepacks_list)
+                logging.exception(f"GCS paths in build bucket corepacks.json file are not of format: "
+                                  f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
+                                  f"List of build bucket corepacks paths:\n{corepacks_list_str}, exiting...")
+                sys.exit(1)
+
+            # construct core pack data with public gcs urls
+            core_packs_data = {
+                'corePacks': bucket_corepacks_list,
+                'upgradeCorePacks': corepacks_file_content.get('upgradeCorePacks', []),
+                'buildNumber': build_number,
+            }
+
+            # upload core pack json file to gcs
+            prod_corepacks_file_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
+            prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
+            prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
+
+        else:  # upload of a versioned corepacks file
+            prod_corepacks_storage_path = os.path.join(storage_base_path, corepacks_file)
+            copied_corepacks_file = build_bucket.copy_blob(
+                blob=build_corepacks_blob, destination_bucket=production_bucket, new_name=prod_corepacks_storage_path
+            )
+            if not copied_corepacks_file.exists():
+                logging.error(f"Failed copying {corepacks_file} from build bucket to production bucket - blob"
+                              f" does not exist, exiting...")
+                sys.exit(1)
+        logging.success(f"Finished uploading {corepacks_file} to bucket.")
+
+
+def upload_versions_metadata(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str,
+                             build_bucket_base_path: str):
+    """Uploads the versions-metadata.json file to the target bucket. This file contains information related to
+    different server versions, such as a mapping between server versions and the matching corepacks files.
+
+     Args:
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
+        storage_base_path (str): the path to upload the corepacks.json to.
+        build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
+    """
+    build_file_path = os.path.join(build_bucket_base_path, GCPConfig.VERSIONS_METADATA_FILE)
+    build_blob = build_bucket.blob(build_file_path)
+
+    if not build_blob.exists():
+        logging.critical(f"{GCPConfig.VERSIONS_METADATA_FILE} is missing in {build_bucket.name} bucket, exiting...")
         sys.exit(1)
 
-    temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
-    build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
-    corepacks_file = load_json(temp_corepacks_file_path)
-
-    # change the storage paths to the prod bucket
-    corepacks_list = corepacks_file.get('corePacks', [])
-    try:
-        corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, storage_base_path,
-                                       LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
-    except IndexError:
-        corepacks_list_str = '\n'.join(corepacks_list)
-        logging.exception(f"GCS paths in build bucket corepacks.json file are not of format: "
-                          f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
-                          f"List of build bucket corepacks paths:\n{corepacks_list_str}")
+    prod_versions_metadata_storage_path = os.path.join(storage_base_path, GCPConfig.VERSIONS_METADATA_FILE)
+    copied_versions_metadata = build_bucket.copy_blob(
+        blob=build_blob, destination_bucket=production_bucket, new_name=prod_versions_metadata_storage_path
+    )
+    if copied_versions_metadata.exists():
+        logging.success(f"Finished uploading {GCPConfig.VERSIONS_METADATA_FILE} to storage.")
+    else:
+        logging.error(f"Failed copying {GCPConfig.VERSIONS_METADATA_FILE} from build bucket - blob does not exist, exiting...")
         sys.exit(1)
-
-    # construct core pack data with public gcs urls
-    core_packs_data = {
-        'corePacks': corepacks_list,
-        'upgradeCorePacks': corepacks_file.get('upgradeCorePacks', []),
-        'buildNumber': build_number
-    }
-
-    # upload core pack json file to gcs
-    prod_corepacks_file_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
-    prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
-    prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
-
-    logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
 def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str, build_bucket_base_path: str):
@@ -460,6 +507,9 @@ def main():
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
                              production_base_path, build_bucket_base_path)
+
+    # copy versions-metadata from build bucket to prod bucket
+    upload_versions_metadata(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
 
     # finished iteration over content packs
     copy_index(build_index_folder_path, build_index_blob, build_index_generation, production_bucket,

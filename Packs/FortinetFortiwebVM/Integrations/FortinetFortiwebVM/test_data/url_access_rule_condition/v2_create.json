@@ -1,0 +1,32 @@
+{
+    "results": {
+        "q_type": 0,
+        "id": "1",
+        "reg-exp": "test",
+        "type": "regex-expression",
+        "type_val": "2",
+        "reverse-match": "yes",
+        "reverse-match_val": "1",
+        "sip-address-check": "enable",
+        "sip-address-check_val": "1",
+        "sip-address-type": "source-domain",
+        "sip-address-type_val": "2",
+        "sip-address-value": "",
+        "sip-address-domain": "",
+        "sdomain-type": "ipv4",
+        "sdomain-type_val": "2",
+        "source-domain": "test.com",
+        "source-domain-type": "simple-string",
+        "source-domain-type_val": "1",
+        "url-access-parameter": "test",
+        "url-access-parameter_val": "1155",
+        "only-method-check": "enable",
+        "only-method-check_val": "1",
+        "only-protocol-check": "enable",
+        "only-protocol-check_val": "1",
+        "only-method": "get post put patch ",
+        "only-method_val": "387",
+        "only-protocol": "ws wss ",
+        "only-protocol_val": "12"
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "test_case_1":{
+        "args": {"group_id": "s"},
+        "command_type": "create",
+        "expected_error_msg": "group_id must be a valid number."
+    },
+    "test_case_2":{
+        "args": {"time_zone": "time_zone"},
+        "command_type": "create",
+        "expected_error_msg": "Invalid time zone ID. Please choose one of the following: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html"
+    },
+    "test_case_3":{
+        "args": {"password": "s"},
+        "command_type": "update",
+        "expected_error_msg": "current_password must be provided when attempting to update password."
+    },
+    "test_case_4":{
+        "args": {"password": "s"},
+        "command_type": "create",
+        "expected_error_msg": "Password length must be at least 3 characters."
+    },
+    "test_case_5":{
+        "args": {"email": "email"},
+        "command_type": "create",
+        "expected_error_msg": "Error: The given email address: email is not in the correct format."
+    },
+    "test_case_6":{
+        "args": {"email_notice": "both"},
+        "command_type": "create",
+        "expected_error_msg": "When email_notice is different from none, an email must be given as well."
+    }
+}

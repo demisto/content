@@ -17,6 +17,8 @@ ORGANIZATIONS_HEADERS = ['id', 'name', 'domain_names', 'tags', 'external_id', 'c
 TICKETS_HEADERS = ['id', 'subject', 'description', 'priority', 'status', 'assignee_id', 'created_at', 'updated_at', 'external_id']
 COMMENTS_HEADERS = ['id', 'body', 'created_at', 'public', 'attachments']
 ATTACHMENTS_HEADERS = ['id', 'file_name', 'content_url', 'size', 'content_type']
+GROUP_USER_HEADERS = ['id', 'name', 'email', 'role', 'created_at']
+GROUP_HEADERS = ['id', 'name', 'is_public', 'created_at', 'updated_at']
 ARTICLES_HEADERS = ['body']
 ROLES = ['end-user', 'admin', 'agent']
 ROLE_TYPES = {
@@ -372,7 +374,7 @@ class ZendeskClient(BaseClient):
             return self.__cursor_pagination(url_suffix=url_suffix, data_field_name=data_field_name,
                                             params=params, limit=int(limit))
 
-    # ---- user releated functions ---- #
+    # ---- user related functions ---- #
 
     @staticmethod
     def __command_results_zendesk_users(users: List[Dict]):
@@ -489,7 +491,7 @@ class ZendeskClient(BaseClient):
         self._http_request('DELETE', url_suffix=f'users/{user_id}')
         return f'User deleted. (id: {user_id})'
 
-    # ---- organization releated functions ---- #
+    # ---- organization related functions ---- #
 
     @staticmethod
     def __command_results_zendesk_organizations(organizations: List[Dict]):  # pragma: no cover
@@ -513,7 +515,30 @@ class ZendeskClient(BaseClient):
 
         return self.__command_results_zendesk_organizations(organizations)
 
-    # ---- ticket releated functions ---- #
+    # ---- group related functions ---- #
+    @staticmethod
+    def __command_results_zendesk_group_users(users: List[Dict]):  # pragma: no cover
+        readable_outputs = tableToMarkdown(name='Zendesk Group Users:', t=users, headers=GROUP_USER_HEADERS,
+                                           headerTransform=camelize_string)
+        return CommandResults(outputs_prefix="Zendesk.UserGroup",
+                              outputs=users, readable_output=readable_outputs)
+
+    def list_group_users(self, group_id: int, **kwargs):
+        users = list(self._paged_request(url_suffix=f'groups/{group_id}/users', data_field_name='users', **kwargs))
+        return self.__command_results_zendesk_group_users(users)
+
+    @staticmethod
+    def __command_results_zendesk_groups(groups):  # pragma: no cover
+        readable_outputs = tableToMarkdown(name='Zendesk groups:', t=groups, headers=GROUP_HEADERS,
+                                           headerTransform=camelize_string)
+        return CommandResults(outputs_prefix="Zendesk.Group",
+                              outputs=groups, readable_output=readable_outputs)
+
+    def list_groups(self, **kwargs):
+        groups = list(self._paged_request(url_suffix='groups', data_field_name='groups', **kwargs))
+        return self.__command_results_zendesk_groups(groups)
+
+    # ---- ticket related functions ---- #
 
     @staticmethod
     def __ticket_context(ticket: Dict[str, Any]):
@@ -537,7 +562,7 @@ class ZendeskClient(BaseClient):
     def __get_sort_params(sort: str, cursor_paging: bool = False):
         Validators.validate_ticket_sort(sort)
         if not cursor_paging:
-            # using the offest paged request
+            # using the offset paged request
             sort_list = sort.split('_')
             sort, order = '_'.join(sort_list[:-1]), sort_list[-1]
             return {
@@ -600,7 +625,8 @@ class ZendeskClient(BaseClient):
     class Ticket:
 
         def __init__(self, type: Optional[str] = None, collaborators: Optional[str] = None,
-                     comment: Optional[str] = None, public: Optional[Union[str, bool]] = None,
+                     comment: Optional[str] = None, html_comment: Optional[str] = None,
+                     public: Optional[Union[str, bool]] = None,
                      email_ccs: Optional[str] = None, priority: Optional[str] = None,
                      followers: Optional[Union[List[str], str]] = None, status: Optional[str] = None,
                      **kwargs):
@@ -617,6 +643,10 @@ class ZendeskClient(BaseClient):
                 self._data['priority'] = priority
             if comment:
                 self._data['comment'] = {'body': comment}
+                if public:
+                    self._data['comment']['public'] = argToBoolean(public)
+            if html_comment:
+                self._data['comment'] = {'html_body': html_comment}
                 if public:
                     self._data['comment']['public'] = argToBoolean(public)
             if status:
@@ -708,7 +738,7 @@ class ZendeskClient(BaseClient):
         return CommandResults(outputs_prefix="Zendesk.Ticket.Comment",
                               outputs=comments, readable_output=readable_outputs)
 
-    def _get_comments(self, ticket_id: str, **kwargs):
+    def _get_comments(self, ticket_id: str, **kwargs) -> list:  # type:ignore
         for comment in self._paged_request(url_suffix=f'tickets/{ticket_id}/comments', data_field_name='comments', **kwargs):
             for attachment in comment.get('attachments', []):
                 attachment.pop('thumbnails', None)
@@ -717,7 +747,7 @@ class ZendeskClient(BaseClient):
     def zendesk_ticket_comment_list(self, ticket_id: str, **kwargs):
         return self.__command_results_zendesk_ticket_comments(list(self._get_comments(ticket_id, **kwargs)))
 
-    # ---- attachment releated functions ---- #
+    # ---- attachment related functions ---- #
 
     def zendesk_ticket_attachment_add(self, file_id: STR_OR_STR_LIST, ticket_id: int, comment: str,
                                       file_name: Optional[STR_OR_STR_LIST] = None, is_mirror: bool = False):
@@ -746,7 +776,7 @@ class ZendeskClient(BaseClient):
 
         return f'file: {", ".join(uploaded_files)} attached to ticket: {ticket_id}'
 
-    def zendesk_attachment_get(self, attachment_id: int):
+    def zendesk_attachment_get(self, attachment_id):
         attachments = [
             self._http_request(
                 'GET',
@@ -759,18 +789,30 @@ class ZendeskClient(BaseClient):
             return attachment
 
         attachments = list(map(filter_thumbnails, attachments))
-        readable_output = tableToMarkdown(name='Zendesk attachments', t=attachments,
-                                          headers=ATTACHMENTS_HEADERS, headerTransform=camelize_string)
-        results = [CommandResults(outputs_prefix='Zendesk.Attachment',
-                                  outputs=attachments, readable_output=readable_output)]
+
+        return attachments
+
+    def get_file_entries(self, attachments):
+        results = []
         for attachment_link, attachment_name in map(lambda x: (x['content_url'], x['file_name']), attachments):
             res = self._http_request('GET', full_url=attachment_link, resp_type='response')
             res.raise_for_status()
             results.append(fileResult(filename=attachment_name, data=res.content, file_type=EntryType.ENTRY_INFO_FILE))
+        return results
+
+    def zendesk_attachment_get_command(self, attachment_id: int):
+        attachments = self.zendesk_attachment_get(attachment_id)
+        readable_output = tableToMarkdown(name='Zendesk attachments', t=attachments,
+                                          headers=ATTACHMENTS_HEADERS, headerTransform=camelize_string)
+        results = [CommandResults(outputs_prefix='Zendesk.Attachment',
+                                  outputs=attachments, readable_output=readable_output)]
+
+        file_entries = self.get_file_entries(attachments)
+        results.append(file_entries)
 
         return results
 
-    # ---- search releated functions ---- #
+    # ---- search related functions ---- #
 
     def __zendesk_search_results(self, query: str, limit: int = 50, page_number: Optional[int] = None, page_size: int = 50,
                                  additional_params: dict = {}):
@@ -798,7 +840,7 @@ class ZendeskClient(BaseClient):
                                   query=query, limit=limit, page_number=page_number, page_size=page_size
                               ))
 
-    # ---- articles releated functions ---- #
+    # ---- articles related functions ---- #
 
     def zendesk_article_list(self, locale: Optional[str] = '', article_id: Optional[int] = None, **kwargs):
         if locale:
@@ -818,7 +860,7 @@ class ZendeskClient(BaseClient):
         return CommandResults(outputs_prefix='Zendesk.Article', outputs=articles,
                               readable_output='\n\n\n'.join(readable_output))
 
-    # ---- demisto releated functions ---- #
+    # ---- demisto related functions ---- #
 
     def test_module(self):  # pragma: no cover
         exception: Exception
@@ -832,8 +874,7 @@ class ZendeskClient(BaseClient):
 
         raise exception from None
 
-    @staticmethod
-    def _ticket_to_incident(ticket: Dict):
+    def _ticket_to_incident(self, ticket: Dict):
         ticket |= {
             'severity': PRIORITY_MAP.get(ticket['priority']),
             'mirror_instance': INTEGRATION_INSTANCE,
@@ -846,6 +887,7 @@ class ZendeskClient(BaseClient):
             'rawJSON': json.dumps(ticket),
             'name': ticket['subject'],
             'occurred': ticket['created_at'],
+            'attachment': ticket.get('attachments', [])
         }
 
     @staticmethod
@@ -868,6 +910,7 @@ class ZendeskClient(BaseClient):
         time_filter = 'updated' if params.get('time_filter') == 'updated-at' else 'created'
         query = params.get('fetch_query') or ZendeskClient._fetch_query_builder(**params)
         max_fetch = min(100, int(params.get('max_fetch') or 50))
+        get_attachments = params.get('get_attachments')
 
         # from last_run
         fetched_tickets = deque(last_run.get('fetched_tickets') or [])
@@ -883,7 +926,7 @@ class ZendeskClient(BaseClient):
                 raise DemistoException(f'invalid first fetch time specified ({first_fetch})')
             last_fetch = first_fetch_datetime.strftime(ZENDESK_FETCH_TIME_FORMAT)
 
-        return fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number
+        return fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number, get_attachments
 
     @staticmethod
     def _next_fetch_args(fetched_tickets, search_results_ids, next_run_start_time, query, time_filter,
@@ -905,9 +948,54 @@ class ZendeskClient(BaseClient):
 
         return next_run
 
+    def get_attachments_ids(self, ticket: dict) -> List[int]:
+        """
+
+        Args:
+            ticket (dict): The fetched ticket.
+
+        Returns (list): all the attachment ids for a ticket
+
+        """
+        attachments_ids = []
+        ticket_id = ticket['id']
+        comments_list = self._get_comments(ticket_id=ticket_id)
+        for comment in comments_list:
+            attachments = comment.get('attachments', [])
+            for attachment in attachments:
+                attachment_id = attachment.get('id')
+                attachments_ids.append(attachment_id)
+
+        return attachments_ids
+
+    def get_attachment_entries(self, ticket: dict) -> list:
+        """
+
+        Args:
+            ticket (dict): The ticket to get the file entries
+
+        Returns: The attachments entries.
+
+        """
+        attachments_ids = self.get_attachments_ids(ticket)
+        file_names = []
+        attachments = self.zendesk_attachment_get(attachments_ids)
+        demisto.debug(f'The fetched attachments - {attachments}')
+        attachments_entries = self.get_file_entries(attachments)
+        if isinstance(attachments_entries, list):
+            for file_result in attachments_entries:
+                if file_result['Type'] == entryTypes['error']:
+                    raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                file_names.append({
+                    'path': file_result.get('FileID', ''),
+                    'name': file_result.get('File', '')
+                })
+        return file_names
+
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
         last_run = json.loads(lastRun or 'null') or demisto.getLastRun() or {}
-        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number = self._fetch_args(params, last_run)
+        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number, get_attachments = self._fetch_args(params,
+                                                                                                                    last_run)
 
         # look back window for tickets
         next_run_start_time = datetime.utcnow() - timedelta(minutes=1)
@@ -923,6 +1011,14 @@ class ZendeskClient(BaseClient):
         search_results_ids = list(map(lambda x: x['id'], search_results))
         filtered_search_results_ids = list(filter(lambda x: x not in fetched_tickets, search_results_ids))
         tickets = map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids)
+        ticket_modified = []
+        if get_attachments:
+            for ticket in tickets:
+                attachments = ZendeskClient.get_attachment_entries(self, ticket)
+                ticket.update({'attachments': attachments})
+                ticket_modified.append(ticket)
+
+        tickets = ticket_modified if ticket_modified else tickets
         incidents = list(map(self._ticket_to_incident, tickets))
 
         demisto.incidents(incidents)
@@ -1110,6 +1206,10 @@ def main():  # pragma: no cover
             'zendesk-user-create': client.zendesk_user_create,
             'zendesk-user-update': client.zendesk_user_update,
             'zendesk-user-delete': client.zendesk_user_delete,
+            'zendesk-group-user-list': client.list_group_users,
+
+            # Group commands
+            'zendesk-group-list': client.list_groups,
 
             # organization commands
             'zendesk-organization-list': client.zendesk_organization_list,
@@ -1123,7 +1223,7 @@ def main():  # pragma: no cover
 
             # attachment commands
             'zendesk-ticket-attachment-add': client.zendesk_ticket_attachment_add,
-            'zendesk-attachment-get': client.zendesk_attachment_get,
+            'zendesk-attachment-get': client.zendesk_attachment_get_command,
 
             # search command
             'zendesk-search': client.zendesk_search,

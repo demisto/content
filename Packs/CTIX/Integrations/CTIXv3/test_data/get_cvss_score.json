@@ -1,0 +1,17 @@
+{
+    "next": null,
+    "page_size": 15,
+    "previous": null,
+    "results": [
+        {
+            "cvss2": null,
+            "cvss3": null,
+            "source": {
+                "id": "1e398660-1adb-42ce-bede-658ece9e9483",
+                "name": "Acti",
+                "source_type": "API_FEEDS"
+            }
+        }
+    ],
+    "total": 1
+}

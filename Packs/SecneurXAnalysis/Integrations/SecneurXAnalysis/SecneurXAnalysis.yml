@@ -16,27 +16,22 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Fully automated malware dynamic analysis sandboxing
 display: SecneurX Analysis
 name: Secneurx Analysis
 script:
   commands:
   - arguments:
-    - default: false
-      description: Input the Task UUID value obtained as response from submission
-      isArray: false
+    - description: Input the Task UUID value obtained as response from submission
       name: task_uuid
       required: true
-      secret: false
-    deprecated: false
     description: Get verdict summary report of the analyzed sample
-    execution: false
     name: snx-analysis-get-verdict
     outputs:
     - contextPath: SecneurXAnalysis.Verdict.task_uuid
@@ -58,101 +53,43 @@ script:
       description: Analysis queued sample submission time value.
       type: String
   - arguments:
-    - default: false
-      description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
-      isArray: false
+    - description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
       name: last_hours
-      required: false
-      secret: false
-    - default: false
-      description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
-      isArray: false
+    - description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
       name: last_count
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of submitted samples whose status is marked as "Completed"
-    execution: false
     name: snx-analysis-get-completed
   - arguments:
-    - default: false
-      description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
-      isArray: false
+    - description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
       name: last_hours
-      required: false
-      secret: false
-    - default: false
-      description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
-      isArray: false
+    - description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
       name: last_count
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of submitted samples that are still in pending state
-    execution: false
     name: snx-analysis-get-pending
   - arguments:
-    - default: false
-      description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
-      isArray: false
+    - description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
       name: last_hours
-      required: false
-      secret: false
-    - default: false
-      description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
-      isArray: false
+    - description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
       name: last_count
-      required: false
-      secret: false
-    deprecated: false
     description: Get the status of all the submitted samples
-    execution: false
     name: snx-analysis-get-status
   - arguments:
-    - default: false
-      description: Entry ID value of upload file.
-      isArray: false
+    - description: Entry ID value of upload file.
       name: EntryID
       required: true
-      secret: false
-    - default: false
-      description: Type the OS platform on which the file to be analysed. Default is set to Windows7. Possible values are Windows7, Windows10, Android, Ubuntu
-      isArray: false
+    - description: Type the OS platform on which the file to be analysed. Default is set to Windows7. Possible values are Windows7, Windows10, Android, Ubuntu
       name: Platform
-      required: false
-      secret: false
-    - default: false
-      description: Type the priority of the sample for analysis. Default is set to Normal. Possible values are High, Normal
-      isArray: false
+    - description: Type the priority of the sample for analysis. Default is set to Normal. Possible values are High, Normal
       name: Priority
-      required: false
-      secret: false
-    - default: false
-      description: Type the duration of the analysis in seconds. Not all malicious programs are active right after the launch. Some of them take time to fully reveal the attack vectors. Default is set to 120. Possible values are 120, 180, 240, 300
-      isArray: false
+    - description: Type the duration of the analysis in seconds. Not all malicious programs are active right after the launch. Some of them take time to fully reveal the attack vectors. Default is set to 120. Possible values are 120, 180, 240, 300
       name: Duration
-      secret: false
-    - default: false
-      description: If you want the file for submission to be treated and analysed as a specific file extension, mention it.
-      isArray: false
+    - description: If you want the file for submission to be treated and analysed as a specific file extension, mention it.
       name: Extension
-      required: false
-      secret: false
-    - default: false
-      description: Reboot the system during the analysis. Default is set to 'False'. Possible values are True, False
-      isArray: false
+    - description: Reboot the system during the analysis. Default is set to 'False'. Possible values are True, False
       name: Reboot
-      required: false
-      secret: false
-    - default: false
-      description: If the file for submission is protected with a user-defined password, please enter the password for our system to open and detonate it
-      isArray: false
+    - description: If the file for submission is protected with a user-defined password, please enter the password for our system to open and detonate it
       name: File Password
-      required: false
-      secret: false
-    deprecated: false
     description: Submit a file for Analysis
-    execution: false
     name: snx-analysis-submit-file
     outputs:
     - contextPath: SecneurXAnalysis.SubmitFile.task_uuid
@@ -162,46 +99,30 @@ script:
       description: Submission Time Created at the time the file was submitted
       type: String
   - arguments:
-    - default: false
-      description: Input the URL for analysis
-      isArray: false
+    - description: Input the URL for analysis
       name: URL
       required: true
-      secret: false
-    - default: false
-      description: Type the priority of the sample for analysis. Default is set to Normal. Possible values are High, Normal
-      isArray: false
+    - description: Type the priority of the sample for analysis. Default is set to Normal. Possible values are High, Normal
       name: Priority
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - "High"
       - "Normal"
-    - default: false
-      description: Type the duration of the analysis in seconds. Not all malicious programs are active right after the launch. Some of them take time to fully reveal the attack vectors. Default is set to 120. Possible values are 120, 180, 240, 300
-      isArray: false
+    - description: Type the duration of the analysis in seconds. Not all malicious programs are active right after the launch. Some of them take time to fully reveal the attack vectors. Default is set to 120. Possible values are 120, 180, 240, 300
       name: Duration
-      secret: false
       auto: PREDEFINED
       predefined:
       - "120"
       - "180"
       - "240"
       - "300"
-    - default: false
-      description: Reboot the system during the analysis. Default is set to 'False'. Possible values are True, False
-      isArray: false
+    - description: Reboot the system during the analysis. Default is set to 'False'. Possible values are True, False
       name: Reboot
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-    deprecated: false
     description: Submit the URL for Analysis
-    execution: false
     name: snx-analysis-submit-url
     outputs:
     - contextPath: SecneurXAnalysis.SubmitURL.task_uuid
@@ -211,26 +132,17 @@ script:
       description: Submission Time Created at the time the file was submitted
       type: String
   - arguments:
-    - default: false
-      description: Input the Task UUID value obtained as response from submission
-      isArray: false
+    - description: Input the Task UUID value obtained as response from submission
       name: task_uuid
       required: true
-      secret: false
-    - default: false
-      description: Mention the output format of the report. The value should be "json" or "html". The default is set to "json"
-      isArray: false
+    - description: Mention the output format of the report. The value should be "json" or "html". The default is set to "json"
       defaultValue: "json"
       name: report_format
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - "html"
       - "json"
-    deprecated: false
     description: Get the detailed report of the analyzed sample.
-    execution: false
     name: snx-analysis-get-report
     outputs:
     - contextPath: SecneurXAnalysis.Report.SHA256
@@ -281,9 +193,7 @@ script:
     - contextPath: SecneurXAnalysis.Report.Status
       description: Analysis queued sample state
       type: String
-  - deprecated: false
-    description: Get the API Key quota usage details.
-    execution: false
+  - description: Get the API Key quota usage details.
     name: snx-analysis-get-quota
     outputs:
     - contextPath: SecneurXAnalysis.Quota.start_time
@@ -301,12 +211,11 @@ script:
     - contextPath: SecneurXAnalysis.Quota.unused
       description: Unused count of API Key
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.58411
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.5.0
 tests:
 - Detonate File - SecneurX Analysis - Test

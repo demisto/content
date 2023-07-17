@@ -22,14 +22,16 @@ configuration:
   section: Connect
 - display: Token
   name: token
-  required: true
+  required: false
   type: 4
   section: Connect
-- display: Fetch incidents
-  name: isFetch
+  hidden: true
+- displaypassword: Token
+  name:  credentials_token
   required: false
-  type: 8
-  section: Collect
+  hiddenusername: true
+  type: 9
+  section: Connect
 - display: Service event to fetch
   name: service
   options:
@@ -42,9 +44,9 @@ configuration:
   - gmail
   - teams
   - exchangeserver
-  required: false
   type: 16
   section: Collect
+  required: false
 - display: Event type to fetch
   name: event_type
   options:
@@ -52,38 +54,41 @@ configuration:
   - virtualanalyzer
   - ransomware
   - dlp
-  required: false
   type: 16
   section: Collect
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-  section: Connect
-- display: Trust any certificate (not secure)
-  name: insecure
+- display: Fetch incidents
+  name: isFetch
   required: false
   type: 8
-  section: Connect
-  advanced: true
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-  section: Connect
-  advanced: true
 description: 'Use Trend Micro Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.'
 display: Trend Micro Cloud App Security
 name: TrendMicro Cloud App Security
@@ -91,9 +96,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'Name of the protected service whose logs you want to retrieve. Can be: "exchange", "sharepoint", "onedrive", "dropbox", "box", "googledrive", "gmail", "teams", or "exchangeserver".'
-      isArray: false
       name: service
       predefined:
       - exchange
@@ -106,11 +109,8 @@ script:
       - teams
       - exchangeserver
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of the security event whose logs you want to retrieve. Can be: "securityrisk", "virtualanalyzer", "ransomware", or "dlp".'
-      isArray: false
       name: event_type
       predefined:
       - securityrisk
@@ -118,44 +118,25 @@ script:
       - ransomware
       - dlp
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The start time to retrieve logs, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         The request retrieves logs within a maximum of 72 hours before the request is sent.
         If a start time is added, the request retrieves all from the start time.
         If a start and end time are added, the request retrieves logs within the configured duration.
         If start and end times are not added, the request retrieves logs within 5 minutes before the request is sent.        
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The end time to retrieve logs, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         The request retrieves logs within a maximum of 72 hours before request is sent.
         If an end time is added, the request retrieves logs within five minutes before the end time.
         If start and end are added, the request retrieves logs within the configured duration. Ensure the end time is no earlier than the start time.
         If the start and end times are not added, the request retrieves logs within 5 minutes before the request is sent.        
-      isArray: false
       name: end
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of log items to display. Default is 50 and Maximum is 500.
-      isArray: false
+    - description: The maximum number of log items to display. Default is 50 and Maximum is 500.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The URL for the results page if the total number of log items in a previous request exceeds the specified limit. When the maximum log items exceeds the limit, a URL is specified in the response. To retrieve the remaining log items, use the URL from the response.
-      isArray: false
+    - description: The URL for the results page if the total number of log items in a previous request exceeds the specified limit. When the maximum log items exceeds the limit, a URL is specified in the response. To retrieve the remaining log items, use the URL from the response.
       name: next_link
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves security event logs of services.
-    execution: false
     name: trendmicro-cas-security-events-list
     outputs:
     - contextPath: TrendMicroCAS.Events.last_log_item_generation_time
@@ -255,24 +236,15 @@ script:
       description: The randomly generated ID to trace the request.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The Email address of the mailbox for which to search.
         A non-prefix wildcard is supported. For example, u*ser@gmail.com or user@gm*ail.com.
-      isArray: false
       name: mailbox
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The number of days (n × 24 hours) before the request is sent to search.
         Do not configure lastndays and start/end at the same time.
-      isArray: false
       name: lastndays
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The start time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         The request searches email messages according to the following settings:
         If both start and end are not added, the request searches email messages within seven days (7 × 24 hours) before the request was sent.
@@ -280,12 +252,8 @@ script:
         If only start is added, the request searches email messages within seven days (7 × 24 hours) after the start time.
         If only end is added, the request searches email messages within seven days (7 × 24 hours) before the end time.
         Do not configure lastndays and start/end at the same time.
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The end time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         Cloud App Security saves the meta information of email messages for 90 days.
         The request searches email messages according to the following settings:
@@ -294,90 +262,37 @@ script:
         If only start is added, the request searches email messages within seven days (7 × 24 hours) after the start time.
         If only end is added, the request searches email messages within seven days (7 × 24 hours) before the end time.
         Do not configure lastndays and start/end at the same time.
-      isArray: false
       name: end
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The subject of email messages for which to search. Use double quotes to search for an exact phrase, for example, "messageA messageB"
         otherwise a partial match based on the phrase is performed. For example, 
         a search is performed on a subject containing messageA, or messageB, or messageA message B.
-      isArray: false
       name: subject
-      required: false
-      secret: false
-    - default: false
-      description: The SHA-1 hash value of the attachment file for which to search.
-      isArray: false
+    - description: The SHA-1 hash value of the attachment file for which to search.
       name: file_sha1
-      required: false
-      secret: false
-    - default: false
-      description: 'The name of the attachment file for which to search, with or without a filename extension. A non-prefix wildcard is supported. For example, me*ssage.'
-      isArray: false
+    - description: 'The name of the attachment file for which to search, with or without a filename extension. A non-prefix wildcard is supported. For example, me*ssage.'
       name: file_name
-      required: false
-      secret: false
-    - default: false
-      description: 'The filename extension of attachment files for which to search without a period ".". A non-prefix wildcard is supported. For example, do*'
-      isArray: false
+    - description: 'The filename extension of attachment files for which to search without a period ".". A non-prefix wildcard is supported. For example, do*'
       name: file_extension
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The URL contained in an email body or in an attachment for which to search. Type the
         full URL. 
-      isArray: false
       name: url
-      required: false
-      secret: false
-    - default: false
-      description: 'The email address of the sender for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*ser@gmail.com.'
-      isArray: false
+    - description: 'The email address of the sender for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*ser@gmail.com.'
       name: sender
-      required: false
-      secret: false
-    - default: false
-      description: 'The email address of the recipient for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*ser@gmail.com.'
-      isArray: false
+    - description: 'The email address of the recipient for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*ser@gmail.com.'
       name: recipient
-      required: false
-      secret: false
-    - default: false
-      description: The Internet message ID of the email message for which to search.  Can be obtained from Microsoft Graph API or EWS API.
-      isArray: false
+    - description: The Internet message ID of the email message for which to search.  Can be obtained from Microsoft Graph API or EWS API.
       name: message_id
-      required: false
-      secret: false
-    - default: false
-      description: 'The Source IP address, with or without a subnet mask, of the email message to search. For example, xx.yy.zz.ww or xx.yy.zz.ww/16.'
-      isArray: false
+    - description: 'The Source IP address, with or without a subnet mask, of the email message to search. For example, xx.yy.zz.ww or xx.yy.zz.ww/16.'
       name: source_ip
-      required: false
-      secret: false
-    - default: false
-      description: The Source domain of email messages for which to search. Type a complete domain name. A non-prefix wildcard is supported. For example, gm*ail.com.
-      isArray: false
+    - description: The Source domain of email messages for which to search. Type a complete domain name. A non-prefix wildcard is supported. For example, gm*ail.com.
       name: source_domain
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of email messages to display. Maximum is 1,000 email messages. If not specified, default is 20.
-      isArray: false
+    - description: The maximum number of email messages to display. Maximum is 1,000 email messages. If not specified, default is 20.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The URL for the results page if the total number of email messages in a previous request exceeds the specified limit. When the maximum limit has been exceeded, a URL is specified in the response. To retrieve the remaining email messages, use the URL from the response.
-      isArray: false
+    - description: The URL for the results page if the total number of email messages in a previous request exceeds the specified limit. When the maximum limit has been exceeded, a URL is specified in the response. To retrieve the remaining email messages, use the URL from the response.
       name: next_link
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for email messages in mailboxes, matching search criteria.
-    execution: false
     name: trendmicro-cas-email-sweep
     outputs:
     - contextPath: TrendMicroCAS.EmailSweep.next_link
@@ -430,7 +345,6 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: |-
         Action to take on a user's account. Can be: 
         "ACCOUNT_DISABLE": Disables a user's account.
@@ -438,26 +352,20 @@ script:
         "ACCOUNT_RESET_PASSWORD": Requests to reset the password for a user's account.
         NOTE: Before using ACCOUNT_ENABLE_MFA and ACCOUNT_RESET_PASSWORD, you need to assign the Administrator role to Cloud App Security.
         For more information, see https://docs.trendmicro.com/en-us/enterprise/cloud-app-security-integration-api-online-help/supported-cloud-app-_001/threat-mitigation-ap/take-actions-on-user/assigning-the-user-a.aspx.
-      isArray: false
       name: action_type
       predefined:
       - ACCOUNT_DISABLE
       - ACCOUNT_ENABLE_MFA
       - ACCOUNT_RESET_PASSWORD
       required: true
-      secret: false
-    - default: false
-      description: Comma separated email addresses to take action.
+    - description: Comma separated email addresses to take action.
       isArray: true
       name: account_user_email
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Takes action on a batch of specified user accounts, such as disabling users accounts, 
       requesting multi-factor authentication, and requesting to reset a password for users accounts.
       Relevant for office365 exchange only.
-    execution: false
     name: trendmicro-cas-user-take-action
     outputs:
     - contextPath: TrendMicroCAS.UserTakeAction.action_type
@@ -474,52 +382,35 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: |-
         The action to take on an email message, such as delete or quarantine. Can be:
         "MAIL_DELETE", or "MAIL_QUARANTINE".
-      isArray: false
       name: action_type
       predefined:
       - MAIL_DELETE
       - MAIL_QUARANTINE
       required: true
-      secret: false
-    - default: false
-      description: The email address of an email message for which to take action.
-      isArray: false
+    - description: The email address of an email message for which to take action.
       name: mailbox
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The Internet message ID of an email message for which to take action. 
         To retrieve the ID, use the "trendmicro-cas-email-sweep" command.
-      isArray: false
       name: mail_message_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of an email message for which to take action.
         To retrieve the ID, use the "trendmicro-cas-email-sweep" command.
-      isArray: false
       name: mail_unique_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The time and date when an email message sent
         To retrieve the information, use the "trendmicro-cas-email-sweep" command.
-      isArray: false
       name: mail_message_delivery_time
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Takes action on a batch of specified email messages, such as deleting and quarantining email messages.
       Relevant for office365 exchange only.
-    execution: false
     name: trendmicro-cas-email-take-action
     outputs:
     - contextPath: TrendMicroCAS.EmailTakeAction.action_type
@@ -535,37 +426,19 @@ script:
       description: Randomly generated ID to trace the request.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the action taken. Retrieve the ID from the "trendmicro-cas-email-take-action" command.
-      isArray: false
+    - description: The unique ID of the action taken. Retrieve the ID from the "trendmicro-cas-email-take-action" command.
       name: batch_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The start time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using start, end is required.
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The end time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using end, start is required. Ensure the end time is not earlier than the start time.
-      isArray: false
       name: end
-      required: false
-      secret: false
-    - default: false
-      description: The Maximum number of action results to display. Default (and maximum) is 500.
-      isArray: false
+    - description: The Maximum number of action results to display. Default (and maximum) is 500.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Queries the results of actions taken on a user's account.
-    execution: false
     name: trendmicro-cas-user-action-result-query
     outputs:
     - contextPath: TrendMicroCAS.UserActionResult.account_provider
@@ -602,37 +475,19 @@ script:
       description: 'The status of the action. Can be: "Created": The API request was received. "Executing": The action is executing. "Success": The action was successful. "Skipped": The action was skipped. "Failed": The action failed.'
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the action taken. Retrieve the ID from the "trendmicro-cas-email-take-action" command.
-      isArray: false
+    - description: The unique ID of the action taken. Retrieve the ID from the "trendmicro-cas-email-take-action" command.
       name: batch_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The start time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using start, end is required.         
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The end time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using end, start is required. Ensure the end time is not earlier than the start time.
-      isArray: false
       name: end
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of action results to display. Default (and maximum) is 500.
-      isArray: false
+    - description: The maximum number of action results to display. Default (and maximum) is 500.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Queries the results of actions taken for email messages.
-    execution: false
     name: trendmicro-cas-email-action-result-query
     outputs:
     - contextPath: TrendMicroCAS.EmailActionResult.account_provider
@@ -677,9 +532,7 @@ script:
     - contextPath: TrendMicroCAS.EmailActionResult.mailbox
       description: The email address of an email message on which an action was taken.
       type: String
-  - deprecated: false
-    description: Retrieves all blocked senders, URLs, and SHA-1 hash values that have been configured to quarantine Exchange Online email messages.
-    execution: false
+  - description: Retrieves all blocked senders, URLs, and SHA-1 hash values that have been configured to quarantine Exchange Online email messages.
     name: trendmicro-cas-blocked-lists-get
     outputs:
     - contextPath: TrendMicroCAS.BlockedList.filehashes
@@ -693,41 +546,27 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: |-
         The type of the action to take. Can be: "create", to add to the blocked lists, or
         "delete", to remove from the blocked lists.
-      isArray: false
       name: action_type
       predefined:
       - create
       - delete
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma separated email addresses from which the email message is sent to update.        
       isArray: true
       name: senders
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma separated URLs included in an email message to update.        
       isArray: true
       name: urls
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma separated SHA-1 hash values of an email attachment to update.        
       isArray: true
       name: filehashes
-      required: false
-      secret: false
-    deprecated: false
     description: Adds or removes senders, URLs, SHA-1 hash values to or from blocked lists. You must specify one of senders, urls, or filehashes.
-    execution: false
     name: trendmicro-cas-blocked-lists-update
     outputs:
     - contextPath: TrendMicroCAS.BlockedList.filehashes
@@ -739,11 +578,8 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

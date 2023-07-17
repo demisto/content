@@ -1,10 +1,8 @@
 args:
 - default: true
   description: The name of the job to configure.
-  isArray: false
   name: job_name
   required: true
-  secret: false
 commonfields:
   id: JobCreator
   version: -1
@@ -16,7 +14,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - configuration
 - Content Management

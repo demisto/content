@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 from functools import partial
 from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 import dateutil.parser
-import demistomock as demisto
 import requests
 import urllib3
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from funcy import get_in, identity, set_in
 

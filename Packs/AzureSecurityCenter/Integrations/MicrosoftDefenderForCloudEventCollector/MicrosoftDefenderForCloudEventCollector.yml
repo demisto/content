@@ -6,9 +6,9 @@ configuration:
 - defaultvalue: https://management.azure.com/
   display: Microsoft Azure Management URL
   name: server_url
-  required: false
   type: 0
   section: Connect
+  required: false
 - displaypassword: Client ID
   name: client_id
   required: true
@@ -32,17 +32,17 @@ configuration:
   additionalinfo: Microsoft Defender for Cloud Client Secret
 - displaypassword: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  required: false
   type: 14
   section: Connect
+  required: false
 - displaypassword: Subscription ID to use
   name: sub_id
   required: true
@@ -53,19 +53,19 @@ configuration:
   name: first_fetch
   type: 0
   defaultvalue: 3 days
-  required: false
   section: Collect
   additionalinfo: First time to start fetching alerts from.
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Collect
+  required: false
 description: XSIAM collector for Microsoft Defender for Cloud alerts.
 display: Microsoft Defender for Cloud Event Collector
 name: Microsoft Defender for Cloud Event Collector
@@ -75,21 +75,14 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
+    - description: Maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Lists alerts for the subscription according to the specified filters.
-    execution: false
     name: ms-defender-for-cloud-get-events
     outputs:
     - contextPath: MicrosoftDefenderForCloud.Alert.AlertDisplayName
@@ -109,7 +102,6 @@ script:
       type: string
   dockerimage: demisto/crypto:1.0.0.61689
   isfetchevents: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -19,33 +19,33 @@ configuration:
 - defaultvalue: 7 days
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: first_fetch_time
-  required: false
   type: 0
+  required: false
 - defaultvalue: '0'
   display: Fetch only Detections with greater/equal Certainty score
   name: c_score_gte
-  required: false
   type: 0
+  required: false
 - defaultvalue: '0'
   display: Fetch Detections with a threat score greater than or equal to
   name: t_score_gte
-  required: false
   type: 0
+  required: false
 - display: 'Fetch only Detections with matching State '
   name: state
   defaultvalue: all
   type: 15
-  required: false
   options:
   - all
   - ignored
   - active
   - inactive
+  required: false
 - defaultvalue: '20'
   display: The number of results returned in each fetch
   name: fetch_size
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8

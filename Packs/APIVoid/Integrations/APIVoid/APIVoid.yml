@@ -11,18 +11,18 @@ description: APIVoid wraps up a number of services such as ipvoid & urlvoid
 configuration:
 - name: credentials
   type: 9
-  required: false
   displaypassword: API KEY
   hiddenusername: true
   section: Connect
+  required: false
 - display: API KEY
   name: apikey
   defaultvalue: ''
   type: 4
-  required: false
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Good Reputation (Percentage)
   name: good
   defaultvalue: '10'
@@ -57,15 +57,15 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: C - Fairly reliable
   name: integrationReliability
   display: 'Source Reliability'
@@ -77,14 +77,13 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   section: Collect
+  required: false
 - defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
-  required: false
   type: 17
   options:
   - never
@@ -93,13 +92,14 @@ configuration:
   - suddenDeath
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   section: Collect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -1639,7 +1639,7 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   subtype: python3
 fromversion: 5.0.0

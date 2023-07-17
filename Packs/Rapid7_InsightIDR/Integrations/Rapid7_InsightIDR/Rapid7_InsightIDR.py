@@ -753,7 +753,7 @@ def main():
 
     params = demisto.params()
     region = params.get('region', {})
-    api_key = params.get('apiKey', {})
+    api_key = params.get('apikey_creds', {}).get('password') or params.get('apiKey', {})
     max_fetch = params.get('max_fetch', '50')
 
     base_url = f'https://{region}.api.insight.rapid7.com/'

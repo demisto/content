@@ -1601,6 +1601,13 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 | script_id | Script ID. | Required | 
 | output_directory | Output directory. | Required | 
 | agent_ids | A comma-separated list of agent IDs on which the script should run. | Required | 
+| singularity_xdr_Keyword | Singularityxdr keyword. | Optional |
+| singularity_xdr_Url | Singularityxdr keyword. | Optional |
+| api_key | Api key. | Optional |
+| input_params | Input params. | Optional |
+| password | Password. | Optional |
+| script_runtime_timeout_seconds | Script runtime timout in seconds for current execution. | Optional |
+| requires_approval | If set to true, execution will require approval. | Optional |
 
 #### Context Output
 

@@ -14,41 +14,39 @@ configuration:
   type: 9
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - display: Fetch notifications incidents
   name: fetch_notifications
-  required: false
   type: 8
+  required: false
 - display: Fetch behviors incidents
   name: fetch_behviors
-  required: false
   type: 8
+  required: false
 description: CounterTack empowers endpoint security teams to assure endpoint protection for Identifying Cyber Threats. Integrating a predictive endpoint protection platform
 display: CounterTack
 name: CounterTack
 script:
   commands:
-  - deprecated: false
-    description: Returns information for endpoints.
-    execution: false
+  - description: Returns information for endpoints.
     name: countertack-get-endpoints
     outputs:
     - contextPath: CounterTack.Endpoint.IsQuarantined
@@ -180,9 +178,7 @@ script:
     - contextPath: Endpoint.ID
       description: The ID of the Endpoints.
       type: string
-  - deprecated: false
-    description: Returns information for all behaviors.
-    execution: false
+  - description: Returns information for all behaviors.
     name: countertack-get-behaviors
     outputs:
     - contextPath: CounterTack.Behavior.MaxImpact
@@ -222,15 +218,10 @@ script:
       description: The time that the behavior was last seen.
       type: date
   - arguments:
-    - default: false
-      description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints` command.
-      isArray: false
+    - description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints` command.
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Get information on specific endpoint
-    execution: false
     name: countertack-get-endpoint
     outputs:
     - contextPath: CounterTack.Endpoint.MaxImpact
@@ -357,15 +348,10 @@ script:
       description: The version of the endpoint sensor.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the behavior.
-      isArray: false
+    - description: The ID of the behavior.
       name: behavior_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets information of a given behavior.
-    execution: false
     name: countertack-get-behavior
     outputs:
     - contextPath: CounterTack.Behavior.MaxImpact
@@ -408,15 +394,10 @@ script:
       description: The time that the behavior was last seen.
       type: date
   - arguments:
-    - default: false
-      description: The ID of the endpoint to get tags for.
-      isArray: false
+    - description: The ID of the endpoint to get tags for.
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the tags of a given endpoint.
-    execution: false
     name: countertack-get-endpoint-tags
     outputs:
     - contextPath: CounterTack.Endpoint.Tags
@@ -426,21 +407,14 @@ script:
       description: The ID of the endpoints.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the endpoint. To get the "*endpoint_id*", run the `get-endpoints` command.
-      isArray: false
+    - description: The ID of the endpoint. To get the "*endpoint_id*", run the `get-endpoints` command.
       name: endpoint_id
       required: true
-      secret: false
-    - default: false
-      description: A CSV list of tags you want to add to the endpoint, for example, "test1,test2".
+    - description: A CSV list of tags you want to add to the endpoint, for example, "test1,test2".
       isArray: true
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Adds tags to a given endpoint.
-    execution: false
     name: countertack-add-tags
     outputs:
     - contextPath: CounterTack.Endpoint.EndpointId
@@ -450,21 +424,14 @@ script:
       description: The tags that were added to the endpoint.
       type: string
   - arguments:
-    - default: false
-      description: The tags to be deleted from specified endpoint. To delete more then one, separate the tags with a comma. (e.g test1,test2)
+    - description: The tags to be deleted from specified endpoint. To delete more then one, separate the tags with a comma. (e.g test1,test2)
       isArray: true
       name: tags
       required: true
-      secret: false
-    - default: false
-      description: The endpoint ID. Get the ID from the "get-endpoints" command
-      isArray: false
+    - description: The endpoint ID. Get the ID from the "get-endpoints" command
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the supplied tags from a given endpoint.
-    execution: false
     name: countertack-delete-tags
     outputs:
     - contextPath: CounterTack.Endpoint.Id
@@ -474,21 +441,14 @@ script:
       description: The tags of the specified endpoint
       type: string
   - arguments:
-    - default: false
-      description: The ID of the behavior.
-      isArray: false
+    - description: The ID of the behavior.
       name: behaviour_id
       required: true
-      secret: false
-    - default: false
-      description: A CSV list of tags to add to the behavior, for example, "test1,test2".
+    - description: A CSV list of tags to add to the behavior, for example, "test1,test2".
       isArray: true
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Adds tags to a given behavior.
-    execution: false
     name: countertack-add-behavior-tags
     outputs:
     - contextPath: CounterTack.Behavior.Id
@@ -498,21 +458,14 @@ script:
       description: The tags of the behavior.
       type: string
   - arguments:
-    - default: false
-      description: The behavior ID
-      isArray: false
+    - description: The behavior ID
       name: behaviour_id
       required: true
-      secret: false
-    - default: false
-      description: Tags to delete from a behavior. To delete more then one, separate the tags with a comma. (e.g test1,test2)
+    - description: Tags to delete from a behavior. To delete more then one, separate the tags with a comma. (e.g test1,test2)
       isArray: true
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the supplied tags from a given behavior.
-    execution: false
     name: countertack-delete-behavior-tags
     outputs:
     - contextPath: CounterTack.Behavior.Id
@@ -522,15 +475,10 @@ script:
       description: The tags of the behavior.
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the endpoint to quarantine.
-      isArray: false
+    - description: The ID of the endpoint to quarantine.
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Quarantines a given endpoint.
-    execution: false
     name: countertack-endpoint-quarantine
     outputs:
     - contextPath: CounterTack.Endpoint.Id
@@ -540,15 +488,10 @@ script:
       description: Is the endpoint currently quarantined.
       type: boolean
   - arguments:
-    - default: false
-      description: The ID of the endpoint to remove from quarantine.
-      isArray: false
+    - description: The ID of the endpoint to remove from quarantine.
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Removes a given endpoint from quarantine.
-    execution: false
     name: countertack-disable-quarantine
     outputs:
     - contextPath: CounterTack.Endpoint.Id
@@ -558,21 +501,14 @@ script:
       description: Is the endpoint is currently quarantined.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the endpoint to extract a file from.
-      isArray: false
+    - description: The ID of the endpoint to extract a file from.
       name: endpoint_id
       required: true
-      secret: false
-    - default: false
-      description: The path of the file to extract, for example, "C:\\test1.txt".
+    - description: The path of the file to extract, for example, "C:\\test1.txt".
       isArray: true
       name: file_path
       required: true
-      secret: false
-    deprecated: false
     description: Extracts a file from given endpoint.
-    execution: false
     name: countertack-extract-file
     outputs:
     - contextPath: CounterTack.File.CommandArg.contents
@@ -618,25 +554,15 @@ script:
       description: The ID of the source this command is being sent to.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the endpoint to delete a file from.
-      isArray: false
+    - description: The ID of the endpoint to delete a file from.
       name: endpoint_id
       required: true
-      secret: false
-    - default: false
-      description: The path of  the file to delete.
-      isArray: false
+    - description: The path of  the file to delete.
       name: file_path
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a file from the given endpoint.
-    execution: false
     name: countertack-delete-file
-  - deprecated: false
-    description: Gets all extracted files for all endpoints.
-    execution: false
+  - description: Gets all extracted files for all endpoints.
     name: countertack-get-all-files
     outputs:
     - contextPath: CounterTack.File.Size
@@ -703,15 +629,10 @@ script:
       description: The size of the extracted file (in bytes).
       type: number
   - arguments:
-    - default: false
-      description: The ID of the endpoint. To get the endpoint_id, run the `get-endpoints` command.
-      isArray: false
+    - description: The ID of the endpoint. To get the endpoint_id, run the `get-endpoints` command.
       name: endpoint_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns all extracted files from a given endpoint.
-    execution: false
     name: countertack-get-endpoint-files
     outputs:
     - contextPath: CounterTack.File.Id
@@ -775,15 +696,10 @@ script:
       description: The size of the extracted file (bytes).
       type: number
   - arguments:
-    - default: false
-      description: The ID of the requested file. To get the "file_id"m run the `get-all-files` command.
-      isArray: false
+    - description: The ID of the requested file. To get the "file_id"m run the `get-all-files` command.
       name: file_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the information of a given file.
-    execution: false
     name: countertack-get-file-information
     outputs:
     - contextPath: CounterTack.File.Size
@@ -850,15 +766,10 @@ script:
       description: The size of the extracted file (in bytes).
       type: number
   - arguments:
-    - default: false
-      description: The ID of the extracted file. To get the "file_id", run the `get-all-files` command.
-      isArray: false
+    - description: The ID of the extracted file. To get the "file_id", run the `get-all-files` command.
       name: file_id
       required: true
-      secret: false
-    deprecated: false
     description: Downloads an extracted file in ZIP format. The password to unlock the ZIP file is `sentinel`.
-    execution: false
     name: countertack-download-file
     outputs:
     - contextPath: File.Size
@@ -892,15 +803,10 @@ script:
       description: The extension of the file (.zip).
       type: string
   - arguments:
-    - default: false
-      description: The CQL expression to be used for the search, for example, "events.event_type=basic".
-      isArray: false
+    - description: The CQL expression to be used for the search, for example, "events.event_type=basic".
       name: expression
       required: true
-      secret: false
-    deprecated: false
     description: Searches for events, using CQL expression.
-    execution: false
     name: countertack-search-events
     outputs:
     - contextPath: CounterTack.Event.SourceProcessTimeStarted
@@ -994,27 +900,14 @@ script:
       description: The user associated with the process
       type: string
   - arguments:
-    - default: false
-      description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints` command.
-      isArray: false
+    - description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints` command.
       name: endpoint_id
       required: true
-      secret: false
-    - default: false
-      description: The process PID. To get the "process_id", run the `search-events` command.
-      isArray: false
+    - description: The process PID. To get the "process_id", run the `search-events` command.
       name: process_id
-      required: false
-      secret: false
-    - default: false
-      description: The name of the process. To get the "process_name", run the `search-events` command.
-      isArray: false
+    - description: The name of the process. To get the "process_name", run the `search-events` command.
       name: process_name
-      required: false
-      secret: false
-    deprecated: false
     description: Terminates all instances of the process identified in the command. Processes can be identified by the PID or process name.
-    execution: false
     name: countertack-kill-process
     outputs:
     - contextPath: CounterTack.Endpoint.EndpointIds
@@ -1048,15 +941,10 @@ script:
       description: The time at which the client requested the command.
       type: date
   - arguments:
-    - default: false
-      description: The CQL expression to be used for the search (e.g hashes.type = md5)
-      isArray: false
+    - description: The CQL expression to be used for the search (e.g hashes.type = md5)
       name: expression
       required: true
-      secret: false
-    deprecated: false
     description: Searches for hashes using CQL expressions (Contextual Query Language) to represent queries.
-    execution: false
     name: countertack-search-hashes
     outputs:
     - contextPath: CounterTack.Hash.AvCoverage
@@ -1084,15 +972,10 @@ script:
       description: The ssdeep of the file.
       type: string
   - arguments:
-    - default: false
-      description: The CQL expression to be used for the search. (e.g endpoints.status=on)
-      isArray: false
+    - description: The CQL expression to be used for the search. (e.g endpoints.status=on)
       name: expression
       required: true
-      secret: false
-    deprecated: false
     description: Request for endpoints search using CQL expression (Contextual Query Language) to represent queries.
-    execution: false
     name: countertack-search-endpoints
     outputs:
     - contextPath: CounterTack.Endpoint.Memory
@@ -1213,15 +1096,10 @@ script:
       description: The ID of the Endpoints.
       type: String
   - arguments:
-    - default: false
-      description: The CQL expression to be used for the search(e.g behaviors.event_count<60)
-      isArray: false
+    - description: The CQL expression to be used for the search(e.g behaviors.event_count<60)
       name: expression
       required: true
-      secret: false
-    deprecated: false
     description: Request for behaviors search using CQL expression (Contextual Query Language) to represent queries.
-    execution: false
     name: countertack-search-behaviors
     outputs:
     - contextPath: CounterTack.Behavior.FirstEventId
@@ -1264,11 +1142,10 @@ script:
       description: The threat level of the behavior (LOW, MEDIUM, HIGH, CRITICAL).
       type: String
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - no tests
 fromversion: 5.0.0

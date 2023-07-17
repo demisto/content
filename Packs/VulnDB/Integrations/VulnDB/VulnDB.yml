@@ -18,12 +18,12 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -36,8 +36,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 description: Lists all of the security vulnerabilities for various products (OS,Applications) etc)
 display: VulnDB
 name: VulnDB
@@ -46,13 +46,9 @@ script:
   - arguments:
     - default: true
       description: ID of the vulnerability for which to return information.
-      isArray: false
       name: vuln_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns full details about a specific vulnerability.
-    execution: false
     name: vulndb-get-vuln-by-id
     outputs:
     - contextPath: VulnDB.Vulnerability.ID
@@ -140,28 +136,14 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
-    - default: false
-      description: specific vendor id
-      isArray: false
+    - description: specific vendor id
       name: vendor_id
-      required: false
-      secret: false
-    - default: false
-      description: specific vendor name (only human readable)
-      isArray: false
+    - description: specific vendor name (only human readable)
       name: vendor_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all, or specific, vendor details to include vendor name and ID.
-    execution: false
     name: vulndb-get-vendor
     outputs:
     - contextPath: VulnDB.Results.Id
@@ -177,28 +159,14 @@ script:
       description: Result vendor URL (human readable).
       type: string
   - arguments:
-    - default: false
-      description: Vendor ID.
-      isArray: false
+    - description: Vendor ID.
       name: vendor_id
-      required: false
-      secret: false
-    - default: false
-      description: Vendor name.
-      isArray: false
+    - description: Vendor name.
       name: vendor_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of versions by product name or ID.
-    execution: false
     name: vulndb-get-product
     outputs:
     - contextPath: VulnDB.Results.Id
@@ -208,28 +176,14 @@ script:
       description: Result name.
       type: string
   - arguments:
-    - default: false
-      description: Product name.
-      isArray: false
+    - description: Product name.
       name: product_name
-      required: false
-      secret: false
-    - default: false
-      description: Product ID.
-      isArray: false
+    - description: Product ID.
       name: product_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the version of the specified product.
-    execution: false
     name: vulndb-get-version
     outputs:
     - contextPath: VulnDB.Results.Id
@@ -239,34 +193,16 @@ script:
       description: Version name.
       type: Unknown
   - arguments:
-    - default: false
-      description: Start date for which to return vulnerabilities.
-      isArray: false
+    - description: Start date for which to return vulnerabilities.
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: End date for which to return vulnerabilities.
-      isArray: false
+    - description: End date for which to return vulnerabilities.
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      description: Number of previous hours for which to return vulnerabilities.
-      isArray: false
+    - description: Number of previous hours for which to return vulnerabilities.
       name: hours_ago
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns recent vulnerabilities, by date or number of hours.
-    execution: false
     name: vulndb-get-updates-by-dates-or-hours
     outputs:
     - contextPath: VulnDB.Vulnerability.ID
@@ -354,28 +290,16 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
-    - default: false
-      description: Vendor name.
-      isArray: false
+    - description: Vendor name.
       name: vendor_name
       required: true
-      secret: false
-    - default: false
-      description: Product name.
-      isArray: false
+    - description: Product name.
       name: product_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns full details about a specific vulnerability, by vendor name and product name.
-    execution: false
     name: vulndb-get-vuln-by-vendor-and-product-name
     outputs:
     - contextPath: VulnDB.Vulnerability.ID
@@ -463,28 +387,16 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
-    - default: false
-      description: Vendor ID.
-      isArray: false
+    - description: Vendor ID.
       name: vendor_id
       required: true
-      secret: false
-    - default: false
-      description: Product ID.
-      isArray: false
+    - description: Product ID.
       name: product_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns full details about a specific vulnerability, by vendor ID and product ID.
-    execution: false
     name: vulndb-get-vuln-by-vendor-and-product-id
     outputs:
     - contextPath: VulnDB.Vulnerability.ID
@@ -572,22 +484,13 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
-    - default: false
-      description: Vendor ID.
-      isArray: false
+    - description: Vendor ID.
       name: vendor_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns full details about vulnerabilities, by vendor ID.
-    execution: false
     name: vulndb-get-vuln-by-vendor-id
     outputs:
     - contextPath: VulnDB.Vulnerability.ID
@@ -675,22 +578,13 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
-    - default: false
-      description: Product ID.
-      isArray: false
+    - description: Product ID.
       name: product_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns full details about vulnerabilities, by product ID.
-    execution: false
     name: vulndb-get-vuln-by-product-id
     outputs:
     - contextPath: VulnDB.Vulnerability.ID
@@ -780,20 +674,12 @@ script:
   - arguments:
     - default: true
       description: CVE ID.
-      isArray: false
       name: cve_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns full details about vulnerabilities, by CVE ID.
-    execution: false
     name: vulndb-get-vuln-by-cve-id
     outputs:
     - contextPath: VulnDB.Vulnerability.ID
@@ -881,21 +767,14 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
+    - description: Deprecated. Use the `cve` argument instead.
+      name: cve_id
     - default: true
       description: CVE ID.
-      isArray: false
-      name: cve_id
-      required: true
-      secret: false
-    - default: false
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
+      name: cve
+    - description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
       name: max_size
-      required: false
-      secret: false
-    deprecated: false
     description: Returns CVE information by CVE ID.
-    execution: false
     name: cve
     outputs:
     - contextPath: CVE.ID
@@ -925,11 +804,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3
