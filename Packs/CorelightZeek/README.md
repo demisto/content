@@ -13,7 +13,7 @@ You need to configure Corelight Sensor to forward Zeek Syslog messages.
 4. Under **Performance Monitoring**, enable the **Reporting to Syslog (UDP-Only)** option and set a time interval (e.g., 1min).
 5. Under **Performance Monitoring**, enable the **Reporting Through Zeek Log Streams** option and set a time interval (e.g., 1min).
 
-* Pay attention: Log parsing support is under the a assumption that a UTC +0000 timestamp format is being used.
+* Pay attention: Timestamp parsing support is under the a assumption that a UTC +0000 format is being used.
 
 ## Collect Events from Vendor
 
