@@ -213,8 +213,7 @@ def prepare_params_for_drive_changes_list(args: Dict[str, str]) -> Dict[str, Any
     return GSuiteClient.remove_empty_entities(params)
 
 
-def prepare_drive_changes_output(response: Dict[str, Any], drive_id: str, user_id: str) -> \
-    Tuple[Dict[str, Any], List[Dict[str, Optional[Any]]], List[Dict[str, Optional[Any]]]]:
+def prepare_drive_changes_output(response: Dict[str, Any], drive_id: str, user_id: str) -> Tuple[Dict[str, Any], List[Dict[str, Optional[Any]]], List[Dict[str, Optional[Any]]]]:
     """
     Prepares context output and human readable for google-drive-changes-list command.
 
@@ -626,8 +625,7 @@ def prepare_args_for_fetch_incidents(last_fetch: int, args: Dict[str, Any]) -> D
 
     :return: Prepared request body for fetch-incident.
     """
-    if (args.get('drive_item_search_value') and not args.get('drive_item_search_field')) or (
-        not args.get('drive_item_search_value') and args.get('drive_item_search_field')):
+    if (args.get('drive_item_search_value') and not args.get('drive_item_search_field')) or (not args.get('drive_item_search_value') and args.get('drive_item_search_field')):
         raise ValueError(MESSAGES['FETCH_INCIDENT_REQUIRED_ARGS'])
 
     action_detail_case_include = [action.upper() for action in args.get('action_detail_case_include', [])]
@@ -661,8 +659,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
     params['first_fetch_interval'], _ = parse_date_range(params.get('first_fetch', '10 minutes'), utc=True)
 
     # Check for depended required parameters.
-    if (params.get('drive_item_search_value') and not params.get('drive_item_search_field')) or (
-        not params.get('drive_item_search_value') and params.get('drive_item_search_field')):
+    if (params.get('drive_item_search_value') and not params.get('drive_item_search_field')) or (not params.get('drive_item_search_value') and params.get('drive_item_search_field')):
         raise ValueError(MESSAGES['FETCH_INCIDENT_REQUIRED_ARGS'])
 
     params['max_fetch'] = GSuiteClient.validate_get_int(params.get('max_fetch', 10), limit=100,
@@ -1585,8 +1582,7 @@ def drive_activity_list_command(client: 'GSuiteClient', args: Dict[str, str]) ->
     )
 
 
-def fetch_incidents(client: 'GSuiteClient', last_run: Dict, params: Dict, is_test: bool = False) -> \
-    Tuple[Optional[list], Optional[dict]]:
+def fetch_incidents(client: 'GSuiteClient', last_run: Dict, params: Dict, is_test: bool = False) -> Tuple[Optional[list], Optional[dict]]:
     """
     Prepares incidents from past activity in Google Drive.
 
