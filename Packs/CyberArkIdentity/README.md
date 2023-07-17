@@ -20,7 +20,7 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-* Pay attention: Log parsing is currently supported for the **WhenOccurred** with Epoch string in it.
+* Pay attention: Timestamp parsing is currently supported for the **WhenOccurred** field with Epoch string in it.
 
 ## Commands
 You can execute these commands from the Cortex XSIAM Alerts War Room as part of an automation, or in a playbook.
