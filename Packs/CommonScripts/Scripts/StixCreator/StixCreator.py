@@ -90,10 +90,12 @@ def search_relationship_indicators(value: str) -> list[dict]:
 
     query = ""
     for rel in relationships:
-        if rel.get("entityA", "").lower() == value.lower():
-            query += rel.get("entityB", "") or ""
+        entity_a = rel.get("entityA", "")
+        entity_b = rel.get("entityB", "")
+        if entity_a.lower() == value.lower():
+            query += f'"{entity_b}"'
         else:
-            query += rel.get("entityA", "") or ""
+            query += f'"{entity_a}"'
         query += " or "
     demisto_indicators = demisto.searchIndicators(query=query).get("iocs", [])
     return demisto_indicators
