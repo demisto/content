@@ -53,13 +53,16 @@ def main():
 
     left_list = convert_all_inputs_to_list_of_strings(leftArg)
     right_list = convert_all_inputs_to_list_of_strings(rightArg)
+    #left_list = argToList(str(leftArg))
+    #right_list = argToList(str(rightArg))
 
-    res = common_elements(leftArg, rightArg)
+    #res = common_elements(leftArg, rightArg)
 
     for lval in left_list:
 
         in_range = any(lval.lower() in r.lower() for r in right_list)
         demisto.results(in_range)
+
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
