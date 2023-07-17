@@ -138,8 +138,8 @@ def test_endpoint_command(requests_mock):
                                         'IsIsolated': 'No'}]}
 
     results = outputs[0].to_context()
-    for key, _val in results.get("EntryContext").items():
-        assert results.get("EntryContext")[key] == get_endpoints_response[key]
+    for key, value in results.get("EntryContext", {}).items():
+        assert get_endpoints_response[key] == value
     assert results.get("EntryContext") == get_endpoints_response
 
 
