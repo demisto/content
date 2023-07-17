@@ -305,5 +305,35 @@
             "type": "IP",
             "value": "0.0.0.0"
         }
+    ],
+    "IN_DATA_5": [
+        {
+            "name": "indicator-of",
+            "reverseName": "indicated-by",
+            "type": "IndicatorToIndicator",
+            "entityA": "0.0.0.0",
+            "entityAFamily": "Indicator",
+            "entityAType": "IP",
+            "entityB": "Gibberish Panda",
+            "entityBFamily": "Indicator",
+            "entityBType": "Threat Actor",
+            "fields": {
+            }
+        }
+    ],
+    "IN_DATA_6": [
+        {
+            "name": "attributed-to",
+            "reverseName": "attributed-by",
+            "type": "IndicatorToIndicator",
+            "entityA": "Gibberish Panda",
+            "entityAFamily": "Indicator",
+            "entityAType": "Threat Actor",
+            "entityB": "Gamaredon Group",
+            "entityBFamily": "Indicator",
+            "entityBType": "Intrusion Set",
+            "fields": {
+            }
+        }
     ]
 }
