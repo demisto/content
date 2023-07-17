@@ -17,48 +17,51 @@ https://unit42.paloaltonetworks.com/fireeye-solarstorm-sunburst/3/
 https://www.splunk.com/en_us/blog/security/sunburst-backdoor-detections-in-splunk.html
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Indicators - Generic v2
+
 * Panorama search thread-ids in threat logs
-* Panorama search SolarWinds App-IDs traffic logs
 * CVE Enrichment - Generic v2
+* SolarStorm Activity Behavior Hunting playbook
+* Palo Alto Networks - Hunting And Threat Detection
 * Search Endpoint by CVE - Generic
 * Office 365 and Azure Configuration Analysis
-* Block IP - Generic v2
-* SolarStorm Activity Behavior Hunting playbook
 * Isolate Endpoint - Generic V2
+* Block IP - Generic v3
+* Block Indicators - Generic v2
 * Search Endpoints By Hash - Generic V2
-* Palo Alto Networks - Hunting And Threat Detection
 * Office 365 and Azure Hunting
+* Panorama search SolarWinds App-IDs traffic logs
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* UnEscapeIPs
-* CreateIndicatorsFromSTIX
-* SearchIncidentsV2
-* FileCreateAndUpload
+
 * http
+* CreateIndicatorsFromSTIX
 * UnEscapeURLs
+* UnEscapeIPs
+* FileCreateAndUpload
+* SearchIncidentsV2
 
 ### Commands
-* expanse-list-risk-rules
-* createNewIndicator
-* expanse-get-risky-flows
-* expanse-get-issues
+
 * appendIndicatorField
-* extractIndicators
 * closeInvestigation
+* extractIndicators
+* expanse-get-issues
+* createNewIndicator
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ThreatIDs | Threat IDs to hunt through NGFW Threat Logs. | 86246,86237,34801,39934,58049,38399,55378,37582,36709,37781,38388,56269 | Optional |
 | IsolateEndpointAutomatically | Whether to automatically isolate endpoints, or opt for manual user approval. True means isolation will be done automatically. | False | Optional |
 | BlockIndicatorsAutomatically | Whether to automatically indicators involved with SolarStorm. | False | Optional |
 | CVEs | CVEs related to SUNBURST and SolarStorm. | CVE-2020-14005,CVE-2020-13169 | Optional |
@@ -72,9 +75,12 @@ This playbook does not use any integrations.
 | Mialboxes_Retrieve_Limit | The maximum number of results to retrieve. Default is 10. | 10 | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![SolarStorm and SUNBURST Hunting and Response Playbook](../doc_files/SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_6.png)
+
+![SolarStorm and SUNBURST Hunting and Response Playbook](../doc_files/SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook.png)
