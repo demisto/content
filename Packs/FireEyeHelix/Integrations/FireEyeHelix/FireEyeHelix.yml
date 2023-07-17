@@ -18,40 +18,48 @@ configuration:
   type: 0
   section: Connect
   hidden: true
+  required: false
 - display: API Token
   name: token
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Customer ID
   name: h_id_creds
   type: 9
   section: Connect
   displaypassword: API Token
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   type: 0
   section: Collect
   defaultvalue: 3 days
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - advanced: true
   display: Use system proxy settings
   name: proxy
   section: Connect
   type: 8
 
+  required: false
 description: FireEye Helix is a security operations platform. FireEye Helix integrates security tools and augments them with next-generation SIEM, orchestration and threat intelligence tools such as alert management, search, analysis, investigations and reporting.
 display: FireEye Helix
 name: FireEyeHelix

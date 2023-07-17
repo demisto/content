@@ -20,12 +20,15 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 30 days
   display: How much time before the first fetch to retrieve incidents
   name: first_fetch
@@ -37,12 +40,14 @@ configuration:
   - 90 days
   type: 15
   hidden: false
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   additionalinfo: The maximum number of incidents to fetch per sub-category.
   hidden: false
+  required: false
 description: DeCYFIR API's provides External Threat Landscape Management insights.
 display: DeCYFIR
 name: decyfir
