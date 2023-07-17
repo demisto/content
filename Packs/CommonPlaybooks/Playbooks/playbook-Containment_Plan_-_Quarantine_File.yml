@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1145
+          "y": 1365
         }
       }
     note: false
@@ -202,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 970
+          "y": 1150
         }
       }
     note: false
@@ -295,7 +295,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "9"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -333,16 +333,54 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7e2c6273-86db-4fdd-8165-79a451736b14
+    type: regular
+    task:
+      id: 7e2c6273-86db-4fdd-8165-79a451736b14
+      version: -1
+      name: Set Quarantine files on endpoints to the context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: QuarantinedFilesFromEndpoints
+      value:
+        complex:
+          root: Core.quarantineFiles
+          accessor: actionIds
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "13_2_#default#": 0.14,
-      "15_2_#default#": 0.23,
-      "15_9_yes": 0.65
+      "15_2_#default#": 0.23
     },
     "paper": {
       "dimensions": {
-        "height": 1140,
+        "height": 1360,
         "width": 380,
         "x": 450,
         "y": 70

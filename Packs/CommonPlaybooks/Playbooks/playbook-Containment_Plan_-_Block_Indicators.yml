@@ -206,17 +206,7 @@ tasks:
         simple: Demisto Remediation - Malicious URLs
       DomainToBlock:
         complex:
-          root: ListCompare.LeftOnly
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: ListCompare.LeftOnly
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.Domain
-                iscontext: true
+          root: inputs.Domain
       EmailToBlock:
         complex:
           root: DBotScore
@@ -265,38 +255,17 @@ tasks:
           - operator: uniq
       IP:
         complex:
-          root: ListCompare.LeftOnly
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: ListCompare.LeftOnly
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.IP
-                iscontext: true
-          transformers:
-          - operator: uniq
+          root: inputs.IP
       InputEnrichment:
         simple: "False"
       MD5:
         complex:
-          root: ListCompare.LeftOnly
+          root: inputs.FileHash
           filters:
-          - - operator: in
-              left:
-                value:
-                  simple: ListCompare.LeftOnly
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.FileHash
-                iscontext: true
           - - operator: stringHasLength
               left:
                 value:
-                  simple: ListCompare.LeftOnly
+                  simple: inputs.FileHash
                 iscontext: true
               right:
                 value:
@@ -307,41 +276,19 @@ tasks:
         simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
-          root: ListCompare.LeftOnly
+          root: inputs.FileHash
           filters:
-          - - operator: in
-              left:
-                value:
-                  simple: ListCompare.LeftOnly
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.FileHash
-                iscontext: true
           - - operator: stringHasLength
               left:
                 value:
-                  simple: ListCompare.LeftOnly
+                  simple: inputs.FileHash
                 iscontext: true
               right:
                 value:
                   simple: "64"
       URL:
         complex:
-          root: ListCompare.LeftOnly
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: ListCompare.LeftOnly
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.URL
-                iscontext: true
-              ignorecase: true
-          transformers:
-          - operator: uniq
+          root: inputs.URL
       UserVerification:
         complex:
           root: inputs.UserVerification
@@ -435,7 +382,7 @@ tasks:
       - "2"
     scriptarguments:
       key:
-        simple: BlockedIndicators
+        simple: IndicatorsToBlock
       value:
         complex:
           root: IndicatorsToBlock
@@ -545,30 +492,6 @@ tasks:
             args:
               item:
                 value:
-                  simple: inputs.FilePath
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.IP
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.Domain
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.URL
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
                   simple: foundIncidents.CustomFields.initiatorsha256
                 iscontext: true
           - operator: SetIfEmpty
@@ -579,8 +502,8 @@ tasks:
                   simple: No Values
       right:
         complex:
-          root: parentIncidentContext
-          accessor: BlockedIndicators
+          root: parentIncidentContext.BlockedFilesHashCore.blocklist.added_hashes
+          accessor: fileHash
           transformers:
           - operator: SetIfEmpty
             args:
