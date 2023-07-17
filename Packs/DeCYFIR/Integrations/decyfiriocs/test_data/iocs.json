@@ -114,8 +114,193 @@
                 "type": "indicator",
                 "valid_from": "2023-07-11T06:21:42.110Z"
             },
-            "relationships": [
-            ],
+            "service": "DeCYFIR",
+            "type": "IP",
+            "value": "0.0.0.0"
+        }
+    ],
+    "IN_DATA_3": [
+        {
+            "value": "Gibberish Panda",
+            "name": "Gibberish Panda",
+            "type": "Threat Actor",
+            "score": 3,
+            "service": "DeCYFIR",
+            "rawJSON": {
+                "type": "threat-actor",
+                "spec_version": "2.1",
+                "id": "threat-actor--e69fedf8-2777-487f-8bff-b8f578e199ac",
+                "created": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "description": "China based threat actor.",
+                "aliases": [
+                    "Gibberish Panda"
+                ],
+                "labels": [
+                    {
+                        "origin-of-country": "China",
+                        "target-technologies": [
+                            "Office Suites Software",
+                            "Web Application",
+                            "Operating System"
+                        ],
+                        "target-industries": [
+                            "Software",
+                            "IT Services"
+                        ],
+                        "target-countries": [
+                        ]
+                    }
+                ],
+                "name": "Gibberish Panda",
+                "threat_actor_types": [
+                    "crime-syndicate"
+                ],
+                "primary_motivation": "personal-gain"
+            },
+            "fields": {
+                "stixid": "threat-actor--e69fedf8-2777-487f-8bff-b8f578e199ac",
+                "description": "China based threat actor.",
+                "firstseenbysource": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                    "Gibberish Panda"
+                ],
+                "tags": [
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "personal-gain",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": [
+                    "crime-syndicate"
+                ],
+                "killchainphases": [
+                ],
+                "geocountry": "China",
+                "targetindustries": [
+                    "Software",
+                    "IT Services"
+                ]
+            }
+        },
+        {
+            "value": "Pale Panda",
+            "name": "Pale Panda",
+            "type": "Threat Actor",
+            "score": 3,
+            "service": "DeCYFIR",
+            "rawJSON": {
+                "type": "threat-actor",
+                "spec_version": "2.1",
+                "id": "threat-actor--d91267c4-a109-4d2a-bab6-0d234082c16e",
+                "created": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "description": "Chinese threat actor that uses PlugX",
+                "labels": [
+                    {
+                        "origin-of-country": "China",
+                        "target-technologies": [
+                            "Office Suites Software",
+                            "Web Application",
+                            "Operating System"
+                        ],
+                        "target-industries": [
+                            "Software",
+                            "IT Services"
+                        ],
+                        "target-countries": [
+                        ]
+                    }
+                ],
+                "name": "Pale Panda",
+                "threat_actor_types": [
+                    "crime-syndicate"
+                ],
+                "primary_motivation": "personal-gain"
+            },
+            "fields": {
+                "stixid": "threat-actor--d91267c4-a109-4d2a-bab6-0d234082c16e",
+                "description": "Chinese threat actor that uses PlugX",
+                "firstseenbysource": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                ],
+                "tags": [
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "personal-gain",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": [
+                    "crime-syndicate"
+                ],
+                "killchainphases": [
+                ],
+                "geocountry": "China",
+                "targetindustries": [
+                    "Software",
+                    "IT Services"
+                ]
+            }
+        }
+    ],
+    "IN_DATA_4": [
+        {
+            "Reputation": "feedReputation",
+            "fields": {
+                "aliases": [
+                ],
+                "description": "Sample Testing",
+                "firstseenbysource": "2023-07-11T06:21:42.110Z",
+                "geocountry": "United States",
+                "ipv4-addr:value": "0.0.0.0",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "stixid": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "tags": [
+                    "feedTags",
+                    "group 83",
+                    "macdownloader",
+                    "parastoo",
+                    "Charming Kitten"
+                ],
+                "trafficlightprotocol": "tlp_color"
+            },
+            "rawJSON": {
+                "created": "2023-07-11T06:21:42.110Z",
+                "description": "Sample Testing",
+                "first_seen": "2022-06-06T00:00:00.000Z",
+                "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "indicator_types": [
+                    "attribution"
+                ],
+                "kill_chain_phases  ": [
+                    "Command & Control"
+                ],
+                "labels": [
+                    {
+                        "geographies": "United States",
+                        "tags": [
+                            "group 83",
+                            "macdownloader",
+                            "parastoo",
+                            "Charming Kitten"
+                        ]
+                    }
+                ],
+                "last_seen": "2022-12-16T00:00:00.000Z",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "name": "0.0.0.0",
+                "pattern": "[ipv4-addr:value = '0.0.0.0']",
+                "pattern_type": "stix",
+                "spec_version": "2.1",
+                "type": "indicator",
+                "valid_from": "2023-07-11T06:21:42.110Z"
+            },
             "service": "DeCYFIR",
             "type": "IP",
             "value": "0.0.0.0"
