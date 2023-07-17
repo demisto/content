@@ -11,31 +11,37 @@ configuration:
   type: 9
   displaypassword: Slack API access token
   hiddenusername: true
+  required: false
 - name: cred_bot_token
   type: 9
   displaypassword: Slack API bot token
   hiddenusername: true
+  required: false
 - display: Slack API access token
   name: access_token
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Slack API bot token
   name: bot_token
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   type: 0
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Send notifications about incidents to the dedicated channel
   name: notify_incidents
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: Low
   display: Minimum incident severity to send messages to slack by
   name: min_severity
@@ -48,26 +54,31 @@ configuration:
   - Critical
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   hidden: true
@@ -75,39 +86,46 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Bot display name in Slack (Cortex XSOAR by default)
   name: bot_name
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   type: 0
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '60'
   display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
   type: 0
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '200'
   display: Number of objects to return in each paginated call
   name: paginated_count
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Proxy URL to use in Slack API calls
   name: proxy_url
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Comma separated list of tags To filter the messages sent from demisto.
   name: filtered_tags
   type: 0
   additionalinfo: Only supported in Demisto V6.1 and above.
   section: Collect
   advanced: true
+  required: false
 description: Deprecated. Use SlackV3 instead.
 display: Slack v2 (Deprecated)
 name: SlackV2

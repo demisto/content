@@ -22,6 +22,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Username
   name: username
   required: true
@@ -32,11 +33,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use this integration to read information and send commands to the Check Point Firewall server.
 display: CheckPoint Firewall v2
 name: CheckPointFirewall_v2
