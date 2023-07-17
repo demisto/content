@@ -330,13 +330,13 @@ def create_host_command(args: dict[str, Any]) -> CommandResults:
     if address and ipv6_address:
         return CommandResults(readable_output='Both address and ipv6_address were provided, choose just one.')
 
-    Host.create(name=name, address=address, ipv6_address=ipv6_address, secondary=secondary, comment=comment)
-
-    outputs = {'Name': name,
+    host = Host.create(name=name, address=address, ipv6_address=ipv6_address, secondary=secondary, comment=comment)
+    address, ipv6_address = extract_host_address(host)
+    outputs = {'Name': host.name,
                'Address': address,
                'IPv6_address': ipv6_address,
-               'Secondary_address': secondary,
-               'Comment': comment}
+               'Secondary_address': host.secondary,
+               'Comment': host.comment}
 
     return CommandResults(
         outputs_prefix='ForcepointSMC.Host',
@@ -425,10 +425,10 @@ def create_domain_command(args: dict[str, Any]) -> CommandResults:
     name = args.get('name')
     comment = args.get('comment', '')
 
-    DomainName.create(name=name, comment=comment)
+    domain = DomainName.create(name=name, comment=comment)
 
-    outputs = {'Name': name,
-               'Comment': comment}
+    outputs = {'Name': domain.name,
+               'Comment': domain.comment}
 
     return CommandResults(
         outputs_prefix='ForcepointSMC.Domain',
