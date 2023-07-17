@@ -3,7 +3,7 @@ This playbook should be run as a job. The playbook runs on domain indicators and
 If a domain is related to a campaign or a threat actor, or if it resolves to a malicious IP or has malware-related tags, the playbook will add a new tag to it in order to sinkhole that domain.
 The playbook assumes that the user is exporting indicators with the sinkhole tag to an EDL (External Dynamic List) using the Export Generic Indicators Service integration in XSOAR. That EDL should be connected to PAN-OS.
 
-The playbook then ensures a DNS sinkhole is configured in PAN-OS so that communication with those domains will get blocked, and Traffic logs for the systems creating the malicious traffic will be generated, allowing the user to then query the logs in other playbooks using the PAN-OS - Find Sources of Sinkholed Traffic playbook.
+The playbook then ensures a DNS sinkhole is configured in PAN-OS so that communication with those domains will get blocked, and Traffic logs for the systems creating the malicious traffic will be generated, allowing the user to then query the logs in other playbooks using the PAN-OS - Extract IPs From Traffic Logs To Sinkhole playbook.
 
 Note: this playbook has inputs for both the "From context data" tab and for the "From indicators" tab.
 
