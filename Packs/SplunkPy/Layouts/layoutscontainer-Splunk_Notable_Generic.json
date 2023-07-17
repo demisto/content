@@ -347,7 +347,7 @@
                                 "height": 22,
                                 "id": "button",
                                 "index": 0,
-                                "name": "Press to add comment to Splunk issue",
+                                "name": "Press to add comment to Splunk",
                                 "scriptId": "SplunkAddComment",
                                 "sectionItemType": "button",
                                 "startCol": 0
