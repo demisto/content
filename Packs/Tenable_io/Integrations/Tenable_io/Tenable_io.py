@@ -1289,7 +1289,8 @@ def initiate_export_scan(scan_id: str, args: dict) -> PollResult:
         CommandResults(
             outputs_prefix='InfoFile',
             outputs_key_field='file',
-            outputs=response_json))
+            outputs=response_json,
+            readable_output=f'Exporting File. ID: {file_id}'))
 
 
 def check_export_scan_status(scan_id: str, file_id: str) -> str:
