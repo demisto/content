@@ -35,7 +35,7 @@ We currently support the retrieval of events from Cloudflare WAF by using an HTT
 
 In order to configure the logpush on the Cloudflare side, read [this documentation](https://developers.cloudflare.com/logs/get-started/enable-destinations/http/). 
 
-<u>Guidelines:</u>
+<ins>Guidelines:</ins>
 1. For the **destination_conf**, use the API URL which was copied in section 3 (on the XSIAM side).
 2. For the **X-Auth-Key**, use the newly created token mentioned in section 2 (on the XSIAM side).
 3. **Important:**
