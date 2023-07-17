@@ -1,6 +1,6 @@
 {
     "name": "Trend Micro Email Security",
-    "description": "",
+    "description": "Trend Micro Email Security is an enterprise grade solution to stop phishing, ransomware, BEC, other advanced email threats, and spam",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
