@@ -85,6 +85,43 @@ HASH_TYPE_TO_STIX_HASH_TYPE = {  # pragma: no cover
 }
 
 
+def search_relationship_indicators(value: str) -> list[dict]:
+    relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
+
+    query = ""
+    for rel in relationships:
+        if rel.get("entityA", "").lower() == value.lower():
+            query += rel.get("entityB", "") or ""
+        else:
+            query += rel.get("entityA", "") or ""
+        query += " or "
+    demisto_indicators = demisto.searchIndicators(query=query).get("iocs", [])
+    return demisto_indicators
+
+
+def get_indicators_stix_ids(value: str, indicator_type: str, demisto_indicators: list[dict]) -> list[str]:
+    stix_ids = []
+    for indicator in demisto_indicators:
+        if stix_id := indicator.get("stixid"):
+            stix_ids.append(stix_id)
+        else:
+            stix_type = XSOAR_TYPES_TO_STIX_SDO.get(indicator.get("indicator_type", ""))
+            if not stix_type:
+                stix_type = XSOAR_TYPES_TO_STIX_SCO.get(indicator.get("indicator_type", ""), 'indicator')
+            if stix_type == 'indicator':
+                raise ValueError(indicator)
+
+            if indicator_type in SDOs:
+                stix_id = create_sdo_stix_uuid(indicator, stix_type, indicator.get("value", ""))
+            elif indicator_type in SCOs:
+                stix_id = create_sco_stix_uuid(indicator, stix_type, indicator.get("value", ""))
+            else:
+                demisto.info(f"Indicator type: {indicator_type}, with the value: {value} is unknown.")
+                continue
+        stix_ids.append(stix_id)
+    return stix_ids
+
+
 def hash_type(value: str) -> str:  # pragma: no cover
     length = len(value)
     if length == 32:
@@ -310,35 +347,8 @@ def main():
                     if indicator_type == 'report':
                         kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
 
-                        relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
-
-                        query = ""
-                        for rel in relationships:
-                            if rel.get("entityA", "").lower() == value.lower():
-                                query += rel.get("entityB", "") or ""
-                            else:
-                                query += rel.get("entityA", "") or ""
-                            query += " or "
-                        demisto_indicators = demisto.searchIndicators(query=query).get("iocs", [])
-                        stix_ids = []
-                        for indicator in demisto_indicators:
-                            if stix_id := indicator.get("stixid"):
-                                stix_ids.append(stix_id)
-                            else:
-                                stix_type = XSOAR_TYPES_TO_STIX_SDO.get(indicator.get("indicator_type"))
-                                if not stix_type:
-                                    stix_type = XSOAR_TYPES_TO_STIX_SCO.get(indicator.get("indicator_type"), 'indicator')
-                                if stix_type == 'indicator':
-                                    raise ValueError(indicator)
-
-                                if indicator_type in SDOs:
-                                    stix_id = create_sdo_stix_uuid(indicator, stix_type, indicator.get("value"))
-                                elif indicator_type in SCOs:
-                                    stix_id = create_sco_stix_uuid(indicator, stix_type, indicator.get("value"))
-                                else:
-                                    demisto.info(f"Indicator type: {indicator_type}, with the value: {value} is unknown.")
-                                    continue
-                            stix_ids.append(stix_id)
+                        demisto_indicators = search_relationship_indicators(value)
+                        stix_ids = get_indicators_stix_ids(value, indicator_type, demisto_indicators)
                         kwargs["object_refs"] = stix_ids
                     demisto.debug(f"Creating {indicator_type} indicator: {value}, with the following kwargs: {kwargs}")
                     indicator = SDOs[indicator_type](
@@ -352,21 +362,14 @@ def main():
                     demisto.info(
                         f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible")
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
-                    # for testing purposes
-                    raise Exception(traceback.format_exc())
-
                     continue
 
                 except InvalidValueError:
                     demisto.info(
                         f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
-                    # for testing purposes
-                    raise Exception(
-                        f"Indicator type: {demisto_indicator_type}, with the value: {value}\n\n{traceback.format_exc()}")
                     continue
     if len(indicators) > 1:
-        raise ValueError(indicators)
         bundle = Bundle(indicators, allow_custom=True)
         context = {
             'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
