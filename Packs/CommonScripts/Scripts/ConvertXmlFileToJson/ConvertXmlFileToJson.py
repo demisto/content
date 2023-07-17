@@ -5,7 +5,7 @@ import xmltodict
 
 def convert_file(entry_id: str, verbose: bool, context_key:str | None) ->  None:
     """
-    Converts file content crom XML to Json
+    Converts file content from XML to Json
     Args:
         entry_id: The entry id represents the file.
         verbose: Whether to print the json result to the warroom.
