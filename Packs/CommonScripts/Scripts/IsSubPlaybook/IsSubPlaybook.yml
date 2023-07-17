@@ -1,0 +1,29 @@
+comment: |-
+  Determines if this is a sub playbook or not by checking ${currentPlaybookID}. This method is also used in DeleteContext.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+commonfields:
+  id: IsSubPlaybook
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+enabled: true
+name: IsSubPlaybook
+outputs:
+- contextPath: "true"
+  type: boolean
+- contextPath: "false"
+  type: boolean
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- Condition
+type: javascript
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
