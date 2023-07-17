@@ -1797,16 +1797,15 @@ def test_credentials(SERVER_IP):
         outputs_prefix='ActiveDirectory.ValidCredentials',
         outputs_key_field='username',
         outputs=username,
-        readable_output=f"Credential with username {username} is valid"
+        readable_output=f"Credential with username {username} is successful"
     )
 
 
 def set_connection(server: Server, server_ip: str, username: str, password: str, ntlm_connection: bool, auto_bind: str | bool):
     domain_name = server_ip + '\\' + username if '\\' not in username else username
-    try:
-        # open socket and bind to server
-        return Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=auto_bind) if ntlm_connection \
-            else Connection(server, user=username, password=password, auto_bind=auto_bind)
+    # open socket and bind to server
+    return Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=auto_bind) if ntlm_connection \
+        else Connection(server, user=username, password=password, auto_bind=auto_bind)
 
 
 def get_auto_bind_value(secure_connection, unsecure) -> str:
