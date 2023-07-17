@@ -531,8 +531,6 @@ def create_list_relationships(relationships_objects, id_to_object):
     relationships_list = []
 
     for relationships_object in relationships_objects:
-        if relationships_object['id'] == 'relationship--569f75a0-0674-49c9-b7f8-405240da1d88':
-            print(3)
         relationship_type = relationships_object.get('relationship_type')
         if relationship_type not in RELATIONSHIP_TYPES:
             if relationship_type == 'indicates':
