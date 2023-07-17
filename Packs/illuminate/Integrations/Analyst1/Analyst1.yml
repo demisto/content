@@ -17,7 +17,8 @@ configuration:
   name: credentials
   type: 9
   required: true
-- display: Domain of Analyst1 server to use (format - server.that_you_use.com - No http/https)
+- display: Domain of Analyst1 server to use
+  additionalinfo: Format - server.that_you_use.com - No http/https
   name: server
   defaultvalue: partner.cloud.analyst1.com
   type: 0
