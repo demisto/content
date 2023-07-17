@@ -740,7 +740,7 @@ script:
       - 'true'
       - 'false'
   - arguments:
-    - description: 'A comma-separated list of enpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
+    - description: 'A comma-separated list of endpoints statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
       name: status
       isArray: true
     - description: A comma-separated list of endpoint IDs.
