@@ -15,13 +15,13 @@ configuration:
   name: apikey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - name: apikey_creds
   type: 9
-  required: false
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -33,9 +33,9 @@ configuration:
 - defaultvalue: cleanmx_virus,et_c2
   display: CSV list of lists that should be considered malicious
   name: maliciousList
-  required: false
   type: 0
 
+  required: false
 script:
   script: ''
   type: javascript

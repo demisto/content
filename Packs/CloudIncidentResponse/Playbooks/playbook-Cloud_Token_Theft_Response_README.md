@@ -1,3 +1,5 @@
+---
+
 ## Cloud Token Theft Response Playbook
 
 The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
@@ -8,16 +10,13 @@ The **Cloud Token Theft Response Playbook** provides a structured and comprehens
 - Enriches the involved IPs
 
 **Verdict Decision Tree:**
-
-Determines the appropriate verdict based on the investigation findings
+- Determines the appropriate verdict based on the investigation findings
 
 **Early Containment using the Cloud Response - Generic Playbook:**
-
-Implements early containment measures to prevent further impact
+- Implements early containment measures to prevent further impact
 
 **Cloud Persistence Threat Hunting:**
-
-Conducts threat hunting activities to identify any cloud persistence techniques
+- Conducts threat hunting activities to identify any cloud persistence techniques
 
 **Enriching and Responding to Hunting Findings:**
 - Performs additional enrichment and responds to the findings from threat hunting
@@ -25,7 +24,6 @@ Conducts threat hunting activities to identify any cloud persistence techniques
 **Verdict Handling:**
 - Handles false positives identified during the investigation
 - Handles true positives by initiating appropriate response actions
-
 
 ### Supported Alerts
 
@@ -45,19 +43,22 @@ Conducts threat hunting activities to identify any cloud persistence techniques
 | Remote usage of VM Service Account token            | GCP   |
 | Suspicious usage of VM Service Account toke         | GCP   |
 
+---
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Threat Hunting - Persistence
-* Cloud Token Theft  - Set Verdict
-* Handle False Positive Alerts
-* Cloud Enrichment - Generic
-* Entity Enrichment - Generic v3
 * Cloud Response - Generic
+* Handle False Positive Alerts
+* TIM - Indicator Relationships Analysis
+* Entity Enrichment - Generic v3
+* Cloud Threat Hunting - Persistence
 * IP Enrichment - Generic v2
+* Cloud Token Theft - Set Verdict
+* Cloud Enrichment - Generic
 
 ### Integrations
 
@@ -65,12 +66,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-LoadJSON
+* LoadJSON
+* ParseHTMLIndicators
 
 ### Commands
 
-* closeInvestigation
 * core-get-cloud-original-alerts
+* setAlert
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -82,6 +85,7 @@ LoadJSON
 | InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. |  | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
 | earlyContainment | Whether to execute early containment.<br/>This action allows you to respond rapidly but have higher probability for false positives. | False | Optional |
+| VPNIPList | This input can process to types of data:<br/>1. A comma separated list of IP addresses assigned by the VPN provider. \(using a XSIAM list or an hardcoded array\)<br/>2. A comma separated list of CIDRs.<br/>3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.<br/> |  | Optional |
 
 ## Playbook Outputs
 

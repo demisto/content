@@ -1,5 +1,6 @@
 [INGEST:vendor = barracuda, product = email_protection, target_dataset = barracuda_email_protection_raw, no_hit = keep]
-alter 
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}"
+| alter
     tmp_payload = arrayindex(regextract(_raw_log, "\[\d\]: (\{.*?$)"), 0)
 | alter
     tmp_get_timestamp = json_extract_scalar(tmp_payload, "$.timestamp")

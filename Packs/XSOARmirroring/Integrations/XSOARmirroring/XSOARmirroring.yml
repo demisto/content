@@ -20,8 +20,15 @@ configuration:
 - display: API Key
   name: apikey
   type: 4
-  required: true
   additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
+  hidden: true
+  required: false
+- displaypassword: API Key
+  name: credentials_api_key
+  hiddenusername: true
+  additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
+  type: 9
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -34,31 +41,31 @@ configuration:
 - display: Fetch only incidents that match the query
   name: query
   type: 0
-  required: false
   additionalinfo: Don't add created time to the query as this field will be addressed in the "First fetch time".
+  required: false
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
-  required: false
   additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
+  required: false
 - display: Entry Categories
   name: categories
   defaultvalue: notes,chats,attachments
   type: 0
-  required: false
   additionalinfo: Which entries to retrieve from the Cortex XSOAR server. The available options are notes, comments (chats), and files. (attachments).
+  required: false
 - display: Incoming Entry tags
   name: tags
   type: 0
-  required: false
   additionalinfo: Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved.
+  required: false
 - additionalinfo: Choose the tags to filter the entries you want to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent.
   defaultvalue: ""
   display: Outgoing Entry Tags
   name: mirror_tag
-  required: false
   type: 0
+  required: false
 - defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -67,8 +74,8 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
+  required: false
 - display: Disable fetching for incidents that came from this integration
   additionalinfo: Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
   name: disable_from_same_integration
@@ -91,8 +98,8 @@ configuration:
   name: mirror_playbook_id
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: 'A parameter integration that removes the playbook ID field from incoming incidents. Note: When set to true (default), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type (if configured locally).'
+  required: false
 script:
   script: ''
   type: python
@@ -108,13 +115,10 @@ script:
     - name: max_results
       description: How many incidents to retrieve.
       defaultValue: "10"
-    - default: false
-      defaultValue: id,name,type,status,severity,owner,occured
+    - defaultValue: id,name,type,status,severity,owner,occured
       description: Which columns to display. Default is 'id,name,type,status,severity,owner,occured'. To display all columns, insert 'all'.
       isArray: true
       name: columns
-      required: false
-      secret: false
     description: Search remote Cortex XSOAR for incidents.
   - name: xsoar-get-incident
     arguments:
@@ -144,9 +148,8 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
   ismappable: true
   isremotesyncin: true

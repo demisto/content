@@ -22,12 +22,12 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: useproxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Only fetch comments when using the SalesforceAskUser automation.
   defaultvalue: cases
   display: 'Fetch type: cases/comments'
@@ -35,31 +35,31 @@ configuration:
   options:
   - cases
   - comments
-  required: false
   type: 15
+  required: false
 - additionalinfo: "E.g.: OwnerId='0056s000000wGoWAAX'"
   display: Define a query to determine which objects to fetch.
   name: condition
-  required: false
   type: 0
+  required: false
 - additionalinfo: Additional fields to fetch
   display: Fields to Fetch (only for cases/comments)
   name: fetchFields
-  required: false
   type: 12
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - additionalinfo: The First Fetch Time, e.g., 1 hour, 3 days
   display: First Fetch Time
   name: firstFetchTime
-  required: false
   type: 0
+  required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Salesforce to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and Salesforce).'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -69,39 +69,39 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in SalesForce.
   defaultvalue: comments
   display: Comment Entry Tag
   name: comment_tag
-  required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the Salesforce ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
-  required: false
   type: 8
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in SalesForce.
   defaultvalue: 'false'
   display: Close Mirrored Salesforce case
   name: close_case
-  required: false
   type: 8
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 description: CRM Services
 display: Salesforce v2
 name: SalesforceV2
@@ -1045,18 +1045,15 @@ script:
     description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging purposes.
     name: get-modified-remote-data
   - arguments:
-      - name: data
-        required: true
-        description: The data to send to the remote system.
-      - name: entries
-        required: false
-        description: The entries to send to the remote system.
-      - name: incident_changed
-        required: false
-        description: Boolean that is telling us if the local incident indeed changed or not.
-      - name: remote_incident_id
-        required: false
-        description: the remote incident id
+    - name: data
+      required: true
+      description: The data to send to the remote system.
+    - name: entries
+      description: The entries to send to the remote system.
+    - name: incident_changed
+      description: Boolean that is telling us if the local incident indeed changed or not.
+    - name: remote_incident_id
+      description: the remote incident id
     description: Available from Cortex XSOAR version 6.1.0. This command pushes local changes to the remote system.
     name: update-remote-system
   - arguments: []
@@ -1086,12 +1083,11 @@ script:
       name: caseNumber
     description: Retrieve a case file by file ID.
     name: salesforce-get-case-file-by-id
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

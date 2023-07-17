@@ -11,20 +11,20 @@ configuration:
 - additionalinfo: Whether this instance should listen for reports
   display: Long running instance
   name: longRunning
-  required: false
   type: 8
+  required: false
 - display: Listen port, e.g. 7000
   name: longRunningPort
-  required: false
   type: 0
+  required: false
 - display: Certificate (Required for HTTPS)
   name: certificate
-  required: false
   type: 12
+  required: false
 - display: Private Key (Required for HTTPS)
   name: private_key
-  required: false
   type: 14
+  required: false
 description: This integration will run a server that will listen for PingCastle XML reports.
 display: PingCastle
 name: PingCastle
@@ -32,30 +32,21 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'No'
       description: Whether to delete the report after getting it or save it to allow retrieving it again
-      isArray: false
       name: delete_report
       predefined:
       - 'Yes'
       - 'No'
-      required: false
-      secret: false
-    deprecated: false
     description: Get the Currently saved Ping Castle Report
-    execution: false
     name: pingcastle-get-report
     outputs:
     - contextPath: PingCastle.Report.report
       description: The XML report sent by Ping Castle
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
+  dockerimage: demisto/python3:3.10.12.63474
   longRunning: true
   longRunningPort: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python

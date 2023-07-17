@@ -12,14 +12,14 @@ configuration:
   additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number, e.g., 50.
   name: max_size
   defaultvalue: '45'
-  required: false
   type: 0
+  required: false
 - display: Read Timeout
   additionalinfo: Default is 20 seconds. In cases content is too long, Read Timeout Error is return, to handle it increase the read timeout value.
   name: read_timeout
   defaultvalue: '20'
-  required: false
   type: 0
+  required: false
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -29,14 +29,13 @@ configuration:
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
@@ -50,8 +49,7 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -59,69 +57,60 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   defaultvalue: "20160"
-  required: false
   type: 1
   display: ""
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
   additionalinfo: |-
     When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: RSS Feed reader can ingest new items as report indicators.
 display: RSS Feed
 name: RSS Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of indicators to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the reports from the RSS feed.
-    execution: false
     name: rss-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.31193
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

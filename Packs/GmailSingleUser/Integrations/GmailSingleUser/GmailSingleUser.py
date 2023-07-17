@@ -910,7 +910,7 @@ class Client:
         if inReplyTo:
             message['In-Reply-To'] = self.header(' '.join(inReplyTo.split()))
         if references:
-            message['References'] = self.header(' '.join(references.split()))
+            message['References'] = self.header(' '.join(references))
 
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):

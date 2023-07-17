@@ -35,7 +35,7 @@ ignore=RM106
 ignore=PB106
 
 [file:playbook-Delete_Custom_Content.yml]
-ignore=PB105
+ignore=PB105,PB106
 
 [known_words]
 cliname

@@ -1,0 +1,649 @@
+id: Cortex XDR - XCloud Token Theft - Set Verdict
+version: -1
+name: Cortex XDR - XCloud Token Theft - Set Verdict
+description: |-
+  ---
+
+  ## Cloud Token Theft  - Set Verdict Playbook
+
+  The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
+
+  ### Event Search
+
+  The playbook searches for events based on the attacker's IP address within the last two hours.
+
+  ### Tests Performed
+
+  The following tests are performed on the observed activity:
+
+  1. **Malicious IP Check**: Determines if the IP address is malicious.
+  2. **CSP ASN Check**: Checks if the activity was performed from an Autonomous System Number (ASN) belonging to one of the Cloud Service Providers (CSPs).
+  3. **IP and ASN History Check**: Verifies if the IP address and ASN have been previously observed.
+  4. **Region Check**: Determines if the API call was made from outside the recognized region.
+  5. **Anomalous State Check**: Checks if the API call was made from an anomalous state.
+  6. **Alert Check**: Looks for any related alerts around the event, including:
+     - Possible cloud instance metadata service (IMDS) abuse.
+     - Impossible Traveler by cloud identity.
+
+  ---
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5cb65176-16ca-4a17-8223-b263a5faee7c
+    type: start
+    task:
+      id: 5cb65176-16ca-4a17-8223-b263a5faee7c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1d10af0b-7d60-4562-8778-0a0ee87d460c
+    type: condition
+    task:
+      id: 1d10af0b-7d60-4562-8778-0a0ee87d460c
+      version: -1
+      name: Check caller IP reputation
+      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Malicious:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.sourceIP
+                      iscontext: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 980777c8-d213-4f10-848b-290d9e700bba
+    type: regular
+    task:
+      id: 980777c8-d213-4f10-848b-290d9e700bba
+      version: -1
+      name: Get additional alerts
+      description: |-
+        Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+            "OR": [
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "agent_ip_addresses",
+                    "SEARCH_TYPE": "IPLIST_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              },
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "action_local_ip",
+                    "SEARCH_TYPE": "IP_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              },
+              {
+                "AND": [
+                  {
+                    "SEARCH_FIELD": "action_remote_ip",
+                    "SEARCH_TYPE": "IP_MATCH",
+                    "SEARCH_VALUE": "${inputs.sourceIP}"
+                  }
+                ]
+              }
+            ]
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: XDR Alert Search Results
+      output:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Alert
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 23a75037-8637-4ffb-83ca-9801253b1150
+    type: regular
+    task:
+      id: 23a75037-8637-4ffb-83ca-9801253b1150
+      version: -1
+      name: Set verdict - Malicious
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: alertVerdict
+      value:
+        simple: Malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c7fb9a98-b0bf-4de4-8989-376c2a6f7f29
+    type: regular
+    task:
+      id: c7fb9a98-b0bf-4de4-8989-376c2a6f7f29
+      version: -1
+      name: Set verdict - User verification
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: alertVerdict
+      value:
+        simple: userVerification
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c133ff88-9860-4f38-8d90-3fc6a0111cc4
+    type: condition
+    task:
+      id: c133ff88-9860-4f38-8d90-3fc6a0111cc4
+      version: -1
+      name: Check source ASN
+      description: Detailed explanation available in the playbook description.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Cloud ASN:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Cloud ASN
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.OriginalAlert.event
+                accessor: caller_ip_asn_org
+            iscontext: true
+          right:
+            value:
+              simple: GOOGLE
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.OriginalAlert.event
+                accessor: caller_ip_asn_org
+            iscontext: true
+          right:
+            value:
+              simple: MICROSOFT
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.OriginalAlert.event
+                accessor: caller_ip_asn_org
+            iscontext: true
+          right:
+            value:
+              simple: AMAZON
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f3f098de-ec20-4686-8e98-e2d429276f48
+    type: condition
+    task:
+      id: f3f098de-ec20-4686-8e98-e2d429276f48
+      version: -1
+      name: Check ASN & Agent IP popularity
+      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      Malicious:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: alertJson.raw_abioc.event
+                accessor: cloud_agent_external_ip_days_seen_count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: alertJson.raw_abioc.event
+                accessor: cloud_caller_ip_asn_count_distinct_cloud_best_identity
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 648c1de2-72be-46cb-8b08-174171300a61
+    type: condition
+    task:
+      id: 648c1de2-72be-46cb-8b08-174171300a61
+      version: -1
+      name: Check for API call executed outside the instance region
+      description: Detailed explanation available in the playbook description.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Malicious:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_name
+            iscontext: true
+          right:
+            value:
+              simple: A compute-attached identity executed API calls outside the instance's region
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: bbb0beba-0cd1-4d6f-8e7d-52feb1686556
+    type: condition
+    task:
+      id: bbb0beba-0cd1-4d6f-8e7d-52feb1686556
+      version: -1
+      name: Check for API call from unusual country
+      description: Detailed explanation available in the playbook description.      
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      Malicious:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_name
+            iscontext: true
+          right:
+            value:
+              simple: A cloud identity executed an API call from an unusual country
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 69619ff1-8fcc-4fa3-802f-5acd7edef159
+    type: condition
+    task:
+      id: 69619ff1-8fcc-4fa3-802f-5acd7edef159
+      version: -1
+      name: Check for IMDS Access alert
+      description: Detailed explanation available in the playbook description.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      Malicious:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_name
+            iscontext: true
+          right:
+            value:
+              simple: Possible Cloud Instance Metadata Service (IMDS) Abuse
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4e1d2cbd-8ada-4fd8-83ff-1144e09d4220
+    type: condition
+    task:
+      id: 4e1d2cbd-8ada-4fd8-83ff-1144e09d4220
+      version: -1
+      name: Check for Impossible Traveler alert
+      description: Detailed explanation available in the playbook description.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Malicious:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_name
+            iscontext: true
+          right:
+            value:
+              simple: Impossible travel by cloud identity
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8ae2cf69-0978-4d75-8104-2442bb959263
+    type: title
+    task:
+      id: 8ae2cf69-0978-4d75-8104-2442bb959263
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_#default#": 0.39,
+      "11_4_Malicious": 0.22,
+      "12_13_#default#": 0.4,
+      "12_4_Malicious": 0.26,
+      "13_14_#default#": 0.42,
+      "13_4_Malicious": 0.31,
+      "14_15_#default#": 0.41,
+      "14_4_Malicious": 0.41,
+      "15_4_Malicious": 0.51,
+      "15_5_#default#": 0.13,
+      "2_4_Malicious": 0.1,
+      "2_6_#default#": 0.1,
+      "6_5_Cloud ASN": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 1260,
+        "x": -780,
+        "y": 570
+      }
+    }
+  }
+inputs:
+- key: sourceIP
+  value: {}
+  required: false
+  description: The source IP to search by additional alerts.
+  playbookInputQuery:
+- key: fromDate
+  value: {}
+  required: false
+  description: |-
+    The start date for the search additional alerts task.
+
+    Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  playbookInputQuery:
+outputs:
+- contextPath: alertVerdict
+  description: The alert verdict.
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.Alert
+  description: The additional alerts found.
+  type: unknown
+tests:
+- No tests (auto formatted)
+marketplaces: ["xsoar"]
+fromversion: 6.8.0

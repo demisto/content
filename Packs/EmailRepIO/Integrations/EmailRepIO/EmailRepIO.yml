@@ -11,39 +11,48 @@ configuration:
 - additionalinfo: Mandatory for the emailrepio-email-address-report command
   display: API Key
   name: apikey
-  required: false
   type: 4
   hidden: true
+  required: false
 - display: ""
   name: credentials
-  required: false
   type: 9
   additionalinfo: Mandatory for the emailrepio-email-address-report command
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 description: Provides email address reputation and reports.
 display: EmailRep.io
 name: EmailRepIO
 script:
   commands:
   - arguments:
-    - default: false
-      description: The email address to get the reputation for.
-      isArray: false
+    - description: The email address to get the reputation for.
       name: email_address
       required: true
-      secret: false
-    deprecated: false
     description: Gets the EmailRepIO reputation for the given email address.
-    execution: false
     name: emailrepio-email-reputation-get
     outputs:
     - contextPath: EmailRepIO.Email.email
@@ -133,17 +142,14 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Gets the DBot score for the given email address using the EmailRepIO reputation.
-    execution: false
     name: email
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -151,9 +157,12 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
     - contextPath: EmailRepIO.Email.email
       type: String
-      description: The email address that was queried.
+      description: 'The email address that was queried.'
     - contextPath: EmailRepIO.Email.reputation
       type: String
       description: 'The reputation of the email. Possible values are: "high", "medium", "low", and "none".'
@@ -189,7 +198,7 @@ script:
       description: The last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
     - contextPath: EmailRepIO.Email.details.domain_exists
       type: Boolean
-      description: Whether the domain is a valid domain.
+      description: 'Whether the domain is a valid domain.'
     - contextPath: EmailRepIO.Email.details.domain_reputation
       type: String
       description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable, or doesn’t exist.'
@@ -233,14 +242,10 @@ script:
       type: String
       description: The online profiles used by the email.
   - arguments:
-    - default: false
-      description: The email address to report.
-      isArray: false
+    - description: The email address to report.
       name: email_address
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The tags to apply to the email. See detailed descriptions in the EmailRepIO documentation for more information.
       isArray: true
       name: tags
@@ -258,34 +263,15 @@ script:
       - task_request
       - threat_actor
       required: true
-      secret: false
-    - default: false
-      description: Additional information and context.
-      isArray: false
+    - description: Additional information and context.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: The time the activity occurred in UTC time format. Defaults to now().
-      isArray: false
+    - description: The time the activity occurred in UTC time format. Defaults to now().
       name: timestamp
-      required: false
-      secret: false
-    - default: false
-      description: The number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless the "account_takeover" tag is specified, in which case the default is 14 days.
-      isArray: false
+    - description: The number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless the "account_takeover" tag is specified, in which case the default is 14 days.
       name: expires
-      required: false
-      secret: false
-    deprecated: false
     description: Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
-    execution: false
     name: emailrepio-email-address-report
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

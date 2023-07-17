@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 from collections.abc import Mapping
 from typing import Any, Dict, List
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 DEV_ENV_CLASSIFICATION = "DevelopmentEnvironment"
 EXACT_DEV_MATCH = ["dv", "noprod", "np", "ppe"]

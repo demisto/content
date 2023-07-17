@@ -17,28 +17,28 @@ configuration:
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: '5'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   defaultvalue: Trend Micro Vision One XDR Incident
   type: 13
+  required: false
 - defaultvalue: '30'
   display: Sync On First Run (days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Max Incidents
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
@@ -724,10 +724,9 @@ script:
       type: string
     description: Updates the status of a workbench alert
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.12.63474
   isFetchSamples: true
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python
