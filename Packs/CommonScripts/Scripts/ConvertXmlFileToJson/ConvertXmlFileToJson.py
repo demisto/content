@@ -24,7 +24,7 @@ def main():  # pragma: no cover
     args = demisto.args()
     entry_id = args.get("entryID", "")
     verbose = argToBoolean(args.get("verbose", False))
-    context_key = args.get("contextKey")
+    context_key = args.get("contextKey", "")
     try:
         convert_file(entry_id, verbose, context_key)
     except Exception as e:
