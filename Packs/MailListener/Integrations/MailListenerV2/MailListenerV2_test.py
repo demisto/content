@@ -475,3 +475,65 @@ def test_load_empty_client_cert_and_key_():
     ssl_ctx.verify_mode = ssl.CERT_NONE
     ssl_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
     assert (load_client_cert_and_key(ssl_ctx, params) is False)
+
+
+@pytest.mark.parametrize('input_credentials, output_credentials', [
+    # No credentials
+    (None, None),
+
+    # 1 credential
+    (
+        '-----BEGIN CERTIFICATE----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END CERTIFICATE-----',
+
+        '''-----BEGIN CERTIFICATE-----
+LINE1
+LINE2
+-----END CERTIFICATE-----'''
+    ),
+    # 2 credentials
+    (
+        '-----BEGIN CERTIFICATE----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END CERTIFICATE----- '
+        '-----BEGIN EC PRIVATE KEY----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END EC PRIVATE KEY-----',
+
+        '''-----BEGIN CERTIFICATE-----
+LINE1
+LINE2
+-----END CERTIFICATE-----
+-----BEGIN EC PRIVATE KEY-----
+LINE1
+LINE2
+-----END EC PRIVATE KEY-----'''
+    ),
+    # credentials with human readable text
+    (
+        'text1 '
+        'text2 '
+        '-----BEGIN EC PRIVATE KEY----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END EC PRIVATE KEY----- '
+        'text1 '
+        'text2',
+
+        '''text1 text2
+-----BEGIN EC PRIVATE KEY-----
+LINE1
+LINE2
+-----END EC PRIVATE KEY-----
+text1 text2'''
+    ),
+])
+def test_replace_spaces_in_credentials(input_credentials, output_credentials):
+    from MailListenerV2 import replace_spaces_in_credentials
+    import json
+
+    assert (json.dumps(replace_spaces_in_credentials(input_credentials)) == json.dumps(output_credentials))

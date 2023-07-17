@@ -509,11 +509,12 @@ def replace_spaces_in_credentials(credentials: str | None) -> str | None:
         return credentials
 
     return re.sub(
-        r'(?P<separators>\s*)(?P<begin>-----BEGIN(.*?)-----)(?P<body>.*?)(?P<end>-----END(.*?)-----)',
-        lambda m: m.group('separators').replace(' ', '\n')
+        r'(?P<lseps>\s*)(?P<begin>-----BEGIN(.*?)-----)(?P<body>.*?)(?P<end>-----END(.*?)-----)(?P<tseps>\s*)',
+        lambda m: m.group('lseps').replace(' ', '\n')
         + m.group('begin')
         + m.group('body').replace(' ', '\n')
-        + m.group('end'),
+        + m.group('end')
+        + m.group('tseps').replace(' ', '\n'),
         credentials,
         flags=re.DOTALL)
 
