@@ -22,6 +22,14 @@ configuration:
   required: true
   type: 9
   section: Connect
+- displaypassword: Client Certificate And Private Key (List of PEMs)
+  display: ""
+  name: clientCertAndKey
+  required: false
+  section: Connect
+  type: 9
+  advanced: true
+  hiddenusername: true
 - defaultvalue: INBOX
   display: Incoming mail folder
   name: folder
@@ -89,14 +97,6 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- displaypassword: Client Certificate And Private Key (List of PEMs)
-  display: ""
-  name: clientCertAndKey
-  required: false
-  section: Connect
-  type: 9
-  advanced: true
-  hiddenusername: true
 description: Listens to a mailbox and enables incident triggering via e-mail.
 display: Mail Listener v2
 name: Mail Listener v2
