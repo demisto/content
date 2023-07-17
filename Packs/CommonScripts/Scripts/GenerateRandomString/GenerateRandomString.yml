@@ -46,7 +46,6 @@ outputs:
   description: The generated string.
   type: string
 scripttarget: 0
-runonce: false
 tests:
 - RandomStringGenerateTest
 fromversion: 6.2.0

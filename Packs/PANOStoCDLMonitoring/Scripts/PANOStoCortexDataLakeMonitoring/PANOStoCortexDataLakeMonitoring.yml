@@ -20,7 +20,6 @@ outputs:
   description: Firewall serials that sent logs to Crotex Data Lake.
   type: String
 runas: DBotWeakRole
-runonce: false
 script: ''
 tags:
 - CDL

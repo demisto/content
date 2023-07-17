@@ -6,7 +6,6 @@ dockerimage: demisto/python3:3.10.9.46032
 enabled: true
 name: ServerLogs
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,0 +1,149 @@
+ignore:
+    - CommonServerPython.py
+    - CommonServerUserPython.py
+    - demistomock.py
+    - conftest.py
+rule_settings:
+  enable:
+    - aug-assign
+    - bin-op-identity
+    # - break-or-continue-outside-loop (without autofix?)
+    - chain-compares
+    - collection-into-set
+    - collection-to-bool
+    - compare-via-equals
+    - convert-any-to-in
+    - convert-to-enumerate
+    - dataframe-append-to-concat
+    - de-morgan
+    - default-get
+    # - default-mutable-arg (todo: disable ruff B006)
+    - del-comprehension
+    - dict-assign-update-to-union
+    - dict-comprehension
+    # - ensure-file-closed (todo: disable ruff sim115)
+    - flatten-nested-try
+    - for-append-to-extend
+    - for-index-replacement
+    - for-index-underscore
+    - guard
+    - hoist-loop-from-if
+    - hoist-repeated-if-condition
+    - hoist-similar-statement-from-if
+    - hoist-statement-from-if
+    - hoist-statement-from-loop
+    - instance-method-first-arg-name
+    - invert-any-all
+    - invert-any-all-body
+    - last-if-guard
+    - lift-duplicated-conditional
+    - lift-return-into-if
+    - max-min-default
+    - merge-assign-and-aug-assign
+    - merge-comparisons
+    - merge-dict-assign
+    - merge-duplicate-blocks
+    # - merge-else-if-into-elif (todo: disable ruff prl501)
+    - merge-except-handler
+    - merge-list-append
+    - merge-list-appends-into-extend
+    - merge-list-extend
+    - merge-nested-ifs
+    - merge-repeated-ifs
+    - merge-set-add
+    - min-max-identity
+    - missing-dict-items
+    - move-assign
+    - move-assign-in-block
+    - non-equal-comparison
+    - path-read
+    - raise-from-previous-error
+    - reintroduce-else
+    - remove-assert-true
+    - remove-dict-items
+    - remove-none-from-default-get
+    - remove-pass-body
+    - remove-pass-elif
+    - remove-redundant-boolean
+    - remove-redundant-condition
+    - remove-redundant-constructor-in-dict-union
+    - remove-redundant-continue
+    # - remove-redundant-except-handler (without autofix)
+    # - remove-redundant-exception (without autofix)
+    - remove-redundant-if
+    - remove-redundant-pass
+    - remove-redundant-slice-index
+    - remove-str-from-fstring
+    - remove-str-from-print
+    - remove-unit-step-from-range
+    - remove-unnecessary-cast
+    - remove-unnecessary-else
+    # - remove-unreachable-code (without autofix)
+    - remove-unused-enumerate
+    - remove-zero-from-range
+    - replace-apply-with-method-call
+    - replace-dict-items-with-values
+    - replace-interpolation-with-fstring
+    - simplify-constant-sum
+    - simplify-dictionary-update
+    - simplify-division
+    - simplify-fstring-formatting
+    - remove-redundant-slice-index
+    - remove-str-from-fstring
+    - remove-str-from-print
+    - remove-unit-step-from-range
+    - remove-unnecessary-cast
+    - remove-unused-enumerate
+    - remove-zero-from-range
+    - replace-apply-with-method-call
+    - replace-apply-with-numpy-operation
+    - replace-dict-items-with-values
+    - set-comprehension
+    - simplify-boolean-comparison
+    - simplify-constant-sum
+    - simplify-dictionary-update
+    - simplify-generator
+    - simplify-len-comparison
+    - simplify-negative-index
+    - simplify-string-len-comparison
+    - simplify-substring-search
+    - skip-sorted-list-construction
+    - square-identity
+    - str-prefix-suffix
+    - sum-comprehension
+    - swap-nested-ifs
+    - swap-variable
+    # - switch (todo: remove ruff sim114)
+    - ternary-to-if-expression
+    - tuple-literal
+    - unwrap-iterable-construction
+    - use-any
+    - use-assigned-variable
+    - use-count
+    - use-datetime-now-not-today
+    - use-dict-items
+    - use-dictionary-union
+    - use-file-iterator
+    - use-fstring-for-concatenation
+    - use-fstring-for-formatting
+    - use-getitem-for-re-match-groups
+    - use-isna
+    - use-itertools-product
+    - use-join
+    - use-len
+    # - use-named-expression
+    - use-string-remove-affix
+    - while-guard-to-condition
+    - while-to-for
+
+disable: []
+
+rule_types:
+  - refactoring
+  - suggestion
+  - comment
+
+python_version: "3.7"
+
+rules: []
+

@@ -1,5 +1,5 @@
 [file:DigitalGuardian.yml]
-ignore=IN126,IN145
+ignore=IN126
 
 [file:README.md]
 ignore=RM104
@@ -10,6 +10,6 @@ ignore=BA110
 [file:incidentfield-Digital_Guardian_Computer_Name.json]
 ignore=BA113
 
-
 [file:DigitalGuardian_image.png]
 ignore=IM111
+

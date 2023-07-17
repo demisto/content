@@ -1,119 +1,43 @@
 args:
-- default: false
-  description: User name of the client. Get the username using the'bmc-remedy-user-details-get' command.
-  isArray: false
+- description: User name of the client. Get the username using the'bmc-remedy-user-details-get' command.
   name: client_user_name
-  required: false
-  secret: false
-- default: false
-  description: The unique id of the client. It helps to select a client for a particular service request. Get the client id from the email using the 'bmc-remedy-user-details-get' command.
-  isArray: false
+- description: The unique id of the client. It helps to select a client for a particular service request. Get the client id from the email using the 'bmc-remedy-user-details-get' command.
   name: client_id
-  required: false
-  secret: false
-- default: false
-  description: Classifies the service request using standard classifications to track the reporting purposes. Get the category name using the 'bmc-remedy-category-details-get' command.
-  isArray: false
+- description: Classifies the service request using standard classifications to track the reporting purposes. Get the category name using the 'bmc-remedy-category-details-get' command.
   name: category
-  required: false
-  secret: false
-- default: false
-  description: The unique ID of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes. Get the category ID using 'bmc-remedy-category-details-get' command.
-  isArray: false
+- description: The unique ID of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes. Get the category ID using 'bmc-remedy-category-details-get' command.
   name: category_id
-  required: false
-  secret: false
-- default: false
-  description: Name of the queue owner. Get the queue name using the 'bmc-remedy-queue-details-get' command.
-  isArray: false
+- description: Name of the queue owner. Get the queue name using the 'bmc-remedy-queue-details-get' command.
   name: queue
-  required: false
-  secret: false
-- default: false
-  description: The unique ID of the queue owner. Get the queue ID using the 'bmc-remedy-queue-details-get' command.
-  isArray: false
+- description: The unique ID of the queue owner. Get the queue ID using the 'bmc-remedy-queue-details-get' command.
   name: queue_id
-  required: false
-  secret: false
-- default: false
-  description: User name of the staff. Get the username using the 'bmc-remedy-user-details-get' command.
-  isArray: false
+- description: User name of the staff. Get the username using the 'bmc-remedy-user-details-get' command.
   name: staff_user_name
-  required: false
-  secret: false
-- default: false
-  description: The unique ID of the staff to whom the user wants to assign the record. Get the staff ID from the staff details using the 'bmc-remedy-user-details-get' command.
-  isArray: false
+- description: The unique ID of the staff to whom the user wants to assign the record. Get the staff ID from the staff details using the 'bmc-remedy-user-details-get' command.
   name: staff_id
-  required: false
-  secret: false
-- default: false
-  description: Displays the progress of the service request through its stages from opening to closure. Get the status name using the 'bmc-remedy-status-details-get' command.
-  isArray: false
+- description: Displays the progress of the service request through its stages from opening to closure. Get the status name using the 'bmc-remedy-status-details-get' command.
   name: status
-  required: false
-  secret: false
-- default: false
-  description: The unique ID of the status that is used to display the progress of the service request through its stages from opening to closure. Get the status ID using the 'bmc-remedy-status-details-get' command.
-  isArray: false
+- description: The unique ID of the status that is used to display the progress of the service request through its stages from opening to closure. Get the status ID using the 'bmc-remedy-status-details-get' command.
   name: status_id
-  required: false
-  secret: false
-- default: false
-  description: Determines the priority of the service request. Get the urgency name using the 'bmc-remedy-urgency-details-get' command.
-  isArray: false
+- description: Determines the priority of the service request. Get the urgency name using the 'bmc-remedy-urgency-details-get' command.
   name: urgency
-  required: false
-  secret: false
-- default: false
-  description: The unique ID of the urgency which is used to determine the priority of the service request. Get the urgency ID from the urgency name using the 'bmc-remedy-urgency-details-get' command.
-  isArray: false
+- description: The unique ID of the urgency which is used to determine the priority of the service request. Get the urgency ID from the urgency name using the 'bmc-remedy-urgency-details-get' command.
   name: urgency_id
-  required: false
-  secret: false
-- default: false
-  description: The Service Request Definition name. Get the Service Request Definition name using the 'bmc-remedy-service-request-definition-get' command.
-  isArray: false
+- description: The Service Request Definition name. Get the Service Request Definition name using the 'bmc-remedy-service-request-definition-get' command.
   name: service_request_definition
-  required: false
-  secret: false
-- default: false
-  description: The unique ID of the Service Request Definition. Get the Service Request Definition ID using the 'bmc-remedy-service-request-definition-get' command.
-  isArray: false
+- description: The unique ID of the Service Request Definition. Get the Service Request Definition ID using the 'bmc-remedy-service-request-definition-get' command.
   name: service_request_definition_id
-  required: false
-  secret: false
-- default: false
-  description: |-
+- description: |-
     Each service request definition expects specific parameters to be supplied. Specify the parameters as a delimiter (;) separated string. Example: 'param1=value1; param2=value2'.
-  isArray: false
   name: service_request_definition_params
-  required: false
-  secret: false
-- default: false
-  description: Determines the priority of the service request. Get the impact name using the 'bmc-remedy-impact-details-get' command.
-  isArray: false
+- description: Determines the priority of the service request. Get the impact name using the 'bmc-remedy-impact-details-get' command.
   name: impact
-  required: false
-  secret: false
-- default: false
-  description: The unique ID of the impact which is used to determine the priority of the service request. Get the impact ID using the 'bmc-remedy-impact-details-get' command.
-  isArray: false
+- description: The unique ID of the impact which is used to determine the priority of the service request. Get the impact ID using the 'bmc-remedy-impact-details-get' command.
   name: impact_id
-  required: false
-  secret: false
-- default: false
-  description: Name of the account. Get the account name using the 'bmc-remedy-account-details-get' command.
-  isArray: false
+- description: Name of the account. Get the account name using the 'bmc-remedy-account-details-get' command.
   name: account
-  required: false
-  secret: false
-- default: false
-  description: The account ID of the specific account. Get the account ID from the account name using the 'bmc-remedy-account-details-get' command.
-  isArray: false
+- description: The account ID of the specific account. Get the account ID from the account name using the 'bmc-remedy-account-details-get' command.
   name: account_id
-  required: false
-  secret: false
 comment: 'This script is used to simplify the process of creating a service request in BMC Helix Remedyforce. The script will consider the ID over the name of the argument when both are provided. Example: client_id is considered when both client_id and client_user_name are provided.'
 commonfields:
   id: BMCHelixRemedyforceCreateServiceRequest
@@ -133,7 +57,6 @@ script: '-'
 subtype: python3
 tags:
 - bmcremedyforce
-system: false
 timeout: '0'
 type: python
 dependson:

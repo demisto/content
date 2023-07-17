@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # STD Libraries
 from typing import Optional, List, Dict, Any
 # 3-rd party libraries
 import pandas as pd
 import phrases_case
 # Local packages
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 

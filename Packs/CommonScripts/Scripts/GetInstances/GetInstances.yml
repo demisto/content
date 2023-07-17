@@ -9,7 +9,7 @@ enabled: true
 comment: Returns integration instances configured in Cortex XSOAR. You can filter by instance status and/or brand name (vendor).
 args:
 - name: brand
-  description: Brand name to filter instances by. 
+  description: Brand name to filter instances by.
   isArray: true
 - defaultValue: "active"
   name: instance_status
@@ -37,7 +37,6 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 5.0.0

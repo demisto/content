@@ -1,16 +1,8 @@
 args:
-- default: false
-  description: The end date for searching indicators.
-  isArray: false
+- description: The end date for searching indicators.
   name: to
-  required: false
-  secret: false
-- default: false
-  description: The start date for searching indicators.
-  isArray: false
+- description: The start date for searching indicators.
   name: from
-  required: false
-  secret: false
 comment: This is a widget script returning MITRE indicators information for top indicators shown in incidents.
 commonfields:
   id: MITREIndicatorsByOpenIncidentsV2
@@ -19,14 +11,12 @@ enabled: true
 name: MITREIndicatorsByOpenIncidentsV2
 script: '-'
 subtype: python3
-system: false
 tags:
 - widget
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.11.58677
 runas: DBotWeakRole
-runonce: false
 tests:
 - No test.
 fromversion: 5.5.0

@@ -5,7 +5,6 @@ comment: This script is used to convert alerts to a table.
 name: MicrosoftSentinelConvertAlertsToTable
 outputs:
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'

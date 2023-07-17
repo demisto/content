@@ -139,8 +139,8 @@ severity_to_text = [
     'Critical']
 
 BASE_URL = demisto.params()['url']
-ACCESS_KEY = demisto.params()['access-key']
-SECRET_KEY = demisto.params()['secret-key']
+ACCESS_KEY = demisto.params().get('credentials_access_key', {}).get('password') or demisto.params()['access-key']
+SECRET_KEY = demisto.params().get('credentials_secret_key', {}).get('password') or demisto.params()['secret-key']
 USER_AGENT_HEADERS_VALUE = 'Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)'
 AUTH_HEADERS = {'X-ApiKeys': f"accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}"}
 NEW_HEADERS = {
@@ -1115,6 +1115,8 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
 
 
 def main():  # pragma: no cover
+    if not (ACCESS_KEY and SECRET_KEY):
+        raise DemistoException('Access Key and Secret Key must be provided.')
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'tenable-io-list-scans':

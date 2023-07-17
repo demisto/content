@@ -21,7 +21,6 @@ args:
   required: true
   description: Duplicate incident id
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.4.29342
 tests:

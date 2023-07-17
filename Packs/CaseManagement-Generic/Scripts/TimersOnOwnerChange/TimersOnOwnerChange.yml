@@ -9,11 +9,10 @@ comment: |-
 commonfields:
   id: TimersOnOwnerChange
   version: -1
-dockerimage: demisto/python3:3.10.10.49934
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: TimersOnOwnerChange
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

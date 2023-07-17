@@ -5,7 +5,6 @@ dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: GetCampaignIncidentsIdsAsOptions
 runas: DBotWeakRole
-runonce: false
 script: ''
 comment: Get the campaign incident IDs as option values for Multi Select field.
 scripttarget: 0

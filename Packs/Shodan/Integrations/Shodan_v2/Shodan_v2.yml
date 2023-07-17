@@ -7,14 +7,12 @@ commonfields:
   version: -1
 configuration:
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
   section: Connect
 - display: API Key
   name: api_key
-  required: false
   type: 4
   hidden: true
   section: Connect
@@ -26,13 +24,11 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -47,14 +43,12 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   section: Collect
 - defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
-  required: false
   type: 17
   options:
   - never
@@ -66,7 +60,6 @@ configuration:
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   section: Collect
   advanced: true
@@ -78,26 +71,14 @@ script:
   - arguments:
     - default: true
       description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
-      isArray: false
       name: query
       required: true
-      secret: false
-    - default: false
-      description: A CSV list of properties on which to get summary information. The search query supports filtering using the "property:count" format to define the number of facets to return for a property. For example, the query "country:100" returns the top 100 countries.
-      isArray: false
+    - description: A CSV list of properties on which to get summary information. The search query supports filtering using the "property:count" format to define the number of facets to return for a property. For example, the query "country:100" returns the top 100 countries.
       name: facets
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the fetched results. Each page contains a maximum of 100 results.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Searches Shodan using facets to get summary information on properties.
-    execution: false
     name: search
     outputs:
     - contextPath: Shodan.Banner.Org
@@ -148,13 +129,9 @@ script:
   - arguments:
     - default: true
       description: The IP address of the host.
-      isArray: false
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Returns all services that have been found on the IP address of the searched host.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.ASN
@@ -227,30 +204,20 @@ script:
       description: The vendor name.
       type: String
   - arguments:
-    - default: false
-      description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
-      isArray: false
+    - description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Returns the total number of results that match only the specified query or facet settings. This command does not return host results. This command does not consume query credits.
-    execution: false
     name: shodan-search-count
     outputs:
     - contextPath: Shodan.Search.ResultCount
       description: The number of results matched in the search query.
       type: Number
   - arguments:
-    - default: false
-      description: A CSV list of IP addresses or netblocks for Shodan to crawl defined in CIDR notation.
-      isArray: false
+    - description: A CSV list of IP addresses or netblocks for Shodan to crawl defined in CIDR notation.
       name: ips
       required: true
-      secret: false
-    deprecated: false
     description: Requests Shodan to crawl a network.
-    execution: false
     name: shodan-scan-ip
     outputs:
     - contextPath: Shodan.Scan.ID
@@ -260,36 +227,23 @@ script:
       description: The status of the scan.
       type: String
   - arguments:
-    - default: false
-      description: The port for which Shodan crawls the Internet.
-      isArray: false
+    - description: The port for which Shodan crawls the Internet.
       name: port
       required: true
-      secret: false
-    - default: false
-      description: The name of the protocol used to interrogate the port.
-      isArray: false
+    - description: The name of the protocol used to interrogate the port.
       name: protocol
       required: true
-      secret: false
-    deprecated: false
     description: Requests for Shodan to perform a scan on the specified port and protocol.
-    execution: false
     name: shodan-scan-internet
     outputs:
     - contextPath: Shodan.Scan.ID
       description: The ID of the initial scan.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the initial scan.
-      isArray: false
+    - description: The unique ID of the initial scan.
       name: scanID
       required: true
-      secret: false
-    deprecated: false
     description: Checks the progress of a previously submitted scan request on the specified port and protocol.
-    execution: false
     name: shodan-scan-status
     outputs:
     - contextPath: Shodan.Scan.Id
@@ -299,27 +253,15 @@ script:
       description: The status of the scan job checked for progress.
       type: String
   - arguments:
-    - default: false
-      description: The name of the network alert.
-      isArray: false
+    - description: The name of the network alert.
       name: alertName
       required: true
-      secret: false
-    - default: false
-      description: A list of IP addresses or network ranges defined in CIDR notation.
-      isArray: false
+    - description: A list of IP addresses or network ranges defined in CIDR notation.
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: The number of seconds for the network alert to remain active.
-      isArray: false
+    - description: The number of seconds for the network alert to remain active.
       name: expires
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a network alert for a defined IP address or netblock used for subscribing to changes or events that are discovered within the netblock's range.
-    execution: false
     name: shodan-create-network-alert
     outputs:
     - contextPath: Shodan.Alert.ID
@@ -329,15 +271,10 @@ script:
       description: The number of seconds that the specified network alert remains active.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the network alert.
-      isArray: false
+    - description: The ID of the network alert.
       name: alertID
       required: true
-      secret: false
-    deprecated: false
     description: Gets the details of a network alert.
-    execution: false
     name: shodan-network-get-alert-by-id
     outputs:
     - contextPath: Shodan.Alert.ID
@@ -346,9 +283,7 @@ script:
     - contextPath: Shodan.Alert.Expires
       description: The number of seconds that the network alert remains active.
       type: String
-  - deprecated: false
-    description: Gets a list of all created network alerts.
-    execution: false
+  - description: Gets a list of all created network alerts.
     name: shodan-network-get-alerts
     outputs:
     - contextPath: Shodan.Alert.ID
@@ -358,101 +293,54 @@ script:
       description: The number of seconds that the network alerts remain active.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the network alert to remove.
-      isArray: false
+    - description: The ID of the network alert to remove.
       name: alertID
       required: true
-      secret: false
-    deprecated: false
     description: Removes the specified network alert.
-    execution: false
     name: shodan-network-delete-alert
   - arguments:
-    - default: false
-      description: The ID of the network alert for which to enable notifications.
-      isArray: false
+    - description: The ID of the network alert for which to enable notifications.
       name: alertID
       required: true
-      secret: false
-    - default: false
-      description: The name of the trigger.
-      isArray: false
+    - description: The name of the trigger.
       name: Trigger
       required: true
-      secret: false
-    deprecated: false
     description: Enables receiving notifications for network alerts that are set off by the specified triggers.
-    execution: false
     name: shodan-network-alert-set-trigger
   - arguments:
-    - default: false
-      description: The ID of the network alert for which to disable notifications.
-      isArray: false
+    - description: The ID of the network alert for which to disable notifications.
       name: alertID
       required: true
-      secret: false
-    - default: false
-      description: The name of the trigger.
-      isArray: false
+    - description: The name of the trigger.
       name: Trigger
       required: true
-      secret: false
-    deprecated: false
     description: Disables receiving notifications for network alerts that are set off by the specified triggers.
-    execution: false
     name: shodan-network-alert-remove-trigger
   - arguments:
-    - default: false
-      description: The ID of the network alert for which to ignore the specified services.
-      isArray: false
+    - description: The ID of the network alert for which to ignore the specified services.
       name: alertID
       required: true
-      secret: false
-    - default: false
-      description: The name of the trigger.
-      isArray: false
+    - description: The name of the trigger.
       name: trigger
       required: true
-      secret: false
-    - default: false
-      description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
-      isArray: false
+    - description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
       name: service
       required: true
-      secret: false
-    deprecated: false
     description: Ignores the specified services for network alerts that are set off by the specified triggers.
-    execution: false
     name: shodan-network-alert-whitelist-service
   - arguments:
-    - default: false
-      description: The ID of the alert for which to resume the specified services.
-      isArray: false
+    - description: The ID of the alert for which to resume the specified services.
       name: alertID
       required: true
-      secret: false
-    - default: false
-      description: The name of the trigger.
-      isArray: false
+    - description: The name of the trigger.
       name: trigger
       required: true
-      secret: false
-    - default: false
-      description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
-      isArray: false
+    - description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
       name: service
       required: true
-      secret: false
-    deprecated: false
     description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
-    execution: false
     name: shodan-network-alert-remove-service-from-whitelist
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

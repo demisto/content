@@ -31,7 +31,6 @@ args:
   - Critical
   description: The new value of the field that was changed.
 scripttarget: 0
-runonce: false
 runas: DBotRole
 marketplaces:
 - xsoar

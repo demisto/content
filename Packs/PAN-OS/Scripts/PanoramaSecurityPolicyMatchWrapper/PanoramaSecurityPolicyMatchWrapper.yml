@@ -60,7 +60,6 @@ outputs:
   description: The matching rule to zone.
   type: String
 script: '-'
-system: false
 timeout: '0'
 type: python
 subtype: python3

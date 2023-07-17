@@ -1,22 +1,12 @@
 args:
-- default: false
-  description: The command to run.
-  isArray: false
+- description: The command to run.
   name: command
   required: true
-  secret: false
-- default: false
-  description: The arguments of the command.
-  isArray: false
+- description: The arguments of the command.
   name: arguments
-  required: false
-  secret: false
-- default: false
-  description: The instance name.
-  isArray: false
+- description: The instance name.
   name: instance_name
   required: true
-  secret: false
 comment: Executes a command in Cortex XSOAR in debug mode and pulls logs from the command execution.
 commonfields:
   id: TroubleshootExecuteCommand
@@ -64,7 +54,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - troubleshoot
 timeout: '0'

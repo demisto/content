@@ -15,7 +15,6 @@ args:
   default: true
   description: File hash to look up - supports MD5, SHA1 and SHA256
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.9.40422
 tests:

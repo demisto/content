@@ -1,5 +1,4 @@
-comment: 'Generates the HTML needed for a formatted email to be sent using the outputs
-  of !SSLVerifierV2, as part of the SSLVerifierV2 content pack. '
+comment: 'Generates the HTML needed for a formatted email to be sent using the outputs of !SSLVerifierV2, as part of the SSLVerifierV2 content pack. '
 commonfields:
   id: SSLVerifierV2_GenerateEmailBody
   version: -1
@@ -11,7 +10,6 @@ outputs:
   description: Email body formatted in HTML
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

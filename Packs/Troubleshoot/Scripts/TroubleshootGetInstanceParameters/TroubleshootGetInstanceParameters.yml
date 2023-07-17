@@ -1,9 +1,6 @@
 args:
-- default: false
-  isArray: false
-  name: instance_name
+- name: instance_name
   required: true
-  secret: false
   description: The name of the instance for which to get its parameters.
 comment: Gets an instance's configuration parameters in order to troubleshoot the instance.
 commonfields:
@@ -52,7 +49,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - troubleshoot
 timeout: '0'

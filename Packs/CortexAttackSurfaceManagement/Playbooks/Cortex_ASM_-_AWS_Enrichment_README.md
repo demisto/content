@@ -7,6 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * AWS - Enrichment
+* AWS - Unclaimed S3 Bucket Validation
 
 ### Integrations
 
@@ -27,6 +28,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | RemoteIP | IP address of service | alert.remoteip | Optional |
+| ASMRuleID | Attack Surface Management Rule ID. | alert.asmattacksurfaceruleid | Required |
 
 ## Playbook Outputs
 

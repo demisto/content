@@ -5,7 +5,6 @@ dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: SendEmailToCampaignRecipients
 runas: DBotWeakRole
-runonce: false
 script: ''
 comment: Send email to all recipients from the selected campaign incidents.
 scripttarget: 0
