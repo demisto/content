@@ -14,9 +14,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Proofpoint email security appliance.
 display: Proofpoint Protection Server v2
 name: Proofpoint Protection Server v2

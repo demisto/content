@@ -6,6 +6,7 @@ configuration:
 - display: Server IP / Hostname (e.g. 1.2.3.4)
   name: hostname
   type: 0
+  required: false
 - defaultvalue: '445'
   display: Port
   name: port
@@ -14,9 +15,11 @@ configuration:
 - display: Server NetBIOS (AD) Name
   name: nbname
   type: 0
+  required: false
 - display: Domain
   name: domain
   type: 0
+  required: false
 - display: Username
   name: credentials
   required: true
@@ -25,6 +28,7 @@ configuration:
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Deprecated. Use the Server Message Block (SMB) v2 integration instead.
 display: Server Message Block (SMB) (Deprecated)
 name: Server Message Block (SMB)

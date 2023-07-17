@@ -24,22 +24,26 @@ configuration:
   name: fetch_from
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 500
   display: The maximum number of events per fetch.
   additionalinfo: If you're encountering timeouts, consider decreasing this value.
   name: limit
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Collect events from Dropbox's logs.
 display: Dropbox Event Collector
 name: DropboxEventsCollector

@@ -26,47 +26,56 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: 'Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)'
   name: severity_level
   defaultvalue: All
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   defaultvalue: 1 day
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Max fetch
   defaultvalue: '50'
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Sub Account ID (MSSP accounts only)
   name: mssp_sub_account_id
   type: 0
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python

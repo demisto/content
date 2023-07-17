@@ -16,6 +16,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
   name: server
@@ -25,20 +26,25 @@ configuration:
   name: credentials
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Retry requests when API is rate limited
   name: retry_on_rate_limit
   type: 8
   defaultvalue: 'true'
+  required: false
 - display: API Key (Deprecated)
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
   name: api_key
   type: 4
+  required: false
 description: Malware analysis sandboxing.
 display: VMRay
 name: vmray

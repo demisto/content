@@ -17,10 +17,12 @@ configuration:
   display: Maximum incidents per fetch.
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: All
   display: Filter incidents by status.
   name: status
@@ -31,6 +33,7 @@ configuration:
   - Manually Cleared
   - System Cleared
   type: 16
+  required: false
 - additionalinfo: In some cases, performance might be impacted by using 'Fetch With Events' mode.
   defaultvalue: Fetch Without Events
   display: Fetch Mode
@@ -39,23 +42,29 @@ configuration:
   - Fetch With Events
   - Fetch Without Events
   type: 15
+  required: false
 - additionalinfo: Default is 20. Maximum is 50.
   defaultvalue: '20'
   display: Maximum events to fetch per incident.
   name: max_events_fetch
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: Use FortiSIEM v2 to fetch and update incidents, search events and manage watchlists of FortiSIEM.
 display: FortiSIEM v2
 name: FortiSIEMV2

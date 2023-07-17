@@ -33,14 +33,17 @@ configuration:
   name: retries
   type: 0
   defaultvalue: 5
+  required: false
 - additionalinfo: A comma-delimited string that specifies the initial order and type in which to get logs from the available APIs. Possible values are AUTHENTICATION, ADMINISTRATION, and TELEPHONY.
   display: APIs to use
   name: logs_type_array
   type: 0
   defaultvalue: AUTHENTICATION,ADMINISTRATION,TELEPHONY
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ""
   type: python

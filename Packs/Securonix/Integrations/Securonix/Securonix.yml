@@ -6,6 +6,7 @@ configuration:
 - display: Host (Overrides the default hostname, https://{tenant}.net/Snypr)
   name: host
   type: 0
+  required: false
 - display: Tenant
   name: tenant
   required: true
@@ -26,13 +27,16 @@ configuration:
   - Incident
   - Threat
   type: 15
+  required: false
 - additionalinfo: Name of the tenant to fetch threats from. This parameter is optional for Non MSSP users.
   display: Tenant Name
   name: tenant_name
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: |-
     Selecting "all" will fetch incidents updated in the given time range.
     Selecting "opened" will fetch incidents opened in the given time range.
@@ -45,6 +49,7 @@ configuration:
   - opened
   - closed
   type: 15
+  required: false
 - display: Set default incident severity
   name: default_severity
   options:
@@ -52,9 +57,11 @@ configuration:
   - Medium
   - High
   type: 15
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: |-
     The date or relative timestamp from where to start fetching incidents.
 
@@ -63,11 +70,13 @@ configuration:
   display: First fetch time range
   name: fetch_time
   type: 0
+  required: false
 - defaultvalue: '200'
   additionalinfo: If the value is greater than 200, it will be considered as 200. The maximum is 200.
   display: The maximum number of incidents to fetch each time.
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: The mirroring direction in which to mirror the incidents. You can mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix), or in both directions.
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -78,6 +87,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   type: 15
+  required: false
 - additionalinfo: |-
     If enabled, the integration will close the respective Securonix
     incident after fetching it in XSOAR. Following fields will be required for 
@@ -90,31 +100,38 @@ configuration:
   display: Close respective Securonix incident after fetching
   name: close_incident
   type: 8
+  required: false
 - additionalinfo: If the Securonix incident is in any one of the state mentioned here, then the incident will be Closed on XSOAR. Supports comma-separated values.
   display: Securonix workflow state(s) that can be considered as Close state in XSOAR for Incoming mirroring
   name: close_states_of_securonix
   type: 0
+  required: false
 - additionalinfo: Provide an action name to map with XSOAR's active state. E.g. IN PROGRESS
   display: Securonix action name to map with XSOAR's active state for Outgoing mirroring
   name: active_state_action_mapping
   type: 0
+  required: false
 - additionalinfo: Provide a workflow status to map with XSOAR's active state. E.g. In Progress
   display: Securonix status to map with XSOAR's active state for Outgoing mirroring
   name: active_state_status_mapping
   type: 0
+  required: false
 - additionalinfo: Provide an action name to map with XSOAR's Closed state. E.g. CLOSED
   display: Securonix action name to map with XSOAR's closed state for Outgoing mirroring
   name: closed_state_action_mapping
   type: 0
+  required: false
 - additionalinfo: Provide a workflow status to map with XSOAR's closed state. E.g. Completed
   display: Securonix status to map with XSOAR's closed state for Outgoing mirroring
   name: closed_state_status_mapping
   type: 0
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Securonix.
   defaultvalue: comment
   display: Comment Entry Tag
   name: comment_tag
   type: 0
+  required: false
 - additionalinfo: Numbers of retries to be performed. (Recommended is 3)
   defaultvalue: '3'
   display: Securonix Retry Count
@@ -127,11 +144,13 @@ configuration:
   - '4'
   - '5'
   type: 15
+  required: false
 - additionalinfo: The delay between two retries. Range in 30 to 300 Seconds (5 minutes). Anything less than 30 seconds is considered 30 seconds, and anything more than 300 seconds is considered 300 seconds. (Recommended is 30 seconds)
   defaultvalue: '30'
   display: Securonix Retry Delay
   name: securonix_retry_delay
   type: 0
+  required: false
 - additionalinfo: Delay type of retry mechanism. (Recommended is Exponential)
   defaultvalue: Exponential
   display: Securonix Retry Delay Type
@@ -140,12 +159,15 @@ configuration:
   - Exponential
   - Fixed
   type: 15
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists.
 display: Securonix
 name: Securonix

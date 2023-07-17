@@ -21,16 +21,19 @@ configuration:
   - Asia
   type: 15
   section: Connect
+  required: false
 - display: Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.
   name: malicious_categories
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.
   name: suspicious_categories
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.
   name: override_severity_malicious
   options:
@@ -40,6 +43,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - display: Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.
   name: override_severity_suspicious
   options:
@@ -49,16 +53,19 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - display: Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.
   name: override_confidence_score_malicious_threshold
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.
   name: override_confidence_score_suspicious_threshold
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.
   name: override_confidence_level_malicious
   options:
@@ -70,6 +77,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: |-
     Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious".
     The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.
@@ -83,14 +91,17 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - additionalinfo: |-
     The UTC date or relative timestamp from where to start fetching incidents.
 
@@ -102,11 +113,13 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '100'
   display: How many incidents to fetch each time
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - additionalinfo: Select Chronicle alert type to create actionable incident. Available options are IOC Domain matches(Default), Assets with alerts, Detection alerts and User alerts.
   defaultvalue: IOC Domain matches
   display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).
@@ -119,6 +132,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts).
   name: incident_severity
   options:
@@ -129,18 +143,21 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add multiple. Entered rules have precedence over the "Fetch all rules detections" checkbox.'
   display: Detections to fetch by Rule ID or Version ID
   name: fetch_detection_by_ids
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Fetch detections for all versions of all the rules.
   display: Fetch all rules detections
   name: fetch_all_detections
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Select the alert state to filter the detections to be fetched using fetch incidents. Available options are 'ALERTING' and 'NOT_ALERTING' (Default-No Selection).
   display: Filter detections by alert state
   name: fetch_detection_by_alert_state
@@ -150,6 +167,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Select the time window to query Chronicle. While selecting the time window consider the time delay for an event to appear in Chronicle after generation. Available options are 15 (Default), 30, 45 and 60. This parameter is not applied when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless you're missing alerts.
   defaultvalue: '15'
   display: Time window (in minutes)
@@ -162,6 +180,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "CREATED_TIME". This configuration is applicable to "Detection alerts" only.
   defaultvalue: CREATED_TIME
   display: List Basis
@@ -172,16 +191,19 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -196,6 +218,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   section: Collect
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -207,12 +230,14 @@ configuration:
   type: 17
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   section: Collect
   advanced: true
+  required: false
 description: Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 display: Chronicle
 name: Google Chronicle Backstory
