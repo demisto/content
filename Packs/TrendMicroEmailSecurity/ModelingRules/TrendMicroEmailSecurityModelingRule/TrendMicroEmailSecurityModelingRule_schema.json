@@ -73,19 +73,19 @@
             "is_array": false
         },
         "attachments": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         },
         "recipients": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         },
         "headerTo": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         },
         "details": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         },
         "timestamp": {
