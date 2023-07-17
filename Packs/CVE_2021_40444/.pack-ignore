@@ -3,3 +3,9 @@ ignore=RM106
 
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:playbook-Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack_6_5_README.md]
+ignore=RM106
+
+[file:playbook-CVE-2021-40444_-_MSHTML_RCE_6_5_README.md]
+ignore=RM106
