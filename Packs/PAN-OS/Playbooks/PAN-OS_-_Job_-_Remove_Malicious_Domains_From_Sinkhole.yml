@@ -1,6 +1,5 @@
-id: 92bcb4ca-e7e1-4d23-80b4-cfcbf6897049
-version: 63
-vcShouldKeepItemLegacyProdMachine: false
+id: PAN-OS - Job - Remove Malicious Domains From Sinkhole
+version: -1
 name: PAN-OS - Job - Remove Malicious Domains From Sinkhole
 description: |-
   This playbook should be run as a job. It is used to periodically remove the specified tag from domain indicators. It should be used in conjunction with the "PAN-OS - Job - Add Malicious Domains To Sinkhole" playbook, to stop domains from being sinkholed after a certain amount of time.
@@ -21,6 +20,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -97,9 +97,7 @@ tasks:
       id: 7c1c7038-aaa1-4b07-8677-4921ab9077f5
       version: -1
       name: Get the oldest decay date
-      description: Gets the oldest date and time according to the decay period configured
-        in the playbook input. Domains that have not been tagged since the decay time
-        will be untagged.
+      description: Gets the oldest date and time according to the decay period configured in the playbook input. Domains that have not been tagged since the decay time will be untagged.
       scriptName: GetTime
       type: regular
       iscommand: false
@@ -139,8 +137,7 @@ tasks:
       id: 1f109241-f295-4231-8a78-ae89b78d98e1
       version: -1
       name: Remove tags from the decayed domains
-      description: Removes the sinkhole tag from the domains that reached the decay
-        period according to the playbook input.
+      description: Removes the sinkhole tag from the domains that reached the decay period according to the playbook input.
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
@@ -197,6 +194,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -221,9 +219,7 @@ tasks:
       id: 70f7905f-7f25-44de-8f4c-d4adc31a80ff
       version: -1
       name: Save the name of the tagging event to search in history
-      description: Saves the name of the event that appears in the indicator timeline
-        section, so that it can be used when filtering past tag events and deciding
-        whether to remove the tag from the indicator.
+      description: Saves the name of the event that appears in the indicator timeline section, so that it can be used when filtering past tag events and deciding whether to remove the tag from the indicator.
       scriptName: Set
       type: regular
       iscommand: false
@@ -273,6 +269,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -426,9 +423,7 @@ tasks:
       id: ed078f6d-529e-4243-8d35-a03182bdd5ad
       version: -1
       name: Any domains have NOT been tagged recently?
-      description: Checks whether any of the checked domains was not tagged within
-        the decay period. If domains have been recently tagged (E.g., after the date
-        derived from the decay period input), they will not be untagged.
+      description: Checks whether any of the checked domains was not tagged within the decay period. If domains have been recently tagged (E.g., after the date derived from the decay period input), they will not be untagged.
       type: condition
       iscommand: false
       brand: ""
@@ -495,7 +490,7 @@ inputs:
   description: |-
     The tag that will be removed from the tagged domain indicators.
     This should be the tag that was used to export the domains to the EDL using the Generic Export Indicators Service integration, which is used by the firewall's sinkhole configuration.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DaysTaggedBeforeRemoval
   value:
     simple: "14"
@@ -505,6 +500,9 @@ inputs:
     The value should be a number of days. For example: 14.
 
     Technical details: when specifying the decay period, the playbook will take into account multiple tagging/untagging activity in the domain indicator in XSOAR. This means that if you specified a value of "14" and a domain was tagged 15 days ago, but also untagged and then tagged again 10 days ago - it will not be untagged by the playbook, as tagging activity happened 10 days ago. It will, however, be untagged when the playbook runs 5 days afterwards, since at that time the domain will have reached the decay period again.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

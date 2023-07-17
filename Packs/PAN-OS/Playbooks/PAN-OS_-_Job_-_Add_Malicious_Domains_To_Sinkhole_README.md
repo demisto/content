@@ -21,10 +21,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GetIndicatorDBotScoreFromCache
+* SearchIndicatorRelationships
 * Set
 * SetAndHandleEmpty
-* SearchIndicatorRelationships
+* GetIndicatorDBotScoreFromCache
 
 ### Commands
 

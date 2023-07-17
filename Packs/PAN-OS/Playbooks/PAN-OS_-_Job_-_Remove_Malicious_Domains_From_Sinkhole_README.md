@@ -20,8 +20,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* removeIndicatorField
 * findIndicators
+* removeIndicatorField
 
 ## Playbook Inputs
 
