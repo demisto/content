@@ -21,6 +21,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Credentials
   name: credentials
   defaultvalue: ""
@@ -32,6 +33,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
   defaultvalue: ""
@@ -69,11 +71,13 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used in the IAM commands.
   defaultvalue: User Profile - Active Directory (Incoming)
   display: Incoming Mapper
@@ -93,6 +97,7 @@ configuration:
   defaultvalue: ""
   type: 0
   section: Connect
+  required: false
 - additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
   defaultvalue: 'true'
   display: Create user if does not exist
@@ -100,6 +105,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
