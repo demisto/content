@@ -40,17 +40,17 @@ jobs:
     
     - name: Update dependencies
       run: |
-        echo ${{ inputs.release_changes }}
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
 
     - name: Create pull request
       run: |
+        pr_body=$(echo ${{ inputs.release_changes }})
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
         git checkout -b ${{ inputs.release_version }}
         git commit -m "poetry files" -a
         git push origin ${{ inputs.release_version }}
-        gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved"
+        gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body $pr_body --reviewer ${{ inputs.reviewer }} -l "docs-approved"
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
