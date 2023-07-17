@@ -21,20 +21,24 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  required: false
 - name: creds_tenant_id
   type: 9
   displaypassword: Tenant ID
   hiddenusername: true
   section: Connect
+  required: false
 - display: Tenant ID
   name: tenant_id
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Client ID
   name: credentials
   type: 9
   section: Connect
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
@@ -42,6 +46,7 @@ configuration:
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -49,6 +54,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -56,12 +62,14 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
@@ -69,6 +77,7 @@ configuration:
   type: 9
   section: Connect
   advanced: true
+  required: false
 - display: Default Subscription ID
   name: subscriptionID
   required: true
@@ -90,11 +99,13 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   section: Collect
+  required: false
 - defaultvalue: Informational
   display: The minimum severity of incidents to fetch
   name: min_severity
@@ -106,10 +117,12 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Server URL
   name: server_url
   type: 0
@@ -117,16 +130,19 @@ configuration:
   advanced: true
   defaultvalue: https://management.azure.com
   additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Additional info to fetch
   name: fetch_additional_info
   type: 16
@@ -140,6 +156,7 @@ configuration:
     Choose what additional info to fetch for each incident.
     Note that this will increase the number of API calls.
   advanced: true
+  required: false
 - defaultvalue: 'None'
   display: Mirroring Direction
   name: mirror_direction
@@ -152,6 +169,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  required: false
 - additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -161,6 +179,7 @@ configuration:
   - marketplacev2
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel.
   defaultvalue: 'false'
   display: Close Mirrored Microsoft Sentinel Ticket
@@ -170,6 +189,7 @@ configuration:
   - marketplacev2
   section: Collect
   advanced: true
+  required: false
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel

@@ -19,10 +19,12 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: ''
   display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 description: Deprecated. Create and Manage Azure Virtual Machines
 display: Azure Compute (Deprecated)
 name: Azure Compute

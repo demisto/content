@@ -29,11 +29,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
 display: Cortex XDR - XQL Query Engine
 name: Cortex XDR - XQL Query Engine

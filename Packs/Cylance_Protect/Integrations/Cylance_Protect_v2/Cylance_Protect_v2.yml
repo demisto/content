@@ -17,56 +17,67 @@ configuration:
   type: 0
   section: Connect
   hidden: true
+  required: false
 - display: Application Secret
   name: app_secret
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Tenant API Key
   name: tid
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Application ID
   name: app_creds
   type: 9
   section: Connect
   displaypassword: Application Secret
+  required: false
 - name: api_key
   type: 9
   section: Connect
   hiddenusername: true
   displaypassword: Tenant API Key
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - defaultvalue: "-59"
   display: File Threshold
   name: file_threshold
   type: 0
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   section: Collect
   advanced: true
+  required: false
 description: Manage Endpoints using Cylance protect
 display: Cylance Protect v2
 name: Cylance Protect v2

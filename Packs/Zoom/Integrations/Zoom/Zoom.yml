@@ -7,39 +7,48 @@ configuration:
   name: url
   type: 0
   defaultvalue: "https://api.zoom.us/v2/"
+  required: false
 - display: Account ID (OAuth)
   name: account_id
   type: 0
+  required: false
 - display: Client ID (OAuth)
   name: credentials
   type: 9
   displaypassword: Client Secret (OAuth)
+  required: false
 - name: creds_api_key
   displaypassword: API Key (JWT-Deprecated.)
   type: 9
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hiddenusername: true
+  required: false
 - name: creds_api_secret
   displaypassword: API Secret (JWT-Deprecated.)
   type: 9
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hiddenusername: true
+  required: false
 - display: API Key (JWT-Deprecated.)
   name: apiKey
   type: 4
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hidden: true
+  required: false
 - display: API Secret (JWT-Deprecated.)
   name: apiSecret
   type: 4
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hidden: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Use the Zoom integration manage your Zoom users and meetings
 display: Zoom
 name: Zoom

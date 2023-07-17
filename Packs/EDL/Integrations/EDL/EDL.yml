@@ -12,12 +12,14 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators.
   display: Indicator Query
   name: indicators_query
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: The format of the exported list.
   defaultvalue: PAN-OS (text)
   display: Outbound Format
@@ -31,12 +33,14 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: For use with JSON and CSV formats - select specific XSOAR fields to export (comma separated list). If given the value 'all' - all XSOAR fields are exported (in large quantities this can cause a performance issue). If left empty - only value and type are exported.
   display: Exported Fields
   name: fields_filter
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Maximum number of items in the list.
   defaultvalue: '2500'
   display: List Size
@@ -51,28 +55,33 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use."
   display: Listen Port
   name: longRunningPort
   type: 0
   section: Connect
+  required: false
 - additionalinfo: For use with HTTPS - the certificate that the service should use.
   display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: For use with HTTPS - the private key that the service should use.
   display: Private Key (Required for HTTPS)
   name: key
   type: 14
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced.
   display: Username
   name: credentials
   type: 9
   section: Connect
+  required: false
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
@@ -80,6 +89,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
   defaultvalue: 'true'
   display: Strip ports from URLs
@@ -87,6 +97,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: If selected, strips the protocol from URLs (http/https).
   defaultvalue: 'true'
   display: Strip protocols from URLs
@@ -94,6 +105,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: If selected, URLs are truncated to no more than 254 characters.
   defaultvalue: 'false'
   display: Truncate URL length
@@ -101,18 +113,21 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Prepend string to list
   name: prepend_string
   type: 12
   additionalinfo: For use with PAN-OS (text) format - String to add to beginning of published list. Supports newline characters (\n).
   section: Collect
   advanced: true
+  required: false
 - display: Append string to list
   name: append_string
   type: 12
   additionalinfo: For use with PAN-OS (text) format - String to add to end of published list. Supports newline characters (\n).
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR).
   defaultvalue: Don't Collapse
   display: IP Collapsing
@@ -124,6 +139,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
   defaultvalue: 8
   display: 'Maximum CIDR network prefix bits size'
@@ -131,6 +147,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: 'Option to remove top level domainGlobs from the list. For example - *.com.'
   defaultvalue: 'false'
   display: 'Exclude top level domainGlobs'
@@ -138,12 +155,14 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
   display: "PAN-OS: drop invalid URL entries"
   name: drop_invalids
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   defaultvalue: string
   display: "McAfee Gateway: Indicator List Type"
@@ -160,6 +179,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: For use with Symantec ProxySG format - set the default category for the output.
   defaultvalue: bc_category
   display: "Symantec ProxySG: Default Category"
@@ -167,18 +187,21 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: For use with Symantec ProxySG format - set the categories that should be listed in the output (comma separated list). If not set, lists all existing categories.
   display: "Symantec ProxySG: Listed Categories"
   name: category_attribute
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: If selected, CSV format appears in a textual webpage instead of initiating a file download.
   display: Show CSV format as Text
   name: csv_text
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators. Value can be up to 10,000 due to performance limitations.
   defaultvalue: '10000'
   display: XSOAR Indicator Page Size
@@ -186,36 +209,42 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Long Running Instance
   hidden: true
   name: longRunning
   type: 8
   section: Connect
+  required: false
 - additionalinfo: 'NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support.'
   display: NGINX Global Directives
   name: nginx_global_directives
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support.
   display: NGINX Server Conf
   name: nginx_server_conf
   type: 12
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: NGNIX read timeout in seconds.
   display: NGINX Read Timeout
   name: timeout
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: 'This parameter will be deprecated from September 2023. Make sure to adjust your default queries accordingly..'
   display: 'Advanced: Use Legacy Queries (Deprecated)'
   name: use_legacy_query
   type: 8
   section: Collect
   advanced: true
+  required: false
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL

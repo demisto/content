@@ -15,6 +15,7 @@ configuration:
   name: station
   defaultvalue: https://station.trustar.co
   type: 0
+  required: false
 - display: TruSTAR API Key
   name: key
   type: 0
@@ -26,9 +27,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   commands:
   - name: trustar-search-indicators

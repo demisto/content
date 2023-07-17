@@ -17,9 +17,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users, and groups. Users can also manage the space permissions.
 display: Atlassian Confluence Cloud
 name: Atlassian Confluence Cloud

@@ -11,6 +11,7 @@ configuration:
   name: app_id
   type: 0
   section: Connect
+  required: false
 - display: Subscription ID
   name: subscription_id
   required: true
@@ -26,11 +27,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - name: auth_type
   display: Authentication Type
   required: true
@@ -48,6 +51,7 @@ configuration:
   type: 0
   additionalinfo: ""
   section: Connect
+  required: false
 - name: credentials
   display: Client Secret (for user-auth mode)
   defaultvalue:
@@ -56,6 +60,7 @@ configuration:
   displaypassword: Client Secret (for user-auth mode)
   hiddenusername: true
   section: Connect
+  required: false
 - name: redirect_uri
   display: Application redirect URI (for user-auth mode)
   defaultvalue:
@@ -63,6 +68,7 @@ configuration:
   additionalinfo: ""
   section: Connect
   advanced: true
+  required: false
 - name: auth_code
   display: Authorization code
   defaultvalue:
@@ -71,12 +77,14 @@ configuration:
   displaypassword: Authorization code
   hiddenusername: true
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 description: Deploy and manage storage accounts and blob services.
 display: Azure Storage Management
 name: Azure Storage

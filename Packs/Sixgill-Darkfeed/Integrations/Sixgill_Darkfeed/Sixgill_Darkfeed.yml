@@ -22,10 +22,12 @@ configuration:
   - "70"
   - "60"
   additionalinfo: 'Ingest all IOCs=all, IOC exactly fits description=90, IOC almost exactly fits description=80, IOC mostly fits description=70, IOC generally fits description=60'
+  required: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -36,6 +38,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -58,6 +61,7 @@ configuration:
   - WHITE
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 - defaultvalue: 'indicatorType'
   display: ""
   name: feedExpirationPolicy
@@ -67,37 +71,46 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
   type: 1
+  required: false
 - defaultvalue: '2'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - display: The maximum number of indicators to fetch.
   name: maxIndicators
   type: 0
   defaultvalue: '1000'
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Incremental Feed
   name: feedIncremental
   type: 8
   defaultvalue: 'true'
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses straight into the XSOAR platform.
 display: Sixgill DarkFeed Threat Intelligence
 name: Sixgill_Darkfeed

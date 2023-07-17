@@ -15,9 +15,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Alert and notify users using iLert
 display: iLert
 name: iLert

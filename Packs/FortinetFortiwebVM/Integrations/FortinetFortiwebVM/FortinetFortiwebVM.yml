@@ -25,10 +25,12 @@ configuration:
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: "Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and host names."
 display: Fortiweb VM
 name: fortiweb_vm

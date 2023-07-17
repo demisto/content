@@ -11,11 +11,13 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key
   name: api_key
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Base url to Shodan API
   name: api_url
   required: true
@@ -27,11 +29,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: A - Completely reliable
   name: integrationReliability
   display: 'Source Reliability'
@@ -46,6 +50,7 @@ configuration:
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   section: Collect
+  required: false
 - defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
@@ -57,12 +62,14 @@ configuration:
   - suddenDeath
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   section: Collect
   advanced: true
+  required: false
 description: A search engine used for searching Internet-connected devices
 display: Shodan v2
 name: Shodan_v2

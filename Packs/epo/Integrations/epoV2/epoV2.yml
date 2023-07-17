@@ -26,11 +26,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The timeout of the HTTP requests sent to McAfee ePO API (in seconds), the max timeout allowed is 300s.
   defaultvalue: '120'
   display: HTTP Timeout
@@ -38,6 +40,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 script:
   commands:
   - name: epo-help

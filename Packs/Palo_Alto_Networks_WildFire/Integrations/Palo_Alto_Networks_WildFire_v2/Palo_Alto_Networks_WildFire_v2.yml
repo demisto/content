@@ -17,6 +17,7 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
+  required: false
 - additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc = Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM API Key
   defaultvalue: other
   display: API Key Type
@@ -29,6 +30,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Source Reliability
   name: integrationReliability
   required: true
@@ -49,22 +51,26 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Return warning entry for unsupported file types
   name: suppress_file_type_error
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: API Key (Deprecated)
   name: token
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Create relationships
   defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
@@ -72,6 +78,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2

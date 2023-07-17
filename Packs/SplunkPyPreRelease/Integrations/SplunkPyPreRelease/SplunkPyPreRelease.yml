@@ -21,57 +21,71 @@ configuration:
   name: fetchQuery
   type: 0
   additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
+  required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: 'true'
   display: Use Splunk Clock Time For Fetch
   name: useSplunkTime
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Parse Raw Part of Notable Events
   name: parseNotableEventsRaw
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   type: 8
+  required: false
 - display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. (Set only if the Splunk server is different than the Cortex XSOAR server.) Relevant only for fetching and mirroring notable events.
   name: timezone
   type: 0
+  required: false
 - additionalinfo: The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option.
   defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   type: 0
+  required: false
 - defaultvalue: earliest_time
   display: Earliest time to fetch (The name of the Splunk field whose value defines the query's earliest time to fetch.)
   name: earliest_fetch_time_fieldname
   type: 0
+  required: false
 - defaultvalue: latest_time
   display: Latest time to fetch (The name of the Splunk field whose value defines the query's latest time to fetch.)
   name: latest_fetch_time_fieldname
   type: 0
+  required: false
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   type: 12
+  required: false
 - additionalinfo: Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field.
   defaultvalue: source
   display: Event Type Field
   name: type_field
   type: 0
+  required: false
 - defaultvalue: 'false'
   display: Use CIM Schemas for Mapping
   name: use_cim
   type: 8
   additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (supported from Cortex XSOAR V6.0), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information.
+  required: false
 - defaultvalue: None
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to XSOAR and Splunk).'
   display: Incident Mirroring Direction
@@ -84,6 +98,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   type: 15
+  required: false
 - additionalinfo: When selected, closing the Splunk notable event is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -91,6 +106,7 @@ configuration:
   - marketplacev2
   name: close_incident
   type: 8
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Splunk.
   defaultvalue: 'false'
   display: Close Mirrored Splunk Notable Event
@@ -98,24 +114,31 @@ configuration:
   - marketplacev2
   name: close_notable
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: The app context of the namespace
   name: app
   type: 0
+  required: false
 - display: HEC Token (HTTP Event Collector)
   name: hec_token
   type: 4
+  required: false
 - display: 'HEC URL (e.g: https://localhost:8088).'
   name: hec_url
   type: 0
+  required: false
 - display: Use Python requests handler
   name: use_requests_handler
   type: 8
+  required: false
 - display: Enrichment Types
   name: enabled_enrichments
   type: 16
@@ -124,28 +147,34 @@ configuration:
   - Asset
   - Identity
   additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
+  required: false
 - display: Enrichment Timeout (Minutes)
   name: enrichment_timeout
   defaultvalue: "5"
   type: 0
   additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
+  required: false
 - display: Number of Events Per Enrichment Type
   name: num_enrichment_events
   defaultvalue: "20"
   type: 0
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
+  required: false
 - display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
   name: extensive_logs
   type: 8
+  required: false
 - display: 'Advanced: Fetch backwards window for the events occurrence time'
   name: occurrence_look_behind
   defaultvalue: "15"
   type: 0
   additionalinfo: The fetch time range will be at least of the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk.
+  required: false
 - display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   type: 0
   additionalinfo: Use this parameter to specify a list of comma separated fields, which together are a unique identifier for the events you with to fetch.
+  required: false
 description: Runs queries on Splunk servers.
 display: SplunkPy Prerelease (Beta)
 name: SplunkPyPreRelease

@@ -16,6 +16,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Server URL (e.g., https://example.net)
   name: url
   required: true
@@ -27,45 +28,54 @@ configuration:
   displaypassword: User's key to access the API (for legacy method)
   hiddenusername: true
   section: Connect
+  required: false
 - display: User's key to access the API (for legacy method)
   name: token
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Application ID
   name: app_id
   type: 0
   section: Connect
   additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
+  required: false
 - display: 'Tenant ID (for Client Credentials mode)'
   name: tenant_id
   type: 0
   section: Connect
+  required: false
 - display: ''
   name: client_id
   type: 9
   displaypassword: Client Secret (for Client Credentials mode)
   hiddenusername: true
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident severity
   name: severity
   type: 16
@@ -74,15 +84,18 @@ configuration:
   - Medium
   - High
   - All
+  required: false
 - display: Maximum alerts to fetch
   name: max_fetch
   type: 0
   defaultvalue: '50'
+  required: false
 - display: First fetch time
   name: first_fetch
   type: 0
   additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   section: Collect
+  required: false
 - display: Incident resolution status
   name: resolution_status
   type: 16
@@ -93,12 +106,14 @@ configuration:
   - All
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: {"severity":{"eq":2}}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: {"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"}" please query on {"entity.policy":{"eq":1234}}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
   display: 'Custom Filter'
   name: custom_filter
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching'
@@ -106,6 +121,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
 display: Microsoft Defender for Cloud Apps
 name: MicrosoftCloudAppSecurity
