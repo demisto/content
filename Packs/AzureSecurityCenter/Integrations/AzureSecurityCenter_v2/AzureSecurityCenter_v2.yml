@@ -400,7 +400,7 @@ script:
     - contextPath: Azure.Securescore.weight
       description: The relative weight for each subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.64970
   runonce: false
   script: '-'
   type: python
