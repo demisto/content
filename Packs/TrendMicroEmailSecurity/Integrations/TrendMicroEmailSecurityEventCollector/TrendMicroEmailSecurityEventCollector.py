@@ -158,13 +158,16 @@ def order_first_fetch(first_fetch: str) -> str:
     """
     Checks the first_fetch which is not older than 3 days
     """
-
-    if arg_to_datetime(first_fetch) <= arg_to_datetime("4321 minutes"):  # type: ignore[operator]
-        raise ValueError(
-            "The request retrieves logs created within 72 hours at most before sending the request\n"
-            "Please put in the First Fetch Time parameter a value that is at most 72 hours / 3 days"
-        )
-    return arg_to_datetime(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    first_fetch: Optional[datetime] = arg_to_datetime(first_fetch)
+    max_time_ago: Optional[datetime] = arg_to_datetime("4321 minutes")
+    if first_fetch and max_time_ago:
+        if (first_fetch <= max_time_ago):
+            raise ValueError(
+                "The request retrieves logs created within 72 hours at most before sending the request\n"
+                "Please put in the First Fetch Time parameter a value that is at most 72 hours / 3 days"
+            )
+        return first_fetch.strftime(DATE_FORMAT)
+    raise ValueError("No provided `max_fetch` parameter")
 
 
 def remove_sensitive_from_events(event: dict) -> dict:
@@ -359,28 +362,29 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module(client))
-        elif command in ("trend-micro-get-events", "fetch-events"):
-            if command == "trend-micro-get-events":
-                should_update_last_run = False
-                since = order_first_fetch(params.get("since") or "3 days")
-                events, _ = fetch_events_command(client, args, since, last_run={})
-                return_results(
-                    CommandResults(readable_output=tableToMarkdown("Events:", events))
-                )
-            elif command == "fetch-events":
-                should_push_events = True
-                should_update_last_run = True
-                events, last_run = fetch_events_command(
-                    client, params, first_fetch, last_run=last_run
-                )
 
-            if should_push_events:
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug("The events were pushed to XSIAM")
+        elif command == "trend-micro-get-events":
+            should_update_last_run = False
+            since = order_first_fetch(params.get("since") or "3 days")
+            events, _ = fetch_events_command(client, args, since, last_run={})
+            return_results(
+                CommandResults(readable_output=tableToMarkdown("Events:", events))
+            )
 
-                if should_update_last_run:
-                    demisto.setLastRun(last_run)
-                    demisto.debug(f"set {last_run=}")
+        elif command == "fetch-events":
+            should_push_events = True
+            should_update_last_run = True
+            events, last_run = fetch_events_command(
+                client, params, first_fetch, last_run=last_run
+            )
+
+        if should_push_events:
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.debug("The events were pushed to XSIAM")
+
+            if should_update_last_run:
+                demisto.setLastRun(last_run)
+                demisto.debug(f"set {last_run=}")
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
