@@ -44,27 +44,32 @@ configuration:
   name: after
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '1000'
   additionalinfo: Due to API limitations, the maximum is 10,000.
   display: Number of alerts for each fetch.
   name: limit
   type: 0
   section: Collect
+  required: false
 - display: Fetch events
   name: isFetchEvents
   type: 8
   section: Collect
+  required: false
 - defaultvalue: 'true'
   display: Verify SSL Certificate
   name: verify
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Collects the events log for alerts and activities provided Microsoft Defender for Cloud Apps API.
 display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector

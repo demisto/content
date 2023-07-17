@@ -20,20 +20,24 @@ configuration:
   hiddenusername: true
   name: creds_enc_key
   type: 9
+  required: false
 - display: Certificate Thumbprint (can be used instead of Client Secret)
   displaypassword: Private Key
   name: creds_certificate
   type: 9
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   hidden: true
   name: private_key
   type: 14
+  required: false
 - display: ""
   displaypassword: Authorization code (run msgraph-generate-login-url command)
   hiddenusername: true
   name: creds_auth_code
   type: 9
+  required: false
 - display: Application redirect URI
   name: redirect_uri
   required: true
@@ -41,9 +45,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: 'Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.'
 display: Microsoft Graph Search
 name: Microsoft Graph Search

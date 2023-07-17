@@ -18,6 +18,7 @@ configuration:
   displaypassword: Secret key
   section: Connect
   additionalinfo: See the help for instructions to generate the access key.
+  required: false
 - display: Username
   hiddenusername: true
   hiddenpassword: true
@@ -25,30 +26,36 @@ configuration:
   type: 9
   section: Connect
   additionalinfo: The Username is either admin or secman (depend on the role you want to log into) and your password to the tenable server.
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   type: 0
   section: Collect
   additionalinfo: The timestamp to start the fetch from.
+  required: false
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
