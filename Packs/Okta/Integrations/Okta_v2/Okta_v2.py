@@ -302,9 +302,8 @@ class Client(BaseClient):
         uri = "users"
         query_params = assign_params(
             limit=limit,
-            q=encode_string_results(term) if not advanced_search else None,
-            search=urllib.parse.quote(advanced_search)
-            # search='profile.department%20eq%20%22Engineering%22'
+            q=None if advanced_search else encode_string_results(term),
+            search=encode_string_results(advanced_search) if advanced_search else None
         )
         demisto.log(f'{query_params}')
         return self._http_request(
@@ -895,6 +894,8 @@ def search_command(client, args):
     limit = args.get('limit') or SEARCH_LIMIT
     verbose = args.get('verbose')
     advanced_search = args.get('advanced_search', '')
+    if not term and not advanced_search:
+        raise DemistoException('Please provide either the term or advanced_search argument')
     raw_response = client.search(term, limit, advanced_search)
 
     if raw_response and len(raw_response) > 0:

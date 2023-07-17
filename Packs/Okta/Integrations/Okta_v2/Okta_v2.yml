@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Okta v2
+  id: Okta v2 Test
   version: -1
 configuration:
 - display: Okta URL (https://<domain>.okta.com)
@@ -32,8 +32,8 @@ configuration:
   section: Connect
   advanced: true
 description: Integration with Okta's cloud-based identity management service.
-display: Okta v2
-name: Okta v2
+display: Okta v2 Test
+name: Okta v2 Test
 script:
   commands:
   - arguments:
@@ -208,8 +208,8 @@ script:
     - default: true
       description: Term by which to search. Can be a first name, last name, or email address.
       name: term
-      required: true
-    - description: Searches for users with a supported [filtering expression](https://developer.okta.com/docs/reference/core-okta-api/#filter) for most properties. If `term`, and `advanced_search` are provided, `advanced_search` will take precedence.
+      required: false
+    - description: Searches for users with a supported filtering expression for most properties. If `term` and `advanced_search` are provided, `advanced_search` will take precedence.
       name: advanced_search
       required: false
     - description: The maximum number of results to return. The default and maximum is 200.
