@@ -16,6 +16,9 @@ from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
+
+# Replace the Github Users of the reviewers and security reviewer according to the current contributions team
+SECURITY_REVIEWER = "efelmandar"
 REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
@@ -31,6 +34,17 @@ XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
 COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
+EXTERNAL_LABEL = "External PR"
+SECURITY_LABEL = "Security Review"
+SECURITY_CONTENT_ITEMS = [
+    "Playbooks",
+    "IncidentTypes",
+    "IncidentFields",
+    "IndicatorTypes",
+    "IndicatorFields",
+    "Layouts",
+    "Classifiers"
+]
 
 
 def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
@@ -158,6 +172,25 @@ def get_highest_support_label(packs_support_levels: set[str]) -> str:
         return COMMUNITY_SUPPORT_LEVEL_LABEL
 
 
+def is_requires_security_reviewer(pr_files: list[str]) -> bool:
+    """
+    Checks whether a security engineer is needed in the review.
+
+    Arguments:
+        - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
+        whether a security engineer is required for the review.
+
+    Returns: `bool` whether a security engineer should be assigned
+    """
+
+    for pr_file in pr_files:
+        for item in SECURITY_CONTENT_ITEMS:
+            if item in pr_file:
+                return True
+
+    return False
+
+
 def main():
     """Handles External PRs (PRs from forks)
 
@@ -190,11 +223,14 @@ def main():
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
 
-    labels_to_add = [CONTRIBUTION_LABEL]
+    labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
     if support_label := get_packs_support_level_label(pr_files, pr.head.ref):
         labels_to_add.append(support_label)
 
-    # Add 'Contribution' + support Label to the external PR
+    # Add the initial labels to PR:
+    # - Contribution
+    # - External PR
+    # - Support Label
     for label in labels_to_add:
         pr.add_to_labels(label)
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
@@ -223,15 +259,22 @@ def main():
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
     # assign reviewers / request review from
-    reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
-    pr.add_to_assignees(reviewer_to_assign)
-    pr.create_review_request(reviewers=[reviewer_to_assign])
-    print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
-    print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
+    content_reviewer = determine_reviewer(REVIEWERS, content_repo)
+    pr.add_to_assignees(content_reviewer)
+    reviewers = [content_reviewer]
+
+    # Add a security architect reviewer if the PR contains security content items
+    if is_requires_security_reviewer(pr_files):
+        reviewers.append(SECURITY_REVIEWER)
+        pr.add_to_assignees(SECURITY_REVIEWER)
+        pr.add_to_labels(SECURITY_LABEL)
+
+    pr.create_review_request(reviewers=reviewers)
+    print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
 
     # create welcome comment (only users who contributed through Github need to have that contribution form filled)
     message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
-    body = message_to_send.format(selected_reviewer=reviewer_to_assign)
+    body = message_to_send.format(selected_reviewer=content_reviewer)
     pr.create_issue_comment(body)
     print(f'{t.cyan}Created welcome comment{t.normal}')
 
