@@ -30,9 +30,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: "KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments"
 display: "KnowBe4KMSAT"
 name: KnowBe4_KMSAT
