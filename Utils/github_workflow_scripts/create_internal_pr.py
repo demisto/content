@@ -5,11 +5,13 @@ import json
 import urllib3
 from blessings import Terminal
 from github import Github
+from handle_external_pr import EXTERNAL_LABEL
 
 from utils import get_env_var, timestamped_print
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
+INTERNAL_LABEL = "Internal PR"
 
 
 def main():
@@ -54,7 +56,8 @@ def main():
     print(f'{t.cyan}Internal PR Created - {pr.html_url}{t.normal}')
 
     # labels should already contain the contribution label from the external PR.
-    labels = [label.name for label in merged_pr.labels]
+    # We want to replace the 'External PR' with 'Internal PR' label
+    labels = [label.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for label in merged_pr.labels]
     for label in labels:
         pr.add_to_labels(label)
         print(f'{t.cyan}"{label}" label added to the Internal PR{t.normal}')

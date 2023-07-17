@@ -21,18 +21,22 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: IP Threshold. Minimum risk score for the IP to be consodered malicious (ranges from 1 to 10).
   name: ipThreshold
   defaultvalue: "7"
   type: 0
+  required: false
 - display: URL Threshold. Minimum risk score for the URL to be consodered malicious (ranges from 1 to 10).
   name: urlThreshold
   defaultvalue: "7"
   type: 0
+  required: false
 script:
   script: ''
   type: javascript
