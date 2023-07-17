@@ -23,7 +23,8 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "memory_threshold": 300
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -674,7 +675,7 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
-            "timeout": 600,
+            "timeout": 900,
             "instance_names": "ms_graph_mail_dev"
         },
         {
@@ -4237,7 +4238,7 @@
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
             ],
-            "timeout": 500
+            "timeout": 700
         },
         {
             "playbookID": "Polygon-Test",
