@@ -1,14 +1,19 @@
-id: 5e0b6907-eae7-4c10-802a-8a63d160e214
-version: 125
-vcShouldKeepItemLegacyProdMachine: false
-name: Job - Add Malicious Domains To Sinkhole
+id: PAN-OS - Job - Add Malicious Domains To Sinkhole
+version: -1
+name: PAN-OS - Job - Add Malicious Domains To Sinkhole
 description: |-
   This playbook should be run as a job. The playbook runs on domain indicators and performs various checks to decide if they should be sinkholed.
-  If a domain is suspicious or malicious and communicates with a file or an IP address, or has C2 related tags, it will be tagged for sinkholing. The playbook assumes that the user is exporting indicators with the sinkhole tag to an EDL (External Dynamic List) using the Export Generic Indicators Service integration in XSOAR. That EDL should be connected to PAN-OS.
+
+  If a domain is related to a campaign or a threat actor, or if it resolves to a malicious IP or has malware-related tags, the playbook will add a new tag to it in order to sinkhole that domain.
+  The playbook assumes that the user is exporting indicators with the sinkhole tag to an EDL (External Dynamic List) using the Export Generic Indicators Service integration in XSOAR. That EDL should be connected to PAN-OS.
 
   The playbook then ensures a DNS sinkhole is configured in PAN-OS so that communication with those domains will get blocked, and Traffic logs for the systems creating the malicious traffic will be generated, allowing the user to then query the logs in other playbooks using the PAN-OS - Find Sources of Sinkholed Traffic playbook.
 
   Note: this playbook has inputs for both the "From context data" tab and for the "From indicators" tab.
+tags:
+- Job
+- PAN-OS
+- Sinkhole
 starttaskid: "0"
 tasks:
   "0":
@@ -21,6 +26,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -107,6 +113,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -128,21 +135,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 331e344b-410c-440f-804a-5869b1738bdc
+    taskid: c7e98784-57a4-4135-8245-787d6bdcbabc
     type: regular
     task:
-      id: 331e344b-410c-440f-804a-5869b1738bdc
+      id: c7e98784-57a4-4135-8245-787d6bdcbabc
       version: -1
       name: Add sinkhole tag (exports to EDL)
-      description: Tags the domains deemed as C2 domains with a tag to export them
-        to an EDL using the Generic Export Indicators Service.
+      description: Tags the malicious domains with a sinkhole tag to export them to an EDL using the Generic Export Indicators Service.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "12"
+      - "51"
     scriptarguments:
       field:
         simple: tags
@@ -198,8 +204,7 @@ tasks:
       id: 4a600ff4-a8c9-4641-8b1a-2bc7a7a2bb65
       version: -1
       name: Save domains with tags
-      description: Saves domains that have a "c2", "c&c" or "command and control"
-        tag, in a separate context key.
+      description: Saves domains that have a "c2", "c&c" or "command and control" tag, in a separate context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -293,10 +298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 3f101777-77a2-41a3-8313-55e3dc2b9c1e
+    taskid: 071e7f9f-e9a2-4299-8a69-2c67ccada549
     type: playbook
     task:
-      id: 3f101777-77a2-41a3-8313-55e3dc2b9c1e
+      id: 071e7f9f-e9a2-4299-8a69-2c67ccada549
       version: -1
       name: PAN-OS - Configure DNS Sinkhole
       description: |-
@@ -337,19 +342,19 @@ tasks:
         simple: "False"
       DNSSignatureSource:
         complex:
-          root: inputs.DNSSignatureSource
+          root: inputs.EDLName
       OverwriteExistingProfile:
-        complex:
-          root: inputs.OverwriteExistingProfile
+        simple: "False"
       PrimaryInternalDNSServerIP:
         complex:
           root: inputs.PrimaryInternalDNSServerIP
       PublicDNSServerIP:
         complex:
           root: inputs.PublicDNSServerIP
+      RuleNameToAllowDNS:
+        simple: Allow DNS Outside - Created By XSOAR
       RuleNameToDenyToSinkhole:
-        complex:
-          root: inputs.RuleNameToDenyToSinkhole
+        simple: Deny To Sinkhole
       SecondaryInternalDNSServerIP:
         complex:
           root: inputs.SecondaryInternalDNSServerIP
@@ -366,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 3370
+          "y": 3700
         }
       }
     note: false
@@ -387,6 +392,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -524,8 +530,7 @@ tasks:
       id: 0916bfab-a760-49c1-80d0-60d083652675
       version: -1
       name: Enrich unknown domains?
-      description: Checks whether domains with a score of 0 (unknown) should be enriched,
-        according to the playbook inputs.
+      description: Checks whether domains with a score of 0 (unknown) should be enriched, according to the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -670,6 +675,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -698,8 +704,7 @@ tasks:
       id: a4654cde-af5b-49ae-84e8-89392e42ea29
       version: -1
       name: Enrich suspicious domains?
-      description: Checks whether domains with a score of 2 (suspicious) should be
-        enriched, according to the playbook inputs.
+      description: Checks whether domains with a score of 2 (suspicious) should be enriched, according to the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -739,13 +744,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 6385c828-154d-4721-88da-8b17d0f9757d
+    taskid: 74c8c67d-5934-496c-869b-dd9e6242c732
     type: condition
     task:
-      id: 6385c828-154d-4721-88da-8b17d0f9757d
+      id: 74c8c67d-5934-496c-869b-dd9e6242c732
       version: -1
       name: Any domains to sinkhole?
-      description: Checks whether domains with C2 tags or relationships were found.
+      description: Checks whether any domains should be sinkholed according to the tags and relationships.
       type: condition
       iscommand: false
       brand: ""
@@ -806,6 +811,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -830,8 +836,7 @@ tasks:
       id: c3d17149-69cf-4860-897b-420823294552
       version: -1
       name: Are there domains to check?
-      description: Checks whether there are new domains to check for whether they
-        should be sinkholed.
+      description: Checks whether there are new domains to check for whether they should be sinkholed.
       type: condition
       iscommand: false
       brand: ""
@@ -879,6 +884,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -900,17 +906,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: b2e78e28-890c-425c-82b5-01d05656c871
+    taskid: 89f224e9-5579-4c4b-8f1a-f1cbff179416
     type: regular
     task:
-      id: b2e78e28-890c-425c-82b5-01d05656c871
+      id: 89f224e9-5579-4c4b-8f1a-f1cbff179416
       version: -1
       name: Check for resolved IPs
-      description: This automation outputs the indicator relationships to context
-        according to the provided query, using the entities, entityTypes, and relationships
-        arguments. All arguments will use the AND operator. For example, using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide only
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: Searches the relationships of the domains to check if any of them resolves to a malicious IP address.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -947,12 +949,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: d197ea57-fbc6-45e7-800d-fbca8e0622b3
+    taskid: d6a02cf5-a9ed-40d5-837a-8f3bf0c52d96
     type: condition
     task:
-      id: d197ea57-fbc6-45e7-800d-fbca8e0622b3
+      id: d6a02cf5-a9ed-40d5-837a-8f3bf0c52d96
       version: -1
       name: Any IPs found?
+      description: Checks whether any IP addresses that the domains resolve to were found.
       type: condition
       iscommand: false
       brand: ""
@@ -989,13 +992,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: e454f7f5-310b-49fc-8a88-9f74e2009c69
+    taskid: 236a5077-cf02-4331-8964-77c441c179fa
     type: regular
     task:
-      id: e454f7f5-310b-49fc-8a88-9f74e2009c69
+      id: 236a5077-cf02-4331-8964-77c441c179fa
       version: -1
       name: Get IP scores
-      description: Get the overall score for the indicator as calculated by DBot.
+      description: Gets the DBotScores of the IP addresses that the domains resolve to.
       scriptName: GetIndicatorDBotScoreFromCache
       type: regular
       iscommand: false
@@ -1028,12 +1031,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: e7a8b59c-e6a6-4886-883b-793c35a985e2
+    taskid: c732f3b0-c0b2-4650-81b9-f463c8d68f58
     type: condition
     task:
-      id: e7a8b59c-e6a6-4886-883b-793c35a985e2
+      id: c732f3b0-c0b2-4650-81b9-f463c8d68f58
       version: -1
       name: Any malicious IPs?
+      description: Checks whether any IP found is malicious.
       type: condition
       iscommand: false
       brand: ""
@@ -1081,13 +1085,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: cb7f64b3-9240-4d07-8b86-8efd5bc03b0a
+    taskid: f0844f55-7269-48ce-8368-306957b45da7
     type: regular
     task:
-      id: cb7f64b3-9240-4d07-8b86-8efd5bc03b0a
+      id: f0844f55-7269-48ce-8368-306957b45da7
       version: -1
       name: Save their corresponding domains in a new key
-      description: Set a value in context under the key you entered.
+      description: Saves the domains that resolved to the malicious IPs in a new key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1130,13 +1134,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4f6a4394-fa23-44ef-86a2-49f51dae15b2
+    taskid: ecdcf14b-afbf-480d-80be-8ab3586e5e93
     type: regular
     task:
-      id: 4f6a4394-fa23-44ef-86a2-49f51dae15b2
+      id: ecdcf14b-afbf-480d-80be-8ab3586e5e93
       version: -1
       name: Save malicious IPs in a new key
-      description: Set a value in context under the key you entered.
+      description: Saves the malicious IPs in a new key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1189,6 +1193,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -1210,15 +1215,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 2731dde2-e590-42fd-891e-964ac61e1f92
+    taskid: ec96c0d0-95fa-436b-8334-d74cacdcb475
     type: regular
     task:
-      id: 2731dde2-e590-42fd-891e-964ac61e1f92
+      id: ec96c0d0-95fa-436b-8334-d74cacdcb475
       version: -1
       name: 'Check for related threat actors / campaigns '
-      description: |-
-        Searches for relationships of the domains that are being checked.
-        Note: it is currently impossible to search for relationships to a specific type (campaign), since the "entities_types" argument applies to the EntityAType, which are our domains in this case. Due to this problem, we will get the relevant relationship types instead, and then filter them in the playbook by EntityBType of campaign.
+      description: Searches the domains for relationships with threat actors or campaigns.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -1265,6 +1268,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -1295,6 +1299,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1316,12 +1321,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: a0136562-84cf-4aa2-872b-ee1672ab94ac
+    taskid: 40407e32-a7d7-4695-856b-1cc103213827
     type: condition
     task:
-      id: a0136562-84cf-4aa2-872b-ee1672ab94ac
+      id: 40407e32-a7d7-4695-856b-1cc103213827
       version: -1
       name: Any campaigns found?
+      description: Checks whether any relationships to campaigns were found.
       type: condition
       iscommand: false
       brand: ""
@@ -1370,13 +1376,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 9d6772da-fd2e-47cc-8e7b-2afaa7f43582
+    taskid: b4d7e5ad-3c4c-49f1-80f8-db5550640f8e
     type: regular
     task:
-      id: 9d6772da-fd2e-47cc-8e7b-2afaa7f43582
+      id: b4d7e5ad-3c4c-49f1-80f8-db5550640f8e
       version: -1
       name: Save their corresponding domains in a new key
-      description: Set a value in context under the key you entered.
+      description: Saves the domains that have relationships to campaigns in a new key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1419,12 +1425,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 405abc31-0573-43fd-8bc9-2747adb398ae
+    taskid: da487d6f-a8b1-4f7a-8c79-e1e7caac3da9
     type: condition
     task:
-      id: 405abc31-0573-43fd-8bc9-2747adb398ae
+      id: da487d6f-a8b1-4f7a-8c79-e1e7caac3da9
       version: -1
       name: Any threat actors found?
+      description: Checks whether any relationships to threat actors were found.
       type: condition
       iscommand: false
       brand: ""
@@ -1473,13 +1480,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 70876d4f-29ed-4b4a-8802-546b5b783ac6
+    taskid: 666a7f2c-1788-4595-8b56-04f9da182103
     type: regular
     task:
-      id: 70876d4f-29ed-4b4a-8802-546b5b783ac6
+      id: 666a7f2c-1788-4595-8b56-04f9da182103
       version: -1
       name: Save their corresponding domains in a new key
-      description: Set a value in context under the key you entered.
+      description: Saves the domains that have relationships to threat actors in a new key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1520,6 +1527,59 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: c04b5bef-1cbc-4ad5-854a-dddfda17ee7a
+    type: condition
+    task:
+      id: c04b5bef-1cbc-4ad5-854a-dddfda17ee7a
+      version: -1
+      name: Can we ensure DNS sinkhole is configured?
+      description: Checks whether the inputs needed to configure the DNS sinkhole are fulfilled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.EDLName
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.PrimaryInternalDNSServerIP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.PublicDNSServerIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1541,7 +1601,8 @@ view: |-
       "46_8_#default#": 0.1,
       "49_50_yes": 0.35,
       "49_8_#default#": 0.1,
-      "4_14_#default#": 0.1
+      "4_14_#default#": 0.1,
+      "51_29_#default#": 0.49
     },
     "paper": {
       "dimensions": {
@@ -1556,12 +1617,11 @@ inputs:
 - key: ""
   value: {}
   required: false
-  description: All domain indicators. In the playbook, the domains will be filtered
-    by those used for malicious communication, and tagged to be sinkholed.
+  description: All domain indicators. In the playbook, the domains will be filtered by those used for malicious communication, and tagged to be sinkholed.
   playbookInputQuery:
     query: type:Domain
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -1569,18 +1629,17 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
 - key: SinkholeTagForEDL
   value:
     simple: to_sinkhole
-  required: false
-  description: The tag that should be applied to the domain so that it will be exported
-    to the EDL using the Generic Export Indicators Service integration in XSOAR.
-  playbookInputQuery: null
+  required: true
+  description: The tag that should be applied to the domain so that it will be exported to the EDL using the Generic Export Indicators Service integration in XSOAR.
+  playbookInputQuery:
 - key: EnrichUnknownDomains
   value:
     simple: "False"
@@ -1588,7 +1647,7 @@ inputs:
   description: |-
     Whether to enrich unknown domains. Enriching domains can be useful to gain additional information regarding reputation for domains from your feed which will help identify domains used in C2 communication, but may consume more API quota from your threat intelligence integrations.
     Can be True or False.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EnrichSuspiciousDomains
   value:
     simple: "False"
@@ -1596,67 +1655,38 @@ inputs:
   description: |-
     Whether to enrich suspicious domains. Enriching domains can be useful to gain additional information regarding reputation for domains from your feed which will help identify domains used in C2 communication, but may consume more API quota from your threat intelligence integrations.
     Can be True or False.
-  playbookInputQuery: null
-- key: DNSSignatureSource
-  value:
-    simple: Domain EDL To Sinkhole
+  playbookInputQuery:
+- key: EDLName
+  value: {}
   required: false
   description: |-
-    The name of the signature source that contains the domains to sinkhole. It is used by the security profile to check if traffic for any of these domains is being sent through the firewall. Supported signature sources are: Custom EDLs of type Domain, Palo Alto Networks Content-delivered malicious domains, and DNS Security Categories.
+    Used when configuring the DNS sinkhole for the first time - the name of the External Dynamic List exported from XSOAR and configured in PAN-OS. The EDL should contain the domains to sinkhole. It is used by the security profile to check if traffic for any of these domains is being sent through the firewall.
 
-    To find your available DNS signature sources in PAN-OS, navigate to Objects > Security Profiles > Anti-Spyware.
-    Click on the name of an existing profile or click Add, then open the DNS Policies tab.
-
-    Note: using External Dynamic Lists (EDLs) or DNS Security as signature sources requires a "DNS Security" subscription. If you don't have one, you can keep the default value of "default-paloalto-dns", which is part of the Palo Alto Networks Content.
-  playbookInputQuery: null
-- key: SecurityProfileName
-  value:
-    simple: Sinkhole Anti Spyware Profile
-  required: false
-  description: |-
-    The name of the Anti-Spyware Security Profile that will be applied to the DNS related rule, in order to filter the malicious domains and facilitate the sinkhole action. The profile has to be an anti-spyware profile that the user wants the playbook to modify. The playbook will apply this profile to a security rule currently allowing DNS traffic.
-    If a security profile with the specified name does not exist, it will be created automatically.
-    Afterwards, the playbook will modify the profile to sinkhole any traffic to the domains found in the DNS signature source defined in the playbook input.
-
-    If you're not sure, leave the default value of this input.
-  playbookInputQuery: null
+    Note: using External Dynamic Lists (EDLs) in PAN-OS requires a "DNS Security" subscription.
+  playbookInputQuery:
 - key: PrimaryInternalDNSServerIP
   value: {}
-  required: true
-  description: The IP of the primary internal DNS server. Used to find a policy that
-    matches the malicious DNS queries that go out from the internal DNS server to
-    the firewall. The idea is to find a policy that allows DNS traffic in order to
-    sinkhole that traffic when used for resolving malicious domains found in our signature
-    source.
-  playbookInputQuery: null
+  required: false
+  description: Required in order to configure the DNS sinkhole in PAN OS. The IP of the primary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our signature source.
+  playbookInputQuery:
 - key: SecondaryInternalDNSServerIP
   value: {}
   required: false
-  description: Optional - the IP of the secondary internal DNS server. Used to find
-    a policy that matches the malicious DNS queries that go out from the internal
-    DNS server to the firewall. The idea is to find a policy that allows DNS traffic
-    in order to sinkhole that traffic when used for resolving malicious domains found
-    in our signature source.
-  playbookInputQuery: null
+  description: |-
+    Optional. If there is a secondary DNS server configured in the network, this input will be required for the DNS sinkhole configuration in PAN-OS.
+    The IP of the secondary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our signature source.
+  playbookInputQuery:
 - key: PublicDNSServerIP
   value:
     simple: 8.8.8.8
-  required: true
-  description: |-
-    The IP of the public DNS server that the organization is using to resolve external domains. This is needed to find the rule that allows DNS requests so that malicious ones can be sinkholed by attaching a security profile to that rule.
-
-    If there is currently no rule to allow DNS traffic from the internal DNS server to the internet, the user will be prompted to approve the creation of a new rule that allows DNS traffic from the internal DNS server/s to the IP specified in this input's value.
-  playbookInputQuery: null
-- key: RuleNameToDenyToSinkhole
-  value:
-    simple: Deny To Sinkhole
   required: false
   description: |-
-    The name of the rule that will be created  to deny traffic to the sinkhole address. This is required so that traffic logs will reveal the endpoints attempting to connect to their C&C (which by the end of this playbook will be sinkholed).
-    If a rule with the specified name does not exist, one will be created. The new rule will be placed before rules that allow DNS traffic, as recommended by the PAN-OS best practices.
-  playbookInputQuery: null
-outputs:
-- description: query test
-- description: The tag that should be applied to the domain so that it will be exported
-    to the EDL using the Generic Export Indicators Service integration in XSOAR.
+    Required in order to configure the DNS sinkhole in PAN OS. The IP of the public DNS server that the organization is using to resolve external domains. This is needed to find the rule that allows DNS requests so that malicious ones can be sinkholed by attaching a security profile to that rule.
+
+    If there is currently no rule to allow DNS traffic from the internal DNS server to the internet, the user will be prompted to approve the creation of a new rule that allows DNS traffic from the internal DNS server/s to the IP specified in this input's value.
+  playbookInputQuery:
+outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
