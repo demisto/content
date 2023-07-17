@@ -966,7 +966,7 @@ def export_assets_command(args: Dict[str, Any]) -> PollResult:
             chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'assets')
             command_results = export_assets_build_command_result(chunks_details_list)
             return PollResult(command_results)
-        elif status == 'PROCESSING' or status == 'QUEUED':
+        elif status in ('PROCESSING', 'QUEUED'):
             return PollResult(
                 response=None,
                 partial_result=CommandResults(
@@ -1094,7 +1094,7 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
             chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'vulns')
             command_results = export_vulnerabilities_build_command_result(chunks_details_list)
             return PollResult(command_results)
-        elif status == 'PROCESSING' or status == 'QUEUED':
+        elif status in ('PROCESSING', 'QUEUED'):
             return PollResult(
                 response=None,
                 partial_result=CommandResults(
@@ -1141,7 +1141,8 @@ def safe_get_json(response: requests.models.Response) -> dict:
         demisto.debug(str(e))
         raise DemistoException(
             'Error processing request. '
-            f'Unexpected response from Tenable IO:\n{response.text}')
+            'Unexpected response from Tenable IO:'
+            f'\n{response.text}') from e
 
 
 def list_scan_filters_request() -> dict:
@@ -1183,7 +1184,7 @@ def list_scan_filters_command() -> CommandResults:
 def get_scan_history_request(scan_id, params) -> dict:
     remove_nulls_from_dictionary(params)
     response = requests.get(
-        f'{BASE_URL}/scans/{scan_id}/history',
+        f'{BASE_URL}scans/{scan_id}/history',
         params=params,
         headers=HEADERS,
         verify=USE_SSL)
@@ -1212,8 +1213,8 @@ def scan_history_human_readable(history: list) -> str:
 
 def scan_history_params(args: dict) -> dict:
     return {
-        'sort': '%2C'.join(
-            f'{field}%3A{args["sortOrder"]}'
+        'sort': ','.join(
+            f'{field}:{args["sortOrder"]}'
             for field in argToList(args.get('sortFields'))),
         'exclude_rollover': args['excludeRollover'],
         'limit': args.get('pageSize') or args['limit'],
@@ -1270,10 +1271,16 @@ def initiate_export_scan(scan_id: str, args: dict) -> PollResult:
         **export_scan_request_args(**args),
         headers=HEADERS, verify=USE_SSL)
     response_json = safe_get_json(response)
+
+    if not (file_id := response_json.get('file')):
+        raise DemistoException(
+            f'Unexpected response from Tenable IO: {response_json}')
+
     return PollResult(
         None, True,
-        {'fileId': response_json['file'],
-         'scanId': scan_id},
+        {'fileId': file_id,
+         'scanId': scan_id,
+         'format': args['format']},
         CommandResults(
             outputs_prefix='InfoFile',
             outputs_key_field='file',
@@ -1288,17 +1295,18 @@ def check_export_scan_status(scan_id: str, file_id: str) -> str:
 
 
 def download_export_scan(scan_id: str, file_id: str, args: dict) -> dict:
-    data = requests.get(
+    response = requests.get(
         f'{BASE_URL}scans/{scan_id}/export/{file_id}/download',
         headers=HEADERS, verify=USE_SSL)
     return fileResult(
         f'scan_{scan_id}_{file_id}.{args["format"].lower()}',
-        data, EntryType.ENTRY_INFO_FILE)
+        response.content, EntryType.ENTRY_INFO_FILE)
 
 
 @polling_function(
     'tenable-io-export-scan',
     poll_message='Preparing scan report:',
+    interval=15,
     requires_polling_arg=False)
 def export_scan_command(args: dict[str, Any]) -> PollResult:
 

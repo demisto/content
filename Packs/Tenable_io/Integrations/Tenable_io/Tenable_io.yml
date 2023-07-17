@@ -1112,20 +1112,20 @@ script:
       type: String
   - arguments:
     - name: scanId
-      description: The ID of the scan to get the runs of.
+      description: The ID of the scan of which to get the runs.
       required: true
     - name: sortFields
       description: 'The fields by which to sort, in the order defined by "sortOrder". Possible values: start_date, end_date, status.'
       isArray: true
     - name: sortOrder
-      description: The direction in which to sort the fields defined by "sortFields".
+      description: The direction in which to sort the fields defined by "sortFields". Default is "asc".
       defaultValue: asc
       auto: PREDEFINED
       predefined:
       - asc
       - desc
     - name: excludeRollover
-      description: Whether or not to exclude rollover scans from the scan history.
+      description: Whether or not to exclude rollover scans from the scan history. Default is false.
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
@@ -1177,8 +1177,11 @@ script:
     - name: historyUuid
       description: The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs.
     - name: format
-      description: The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 60 days. For scans that are older than 60 days, only the Nessus and CSV formats are supported.
+      description: |
+        The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 60 days.
+         For scans that are older than 60 days, only the Nessus and CSV formats are supported. Default is CSV.
       required: true
+      defaultValue: CSV
       auto: PREDEFINED
       predefined:
       - Nessus
@@ -1195,32 +1198,34 @@ script:
       description: |
         A list of filters to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).
-         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to make individual filters.
+         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
       isArray: true
     - name: filterQuality
       description: |
         A list of operators for the filter to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).
-         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to make individual filters.
+         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
       isArray: true
     - name: filterValue
       description: |
         A list of values for the filter to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).
-         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to make individual filters.
+         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
       isArray: true
     - name: filterSearchType
       description: For multiple filters, specifies whether to use the AND or the OR logical operator.
     - name: assetId
       description: The ID of the asset scanned.
+    - name: fileId
+      hidden: true
+    - name: hide_polling_output
+      defaultValue: true
+      hidden: true
     polling: true
     description: Export and download a scan report.
     name: tenable-io-export-scan
     outputs:
     - contextPath: InfoFile.file
-      description: ''
-      # type: Number
-    - contextPath: InfoFile.temp_token
       description: ''
       type: String
   runonce: false
