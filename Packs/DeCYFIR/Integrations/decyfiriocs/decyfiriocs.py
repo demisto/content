@@ -298,9 +298,9 @@ class Client(BaseClient):
                             elif ta_rel_data.get(LABEL_TYPE) == LABEL_RELATIONSHIP:
                                 raw_ta_rels.append(ta_rel_data)
                             else:
-                                if raw_ta_obj.get(LABEL_ID) != ta_rel_data.get(LABEL_ID):
-                                    if ta_rel_data.get(LABEL_TYPE) in [LABEL_INTRUSION_SET, LABEL_CAMPAIGN, LABEL_MALWARE]:
-                                        ta_rel_data["labels"] = raw_ta_obj.get("labels", [])
+                                is_types_in = ta_rel_data.get(LABEL_TYPE) in [LABEL_INTRUSION_SET, LABEL_CAMPAIGN, LABEL_MALWARE]
+                                if raw_ta_obj.get(LABEL_ID) != ta_rel_data.get(LABEL_ID) and is_types_in:
+                                    ta_rel_data["labels"] = raw_ta_obj.get("labels", [])
                                 raw_ta_data[ta_rel_data.get(LABEL_ID)] = ta_rel_data
 
                         # Mapping the relations with source and target objects
