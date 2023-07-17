@@ -1123,6 +1123,11 @@ script:
     - name: sortFields
       description: 'The fields by which to sort, in the order defined by "sortOrder". Possible values: start_date, end_date, status.'
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - start_date
+      - end_date
+      - status
     - name: sortOrder
       description: The direction in which to sort the fields defined by "sortFields". Default is "asc".
       defaultValue: asc
@@ -1200,6 +1205,14 @@ script:
          Chapters can be any of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance.
          This argument is required if the file format is PDF or HTML.
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - vuln_hosts_summary
+      - vuln_by_host
+      - compliance_exec
+      - remediations
+      - vuln_by_plugin
+      - compliance 
     - name: filterName
       description: |
         A list of filters to apply to the exported scan report.

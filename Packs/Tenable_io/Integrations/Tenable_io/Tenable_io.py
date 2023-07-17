@@ -299,7 +299,8 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
         res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, json=body, params=kwargs)
         res.raise_for_status()
         return res.json()
-    except HTTPError:
+    except HTTPError as e:
+        demisto.debug(str(e))
         if ignore_license_error and res.status_code in (403, 500):
             return None
         err_msg = get_scan_error_message(res, scan_id)
@@ -1118,8 +1119,11 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
 
 def safe_get_json(response: requests.models.Response) -> dict:
 
-    if (code := response.status_code) not in range(200, 300):
-        demisto.debug(response.text)
+    try:
+        response.raise_for_status()
+        return response.json()
+    except HTTPError as e:
+        demisto.debug(f'Response: {response.text}\nError: {e}')
         code_messages = {
             400:
                 'Possible reasons:\n'
@@ -1131,13 +1135,13 @@ def safe_get_json(response: requests.models.Response) -> dict:
             404: 'Tenable Vulnerability Management cannot find the specified scan.',
             492: 'Too Many Requests',
         }
+        code = response.status_code
         raise DemistoException(
             f'Error processing request. Got response status code: {code}' + (
                 f' - {code_messages[code]}'
                 if code in code_messages
-                else f'. Full Response:\n{response.text}'))
-    try:
-        return response.json()
+                else f'. Full Response:\n{response.text}')
+        ) from e
     except requests.exceptions.JSONDecodeError as e:
         demisto.debug(str(e))
         raise DemistoException(
