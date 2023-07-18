@@ -26,11 +26,11 @@ script:
       name: Message
       required: true
     - auto: PREDEFINED
-      description: 1=True,0=False
+      description: If you want that the person will need to input.
       name: require_input
       predefined:
-      - "0"
-      - "1"
+      - "False"
+      - "True"
       required: true
     - auto: PREDEFINED
       description: You Can choose either Male or Female

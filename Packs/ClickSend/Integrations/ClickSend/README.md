@@ -32,7 +32,7 @@ Make phone call with you own text
 | --- | --- | --- |
 | phoneNumber | Phone Number  Example: +972501234567. | Required | 
 | Message | Message Body. | Required | 
-| require_input | 1=True,0=False. Possible values are: 0, 1. | Required | 
+| require_input | If you want that the person will need to input. Possible values are: False, True. | Required | 
 | voice | You Can choose either Male or Female. Possible values are: male, female. | Required | 
 
 #### Context Output
