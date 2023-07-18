@@ -165,6 +165,8 @@
                 "rawJSON": {
                     "value": "isc.org",
                     "type": "Domain",
+                    "firstseenbysource": "2020-10-16T02:58:53Z",
+                    "lastseenbysource": "2020-10-16T02:58:55Z",
                     "gibcollection": "attacks/ddos",
                     "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
                     "gibreliability": 90,
@@ -179,26 +181,11 @@
                     "type": "IP",
                     "asn": "AS1280 Internet Systems Consortium, Inc.",
                     "geocountry": "United States",
+                    "firstseenbysource": "2020-10-16T02:58:53Z",
+                    "lastseenbysource": "2020-10-16T02:58:55Z",
                     "geolocation": "California",
                     "gibcollection": "attacks/ddos",
                     "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
-                    "gibreliability": 90,
-                    "gibcredibility": 90,
-                    "gibadmiraltycode": "A2",
-                    "gibseverity": "red"
-                }
-            },
-            {
-                "rawJSON": {
-                    "value": "11.11.11.11",
-                    "type": "GIB Victim IP",
-                    "asn": "AS1298 Comcast Cable Communications",
-                    "geocountry": "United States",
-                    "geolocation": "Washington",
-                    "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
-                    "firstseenbysource": "2020-10-16T02:58:53Z", 
-                    "lastseenbysource": "2020-10-16T02:58:55Z",
                     "gibreliability": 90,
                     "gibcredibility": 90,
                     "gibadmiraltycode": "A2",
@@ -554,6 +541,45 @@
                     "gibcredibility": 100,
                     "gibadmiraltycode": "A1",
                     "gibseverity": "green"
+                }
+            }
+        ]
+    ],
+    "ioc/common": [
+         {
+            "last_fetch": {
+                "ioc/common": 16408877331936
+            }
+        },
+        [
+            {
+                "rawJSON": {
+                    "gibcollection": "ioc/common",
+                    "gibid": "6d44a7ed0b826f972e2fb74233c581d80f890552",
+                    "type": "URL",
+                    "value": "https://some.ru",
+                    "firstseenbysource": "2012-10-24T00:00:00Z",
+                    "lastseenbysource": "2016-10-24T00:00:00Z"
+                }
+            },
+            {
+                "rawJSON": {
+                    "gibcollection": "ioc/common",
+                    "gibid": "6d44a7ed0b826f972e2fb74233c581d80f890552",
+                    "type": "Domain",
+                    "value": "some.ru",
+                    "firstseenbysource": "2012-10-24T00:00:00Z",
+                    "lastseenbysource": "2016-10-24T00:00:00Z"
+                }
+            },
+            {
+                "rawJSON": {
+                    "gibcollection": "ioc/common",
+                    "gibid": "6d44a7ed0b826f972e2fb74233c581d80f890552",
+                    "type": "IP",
+                    "value": "11.11.11.11",
+                    "firstseenbysource": "2012-10-24T00:00:00Z",
+                    "lastseenbysource": "2016-10-24T00:00:00Z"
                 }
             }
         ]

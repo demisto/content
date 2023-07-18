@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Group-IB Threat Intelligence & Attribution - mapper",
+    "id": "Group-IB Threat Intelligence - mapper",
     "mapping": {
         "GIB Brand Protection Domain": {
             "dontMapEventToLabels": true,
@@ -1435,7 +1435,7 @@
             "internalMapping": {}
         }
     },
-    "name": "Group-IB Threat Intelligence & Attribution (mapper)",
+    "name": "Group-IB Threat Intelligence (mapper)",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

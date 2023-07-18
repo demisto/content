@@ -10,38 +10,33 @@ with open('test_data/results.json') as results:
 
 # Because of errors with markdown tables
 RESULTS.update({
-    'osi/git_leak': (
-        {'last_fetch': {'osi/git_leak': 1611219371626093}},
-        [
-            {
-                'name': 'Git Leak: conf/nginx/sites-available/whatsinmyyogurt',
-                'occurred': '2021-01-21T08:56:11Z',
-                'rawJSON': '{"dateDetected": "2021-01-21T08:56:11+00:00", "dateUpdated": "1561036415", '
-                           '"evaluation": {"admiraltyCode": "A6", "credibility": 100, "reliability": 100, '
-                           '"severity": "green", "tlp": "amber", "ttl": 30}, '
-                           '"file": "https://bt.group-ib.com/api/v2/osi/git_leak'
-                           '/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/bWFpbi01NDA4'
-                           'YWY0MDE2ZTVmZDFjYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc'
-                           '4YmVmMGNlYmUyZGVlMDZmMDhm", "id": "f201c253ac71f7d78db39fa111a2af9d7ee7a3f7", '
-                           '"matchesType": ["keyword"], "matchesTypeCount": {"card": 0, '
-                           '"cisco": 0, "commonKeywords": 0, "domain": 0, "dsn": 0, "email": 0, '
-                           '"google": 0, "ip": 0, "keyword": 1, "login": 0, "metasploit": 0, "nmap": 0, '
-                           '"pgp": 0, "sha": 0, "slackAPI": 0, "ssh": 0}, '
-                           '"name": "Git Leak: conf/nginx/sites-available/whatsinmyyogurt", '
-                           '"repository": "openfoodfacts/openfoodfacts-server", '
-                           '"revisions": "| File | File Difference | Author Email | Author Name | Date Created |\\n'
-                           '| ---- | --------------- | ------------ | ----------- | ------------ |\\n'
-                           '| [https://bt.group-ib.com/api/v2/osi/git_leak]'
-                           '(https://bt.group-ib.com/api/v2/osi/git_leak'
-                           '/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZS01NDA4YWY0MDE2ZTVmZDF'
-                           'jYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc4YmVmMGNlYmUyZGVlMDZmMDhm) | '
-                           '[https://bt.group-ib.com/api/v2/osi/git_leak]'
-                           '(https://bt.group-ib.com'
-                           '/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZml'
-                           'sZURpZmYtNTQwOGFmNDAxNmU1ZmQxY2E2ZWFkMzU4Y2MzYjJiNGI2MDVmNTRmNjg1OGM3OGJlZjB'
-                           'jZWJlMmRlZTA2ZjA4Zg==) | some@gmail.ru | sadsdsa | 2019-06-20T13:13:35+00:00 |\\n", '
-                           '"seqUpdate": 1611219371626093, "source": "github", '
-                           '"gibType": "osi/git_leak", "relatedIndicatorsData": [], "systemSeverity": 1}'}]),
+    'osi/git_repository': (
+        ({'last_fetch': {'osi/git_repository': 1611862631144674}},
+         [{'name': 'Git Leak: https://github.com/somegit',
+           'occurred': '2021-01-28T22:32:54Z',
+           'rawJSON': '{"company": [], "companyId": [3150], "contributors": '
+                      '[{"authorEmail": "some@email.com", "authorName": "somename"}, '
+                      '{"authorEmail": "some@email.com", "authorName": "somename"}, '
+                      '{"authorEmail": "some@email.com", "authorName": "somename"}], '
+                      '"dataFound": {"password": 8, "apikey": 2, "secret": 1}, '
+                      '"dateCreated": "2021-01-23T22:12:58+03:00", "dateDetected": '
+                      '"2021-01-28T22:32:54+03:00", "evaluation": {"admiraltyCode": '
+                      '"A1", "credibility": 50, "reliability": 50, "severity": '
+                      '"orange", "tlp": "amber", "ttl": 30}, "favouriteForCompanies": '
+                      '[], "files": "| URL  |   Author Email  | Author Name  | Date '
+                      'Created| TimeStamp    |\\n| ---- | --------------- | '
+                      '------------ | ----------- | ------------ |\\n| '
+                      'https://github.com/somegit | some@email.com | TEST | '
+                      '1970-01-01T03:00:00+03:00 | [1611429178] |\\n", '
+                      '"hideForCompanies": [], "id": '
+                      '"21aed9b86d2e6cbb15180d803a84f6d27f673db4", '
+                      '"ignoreForCompanies": [], "isFavourite": false, "isHidden": '
+                      'false, "isIgnore": false, "matchesTypes": [], "name": "Git '
+                      'Leak: https://github.com/somegit", "numberOf": {"contributors": '
+                      '3, "files": 10}, "relations": {"infobip.com": "some.com", '
+                      '"Infobip": "some"}, "seqUpdate": 1611862631144674, "source": '
+                      '"github", "gibType": "osi/git_repository", '
+                      '"relatedIndicatorsData": [], "systemSeverity": 2}'}])),
     'osi/public_leak': (
         {'last_fetch': {'osi/public_leak': 1601909532153438}},
         [
@@ -80,7 +75,7 @@ RESULTS.update({
                         '"dateLastSeen": "2021-01-14T14:12:17+00:00", "downloadedFrom": "| URL | File Name '
                         '| Domain | Date |\\n| --- | --------- | ------ | ---- |\\n'
                         '| https://some.ru | show.zip | some.ru | 2021-01-21 10:10:41 |\\n'
-                        '| https://some.ru | show.zip | ''some.ru '
+                        '| https://some.ru | show.zip | "some.ru" '
                         '| 2021-01-21 10:10:41 |\\n| https://some.ru | show.zip '
                         '| some.ru | 2021-01-21 10:10:41 |\\n", '
                         '"emails": [], "evaluation": {"admiraltyCode": "B2", "credibility": 70, '
@@ -99,9 +94,8 @@ RESULTS.update({
                         '"bp/phishing_kit", "relatedIndicatorsData": [[]], '
                         '"systemSeverity": 2}'}]),
 })
-COLLECTION_NAMES = ['compromised/account', 'compromised/card', 'osi/git_leak', 'osi/public_leak',
-                    'bp/phishing', 'bp/phishing_kit', 'malware/targeted_malware', "compromised/breached",
-                    'bp/domain']
+COLLECTION_NAMES = ['compromised/account', 'compromised/card', 'osi/git_repository', 'osi/public_leak',
+                    'bp/phishing', 'bp/phishing_kit', 'malware/targeted_malware', "compromised/breached"]
 
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)

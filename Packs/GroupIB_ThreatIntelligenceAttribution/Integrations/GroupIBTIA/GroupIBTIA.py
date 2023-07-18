@@ -11,6 +11,7 @@ from typing import Dict, Generator, List, Optional, Tuple, Union
 import dateparser
 import urllib3
 import random
+from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -137,7 +138,7 @@ MAPPING: dict = {
         "name":
             "name",
         "prefix":
-            "Git Repository",
+            "Git Leak",
     },
     "osi/public_leak": {
         "date":
@@ -438,7 +439,8 @@ class Client(BaseClient):
     """
 
     def _create_update_generator(self, collection_name: str, max_requests: int,
-                                 date_from: Optional[str] = None, seq_update: Union[int, str] = None) -> Generator:
+                                 date_from: Optional[str] = None, seq_update: Union[int, str] = None,
+                                 limit: int = 200) -> Generator:
         """
         Creates generator of lists with feeds class objects for an update session
         (feeds are sorted in ascending order) `collection_name` with set parameters.
@@ -461,12 +463,21 @@ class Client(BaseClient):
         while True:
             if requests_count >= max_requests:
                 break
+            session = requests.Session()
+            session.auth = HTTPBasicAuth(self._auth[0], self._auth[1])
 
-            params = {"df": date_from, "seqUpdate": seq_update}
-            params = assign_params(**params)
-            portion = self._http_request(method="GET", url_suffix=collection_name + "/updated",
-                                         params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+            session.headers["Accept"] = "*/*"
+            session.headers["User-Agent"] = f'SOAR/CortexSOAR/{self._auth[0]}/unknown'
+
+            params = {'df': date_from, 'limit': limit, 'seqUpdate': seq_update}
+            params = {key: value for key, value in params.items() if value}
+            portion = session.get(url=f'{self._base_url}{collection_name}/updated', params=params, timeout=60).json()
+
+            # params = {"df": date_from, "seqUpdate": seq_update}
+            # params = assign_params(**params)
+            # portion = self._http_request(method="GET", url_suffix=collection_name + "/updated",
+            #                              params=params, timeout=TIMEOUT, retries=RETRIES,
+            #                              status_list_to_retry=STATUS_LIST_TO_RETRY)
             if portion.get("count") == 0:
                 break
             seq_update = portion.get("seqUpdate")
@@ -477,7 +488,7 @@ class Client(BaseClient):
 
     def _create_search_generator(self, collection_name: str, max_requests: int, date_to: str = None,
                                  page: int = 0, starting_date_from: str = None,
-                                 starting_date_to: str = None) -> Generator:
+                                 starting_date_to: str = None, limit: int = 200) -> Generator:
         """
         Creates generator of lists with feeds for the search session for ingestion purpose
         (feeds are sorted in descending order) for `collection_name` with set parameters. This version solves problem
@@ -887,21 +898,25 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
     :return: given feed with transformed fields.
     """
 
-    if collection_name == "osi/git_leak":
+    if collection_name == "osi/git_repository":
         buffer = ""
-        revisions = feed.get("revisions", [])
-        for i in revisions:
-            file = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("file"))
-            file_diff = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("fileDiff"))
-            info = i.get("info")
-            author_email, author_name, date = info.get("authorEmail"), info.get("authorName"), info.get("dateCreated")
-            buffer += "| {0} | {1} | {2} | {3} | {4} |\n".format(file, file_diff, author_email, author_name, date)
+        files = feed.get("files", [])
+        for i in files:
+            url = i.get("url")
+            date = i.get("dateCreated")
+            # file_diff = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("fileDiff"))
+            # info = find_element_by_key(i,'revisions.info')
+            author_email = ''.join(find_element_by_key(i, 'revisions.info.authorEmail'))
+            author_name = ''.join(find_element_by_key(i, 'revisions.info.authorName'))
+            timestamp = ''.join(str(find_element_by_key(i, 'revisions.info.timestamp')))
+            # author_email, author_name, date = info.get("authorEmail"), info.get("authorName"), info.get("dateCreated")
+            buffer += "| {0} | {1} | {2} | {3} | {4} |\n".format(url, author_email, author_name, date, timestamp)
         if buffer:
-            buffer = "| File | File Difference | Author Email | Author Name | Date Created |\n" \
+            buffer = "| URL  |   Author Email  | Author Name  | Date Created| TimeStamp    |\n" \
                      "| ---- | --------------- | ------------ | ----------- | ------------ |\n" + buffer
-            feed["revisions"] = buffer
+            feed["files"] = buffer
         else:
-            del feed["revisions"]
+            del feed["files"]
 
     elif collection_name == "osi/public_leak":
         buffer = ""
@@ -1028,11 +1043,11 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
                 if collection_name == "compromised/breached":
-                    feed.update({"name": mapping.get("prefix", "") + ": " + ', '.join(find_element_by_key(feed,
-                                                                                                          mapping.get("name")))})
+                    feed.update({"name": mapping.get("prefix", "") + ": " + ', '.join(
+                        find_element_by_key(feed, mapping.get("name")))})
                 else:
-                    feed.update({"name": mapping.get("prefix", "") + ": " + str(find_element_by_key(feed,
-                                                                                                    mapping.get("name")))})
+                    feed.update({"name": mapping.get("prefix", "") + ": " + str(
+                        find_element_by_key(feed, mapping.get("name")))})
 
                 feed.update({"gibType": collection_name})
 
@@ -1055,7 +1070,7 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
                 assert incident_created_time is not None
                 feed.update({"relatedIndicatorsData": related_indicators_data})
                 feed.update({"systemSeverity": system_severity})
-                if collection_name in ["osi/git_leak", "osi/public_leak", "bp/phishing_kit"]:
+                if collection_name in ["osi/git_repository", "osi/public_leak", "bp/phishing_kit"]:
                     feed = transform_some_fields_into_markdown(collection_name, feed)
                 incident = {
                     "name": feed["name"],
@@ -1262,7 +1277,7 @@ def main():
             "gibtia-get-compromised-breached-info": get_info_by_id_command("compromised/breached"),
             "gibtia-get-phishing-kit-info": get_info_by_id_command("attacks/phishing_kit"),
             "gibtia-get-phishing-info": get_info_by_id_command("attacks/phishing"),
-            "gibtia-get-osi-git-leak-info": get_info_by_id_command("osi/git_leak"),
+            "gibtia-get-osi-git-leak-info": get_info_by_id_command("osi/git_repository"),
             "gibtia-get-osi-public-leak-info": get_info_by_id_command("osi/public_leak"),
             "gibtia-get-osi-vulnerability-info": get_info_by_id_command("osi/vulnerability"),
             "gibtia-get-attacks-ddos-info": get_info_by_id_command("attacks/ddos"),

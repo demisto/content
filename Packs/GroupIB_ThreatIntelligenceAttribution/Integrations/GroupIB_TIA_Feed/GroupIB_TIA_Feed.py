@@ -1,4 +1,7 @@
+import requests
+
 import demistomock as demisto
+import demistomock
 from CommonServerPython import *
 from CommonServerUserPython import *
 """ IMPORTS """
@@ -7,6 +10,7 @@ from typing import Dict, Generator, List, Optional, Tuple, Union
 
 import dateparser
 import urllib3
+from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -124,43 +128,51 @@ MAPPING: dict = {
                 {
                     "main_field": 'cnc.url', "main_field_type": 'URL',
                     "add_fields": [
-                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS,
+                        'dateBegin', 'dateEnd',
                     ],
                     "add_fields_types": [
-                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES,
+                        'firstseenbysource', 'lastseenbysource'
                     ]
                 },
                 {
                     "main_field": 'cnc.domain', "main_field_type": 'Domain',
                     "add_fields": [
-                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS,
+                        'dateBegin', 'dateEnd',
                     ],
                     "add_fields_types": [
-                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES,
+                        'firstseenbysource', 'lastseenbysource'
                     ]
                 },
                 {
                     "main_field": 'cnc.ipv4.ip', "main_field_type": 'IP',
                     "add_fields": [
                         'cnc.ipv4.asn', 'cnc.ipv4.countryName', 'cnc.ipv4.region',
-                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
-                    ],
-                    "add_fields_types": [
-                        *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
-                    ]
-                },
-                {
-                    "main_field": 'target.ipv4.ip', "main_field_type": 'GIB Victim IP',
-                    "add_fields": [
-                        'target.ipv4.asn', 'target.ipv4.countryName', 'target.ipv4.region',
-                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS,
-                        'dateBegin', 'dateEnd', *EVALUATION_FIELDS
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS,
+                        'dateBegin', 'dateEnd'
+
                     ],
                     "add_fields_types": [
                         *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES,
-                        'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
+                        *EVALUATION_FIELD_TYPES,
+                        'firstseenbysource', 'lastseenbysource'
                     ]
-                }
+                },
+                # {
+                #     "main_field": 'target.ipv4.ip', "main_field_type": 'GIB Victim IP',
+                #     "add_fields": [
+                #         'target.ipv4.asn', 'target.ipv4.countryName', 'target.ipv4.region',
+                #         *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS,
+                #         'dateBegin', 'dateEnd', *EVALUATION_FIELDS
+                #     ],
+                #     "add_fields_types": [
+                #         *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES,
+                #         'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
+                #     ]
+                # }
             ]
     },
     "attacks/deface": {
@@ -429,6 +441,43 @@ MAPPING: dict = {
                 }
             ]
     },
+    'ioc/common': {
+        'indicators':
+            [
+                {
+                    'main_field': 'url', "main_field_type": 'URL',
+                    "add_fields": [
+                        'dateFirstSeen', 'dateLastSeen',
+
+                    ],
+                    "add_fields_types": [
+                        'firstseenbysource', 'lastseenbysource',
+
+                    ]
+                },
+                {
+                    'main_field': 'domain', "main_field_type": 'Domain',
+                    "add_fields": [
+                        'dateFirstSeen', 'dateLastSeen',
+
+                    ],
+                    "add_fields_types": [
+                        'firstseenbysource', 'lastseenbysource',
+
+                    ]
+                }, {
+                    'main_field': 'ip', "main_field_type": 'IP',
+                    "add_fields": [
+                        'dateFirstSeen', 'dateLastSeen',
+
+                    ],
+                    "add_fields_types": [
+                        'firstseenbysource', 'lastseenbysource',
+
+                    ]
+                }
+            ]
+    }
 }
 
 
@@ -460,11 +509,20 @@ class Client(BaseClient):
         """
 
         while True:
+            session = requests.Session()
+            session.auth = HTTPBasicAuth(self._auth[0], self._auth[1])
+
+            session.headers["Accept"] = "*/*"
+            session.headers["User-Agent"] = f'SOAR/CortexSOAR/{self._auth[0]}/unknown'
+
             params = {'df': date_from, 'limit': limit, 'seqUpdate': seq_update}
             params = {key: value for key, value in params.items() if value}
-            portion = self._http_request(method="GET", url_suffix=collection_name + '/updated',
-                                         params=params, timeout=60.,
-                                         retries=4, status_list_to_retry=[429, 500])
+            portion = session.get(url=f'{self._base_url}{collection_name}/updated', params=params, timeout=60).json()
+
+            # product = f'SOAR/CortexSOAR/Username/unkown}'
+            # portion = self._http_request(method="GET", url_suffix=collection_name + '/updated',
+            #                              params=params, timeout=60.,
+            #                              retries=4, status_list_to_retry=[429, 500])
             if portion.get("count") == 0:
                 break
             seq_update = portion.get("seqUpdate")
@@ -484,11 +542,20 @@ class Client(BaseClient):
 
         result_id = None
         while True:
+            session = requests.Session()
+            session.auth = HTTPBasicAuth(self._auth[0], self._auth[1])
+
+            session.headers["Accept"] = "*/*"
+            session.headers["User-Agent"] = f'SOAR/CortexSOAR/{self._auth[0]}/unknown'
+
             params = {'df': date_from, 'limit': limit, 'resultId': result_id}
             params = {key: value for key, value in params.items() if value}
-            portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=60.,
-                                         retries=4, status_list_to_retry=[429, 500])
+            portion = session.get(url=f'{self._base_url}{collection_name}', params=params, timeout=60).json()
+            # params = {'df': date_from, 'limit': limit, 'resultId': result_id}
+            # params = {key: value for key, value in params.items() if value}
+            # portion = self._http_request(method="GET", url_suffix=collection_name,
+            #                              params=params, timeout=60.,
+            #                              retries=4, status_list_to_retry=[429, 500])
             if len(portion.get('items')) == 0:
                 break
             result_id = portion.get("resultId")
@@ -546,6 +613,21 @@ def find_element_by_key(obj, key):
             return obj
 
 
+def unpack_iocs_from_list(ioc):
+    # type: (Union[list, str]) -> list
+    """
+    Recursively unpacks all IOCs in one list.
+    """
+    unpacked = []
+    if isinstance(ioc, list):
+        for i in ioc:
+            unpacked.extend(unpack_iocs_from_list(i))
+    else:
+        unpacked.append(ioc)
+
+    return list(unpacked)
+
+
 def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
     """
     Recursively ties together and transforms indicator data.
@@ -560,10 +642,12 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
                 else:
                     buf_fields.append(field)
             unpacked.extend(unpack_iocs(ioc, ioc_type, buf_fields, fields_names, collection_name))
+
     else:
         if iocs in ['255.255.255.255', '0.0.0.0', '', None]:
             return unpacked
 
+        # fields=unpack_iocs_from_list(fields)
         fields_dict = {fields_names[i]: fields[i] for i in range(len(fields_names)) if fields[i] is not None}
 
         # Transforming one certain field into a markdown table
@@ -588,9 +672,11 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
         for date_field in DATE_FIELDS_LIST:
             if fields_dict.get(date_field):
                 previous_date = dateparser.parse(fields_dict.get(date_field, ""))
+                # previous_date = fields_dict.get(date_field, "")
+
                 if previous_date:
                     fields_dict[date_field] = previous_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-
+                    # fields_dict[date_field] = convert_to_timestamp(previous_date)
         fields_dict.update({'gibcollection': collection_name})
 
         raw_json = {'value': iocs, 'type': ioc_type, **fields_dict}
@@ -792,7 +878,10 @@ def main():
             verify=verify_certificate,
             auth=(username, password),
             proxy=proxy,
-            headers={"Accept": "*/*"})
+            headers={
+                "Accept": "*/*",
+                "User-Agent": f"SOAR/CortexSOAR/{username}/unknown"
+            })
 
         commands = {'gibtia-get-indicators': get_indicators_command}
 
@@ -814,7 +903,7 @@ def main():
                                                             common_fields=common_fields)
             set_integration_context(next_run)
             for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+                demisto.createIndicators(b)  # type: ignore
 
         else:
             return_results(commands[command](client, args))

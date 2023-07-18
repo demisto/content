@@ -18,13 +18,13 @@
                     "cnc": "http://some.ru",
                     "domain": "some.ru",
                     "ipv4": {
-                        "asn": "AS35278 Sprinthost.ru LLC",
-                        "city": "Moscow",
-                        "countryCode": "RU",
-                        "countryName": "Russian Federation",
+                        "asn": "ASN",
+                        "city": "City",
+                        "countryCode": "Code",
+                        "countryName": "Country Name",
                         "ip": "11.11.11.11",
-                        "provider": "Sprinthost.ru LLC",
-                        "region": "Moscow City"
+                        "provider": "Provider",
+                        "region": "Country"
                     },
                     "ipv6": null,
                     "url": "http://some.ru"
@@ -63,7 +63,7 @@
                     "name": "PredatorStealer"
                 },
                 "oldId": "396792583",
-                "password": "@jd0123123fhb_aawq",
+                "password": "password",
                 "person": {
                     "address": null,
                     "birthday": null,
@@ -85,7 +85,7 @@
                     "country": null,
                     "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "isAPT": false,
-                    "name": "FRK48"
+                    "name": "name TA"
                 }
             }
         ],
@@ -94,13 +94,13 @@
     "compromised/card": [
         [
             {
-                "baseName": "United States",
+                "baseName": "Name",
                 "cardInfo": {
                     "cvv": null,
                     "dump": null,
                     "issuer": {
-                        "countryCode": "US",
-                        "countryName": "UNITED STATES",
+                        "countryCode": "Code",
+                        "countryName": "Country Name",
                         "issuer": "SOME BANK"
                     },
                     "number": "545123XXXXXXXXXX",
@@ -120,13 +120,13 @@
                     }
                 },
                 "cnc": {
-                    "cnc": "mandarincc.pw",
-                    "domain": "mandarincc.pw",
+                    "cnc": "some.ru",
+                    "domain": "some.ru",
                     "ipv4": {
                         "asn": null,
-                        "city": "San Francisco",
-                        "countryCode": "US",
-                        "countryName": "United States",
+                        "city": "City",
+                        "countryCode": "Code",
+                        "countryName": "Country Name",
                         "ip": "11.11.11.11",
                         "provider": "Cloudflare",
                         "region": "California"
@@ -156,7 +156,7 @@
                     "city": "Something",
                     "countryCode": "US",
                     "email": null,
-                    "name": "Gary Oldman",
+                    "name": "Name",
                     "passport": null,
                     "phone": "932876",
                     "state": "Ohio",
@@ -292,62 +292,110 @@
         ],
         1614921031175
     ],
-    "osi/git_leak": [
+    "osi/git_repository": [
         [
             {
-                "dateDetected": "2021-01-21T08:56:11+00:00",
-                "dateUpdated": "1561036415",
-                "evaluation": {
-                    "admiraltyCode": "A6",
-                    "credibility": 100,
-                    "reliability": 100,
-                    "severity": "green",
-                    "tlp": "amber",
-                    "ttl": 30
+            "company": [],
+            "companyId": [
+                3150
+            ],
+            "contributors": [
+                {
+                    "authorEmail": "some@email.com",
+                    "authorName": "somename"
                 },
-                "file": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/bWFpbi01NDA4YWY0MDE2ZTVmZDFjYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc4YmVmMGNlYmUyZGVlMDZmMDhm",
-                "id": "f201c253ac71f7d78db39fa111a2af9d7ee7a3f7",
-                "matchesType": ["keyword"],
-                "matchesTypeCount": {
-                    "card": 0,
-                    "cisco": 0,
-                    "commonKeywords": 0,
-                    "domain": 0,
-                    "dsn": 0,
-                    "email": 0,
-                    "google": 0,
-                    "ip": 0,
-                    "keyword": 1,
-                    "login": 0,
-                    "metasploit": 0,
-                    "nmap": 0,
-                    "pgp": 0,
-                    "sha": 0,
-                    "slackAPI": 0,
-                    "ssh": 0
+                {
+                    "authorEmail": "some@email.com",
+                    "authorName": "somename"
                 },
-                "name": "conf/nginx/sites-available/whatsinmyyogurt",
-                "repository": "openfoodfacts/openfoodfacts-server",
-                "revisions": [
-                    {
-                        "bind": [{"bindBy": "cert", "data": "cert", "type": "keyword"}],
-                        "data": null,
-                        "file": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZS01NDA4YWY0MDE2ZTVmZDFjYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc4YmVmMGNlYmUyZGVlMDZmMDhm",
-                        "fileDiff": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZURpZmYtNTQwOGFmNDAxNmU1ZmQxY2E2ZWFkMzU4Y2MzYjJiNGI2MDVmNTRmNjg1OGM3OGJlZjBjZWJlMmRlZTA2ZjA4Zg==",
-                        "hash": "029eef2ec6e7a16d958f4ae666b7295f427f123b",
-                        "info": {
-                            "authorEmail": "some@gmail.ru",
-                            "authorName": "sadsdsa",
-                            "dateCreated": "2019-06-20T13:13:35+00:00"
+                {
+                    "authorEmail": "some@email.com",
+                    "authorName": "somename"
+                }
+            ],
+            "dataFound": {
+                "password": 8,
+                "apikey": 2,
+                "secret": 1
+            },
+            "dateCreated": "2021-01-23T22:12:58+03:00",
+            "dateDetected": "2021-01-28T22:32:54+03:00",
+            "evaluation": {
+                "admiraltyCode": "A1",
+                "credibility": 50,
+                "reliability": 50,
+                "severity": "orange",
+                "tlp": "amber",
+                "ttl": 30
+            },
+            "favouriteForCompanies": [],
+            "files": [
+                {
+                    "dataFound": [],
+                    "dateCreated": "1970-01-01T03:00:00+03:00",
+                    "dateDetected": "2021-01-28T19:37:08+00:00",
+                    "evaluation": {
+                        "admiraltyCode": "A1",
+                        "credibility": 30,
+                        "reliability": 100,
+                        "severity": "gray",
+                        "tlp": "amber",
+                        "ttl": 30
+                    },
+                    "id": "9ea4c62e9e5da6bc86ecb35e9f4da12fd29cfa5e",
+                    "matchesType": [
+                        "readme"
+                    ],
+                    "matchesTypeCount": {
+                        "readme": 1
+                    },
+                    "name": "example.txt",
+                    "revisions": [
+                        {
+                            "bind": [
+                                {
+                                    "bindBy": "",
+                                    "companyId": 0,
+                                    "data": "",
+                                    "ruleId": 0,
+                                    "type": "readme"
+                                }
+                            ],
+                            "data": null,
+                            "hash": "21e02c97e2ecdabb272bfefbe29fd3f50032f525",
+                            "info": {
+                                "authorEmail": "some@email.com",
+                                "authorName": "TEST",
+                                "timestamp": 1611429178
+                            }
                         }
+                    ],
+                    "rules": null,
+                    "url": "https://github.com/somegit"
                     }
-                ],
-                "seqUpdate": 1611219371626093,
-                "source": "github"
-            }
+            ],
+            "hideForCompanies": [],
+            "id": "21aed9b86d2e6cbb15180d803a84f6d27f673db4",
+            "ignoreForCompanies": [],
+            "isFavourite": false,
+            "isHidden": false,
+            "isIgnore": false,
+            "matchesTypes": [],
+            "name": "https://github.com/somegit",
+            "numberOf": {
+                "contributors": 3,
+                "files": 10
+            },
+            "relations": {
+                "infobip.com": "some.com",
+                "Infobip": "some"
+            },
+            "seqUpdate": 1611862631144674,
+            "source": "github"
+        }
         ],
-        1611219371626093
-    ],
+        1611862631144674
+        ],
     "osi/public_leak": [
         [
             {
