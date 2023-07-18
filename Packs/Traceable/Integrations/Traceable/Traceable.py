@@ -329,7 +329,7 @@ class Client(BaseClient):
                 _ipCategoriesList.append("IP_LOCATION_TYPE_BOT")
             else:
                 error = f"Unknown ipCategory {ipCategory} specified."
-                raise Exception(error)
+                raise DemistoException(error)
         self.ipCategoriesList = _ipCategoriesList
 
     def set_ip_abuse_velocity_list(self, ipAbuseVelocityList):
