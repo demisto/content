@@ -126,6 +126,7 @@
             "type": "Threat Actor",
             "score": 3,
             "service": "DeCYFIR",
+            "relationships": [],
             "rawJSON": {
                 "type": "threat-actor",
                 "spec_version": "2.1",
@@ -192,6 +193,7 @@
             "type": "Threat Actor",
             "score": 3,
             "service": "DeCYFIR",
+            "relationships": [],
             "rawJSON": {
                 "type": "threat-actor",
                 "spec_version": "2.1",
