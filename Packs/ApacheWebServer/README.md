@@ -5,11 +5,12 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure Apache Web Server to forward Syslog messages.
 
-Open your Apache Web Server instance, and follow these instructions:
+Open your Apache Web Server instance, and follow these instructions [Documentation](https://docs.trellix.com/bundle/xdr_dscg/page/UUID-4540547f-28c4-0553-846e-544fbc02530f.html):
 1. Log in to your Apache Web Server instance as a **root** user.
 2. Edit the Apache configuration file **httpd.conf**.
    * Ensure to keep a backup copy of the file.
    * Edit one config at a time- Save each change at a time and monitor its effect.
+   * For further information on Apache Log Files - [Documentation](https://httpd.apache.org/docs/2.4/logs.html#page-header) 
 3. Add the following information in the Apache configuration file to specify a custom path for the syslog events:
 ```bash 
    CustomLog "|/usr/bin/logger -t httpd -p <facility>.<priority>" combined 
