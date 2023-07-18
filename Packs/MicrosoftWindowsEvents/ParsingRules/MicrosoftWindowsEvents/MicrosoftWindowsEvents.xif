@@ -1,0 +1,4 @@
+[INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_windows_raw", no_hit=drop]
+config case_sensitive=false 
+| filter provider_name!="AD FS Auditing" OR provider_name!="AD FS"
+| alter _time = coalesce(time_created,_insert_time);
