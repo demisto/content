@@ -21,6 +21,7 @@ configuration:
   name: proxy
   type: 8
   defaultvalue: "false"
+  required: false
 script:
   script: ''
   type: python
