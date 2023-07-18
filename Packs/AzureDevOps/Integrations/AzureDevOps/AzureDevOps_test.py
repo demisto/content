@@ -1185,7 +1185,7 @@ def test_work_item_update_command(requests_mock):
 
     result = work_item_update_command(client, {"item_id": "21", "title": "Test"}, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith(f'Work Item 21 was updated successfully.')
+    assert result.readable_output.startswith('Work Item 21 was updated successfully.')
     assert result.outputs_prefix == 'AzureDevOps.WorkItem'
 
 
@@ -1205,3 +1205,191 @@ def test_work_item_pre_process_data(args, arguments_list, expected_result):
     from AzureDevOps import work_item_pre_process_data
     data = work_item_pre_process_data(args, arguments_list)
     assert data == expected_result
+
+
+def test_file_create_command(requests_mock):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing azure-devops-file-create command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, file_create_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
+
+    mock_response = json.loads(load_mock_response('file.json'))
+    requests_mock.post(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    args = {"branch_id": "111",
+            "branch_name": "Test",
+            "commit_comment": "Test 5.",
+            "file_content": "# Tasks\\n\\n* Item 1\\n* Item 2",
+            "file_path": "/test_5.md"
+            }
+    result = file_create_command(client, args, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith('Commit "Test 5." was created and pushed successfully by "" to branch "Test".')
+    assert result.outputs_prefix == 'AzureDevOps.File'
+
+
+CREATE_FILE_CHANGE_TYPE = "add"
+CREATE_FILE_ARGS = {"branch_id": "111",
+                    "branch_name": "Test",
+                    "commit_comment": "Test 6",
+                    "file_content": "# Tasks\\n\\n* Item 1\\n* Item 2",
+                    "file_path": "/test_5.md"
+                    }
+CREATE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '111'}],
+            'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'add', 'item': {'path': '/test_5.md'},
+                                                           'newContent': {'content': '# Tasks\\n\\n* Item 1\\n* Item 2',
+                                                                          'contentType': 'rawtext'}}]}]}
+CREATE_FILE = (CREATE_FILE_CHANGE_TYPE, CREATE_FILE_ARGS, CREATE_FILE_EXPECTED_RESULT)
+
+UPDATE_FILE_CHANGE_TYPE = "edit"
+UPDATE_FILE_ARGS = {"branch_id": "111",
+                    "branch_name": "Test",
+                    "commit_comment": "Test 6",
+                    "file_content": "UPDATE",
+                    "file_path": "/test_5.md"
+                    }
+UPDATE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '111'}],
+                               'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'edit', 'item': {'path': '/test_5.md'},
+                                                                              'newContent': {'content': 'UPDATE',
+                                                                                             'contentType': 'rawtext'}}]}]}
+UPDATE_FILE = (UPDATE_FILE_CHANGE_TYPE, UPDATE_FILE_ARGS, UPDATE_FILE_EXPECTED_RESULT)
+
+DELETE_FILE_CHANGE_TYPE = "delete"
+DELETE_FILE_ARGS = {"branch_id": "111",
+                    "branch_name": "Test",
+                    "commit_comment": "Test 6",
+                    "file_path": "/test_5.md"
+                    }
+DELETE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '111'}],
+                               'commits': [{'comment': 'Test 6',
+                                            'changes': [{'changeType': 'delete', 'item': {'path': '/test_5.md'}}]}]}
+DELETE_FILE = (DELETE_FILE_CHANGE_TYPE, DELETE_FILE_ARGS, DELETE_FILE_EXPECTED_RESULT)
+@pytest.mark.parametrize('change_type, args, expected_result',
+                         [CREATE_FILE, UPDATE_FILE, DELETE_FILE])
+def test_file_pre_process_body_request(requests_mock, change_type, args, expected_result):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing file_pre_process_body_request static method
+    Then:
+     - Ensure that this static method works as expected by constructing the HTTP response data accordingly.
+    """
+    from AzureDevOps import Client
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    data = client.file_pre_process_body_request(change_type, args)
+    assert data == expected_result
+
+
+def test_file_update_command(requests_mock):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing azure-devops-file-update command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, file_update_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
+
+    mock_response = json.loads(load_mock_response('file.json'))
+    requests_mock.post(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    args = {"branch_id": "111",
+            "branch_name": "Test",
+            "commit_comment": "Test 5.",
+            "file_content": "UPTADE",
+            "file_path": "/test_5.md"
+            }
+    result = file_update_command(client, args, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith('Commit "Test 5." was updated successfully by "" in branch "Test".')
+    assert result.outputs_prefix == 'AzureDevOps.File'
+
+
+def test_file_delete_command(requests_mock):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing azure-devops-file-delete command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, file_delete_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
+
+    mock_response = json.loads(load_mock_response('file.json'))
+    requests_mock.post(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    args = {"branch_id": "111",
+            "branch_name": "Test",
+            "commit_comment": "Test 5.",
+            "file_path": "/test_5.md"
+            }
+    result = file_delete_command(client, args, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith('Commit "Test 5." was deleted successfully by "" in branch "Test".')
+    assert result.outputs_prefix == 'AzureDevOps.File'

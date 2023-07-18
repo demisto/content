@@ -490,7 +490,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def work_item_get_request(self, organization, project, item_id):
+    def work_item_get_request(self, organization: str, project: str, item_id: str):
 
         params = {"api-version": 7.0}
         full_url = f'https://dev.azure.com/{organization}/{project}/_apis/wit/workitems/{item_id}'
@@ -500,7 +500,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def work_item_create_request(self, organization, project, args):
+    def work_item_create_request(self, organization: str, project: str, args: Dict[str, Any]):
         arguments_list = ['title', 'iteration_path', 'description', 'priority', 'tag']
 
         data = work_item_pre_process_data(args, arguments_list)
@@ -516,7 +516,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def work_item_update_request(self, organization, project, args):
+    def work_item_update_request(self, organization: str, project: str, args: Dict[str, Any]):
         arguments_list = ['title', 'assignee_display_name', 'state', 'iteration_path', 'description', 'priority', 'tag']
 
         data = work_item_pre_process_data(args, arguments_list)
@@ -527,6 +527,44 @@ class Client:
 
         return self.ms_client.http_request(method='PATCH',
                                            headers={"Content-Type": "application/json-patch+json"},
+                                           full_url=full_url,
+                                           params=params,
+                                           json_data=data,
+                                           resp_type='json')
+
+    @staticmethod
+    def file_pre_process_body_request(change_type: str, args: Dict[str, Any]) -> dict:
+        # pre-process branch
+        branch_name = args.get("branch_name")
+        branch_id = args.get("branch_id")
+        branch_details = [{"name": branch_name, "oldObjectId": branch_id}]
+
+        # pre-process commit
+        comment = args.get("commit_comment")
+        file_path = args.get("file_path")
+        file_content = args.get("file_content")
+
+        changes = {"changeType": change_type, "item": {"path": file_path}}
+
+        # in case of add/edit (create/update), add another key with the new content
+        if change_type != "delete":
+            changes["newContent"] = {"content": file_content, "contentType": "rawtext"}
+
+        commits = [{"comment": comment, "changes": [changes]}]
+
+        data = {"refUpdates": branch_details, "commits": commits}
+
+        return data
+
+    def file_request(self, organization: str, repository_id: str, project: str, change_type: str, args: Dict[str, Any]):
+
+        data = self.file_pre_process_body_request(change_type, args)
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/pushes'
+
+        return self.ms_client.http_request(method='POST',
                                            full_url=full_url,
                                            params=params,
                                            json_data=data,
@@ -1873,6 +1911,67 @@ def work_item_update_command(client: Client, args: Dict[str, Any], organization:
     )
 
 
+def file_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                        project: Optional[str]) -> CommandResults:
+    """
+    Add a file to the repository.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.file_request(organization, repository_id, project, change_type="add", args=args)
+
+    readable_output = f'Commit "{response.get("commits", [])[0].get("comment")}" was created and pushed successfully by ' \
+                      f'"{response.get("pushedBy", {}).get("displayName")}" to branch "{args.get("branch_name")}".'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.File',
+        outputs=response,
+        raw_response=response
+    )
+
+def file_update_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                        project: Optional[str]) -> CommandResults:
+    """
+    Update a file in the repository.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.file_request(organization, repository_id, project, change_type="edit", args=args)
+
+    readable_output = f'Commit "{response.get("commits", [])[0].get("comment")}" was updated successfully by ' \
+                      f'"{response.get("pushedBy", {}).get("displayName")}" in branch "{args.get("branch_name")}".'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.File',
+        outputs=response,
+        raw_response=response
+    )
+
+def file_delete_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                        project: Optional[str]) -> CommandResults:
+    """
+    Delete a file in the repository.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.file_request(organization, repository_id, project, change_type="delete", args=args)
+
+    readable_output = f'Commit "{response.get("commits", [])[0].get("comment")}" was deleted successfully by ' \
+                      f'"{response.get("pushedBy", {}).get("displayName")}" in branch "{args.get("branch_name")}".'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.File',
+        outputs=response,
+        raw_response=response
+    )
+
+
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
     """
@@ -2084,6 +2183,18 @@ def main() -> None:
         elif command == 'azure-devops-work-item-update':
             return_results(work_item_update_command(client, args, params.get('organization'),
                                                     params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-file-create':
+            return_results(file_create_command(client, args, params.get('organization'),
+                                               params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-file-update':
+            return_results(file_update_command(client, args, params.get('organization'),
+                                               params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-file-delete':
+            return_results(file_delete_command(client, args, params.get('organization'),
+                                               params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

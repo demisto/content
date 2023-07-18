@@ -1649,6 +1649,545 @@ script:
       - type: String
         contextPath: AzureDevOps.WorkItem.url
         description: Link to the work item.
+  - name: azure-devops-file-create
+    description: Add a file to the repository.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: branch_name
+        description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        required: true
+        isArray: false
+      - name: branch_id
+        description: The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        required: true
+        isArray: false
+      - name: commit_comment
+        description: Comment or message of the commit.
+        required: true
+        isArray: false
+      - name: file_path
+        description: The file path.
+        required: true
+        isArray: false
+      - name: file_content
+        description: The file content.
+        required: true
+        isArray: false
+      - name: entry_id
+        description: There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id.
+        required: false
+        isArray: false
+    outputs:
+      - type: String
+        contextPath: AzureDevOps.File.commits.treeId
+        description: Tree ID of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.commitId
+        description: ID (SHA-1) of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.author.name
+        description: Name of the commit author.
+      - type: String
+        contextPath: AzureDevOps.File.commits.author.email
+        description: Email address of the commit author.
+      - type: Date
+        contextPath: AzureDevOps.File.commits.author.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.File.commits.committer.name
+        description: Name of the commit committer.
+      - type: String
+        contextPath: AzureDevOps.File.commits.committer.email
+        description: Email address of the commit committer.
+      - type: Date
+        contextPath: AzureDevOps.File.commits.committer.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.File.commits.comment
+        description: Comment or message of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.parents
+        description: An enumeration of the parent commit IDs for this commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.url
+        description: REST URL for this resource.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.repositoryId
+        description: The ID of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.name
+        description: The branch name.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.oldObjectId
+        description: The last commit ID.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.newObjectId
+        description: The new commit ID.
+      - type: String
+        contextPath: AzureDevOps.File.repository.id
+        description: The ID of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.name
+        description: The name of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.url
+        description: The URL of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.id
+        description: The ID of the Project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.name
+        description: The name of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.description
+        description: The description of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.url
+        description: The URL of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.state
+        description: The state of the project.
+      - type: Number
+        contextPath: AzureDevOps.File.repository.project.revision
+        description: The revision number of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.visibility
+        description: Indicates whom the project is visible to.
+      - type: Date
+        contextPath: AzureDevOps.File.repository.project.lastUpdateTime
+        description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: Number
+        contextPath: AzureDevOps.File.repository.size
+        description: The size of the repository (in bytes).
+      - type: String
+        contextPath: AzureDevOps.File.repository.remoteUrl
+        description: Remote URL path to the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.sshUrl
+        description: The ssh URL of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.webUrl
+        description: The web URL of the repository.
+      - type: Boolean
+        contextPath: AzureDevOps.File.repository.isDisabled
+        description: If the repository is disabled or not.
+      - type: Boolean
+        contextPath: AzureDevOps.File.repository.isInMaintenance
+        description: If the repository is in maintenance or not.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.displayName
+        description: Display name of the user who pushed the commit / file.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.url
+        description:  Identity Reference.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy._links.avatar.href
+        description: Url for the user's avatar.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.id
+        description: ID of the user who pushed the commit / file.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.uniqueName
+        description: Domain and principal name.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.imageUrl
+        description: Identity Image.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Number
+        contextPath: AzureDevOps.File.pushId
+        description: Unique ID of the push operation.
+      - type: Date
+        contextPath: AzureDevOps.File.date
+        description: Date of the operation.
+      - type: String
+        contextPath: AzureDevOps.File.url
+        description: Link to the commit.
+      - type: String
+        contextPath: AzureDevOps.File._links.self.href
+        description: A collection of related REST reference links.
+      - type: String
+        contextPath: AzureDevOps.File._links.repository.href
+        description: Link to the repository where the commit is.
+      - type: String
+        contextPath: AzureDevOps.File._links.commits.href
+        description: Link to the commits.
+      - type: String
+        contextPath: AzureDevOps.File._links.pusher.href
+        description: Link to the commit pusher.
+      - type: String
+        contextPath: AzureDevOps.File._links.refs.href
+        description: Link to the branch.
+  - name: azure-devops-file-update
+    description: Update a file in the repository.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: branch_name
+        description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        required: true
+        isArray: false
+      - name: branch_id
+        description: The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        required: true
+        isArray: false
+      - name: commit_comment
+        description: Comment or message of the commit.
+        required: true
+        isArray: false
+      - name: file_path
+        description: The file path.
+        required: true
+        isArray: false
+      - name: file_content
+        description: The file content.
+        required: true
+        isArray: false
+      - name: entry_id
+        description: There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id.
+        required: false
+        isArray: false
+    outputs:
+      - type: String
+        contextPath: AzureDevOps.File.commits.treeId
+        description: Tree ID of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.commitId
+        description: ID (SHA-1) of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.author.name
+        description: Name of the commit author.
+      - type: String
+        contextPath: AzureDevOps.File.commits.author.email
+        description: Email address of the commit author.
+      - type: Date
+        contextPath: AzureDevOps.File.commits.author.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.File.commits.committer.name
+        description: Name of the commit committer.
+      - type: String
+        contextPath: AzureDevOps.File.commits.committer.email
+        description: Email address of the commit committer.
+      - type: Date
+        contextPath: AzureDevOps.File.commits.committer.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.File.commits.comment
+        description: Comment or message of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.parents
+        description: An enumeration of the parent commit IDs for this commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.url
+        description: REST URL for this resource.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.repositoryId
+        description: The ID of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.name
+        description: The branch name.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.oldObjectId
+        description: The last commit ID.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.newObjectId
+        description: The new commit ID.
+      - type: String
+        contextPath: AzureDevOps.File.repository.id
+        description: The ID of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.name
+        description: The name of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.url
+        description: The URL of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.id
+        description: The ID of the Project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.name
+        description: The name of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.description
+        description: The description of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.url
+        description: The URL of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.state
+        description: The state of the project.
+      - type: Number
+        contextPath: AzureDevOps.File.repository.project.revision
+        description: The revision number of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.visibility
+        description: Indicates whom the project is visible to.
+      - type: Date
+        contextPath: AzureDevOps.File.repository.project.lastUpdateTime
+        description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: Number
+        contextPath: AzureDevOps.File.repository.size
+        description: The size of the repository (in bytes).
+      - type: String
+        contextPath: AzureDevOps.File.repository.remoteUrl
+        description: Remote URL path to the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.sshUrl
+        description: The ssh URL of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.webUrl
+        description: The web URL of the repository.
+      - type: Boolean
+        contextPath: AzureDevOps.File.repository.isDisabled
+        description: If the repository is disabled or not.
+      - type: Boolean
+        contextPath: AzureDevOps.File.repository.isInMaintenance
+        description: If the repository is in maintenance or not.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.displayName
+        description: Display name of the user who pushed the commit / file.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.url
+        description:  Identity Reference.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy._links.avatar.href
+        description: Url for the user's avatar.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.id
+        description: ID of the user who pushed the commit / file.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.uniqueName
+        description: Domain and principal name.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.imageUrl
+        description: Identity Image.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Number
+        contextPath: AzureDevOps.File.pushId
+        description: Unique ID of the push operation.
+      - type: Date
+        contextPath: AzureDevOps.File.date
+        description: Date of the operation.
+      - type: String
+        contextPath: AzureDevOps.File.url
+        description: Link to the commit.
+      - type: String
+        contextPath: AzureDevOps.File._links.self.href
+        description: A collection of related REST reference links.
+      - type: String
+        contextPath: AzureDevOps.File._links.repository.href
+        description: Link to the repository where the commit is.
+      - type: String
+        contextPath: AzureDevOps.File._links.commits.href
+        description: Link to the commits.
+      - type: String
+        contextPath: AzureDevOps.File._links.pusher.href
+        description: Link to the commit pusher.
+      - type: String
+        contextPath: AzureDevOps.File._links.refs.href
+        description: Link to the branch.
+  - name: azure-devops-file-delete
+    description: Update a file in the repository.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: branch_name
+        description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        required: true
+        isArray: false
+      - name: branch_id
+        description: The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        required: true
+        isArray: false
+      - name: commit_comment
+        description: Comment or message of the commit.
+        required: true
+        isArray: false
+      - name: file_path
+        description: The file path.
+        required: true
+        isArray: false
+      - name: entry_id
+        description: There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id.
+        required: false
+        isArray: false
+    outputs:
+      - type: String
+        contextPath: AzureDevOps.File.commits.treeId
+        description: Tree ID of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.commitId
+        description: ID (SHA-1) of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.author.name
+        description: Name of the commit author.
+      - type: String
+        contextPath: AzureDevOps.File.commits.author.email
+        description: Email address of the commit author.
+      - type: Date
+        contextPath: AzureDevOps.File.commits.author.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.File.commits.committer.name
+        description: Name of the commit committer.
+      - type: String
+        contextPath: AzureDevOps.File.commits.committer.email
+        description: Email address of the commit committer.
+      - type: Date
+        contextPath: AzureDevOps.File.commits.committer.date
+        description: Date of the commit operation.
+      - type: String
+        contextPath: AzureDevOps.File.commits.comment
+        description: Comment or message of the commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.parents
+        description: An enumeration of the parent commit IDs for this commit.
+      - type: String
+        contextPath: AzureDevOps.File.commits.url
+        description: REST URL for this resource.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.repositoryId
+        description: The ID of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.name
+        description: The branch name.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.oldObjectId
+        description: The last commit ID.
+      - type: String
+        contextPath: AzureDevOps.File.refUpdates.newObjectId
+        description: The new commit ID.
+      - type: String
+        contextPath: AzureDevOps.File.repository.id
+        description: The ID of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.name
+        description: The name of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.url
+        description: The URL of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.id
+        description: The ID of the Project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.name
+        description: The name of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.description
+        description: The description of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.url
+        description: The URL of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.state
+        description: The state of the project.
+      - type: Number
+        contextPath: AzureDevOps.File.repository.project.revision
+        description: The revision number of the project.
+      - type: String
+        contextPath: AzureDevOps.File.repository.project.visibility
+        description: Indicates whom the project is visible to.
+      - type: Date
+        contextPath: AzureDevOps.File.repository.project.lastUpdateTime
+        description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      - type: Number
+        contextPath: AzureDevOps.File.repository.size
+        description: The size of the repository (in bytes).
+      - type: String
+        contextPath: AzureDevOps.File.repository.remoteUrl
+        description: Remote URL path to the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.sshUrl
+        description: The ssh URL of the repository.
+      - type: String
+        contextPath: AzureDevOps.File.repository.webUrl
+        description: The web URL of the repository.
+      - type: Boolean
+        contextPath: AzureDevOps.File.repository.isDisabled
+        description: If the repository is disabled or not.
+      - type: Boolean
+        contextPath: AzureDevOps.File.repository.isInMaintenance
+        description: If the repository is in maintenance or not.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.displayName
+        description: Display name of the user who pushed the commit / file.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.url
+        description: Identity Reference.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy._links.avatar.href
+        description: Url for the user's avatar.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.id
+        description: ID of the user who pushed the commit / file.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.uniqueName
+        description: Domain and principal name.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.imageUrl
+        description: Identity Image.
+      - type: String
+        contextPath: AzureDevOps.File.pushedBy.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Number
+        contextPath: AzureDevOps.File.pushId
+        description: Unique ID of the push operation.
+      - type: Date
+        contextPath: AzureDevOps.File.date
+        description: Date of the operation.
+      - type: String
+        contextPath: AzureDevOps.File.url
+        description: Link to the commit.
+      - type: String
+        contextPath: AzureDevOps.File._links.self.href
+        description: A collection of related REST reference links.
+      - type: String
+        contextPath: AzureDevOps.File._links.repository.href
+        description: Link to the repository where the commit is.
+      - type: String
+        contextPath: AzureDevOps.File._links.commits.href
+        description: Link to the commits.
+      - type: String
+        contextPath: AzureDevOps.File._links.pusher.href
+        description: Link to the commit pusher.
+      - type: String
+        contextPath: AzureDevOps.File._links.refs.href
+        description: Link to the branch.
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
