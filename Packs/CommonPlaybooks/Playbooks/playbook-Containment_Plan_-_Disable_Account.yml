@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -300
+          "y": -140
         }
       }
     note: false
@@ -52,46 +52,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: c35213af-fd08-44f2-8bf3-ecae94fb2e8d
-    type: condition
-    task:
-      id: c35213af-fd08-44f2-8bf3-ecae94fb2e8d
-      version: -1
-      name: Is Active Directory Query v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "13"
-    scriptarguments:
-      brandname:
-        simple: Active Directory Query v2
-    results:
-    - brandInstances
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 190
+          "y": 750
         }
       }
     note: false
@@ -119,7 +80,7 @@ tasks:
       - "2"
     scriptarguments:
       key:
-        simple: DisabledUsers
+        simple: UsersBlockList
       value:
         complex:
           root: Blocklist
@@ -130,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 765
+          "y": 575
         }
       }
     note: false
@@ -147,8 +108,8 @@ tasks:
     task:
       id: 073f607c-a924-43c1-8852-d480e1454fdc
       version: -1
-      name: Should disable the account based on the incident context?
-      description: Whether to disable the account based on the input values and the incident context.
+      name: Should disable the account?
+      description: Whether to disable the account based on the input values.
       type: condition
       iscommand: false
       brand: ""
@@ -156,40 +117,11 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "7"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: Both
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
       - - operator: isEqualString
           left:
             value:
@@ -200,19 +132,25 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 5
+          "y": 0
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -222,7 +160,7 @@ tasks:
     task:
       id: 32ec3207-df33-4d5f-8551-2a49ca677b62
       version: -1
-      name: 'Set users to disable and not appear in Incident context '
+      name: Set users to disable
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -241,8 +179,7 @@ tasks:
         simple: UsersToDisable
       value:
         complex:
-          root: ListCompare
-          accessor: LeftOnly
+          root: inputs.Username
           transformers:
           - operator: uniq
     separatecontext: false
@@ -251,7 +188,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 400
+          "y": 210
         }
       }
     note: false
@@ -259,60 +196,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 46906c55-db0e-48d1-8c1c-38cb34384cd0
-    type: regular
-    task:
-      id: 46906c55-db0e-48d1-8c1c-38cb34384cd0
-      version: -1
-      name: Compare the input usernames with disabled users in the incident
-      description: Compare two lists and put the differences in context.
-      scriptName: CompareLists
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      left:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
-      right:
-        complex:
-          root: parentIncidentContext
-          accessor: DisabledUsers
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -350,7 +233,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 580
+          "y": 390
         }
       }
     note: false
@@ -363,16 +246,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_2_#default#": 0.16,
-      "12_7_yes": 0.47,
-      "7_2_#default#": 0.2
+      "12_2_#default#": 0.16
     },
     "paper": {
       "dimensions": {
-        "height": 1305,
+        "height": 955,
         "width": 380,
         "x": 450,
-        "y": -300
+        "y": -140
       }
     }
   }

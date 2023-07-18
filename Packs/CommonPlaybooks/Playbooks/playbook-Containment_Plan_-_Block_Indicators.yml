@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -330
+          "y": 30
         }
       }
     note: false
@@ -57,12 +57,12 @@ tasks:
           accessor: alertname
       hash_list:
         complex:
-          root: ListCompare.LeftOnly
+          root: inputs.FileHash
           filters:
           - - operator: in
               left:
                 value:
-                  simple: ListCompare.LeftOnly
+                  simple: inputs.FileHash
                 iscontext: true
               right:
                 value:
@@ -71,7 +71,7 @@ tasks:
           - - operator: stringHasLength
               left:
                 value:
-                  simple: ListCompare.LeftOnly
+                  simple: inputs.FileHash
                 iscontext: true
               right:
                 value:
@@ -402,131 +402,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 039f34e2-b80d-4fb3-898d-a0bbc151ea49
-    type: condition
-    task:
-      id: 039f34e2-b80d-4fb3-898d-a0bbc151ea49
-      version: -1
-      name: Should block the indicators based on the incident context?
-      description: Whether to block the indicators based on the incident context.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: Both
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -30
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 4394e286-e62e-41f9-8019-92748ab84bd3
-    type: regular
-    task:
-      id: 4394e286-e62e-41f9-8019-92748ab84bd3
-      version: -1
-      name: compare the indicators to block with blocked indicators
-      description: Compare two lists and put the differences in context.
-      scriptName: CompareLists
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      left:
-        complex:
-          root: inputs.FileHash
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorsha256
-                iscontext: true
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
-      right:
-        complex:
-          root: parentIncidentContext.BlockedFilesHashCore.blocklist.added_hashes
-          accessor: fileHash
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: f8c2ef29-8616-42a0-804d-8cc3c9f49763
@@ -548,14 +423,8 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: in
+      - - operator: isNotEmpty
           left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-          right:
             value:
               complex:
                 root: inputs.FileHash
@@ -587,8 +456,6 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "14_2_#default#": 0.12,
-      "14_3_yes": 0.55,
       "24_1_yes": 0.44,
       "24_8_#default#": 0.23,
       "3_24_yes": 0.54,
@@ -596,10 +463,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1725,
+        "height": 1365,
         "width": 380,
         "x": 450,
-        "y": -330
+        "y": 30
       }
     }
   }

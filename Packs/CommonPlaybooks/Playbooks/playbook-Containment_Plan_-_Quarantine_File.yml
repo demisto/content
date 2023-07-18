@@ -180,7 +180,7 @@ tasks:
     task:
       id: 2b43ad1d-1312-47cd-87af-a0e39b15ab76
       version: -1
-      name: Set Quarantine files on endpoints to the Incident context
+      name: Set quarantine files per endpoints to the Incident context
       description: commands.local.cmd.set.parent.incident.context
       script: Builtin|||setParentIncidentContext
       type: regular
@@ -340,7 +340,7 @@ tasks:
     task:
       id: 7e2c6273-86db-4fdd-8165-79a451736b14
       version: -1
-      name: Set Quarantine files on endpoints to the context
+      name: Set quarantine files to the context
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -376,6 +376,7 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_2_#default#": 0.14,
+      "15_16_yes": 0.6,
       "15_2_#default#": 0.23
     },
     "paper": {

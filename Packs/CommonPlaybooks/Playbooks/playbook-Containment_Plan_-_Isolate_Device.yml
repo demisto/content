@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "23"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 490,
-          "y": -460
+          "y": -1020
         }
       }
     note: false
@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 400
+          "y": 80
         }
       }
     note: false
@@ -93,13 +93,15 @@ tasks:
         complex:
           root: Core.Isolation
           accessor: endpoint_id
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 490,
-          "y": 585
+          "y": 265
         }
       }
     note: false
@@ -127,7 +129,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 760
+          "y": 490
         }
       }
     note: false
@@ -144,7 +146,7 @@ tasks:
     task:
       id: a0690559-7fbb-4a1e-8eb1-051f88912afd
       version: -1
-      name: Get endpoint info
+      name: Get endpoint info by endpoint ID
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields is concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
@@ -152,18 +154,25 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "17"
     scriptarguments:
-      hostname:
+      endpoint_id_list:
         complex:
-          root: inputs.EndpointHostName
+          root: inputs.EndpointID
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "null"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 490,
-          "y": -305
+          "y": -495
         }
       }
     note: false
@@ -173,156 +182,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 7ed6fb17-577b-4bf3-8708-7a212ce724f0
-    type: regular
-    task:
-      id: 7ed6fb17-577b-4bf3-8708-7a212ce724f0
-      version: -1
-      name: Compare endpoint ID with isolated endpoints in the incident
-      description: Compare two lists and put the differences in context.
-      scriptName: CompareLists
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      left:
-        complex:
-          root: inputs.EndpointID
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.Endpoint.endpoint_id
-                iscontext: true
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
-          - operator: uniq
-      right:
-        complex:
-          root: parentIncidentContext
-          accessor: IsolatedEndpointsID
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": -140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 8c48f7c2-7cd0-485e-8849-dddb4fd4d5cb
-    type: condition
-    task:
-      id: 8c48f7c2-7cd0-485e-8849-dddb4fd4d5cb
-      version: -1
-      name: Should isolate the endpoint?
-      description: Whether to isolate the endpoint based on the input values.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.HostContainment
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: Both
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a09d85cf-0537-44eb-8805-b51d720123ce
+    taskid: 967d72b1-110e-4966-884c-8e5f75feb07e
     type: regular
     task:
-      id: a09d85cf-0537-44eb-8805-b51d720123ce
+      id: 967d72b1-110e-4966-884c-8e5f75feb07e
       version: -1
-      name: 'Set Endpoints ID to isolate and not appear in Incident context '
+      name: Set endpoints ID to isolate
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -335,8 +208,8 @@ tasks:
         simple: EndpointsIDToIsolate
       value:
         complex:
-          root: ListCompare
-          accessor: LeftOnly
+          root: Core.Endpoint
+          accessor: endpoint_id
           transformers:
           - operator: uniq
     separatecontext: false
@@ -345,7 +218,271 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 230
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1b35e319-899a-4a2b-80e4-591c3b92a9ae
+    type: condition
+    task:
+      id: 1b35e319-899a-4a2b-80e4-591c3b92a9ae
+      version: -1
+      name: Should isolate the endpoint?
+      description: Whether to isolate the endpoint based on the input values.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "Yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HostContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: DISCONNECTED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 677be289-10e0-46ea-8380-a44f18e8a047
+    type: regular
+    task:
+      id: 677be289-10e0-46ea-8380-a44f18e8a047
+      version: -1
+      name: Set Isolated endpoint ID to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: IsolatedEndpointsID
+      value:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: No Values
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 65bfa257-2884-4787-8dd5-64589ea2ad55
+    type: condition
+    task:
+      id: 65bfa257-2884-4787-8dd5-64589ea2ad55
+      version: -1
+      name: Is the endpoint ID or the endpoint name defined?
+      description: Checks if the endpoint ID or the endpoint name defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EndpointID
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EndpointHostName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6e3d0a66-444e-4d5d-803a-82f81ef2afdf
+    type: regular
+    task:
+      id: 6e3d0a66-444e-4d5d-803a-82f81ef2afdf
+      version: -1
+      name: Get endpoint info by endpoint name
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields is concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      hostname:
+        complex:
+          root: inputs.EndpointHostName
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "null"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 28a11db5-8870-402e-8fee-8d815b2fc6a9
+    type: condition
+    task:
+      id: 28a11db5-8870-402e-8fee-8d815b2fc6a9
+      version: -1
+      name: is the endpoint already isolated?
+      description: Checks if the endpoint is already isolated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_ISOLATED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": -120
         }
       }
     note: false
@@ -358,14 +495,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_10_#default#": 0.19
+      "17_16_Yes": 0.55,
+      "23_10_#default#": 0.11,
+      "25_22_yes": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 1285,
-        "width": 380,
-        "x": 490,
-        "y": -460
+        "height": 1575,
+        "width": 840,
+        "x": 30,
+        "y": -1020
       }
     }
   }

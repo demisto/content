@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 770,
-          "y": -310
+          "y": -150
         }
       }
     note: false
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 1100
+          "y": 1150
         }
       }
     note: false
@@ -177,81 +177,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: ed64e006-6010-49b6-8897-3943a4015825
-    type: condition
-    task:
-      id: ed64e006-6010-49b6-8897-3943a4015825
-      version: -1
-      name: Should clear the user sessions based on the incident context?
-      description: Whether to clear the user session based on the input values and the incident context.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: Both
-            iscontext: true
-          right:
-            value:
-              simple: No Values
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ListCompare
-                accessor: LeftOnly
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ClearUserSessions
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 770,
-          "y": 10
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: cceb9ed8-97d2-4b2a-8688-c02b46be05a6
@@ -259,7 +184,7 @@ tasks:
     task:
       id: cceb9ed8-97d2-4b2a-8688-c02b46be05a6
       version: -1
-      name: 'Set users to clear the session and not appear in Incident context '
+      name: Set users to clear the session
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -273,12 +198,12 @@ tasks:
         simple: UsersSessionToClear
       value:
         complex:
-          root: ListCompare.LeftOnly
+          root: inputs.Username
           filters:
           - - operator: notContainsGeneral
               left:
                 value:
-                  simple: ListCompare.LeftOnly
+                  simple: inputs.Username
                 iscontext: true
               right:
                 value:
@@ -287,7 +212,7 @@ tasks:
           - - operator: notContainsGeneral
               left:
                 value:
-                  simple: ListCompare.LeftOnly
+                  simple: inputs.Username
                 iscontext: true
               right:
                 value:
@@ -367,92 +292,65 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 725fe300-6380-4936-8ab3-e176c0bef34f
-    type: regular
+  "17":
+    id: "17"
+    taskid: f1d3409f-55f4-4804-8a48-354971cae04e
+    type: condition
     task:
-      id: 725fe300-6380-4936-8ab3-e176c0bef34f
+      id: f1d3409f-55f4-4804-8a48-354971cae04e
       version: -1
-      name: Compare the users with cleared users sessions in the incident
-      description: Compare two lists and put the differences in context.
-      scriptName: CompareLists
-      type: regular
+      name: Should clear the user sessions?
+      description: Whether to clear the user sessions based on the input values.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      left:
-        complex:
-          root: inputs.Username
-          filters:
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: inputs.Username
-                iscontext: true
-              right:
-                value:
-                  simple: administrator
-              ignorecase: true
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: inputs.Username
-                iscontext: true
-              right:
-                value:
-                  simple: system
-              ignorecase: true
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
-      right:
-        complex:
-          root: parentIncidentContext
-          accessor: UsersSessionCleared
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No Values
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ClearUserSessions
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 770,
-          "y": -160
+          "y": 0
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "10_15_yes": 0.4,
-      "10_2_#default#": 0.12,
-      "15_2_#default#": 0.15
+      "15_2_#default#": 0.15,
+      "17_15_yes": 0.48,
+      "17_2_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 1475,
+        "height": 1365,
         "width": 380,
         "x": 770,
-        "y": -310
+        "y": -150
       }
     }
   }
