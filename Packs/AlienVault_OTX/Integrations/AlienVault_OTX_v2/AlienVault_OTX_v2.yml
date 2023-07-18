@@ -17,17 +17,20 @@ configuration:
   displaypassword: API Token
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Token
   name: api_token
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: '2'
   display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
   name: default_threshold
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '10'
   display: Maximum number of relationships for indicators
   name: max_indicator_relationships
@@ -35,6 +38,7 @@ configuration:
   additionalinfo: If not provided, no relationships will be added. This field is relevant only for url, file hash and ip / domain indicators.
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -57,16 +61,19 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Query Indicators of Compromise in AlienVault OTX.
 display: AlienVault OTX v2
 name: AlienVault OTX v2

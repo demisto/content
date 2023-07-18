@@ -17,9 +17,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Twitter integration provides access to searching recent Tweets (in last 7 days) and user information using the Twitter v2 API.
 display: 'Twitter v2'
 name: Twitter v2
