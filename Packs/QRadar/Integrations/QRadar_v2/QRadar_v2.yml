@@ -6,6 +6,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
   required: true
@@ -13,38 +14,47 @@ configuration:
 - display: Username / API Key (see '?')
   name: credentials
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Long running instance
   name: longRunning
   type: 8
+  required: false
 - display: Query to fetch offenses
   name: query
   type: 0
   additionalinfo: "Define a query to determine which offenses to fetch. e.g. status=OPEN. See ? for more details."
+  required: false
 - defaultvalue: '20'
   display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
   type: 0
+  required: false
 - defaultvalue: 'true'
   display: Incident IP Enrichment
   name: ip_enrich
   type: 8
   additionalinfo: "IP values related to the offense are returned from the API as ID values. Enable this parameter the IDs to IP values."
+  required: false
 - defaultvalue: 'true'
   display: Incident Asset Enrichment
   name: asset_enrich
   type: 8
   additionalinfo: "Enable this to fetch assets that correlate to the fetched offenses."
+  required: false
 - defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime'
   display: Event fields to return from the events query (CAUTION this parameter is correlated to the incoming mapper, and changing the values may adversely affect mapping)
   name: events_columns
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_aql_intro.html"
   type: 12
+  required: false
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   name: fetch_mode
@@ -59,10 +69,12 @@ configuration:
   name: events_limit
   type: 0
   additionalinfo: This field is require when running as ‘long running instance’ - please set the max amount of events to fetch.
+  required: false
 - additionalinfo: Comma-separated configuration for advanced parameters values. e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
   name: adv_params
   type: 12
+  required: false
 description: 'Deprecated. Use the IBM QRadar v3 integration instead. Fetch offenses from QRadar using Cortex XSOAR. Supports API versions until 10.0. You can fetch the offenses with their related events and assets by creating a comma-separated list of event fields.'
 display: IBM QRadar v2 (Deprecated)
 deprecated: true
