@@ -5473,7 +5473,8 @@
         },
         {
             "integrations": "Forcepoint Security Management Center",
-            "playbookID": "ForcepointSecurityManagementCenter_test"
+            "playbookID": "ForcepointSecurityManagementCenter_test",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
