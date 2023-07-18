@@ -1,5 +1,5 @@
 Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
-This integration was integrated and tested with version xx of GoogleDrive
+This integration was integrated and tested with version 1.31.0 of GoogleDrive
 
 ## Configure Google Drive on Cortex XSOAR
 
