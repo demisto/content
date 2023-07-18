@@ -20,6 +20,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Reputation for the Cryptocurrency indicators. Default is Suspicious.
   defaultvalue: Suspicious
   display: Reputation
@@ -32,6 +33,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 description: Cryptocurrency will help classify Cryptocurrency indicators with the configured score when ingested.
 display: Cryptocurrency
 name: Cryptocurrency
