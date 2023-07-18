@@ -20,10 +20,12 @@ configuration:
   name: unsecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Password properties
   name: password_properties
   defaultvalue: Letter,Number
@@ -40,10 +42,12 @@ configuration:
   - AtLeast16Characters
   - AtLeast24Characters
   additionalinfo: Filter for password properties
+  required: false
 - display: Limit of identities to get (min is 0 and max is 10 000)
   name: limit_identities
   defaultvalue: "500"
   type: 0
+  required: false
 - display: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). This will be used for identity search command as a default value.
   name: domains
   type: 12

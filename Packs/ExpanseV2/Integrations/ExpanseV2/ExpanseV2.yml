@@ -16,40 +16,48 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key
   name: apikey
   type: 4
   additionalinfo: Xpanse API Key to use to connect.
   hidden: true
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Fetch Xpanse issues with Priority
   name: priority
   options:
@@ -60,6 +68,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: Active
   display: Fetch Xpanse issues with Activity Status
   name: activity_status
@@ -69,6 +78,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - display: Fetch Xpanse issues with Progress Status
   name: progress_status
   options:
@@ -80,21 +90,25 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - display: Fetch issues with Business Units (comma separated string)
   name: business_unit
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch issues with Tags (comma separated string)
   name: tag
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch issue with Types (comma separated string)
   name: issue_type
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch Xpanse issues with Cloud Management Status
   name: cloud_management_status
   options:
@@ -104,6 +118,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -114,12 +129,14 @@ configuration:
   - Both
   type: 15
   section: Collect
+  required: false
 - defaultvalue: 'false'
   display: Sync Incident Owners
   name: sync_owners
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments mirrored from the Xpanse Issue (must be different from the sync_tags to prevent loops).
   defaultvalue: FromExpanse
   display: Tag(s) for mirrored comments
@@ -127,12 +144,14 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list) to the corresponding Xpanse Issue as comments (must be different from the incoming_tags to prevent loops).
   display: Mirror out Entries with tag(s)
   name: sync_tags
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -147,6 +166,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   section: Collect
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -158,12 +178,14 @@ configuration:
   type: 17
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   section: Collect
   advanced: true
+  required: false
 description: The Xpanse integration for Cortex XSOAR leverages the Expander API to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
 display: Cortex Xpanse
 name: ExpanseV2

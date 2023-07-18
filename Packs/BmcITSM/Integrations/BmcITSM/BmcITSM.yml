@@ -24,11 +24,13 @@ configuration:
   defaultvalue: "50"
   type: 0
   additionalinfo: Default is 50. Maximum is 200.
+  required: false
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 7 days
   type: 0
   additionalinfo: ""
+  required: false
 - name: ticket_type
   display: Ticket Type
   defaultvalue: All
@@ -42,6 +44,7 @@ configuration:
   - problem investigation
   - known error
   - All
+  required: false
 - name: ticket_status
   display: Ticket Status
   defaultvalue: All
@@ -81,6 +84,7 @@ configuration:
   - No Action Planned
   - Corrected
   - All
+  required: false
 - name: ticket_impact
   display: Ticket Impact
   defaultvalue: All
@@ -92,6 +96,7 @@ configuration:
   - 3-Moderate/Limited
   - 4-Minor/Localized
   - All
+  required: false
 - name: ticket_urgency
   display: Ticket Urgency
   defaultvalue: All
@@ -103,11 +108,13 @@ configuration:
   - 3-Medium
   - 4-Low
   - All
+  required: false
 - name: query
   display: Fetch by Query
   defaultvalue:
   type: 0
   additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+  required: false
 - additionalinfo: "Choose the direction to mirror the incident: Incoming (from BMC Helix ITSM to Cortex XSOAR), Outgoing (from Cortex XSOAR to BMC Helix ITSM), or Incoming and Outgoing (from/to Cortex XSOAR and BMC Helix ITSM)."
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -120,6 +127,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
   defaultvalue: "false"
   display: Close Mirrored XSOAR Incident
@@ -127,6 +135,7 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
   defaultvalue: "false"
   display: Close Mirrored BMC Helix ITSM Ticket
@@ -134,22 +143,27 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 script:
   script: ""
   type: python
