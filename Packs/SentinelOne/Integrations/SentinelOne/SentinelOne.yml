@@ -17,17 +17,21 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
+  required: false
 - display: API Version
   name: version
   defaultvalue: "2.0"
   type: 0
+  required: false
 - display: Token
   name: token
   defaultvalue: ""
   type: 4
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 script:
   script: ''
   type: javascript
