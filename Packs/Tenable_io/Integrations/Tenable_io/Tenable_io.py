@@ -1170,7 +1170,7 @@ def scan_filters_human_readable(filters: list) -> str:
     }
     return tableToMarkdown(
         'Tenable IO Scan Filters',
-        list(map(flatten, filters)),
+        [d | d.get('control', {}) for d in filters],
         headers=list(context_to_hr),
         headerTransform=context_to_hr.get)
 
@@ -1212,7 +1212,7 @@ def scan_history_human_readable(history: list) -> str:
     }
     return tableToMarkdown(
         'Tenable IO Scan History',
-        list(map(flatten, history)),
+        [d | d.get('targets', {}) for d in history],
         headers=list(context_to_hr),
         headerTransform=context_to_hr.get)
 
@@ -1224,7 +1224,7 @@ def scan_history_params(args: dict) -> dict:
             for field in argToList(args.get('sortFields'))),
         'exclude_rollover': args['excludeRollover'],
         'limit': args.get('pageSize') or args['limit'],
-        'offset': int(args.get('pageSize', 0)) * int(args.get('page', 0)),
+        'offset': int(args.get('pageSize', 0)) * (int(args.get('page', 0)) - 1),
     }
 
 

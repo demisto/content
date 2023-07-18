@@ -1140,7 +1140,7 @@ script:
       - 'true'
       - 'false'
     - name: page
-      description: The page number of scan records to retrieve (used for pagination). The page size is defined by the "pageSize" argument.
+      description: The 1-indexed page number of scan records to retrieve (used for pagination). The page size is defined by the "pageSize" argument.
     - name: pageSize
       description: The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
     - name: limit

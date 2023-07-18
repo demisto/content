@@ -1355,3 +1355,237 @@ When inserting invalid arguments, an error message could be returned.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| fake_uuid | 1.1.1.1 | 1.1.1.1 | Linux Kernel 3.13 on Ubuntu 14.04 (trusty) | general-purpose | fqdn | info | 00000 | Name |  |  | TCP | 22 | 2024-11-07T11:11:05.906Z | 2024-11-07T11:11:05.906Z | Description | N/A |
 >| fake_uuid | 1.3.2.1 | 1.3.2.1 | Nutanix | general-purpose | fqdn | info | 00000 | Name |  |  | TCP | 0 | 2024-11-07T11:11:05.906Z | 2024-11-07T11:11:05.906Z | Description | N/A |
+### tenable-io-list-scan-filters
+
+***
+Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints/commands that support them.
+
+#### Base Command
+
+`tenable-io-list-scan-filters`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.ScanFilter.name | String | The name of the scan filter. | 
+| TenableIO.ScanFilter.readable_name | String | The readable name of the scan filter. | 
+| TenableIO.ScanFilter.control.type | String | The type of control associated with the scan filter. | 
+| TenableIO.ScanFilter.control.regex | String | The regular expression used by the scan filter. | 
+| TenableIO.ScanFilter.control.readable_regex | String | An example expression that filter's regular expression would match. | 
+| TenableIO.ScanFilter.operators | String | The operators available for the scan filter. | 
+| TenableIO.ScanFilter.group_name | Unknown | The group name associated with the scan filter. | 
+
+#### Command example
+```!tenable-io-list-scan-filters```
+#### Context Example
+```json
+{
+    "TenableIO": {
+        "ScanFilter": [
+            {
+                "control": {
+                    "readable_regex": "01234567-abcd-ef01-2345-6789abcdef01",
+                    "regex": "[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*",
+                    "type": "entry"
+                },
+                "group_name": null,
+                "name": "host.id",
+                "operators": [
+                    "eq",
+                    "neq",
+                    "match",
+                    "nmatch"
+                ],
+                "readable_name": "Asset ID"
+            },
+            {
+                "control": {
+                    "maxlength": 18,
+                    "readable_regex": "NUMBER",
+                    "regex": "^[0-9]+(,[0-9]+)*",
+                    "type": "entry"
+                },
+                "group_name": null,
+                "name": "plugin.attributes.bid",
+                "operators": [
+                    "eq",
+                    "neq",
+                    "match",
+                    "nmatch"
+                ],
+                "readable_name": "Bugtraq ID"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tenable IO Scan Filters
+>|Filter name|Filter Readable name|Filter Control type|Filter regex|Readable regex|Filter operators|Filter group name|
+>|---|---|---|---|---|---|---|
+>| host.id | Asset ID | entry | [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})* | 01234567-abcd-ef01-2345-6789abcdef01 | eq,<br/>neq,<br/>match,<br/>nmatch |  |
+>| plugin.attributes.bid | Bugtraq ID | entry | ^[0-9]+(,[0-9]+)* | NUMBER | eq,<br/>neq,<br/>match,<br/>nmatch |  |
+
+### tenable-io-get-scan-history
+
+***
+Lists the individual runs of the specified scan.
+
+#### Base Command
+
+`tenable-io-get-scan-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scanId | The ID of the scan of which to get the runs. | Required | 
+| sortFields | The fields by which to sort, in the order defined by "sortOrder". Possible values: start_date, end_date, status. Possible values are: start_date, end_date, status. | Optional | 
+| sortOrder | The direction in which to sort the fields defined by "sortFields". Default is "asc". Possible values are: asc, desc. Default is asc. | Optional | 
+| excludeRollover | Whether or not to exclude rollover scans from the scan history. Default is false. Possible values are: true, false. Default is false. | Optional | 
+| page | The 1-indexed page number of scan records to retrieve (used for pagination). The page size is defined by the "pageSize" argument. | Optional | 
+| pageSize | The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument. | Optional | 
+| limit | The number of records to retrieve. If "pageSize" is defined, this argument is ignored. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.ScanHistory.time_end | Number | The end time of the scan. | 
+| TenableIO.ScanHistory.scan_uuid | String | The UUID \(Universally Unique Identifier\) of the scan. | 
+| TenableIO.ScanHistory.id | Number | The ID of the scan history. | 
+| TenableIO.ScanHistory.is_archived | Boolean | Indicates whether the scan history is archived or not. | 
+| TenableIO.ScanHistory.time_start | Number | The start time of the scan. | 
+| TenableIO.ScanHistory.visibility | String | The visibility of the scan. | 
+| TenableIO.ScanHistory.targets.custom | Boolean | Indicates whether custom targets were used in the scan. | 
+| TenableIO.ScanHistory.targets.default | Boolean | Indicates whether the default targets were used in the scan. | 
+| TenableIO.ScanHistory.status | String | The status of the scan. | 
+
+#### Command example
+```!tenable-io-get-scan-history scanId=16 excludeRollover=true sortFields=end_date,status sortOrder=desc page=2 pageSize=4```
+#### Context Example
+```json
+{
+    "TenableIO": {
+        "ScanHistory": [
+            {
+                "id": 17235445,
+                "is_archived": true,
+                "reindexing": null,
+                "scan_uuid": "69a55b8e-0d52-427a-81e0-7dfe4dc6eda6",
+                "status": "completed",
+                "targets": {
+                    "custom": null,
+                    "default": false
+                },
+                "time_end": 1677425182,
+                "time_start": 1677424566,
+                "visibility": "public"
+            },
+            {
+                "id": 17235342,
+                "is_archived": true,
+                "reindexing": null,
+                "scan_uuid": "2c592d52-df56-42e0-9f18-d892bdeb1e18",
+                "status": "completed",
+                "targets": {
+                    "custom": null,
+                    "default": false
+                },
+                "time_end": 1677424556,
+                "time_start": 1677423906,
+                "visibility": "public"
+            },
+            {
+                "id": 17235033,
+                "is_archived": true,
+                "reindexing": null,
+                "scan_uuid": "44586b4f-1051-415c-b375-db86f6bd8c13",
+                "status": "completed",
+                "targets": {
+                    "custom": null,
+                    "default": false
+                },
+                "time_end": 1677423865,
+                "time_start": 1677423247,
+                "visibility": "public"
+            },
+            {
+                "id": 17234969,
+                "is_archived": true,
+                "reindexing": null,
+                "scan_uuid": "06c12bf7-436f-489d-bb04-aae511ea9f5c",
+                "status": "completed",
+                "targets": {
+                    "custom": null,
+                    "default": false
+                },
+                "time_end": 1677423205,
+                "time_start": 1677422585,
+                "visibility": "public"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tenable IO Scan History
+>|History id|History uuid|Status|Is archived|Targets custom|Targets default|Visibility|Time start|Time end|
+>|---|---|---|---|---|---|---|---|---|
+>| 17235445 | 69a55b8e-0d52-427a-81e0-7dfe4dc6eda6 | completed | true |  | false | public | 1677424566 | 1677425182 |
+>| 17235342 | 2c592d52-df56-42e0-9f18-d892bdeb1e18 | completed | true |  | false | public | 1677423906 | 1677424556 |
+>| 17235033 | 44586b4f-1051-415c-b375-db86f6bd8c13 | completed | true |  | false | public | 1677423247 | 1677423865 |
+>| 17234969 | 06c12bf7-436f-489d-bb04-aae511ea9f5c | completed | true |  | false | public | 1677422585 | 1677423205 |
+
+### tenable-io-export-scan
+
+***
+Export and download a scan report.
+
+#### Base Command
+
+`tenable-io-export-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scanId | The identifier for the scan to export. Run the "tenable-io-list-scans" command to get all available scans. | Required | 
+| historyId | The unique identifier of the historical data to export. Run the "tenable-io-get-scan-history" command to get history IDs. | Optional | 
+| historyUuid | The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs. | Optional | 
+| format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 60 days.<br/> For scans that are older than 60 days, only the Nessus and CSV formats are supported. Default is CSV.<br/>. Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Required | 
+| chapters | A list of chapters to include in the export.<br/> Chapters can be any of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance.<br/> This argument is required if the file format is PDF or HTML.<br/>. Possible values are: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance. | Optional | 
+| filterName | A list of filters to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
+| filterQuality | A list of operators for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
+| filterValue | A list of values for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
+| filterSearchType | For multiple filters, specifies whether to use the AND or the OR logical operator. Possible values are: and, or. Default is and. | Optional | 
+| assetId | The ID of the asset scanned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Size | number | The size of the file in bytes. | 
+| InfoFile.Name | string | The name of the file. | 
+| InfoFile.EntryID | string | The War Room entry ID of the file. | 
+| InfoFile.Info | string | The Format of the file. | 
+| InfoFile.Type | string | The type of the file. | 
+| InfoFile.Extension | unknown | The file extension of the file. | 
+
+#### Command example
+```!tenable-io-export-scan scanId=16 format=HTML chapters="compliance_exec,remediations,vuln_by_plugin" historyId=19540157 historyUuid=f7eaad37-23bd-4aac-a979-baab0e9a465b filterSearchType=or filterName="host.id,plugin.attributes.bid" filterQuality=eq,neq filterValue=".*,(.[0-9]0-9)*"  assetId=10```
+#### Human Readable Output
+
+>Preparing scan report:
+
+>Returned file: scan_16_SSE-144f3dc6-cb2d-42fc-b6cc-dd20b807735f-html.html [Download](https://example.com)

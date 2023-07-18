@@ -4,6 +4,7 @@ from freezegun import freeze_time
 from CommonServerPython import *
 import json
 import requests
+# type: ignore=operator
 
 MOCK_PARAMS = {
     'access-key': 'fake_access_key',
@@ -46,12 +47,12 @@ EXPECTED_VULN_BY_ASSET_RESULTS = [
 ]
 
 
-
 class MockResponse:
 
-    def __init__(self, json_data, status_code=200):
+    def __init__(self, json_data, status_code=200, content=None):
         self.json_data = json_data
         self.status_code = status_code
+        self.content = content
 
     def json(self):
         return self.json_data
@@ -539,7 +540,9 @@ def test_list_scan_filters_command(mocker):
     assert results.readable_output == test_data['readable_output']
     assert results.outputs_prefix == 'TenableIO.ScanFilter'
     assert results.outputs_key_field == 'name'
-    assert requests_get.called_with(**test_data['called_with'])
+    requests_get.assert_called_with(
+        *test_data['called_with']['args'],
+        **test_data['called_with']['kwargs'])
 
 
 def test_get_scan_history_command(mocker):
@@ -567,9 +570,26 @@ def test_get_scan_history_command(mocker):
     assert results.readable_output == test_data['readable_output']
     assert results.outputs_prefix == 'TenableIO.ScanHistory'
     assert results.outputs_key_field == 'id'
-    assert requests_get.called_with(**test_data['called_with'])
+    requests_get.assert_called_with(
+        *test_data['called_with']['args'],
+        **test_data['called_with']['kwargs'])
 
 
-def test_export_scan_command(mocker):
-
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+# @pytest.mark.parametrize(
+    
+# )
+# def test_export_scan_command(mocker, args, ):
+    
+#     test_data = load_json('export_scan')
+    
+#     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+#     get_response = MockResponse(
+#         test_data['get_response_json'], 
+#         content=test_data['get_response_content'])
+#     post_response = MockResponse(
+#         test_data['post_response_json'])
+#     requests_get = mocker.patch.object(requests, 'get', return_value=get_response)
+#     requests_post = mocker.patch.object(requests, 'post', return_value=post_response)
+    # args, kwargs = requests_get.call_args
+    # with open('result.json', 'w') as f:
+    #     json.dump({'args': args, 'kwargs': kwargs}, f)
