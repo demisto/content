@@ -26,8 +26,8 @@ send-mail
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| OwnerNotificationSubject | Subject of the notification \(email or ticket\) sent to potential service owner. |  | Required |
-| OwnerNotificationBody | Body of the notification \(email or ticket\) sent to potential service owner. |  | Optional |
+| OwnerNotificationSubject | Subject of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
+| OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Optional |
 
 ## Playbook Outputs
 

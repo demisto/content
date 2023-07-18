@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - Remediation Guidance
+Cortex ASM - Remediation Guidance
 
 ### Integrations
 
