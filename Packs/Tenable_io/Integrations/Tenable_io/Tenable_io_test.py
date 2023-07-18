@@ -3,6 +3,7 @@ import pytest
 from freezegun import freeze_time
 from CommonServerPython import *
 import json
+import requests
 
 MOCK_PARAMS = {
     'access-key': 'fake_access_key',
@@ -45,12 +46,26 @@ EXPECTED_VULN_BY_ASSET_RESULTS = [
 ]
 
 
+
+class MockResponse:
+
+    def __init__(self, json_data, status_code=200):
+        self.json_data = json_data
+        self.status_code = status_code
+
+    def json(self):
+        return self.json_data
+
+    def raise_for_status(self):
+        pass
+
+
 def load_json(filename):
     with open(f'test_data/{filename}.json') as f:
         return json.load(f)
 
 
-def mock_demisto(mocker, mock_args):
+def mock_demisto(mocker, mock_args=None):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, 'args', return_value=mock_args)
     mocker.patch.object(demisto, 'results')
@@ -426,44 +441,135 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
         assert response.raw_response == export_vulnerabilities_response
 
 
-# def test_safe_get_json(mocker):
-#     """
-#     Given:
-#         - A response from Tenable IO
-#     When:
-#         - Running the "list-scan-filters", "get-scan-history" and "export-scan" commands.
-#     Then:
-#         - Verify that tenable-io-export-vulnerabilities command works as expected.
-#     """
-#     response = requests.models.Response()
-#     response.status_code = 200
-#     response._content = b'{"key": "value"}'
-#     assert safe_get_json(response) == {'key': 'value'}
+def test_get_json(mocker):
+    '''
+    Given:
+        - An expected and valid response from Tenable IO
+
+    When:
+        - Running the "list-scan-filters", "get-scan-history" and "export-scan" commands.
+
+    Then:
+        - Verify that the error code is acceptable and the response json is returned.
+    '''
+    from Tenable_io import get_json
+
+    mock_demisto(mocker)
+
+    response = requests.models.Response()
+    response.status_code = 200
+    response._content = b'{"key": "value"}'
+    assert get_json(response) == {'key': 'value'}
 
 
-# @pytest.mark.parametrize(
-#     'status_code, error_message',
-#     (
-#         (400, 'Got response status code: 400 - Possible reasons:\n'),
-#         (404, 'Got response status code: 404 - Tenable Vulnerability Management cannot find the specified scan.'),
-#         (429, 'Got response status code: 429 - Too Many Requests'),
-#         (500, '. Full Response:\n'),
-#     )
-# )
-# def test_safe_get_json_with_error_codes(mocker, status_code, error_message):
-#     #mock demisto debug
-#     response = requests.models.Response()
-#     response.status_code = status_code
-#     with pytest.raises(DemistoException, match=error_message):
-#         safe_get_json(response)
+@pytest.mark.parametrize(
+    'status_code, error_message',
+    (
+        (400, 'Got response status code: 400 - Possible reasons:\n'),
+        (404, 'Got response status code: 404 - Tenable Vulnerability Management cannot find the specified scan.'),
+        (429, 'Got response status code: 429 - Too Many Requests'),
+        (500, '. Full Response:\n'),
+    )
+)
+def test_get_json_with_error_codes(mocker, status_code, error_message):
+    '''
+    Given:
+        - A response with an unsuccessful status code from Tenable IO
+
+    When:
+        - Running the "list-scan-filters", "get-scan-history" and "export-scan" commands.
+
+    Then:
+        - Verify that the error code is caught and an explanatory error is raised.
+    '''
+    from Tenable_io import get_json
+
+    mock_demisto(mocker)
+
+    response = requests.models.Response()
+    response.status_code = status_code
+    with pytest.raises(DemistoException, match=error_message):
+        get_json(response)
 
 
-# def test_safe_get_json_decode_error(mocker):
-#     '''
+def test_get_json_decode_error(mocker):
+    '''
+    Given:
+        - A non-json response from Tenable IO
 
-#     '''
-#     response = requests.models.Response()
-#     response.status_code = 200
-#     response._content = b'blabla'
-#     with pytest.raises(DemistoException, match='Error processing request.'):
-#         safe_get_json(response)
+    When:
+        - Running the "list-scan-filters", "get-scan-history" and "export-scan" commands.
+
+    Then:
+        - Verify that the unsuccessful json decoding is caught and an error is raised with the response.
+    '''
+    from Tenable_io import get_json
+
+    mock_demisto(mocker)
+
+    response = requests.models.Response()
+    response.status_code = 200
+    response._content = b'blabla'
+    with pytest.raises(DemistoException, match='Error processing request. Unexpected response from Tenable IO:\nblabla'):
+        get_json(response)
+
+
+def test_list_scan_filters_command(mocker):
+    '''
+    Given:
+        -  A request to list Tenable IO scan filters.
+
+    When:
+        - Running the "list-scan-filters" command.
+
+    Then:
+        - Verify that tenable-io-list-scan-filters command works as expected.
+    '''
+    from Tenable_io import list_scan_filters_command
+
+    test_data = load_json('list_scan_filters')
+
+    response = MockResponse(test_data['response_json'])
+    requests_get = mocker.patch.object(requests, 'get', return_value=response)
+    mock_demisto(mocker)
+
+    results = list_scan_filters_command()
+
+    assert results.outputs == test_data['outputs']
+    assert results.readable_output == test_data['readable_output']
+    assert results.outputs_prefix == 'TenableIO.ScanFilter'
+    assert results.outputs_key_field == 'name'
+    assert requests_get.called_with(**test_data['called_with'])
+
+
+def test_get_scan_history_command(mocker):
+    '''
+    Given:
+        -  A request to get Tenable IO scan history.
+
+    When:
+        - Running the "get-scan-history" command.
+
+    Then:
+        - Verify that tenable-io-get-scan-history command works as expected.
+    '''
+    from Tenable_io import get_scan_history_command
+
+    test_data = load_json('get_scan_history')
+
+    response = MockResponse(test_data['response_json'])
+    requests_get = mocker.patch.object(requests, 'get', return_value=response)
+    mock_demisto(mocker)
+
+    results = get_scan_history_command(test_data['args'])
+
+    assert results.outputs == test_data['outputs']
+    assert results.readable_output == test_data['readable_output']
+    assert results.outputs_prefix == 'TenableIO.ScanHistory'
+    assert results.outputs_key_field == 'id'
+    assert requests_get.called_with(**test_data['called_with'])
+
+
+def test_export_scan_command(mocker):
+
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)

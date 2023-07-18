@@ -136,8 +136,8 @@ severity_to_text = [
     'Low',
     'Medium',
     'High',
-    'Critical']
-
+    'Critical'
+]
 PARAMS = demisto.params()
 BASE_URL = PARAMS['url']
 ACCESS_KEY = PARAMS.get('credentials_access_key', {}).get('password') or PARAMS.get('access-key')
@@ -1135,15 +1135,14 @@ def get_json(response: requests.models.Response) -> dict:
                 '   Only Nessus and CSV formats are supported for scan results that are older than 60 days.'
                 ' - Your command arguments included filter query parameters for scan results that are older than 60 days.',
             404: 'Tenable Vulnerability Management cannot find the specified scan.',
-            492: 'Too Many Requests',
+            429: 'Too Many Requests',
         }
         code = response.status_code
         raise DemistoException(
             f'Error processing request. Got response status code: {code}' + (
                 f' - {code_messages[code]}'
                 if code in code_messages
-                else f'. Full Response:\n{response.text}')
-        ) from e
+                else f'. Full Response:\n{response.text}'))
     except requests.exceptions.JSONDecodeError as e:
         demisto.debug(str(e))
         raise DemistoException(
@@ -1172,7 +1171,7 @@ def scan_filters_human_readable(filters: list) -> str:
     return tableToMarkdown(
         'Tenable IO Scan Filters',
         list(map(flatten, filters)),
-        headers=list(context_to_hr.keys()),
+        headers=list(context_to_hr),
         headerTransform=context_to_hr.get)
 
 
@@ -1214,7 +1213,7 @@ def scan_history_human_readable(history: list) -> str:
     return tableToMarkdown(
         'Tenable IO Scan History',
         list(map(flatten, history)),
-        headers=list(context_to_hr.keys()),
+        headers=list(context_to_hr),
         headerTransform=context_to_hr.get)
 
 
