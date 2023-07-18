@@ -17,23 +17,28 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: '-1'
   display: Default Arcanna Job Id
   name: default_job_id
   type: 0
+  required: false
 - additionalinfo: An array to map between closing reason and Arcanna labels
   defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
   display: A closing reason to Arcanna labels.
   name: feature_mapping
   type: 12
+  required: false
 - additionalinfo: This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
   defaultvalue: closeReason
   display: Alert closing reason
   name: closing_reason_field
   type: 0
+  required: false
 description: Arcanna integration for using the power of AI in SOC
 display: Arcanna.AI
 name: Arcanna.AI
