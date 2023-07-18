@@ -337,6 +337,7 @@ var uploadFile= function(incident_id, file_content, file_name) {
                 contentType: 'multipart/form-data'
             }
         },
+        entry_category: "chat",
     };
     var res = httpMultipart(`/entry/upload/${incident_id}`,file_content ,body);
     if (isError(res[0])) {
