@@ -215,7 +215,7 @@ def prepare_params_for_drive_changes_list(args: dict[str, str]) -> dict[str, Any
 
 
 def prepare_drive_changes_output(response: dict[str, Any], drive_id: str, user_id: str) -> \
-    tuple[dict[str, Any], list[dict[str, Any | None]], list[dict[str, Any | None]]]:
+        tuple[dict[str, Any], list[dict[str, Any | None]], list[dict[str, Any | None]]]:
     """
     Prepares context output and human readable for google-drive-changes-list command.
 
@@ -628,7 +628,7 @@ def prepare_args_for_fetch_incidents(last_fetch: int, args: dict[str, Any]) -> d
     :return: Prepared request body for fetch-incident.
     """
     if (args.get('drive_item_search_value') and not args.get('drive_item_search_field')) or \
-        (not args.get('drive_item_search_value') and args.get('drive_item_search_field')):
+            (not args.get('drive_item_search_value') and args.get('drive_item_search_field')):
         raise ValueError(MESSAGES['FETCH_INCIDENT_REQUIRED_ARGS'])
 
     action_detail_case_include = [action.upper() for action in args.get('action_detail_case_include', [])]
@@ -663,7 +663,7 @@ def validate_params_for_fetch_incidents(params: dict[str, Any]) -> None:
 
     # Check for depended required parameters.
     if (params.get('drive_item_search_value') and not params.get('drive_item_search_field')) or \
-        (not params.get('drive_item_search_value') and params.get('drive_item_search_field')):
+            (not params.get('drive_item_search_value') and params.get('drive_item_search_field')):
         raise ValueError(MESSAGES['FETCH_INCIDENT_REQUIRED_ARGS'])
 
     params['max_fetch'] = GSuiteClient.validate_get_int(params.get('max_fetch', 10), limit=100,
@@ -1586,8 +1586,8 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
     )
 
 
-def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_test: bool = False) ->\
-    tuple[list | None, dict | None]:
+def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_test: bool = False) -> \
+        tuple[list | None, dict | None]:
     """
     Prepares incidents from past activity in Google Drive.
 
