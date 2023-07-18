@@ -15,8 +15,6 @@ def main():
         for data in splunkComments_str:
             parsed_data = json.loads(data)
             splunkComments.append(parsed_data)
-        demisto.debug(f"{fields} \n\n\n SplunkComments: {splunkComments} \n\n\n {type(splunkComments)}")
-
     if not splunkComments:
         return CommandResults(readable_output='No comments were found in the notable')
 
@@ -26,7 +24,6 @@ def main():
     return CommandResults(
         readable_output=markdown
     )
-    # return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
