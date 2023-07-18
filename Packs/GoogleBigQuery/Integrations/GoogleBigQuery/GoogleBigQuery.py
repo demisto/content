@@ -7,7 +7,7 @@ import os
 import json
 import urllib3
 from google.cloud import bigquery
-from datetime import date
+from datetime import date, time
 import hashlib
 
 
@@ -100,7 +100,7 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
 
 
 def convert_to_string_if_datetime(object_that_may_be_datetime):
-    if isinstance(object_that_may_be_datetime, datetime):
+    if isinstance(object_that_may_be_datetime, datetime) or isinstance(object_that_may_be_datetime, time):
         return object_that_may_be_datetime.strftime("%m/%d/%Y %H:%M:%S")
     if isinstance(object_that_may_be_datetime, date):
         return object_that_may_be_datetime.strftime("%m/%d/%Y")
