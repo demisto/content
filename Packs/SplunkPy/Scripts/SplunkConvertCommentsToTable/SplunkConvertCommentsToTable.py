@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     if not splunkComments:
         return CommandResults(readable_output='No comments were found in the notable')
 
-    markdown = tableToMarkdown("", splunkComments, headers=['Comment', 'Comment time', 'Reviwer'])
+    markdown = tableToMarkdown("", splunkComments, headers=['Comment', 'Comment time', 'Reviewer'])
     demisto.debug(f"markdown {markdown}")
 
     return CommandResults(
