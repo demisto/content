@@ -76,6 +76,7 @@ configuration:
   - HIGH
   - MEDIUM
   - LOW
+  - UNKNOWN
 - display: "IP Abuse Velocity"
   name: ipAbuseVelocity
   defaultvalue: CRITICAL,HIGH,MEDIUM
@@ -86,6 +87,18 @@ configuration:
   - HIGH
   - MEDIUM
   - LOW
+  - UNKNOWN
+- display: "IP Location Type"
+  name: ipCategories
+  type: 16
+  required: false
+  options:
+  - Anonymous VPN
+  - Hosting Provider
+  - Public Proxy
+  - TOR Exit Node
+  - BOT
+  - Unknown
 - display: Incident type
   defaultvalue: Exploit
   name: incidentType
