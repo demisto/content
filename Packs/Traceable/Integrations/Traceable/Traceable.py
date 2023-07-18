@@ -329,7 +329,6 @@ class Client(BaseClient):
                 _ipCategoriesList.append("IP_LOCATION_TYPE_BOT")
             else:
                 error = f"Unknown ipCategory {ipCategory} specified."
-                demisto.error(error)
                 raise Exception(error)
         self.ipCategoriesList = _ipCategoriesList
 
