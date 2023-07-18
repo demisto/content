@@ -8,70 +8,87 @@ configuration:
   name: server_url
   type: 0
 
+  required: false
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
   hidden: true
+  required: false
 - displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
   name: credentials_auth_id
   hiddenusername: true
   type: 9
+  required: false
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
   hidden: true
+  required: false
 - displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: credentials_tenant_id
   hiddenusername: true
   type: 9
+  required: false
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   type: 4
   hidden: true
+  required: false
 - displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
   name: credentials_enc_key
   hiddenusername: true
   type: 9
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
   hidden: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
   name: credentials_certificate_thumbprint
   hiddenusername: true
   type: 9
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 14
+  required: false
 - display: Default subscription ID to use
   name: default_sub_id
   type: 4
   hidden: true
+  required: false
 - displaypassword: Default subscription ID to use
   name: credentials_default_sub_id
   hiddenusername: true
   type: 9
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID.
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
+  required: false
 description: Unified security management and advanced threat protection across hybrid cloud workloads.
 display: Microsoft Defender for Cloud
 name: Azure Security Center v2
@@ -400,7 +417,7 @@ script:
     - contextPath: Azure.Securescore.weight
       description: The relative weight for each subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.64970
   runonce: false
   script: '-'
   type: python
