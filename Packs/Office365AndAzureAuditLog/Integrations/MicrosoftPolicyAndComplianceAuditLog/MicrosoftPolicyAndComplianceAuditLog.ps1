@@ -5,20 +5,17 @@ Import-Module ExchangeOnlineManagement
 
 class ExchangeOnlinePowershellV3Client
 {
-    [string]$url
     [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
     [string]$organization
     [string]$app_id
     [SecureString]$password
     ExchangeOnlinePowershellV3Client(
-            [string]$url,
             [string]$app_id,
             [string]$organization,
             [string]$certificate,
             [SecureString]$password
     )
     {
-        $this.url = $url
         try
         {
             $ByteArray = [System.Convert]::FromBase64String($certificate)
@@ -178,7 +175,6 @@ function Main {
     }
 
     $audit_log_client = [ExchangeOnlinePowershellV3Client]::new(
-            $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
             $integration_params.certificate.identifier,

@@ -3,12 +3,6 @@ commonfields:
   id: MicrosoftPolicyAndComplianceAuditLog
   version: -1
 configuration:
-- defaultvalue: https://outlook.office365.com
-  display: Exchange Online URL
-  name: url
-  required: true
-  type: 0
-  section: Connect
 - displaypassword: Certificate Password
   display: Certificate
   additionalinfo: A pfx certificate encoded in Base64.
