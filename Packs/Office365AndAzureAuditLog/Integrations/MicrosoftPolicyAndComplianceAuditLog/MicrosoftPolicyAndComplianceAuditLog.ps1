@@ -24,7 +24,7 @@ class ExchangeOnlinePowershellV3Client
         {
             throw "Could not decode the certificate. Try to re-enter it"
         }
-        $this.certificate = New-object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList ($ByteArray, $password)
+        $this.certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList ($ByteArray, $password)
 
         $this.organization = $organization
         $this.app_id = $app_id
@@ -163,16 +163,9 @@ function Main {
     param()
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
-    $integration_params = [Hashtable] $demisto.Params()
+    $integration_params = $demisto.Params()
 
-    if ($integration_params.certificate.password)
-    {
-        $password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
-    }
-    else
-    {
-        $password = $null
-    }
+    $password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
 
     $audit_log_client = [ExchangeOnlinePowershellV3Client]::new(
             $integration_params.app_id,
