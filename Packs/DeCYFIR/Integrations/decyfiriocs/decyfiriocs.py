@@ -367,9 +367,9 @@ class Client(BaseClient):
                                                feed_tags: Optional[List], threat_intel_type: str,
                                                is_data_save: bool) -> List[Dict]:
 
-        return_data = []
-        ta_source_obj = {}
-        src_ti_relationships_data = []
+        return_data: list[dict] = []
+        ta_source_obj: dict = {}
+        src_ti_relationships_data: list = []
 
         if data:
             # Threat actors Data

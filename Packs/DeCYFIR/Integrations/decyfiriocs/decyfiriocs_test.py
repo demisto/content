@@ -15,7 +15,7 @@ def test_get_indicator_or_threatintel_type(mocker):
         proxy=False,
     )
     da = client.get_indicator_or_threatintel_type("[ipv4-addr:value = '0.0.0.0']")
-    assert "IP" == da
+    assert da == "IP"
 
 
 def test_build_ioc_relationship_obj(mocker):
