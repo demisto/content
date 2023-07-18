@@ -18,10 +18,12 @@ configuration:
   name: insecure
   type: 8
   defaultvalue: 'false'
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   defaultvalue: 'false'
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -35,6 +37,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 script:
   commands:
   - description: Adds domains, IPs, and/or URLs to an allow list.

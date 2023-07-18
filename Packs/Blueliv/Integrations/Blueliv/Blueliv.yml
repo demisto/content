@@ -12,13 +12,16 @@ configuration:
   name: token
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Token
   name: credentials_token
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Blueliv reduces risk through actionable, dynamic and targeted threat intelligence, trusted by your organization.
 display: Blueliv (Beta)
 name: Blueliv_Beta
