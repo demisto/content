@@ -1,0 +1,142 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "0bc8eed7-0778-49d7-8b52-c44e291ee9e7",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": {
+		"Lacework Composite Alert": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "data.derivedFields.category"
+				},
+				"Alert ID": {
+					"simple": "data.alertId"
+				},
+				"Alert Name": {
+					"simple": "data.alertName"
+				},
+				"Alert Source": {
+					"simple": "data.derivedFields.source"
+				},
+				"Cloud Account ID": {
+					"simple": "data.entityMap.CT_User.[0].KEY.account"
+				},
+				"Country": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.country_name"
+				},
+				"Country Code": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.country_code"
+				},
+				"Description": {
+					"simple": "data.alertInfo.description"
+				},
+				"Source IP": {
+					"simple": "data.entityMap.API.[0].PROPS.source_ip_address_list"
+				},
+				"Source Username": {
+					"simple": "data.entityMap.CT_User.[0].KEY.username"
+				},
+				"api": {
+					"simple": "data.entityMap.API.[0].KEY.api"
+				},
+				"aws-region": {
+					"simple": "data.entityMap.CT_User.[0].PROPS.region_list.[0]"
+				},
+				"city name": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.city_name"
+				},
+				"event times": {
+					"simple": "data.entityMap.CT_User.[0].PROPS.all_timestamps"
+				},
+				"internet exposure": {
+					"simple": "data.internetExposure"
+				},
+				"mfa": {
+					"simple": "data.entityMap.CT_User.[0].KEY.mfa"
+				},
+				"principal id": {
+					"simple": "data.entityMap.CT_User.[0].KEY.principalId"
+				},
+				"region name": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.region_name"
+				},
+				"service": {
+					"simple": "data.entityMap.API.[0].KEY.service"
+				},
+				"severity": {
+					"simple": "data.severity"
+				},
+				"subject": {
+					"simple": "data.alertInfo.subject"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Country": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.country_name"
+				},
+				"Country Code": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.country_code"
+				},
+				"api": {
+					"simple": "data.entityMap.API.[0].KEY.api"
+				},
+				"aws-region": {
+					"simple": "data.entityMap.CT_User.[0].PROPS.region_list.[0]"
+				},
+				"city name": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.city_name"
+				},
+				"event times": {
+					"simple": "data.entityMap.CT_User.[0].PROPS.all_timestamps"
+				},
+				"internet exposure": {
+					"simple": "data.internetExposure"
+				},
+				"mfa": {
+					"simple": "data.entityMap.CT_User.[0].KEY.mfa"
+				},
+				"principal id": {
+					"simple": "data.entityMap.CT_User.[0].KEY.principalId"
+				},
+				"region name": {
+					"simple": "data.entityMap.SourceIpAddress.[0].PROPS.location.region_name"
+				},
+				"service": {
+					"simple": "data.entityMap.API.[0].KEY.service"
+				},
+				"subject": {
+					"simple": "data.alertInfo.subject"
+				}
+			}
+		}
+	},
+	"name": "Lacework Composite - Incoming Mapper",
+	"nameRaw": "Lacework Composite - Incoming Mapper",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
