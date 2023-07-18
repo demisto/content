@@ -5,8 +5,12 @@ name: DateTimeNowToEpoch
 script: ''
 type: python
 tags: []
-comment: Returns the current datetime as an epoch value for use in timestamp comparisons
+comment: Returns the current datetime as an epoch value for use in timestamp comparisons.
 enabled: true
+outputs:
+- contextPath: DateTimeNowEpoch
+  description: The current date/time epoch as an integer value
+  type: number
 scripttarget: 0
 subtype: python3
 runonce: false
