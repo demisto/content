@@ -18,25 +18,31 @@ configuration:
   defaultvalue: ""
   type: 0
   hidden: true
+  required: false
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - display: Username
   name: credentials
   type: 9
   displaypassword: Password
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: javascript
