@@ -7,39 +7,52 @@ This playbook includes the following tasks:
 ** Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Search Endpoints By Hash - Generic V2
-* Palo Alto Networks - Hunting And Threat Detection
+
 * Splunk Indicator Hunting
+* Search Endpoints By Hash - Generic V2
+* Block Indicators - Generic v3
+* Palo Alto Networks - Hunting And Threat Detection
 * QRadar Indicator Hunting V2
 * Panorama Query Logs
-* Block Indicators - Generic v2
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* SearchIncidentsV2
+
+* ParseHTMLIndicators
 * http
+* SearchIncidentsV2
 
 ### Commands
+
 * extractIndicators
 * ews-search-mailbox
+* setIndicators
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | EWSSearchQuery | The EWS query to find malicious emails related to NOBELIUM spear-phishing. | From:*usaid.gov or From:*in.constantcontact.com | Optional |
 | BlockIndicatorsAutomatically | Whether to automatically indicators involved with NOBELIUM spear-phishing. | False | Optional |
+| UserVerification | Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
+| AutoBlockIndicators | Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![NOBELIUM - wide scale APT29 spear-phishing](https://raw.githubusercontent.com/demisto/content/6b83f79a696de22d675adc63c7dd3329dfc67837/Packs/MajorBreachesInvestigationandResponse/doc_files/NOBELIUM_-_wide_scale_APT29_spear-phishing.png)
+
+![NOBELIUM - wide scale APT29 spear-phishing](../doc_files/NOBELIUM_-_wide_scale_APT29_spear-phishing.png)

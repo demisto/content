@@ -12,6 +12,7 @@ configuration:
   section: Connect
   additionalinfo:
   hidden: true
+  required: false
 - name: user_id
   display: User ID
   defaultvalue:
@@ -20,11 +21,13 @@ configuration:
   advanced: true
   additionalinfo: The primary email address of the user to fetch the incident(s).
   hidden: true
+  required: false
 - name: user_creds
   display: User ID
   type: 9
   section: Connect
   displaypassword: User's Service Account JSON
+  required: false
 - name: action_detail_case_include
   display: Action Detail Case Include
   defaultvalue:
@@ -41,6 +44,7 @@ configuration:
   - RESTORE
   - COMMENT
   - REFERENCE
+  required: false
 - name: drive_item_search_field
   display: Drive Item Search Field
   defaultvalue:
@@ -51,6 +55,7 @@ configuration:
   options:
   - itemName
   - folderName
+  required: false
 - name: drive_item_search_value
   display: Drive Item Search Value
   type: 0
@@ -58,19 +63,23 @@ configuration:
   defaultvalue:
   advanced: true
   additionalinfo: itemName or folderName for fetching the incident.
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - name: incidentType
   display: Incident type
   type: 13
+  required: false
 - name: max_fetch
   display: Max Incidents
   defaultvalue: 50
   type: 0
   section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
+  required: false
 - name: first_fetch
   display: First Fetch Time Interval
   type: 0
@@ -78,18 +87,21 @@ configuration:
   advanced: true
   additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit> e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours.
   defaultvalue: 10 minutes
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   section: Connect
   advanced: true
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   section: Connect
   advanced: true
   additionalinfo:
+  required: false
 description: Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
 script:
   commands:
@@ -2674,7 +2686,7 @@ script:
       predefined:
       - "true"
       - "false"
-  dockerimage: demisto/googleapi-python3:1.0.0.64222
+  dockerimage: demisto/googleapi-python3:1.0.0.65068
   isfetch: true
   runonce: false
   script: "-"
