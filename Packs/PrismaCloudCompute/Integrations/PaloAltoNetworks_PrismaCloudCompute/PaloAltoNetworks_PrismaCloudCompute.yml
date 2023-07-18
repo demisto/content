@@ -7,6 +7,7 @@ configuration:
   display: Fetch incidents
   type: 8
   section: Collect
+  required: false
 - name: address
   display: |-
     Prisma Cloud Compute Console URL and Port
@@ -20,18 +21,21 @@ configuration:
   type: 0
   additionalinfo: Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field.
   section: Connect
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo: Skips verification of the CA certificate (not recommended).
   section: Connect
   advanced: true
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo: Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.
   section: Connect
   advanced: true
+  required: false
 - name: credentials
   display: Username
   required: true
@@ -46,10 +50,12 @@ configuration:
   type: 12
   additionalinfo: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
   section: Connect
+  required: false
 - name: incidentType
   display: Incident type
   type: 13
   section: Connect
+  required: false
 description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute

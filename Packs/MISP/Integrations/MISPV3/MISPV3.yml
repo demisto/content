@@ -12,20 +12,25 @@ configuration:
   type: 9
   hiddenusername: true
   display: ""
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags.
   display: Malicious tag IDs
   name: malicious_tag_ids
   type: 12
+  required: false
 - additionalinfo: Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags.
   display: Suspicious tag IDs
   name: suspicious_tag_ids
   type: 12
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -45,6 +50,7 @@ configuration:
   display: Maximum attributes to be returned
   name: attributes_limit
   type: 0
+  required: false
 description: Malware information sharing platform and threat sharing.
 display: MISP v3
 name: MISP V3
