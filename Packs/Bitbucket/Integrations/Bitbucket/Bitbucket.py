@@ -835,7 +835,7 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
 def commit_create_command(client: Client, args: Dict) -> CommandResults:
     """ creates a commit in Bitbucket.
     Args:
-        client: A Bitbcvcvvucket client.
+        client: A Bitbucket client.
         args: Demisto args.
     Returns:
         A CommandResult object with a success message, in case of a successful action.
