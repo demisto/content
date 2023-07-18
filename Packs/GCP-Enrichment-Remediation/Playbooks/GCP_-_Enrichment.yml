@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1595
+          "y": 2055
         }
       }
     note: false
@@ -345,7 +345,7 @@ tasks:
       brand: GCP-IAM
     nexttasks:
       '#none#':
-      - "2"
+      - "18"
     scriptarguments:
       project_name:
         complex:
@@ -379,12 +379,148 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e887ba28-1bba-48ae-8ca9-3278aafff218
+    type: regular
+    task:
+      id: e887ba28-1bba-48ae-8ca9-3278aafff218
+      version: -1
+      name: Create GCP project hierarchy
+      scriptName: GCPProjectHierarchy
+      description: Determine GCP project hierarchy by looking up parent objects until the organization level is reached.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      project_id:
+        complex:
+          root: GoogleCloudCompute.Instances.networkInterfaces
+          accessor: network
+          transformers:
+          - operator: uniq
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=projects/)[^/]+(?=/global)
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c9c8bcb0-8b16-4aa5-87bc-53336a7ba2e2
+    type: regular
+    task:
+      id: c9c8bcb0-8b16-4aa5-87bc-53336a7ba2e2
+      version: -1
+      name: Lookup tagbindings
+      description: List tag bindings (key value pair) applied to a project/folder/organization object.
+      script: GCP-IAM|||gcp-iam-tagbindings-list
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      parent:
+        complex:
+          root: GCPHierarchy
+          accessor: number
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: //cloudresourcemanager.googleapis.com/
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 32d47af7-892b-434a-8816-b4d2dcc9c7c8
+    type: condition
+    task:
+      id: 32d47af7-892b-434a-8816-b4d2dcc9c7c8
+      version: -1
+      name: Was there results?
+      description: Checks if an output was returned from the last task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GCPHierarchy
+                accessor: number
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 2070,
         "width": 760,
         "x": 450,
         "y": 50
@@ -410,8 +546,14 @@ outputs:
 - contextPath: GCPIAM.Policy
   description: GCP IAM information
   type: unknown
+- contextPath: GCPIAM.TagBindings
+  description: Project/Folder/Organization level tags.
+  type: unknown
+- contextPath: GCPHierarchy
+  description: GCP project hierarchy information.
+  type: unknown
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}

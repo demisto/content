@@ -18,32 +18,32 @@ configuration:
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: '100'
   display: Alarms max fetch
   name: alarmsMaxFetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: '100'
   display: Cases max fetch
   name: casesMaxFetch
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents from type
   name: fetchType
   defaultvalue: Both
@@ -56,7 +56,6 @@ configuration:
 - display: Alarm status filter
   name: alarm_status_filter
   type: 15
-  required: false
   options:
   - New
   - Opened
@@ -68,6 +67,7 @@ configuration:
   - Closed_Unresolved
   - Closed_Reported
   - Closed_Monitor
+  required: false
 - display: Alarm rule name filter
   name: alarm_rule_name_filter
   defaultvalue: ''
@@ -81,27 +81,27 @@ configuration:
 - display: Case status filter
   name: case_status_filter
   type: 15
-  required: false
   options:
   - Created
   - Completed
   - Incident
   - Mitigated
   - Resolved
+  required: false
 - display: Case priority filter
   name: case_priority_filter
   type: 15
-  required: false
   options:
   - '1'
   - '2'
   - '3'
   - '4'
   - '5'
+  required: false
 - display: Fetch case evidences
   name: fetch_case_evidences
-  required: false
   type: 8
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
@@ -114,7 +114,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   commands:
   - name: lr-alarms-list
@@ -122,46 +122,32 @@ script:
     arguments:
     - name: alarm_status
       description: 'The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
-        - New
-        - Opened
-        - Working
-        - Escalated
-        - Closed
-        - Closed_FalseAlarm
-        - Closed_Resolved
-        - Closed_Unresolved
-        - Closed_Reported
-        - Closed_Monitor
+      - New
+      - Opened
+      - Working
+      - Escalated
+      - Closed
+      - Closed_FalseAlarm
+      - Closed_Resolved
+      - Closed_Unresolved
+      - Closed_Reported
+      - Closed_Monitor
     - name: offset
       defaultValue: "0"
       description: 'The number of alarms to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The numbers of alarms to return.'
-      required: false
-      isArray: false
     - name: alarm_rule_name
       description: 'Filter by alarm rule name.'
-      required: false
-      isArray: false
     - name: entity_name
       description: 'Filter by entity name.'
-      required: false
-      isArray: false
     - name: alarm_id
       description: 'Filter by alarm ID.'
-      required: false
-      isArray: false
     - name: case_association
       description: 'Filter by case ID.'
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.Alarm.alarmId
@@ -190,11 +176,8 @@ script:
     - name: alarm_id
       description: 'The alarm ID.'
       required: true
-      isArray: false
     - name: alarm_status
       description: 'The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - New
@@ -209,8 +192,6 @@ script:
       - Closed_Monitor
     - name: rbp
       description: 'The alarm rbp.'
-      required: false
-      isArray: false
     outputs: []
   - name: lr-alarm-add-comment
     description: 'Updates the Alarm History table with comments in the Comments column based on the alarm ID supplied.'
@@ -218,11 +199,9 @@ script:
     - name: alarm_id
       description: 'The alarm ID.'
       required: true
-      isArray: false
     - name: alarm_comment
       description: 'The alarm comment.'
       required: true
-      isArray: false
     outputs: []
   - name: lr-alarm-history-list
     description: 'Gets the alarm history details by ID and filter criteria.'
@@ -230,34 +209,23 @@ script:
     - name: alarm_id
       description: 'The alarm ID.'
       required: true
-      isArray: false
     - name: person_id
       description: 'Filter by person ID.'
-      required: false
-      isArray: false
     - name: date_updated
       description: 'Filter by when the alarm was updated. The returned value will be greater than or equal to the given date.'
-      required: false
-      isArray: false
     - name: type
       description: 'Filter by history type. Possible type: "comment", "status", and "rbp".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
-        - comment
-        - status
-        - rbp
+      - comment
+      - status
+      - rbp
     - name: offset
       defaultValue: "0"
       description: 'The number of items to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The numbers of items to return.'
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.AlarmHistory.alarmId
@@ -280,7 +248,6 @@ script:
     - name: alarm_id
       description: 'The alarm ID.'
       required: true
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.AlarmEvents.alarmId
@@ -726,7 +693,6 @@ script:
     - name: alarm_id
       description: 'Numeric ID of the alarm to get.'
       required: true
-      isArray: false
     outputs:
     - type: Date
       contextPath: LogRhythm.AlarmSummary.dateInserted
@@ -800,7 +766,6 @@ script:
     - name: alarm_id
       description: 'Numeric ID of the alarm to get.'
       required: true
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.AlarmDetails.alarmId
@@ -874,7 +839,6 @@ script:
     - name: alarm_id
       description: 'Numeric ID of the alarm to get.'
       required: true
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.AlarmDrilldown.AlarmID
@@ -956,12 +920,8 @@ script:
     arguments:
     - name: case_id
       description: 'The case ID by which to filter the results.'
-      required: false
-      isArray: false
     - name: timestamp_filter_type
       description: 'The type by which to filter case results combined with the argument timestamp. Possible values: "updatedAfter", "updatedBefore", "createdAfter", and "createdBefore".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - updatedAfter
@@ -970,12 +930,8 @@ script:
       - createdBefore
     - name: timestamp
       description: 'The timestamp by which to filter case results combined with the argument timestamp_filter_type.'
-      required: false
-      isArray: false
     - name: priority
       description: 'The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - '1'
@@ -985,8 +941,6 @@ script:
       - '5'
     - name: status
       description: 'The status by which to filter the results. Possible values are "1", (created), "2" (completed), "3" (incident), "4" (mitigated), and "5" (resolved).'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - '1'
@@ -996,20 +950,14 @@ script:
       - '5'
     - name: owners
       description: A comma-separated list of owner numbers.
-      required: false
       isArray: true
     - name: tags
       description: A comma-separated list of  tag numbers.
-      required: false
       isArray: true
     - name: text
       description: 'Filter results that have a case number or name that contains the specified value.'
-      required: false
-      isArray: false
     - name: evidence_type
       description: 'Filter results that have evidence of the specified type. Possible values: "alarm", "userEvents", "log", no"te, and "file".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - alarm
@@ -1019,22 +967,14 @@ script:
       - file
     - name: reference_id
       description: 'Filter results that have evidence with the given reference identifier. For example, an alarm ID.'
-      required: false
-      isArray: false
     - name: external_id
       description: 'Filter results that have the specified, unique, external identifier.'
-      required: false
-      isArray: false
     - name: offset
       defaultValue: "0"
       description: 'The number of cases to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The number of cases to return.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
@@ -1129,11 +1069,9 @@ script:
     - name: name
       description: 'Name of the case.'
       required: true
-      isArray: false
     - name: priority
       description: 'The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - '1'
@@ -1143,16 +1081,10 @@ script:
       - '5'
     - name: external_id
       description: 'Externally defined identifier for the case.'
-      required: false
-      isArray: false
     - name: due_date
       description: 'The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z.'
-      required: false
-      isArray: false
     - name: summary
       description: 'Note summarizing the case.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
@@ -1247,15 +1179,10 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: name
       description: 'Name of the case.'
-      required: false
-      isArray: false
     - name: priority
       description: 'The priority of the case. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - '1'
@@ -1265,24 +1192,14 @@ script:
       - '5'
     - name: external_id
       description: 'Externally defined identifier for the case.'
-      required: false
-      isArray: false
     - name: due_date
       description: 'The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z.'
-      required: false
-      isArray: false
     - name: summary
       description: 'Note summarizing the case.'
-      required: false
-      isArray: false
     - name: entity_id
       description: 'Entity to assign to the case.'
-      required: false
-      isArray: false
     - name: resolution
       description: 'Description of how the case was resolved.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
@@ -1377,11 +1294,9 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: status
       description: 'The case status. Possible values: "Created", "Completed", "Incident", "Mitigated", and "Resolved".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Created
@@ -1483,11 +1398,8 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: evidence_type
       description: 'Filter results that have evidence of the specified type. Possible values are: "alarm", "userEvents", "log", "note", and "file".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - alarm
@@ -1497,8 +1409,6 @@ script:
       - file
     - name: status
       description: 'Filter results that have a specific evidence status. Possible values: "pending", "completed", and "failed".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - pending
@@ -1506,8 +1416,6 @@ script:
       - failed
     - name: evidence_number
       description: 'Filter results by evidence number.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.CaseEvidence.CaseID
@@ -1563,7 +1471,6 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: alarm_numbers
       description: 'A comma-separated list of alarm IDs.'
       required: true
@@ -1647,11 +1554,9 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: note
       description: 'Note text.'
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.NoteEvidence.CaseID
@@ -1707,11 +1612,9 @@ script:
     - name: case_id
       description: 'Unique identifier for the case,'
       required: true
-      isArray: false
     - name: entryId
       description: 'The entry ID of the file to attach.'
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.FileEvidence.CaseID
@@ -1767,29 +1670,24 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: evidence_number
       description: 'Unique, numeric identifier for the evidence to remove.'
       required: true
-      isArray: false
   - name: lr-case-file-evidence-download
     description: 'Download an item of file evidence from a case.'
     arguments:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: evidence_number
       description: 'Unique, numeric identifier for the evidence.'
       required: true
-      isArray: false
   - name: lr-case-tags-add
     description: 'Add tags to a case.'
     arguments:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: tag_numbers
       description: 'A comma-separated list of tag numbers to add.'
       required: true
@@ -1888,7 +1786,6 @@ script:
     - name: case_id
       description: 'Unique identifier for the case'
       required: true
-      isArray: false
     - name: tag_numbers
       description: 'A comma-separated list of tag numbers to remove.'
       required: true
@@ -1986,18 +1883,12 @@ script:
     arguments:
     - name: tag_name
       description: 'Filter results that have a tag name that contains the specified value.'
-      required: false
-      isArray: false
     - name: offset
       defaultValue: "0"
       description: 'The number of tags to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The numbers of tags to return.'
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.Tag.number
@@ -2023,7 +1914,6 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.CaseCollaborator.CaseID
@@ -2052,11 +1942,9 @@ script:
     - name: case_id
       description: 'Unique identifier for the case.'
       required: true
-      isArray: false
     - name: owner
       description: 'Unique, numeric identifier for the person.'
       required: true
-      isArray: false
     - name: collaborators
       description: 'A comma-separated list of user IDs.'
       required: true
@@ -2088,22 +1976,14 @@ script:
     arguments:
     - name: parent_entity_id
       description: 'Filter by the object parent entity ID.'
-      required: false
-      isArray: false
     - name: entity_id
       description: 'Filter by the entity ID.'
-      required: false
-      isArray: false
     - name: offset
       defaultValue: "0"
       description: 'The number of entities to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The number of entities to return.'
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.Entity.id
@@ -2128,20 +2008,12 @@ script:
     arguments:
     - name: host_id
       description: 'Filter by host ID.'
-      required: false
-      isArray: false
     - name: host_name
       description: 'Filter by host name.'
-      required: false
-      isArray: false
     - name: entity_name
       description: 'Filter by entity name.'
-      required: false
-      isArray: false
     - name: record_status
       description: 'Filter by record status. Possible values: "all", "active", "retired".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - all
@@ -2150,13 +2022,9 @@ script:
     - name: offset
       defaultValue: "0"
       description: 'The number of hosts to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The number of hosts to return.'
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.Host.id
@@ -2223,16 +2091,12 @@ script:
     arguments:
     - name: user_ids
       description: 'A comma-separated list of user IDs.'
-      required: false
       isArray: true
     - name: entity_ids
       description: 'A comma-separated list of entity IDs.'
-      required: false
       isArray: true
     - name: user_status
       description: 'Filter by user status. Possible values: "Active" and "Retired".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Active
@@ -2240,13 +2104,9 @@ script:
     - name: offset
       defaultValue: "0"
       description: 'The ID of users to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The IDs of the users to return.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: LogRhythm.User.firstName
       description: 'The user first name.'
@@ -2292,8 +2152,6 @@ script:
     arguments:
     - name: list_type
       description: 'The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - None
@@ -2315,12 +2173,8 @@ script:
       - Identity
     - name: list_name
       description: 'The name of the object or regex match.'
-      required: false
-      isArray: false
     - name: can_edit
       description: 'Specifies if Write Only (true) or Read Only (false) lists are required for a user. Possible values: "true" and "false".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2396,14 +2250,11 @@ script:
       contextPath: LogRhythm.List.revisitDate
       description: 'The list revisit date.'
   - name: lr-list-summary-create-update
-    description: 'Updates a list summary based on the GUID and other required details.
-     Searches the system for existing list summaries by GUID.
-      Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.'
+    description: 'Updates a list summary based on the GUID and other required details. Searches the system for existing list summaries by GUID. Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.'
     arguments:
     - name: list_type
       description: 'The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - None
@@ -2426,11 +2277,9 @@ script:
     - name: name
       description: 'The list name.'
       required: true
-      isArray: false
     - name: enabled
       description: 'Whether the list auto import is enabled. Possible values: "true" and "false".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2438,7 +2287,6 @@ script:
     - name: use_patterns
       description: 'Whether the auto import use patterns is enabled. Possible values: "true" and "false".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2446,7 +2294,6 @@ script:
     - name: replace_existing
       description: 'Whether the auto import replace existing is enabled. Possible values: "true" and "false".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2454,7 +2301,6 @@ script:
     - name: read_access
       description: 'The read permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Private
@@ -2466,7 +2312,6 @@ script:
     - name: write_access
       description: 'The write permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Private
@@ -2478,7 +2323,6 @@ script:
     - name: restricted_read
       description: 'Whether the list is read restricted. Possible values: "true" and "false".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2486,11 +2330,9 @@ script:
     - name: entity_name
       description: 'The entity name.'
       required: true
-      isArray: false
     - name: need_to_notify
       description: 'Whether the list need to notify. Possible values: "true" and "false".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2498,15 +2340,12 @@ script:
     - name: does_expire
       description: 'Whether the list expires. Possible values: "true" and "false".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: owner
       description: 'The ID of the owner.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: LogRhythm.List.listType
       description: 'The list type.'
@@ -2571,12 +2410,9 @@ script:
     - name: list_guid
       description: 'The GUID stored in the database.'
       required: true
-      isArray: false
     - name: max_items
       defaultValue: "100"
       description: 'The maximum number of items that can be returned in a single request.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.ListDetails.listType
@@ -2671,11 +2507,9 @@ script:
     - name: list_guid
       description: 'The GUID stored in the database.'
       required: true
-      isArray: false
     - name: items
       description: 'The body of the list item so that the list can be updated with new items (JSON format).'
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.ListItemsAdd.listType
@@ -2746,11 +2580,9 @@ script:
     - name: list_guid
       description: 'The GUID stored in the database.'
       required: true
-      isArray: false
     - name: items
       description: 'Body of the list items to be removed from the list (JSON format).'
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.ListItemsRemove.listType
@@ -2822,15 +2654,10 @@ script:
     - name: number_of_days
       description: 'Number of days to search.'
       required: true
-      isArray: false
     - name: search_name
       description: 'Name of the search.'
-      required: false
-      isArray: false
     - name: source_type
       description: 'Log source type.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - all
@@ -3791,67 +3618,36 @@ script:
       - VLS_-_Syslog_-_Infoblox_-_Threat_Protection
     - name: host_name
       description: 'Impacted host name.'
-      required: false
-      isArray: false
     - name: username
       description: 'Username.'
-      required: false
-      isArray: false
     - name: subject
       description: 'Email subject.'
-      required: false
-      isArray: false
     - name: sender
       description: 'Email sender.'
-      required: false
-      isArray: false
     - name: recipient
       description: 'Email recipient.'
-      required: false
-      isArray: false
     - name: hash
       description: 'Hash code of the event.'
-      required: false
-      isArray: false
     - name: url
       description: 'URL of the event.'
-      required: false
-      isArray: false
     - name: process_name
       description: 'Process name.'
-      required: false
-      isArray: false
     - name: object
       description: 'Log object.'
-      required: false
-      isArray: false
     - name: ip_address
       description: 'IP address of the endpoint.'
-      required: false
-      isArray: false
     - name: max_message
       description: 'Maximum number of log messages to query.'
-      required: false
-      isArray: false
       defaultValue: "100"
     - name: query_timeout
       description: 'The query timeout in seconds.'
-      required: false
-      isArray: false
       defaultValue: "60"
     - name: entity_id
       description: 'Entity ID.'
-      required: false
-      isArray: false
-    - default: false
-      description: 'Interval in seconds between each poll.'
-      isArray: false
+    - description: 'Interval in seconds between each poll.'
       name: interval_in_seconds
-      required: false
     - name: page_size
       description: 'Page size.'
-      required: false
-      isArray: false
       defaultValue: "50"
     outputs:
     - type: String
@@ -3923,11 +3719,8 @@ script:
     - name: task_id
       description: 'The task ID. The task ID can be retrieved from the lr-execute-search-query command.'
       required: true
-      isArray: false
     - name: page_size
       description: 'Page size.'
-      required: false
-      isArray: false
       defaultValue: "50"
     outputs:
     - contextPath: LogRhythm.Search.TaskStatus
@@ -3992,28 +3785,19 @@ script:
     arguments:
     - name: entity-id
       description: 'The entity ID for the host.'
-      required: false
-      isArray: false
     - name: entity-name
       description: 'The entity name for the host.'
       required: true
-      isArray: false
     - name: name
       description: 'The name of the host.'
       required: true
-      isArray: false
     - name: short-description
       description: 'A brief description of the component.'
-      required: false
-      isArray: false
     - name: long-description
       description: 'A full description of the component.'
-      required: false
-      isArray: false
     - name: risk-level
       description: 'The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - None
@@ -4028,8 +3812,6 @@ script:
       - High-High
     - name: threat-level
       description: 'The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - None
@@ -4044,12 +3826,9 @@ script:
       - High-High
     - name: threat-level-comments
       description: 'Comments for the host threat level.'
-      required: false
-      isArray: false
     - name: host-status
       description: 'The host status. Possible values: "Retired" and "Active".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Retired
@@ -4057,7 +3836,6 @@ script:
     - name: host-zone
       description: 'The host zone. Possible values: "External", "DMZ", and "Internal".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - External
@@ -4066,15 +3844,12 @@ script:
     - name: use-eventlog-credentials
       description: 'Whether to use the event log credentials. Possible values: "true" and "false".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: os-type
       description: 'The Agent server type on which the operating system is installed. Possible values: "None", "Server", and "Desktop".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - None
@@ -4083,7 +3858,6 @@ script:
     - name: os
       description: 'The operating system type supported by LogRhythm. Possible values: "Unknown", "Other", "WindowsNT4","Windows2000Professional", "Windows2000Server", "Windows2003Standard", "Windows2003Enterprise", "Windows95", "WindowsXP", "WindowsVista", "Linux", "Solaris", "AIX", "HPUX", and "Windows".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Unknown
@@ -4149,12 +3923,8 @@ script:
     arguments:
     - name: id
       description: 'The endpoint ID.'
-      required: false
-      isArray: false
     - name: hostname
       description: 'The endpoint hostname.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: Endpoint.Hostname
       description: The endpoint's hostname.
@@ -4171,11 +3941,9 @@ script:
     - name: host_id
       description: 'The host ID.'
       required: true
-      isArray: false
     - name: host_status
       description: 'The host status. Possible values: "Retired" and "Active".'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Retired
@@ -4186,16 +3954,10 @@ script:
     arguments:
     - name: network_id
       description: 'Filter by network ID.'
-      required: false
-      isArray: false
     - name: name
       description: 'Filter by name.'
-      required: false
-      isArray: false
     - name: record_status
       description: 'Filter by object record status. Possible values: "all", "retired", "active".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - all
@@ -4203,22 +3965,14 @@ script:
       - active
     - name: bip
       description: 'The starting IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1.'
-      required: false
-      isArray: false
     - name: eip
       description: 'The ending IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1.'
-      required: false
-      isArray: false
     - name: count
       defaultValue: "50"
       description: 'The numbers of networks to return.'
-      required: false
-      isArray: false
     - name: offset
       defaultValue: "0"
       description: 'The number of networks to skip before starting to collect the result set.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: LogRhythm.Network.entity.id
       description: 'The network entity ID.'

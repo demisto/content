@@ -17,65 +17,47 @@ configuration:
   hiddenusername: true
 - display: Fetch Events
   name: isFetchEvents
-  required: false
   type: 8
+  required: false
 - defaultvalue: 7 days
   display: |-
     First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: created_after
-  required: false
   type: 0
+  required: false
 - display: |
     The maximum amount of events to fetch for each page. 
     If you're encountering timeouts, consider decrease this value. range 500.
   name: page_size
-  required: false
   type: 0
   defaultvalue: 500
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Collect events from Box's logs.
 display: Box Event Collector
 name: BoxEventsCollector
 script:
   commands:
   - arguments:
-    - default: false
-      description: Maximum events to fetch
-      isArray: false
+    - description: Maximum events to fetch
       name: page_size
       defaultValue: 10
-      required: false
-      secret: false
-    - default: false
-      description: Should push events
-      isArray: false
+    - description: Should push events
       name: should_push_events
       defaultValue: 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days)
-      isArray: false
+    - description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days)
       name: created_after
       defaultValue: 3 days
-      required: false
-      secret: false
-    deprecated: false
     description: Get events.
-    execution: false
     name: box-get-events
-  dockerimage: demisto/pydantic-jwt3:1.0.0.53513
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/pydantic-jwt3:1.0.0.64406
   runonce: false
   script: '-'
   subtype: python3

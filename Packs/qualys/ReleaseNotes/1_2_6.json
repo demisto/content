@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes": "The command qualys-report-list will return error in case of no results returned for a given report id"}

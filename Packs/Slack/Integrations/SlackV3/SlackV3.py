@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import asyncio
 import concurrent
 import logging.handlers
@@ -16,8 +18,6 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 ''' CONSTANTS '''
@@ -1280,7 +1280,7 @@ def is_bot_message(data: dict) -> bool:
         return True
     elif event.get('subtype') == 'bot_message':
         return True
-    elif data.get('authorizations', [{}])[0].get('is_bot', False):
+    elif not (event.get('user') or data.get('user', {}).get('id') or data.get('envelope_id')):
         return True
     else:
         return False

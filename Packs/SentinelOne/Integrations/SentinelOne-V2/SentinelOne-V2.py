@@ -1,14 +1,15 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import io
 import json
 import traceback
 from datetime import datetime
 import zipfile
-from typing import Callable, List, Optional, Tuple
+from collections.abc import Callable
 
 import urllib3
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
 from dateutil.parser import parse
 
 ''' IMPORTS '''
@@ -179,7 +180,7 @@ class Client(BaseClient):
 
     def get_blocklist_request(self, tenant: bool, group_ids: str = None, site_ids: str = None, account_ids: str = None,
                               skip: int = None, limit: int = None, os_type: str = None, sort_by: str = None,
-                              sort_order: str = None, value_contains: str = None) -> List[dict]:
+                              sort_order: str = None, value_contains: str = None) -> list[dict]:
         """
         We use the `value_contains` instead of `value` parameter because in our testing
         (API 2.1) the `value` parameter is case sensitive. So if an analyst put in the hash with uppercase entries
@@ -250,14 +251,31 @@ class Client(BaseClient):
                             include_resolved_param=True):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
+        created_before_parsed = None
+        created_after_parsed = None
+        created_until_parsed = None
+        created_from_parsed = None
+        updated_from_parsed = None
+
+        if created_before:
+            created_before_parsed = dateparser.parse(created_before, settings={'TIMEZONE': 'UTC'})
+        if created_after:
+            created_after_parsed = dateparser.parse(created_after, settings={'TIMEZONE': 'UTC'})
+        if created_until:
+            created_until_parsed = dateparser.parse(created_until, settings={'TIMEZONE': 'UTC'})
+        if created_from:
+            created_from_parsed = dateparser.parse(created_from, settings={'TIMEZONE': 'UTC'})
+        if updated_from:
+            updated_from_parsed = dateparser.parse(updated_from, settings={'TIMEZONE': 'UTC'})
+
         params = assign_params(
             contentHashes=argToList(content_hash),
             mitigationStatuses=argToList(mitigation_status),
-            createdAt__lt=created_before,
-            createdAt__gt=created_after,
-            createdAt__lte=created_until,
-            createdAt__gte=created_from,
-            updatedAt__gte=updated_from,
+            createdAt__lt=created_before_parsed,
+            createdAt__gt=created_after_parsed,
+            createdAt__lte=created_until_parsed,
+            createdAt__gte=created_from_parsed,
+            updatedAt__gte=updated_from_parsed,
             resolved=argToBoolean(resolved) if include_resolved_param else None,
             displayName__like=display_name,
             displayName=display_name,
@@ -461,6 +479,15 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {}).get('queryId')
 
+    def create_status_request(self, query_id=None):
+        endpoint_url = 'dv/query-status'
+        params = {
+            'query_id': query_id
+        }
+
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
+
     def get_events_request(self, query_id=None, limit=None, cursor=None):
         endpoint_url = 'dv/events'
 
@@ -502,10 +529,10 @@ class Client(BaseClient):
                                os_types=None,
                                exclusion_type: str = None,
                                limit: int = 10,
-                               value_contains: Optional[str] = None,
+                               value_contains: str | None = None,
                                ok_codes: list = [200],
-                               include_children: Optional[bool] = None,
-                               include_parents: Optional[bool] = None):
+                               include_children: bool | None = None,
+                               include_parents: bool | None = None):
         """
         When includeChildren and includeParents are set to True in API request-
         it will return all items in the exclusion list.
@@ -860,7 +887,10 @@ class Client(BaseClient):
 
     def run_remote_script_request(self,
                                   account_ids: list, script_id: str, output_destination: str,
-                                  task_description: str, output_directory: str, agent_ids: list) -> dict:
+                                  task_description: str, output_directory: str, agent_ids: list,
+                                  singularity_xdr_keyword: str, singularity_xdr_url: str, api_key: str,
+                                  input_params: str, password: str, script_runtime_timeout_seconds: int,
+                                  requires_approval: bool) -> dict:
         endpoint_url = "remote-scripts/execute"
         payload = {
             "filter": {
@@ -871,7 +901,14 @@ class Client(BaseClient):
                 "taskDescription": task_description,
                 "outputDestination": output_destination,
                 "scriptId": script_id,
-                "outputDirectory": output_directory
+                "outputDirectory": output_directory,
+                "singularityxdrKeyword": singularity_xdr_keyword,
+                "singularityxdrUrl": singularity_xdr_url,
+                "apiKey": api_key,
+                "inputParams": input_params,
+                "password": password,
+                "scriptRuntimeTimeoutSeconds": script_runtime_timeout_seconds,
+                "requiresApproval": requires_approval
             }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
@@ -991,10 +1028,7 @@ def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
     agents_groups = client.move_agent_request(group_id, agents_id)
 
     # Parse response into context & content entries
-    if agents_groups.get('agentsMoved') and int(agents_groups.get('agentsMoved')) > 0:
-        agents_moved = True
-    else:
-        agents_moved = False
+    agents_moved = bool(agents_groups.get("agentsMoved") and int(agents_groups.get("agentsMoved")) > 0)
     date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
     context_entries = {
         'Date': date_time_utc,
@@ -1852,7 +1886,7 @@ def expire_site(client: Client, args: dict) -> CommandResults:
         raw_response=Expired_site)
 
 
-def fetch_threat_file(client: Client, args: dict) -> List[CommandResults]:
+def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
     """
     Fetches the threat file. Relevent to both API Versions
     """
@@ -1897,16 +1931,26 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
     """
     Get the Alerts from server. Relevant to API Version 2.1
     """
+    created_until = None
+    created_from = None
+
     context_entries = []
     headers = ['AlertId', 'EventType', 'RuleName', 'EndpointName', 'SrcProcName', 'SrcProcPath', 'SrcProcCommandline',
                'SrcProcSHA1', 'SrcProcStartTime', 'SrcProcStorylineId', 'SrcParentProcName',
                'AlertCreatedAt', 'AgentId', 'AgentUUID', 'RuleName']
+
+    if args.get('created_until'):
+        created_until = dateparser.parse(str(args.get('created_until')), settings={'TIMEZONE': 'UTC'})
+
+    if args.get('created_from'):
+        created_from = dateparser.parse(str(args.get('created_from')), settings={'TIMEZONE': 'UTC'})
+
     query_params = assign_params(
         ruleName__contains=args.get('ruleName'),
         incidentStatus=args.get('incidentStatus'),
         analystVerdict=args.get('analystVerdict'),
-        createdAt__lte=args.get('created_until'),
-        createdAt__gte=args.get('created_from'),
+        createdAt__lte=created_until,
+        createdAt__gte=created_from,
         ids=argToList(args.get('alert_ids')),
         limit=int(args.get('limit', 1000)),
         siteIds=args.get('site_ids'),
@@ -2105,7 +2149,7 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
         raw_response=exclusion_items)
 
 
-def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> List[Optional[str]]:
+def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
     Limit is set to OS_COUNT here where is OS_COUNT is set to the number of Operating Systems a hash can be blocked.
@@ -2453,6 +2497,40 @@ def get_agent_command(client: Client, args: dict) -> CommandResults:
         raw_response=agents)
 
 
+def get_agent_mac_command(client: Client, args: dict) -> CommandResults:
+    """
+        Get single agent mac details via ID
+    """
+    # Set req list
+    mac_list = []
+
+    # Get arguments
+    agent_ids = argToList(args.get('agent_id'))
+
+    # Make request and get raw response
+    agents = client.get_agent_request(agent_ids)
+
+    if agents:
+        for agent in agents:
+            hostname = agent.get('computerName')
+            for interface in agent.get('networkInterfaces'):
+                int_dict = {}
+                int_dict['hostname'] = hostname
+                int_dict['int_name'] = interface.get('name')
+                int_dict['agent_id'] = agent.get('id')
+                int_dict['ip'] = interface.get('inet')
+                int_dict['mac'] = interface.get('physical')
+
+                mac_list.append(int_dict)
+
+    return CommandResults(
+        outputs_prefix='SentinelOne.MAC',
+        outputs=mac_list,
+        readable_output=tableToMarkdown('SentinelOne MAC Address Results', mac_list),
+        raw_response=agents
+    )
+
+
 def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults, str]:
     """
     Sends a "connect to network" command to all agents matching the input filter.
@@ -2575,10 +2653,7 @@ def uninstall_agent(client: Client, args: dict) -> CommandResults:
     context = {
         "Affected": affected_agents
     }
-    if affected_agents > 0:
-        meta = f'Uninstall was sent to {affected_agents} agent(s).'
-    else:
-        meta = 'No agents were affected.'
+    meta = f"Uninstall was sent to {affected_agents} agent(s)." if affected_agents > 0 else "No agents were affected."
 
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Uninstall Agent', context, metadata=meta, removeNull=True),
@@ -2608,7 +2683,23 @@ def create_query(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.Query',
         outputs_key_field='QueryID',
         outputs=context_entries,
-        raw_response=query_id)
+        raw_response=query_id
+    )
+
+
+def get_dv_query_status(client: Client, args: dict) -> CommandResults:
+    query_id = args.get('query_id')
+    status = client.create_status_request(query_id)
+
+    status['QueryID'] = query_id
+
+    return CommandResults(
+        readable_output=tableToMarkdown('SentinelOne Query Status', [status]),
+        outputs_prefix='SentinelOne.Query.Status',
+        outputs_key_field='QueryID',
+        outputs=status,
+        raw_response=status
+    )
 
 
 def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
@@ -2765,7 +2856,7 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raw_response=result)
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, get_global: bool = True) -> List[Optional[str]]:
+def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, get_global: bool = True) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
@@ -2896,7 +2987,7 @@ def fetch_file(client: Client, args: dict) -> str:
     return f"Intiated fetch-file action for {file_path} on Agent {agent_id}"
 
 
-def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> Tuple[str, bytes]:
+def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> tuple[str, bytes]:
     """
     Helper funciton for `download_fetched_file`
     """
@@ -2919,7 +3010,7 @@ def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> Tuple[s
     return file_name, file_data
 
 
-def download_fetched_file(client: Client, args: dict) -> List[CommandResults]:
+def download_fetched_file(client: Client, args: dict) -> list[CommandResults]:
     """
     Download a file that has been requested by `fetch-file`
     """
@@ -2950,9 +3041,18 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
     task_description = args.get("task_description", "")
     output_directory = args.get("output_directory", "")
     agent_ids = argToList(args.get("agent_ids"))
+    singularity_xdr_keyword = args.get("singularity_xdr_Keyword", "")
+    singularity_xdr_url = args.get("singularity_xdr_Url", "")
+    api_key = args.get("api_key", "")
+    input_params = args.get("input_params", "")
+    password = args.get("password", "")
+    script_runtime_timeout_seconds = int(args.get("script_runtime_timeout_seconds", 3600))
+    requires_approval = argToBoolean(args.get("requires_approval", False))
 
     run_remote_script = client.run_remote_script_request(
-        account_ids, script_id, output_destination, task_description, output_directory, agent_ids)
+        account_ids, script_id, output_destination, task_description, output_directory, agent_ids,
+        singularity_xdr_keyword, singularity_xdr_url, api_key, input_params, password, script_runtime_timeout_seconds,
+        requires_approval)
 
     return CommandResults(
         readable_output=tableToMarkdown("SentinelOne - Run Remote Script", run_remote_script, headers=headers, removeNull=True),
@@ -3109,7 +3209,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     remote_incident_id = remote_args.remote_incident_id
 
     mirrored_data = {}
-    entries: List = []
+    entries: list = []
     try:
         demisto.debug(
             f"Performing get-remote-data command with incident id: {remote_incident_id} "
@@ -3157,7 +3257,7 @@ def get_modified_remote_data_command(client: Client, args: dict):
     assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
 
     demisto.debug(f"Remote arguments last_update in UTC is {last_update_utc}")
-    modified_ids_to_mirror = list()
+    modified_ids_to_mirror = []
     last_update_utc = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     raw_threats = client.get_threats_request(updated_from=last_update_utc, limit=1000, include_resolved_param=False)
 
@@ -3181,57 +3281,116 @@ def get_mirroring_fields(params):
     }
 
 
-def fetch_incidents(client: Client, params: dict, fetch_limit: int, first_fetch: str,
-                    fetch_threat_rank: int, fetch_site_ids: str):
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get('time')
+def fetch_threats(client: Client, args):
 
-    # handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
-        if not last_fetch:
-            raise DemistoException('Please provide an initial First fetch timestamp')
-        last_fetch = int(last_fetch.timestamp() * 1000)
+    incidents_threats = []
+    current_fetch = args.get('current_fetch')
 
-    current_fetch = last_fetch
-    incidents = []
-    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
-
-    threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
+    threats = client.get_threats_request(limit=args.get('fetch_limit'),
+                                         created_after=args.get('last_fetch_date_string'),
+                                         site_ids=args.get('fetch_site_ids'))
     for threat in threats:
         rank = threat.get('rank')
-        threat.update(get_mirroring_fields(params))
+        threat.update(get_mirroring_fields(args))
         try:
             rank = int(rank)
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if IS_VERSION_2_1 or rank >= fetch_threat_rank:
-            incident = threat_to_incident(threat)
+        if IS_VERSION_2_1 or rank >= args.get('fetch_threat_rank'):
+            incident = to_incident('Threat', threat)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = int(date_occurred_dt.timestamp() * 1000)
-            if incident_date > last_fetch:
-                incidents.append(incident)
+            if incident_date > int(args.get('last_fetch')):
+                incidents_threats.append(incident)
 
             if incident_date > current_fetch:
                 current_fetch = incident_date
+
+    return incidents_threats, current_fetch
+
+
+def fetch_alerts(client: Client, args):
+
+    incidents_alerts = []
+    current_fetch = args.get('current_fetch')
+
+    query_params = assign_params(
+        incidentStatus=','.join(args.get('fetch_incidentStatus')),
+        createdAt__gte=args.get('last_fetch_date_string'),
+        limit=args.get('fetch_limit'),
+        siteIds=args.get('fetch_site_ids')
+    )
+
+    alerts, pagination = client.get_alerts_request(query_params)
+    for alert in alerts:
+        severity = alert.get('ruleInfo').get('severity')
+
+        if str(severity) in args.get('fetch_severity'):
+            incident = to_incident('Alert', alert)
+            date_occurred_dt = parse(incident['occurred'])
+            incident_date = int(date_occurred_dt.timestamp() * 1000)
+            if incident_date > args.get('last_fetch'):
+                incidents_alerts.append(incident)
+
+            if incident_date > current_fetch:
+                current_fetch = incident_date
+
+    return incidents_alerts, current_fetch
+
+
+def fetch_handler(client: Client, args):
+
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get('time')
+
+    if last_fetch is None:
+        last_fetch = dateparser.parse(args.get('first_fetch_time'), settings={'TIMEZONE': 'UTC'})
+        if not last_fetch:
+            raise DemistoException('Please provide an initial First fetch timestamp')
+        last_fetch = int(last_fetch.timestamp() * 1000)
+
+    current_fetch = last_fetch
+    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+    args['last_fetch'] = last_fetch
+    args['last_fetch_date_string'] = last_fetch_date_string
+    args['current_fetch'] = current_fetch
+
+    if args.get('fetch_type') == 'Both':
+        alert_incidents, alert_current_fetch = fetch_alerts(client, args)
+        threat_incidents, threat_current_fetch = fetch_threats(client, args)
+
+        current_fetch = alert_current_fetch if alert_current_fetch > threat_current_fetch else threat_current_fetch
+
+        incidents = alert_incidents + threat_incidents
+
+    elif args.get('fetch_type') == 'Alerts':
+        incidents, current_fetch = fetch_alerts(client, args)
+    elif args.get('fetch_type') == 'Threats':
+        incidents, current_fetch = fetch_threats(client, args)
 
     demisto.setLastRun({'time': current_fetch})
     demisto.incidents(incidents)
 
 
-def threat_to_incident(threat) -> dict:
-    threat_info = threat.get('threatInfo', {}) if IS_VERSION_2_1 else threat
+def to_incident(type, data):
     incident = {
-        "name": f'Sentinel One Threat: {threat_info.get("classification", "Not classified")}',
-        "labels": [
-            {"type": _type, "value": value if isinstance(value, str) else json.dumps(value)}
-            for _type, value in threat.items()
-        ],
-        "details": json.dumps(threat),
-        "occurred": threat_info.get("createdAt"),
-        "rawJSON": json.dumps(threat),
+        'details': json.dumps(data),
+        'rawJSON': json.dumps(data),
+        'labels': [{'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
+                   for _type, value in data.items()]
     }
+
+    if type == 'Threat':
+        incident_info = data.get('threatInfo', {}) if IS_VERSION_2_1 else data
+        incident['name'] = f'Sentinel One {type}: {incident_info.get("classification", "Not classified")}'
+        incident['occurred'] = incident_info.get('createdAt')
+
+    elif type == 'Alert':
+        incident['name'] = f'Sentinel One {type}: {data.get("ruleInfo").get("name")}'
+        incident['occurred'] = data.get('alertInfo').get('createdAt')
+
     return incident
 
 
@@ -3252,11 +3411,15 @@ def main():
 
     IS_VERSION_2_1 = api_version == '2.1'
 
+    fetch_type = params.get('fetch_type', 'Threats')
     first_fetch_time = params.get('fetch_time', '3 days')
+    fetch_severity = params.get('fetch_severity', [])
+    fetch_incidentStatus = params.get('fetch_incidentStatus', [])
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
     block_site_ids = argToList(params.get('block_site_ids')) or []
+    mirror_direction = params.get('mirror_direction', None)
 
     headers = {
         'Authorization': 'ApiToken ' + token if token else 'ApiToken',
@@ -3277,6 +3440,7 @@ def main():
             'sentinelone-reactivate-site': reactivate_site_command,
             'sentinelone-list-agents': list_agents_command,
             'sentinelone-get-agent': get_agent_command,
+            'sentinelone-get-agent-mac': get_agent_mac_command,
             'sentinelone-get-groups': get_groups_command,
             'sentinelone-move-agent': move_agent_to_group_command,
             'sentinelone-delete-group': delete_group,
@@ -3285,6 +3449,7 @@ def main():
             'sentinelone-broadcast-message': broadcast_message,
             'sentinelone-get-events': get_events,
             'sentinelone-create-query': create_query,
+            'sentinelone-get-dv-query-status': get_dv_query_status,
             'sentinelone-get-processes': get_processes,
             'sentinelone-shutdown-agent': shutdown_agents,
             'sentinelone-uninstall-agent': uninstall_agent,
@@ -3348,8 +3513,22 @@ def main():
 
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch'), first_fetch_time))
-        if command == 'fetch-incidents':
-            fetch_incidents(client, params, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids)
+        elif command == 'fetch-incidents':
+            if fetch_type:
+                fetch_dict = {
+                    'fetch_type': fetch_type,
+                    'fetch_limit': fetch_limit,
+                    'first_fetch_time': first_fetch_time,
+                    'fetch_threat_rank': fetch_threat_rank,
+                    'fetch_site_ids': fetch_site_ids,
+                    'fetch_incidentStatus': fetch_incidentStatus,
+                    'fetch_severity': fetch_severity,
+                    'mirror_direction': mirror_direction
+                }
+
+                return_results(fetch_handler(client, fetch_dict))
+            else:
+                return_results('Please define what type to fetch. Alerts or Threats.')
 
         else:
             if command in commands['common']:

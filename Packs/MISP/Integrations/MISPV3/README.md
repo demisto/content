@@ -11,7 +11,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | MISP server URL (e.g., https://192.168.0.1) |  | True |
+    | MISP server URL (e.g., <https://192.168.0.1>) |  | True |
     | API Key |  | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -21,10 +21,14 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### misp-search-events
+
 ***
 Search for events in MISP. This search command will return only information about the matched events. To get information about attributes, use the misp-search-attributes command.
 
@@ -32,6 +36,7 @@ Search for events in MISP. This search command will return only information abou
 #### Base Command
 
 `misp-search-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,9 +110,11 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Attribute.Value | String | MISP attribute value. | 
 
 #### Command Example
+
 ```!misp-search-events category="Other" limit=3 page=1```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -291,6 +298,7 @@ Search for events in MISP. This search command will return only information abou
 #### Human Readable Output
 
 >### MISP search-events returned 3 events.
+
 > Current page size: 3
 >Showing page 1 out others that may exist
 >|Event Distribution|Event ID|Event Info|Event Objects|Event Org ID|Event Orgc ID|Event Tags|Event UUID|Publish Timestamp|
@@ -301,6 +309,7 @@ Search for events in MISP. This search command will return only information abou
 
 
 ### domain
+
 ***
 Checks the reputation of the given domain.
 
@@ -308,6 +317,7 @@ Checks the reputation of the given domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -365,9 +375,11 @@ Checks the reputation of the given domain.
 
 
 #### Command Example
+
 ```!domain domain=ahaaa0.com```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -465,16 +477,20 @@ Checks the reputation of the given domain.
 #### Human Readable Output
 
 >### Results found in MISP for value: ahaaa0.com
+
 >|Attribute Category|Attribute Type|Attribute Value|Dbot Score|
 >|---|---|---|---|
 >| Network activity | domain | ahaaa0.com | 3 |
+
 >### Related events
+
 >|Event ID|Event Name|Threat Level ID|
 >|---|---|---|
 >| 1208 | OSINT Expansion on Rotten Tomato campaign | 2 |
 
 
 ### email
+
 ***
 Checks the reputation of the given email address.
 
@@ -482,6 +498,7 @@ Checks the reputation of the given email address.
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -539,9 +556,11 @@ Checks the reputation of the given email address.
 
 
 #### Command Example
+
 ```!email email=example@gmail.com```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -622,16 +641,20 @@ Checks the reputation of the given email address.
 #### Human Readable Output
 
 >### Results found in MISP for value: example@gmail.com
+
 >|Attribute Category|Attribute Type|Attribute Value|Dbot Score|
 >|---|---|---|---|
 >| Network activity | email | example@gmail.com | 3 |
+
 >### Related events
+
 >|Event ID|Event Name|Threat Level ID|
 >|---|---|---|
 >| 1655 | TestEvent | 1 |
 
 
 ### file
+
 ***
 Checks the file reputation of the given hash.
 
@@ -639,6 +662,7 @@ Checks the file reputation of the given hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -698,9 +722,11 @@ Checks the file reputation of the given hash.
 
 
 #### Command Example
+
 ```!file file=6c73d338ec64e0e44bd54ea61b6988b2```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -994,10 +1020,13 @@ Checks the file reputation of the given hash.
 #### Human Readable Output
 
 >### Results found in MISP for value: 6c73d338ec64e0e44bd54ea61b6988b2
+
 >|Attribute Category|Attribute Type|Attribute Value|Dbot Score|Events with the scored tag|Scored Tag ID|Scored Tag Name|
 >|---|---|---|---|---|---|---|
 >| Payload delivery | md5 | 6c73d338ec64e0e44bd54ea61b6988b2 | 3 | {'Event_ID': '145', 'Event_Name': 'DDOS.TF'},<br/>{'Event_ID': '144', 'Event_Name': 'Snake: Coming soon in Mac OS X flavour'} | 247 | passivetotal:class="suspicious" |
+
 >### Related events
+
 >|Event ID|Event Name|Threat Level ID|
 >|---|---|---|
 >| 149 | Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide | 1 |
@@ -1006,6 +1035,7 @@ Checks the file reputation of the given hash.
 
 
 ### url
+
 ***
 Checks the reputation of the given URL.
 
@@ -1013,6 +1043,7 @@ Checks the reputation of the given URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1070,9 +1101,11 @@ Checks the reputation of the given URL.
 
 
 #### Command Example
+
 ```!url url=www.example.com```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1554,16 +1587,20 @@ Checks the reputation of the given URL.
 #### Human Readable Output
 
 >### Results found in MISP for value: www.example.com
+
 >|Attribute Category|Attribute Type|Attribute Value|Dbot Score|
 >|---|---|---|---|
 >| Network activity | url | www.example.com | 3 |
+
 >### Related events
+
 >|Event ID|Event Name|Threat Level ID|
 >|---|---|---|
 >| 238 | New Targets Enterprise Wireless Presentation & Display Systems | 3 |
 
 
 ### ip
+
 ***
 Checks the reputation of an IP address.
 
@@ -1571,6 +1608,7 @@ Checks the reputation of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1628,9 +1666,11 @@ Checks the reputation of an IP address.
 
 
 #### Command Example
+
 ```!ip ip=1.2.3.4```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -2155,16 +2195,20 @@ Checks the reputation of an IP address.
 #### Human Readable Output
 
 >### Results found in MISP for value: 1.2.3.4
+
 >|Attribute Category|Attribute Type|Attribute Value|Dbot Score|
 >|---|---|---|---|
 >| External analysis | other | 1.2.3.4 | 3 |
+
 >### Related events
+
 >|Event ID|Event Name|Threat Level ID|
 >|---|---|---|
 >| 488 | final create test | 3 |
 
 
 ### misp-create-event
+
 ***
 Creates a new MISP event.
 
@@ -2172,6 +2216,7 @@ Creates a new MISP event.
 #### Base Command
 
 `misp-create-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2231,9 +2276,11 @@ Creates a new MISP event.
 
 
 #### Command Example
+
 ```!misp-create-event info="New Event" value=example1.com```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -2279,10 +2326,12 @@ Creates a new MISP event.
 #### Human Readable Output
 
 >## MISP create event
+
 >New event with ID: 1656 has been successfully created.
 
 
 ### misp-add-attribute
+
 ***
 Adds an attribute to an existing MISP event.
 
@@ -2290,6 +2339,7 @@ Adds an attribute to an existing MISP event.
 #### Base Command
 
 `misp-add-attribute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2332,9 +2382,11 @@ Adds an attribute to an existing MISP event.
 
 
 #### Command Example
+
 ```!misp-add-attribute event_id=1655 value=1.1.1.2 distribution=All_communities comment=test```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -2372,10 +2424,12 @@ Adds an attribute to an existing MISP event.
 #### Human Readable Output
 
 >## MISP add attribute
+
 >New attribute: 1.1.1.2 was added to event id 1655.
 
 
 ### misp-delete-event
+
 ***
 Deletes an event according to the given event ID.
 
@@ -2383,6 +2437,7 @@ Deletes an event according to the given event ID.
 #### Base Command
 
 `misp-delete-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2395,6 +2450,7 @@ Deletes an event according to the given event ID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!misp-delete-event event_id=1655```
 
 #### Human Readable Output
@@ -2402,6 +2458,7 @@ There is no context output for this command.
 >Event 1655 has been deleted
 
 ### misp-remove-tag-from-event
+
 ***
 Removes a tag from the given UUID event .
 
@@ -2409,6 +2466,7 @@ Removes a tag from the given UUID event .
 #### Base Command
 
 `misp-remove-tag-from-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2458,9 +2516,11 @@ Removes a tag from the given UUID event .
 
 
 #### Command Example
+
 ```!misp-remove-tag-from-event tag="test" uuid="ce083018-0b85-430b-a202-f60bbffcd26b"```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -2508,6 +2568,7 @@ Removes a tag from the given UUID event .
 >Tag test has been successfully removed from the event ce083018-0b85-430b-a202-f60bbffcd26b
 
 ### misp-add-tag-to-event
+
 ***
 Adds a tag to the given UUID event .
 
@@ -2515,6 +2576,7 @@ Adds a tag to the given UUID event .
 #### Base Command
 
 `misp-add-tag-to-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2565,9 +2627,11 @@ Adds a tag to the given UUID event .
 
 
 #### Command Example
+
 ```!misp-add-tag-to-event uuid="ce083018-0b85-430b-a202-f60bbffcd26b" tag="test"```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -2621,6 +2685,7 @@ Adds a tag to the given UUID event .
 >Tag test has been successfully added to event ce083018-0b85-430b-a202-f60bbffcd26b
 
 ### misp-add-tag-to-attribute
+
 ***
 Adds a tag to the given UUID attribute.
 
@@ -2628,6 +2693,7 @@ Adds a tag to the given UUID attribute.
 #### Base Command
 
 `misp-add-tag-to-attribute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2668,9 +2734,11 @@ Adds a tag to the given UUID attribute.
 
 
 #### Command Example
+
 ```!misp-add-tag-to-attribute tag=test uuid="c286a1f8-441e-479b-b10d-b10add2b6739"```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -2716,6 +2784,7 @@ Adds a tag to the given UUID attribute.
 >Tag test has been successfully added to attribute c286a1f8-441e-479b-b10d-b10add2b6739
 
 ### misp-remove-tag-from-attribute
+
 ***
 Removes a tag from the given UUID attribute.
 
@@ -2723,6 +2792,7 @@ Removes a tag from the given UUID attribute.
 #### Base Command
 
 `misp-remove-tag-from-attribute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2762,9 +2832,11 @@ Removes a tag from the given UUID attribute.
 
 
 #### Command Example
+
 ```!misp-remove-tag-from-attribute tag=test uuid="c286a1f8-441e-479b-b10d-b10add2b6739"```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -2804,6 +2876,7 @@ Removes a tag from the given UUID attribute.
 >Tag test has been successfully removed from the attribute c286a1f8-441e-479b-b10d-b10add2b6739
 
 ### misp-add-sighting
+
 ***
 Add sighting to an attribute.
 
@@ -2811,6 +2884,7 @@ Add sighting to an attribute.
 #### Base Command
 
 `misp-add-sighting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2825,6 +2899,7 @@ Add sighting to an attribute.
 There is no context output for this command.
 
 #### Command Example
+
 ```!misp-add-sighting uuid="c286a1f8-441e-479b-b10d-b10add2b6739" type=false_positive```
 
 #### Human Readable Output
@@ -2832,6 +2907,7 @@ There is no context output for this command.
 >Sighting 'false_positive' has been successfully added to attribute c286a1f8-441e-479b-b10d-b10add2b6739
 
 ### misp-add-events-from-feed
+
 ***
 Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.json).
 
@@ -2839,6 +2915,7 @@ Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.j
 #### Base Command
 
 `misp-add-events-from-feed`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2855,16 +2932,19 @@ Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.j
 
 
 #### Command Example
+
 ```!misp-add-events-from-feed limit=1 feed=Botvrij.eu```
 
 #### Human Readable Output
 
 >### Total of 0 events was added to MISP.
+
 >**No entries.**
 
 
 
 ### misp-add-file-object
+
 ***
 Adds an file object to the specified event ID.
 
@@ -2872,6 +2952,7 @@ Adds an file object to the specified event ID.
 #### Base Command
 
 `misp-add-file-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2913,13 +2994,16 @@ Adds an file object to the specified event ID.
 
 
 #### Command Example
+
 ``` !misp-add-file-object entry_id=${File.EntryID} event_id=1655 ```
 
 #### Human Readable Output
+
 >Object has been added to MISP event ID 1655
 
 
 ### misp-add-domain-object
+
 ***
 Adds a domain object to MISP.
 
@@ -2927,6 +3011,7 @@ Adds a domain object to MISP.
 #### Base Command
 
 `misp-add-domain-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2970,9 +3055,11 @@ Adds a domain object to MISP.
 
 
 #### Command Example
+
 ```!misp-add-domain-object ip="5.6.4.4" event_id=1655 name=v.com text=new```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -3070,6 +3157,7 @@ Adds a domain object to MISP.
 >Object has been added to MISP event ID 1655
 
 ### misp-add-email-object
+
 ***
 Adds an email object to MISP.
 
@@ -3077,6 +3165,7 @@ Adds an email object to MISP.
 #### Base Command
 
 `misp-add-email-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3118,9 +3207,11 @@ Adds an email object to MISP.
 
 
 #### Command Example
+
 ```!misp-add-email-object ip="678@6" event_id=743```
 
 #### Context Example
+
 ```json
 {
     "MISP.Event": {
@@ -3267,6 +3358,7 @@ Adds an email object to MISP.
 >Object has been added to MISP event ID 743
 
 ### misp-add-url-object
+
 ***
 Adds a URL object to an MISP event.
 
@@ -3274,6 +3366,7 @@ Adds a URL object to an MISP event.
 #### Base Command
 
 `misp-add-url-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3318,9 +3411,11 @@ Adds a URL object to an MISP event.
 
 
 #### Command Example
+
 ```!misp-add-url-object event_id=1655 url=d.com```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -3397,6 +3492,7 @@ Adds a URL object to an MISP event.
 >Object has been added to MISP event ID 1655
 
 ### misp-add-object
+
 ***
 Adds any other object to MISP.
 
@@ -3404,12 +3500,13 @@ Adds any other object to MISP.
 #### Base Command
 
 `misp-add-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | event_id | ID of the event to add the object to. | Required | 
-| template | Template name. (Can be found at https://www.misp-project.org/objects.html). For example, 'vehicle'. | Required | 
+| template | Template name. (Can be found at <https://www.misp-project.org/objects.html>). For example, 'vehicle'. | Required | 
 | attributes | Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}. | Required | 
 
 
@@ -3446,9 +3543,11 @@ Adds any other object to MISP.
 
 
 #### Command Example
+
 ```!misp-add-object attributes="{'description':'Manager','make': 'Test', 'model': '308 GTS'}"  template=vehicle event_id=1655```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -3546,6 +3645,7 @@ Adds any other object to MISP.
 >Object has been added to MISP event ID 1655
 
 ### misp-add-ip-object
+
 ***
 Adds an IP object to the MISP event. The following arguments are optional, but at least one must be supplied for the command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".
 
@@ -3553,6 +3653,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
 #### Base Command
 
 `misp-add-ip-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3603,9 +3704,11 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
 
 
 #### Command Example
+
 ```!misp-add-ip-object event_id=1655 dst_port=4545 ip_src=1.2.4.4 ip_dst=1.5.52.1 src_port=1001 comment=nice```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -3744,7 +3847,77 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
 
 >Object has been added to MISP event ID 1655
 
+### misp-add-user
+
+***
+Add a new user to MISP.
+
+#### Base Command
+
+`misp-add-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | The email address of the new user to be added. | Required | 
+| org_id | ID number indicating which organization the new user will be added to. In order to get the org_id, use the command misp-get-organization-info. | Required | 
+| role_id | Role of the new user to be added. In order to get the role_id, use the command misp-get-role-info. | Required | 
+| password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, and at least one lower-case character. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.User.id | string | MISP user ID. | 
+| MISP.User.password | string | MISP user password. | 
+| MISP.User.org_id | string | MISP user organisation ID. | 
+| MISP.User.server_id | string | MISP user server ID. | 
+| MISP.User.email | string | MISP user email. | 
+| MISP.User.autoalert | boolean | MISP user auto alert. | 
+| MISP.User.authkey | string | MISP User auth key. | 
+| MISP.User.invited_by | string | MISP user invited by. | 
+| MISP.User.gpgkey | string | MISP user GPG key. | 
+| MISP.User.certif_public | string | MISP User public certificate. | 
+| MISP.User.nids_sid | string | MISP user Network Intrusion Detection System \(NIDS\) Signature ID \(SID\). | 
+| MISP.User.termsaccepted | boolean | Whether MISP user terms were accepted. | 
+| MISP.User.newsread | string | MISP user news read. | 
+| MISP.User.role_id | string | MISP user role ID. | 
+| MISP.User.change_pw | boolean | Whether the MISP user password was changed. | 
+| MISP.User.contactalert | boolean | MISP user contact alert. | 
+| MISP.User.disabled | boolean | Whether the MISP user was disabled. | 
+| MISP.User.expiration | string | MISP user expiration. | 
+| MISP.User.current_login | string | MISP user current login. | 
+| MISP.User.last_login | string | MISP user last login. | 
+| MISP.User.force_logout | boolean | MISP user force logout. | 
+| MISP.User.date_created | string | MISP user created date. | 
+| MISP.User.date_modified | string | MISP user modified date. | 
+
+### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | The email address of the new user to be added | Required | 
+| org_id | ID number indicating which organization the new user will be added to. | Required | 
+| role_id | Role of the new user to be added. | Required | 
+| password | A password for the new user | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.User.email | string | MISP User Email. | 
+
+#### Command Example
+
+```!misp-add-user email="example@example.com" org_id=1 role_id=1 password=123456789++Qq!```
+
+#### Human Readable Output
+
+> MISP add user New user was added to MISP. Email:example@example.com
+
 ### misp-search-attributes
+
 ***
 Search for attributes in MISP.
 
@@ -3752,6 +3925,7 @@ Search for attributes in MISP.
 #### Base Command
 
 `misp-search-attributes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3813,9 +3987,11 @@ Search for attributes in MISP.
 
 
 #### Command Example
+
 ```!misp-search-attributes tags="COVID-19"```
 
 #### Context Example
+
 ```json
 {
     "MISP": {
@@ -3902,6 +4078,7 @@ Search for attributes in MISP.
 #### Human Readable Output
 
 >### MISP search-attributes returned 2 attributes
+
 > Current page size: 50
 >Showing page 1
 >|Attribute Category|Attribute ID|Attribute Tags|Attribute Type|Attribute Value|Event Distribution|Event ID|Event Info|Event Organization ID|Event UUID|To IDs|
@@ -3911,38 +4088,45 @@ Search for attributes in MISP.
 
 
 ## Breaking changes from the previous version of this integration - MISP v3
+
 ### Reputation commands
 
 The main change in this version is that searching indicators (reputation commands) is implemented with search-attributes (and not with search-events as in previous version).
 Please see the new commands (ip, file, url...) context output for details.
 
 ### Commands
+
 #### The following commands were removed in this version:
+
 * ***misp-add-tag*** - replaced by both *misp-add-tag-to-event* and *misp-add-tag-to-attribute*.
 * ***misp-download-sample*** - removed as download sample is not supported by the new PYMISP version.
 * ***misp-upload-sample*** - removed as upload sample is not supported by the new PYMISP version.
 
 ### Arguments
+
 #### The following arguments were removed in this version:
 
-- In the ***misp-create-event*** command, the *id* argument was replaced by *event_id*.
+* In the ***misp-create-event*** command, the *id* argument was replaced by *event_id*.
 
-- In the ***misp-add-domain-object*** command, the *dns* argument was replaced by *ip*.
+* In the ***misp-add-domain-object*** command, the *dns* argument was replaced by *ip*.
 
 #### The behavior of the following arguments was changed:
 
-- In the *misp-add-events-from-feed* command:
-   * *feed* - is now required.
-   * *limit* - the default value was changed from '0' to '2'.
+* In the *misp-add-events-from-feed* command:
+  * *feed* - is now required.
+  * *limit* - the default value was changed from '0' to '2'.
 
-- In the *misp-create-event* command, the default value of the *to_ids* argument was changed from 'false' to 'true'.
+* In the *misp-create-event* command, the default value of the *to_ids* argument was changed from 'false' to 'true'.
 
 
 
 ## Additional Considerations for this version
+
 ### Indicator Scoring
+
 In MISP V3, indicator scoring is calculated depending on **MISP's tags**. In case no tags were found, the score
 is calculated by the event's threat level ID.
+
 * Indicators of attributes and events that have tags that are configured as malicious will be scored 3 (i.e., malicious).
 * Indicators of attributes and events that have tags that are configured as suspicious will be scored 2 (i.e., suspicious).
 * Indicators of attributes and events that don't have any tags that are configured as suspicious nor malicious will be scored by their events' threat level ID.
@@ -3950,10 +4134,12 @@ is calculated by the event's threat level ID.
 * Threat level ID with a value of 4 will be scored 0 (i.e., unknown).
 
 When configuring an instance, you should set: 
-- Malicious tag IDs with tag IDs that would be calculated as malicious.
-- Suspicious tag IDs with tag IDs that would be calculated as suspicious.
+
+* Malicious tag IDs with tag IDs that would be calculated as malicious.
+* Suspicious tag IDs with tag IDs that would be calculated as suspicious.
 
 ### misp-update-attribute
+
 ***
 Update an attribute of an existing MISP event.
 
@@ -3961,6 +4147,7 @@ Update an attribute of an existing MISP event.
 #### Base Command
 
 `misp-update-attribute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3997,20 +4184,24 @@ Update an attribute of an existing MISP event.
 
 
 #### Command Example
+
 ``` !misp-update-attribute attribute_uuid=c0ba7147-d99a-418a-a23a-d9be62590c33 category=Other ```
 
 #### Human Readable Output
 
 >## MISP update attribute
+
 >Attribute: c0ba7147-d99a-418a-a23a-d9be62590c33 was updated.
 
 ### misp-delete-attribute
+
 ***
 Delete an attribute according to the given attribute ID.
 
 #### Base Command
 
 `misp-delete-attribute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4021,8 +4212,11 @@ Delete an attribute according to the given attribute ID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!misp-delete-attribute attribute_id=3f5917b3-100c-4e21-91c3-48b265337232```
+
 #### Human Readable Output
 
 >Attribute 3f5917b3-100c-4e21-91c3-48b265337232 has been deleted
@@ -4030,6 +4224,7 @@ There is no context output for this command.
 
 
 ### misp-publish-event
+
 ***
 Publish an event.
 
@@ -4037,6 +4232,7 @@ Publish an event.
 #### Base Command
 
 `misp-publish-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4048,14 +4244,18 @@ Publish an event.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!misp-publish-event event_id=20536```
+
 #### Human Readable Output
 
 >Event 20536 has been published
 
 
 ### misp-set-event-attributes
+
 ***
 Set event attributes according to the given attributes data.
 
@@ -4063,6 +4263,7 @@ Set event attributes according to the given attributes data.
 #### Base Command
 
 `misp-set-event-attributes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4074,7 +4275,9 @@ Set event attributes according to the given attributes data.
 #### Context Output
 
 There is no context output for this command.
+
 ### misp-check-warninglist
+
 ***
 Check a list of indicator values against the MISP warninglist.
 
@@ -4082,6 +4285,7 @@ Check a list of indicator values against the MISP warninglist.
 #### Base Command
 
 `misp-check-warninglist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4096,3 +4300,56 @@ Check a list of indicator values against the MISP warninglist.
 | MISP.Warninglist.Count | number | Count on how many warninglists the value was found. | 
 | MISP.Warninglist.Value | string | Value checked. | 
 | MISP.Warninglist.Lists | string | Name of warninglists where the value was found. | 
+
+### misp-get-organization-info
+
+***
+Display the organization IDs and names.
+
+#### Base Command
+
+`misp-get-organization-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Organization.org_id | string | MISP organization ID. | 
+| MISP.Organization.org_name | string | MISP organization name. | 
+
+### misp-get-role-info
+
+***
+Display role names and role ids.
+
+#### Base Command
+
+`misp-get-role-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Role.role_id | string | MISP role ID. | 
+| MISP.Role.role_name | string | MISP role name. | 
+
+#### Command Example
+
+```!misp-get-role-info```
+
+#### Human Readable Output
+
+>### MISP Roles
+>|id|name|
+>|---|---|
+>| 1 | rolename |

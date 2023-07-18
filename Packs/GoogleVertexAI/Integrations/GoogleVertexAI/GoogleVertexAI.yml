@@ -1,0 +1,74 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Google Vertex AI
+  version: -1
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Client ID
+  name: ID
+  required: true
+  type: 4
+- display: Client Secret
+  name: Secret
+  required: true
+  type: 4
+- display: Authentication Code (OAuth2) - View documentation to generate the Authentication Code
+  name: Authentication_Code
+  type: 4
+  required: false
+- display: Project ID
+  name: ProjectID
+  required: true
+  type: 0
+detaileddescription: |-
+  Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
+
+  Author: Sameh El-Hakim
+
+  The current integration of Google Vertex Ai is focusing only on the Generative AI model (PaLM) using the Chat prediction.
+
+  Later, this plugin will be updated to include the following:
+  - Model Creation
+  - Model Fine Tuning
+  - PaLM Text
+
+  For more information for how to create the authentication code, client id and secret please follow the integration documentation.
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/google-vertex-ai)
+description: |-
+  Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
+
+  The current integration of Google Vertex Ai is focusing only on the Generative AI model (PaLM) using the Chat prediction.
+
+  Later, this plugin will be updated to include the following:
+  - Model Creation
+  - Model Fine Tuning
+  - PaLM Text
+display: Google Vertex AI
+name: Google Vertex AI
+script:
+  commands:
+  - arguments:
+    - name: prompt
+      description: The text that will be submitted to Google Vertex AI - PaLM for Chat
+      required: true
+    description: Send Text to Google Vertex Ai (PaLM for Chat) and receive a generative ai response
+    name: google-vertex-PaLM-chat
+  - arguments: []
+    description: This command will generate the authentication url required to generate auth code
+    name: google-vertex-ai-generate-auth-url
+  dockerimage: demisto/googleapi-python3:1.0.0.62073
+  resetContext: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+fromversion: 5.0.0

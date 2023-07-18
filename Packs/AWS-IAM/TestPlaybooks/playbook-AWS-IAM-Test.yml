@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b8375585-8af4-4e67-8e8b-6e0f0e119eab
+    taskid: 09640e7a-a450-44e4-8ade-3fb7823f2058
     type: start
     task:
-      id: b8375585-8af4-4e67-8e8b-6e0f0e119eab
+      id: 09640e7a-a450-44e4-8ade-3fb7823f2058
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5c1d5516-c697-458b-8919-bca82fcb1e75
+    taskid: 74bfe2e2-635c-487a-819c-900872f18e90
     type: regular
     task:
-      id: 5c1d5516-c697-458b-8919-bca82fcb1e75
+      id: 74bfe2e2-635c-487a-819c-900872f18e90
       version: -1
       name: aws-iam-list-users
       description: Lists the IAM users, returns all users in the AWS account.
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5095
+          "y": 5785
         }
       }
     note: false
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0d733b4f-07f4-4bbc-8f37-3eaf708892b8
+    taskid: 20114031-c205-4522-8781-19edc290038f
     type: regular
     task:
-      id: 0d733b4f-07f4-4bbc-8f37-3eaf708892b8
+      id: 20114031-c205-4522-8781-19edc290038f
       version: -1
       name: aws-iam-create-group
       description: Creates a new iam group.
@@ -85,14 +85,14 @@ tasks:
       - "69"
     scriptarguments:
       groupName:
-        simple: playbookgrp
+        simple: test_group_${TimeNowUnix}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5445
+          "y": 6135
         }
       }
     note: false
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e30d914e-7364-448f-8bfe-073555514f48
+    taskid: 538231da-4cc7-4d21-804e-6f2ed20a0464
     type: regular
     task:
-      id: e30d914e-7364-448f-8bfe-073555514f48
+      id: 538231da-4cc7-4d21-804e-6f2ed20a0464
       version: -1
       name: aws-iam-list-groups
       description: Lists all the IAM groups in the AWS account
@@ -125,7 +125,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5795
+          "y": 6475
         }
       }
     note: false
@@ -137,10 +137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 67131613-3968-423a-8f28-33218197c1f8
+    taskid: 764d6ba7-950b-41bf-80dc-313b289bdc40
     type: regular
     task:
-      id: 67131613-3968-423a-8f28-33218197c1f8
+      id: 764d6ba7-950b-41bf-80dc-313b289bdc40
       version: -1
       name: aws-iam-list-policies
       description: Lists all the managed policies that are available in your AWS account,
@@ -175,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: d8d9af6d-7049-413b-8ab3-9786fe803a74
+    taskid: eb4c0e9c-65f6-486e-8f5d-21912a7c0c95
     type: regular
     task:
-      id: d8d9af6d-7049-413b-8ab3-9786fe803a74
+      id: eb4c0e9c-65f6-486e-8f5d-21912a7c0c95
       version: -1
       name: aws-iam-list-roles
       description: Lists all IAM roles
@@ -196,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4045
+          "y": 4755
         }
       }
     note: false
@@ -208,10 +208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b7beee1b-5073-4d6f-8f34-3acaf9d94ca8
+    taskid: f72bae99-7b75-4e8c-8b32-04fac427926b
     type: regular
     task:
-      id: b7beee1b-5073-4d6f-8f34-3acaf9d94ca8
+      id: f72bae99-7b75-4e8c-8b32-04fac427926b
       version: -1
       name: aws-iam-delete-group
       description: Deletes the specified IAM group. The group must not contain any
@@ -225,14 +225,14 @@ tasks:
       - "90"
     scriptarguments:
       groupName:
-        simple: playbookgrp
+        simple: test_group_${TimeNowUnix}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 6345
+          "y": 7035
         }
       }
     note: false
@@ -244,10 +244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 839974db-c71e-4a74-88e2-8e64bfc24ea8
+    taskid: a8751f08-8ca2-4314-825f-166f68cf43e3
     type: regular
     task:
-      id: 839974db-c71e-4a74-88e2-8e64bfc24ea8
+      id: a8751f08-8ca2-4314-825f-166f68cf43e3
       version: -1
       name: aws-iam-create-instance-profile
       description: Creates a new instance profile.
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 6885be12-b24b-438a-8e1e-9e196ab11186
+    taskid: c1e1f573-71e7-4356-8265-056771ad0075
     type: regular
     task:
-      id: 6885be12-b24b-438a-8e1e-9e196ab11186
+      id: c1e1f573-71e7-4356-8265-056771ad0075
       version: -1
       name: aws-iam-delete-instance-profile
       description: Deletes the specified instance profile. The instance profile must
@@ -294,7 +294,7 @@ tasks:
       brand: AWS - IAM
     nexttasks:
       '#none#':
-      - "30"
+      - "96"
     scriptarguments:
       instanceProfileName:
         simple: ${TestPBProfileName}
@@ -316,10 +316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 522d7610-170b-4110-8866-2eac187c8b21
+    taskid: 8b02bbe1-0719-41aa-862a-c00f3e64fb0f
     type: regular
     task:
-      id: 522d7610-170b-4110-8866-2eac187c8b21
+      id: 8b02bbe1-0719-41aa-862a-c00f3e64fb0f
       version: -1
       name: aws-iam-list-instance-profiles
       description: Lists all the instance profiles tin your AWS account.
@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: f07e17c9-4041-4315-81f9-4119a348cea2
+    taskid: 0d557d4e-c198-437c-888f-51d29e2b8a8e
     type: regular
     task:
-      id: f07e17c9-4041-4315-81f9-4119a348cea2
+      id: 0d557d4e-c198-437c-888f-51d29e2b8a8e
       version: -1
       name: aws-iam-add-role-to-instance-profile
       description: Adds the specified IAM role to the specified instance profile.
@@ -390,10 +390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 6704f949-363a-442c-86e8-2b5c5b693729
+    taskid: 68ad5382-33ec-4e24-8698-cb1f3d5167f8
     type: regular
     task:
-      id: 6704f949-363a-442c-86e8-2b5c5b693729
+      id: 68ad5382-33ec-4e24-8698-cb1f3d5167f8
       version: -1
       name: aws-iam-remove-role-from-instance-profile
       description: Removes the specified IAM role from the specified EC2 instance
@@ -428,10 +428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 5370f6c1-a333-4820-8024-10a2dadff782
+    taskid: e4442717-56f2-427f-82ac-365f62587976
     type: regular
     task:
-      id: 5370f6c1-a333-4820-8024-10a2dadff782
+      id: e4442717-56f2-427f-82ac-365f62587976
       version: -1
       name: aws-iam-list-instance-profiles-for-role
       description: Lists the instance profiles that have the specified associated
@@ -465,10 +465,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: b21c36f6-c9d9-48a8-8c54-804f0ee38c81
+    taskid: 71bf8dbc-82f9-4fb0-8de1-feb8e166b9aa
     type: regular
     task:
-      id: b21c36f6-c9d9-48a8-8c54-804f0ee38c81
+      id: 71bf8dbc-82f9-4fb0-8de1-feb8e166b9aa
       version: -1
       name: aws-iam-get-instance-profile
       description: Retrieves information about the specified instance profile.
@@ -501,10 +501,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: b3308cab-8783-4c31-8adc-c0858812f1d0
+    taskid: b6384b34-de88-4597-83d1-8ea2269d2da5
     type: regular
     task:
-      id: b3308cab-8783-4c31-8adc-c0858812f1d0
+      id: b6384b34-de88-4597-83d1-8ea2269d2da5
       version: -1
       name: aws-iam-get-role
       description: Retrieves information about the specified role.
@@ -514,8 +514,7 @@ tasks:
       brand: AWS - IAM
     nexttasks:
       '#none#':
-      - "53"
-      - "54"
+      - "97"
     scriptarguments:
       roleName:
         simple: ${TestPBRoleName}
@@ -525,7 +524,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3695
+          "y": 3865
         }
       }
     note: false
@@ -537,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 593d237e-3262-4655-8d6f-6b230413a4d6
+    taskid: 24e338cc-277b-4b54-82fd-0e868a625e45
     type: regular
     task:
-      id: 593d237e-3262-4655-8d6f-6b230413a4d6
+      id: 24e338cc-277b-4b54-82fd-0e868a625e45
       version: -1
       name: aws-iam-delete-role
       description: 'Deletes the specified role. The role must not have any policies
@@ -561,7 +560,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4570
+          "y": 5260
         }
       }
     note: false
@@ -573,10 +572,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 48ea0cdf-1926-4abb-8a28-b9307bac488c
+    taskid: 645dd417-5a4d-4de6-8acf-ddbd13fa8f2e
     type: regular
     task:
-      id: 48ea0cdf-1926-4abb-8a28-b9307bac488c
+      id: 645dd417-5a4d-4de6-8acf-ddbd13fa8f2e
       version: -1
       name: aws-iam-create-role
       description: Creates a new role for your AWS account.
@@ -623,10 +622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: f0b0dfb3-8c05-427e-8ef1-01ca6db9fac7
+    taskid: 89b36d02-158e-4f4c-8cab-c1a7e23df77a
     type: regular
     task:
-      id: f0b0dfb3-8c05-427e-8ef1-01ca6db9fac7
+      id: 89b36d02-158e-4f4c-8cab-c1a7e23df77a
       version: -1
       name: VerifyContext
       description: |-
@@ -663,10 +662,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: c9270238-5f1a-41b5-83bd-e193a2c87fcd
+    taskid: 5995c242-8f7e-48f0-89a1-3fbf94ec7fba
     type: regular
     task:
-      id: c9270238-5f1a-41b5-83bd-e193a2c87fcd
+      id: 5995c242-8f7e-48f0-89a1-3fbf94ec7fba
       version: -1
       name: VerifyContext
       description: |-
@@ -703,10 +702,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 8001f9e1-511f-41ec-8e19-9c118f232a0b
+    taskid: 56d7f06d-fe85-4614-86de-302de14713e5
     type: regular
     task:
-      id: 8001f9e1-511f-41ec-8e19-9c118f232a0b
+      id: 56d7f06d-fe85-4614-86de-302de14713e5
       version: -1
       name: VerifyContext
       description: |-
@@ -743,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 671aa3e5-af1f-4f23-8285-28c82b837126
+    taskid: 5387fe1e-0cec-4837-8cfd-5e15665494d2
     type: regular
     task:
-      id: 671aa3e5-af1f-4f23-8285-28c82b837126
+      id: 5387fe1e-0cec-4837-8cfd-5e15665494d2
       version: -1
       name: VerifyContext
       description: |-
@@ -783,10 +782,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: dae88a69-9ebf-4401-8c24-73769ae8d84a
+    taskid: 18880cef-795b-4a84-8e49-c2c7f3fd2545
     type: regular
     task:
-      id: dae88a69-9ebf-4401-8c24-73769ae8d84a
+      id: 18880cef-795b-4a84-8e49-c2c7f3fd2545
       version: -1
       name: VerifyContext
       description: |-
@@ -823,10 +822,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: c481d540-7abc-41cc-8447-99e07339c061
+    taskid: 21e8de5a-1727-453e-8036-065130fdd479
     type: regular
     task:
-      id: c481d540-7abc-41cc-8447-99e07339c061
+      id: 21e8de5a-1727-453e-8036-065130fdd479
       version: -1
       name: VerifyContext
       description: |-
@@ -863,10 +862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 0bae414d-70f4-4fa5-8ff9-88176ca51114
+    taskid: 62ea8e86-1324-440d-83fd-fb80669f9741
     type: regular
     task:
-      id: 0bae414d-70f4-4fa5-8ff9-88176ca51114
+      id: 62ea8e86-1324-440d-83fd-fb80669f9741
       version: -1
       name: VerifyContext
       description: |-
@@ -903,10 +902,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: e66d83d3-9de5-4661-8ad0-24c3135cd1a1
+    taskid: e3d32f0c-e828-47eb-866e-e75be9357adc
     type: regular
     task:
-      id: e66d83d3-9de5-4661-8ad0-24c3135cd1a1
+      id: e3d32f0c-e828-47eb-866e-e75be9357adc
       version: -1
       name: VerifyContext
       description: |-
@@ -943,10 +942,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 9632f541-0059-40c5-8567-1b13e24ebcb6
+    taskid: 6db916e8-1e2e-4498-8e4f-dd5054ef7379
     type: regular
     task:
-      id: 9632f541-0059-40c5-8567-1b13e24ebcb6
+      id: 6db916e8-1e2e-4498-8e4f-dd5054ef7379
       version: -1
       name: VerifyContext
       description: |-
@@ -983,10 +982,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 3061de3b-e38a-49d4-8e5e-b94220d9bc74
+    taskid: 2200e67e-b7c9-466f-8bc9-b99379dcc689
     type: regular
     task:
-      id: 3061de3b-e38a-49d4-8e5e-b94220d9bc74
+      id: 2200e67e-b7c9-466f-8bc9-b99379dcc689
       version: -1
       name: VerifyContext
       description: |-
@@ -1023,10 +1022,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 4f479591-c711-497b-81c7-443fea7b45c1
+    taskid: c359c654-4c90-496d-86f7-7c75d3e3f68a
     type: regular
     task:
-      id: 4f479591-c711-497b-81c7-443fea7b45c1
+      id: c359c654-4c90-496d-86f7-7c75d3e3f68a
       version: -1
       name: VerifyContext
       description: |-
@@ -1063,10 +1062,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 25522135-f079-447b-876d-5e6f8802377c
+    taskid: dec410c8-1338-4c26-8b28-b8ea4a2e1df3
     type: regular
     task:
-      id: 25522135-f079-447b-876d-5e6f8802377c
+      id: dec410c8-1338-4c26-8b28-b8ea4a2e1df3
       version: -1
       name: VerifyContext
       description: |-
@@ -1103,10 +1102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 2d989b2c-463e-4427-8158-e7cef9ed5777
+    taskid: 5e86ffb0-6e85-4745-8841-a5c348928ab9
     type: regular
     task:
-      id: 2d989b2c-463e-4427-8158-e7cef9ed5777
+      id: 5e86ffb0-6e85-4745-8841-a5c348928ab9
       version: -1
       name: VerifyContext
       description: |-
@@ -1143,10 +1142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 457487c5-4238-4fb3-830a-428430f6dfe9
+    taskid: 3f5d65aa-6b36-4c50-81c4-bfdd16414473
     type: regular
     task:
-      id: 457487c5-4238-4fb3-830a-428430f6dfe9
+      id: 3f5d65aa-6b36-4c50-81c4-bfdd16414473
       version: -1
       name: VerifyContext
       description: |-
@@ -1183,10 +1182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 0228311e-f4c4-4150-8a9d-12b273fd3ef6
+    taskid: 0e774844-43c2-4ed4-89d8-7e17c9d1f8a8
     type: regular
     task:
-      id: 0228311e-f4c4-4150-8a9d-12b273fd3ef6
+      id: 0e774844-43c2-4ed4-89d8-7e17c9d1f8a8
       version: -1
       name: VerifyContext
       description: |-
@@ -1221,92 +1220,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
-    taskid: 72617b67-a5ff-4d9f-8cb4-8b41c4dd7af9
-    type: regular
-    task:
-      id: 72617b67-a5ff-4d9f-8cb4-8b41c4dd7af9
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      path:
-        simple: AWS.IAM.Roles.Arn
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: d873ee64-584a-4b1c-82fd-78ae0f5bd93c
-    type: regular
-    task:
-      id: d873ee64-584a-4b1c-82fd-78ae0f5bd93c
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      path:
-        simple: AWS.IAM.Roles.RoleName
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 3fb84176-618c-4e8f-8ede-73cf79bb35b7
+    taskid: 91eecdbf-77d7-4982-8286-8ba6c5e82715
     type: regular
     task:
-      id: 3fb84176-618c-4e8f-8ede-73cf79bb35b7
+      id: 91eecdbf-77d7-4982-8286-8ba6c5e82715
       version: -1
       name: VerifyContext
       description: |-
@@ -1331,7 +1250,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4220
+          "y": 4910
         }
       }
     note: false
@@ -1343,10 +1262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: bae746db-f568-48d1-8f47-a251f1e0d735
+    taskid: 838fa690-23e7-432a-80e7-7df0354aa273
     type: regular
     task:
-      id: bae746db-f568-48d1-8f47-a251f1e0d735
+      id: 838fa690-23e7-432a-80e7-7df0354aa273
       version: -1
       name: VerifyContext
       description: |-
@@ -1371,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4220
+          "y": 4910
         }
       }
     note: false
@@ -1383,10 +1302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 409926d9-6079-426e-84f9-0f2b93ca2d97
+    taskid: 5bca68e2-1aeb-4eac-8512-5b5a1ccd0abf
     type: regular
     task:
-      id: 409926d9-6079-426e-84f9-0f2b93ca2d97
+      id: 5bca68e2-1aeb-4eac-8512-5b5a1ccd0abf
       version: -1
       name: VerifyContext
       description: |-
@@ -1411,7 +1330,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 5960
         }
       }
     note: false
@@ -1423,10 +1342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: b8730f62-2b83-4785-8eff-717028cd8f3e
+    taskid: d175164e-e78a-4331-85de-b9ddd216c038
     type: regular
     task:
-      id: b8730f62-2b83-4785-8eff-717028cd8f3e
+      id: d175164e-e78a-4331-85de-b9ddd216c038
       version: -1
       name: VerifyContext
       description: |-
@@ -1451,7 +1370,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5270
+          "y": 5960
         }
       }
     note: false
@@ -1463,10 +1382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 1daff141-95b3-4368-8918-236345373c14
+    taskid: fd12fff1-a987-40bc-8b46-8bdeede1c2d4
     type: regular
     task:
-      id: 1daff141-95b3-4368-8918-236345373c14
+      id: fd12fff1-a987-40bc-8b46-8bdeede1c2d4
       version: -1
       name: VerifyContext
       description: |-
@@ -1491,7 +1410,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5620
+          "y": 6310
         }
       }
     note: false
@@ -1503,10 +1422,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: a15862cb-edd4-48aa-8bc7-d3f120201f7b
+    taskid: 7ba8f47d-87fd-46ce-83f8-2dd939214c18
     type: regular
     task:
-      id: a15862cb-edd4-48aa-8bc7-d3f120201f7b
+      id: 7ba8f47d-87fd-46ce-83f8-2dd939214c18
       version: -1
       name: VerifyContext
       description: |-
@@ -1531,7 +1450,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5620
+          "y": 6310
         }
       }
     note: false
@@ -1543,10 +1462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: fb160028-28b1-4a7e-83ff-70fdbbbf63e5
+    taskid: b4dbb274-676a-4f32-8983-73f6792968da
     type: regular
     task:
-      id: fb160028-28b1-4a7e-83ff-70fdbbbf63e5
+      id: b4dbb274-676a-4f32-8983-73f6792968da
       version: -1
       name: VerifyContext
       description: |-
@@ -1571,7 +1490,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5970
+          "y": 6660
         }
       }
     note: false
@@ -1583,10 +1502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 6b5e59e4-549e-4257-8086-e15160ee3c0e
+    taskid: ed26cae4-e0ec-4dc1-897e-28bb29810aca
     type: regular
     task:
-      id: 6b5e59e4-549e-4257-8086-e15160ee3c0e
+      id: ed26cae4-e0ec-4dc1-897e-28bb29810aca
       version: -1
       name: VerifyContext
       description: |-
@@ -1611,7 +1530,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5970
+          "y": 6660
         }
       }
     note: false
@@ -1623,10 +1542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: abcef7dd-da56-4e52-86fb-8d74e45edb23
+    taskid: ebfba128-e58b-49df-8d7e-44c0bb1fa3a1
     type: regular
     task:
-      id: abcef7dd-da56-4e52-86fb-8d74e45edb23
+      id: ebfba128-e58b-49df-8d7e-44c0bb1fa3a1
       version: -1
       name: Generate TestPlaybook Profile Name
       description: Set a value in context under the key you entered.
@@ -1660,10 +1579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 79719949-aec9-4b19-8153-ab56df158efe
+    taskid: c2e8b5eb-91c7-4529-88f5-be0e4e5db4fe
     type: regular
     task:
-      id: 79719949-aec9-4b19-8153-ab56df158efe
+      id: c2e8b5eb-91c7-4529-88f5-be0e4e5db4fe
       version: -1
       name: Generate TestPlaybook Role Name
       description: Set a value in context under the key you entered.
@@ -1697,10 +1616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 1034098a-c9fa-46c8-8bc3-ec1f062a66ca
+    taskid: 8542053e-b430-461f-81ba-3186a949a6db
     type: regular
     task:
-      id: 1034098a-c9fa-46c8-8bc3-ec1f062a66ca
+      id: 8542053e-b430-461f-81ba-3186a949a6db
       version: -1
       name: List Role Policies
       description: Lists the names of the inline policies that are embedded in the
@@ -1721,7 +1640,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4395
+          "y": 5085
         }
       }
     note: false
@@ -1733,10 +1652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 671b836d-9057-40d5-812d-ceca27d3c10c
+    taskid: 4c56b778-c7a3-4ada-8982-659da896d0a4
     type: regular
     task:
-      id: 671b836d-9057-40d5-812d-ceca27d3c10c
+      id: 4c56b778-c7a3-4ada-8982-659da896d0a4
       version: -1
       name: GetTime
       description: |
@@ -1766,10 +1685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: ac8832e8-fcfb-46f3-8e30-f01d5e47a27e
+    taskid: fc80cbf0-677f-44e3-81fd-089f10b052b8
     type: regular
     task:
-      id: ac8832e8-fcfb-46f3-8e30-f01d5e47a27e
+      id: fc80cbf0-677f-44e3-81fd-089f10b052b8
       version: -1
       name: Generate TestPlaybook Profile Name
       description: Set a value in context under the key you entered.
@@ -1803,10 +1722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 33792ff8-a68d-47e2-8bb6-0e6ed0f27eeb
+    taskid: 16eead7c-4cba-4e5a-8e53-05288e5537b0
     type: regular
     task:
-      id: 33792ff8-a68d-47e2-8bb6-0e6ed0f27eeb
+      id: 16eead7c-4cba-4e5a-8e53-05288e5537b0
       version: -1
       name: aws-iam-get-role-policy
       description: Retrieves the specified inline policy document that is embedded
@@ -1829,7 +1748,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4745
+          "y": 5435
         }
       }
     note: false
@@ -1841,10 +1760,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 0329ca35-355c-430a-8540-b256fc2436f7
+    taskid: e3f214a1-45f4-41a0-8fe3-51399b93bb96
     type: regular
     task:
-      id: 0329ca35-355c-430a-8540-b256fc2436f7
+      id: e3f214a1-45f4-41a0-8fe3-51399b93bb96
       version: -1
       name: aws-iam-list-role-policies
       description: Lists the names of the inline policies that are embedded in the
@@ -1865,7 +1784,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4920
+          "y": 5610
         }
       }
     note: false
@@ -1877,10 +1796,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 1c64d7d3-456a-4586-88d1-f99ba20bb5da
+    taskid: e403d29d-21a8-49db-81f1-68e7e3427521
     type: title
     task:
-      id: 1c64d7d3-456a-4586-88d1-f99ba20bb5da
+      id: e403d29d-21a8-49db-81f1-68e7e3427521
       version: -1
       name: Test Done
       type: title
@@ -1892,7 +1811,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7220
+          "y": 7610
         }
       }
     note: false
@@ -1904,10 +1823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: f80c918e-834b-458c-8f34-262b4ba2488a
+    taskid: d63e2884-d306-46ef-810d-89b03dc51637
     type: regular
     task:
-      id: f80c918e-834b-458c-8f34-262b4ba2488a
+      id: d63e2884-d306-46ef-810d-89b03dc51637
       version: -1
       name: aws-iam-list-user-policies
       script: AWS - IAM|||aws-iam-list-user-policies
@@ -1930,7 +1849,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6550
+          "y": 7220
         }
       }
     note: false
@@ -1942,10 +1861,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 34ae4a19-ba11-4668-838f-c59f7e8080b4
+    taskid: 51539536-d4a0-4c8b-8fb2-93a4eaa46525
     type: regular
     task:
-      id: 34ae4a19-ba11-4668-838f-c59f7e8080b4
+      id: 51539536-d4a0-4c8b-8fb2-93a4eaa46525
       version: -1
       name: aws-iam-list-attached-user-policies
       script: AWS - IAM|||aws-iam-list-attached-user-policies
@@ -1968,7 +1887,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6790
+          "y": 7410
         }
       }
     note: false
@@ -1980,10 +1899,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: a82aedb1-60b2-4931-8862-704f69892e1a
+    taskid: 3b623dcf-ccba-4c65-80d8-47b2e420fc02
     type: regular
     task:
-      id: a82aedb1-60b2-4931-8862-704f69892e1a
+      id: 3b623dcf-ccba-4c65-80d8-47b2e420fc02
       version: -1
       name: aws-iam-list-attached-group-policies
       script: AWS - IAM|||aws-iam-list-attached-group-policies
@@ -2006,7 +1925,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6170
+          "y": 6860
         }
       }
     note: false
@@ -2018,10 +1937,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: 7ad8ffe0-eb76-4da5-8846-99d397660d1d
+    taskid: 58382405-0de4-406b-880b-0eeb27f927fc
     type: regular
     task:
-      id: 7ad8ffe0-eb76-4da5-8846-99d397660d1d
+      id: 58382405-0de4-406b-880b-0eeb27f927fc
       version: -1
       name: DeleteContext
       description: |-
@@ -2056,12 +1975,214 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 3dabfd18-853d-4cfe-8541-47659694649f
+    type: regular
+    task:
+      id: 3dabfd18-853d-4cfe-8541-47659694649f
+      version: -1
+      name: aws-iam-tag-role
+      description: Adds one or more tags to an IAM role. The role can be a regular
+        role or a service-linked role. If a tag with the same key name already exists,
+        then that tag is overwritten with the new value.
+      script: '|||aws-iam-tag-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+      tags:
+        simple: Key1:Value1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 3f414816-06df-4915-825f-cd30af29ff09
+    type: condition
+    task:
+      id: 3f414816-06df-4915-825f-cd30af29ff09
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "98"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.IAM.Roles.RoleName
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: AWS.IAM.Roles.Arn
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.IAM.Roles.Tags.Key
+            iscontext: true
+          right:
+            value:
+              simple: Key1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 897e9aa4-d10a-4de2-8cc4-158f3ad4e566
+    type: regular
+    task:
+      id: 897e9aa4-d10a-4de2-8cc4-158f3ad4e566
+      version: -1
+      name: aws-iam-untag-role
+      description: Removes the specified tags from the role.
+      script: '|||aws-iam-untag-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+      tagKeys:
+        simple: Key1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 65f5cbc9-b75a-4211-8af1-984603e8f68e
+    type: regular
+    task:
+      id: 65f5cbc9-b75a-4211-8af1-984603e8f68e
+      version: -1
+      name: aws-iam-get-role
+      description: Retrieves information about the specified role.
+      script: AWS - IAM|||aws-iam-get-role
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: c3acdebb-aa14-44fc-8b4c-a070116435eb
+    type: condition
+    task:
+      id: c3acdebb-aa14-44fc-8b4c-a070116435eb
+      version: -1
+      name: Verify untag role
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: AWS.IAM.Roles.Tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7375,
+        "height": 7765,
         "width": 1240,
         "x": 50,
         "y": -90

@@ -51,7 +51,9 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.deviceid}
+    complex:
+      root: incident
+      accessor: deviceid
 - description: Enter the File paths you would like to delete.
   key: FilePaths
   playbookInputQuery:
@@ -117,6 +119,7 @@ inputs:
           item:
             value:
               simple: URL
+            iscontext: true
       - operator: uniq
   required: false
   description: URL or domain to hunt for.
@@ -993,54 +996,6 @@ tasks:
         }
       }
     continueonerrortype: ""
-  '71':
-    id: '71'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    loop:
-      exitCondition: ''
-      iscommand: false
-      max: 0
-      wait: 1
-    nexttasks:
-      '#none#':
-      - '64'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      endpoint_id:
-        simple: ${inputs.HostID}
-      file_path:
-        complex:
-          root: Confirm which File Path will be deleted.Answers
-          accessor: "0"
-          transformers:
-          - operator: uniq
-      polling_timeout:
-        simple: '10'
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Initiates a new endpoint script execution to delete the specified file and retrieve the results.
-      id: 480bc329-81ff-4f7e-8f55-977b58dda775
-      iscommand: false
-      name: Cortex XDR - delete file
-      type: playbook
-      version: -1
-      playbookName: Cortex XDR - delete file
-    taskid: 480bc329-81ff-4f7e-8f55-977b58dda775
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": -2030,
-          "y": 580
-        }
-      }
-    continueonerrortype: ""
   '72':
     id: '72'
     ignoreworker: false
@@ -1206,7 +1161,7 @@ tasks:
       '#default#':
       - '64'
       yes:
-      - '71'
+      - '91'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1622,7 +1577,8 @@ tasks:
       - "88"
     scriptarguments:
       entryIDs:
-        simple: ${lastCompletedTaskEntries}
+        complex:
+          root: lastCompletedTaskEntries
       tags:
         simple: Found additional assets
     separatecontext: false
@@ -1758,15 +1714,21 @@ tasks:
       QRadarTimeFrame:
         simple: LAST 7 DAYS
       SHA1:
-        simple: ${Specify IOCs to hunt upon.Answers.2}
+        complex:
+          root: Specify IOCs to hunt upon.Answers
+          accessor: "2"
       SHA256:
-        simple: ${Specify IOCs to hunt upon.Answers.1}
+        complex:
+          root: Specify IOCs to hunt upon.Answers
+          accessor: "1"
       SplunkEarliestTime:
         simple: -7d@d
       SplunkLatestTime:
         simple: now
       URLDomain:
-        simple: ${Specify IOCs to hunt upon.Answers.4}
+        complex:
+          root: Specify IOCs to hunt upon.Answers
+          accessor: "4"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1788,7 +1750,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-version: -1
+  "91":
+    id: "91"
+    taskid: c79fa8ce-3da8-424b-865d-e1994c3ea043
+    type: regular
+    task:
+      id: c79fa8ce-3da8-424b-865d-e1994c3ea043
+      version: -1
+      name: xdr-file-delete-script-execute
+      description: Initiates a new endpoint script execution to delete the specified
+        file.
+      script: Cortex XDR - IR|||xdr-file-delete-script-execute
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.HostID
+      file_path:
+        complex:
+          root: Confirm which File Path will be deleted.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+      timeout_in_seconds:
+        simple: "600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2030,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1801,6 +1807,7 @@ view: |-
       }
     }
   }
+version: -1
 tests:
 - Test XDR Playbook
 fromversion: 6.5.0
@@ -1809,4 +1816,3 @@ description: |-
   This playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.
 contentitemexportablefields:
   contentitemfields: {}
-system: true

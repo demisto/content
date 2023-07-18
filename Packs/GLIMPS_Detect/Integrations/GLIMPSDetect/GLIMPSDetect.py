@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # Imports
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 from gdetect.api import status_msg, Client as gClient, logger as gLogger
 from gdetect.exceptions import GDetectError, NoAuthenticateToken, NoURL, BadAuthenticationToken, BadUUID, UnauthorizedAccess

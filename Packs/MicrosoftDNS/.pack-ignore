@@ -1,0 +1,6 @@
+[file:MicrosoftDNS.yml]
+ignore=MR108,PR101
+
+[file:MicrosoftDNS_1_3.yml]
+ignore=MR108
+

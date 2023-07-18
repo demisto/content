@@ -16,7 +16,13 @@ configuration:
   name: apiKey
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- name: apikey_creds
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -24,6 +30,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+
   required: false
 script:
   script: ''
@@ -32,14 +39,11 @@ script:
   - name: cisco-spark-list-people
     arguments:
     - name: email
-      description: List people with this email address. For non-admin requests, either
-        this or displayName are required.
+      description: List people with this email address. For non-admin requests, either this or displayName are required.
     - name: displayName
-      description: List people whose name starts with this string. For non-admin requests,
-        either this or email are required.
+      description: List people whose name starts with this string. For non-admin requests, either this or email are required.
     - name: orgId
-      description: List people in this organization. Only admin users of another organization
-        (such as partners) may use this parameter.
+      description: List people in this organization. Only admin users of another organization (such as partners) may use this parameter.
     - name: max
       description: Limit the maximum number of people in the response.
     outputs:
@@ -67,8 +71,7 @@ script:
     - name: licenses
       description: Licenses allocated to the person
       isArray: true
-    description: Create a new user account for a given organization. Only an admin
-      can create a new user account.
+    description: Create a new user account for a given organization. Only an admin can create a new user account.
   - name: cisco-spark-get-person-details
     arguments:
     - name: personId
@@ -99,8 +102,7 @@ script:
     - name: personId
       required: true
       description: The person ID
-    description: Update details for a person, by ID. Only an admin can update a person
-      details.
+    description: Update details for a person, by ID. Only an admin can update a person details.
   - name: cisco-spark-delete-person
     arguments:
     - name: personId
@@ -121,9 +123,7 @@ script:
       predefined:
       - direct
       - group
-      description: 'Available values: direct and group. direct returns all 1-to-1
-        rooms. group returns all group rooms. If not specified or values not matched,
-        will return all room types.'
+      description: 'Available values: direct and group. direct returns all 1-to-1 rooms. group returns all group rooms. If not specified or values not matched, will return all room types.'
     outputs:
     - contextPath: CiscoSpark.Rooms
       description: The list of rooms.
@@ -170,8 +170,7 @@ script:
     outputs:
     - contextPath: CiscoSpark.Memberships
       description: List of memberships.
-    description: Lists all room memberships. Use either personId or personEmail to
-      filter the results.
+    description: Lists all room memberships. Use either personId or personEmail to filter the results.
   - name: cisco-spark-create-membership
     arguments:
     - name: roomId
@@ -187,8 +186,7 @@ script:
       - "true"
       - "false"
       description: Set to true to make the person a room moderator.
-    description: Add someone to a room by Person ID or email address; optionally making
-      them a moderator.
+    description: Add someone to a room by Person ID or email address; optionally making them a moderator.
   - name: cisco-spark-get-membership-details
     arguments:
     - name: membershipId
@@ -220,8 +218,7 @@ script:
       required: true
       description: List messages for a room, by ID.
     - name: mentionedPeople
-      description: List messages where the caller is mentioned by specifying "me"
-        or the caller personId.
+      description: List messages where the caller is mentioned by specifying "me" or the caller personId.
     - name: before
       description: List messages sent before a date and time, in ISO8601 format.
     - name: beforeMessage
@@ -241,18 +238,12 @@ script:
     - name: toPersonEmail
       description: The email address of the recipient when sending a private 1:1 message.
     - name: text
-      description: The message, in plain text. If markdown is specified this parameter
-        may be optionally used to provide alternate text forUI clients that do not
-        support rich text.
+      description: The message, in plain text. If markdown is specified this parameter may be optionally used to provide alternate text forUI clients that do not support rich text.
     - name: markdown
       description: The message, in markdown format.
     - name: files
-      description: The public URL to a binary file to be posted into the room. Only
-        one file is allowed per message. Uploaded files are automatically converted
-        into a format that all Spark clients can render. For the supported media types
-        and the behavior of uploads, see the Message AttachmentsGuide.
-    description: Posts a plain text message, and optionally, a media content attachment,
-      to a room.
+      description: The public URL to a binary file to be posted into the room. Only one file is allowed per message. Uploaded files are automatically converted into a format that all Spark clients can render. For the supported media types and the behavior of uploads, see the Message AttachmentsGuide.
+    description: Posts a plain text message, and optionally, a media content attachment, to a room.
   - name: cisco-spark-get-message-details
     arguments:
     - name: messageId
@@ -278,8 +269,7 @@ script:
     - name: name
       required: true
       description: A user-friendly name for the team.
-    description: Creates a team. The authenticated user is automatically added as
-      a member of the team.
+    description: Creates a team. The authenticated user is automatically added as a member of the team.
   - name: cisco-spark-get-team-details
     arguments:
     - name: teamId
@@ -311,8 +301,7 @@ script:
     outputs:
     - contextPath: CiscoSpark.TeamMemberships
       description: List of team memberships.
-    description: Lists all team memberships for a given team, specified by the teamId
-      query parameter.
+    description: Lists all team memberships for a given team, specified by the teamId query parameter.
   - name: cisco-spark-create-team-membership
     arguments:
     - name: teamId
@@ -328,8 +317,7 @@ script:
       - "true"
       - "false"
       description: Set to true to make the person a team moderator
-    description: Add someone to a team by Person ID or email address; optionally making
-      them a moderator.
+    description: Add someone to a team by Person ID or email address; optionally making them a moderator.
   - name: cisco-spark-get-team-membership-details
     arguments:
     - name: membershipId
@@ -358,8 +346,7 @@ script:
   - name: cisco-spark-list-webhooks
     arguments:
     - name: max
-      description: Limit the maximum number of webhooks in the response. Setting this
-        to greater than 100 will return an error.
+      description: Limit the maximum number of webhooks in the response. Setting this to greater than 100 will return an error.
     outputs:
     - contextPath: CiscoSpark.Webhooks
       description: List of webhooks.
@@ -374,8 +361,7 @@ script:
       description: The URL that receives POST requests for each event.
     - name: resource
       required: true
-      description: The resource type for the webhook. Creating a webhook requires
-        'read' scope on the resource the webhook is for.
+      description: The resource type for the webhook. Creating a webhook requires 'read' scope on the resource the webhook is for.
     - name: event
       required: true
       description: The event type for the webhook.
@@ -431,8 +417,7 @@ script:
     outputs:
     - contextPath: CiscoSpark.Licenses
       description: List of licenses.
-    description: List all licenses for a given organization. If no orgId is specified,
-      the default is the organization of the authenticated user.
+    description: List all licenses for a given organization. If no orgId is specified, the default is the organization of the authenticated user.
   - name: cisco-spark-get-license-details
     arguments:
     - name: licenseId
@@ -460,16 +445,11 @@ script:
     - name: toPersonId
       description: The personId of the recipient.
     - name: text
-      description: The message, in plain text. If markdown is specified this parameter
-        may be optionally used to provide alternate text forUI clients that do not
-        support rich text.
+      description: The message, in plain text. If markdown is specified this parameter may be optionally used to provide alternate text forUI clients that do not support rich text.
     - name: markdown
       description: The message, in markdown format.
     - name: files
-      description: The public URL to a binary file to be posted into the room. Only
-        one file is allowed per message. Uploaded files are automatically converted
-        into a format that all Spark clients can render. For the supported media types
-        and the behavior of uploads, see the Message AttachmentsGuide.
+      description: The public URL to a binary file to be posted into the room. Only one file is allowed per message. Uploaded files are automatically converted into a format that all Spark clients can render. For the supported media types and the behavior of uploads, see the Message AttachmentsGuide.
     description: Sends a message to a person, by email or person ID.
   - name: cisco-spark-send-message-to-room
     arguments:
@@ -478,16 +458,12 @@ script:
     - name: roomId
       description: The room ID.
     - name: text
-      description: The message, in plain text. If markdown is specified this parameter
-        may be optionally used to provide alternate text forUI clients that do not
-        support rich text.
+      description: The message, in plain text. If markdown is specified this parameter may be optionally used to provide alternate text forUI clients that do not support rich text.
     - name: markdown
       description: The message, in markdown format.
     - name: files
-      description: The public URL to a binary file to be posted into the room. Only
-        one file is allowed per message. Uploaded files are automatically converted
-        into a format that all Spark clients can render. For the supported media types
-        and the behavior of uploads, see the Message AttachmentsGuide.
+      description: The public URL to a binary file to be posted into the room. Only one file is allowed per message. Uploaded files are automatically converted into a format that all Spark clients can render. For the supported media types and the behavior of uploads, see the Message AttachmentsGuide.
     description: Sends a message to a room, by name or room ID.
-hidden: false
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

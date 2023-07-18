@@ -1,32 +1,36 @@
 {
-  "microsoft_windows_raw": {
-    "event_data": {
-        "type": "string",
-        "is_array": false
-    },
-    "event_id": {
-        "type": "int",
-        "is_array": false
-    },
-    "record_id": {
-        "type": "int",
-        "is_array": false
-    },
-    "host_name": {
-        "type": "string",
-        "is_array": false
-    },
-    "opcode": {
-        "type": "string",
-        "is_array": false
-    },
-    "event_result": {
-        "type": "string",
-        "is_array": false
-    },
-    "user": {
-        "type": "string",
-        "is_array": false
+    "microsoft_adfs_raw": {
+      "event_data": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_id": {
+          "type": "string",
+          "is_array": false
+      },
+      "record_id": {
+          "type": "int",
+          "is_array": false
+      },
+      "host_name": {
+          "type": "string",
+          "is_array": false
+      },
+      "opcode": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_result": {
+          "type": "string",
+          "is_array": false
+      },
+      "user": {
+          "type": "string",
+          "is_array": false
+      },
+      "provider_name": {
+          "type": "string",
+          "is_array": false
+      }
     }
   }
-}

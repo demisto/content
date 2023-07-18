@@ -7,20 +7,17 @@ commonfields:
 configuration:
 - defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
   display: App ID
-  hidden: false
   name: app_id
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Default Subscription ID
-  hidden: false
   name: subscription_id
   required: true
   type: 0
   additionalinfo: Default subscription ID value can be overridden using subscription_id argument to commands.
   section: Connect
 - display: Default Resource Group Name
-  hidden: false
   name: resource_group_name
   required: true
   type: 0
@@ -39,63 +36,61 @@ configuration:
   section: Connect
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Client Secret (for authorization code mode)
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
   name: credentials
-  required: false
   type: 9
   section: Connect
+  required: false
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Authorization code
   displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
-    Instructions (?) section
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
   hiddenusername: true
   name: auth_code
-  required: false
   type: 9
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   options:
   - https://login.microsoftonline.com
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
-  required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: |-
   The Azure WAF (Web Application Firewall) integration provides centralized protection of your web applications from common exploits and vulnerabilities.
   It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies,
@@ -105,45 +100,24 @@ name: AzureWAF
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
-      isArray: false
+    - description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
       name: policy_name
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+    - description: Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
       isArray: true
       name: resource_group_name
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID. If not provided, the integration default subscription ID will be used.
-      isArray: false
+    - description: The subscription ID. If not provided, the integration default subscription ID will be used.
       name: subscription_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Maximum number of policies to fetch. Default is "10".
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves protection policies within a resource group.
-    execution: false
     name: azure-waf-policies-get
     outputs:
     - contextPath: AzureWAF.Policy.name
@@ -189,8 +163,7 @@ script:
       description: The name of the resource that is unique within a policy. This name can be used to access the resource.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.priority
-      description: Priority of the rule. Rules with a lower value will be evaluated
-        before rules with a higher value.
+      description: Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.
       type: Number
     - contextPath: AzureWAF.Policy.properties.customRules.ruleType
       description: The rule type.
@@ -232,41 +205,26 @@ script:
       description: The variable to be excluded.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selectorMatchOperator
-      description: When matchVariable is a collection, operate on the selector to
-        specify which elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selector
       description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false".
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: Maximum number of policies to be shown. (This will only affect visualized
-        data, not context.)
-      isArray: false
+    - defaultValue: '10'
+      description: Maximum number of policies to be shown. (This will only affect visualized data, not context.)
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of subscription IDs. Will override the default subscription ID.
+    - description: Comma-separated list of subscription IDs. Will override the default subscription ID.
       isArray: true
       name: subscription_id
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves all the WAF policies in a subscription.
-    execution: false
     name: azure-waf-policies-list-all-in-subscription
     outputs:
     - contextPath: AzureWAF.Policy.name
@@ -279,8 +237,7 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureWAF.Policy.etag
-      description: A unique read-only string that changes whenever the resource is
-        updated.
+      description: A unique read-only string that changes whenever the resource is updated.
       type: String
     - contextPath: AzureWAF.Policy.tags
       description: Resource tags.
@@ -313,8 +270,7 @@ script:
       description: The name of the resource that is unique within a policy. This name can be used to access the resource.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.priority
-      description: Priority of the rule. Rules with a lower value will be evaluated
-        before rules with a higher value.
+      description: Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.
       type: Number
     - contextPath: AzureWAF.Policy.properties.customRules.ruleType
       description: The rule type.
@@ -356,75 +312,39 @@ script:
       description: The variable to be excluded.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selectorMatchOperator
-      description: When matchVariable is a collection, operate on the selector to
-        specify which elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selector
       description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
       type: String
   - arguments:
-    - default: false
-      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
-      isArray: false
+    - description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
       name: policy_name
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+    - description: Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
       isArray: true
       name: resource_group_name
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID. If not provided, the integration default subscription ID will be used.
-      isArray: false
+    - description: The subscription ID. If not provided, the integration default subscription ID will be used.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: Describes the managedRules structure.
-      isArray: false
+    - description: Describes the managedRules structure.
       name: managed_rules
       required: true
-      secret: false
-    - default: false
-      description: Resource ID.
-      isArray: false
+    - description: Resource ID.
       name: resource_id
-      required: false
-      secret: false
-    - default: false
-      description: Describes the resource location.
-      isArray: false
+    - description: Describes the resource location.
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: The custom rules inside the policy.
-      isArray: false
+    - description: The custom rules inside the policy.
       name: custom_rules
-      required: false
-      secret: false
-    - default: false
-      description: The policy setting for the policy.
-      isArray: false
+    - description: The policy setting for the policy.
       name: policy_settings
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: 'Whether to retrieve the full details of the policy. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Creates or updates a policy with a specified rule set name within a resource group.
-    execution: false
     name: azure-waf-policy-update-or-create
     outputs:
     - contextPath: AzureWAF.Policy.name
@@ -518,54 +438,31 @@ script:
       description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
       type: String
   - arguments:
-    - default: false
-      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
-      isArray: false
+    - description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
       name: policy_name
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID. If not provided, the integration default subscription ID will be used.
-      isArray: false
+    - description: The subscription ID. If not provided, the integration default subscription ID will be used.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
+    - description: Comma-separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
       isArray: true
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes a policy.
-    execution: false
     name: azure-waf-policy-delete
-  - deprecated: false
-    description: |-
+  - description: |-
       Run this command to start the authorization process and follow the instructions in the command results.
-    execution: false
     name: azure-waf-auth-start
-  - deprecated: false
-    description: |-
+  - description: |-
       Run this command to complete the authorization process.
       Should be used after running the azure_waf-auth-start command.
-    execution: false
     name: azure-waf-auth-complete
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-waf-auth-reset
-  - deprecated: false
-    description: Tests connectivity to the Azure Web Application Firewall.
-    execution: false
+  - description: Tests connectivity to the Azure Web Application Firewall.
     name: azure-waf-auth-test
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: azure-waf-generate-login-url
     arguments: []
   - description: Gets all subscriptions for a tenant.
-    deprecated: false
-    execution: false
     name: azure-waf-subscriptions-list
     arguments: []
     outputs:
@@ -588,29 +485,16 @@ script:
       description: The tenatnt ID of the subscription.
       type: String
   - description: Gets all the resource groups for a subscription.
-    deprecated: false
-    execution: false
     name: azure-waf-resource-group-list
     arguments:
-    - default: false
-      description: Comma-separated value list of subscription IDs. If not provided, the integration default subscription ID will be used.
+    - description: Comma-separated value list of subscription IDs. If not provided, the integration default subscription ID will be used.
       isArray: true
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The tag name and value by which to filter the results. For example, tagName=tagValue.
-      isArray: false
+    - description: The tag name and value by which to filter the results. For example, tagName=tagValue.
       name: tag
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of resource groups to fetch.
+    - description: Maximum number of resource groups to fetch.
       defaultValue: 50
-      isArray: false
       name: limit
-      required: false
-      secret: false
     outputs:
     - contextPath: AzureWAF.ResourceGroup.id
       description: Resource group ID.
@@ -632,10 +516,6 @@ script:
       type: String
 
   dockerimage: demisto/crypto:1.0.0.52480
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

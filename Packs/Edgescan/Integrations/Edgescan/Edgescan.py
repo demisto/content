@@ -1,9 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import time
 from typing import Tuple, cast
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from dateutil import parser
+import urllib3
 
 MAX_INCIDENTS_TO_FETCH = 250
 
@@ -728,7 +729,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {

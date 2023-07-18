@@ -1,4 +1,6 @@
 from DBotPredictURLPhishing import *
+import pytest
+import DBotPredictURLPhishing
 
 CORRECT_DOMAINS = ['google.com']
 NEW_DOMAINS = ['psg.fr']
@@ -55,8 +57,7 @@ def test_regular_malicious_new_domain(mocker):
                         MODEL_KEY_LOGO_FOUND: True,
                         MODEL_KEY_SEO: True,
                         MODEL_KEY_LOGO_IMAGE_BYTES: "",
-                        MODEL_KEY_LOGIN_FORM: True
-                        }
+                        MODEL_KEY_LOGIN_FORM: True}
     model_mock = PhishingURLModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1'})
@@ -66,6 +67,7 @@ def test_regular_malicious_new_domain(mocker):
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
+    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
     general_summary, detailed_summary, msg_list = main()
     assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_MALICIOUS_COLOR % MALICIOUS_VERDICT
     assert detailed_summary[0][KEY_CONTENT_DOMAIN] == 'psg.fr'
@@ -76,6 +78,65 @@ def test_regular_malicious_new_domain(mocker):
     assert detailed_summary[0][KEY_CONTENT_AGE] == 'True'
     assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == model_prediction[MODEL_KEY_URL_SCORE]
     assert MSG_NO_ACTION_ON_MODEL in msg_list
+
+    # assert default reliability
+    entry_context = return_results_mock.mock_calls[1].args[0]['EntryContext']
+    assert entry_context[KEY_CONTENT_DBOT_SCORE]['Reliability'] == "A+ - 3rd party enrichment"
+
+
+@pytest.mark.parametrize('provided_reliability', ['A+ - 3rd party enrichment', 'A - Completely reliable',
+                                                  'B - Usually reliable', 'D - Not usually reliable'])
+def test_regular_malicious_reliability_change(mocker, provided_reliability):
+    """
+    Given:
+        - url
+        - provided source reliability
+    When:
+        - running DBotPredictUrlPhishing on a non-benign verdict.
+    Then:
+        - Assert the outcome reliability is the provided one.
+    """
+    model_prediction = {MODEL_KEY_URL_SCORE: 0.9,
+                        MODEL_KEY_LOGO_FOUND: True,
+                        MODEL_KEY_SEO: True,
+                        MODEL_KEY_LOGO_IMAGE_BYTES: "",
+                        MODEL_KEY_LOGIN_FORM: True}
+    model_mock = PhishingURLModelMock()
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1',
+                                                       'reliability': provided_reliability})
+    mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
+    mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
+    mocker.patch.object(model_mock, 'major', return_value=0, create=True)
+    mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
+    mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
+    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
+    main()
+    entry_context = return_results_mock.mock_calls[1].args[0]['EntryContext']
+    assert entry_context[KEY_CONTENT_DBOT_SCORE]['Reliability'] == provided_reliability
+
+
+def test_regular_malicious_reliability_invalid(mocker):
+    """
+    Given:
+        - url
+        - invalid source reliability
+    When:
+        - running DBotPredictUrlPhishing.
+    Then:
+        - Assert Fails and valid reliability is requested.
+    """
+    model_mock = PhishingURLModelMock()
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1',
+                                                       'reliability': 'some_invalid_reliability'})
+    mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
+    return_error_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_error', return_value=None)
+    mocker.patch.object(demisto, 'error', return_value=None)
+
+    main()
+    assert "Please use supported reliability only." in return_error_mock.mock_calls[0].args[0]
 
 
 def test_regular_benign(mocker):
@@ -143,7 +204,7 @@ def test_no_html_data(mocker):
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
     general_summary, _, _ = main()
-    assert MSG_SOMETHING_WRONG_IN_RASTERIZE in general_summary[0]['Final Verdict']
+    assert MSG_MISSING_INFORMATION_RASTERIZE in general_summary[0]['Final Verdict']
 
 
 def test_white_list_not_force(mocker):
@@ -211,7 +272,7 @@ def test_new_major_version(mocker):
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch('DBotPredictURLPhishing.oob_model_exists_and_updated', return_value=(True, 0, 0, 'ModelData'),
                  create=True)
-    mocker.patch('DBotPredictURLPhishing.load_oob', return_value='test'.encode('utf-8'), create=True)
+    mocker.patch('DBotPredictURLPhishing.load_oob', return_value=b'test', create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
@@ -266,3 +327,13 @@ def test_get_score():
         MODEL_KEY_URL_SCORE: 0.6
     }
     assert round(get_score(pred_json_2), 2) == 0.55
+
+
+def test_extract_created_date_with_empty_entry():
+    """
+    Given: entry that does not contain anything
+    When: running extract_created_date function
+    Then: Make sure None is returned
+    """
+    from DBotPredictURLPhishing import extract_created_date
+    assert not extract_created_date(entry_list=[{"EntryContext": None, "Type": 1}])

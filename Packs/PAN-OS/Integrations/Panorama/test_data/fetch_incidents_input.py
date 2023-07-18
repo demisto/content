@@ -103,26 +103,26 @@ test_get_fetch_start_datetime_dict_args = [case_first_fetch,
 # test_parse_incident_entries arguments
 case_no_incidents = ({}, (None, None, {}))
 
-one_incident = [{'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'}]
+one_incident = [{'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00', 'device_name': 'testing_device1'}]
 one_incident_result = (
-    '00000000001', utc_time_twelve,
-    [{'name': '00000000001', 'occurred': utc_time_twelve.isoformat() + 'Z',
-      'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}',
+    {'testing_device1': '00000000001'}, utc_time_twelve,
+    [{'name': 'testing_device1 00000000001', 'occurred': utc_time_twelve.isoformat() + 'Z',
+      'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00", "device_name": "testing_device1"}',
       'type': 'X_log_type'}])
 case_one_incident = (one_incident, one_incident_result)
 
 two_incidents = [
-    {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 11:00:00'},
-    {'seqno': '00000000002', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'}
+    {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 11:00:00', 'device_name': 'testing_device2'},
+    {'seqno': '00000000002', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00', 'device_name': 'testing_device3'}
 ]
 two_incidents_result = (
-    '00000000002',
+    {'testing_device2': '00000000001', 'testing_device3': '00000000002'},
     utc_time_twelve,
-    [{'name': '00000000001', 'occurred': utc_time_eleven.isoformat() + 'Z',
-      'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 11:00:00"}',
+    [{'name': 'testing_device2 00000000001', 'occurred': utc_time_eleven.isoformat() + 'Z',
+      'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 11:00:00", "device_name": "testing_device2"}',
       'type': 'X_log_type'},
-     {'name': '00000000002', 'occurred': utc_time_twelve.isoformat() + 'Z',
-        'rawJSON': '{"seqno": "00000000002", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}',
+     {'name': 'testing_device3 00000000002', 'occurred': utc_time_twelve.isoformat() + 'Z',
+        'rawJSON': '{"seqno": "00000000002", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00", "device_name": "testing_device3"}',
       'type': 'X_log_type'}])
 case_two_incident = (two_incidents, two_incidents_result)
 
@@ -137,8 +137,9 @@ case_valid_input = (
     {},
     {
         'X_log_type':
-        [{'name': '00000000001', 'occurred': '2022-01-01T12:00:00Z',
-          'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}',
+        [{'name': 'testing_device1 00000000001', 'occurred': '2022-01-01T12:00:00Z',
+
+          'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00", "device_name": "testing_device1"}',
           'type': 'X_log_type'}]})
 
 get_parsed_incident_entries_args = [case_no_incidents, case_valid_input]

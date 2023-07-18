@@ -1,0 +1,6 @@
+fromversion: 8.2.0
+id: cisco_nexus_modeling_rule
+name: Cisco Nexus
+rules: ''
+schema: ''
+tags: Cisco Nexus

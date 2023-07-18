@@ -14,6 +14,7 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
+from pathlib import Path
 
 # pylint: disable=no-member
 
@@ -686,54 +687,61 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, is_actually_feed,'
+    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, single_integration, is_actually_feed,'
                              ' is_actually_siem, is_actually_data_source',
                              [
                                  # Check is_feed by Integration
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
-                                  'Integration', ["xsoar"], True, False, False),
+                                  'Integration', ["xsoar"], True, True, False, False),
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
-                                  'Integration', ["xsoar"], False, False, False),
+                                  'Integration', ["xsoar"], True, False, False, False),
                                  # Checks no feed parameter
                                  ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla'}},
-                                  'Integration', ["xsoar"], False, False, False),
+                                  'Integration', ["xsoar"], True, False, False, False),
 
                                  # Check is_feed by playbook
                                  ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
-                                  'Playbook', ["xsoar"], True, False, False),
+                                  'Playbook', ["xsoar"], True, True, False, False),
                                  ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
-                                  'Playbook', ["xsoar"], False, False, False),
+                                  'Playbook', ["xsoar"], True, False, False, False),
 
                                  # Check is_siem for integration
-                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', ["xsoar"], False,
-                                  True, False),
-                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', ["xsoar"], False,
-                                  False, False),
+                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', ["xsoar"], True,
+                                  False, True, False),
+                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', ["xsoar"], True,
+                                  False, False, False),
 
                                  # Check is_siem for rules
-                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', ["xsoar"], False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', ["xsoar"], False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', ["xsoar"], False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', ["xsoar"], True, False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', ["xsoar"], True, False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', ["xsoar"], True, False, True, False),
 
                                  # Check is_data_source for integration
+                                 # case 1: one integration, contains isfetchevents, in marketplacev2 -> data source
                                  ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], False, True, True),
+                                  ['xsoar', 'marketplacev2'], True, False, True, True),
+                                 # case 2: one integration, contains isfetch, not in marketplacev2 -> not data source
                                  ({'id': 'some-id', 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar'], False, False, False),
+                                  ['xsoar'], True, False, False, False),
+                                 # case 3: one integration (deprecated), with is_fetch, in marketplacev2 -> data source
                                  ({'id': 'some-id', 'deprecated': True, 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], False, False, False)
+                                  ['xsoar', 'marketplacev2'], True, False, False, True),
+                                 # case 4: not one integration, with isfetch, in marketplacev2 -> not data source
+                                 ({'id': 'some-id', 'deprecated': False, 'script': {'isfetch': True}}, 'Integration',
+                                  ['xsoar', 'marketplacev2'], False, False, False, False)
                              ])
-    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces,
+    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces, single_integration,
                                 is_actually_feed, is_actually_siem, is_actually_data_source):
         """ Tests is_feed or is_seem is set to True for pack changes for tagging.
         """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
         dummy_pack._marketplaces = marketplaces
+        dummy_pack._single_integration = single_integration
         dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
         assert dummy_pack.is_siem == is_actually_siem
@@ -774,6 +782,46 @@ class TestHelperFunctions:
         res = pack.collect_content_items()
         assert res
         assert len(pack._content_items.get('modelingrule')) == 1
+
+    def test_collect_content_items_with_same_id(self):
+        """
+        Given: pack with IncidentType, Layout with same id
+
+        When: collecting content item to upload.
+
+        Then: collect IncidentType and Layout and the up to date playbook.
+
+        """
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
+        expected_id = 'Phishing'
+
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        layout_containers = pack._content_items['layoutscontainer']
+        assert len(layout_containers) == 1
+        assert layout_containers[0]['id'] == expected_id
+
+        incident_types = pack._content_items['incidenttype']
+        assert len(incident_types) == 1
+        assert incident_types[0]['id'] == expected_id
+
+    def test_collect_content_items_only_relevant_playbook(self):
+        """
+        Given: 3 Playbook from which 2 are deprecated.
+
+        When: collecting content item to upload.
+
+        Then: collect the relevant playbook.
+
+        """
+        expected_description = "Expected description"
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        assert len(pack._content_items.get('playbook')) == 1
+        assert pack._content_items.get('playbook')[0]['description'] == expected_description
 
 
 class TestVersionSorting:
@@ -999,7 +1047,7 @@ class TestChangelogCreation:
         mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
         same_block_versions_dict = {'1.0.2': modified_rn_file, '1.0.3': modified_rn_file}
         assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) == \
-               (same_block_versions_dict, higher_nearest_version)
+            (same_block_versions_dict, higher_nearest_version)
 
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
         """
@@ -1211,6 +1259,26 @@ This is visible
 
         assert not version_changelog
 
+    def test_create_changelog_entry_pack_with_override(self, dummy_pack):
+        """
+            Given:
+                - release notes, display version and build number
+            When:
+                - overriding the packs in bucket so pack is marked as modified
+            Then:
+                - return an empty dict
+        """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False,
+                                                                  is_override=True)
+
+        assert not version_changelog
+
     def test_create_filtered_changelog_entry_modified_unrelated_entities(self, dummy_pack: Pack):
         """
            Given:
@@ -1286,7 +1354,7 @@ This is visible
                                                                   id_set=id_set)
 
         assert version_changelog['releaseNotes'] == \
-               "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
+            "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
 
     def test_create_filtered_changelog_entry_no_related_modifications(self, dummy_pack: Pack):
         """
@@ -1737,7 +1805,7 @@ class TestFilterChangelog:
                 - Ensure the filtered entries resulte is as expected.
         """
         assert dummy_pack.filter_entries_by_display_name(self.RN_ENTRIES_DICTIONARY, id_set) == \
-               expected_result
+            expected_result
 
     @pytest.mark.parametrize('changelog_entry, marketplace, id_set, expected_rn', [
         ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
@@ -3165,7 +3233,7 @@ class TestDetectModified:
         status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
 
         assert dummy_pack._modified_files['Integrations'][0] == \
-               'Packs/TestPack/Integrations/integration/integration.yml'
+            'Packs/TestPack/Integrations/integration/integration.yml'
         assert status is True
 
 
@@ -3334,6 +3402,29 @@ class TestCheckChangesRelevanceForMarketplace:
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
+
+
+class TestVersionsMetadataFile:
+    """ Test class to check that the versions-metadata.json file is in the correct format."""
+
+    class TestVersionsMetadataFile:
+        """ Test class to check that the versions-metadata.json file is in the correct format."""
+
+        def test_version_map(self):
+            version_map_content = GCPConfig.versions_metadata_contents.get('version_map')
+            valid_keys = {'core_packs_file', 'core_packs_file_is_locked', 'file_version', 'marketplaces'}
+            for version, core_packs_info in version_map_content.items():
+                missing_keys = set(valid_keys).difference(core_packs_info.keys()).difference({'marketplaces'})
+                unexpected_keys = set(core_packs_info.keys()).difference(valid_keys)
+                assert not missing_keys, f'The following keys are missing in version {version}: {missing_keys}.'
+                assert not unexpected_keys, f'The following invalid keys were found in version {version}: {unexpected_keys}.'
+                assert 'core_packs_file' in core_packs_info, \
+                    f'Version {version} in version_map does not include the required `core_packs_file` key.'
+                assert core_packs_info.get('core_packs_file') == f'corepacks-{version}.json', \
+                    f'corepacks file name of version {version} should be `corepacks-{version}.json` and not ' \
+                    f'`{core_packs_info.get("core_packs_file")}`.'
+                assert 'core_packs_file_is_locked' in core_packs_info, \
+                    f'Version {version} in version_map does not include the required `core_packs_file_is_locked` key.'
 
 
 @freeze_time("2023-01-01")

@@ -5,6 +5,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Remediation - Azure Storage Misconfiguration
 description: |-
+  Deprecated. Use Prisma Cloud Remediation - Azure Storage Misconfiguration v2 instead.
   This playbook remediates Prisma Cloud Azure Storage alerts.  It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
@@ -573,4 +574,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No Test
+- No Test (deprecated)
+deprecated: true

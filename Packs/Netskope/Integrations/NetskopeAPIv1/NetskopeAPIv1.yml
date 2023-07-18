@@ -3,731 +3,500 @@ commonfields:
   id: NetskopeAPIv1
   version: -1
 configuration:
-  - display: Server URL
-    hidden: false
-    name: url
-    required: true
-    type: 0
-  - displaypassword: API token
-    hidden: false
-    hiddenusername: true
-    name: credentials
-    required: true
-    type: 9
-  - defaultvalue: 50
-    display: Maximum incidents per fetch. Max value is 200.
-    hidden: false
-    name: max_fetch
-    required: true
-    type: 0
-  - defaultvalue: 7 days
-    display: First fetch timestamp (<number> <time unit>, like 12 hours, 7 days)
-    hidden: false
-    name: first_fetch
-    required: false
-    type: 0
-  - display: Alerts Query
-    hidden: false
-    name: alerts_query
-    required: false
-    additionalinfo: Free text query to filter the fetched alerts.
-      For more information, please visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).
-    type: 0
-  - display: Fetch Events
-    additionalinfo: Fetch events as incidents, in addition to the alerts.
-    hidden: false
-    name: fetch_events
-    required: false
-    type: 8
-  - additionalinfo:
-      The event types to fetch as incidents. The API requires specifying
-      the event types.
-    display: Event types to fetch.
-    options:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API token
+  hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 50
+  display: Maximum incidents per fetch. Max value is 200.
+  name: max_fetch
+  required: true
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, like 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  required: false
+- display: Alerts Query
+  name: alerts_query
+  additionalinfo: Free text query to filter the fetched alerts. For more information, please visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).
+  type: 0
+  required: false
+- display: Fetch Events
+  additionalinfo: Fetch events as incidents, in addition to the alerts.
+  name: fetch_events
+  type: 8
+  required: false
+- additionalinfo: The event types to fetch as incidents. The API requires specifying the event types.
+  display: Event types to fetch.
+  options:
+  - page
+  - application
+  - audit
+  - infrastructure
+  - network
+  name: event_types
+  type: 16
+  required: false
+- display: Maximum events as incidents per fetch. Max value is 200.
+  name: max_events_fetch
+  defaultvalue: 50
+  type: 0
+  required: false
+- display: Events Query
+  name: events_query
+  additionalinfo: Free text query to filter the fetched events (if configured). For more information, please visit Netskope documentation (https://docs.netskope.com/en/get-events-data.html).
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Get alerts and events, manage quarantine files as well as URL and hash lists using Netskope API v1.
+display: Netskope (API v1)
+name: NetskopeAPIv1
+script:
+  commands:
+  - arguments:
+    - description: 'Free query to filter the events. For example, "app eq Dropbox". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-events-data.html'
+      name: query
+    - auto: PREDEFINED
+      description: Select events by their type.
+      name: event_type
+      predefined:
       - page
       - application
       - audit
       - infrastructure
       - network
-    hidden: false
-    name: event_types
-    required: false
-    type: 16
-  - display: Maximum events as incidents per fetch. Max value is 200.
-    hidden: false
-    name: max_events_fetch
-    defaultvalue: 50
-    required: false
-    type: 0
-  - display: Events Query
-    hidden: false
-    name: events_query
-    required: false
-    additionalinfo:
-      Free text query to filter the fetched events (if configured).
-      For more information, please visit Netskope documentation (https://docs.netskope.com/en/get-events-data.html).
-    type: 0
-  - display: Incident type
-    name: incidentType
-    required: false
-    type: 13
-  - display: Fetch incidents
-    name: isFetch
-    required: false
-    type: 8
-  - display: Trust any certificate (not secure)
-    hidden: false
-    name: insecure
-    required: false
-    type: 8
-  - display: Use system proxy settings
-    hidden: false
-    name: proxy
-    required: false
-    type: 8
-description:
-  Get alerts and events, manage quarantine files as well as URL and hash
-  lists using Netskope API v1.
-display: Netskope (API v1)
-name: NetskopeAPIv1
-script:
-  commands:
-    - arguments:
-        - default: false
-          description:
-            'Free query to filter the events. For example, "app eq Dropbox".
-            For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-events-data.html'
-          isArray: false
-          name: query
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Select events by their type.
-          isArray: false
-          name: event_type
-          predefined:
-            - page
-            - application
-            - audit
-            - infrastructure
-            - network
-          required: true
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Get all events from a certain time period.
-          isArray: false
-          name: timeperiod
-          predefined:
-            - Last 60 Minutes
-            - Last 24 Hours
-            - Last 7 Days
-            - Last 30 Days
-            - Last 60 Days
-            - Last 90 Days
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict events to those that have dates greater than the provided
-            date string.
-          isArray: false
-          name: start_time
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict events to those that have dates less than or equal to
-            the provided date string.
-          isArray: false
-          name: end_time
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict events to those that were inserted to the system after
-            the provided date string.
-          isArray: false
-          name: insertion_start_time
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict events to those that were inserted to the system before
-            the provided date string.
-          isArray: false
-          name: insertion_end_time
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 50
-          description: The maximum amount of events to retrieve.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 1
-          description: The page number of the events to retrieve (minimum is 1).
-          isArray: false
-          name: page
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: false
-          description:
-            If true, the returned data will not be sorted (useful for improved
-            performance).
-          isArray: false
-          name: unsorted
-          predefined:
-            - "true"
-            - "false"
-          required: false
-          secret: false
-      description:
-        Get events extracted from SaaS traffic and or logs. You must provide
-        start_time and end_time, or insertion_start_time and insertion_end_time, or
-        timeperiod. Also, you cannot provide a combination of the options mentioned
-        above.
-      name: netskope-event-list
-      outputs:
-        - contextPath: Netskope.Event.event_id
-          description: The unique identifier of the event.
-          type: String
-        - contextPath: Netskope.Event.timestamp
-          description: Unix epoch timestamp when the event happened in.
-          type: Number
-        - contextPath: Netskope.Event.type
-          description: Shows if it is an application event or a connection event.
-          type: String
-        - contextPath: Netskope.Event.access_method
-          description:
-            Cloud app traffic can be steered to the Netskope cloud using different
-            deployment methods such as Client (Netskope Client), Secure Forwarder etc.
-          type: String
-        - contextPath: Netskope.Event.traffic_type
-          description: "Type of the traffic: CloudApp or Web."
-          type: String
-        - contextPath: Netskope.Event.count
-          description:
-            Number of raw log lines/events sessionized or suppressed during
-            the suppressed interval.
-          type: Number
-        - contextPath: Netskope.Event.app
-          description: Specific cloud application used by the user (e.g. app = Dropbox).
-          type: String
-        - contextPath: Netskope.Event.appcategory
-          description: Application Category as designated by Netskope.
-          type: String
-        - contextPath: Netskope.Event.url
-          description:
-            URL of the application that the user visited as provided by the
-            log or data plane traffic.
-          type: String
-        - contextPath: Netskope.Event.page
-          description: The URL of the originating page.
-          type: String
-        - contextPath: Netskope.Event.domain
-          description: Domain value.
-          type: String
-        - contextPath: Netskope.Event.object
-          description: Name of the object which is being acted on.
-          type: String
-        - contextPath: Netskope.Event.object_id
-          description: Unique ID associated with an object.
-          type: String
-        - contextPath: Netskope.Event.activity
-          description: Description of the user performed activity.
-          type: String
-        - contextPath: Netskope.Event.device
-          description: Device type from where the user accessed the cloud app.
-          type: String
-        - contextPath: Netskope.Event.category
-          description: The event category.
-          type: String
-    - arguments:
-        - default: false
-          description:
-            'Free query to filter the alerts. For example, "alert_name like
-            test". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-alerts-data.html'
-          isArray: false
-          name: query
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Select alerts by their type.
-          isArray: false
-          name: alert_type
-          predefined:
-            - anomaly
-            - Compromised Credential
-            - policy
-            - Legal Hold
-            - malsite
-            - Malware
-            - DLP
-            - Security Assessment
-            - watchlist
-            - quarantine
-            - Remediation
-            - uba
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Whether to retrieve acknowledged alerts or not.
-          isArray: false
-          name: acked
-          predefined:
-            - "true"
-            - "false"
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Get alerts from certain time period.
-          isArray: false
-          name: timeperiod
-          predefined:
-            - Last 60 Minutes
-            - Last 24 Hours
-            - Last 7 Days
-            - Last 30 Days
-            - Last 60 Days
-            - Last 90 Days
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict alerts to those that have dates greater than the provided
-            date string.
-          isArray: false
-          name: start_time
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict alerts to those that have dates less than or equal to
-            the provided date string.
-          isArray: false
-          name: end_time
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict alerts which have been inserted into the system after
-            the provided date string.
-          isArray: false
-          name: insertion_start_time
-          required: false
-          secret: false
-        - default: false
-          description:
-            Restrict alerts which have been inserted into the system before
-            the provided date string.
-          isArray: false
-          name: insertion_end_time
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 50
-          description: The maximum number of alerts to return.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 1
-          description: The page number of the alerts to retrieve (minimum is 1).
-          isArray: false
-          name: page
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: false
-          description:
-            If true, the returned data will not be sorted (useful for improved
-            performance).
-          isArray: false
-          name: unsorted
-          predefined:
-            - "true"
-            - "false"
-          required: false
-          secret: false
-      description:
-        Get alerts generated by Netskope, including policy, DLP, and watch
-        list alerts. You must provide start_time and end_time, or insertion_start_time
-        and insertion_end_time, or timeperiod. Also, you cannot provide a combination
-        of the options mentioned above.
-      name: netskope-alert-list
-      outputs:
-        - contextPath: Netskope.Alert.alert_id
-          description: The unique identifier of the alert.
-          type: String
-        - contextPath: Netskope.Alert.timestamp
-          description: Timestamp when the event/alert happened.
-          type: Number
-        - contextPath: Netskope.Alert.type
-          description: Shows if it is an application event or a connection event.
-          type: String
-        - contextPath: Netskope.Alert.access_method
-          description:
-            Cloud app traffic can be steered to the Netskope cloud using different
-            deployment methods such as Client (Netskope Client), Secure Forwarder etc.
-          type: String
-        - contextPath: Netskope.Alert.traffic_type
-          description: "Type of the traffic: CloudApp or Web."
-          type: String
-        - contextPath: Netskope.Alert.action
-          description: Action taken on the event for the policy.
-          type: String
-        - contextPath: Netskope.Alert.count
-          description:
-            Number of raw log lines/events sessionized or suppressed during
-            the suppressed interval.
-          type: Number
-        - contextPath: Netskope.Alert.alert_name
-          description: Name of the alert.
-          type: String
-        - contextPath: Netskope.Alert.alert_type
-          description: Type of the alert.
-          type: String
-        - contextPath: Netskope.Alert.acked
-          description: Whether user acknowledged the alert or not.
-          type: Boolean
-        - contextPath: Netskope.Alert.policy
-          description: Name of the policy configured by an admin.
-          type: String
-        - contextPath: Netskope.Alert.app
-          description: Specific cloud application used by the user (e.
-          type: String
-        - contextPath: Netskope.Alert.appcategory
-          description: Application Category as designated by Netskope.
-          type: String
-        - contextPath: Netskope.Alert.dlp_file
-          description: File/Object name extracted from the file/object.
-          type: String
-        - contextPath: Netskope.Alert.dlp_profile
-          description: DLP profile name.
-          type: String
-        - contextPath: Netskope.Alert.dlp_rule
-          description: DLP rule that triggered.
-          type: String
-        - contextPath: Netskope.Alert.category
-          description: The alert category.
-          type: String
-        - contextPath: Netskope.Alert.cci
-          description: The cloud confidence index.
-          type: Number
-    - arguments:
-        - default: false
-          description: Get files last modified after the provided date string.
-          isArray: false
-          name: start_time
-          required: false
-          secret: false
-        - default: false
-          description: Get files last modified before the provided date string.
-          isArray: false
-          name: end_time
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 50
-          description: The maximum amount of clients to retrieve.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 1
-          description: The page number of the clients to retrieve (minimum is 1).
-          isArray: false
-          name: page
-          required: false
-          secret: false
-      description: List all quarantined files.
-      name: netskope-quarantined-file-list
-      outputs:
-        - contextPath: Netskope.Quarantine.quarantine_profile_id
-          description: The ID of quarantine profile.
-          type: String
-        - contextPath: Netskope.Quarantine.quarantine_profile_name
-          description: The name of quarantine profile.
-          type: String
-        - contextPath: Netskope.Quarantine.file_id
-          description: The ID of the quarantined file.
-          type: String
-        - contextPath: Netskope.Quarantine.original_file_name
-          description: The original filename before quarantining.
-          type: String
-        - contextPath: Netskope.Quarantine.policy
-          description: The policy name caused quarantine the file.
-          type: String
-        - contextPath: Netskope.Quarantine.quarantined_file_name
-          description: The filename after quarantining.
-          type: String
-        - contextPath: Netskope.Quarantine.user_id
-          description: The ID of the user related to the quarantined file.
-          type: String
-    - arguments:
-        - default: false
-          description: The ID of quarantine profile.
-          isArray: false
-          name: quarantine_profile_id
-          required: true
-          secret: false
-        - default: false
-          description: The ID of the quarantined file.
-          isArray: false
-          name: file_id
-          required: true
-          secret: false
-      description: Download a quarantined file.
-      name: netskope-quarantined-file-get
-      outputs:
-        - contextPath: File.Size
-          description: The size of the file.
-          type: Number
-        - contextPath: File.Name
-          description: The name of the file.
-          type: String
-        - contextPath: File.EntryID
-          description: The entry ID of the file.
-          type: String
-        - contextPath: File.Info
-          description: File information.
-          type: String
-        - contextPath: File.Type
-          description: The file type.
-          type: String
-        - contextPath: File.Extension
-          description: The file extension.
-          type: String
-    - arguments:
-        - default: false
-          description: The profile ID of the quarantined file.
-          isArray: false
-          name: quarantine_profile_id
-          required: true
-          secret: false
-        - default: false
-          description: The ID of the quarantined file.
-          isArray: false
-          name: file_id
-          required: true
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Action to be performed on a quarantined.
-          isArray: false
-          name: action
-          predefined:
-            - block
-            - allow
-          required: true
-          secret: false
-      description: Take an action on a quarantined file.
-      name: netskope-quarantined-file-update
-      outputs: []
-    - arguments:
-        - default: false
-          description:
-            Name of an existing URL List shown in the Netskope UI on the URL
-            List page.
-          isArray: false
-          name: name
-          required: true
-          secret: false
-        - default: false
-          description: A comma-separated list of URLs.
-          isArray: true
-          name: urls
-          required: true
-          secret: false
-      description: Update the URL List with the values provided. The command will override the whole list content, rather than appending the new values.
-      name: netskope-url-list-update
-      outputs:
-        - contextPath: Netskope.URLList.name
-          description: The name of the URL list.
-          type: String
-        - contextPath: Netskope.URLList.URL
-          description: The content the URL list.
-          type: String
-    - arguments:
-        - default: false
-          description:
-            Name of an existing file hash list shown in the Netskope UI on
-            the file hash list page.
-          isArray: false
-          name: name
-          required: true
-          secret: false
-        - default: false
-          description: A comma-separated list of hashes.
-          isArray: true
-          name: hash
-          required: true
-          secret: false
-      description: Update file hash list with the values provided. The command will override the whole list content, rather than appending the new values.
-      name: netskope-file-hash-list-update
-      outputs:
-        - contextPath: FileHashList.name
-          description: The name of the hash list.
-          type: String
-        - contextPath: FileHashList.hash
-          description: The content of the hash list.
-          type: String
-    - arguments:
-        - default: false
-          description:
-            'Free query on the clients, based on the client fields. For example, "host_info.hostname eq xxx".
-            For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-client-data.html.'
-          isArray: false
-          name: query
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 50
-          description: The maximum amount of clients to retrieve.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 1
-          description: The page number of the clients to retrieve (minimum is 1).
-          isArray: false
-          name: page
-          required: false
-          secret: false
-      description: Get information about the Netskope clients.
-      name: netskope-client-list
-      outputs:
-        - contextPath: Netskope.Client.client_id
-          description: The ID of the Netskope client.
-          type: String
-        - contextPath: Netskope.Client.client_version
-          description: The client version.
-          type: String
-        - contextPath: Netskope.Client.device_id
-          description: The ID of the client's device.
-          type: String
-        - contextPath: Netskope.Client.host_info
-          description: Information about the client's host.
-          type: String
-        - contextPath: Netskope.Client.last_event
-          description: Information about the last event related to the client.
-          type: String
-        - contextPath: Netskope.Client.user_added_time
-          description: The last time a client's user was added to Netskope.
-          type: String
-        - contextPath: Netskope.Client.users
-          description: List of all users of the provided client.
-          type: String
-    - arguments:
-        - default: false
-          description:
-            The hostname to view its users. To view all hosts, go to the devices
-            section inside the settings page.
-          isArray: false
-          name: hostname
-          required: true
-          secret: false
-        - default: false
-          defaultValue: 50
-          description: The maximum amount of users to retrieve.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 1
-          description: The page number of the users to retrieve (minimum is 1).
-          isArray: false
-          name: page
-          required: false
-          secret: false
-      description: List all users of certain host by its hostname.
-      name: netskope-host-associated-user-list
-      outputs:
-        - contextPath: Netskope.User.user_id
-          description: The ID of the Netskope user.
-          type: String
-        - contextPath: Netskope.User.device_classification_status
-          description: The device classification status.
-          type: String
-        - contextPath: Netskope.User.last_event
-          description: Information about the last event related to the user.
-          type: Unknown
-        - contextPath: Netskope.User.user_source
-          description: The source of the user.
-          type: String
-        - contextPath: Netskope.User.userkey
-          description: The user key.
-          type: String
-        - contextPath: Netskope.User.username
-          description: The name/email of the user.
-          type: String
-    - arguments:
-        - default: false
-          description:
-            The username to view its hosts. To view all users, go to the users
-            section inside the settings page.
-          isArray: false
-          name: username
-          required: true
-          secret: false
-        - default: false
-          defaultValue: 50
-          description: The maximum amount of hosts to retrieve.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          defaultValue: 1
-          description: The page number of the hosts to retrieve (minimum is 1).
-          isArray: false
-          name: page
-          required: false
-          secret: false
-      description: List all hosts related to a certain username.
-      name: netskope-user-associated-host-list
-      outputs:
-        - contextPath: Netskope.Host.nsdeviceuid
-          description: Netskope device UID.
-          type: String
-        - contextPath: Netskope.Host.os
-          description: The device operating system.
-          type: String
-        - contextPath: Netskope.Host.os_version
-          description: The device operating system version.
-          type: String
-        - contextPath: Netskope.Host.device_model
-          description: The device model.
-          type: String
-        - contextPath: Netskope.Host.hostname
-          description: The hostname of the device.
-          type: String
-        - contextPath: Netskope.Host.agent_status
-          description: The status of the agent on the device.
-          type: String
-  dockerimage: demisto/python3:3.10.10.48392
-  feed: false
+      required: true
+    - auto: PREDEFINED
+      description: Get all events from a certain time period.
+      name: timeperiod
+      predefined:
+      - Last 60 Minutes
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 60 Days
+      - Last 90 Days
+    - description: Restrict events to those that have dates greater than the provided date string.
+      name: start_time
+    - description: Restrict events to those that have dates less than or equal to the provided date string.
+      name: end_time
+    - description: Restrict events to those that were inserted to the system after the provided date string.
+      name: insertion_start_time
+    - description: Restrict events to those that were inserted to the system before the provided date string.
+      name: insertion_end_time
+    - defaultValue: 50
+      description: The maximum amount of events to retrieve.
+      name: limit
+    - defaultValue: 1
+      description: The page number of the events to retrieve (minimum is 1).
+      name: page
+    - auto: PREDEFINED
+      description: If true, the returned data will not be sorted (useful for improved performance).
+      name: unsorted
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+    description: Get events extracted from SaaS traffic and or logs. You must provide start_time and end_time, or insertion_start_time and insertion_end_time, or timeperiod. Also, you cannot provide a combination of the options mentioned above.
+    name: netskope-event-list
+    outputs:
+    - contextPath: Netskope.Event.event_id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: Netskope.Event.timestamp
+      description: Unix epoch timestamp when the event happened in.
+      type: Number
+    - contextPath: Netskope.Event.type
+      description: Shows if it is an application event or a connection event.
+      type: String
+    - contextPath: Netskope.Event.access_method
+      description: Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder etc.
+      type: String
+    - contextPath: Netskope.Event.traffic_type
+      description: "Type of the traffic: CloudApp or Web."
+      type: String
+    - contextPath: Netskope.Event.count
+      description: Number of raw log lines/events sessionized or suppressed during the suppressed interval.
+      type: Number
+    - contextPath: Netskope.Event.app
+      description: Specific cloud application used by the user (e.g. app = Dropbox).
+      type: String
+    - contextPath: Netskope.Event.appcategory
+      description: Application Category as designated by Netskope.
+      type: String
+    - contextPath: Netskope.Event.url
+      description: URL of the application that the user visited as provided by the log or data plane traffic.
+      type: String
+    - contextPath: Netskope.Event.page
+      description: The URL of the originating page.
+      type: String
+    - contextPath: Netskope.Event.domain
+      description: Domain value.
+      type: String
+    - contextPath: Netskope.Event.object
+      description: Name of the object which is being acted on.
+      type: String
+    - contextPath: Netskope.Event.object_id
+      description: Unique ID associated with an object.
+      type: String
+    - contextPath: Netskope.Event.activity
+      description: Description of the user performed activity.
+      type: String
+    - contextPath: Netskope.Event.device
+      description: Device type from where the user accessed the cloud app.
+      type: String
+    - contextPath: Netskope.Event.category
+      description: The event category.
+      type: String
+  - arguments:
+    - description: 'Free query to filter the alerts. For example, "alert_name like test". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-alerts-data.html'
+      name: query
+    - auto: PREDEFINED
+      description: Select alerts by their type.
+      name: alert_type
+      predefined:
+      - anomaly
+      - Compromised Credential
+      - policy
+      - Legal Hold
+      - malsite
+      - Malware
+      - DLP
+      - Security Assessment
+      - watchlist
+      - quarantine
+      - Remediation
+      - uba
+    - auto: PREDEFINED
+      description: Whether to retrieve acknowledged alerts or not.
+      name: acked
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Get alerts from certain time period.
+      name: timeperiod
+      predefined:
+      - Last 60 Minutes
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 60 Days
+      - Last 90 Days
+    - description: Restrict alerts to those that have dates greater than the provided date string.
+      name: start_time
+    - description: Restrict alerts to those that have dates less than or equal to the provided date string.
+      name: end_time
+    - description: Restrict alerts which have been inserted into the system after the provided date string.
+      name: insertion_start_time
+    - description: Restrict alerts which have been inserted into the system before the provided date string.
+      name: insertion_end_time
+    - defaultValue: 50
+      description: The maximum number of alerts to return.
+      name: limit
+    - defaultValue: 1
+      description: The page number of the alerts to retrieve (minimum is 1).
+      name: page
+    - auto: PREDEFINED
+      description: If true, the returned data will not be sorted (useful for improved performance).
+      name: unsorted
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+    description: Get alerts generated by Netskope, including policy, DLP, and watch list alerts. You must provide start_time and end_time, or insertion_start_time and insertion_end_time, or timeperiod. Also, you cannot provide a combination of the options mentioned above.
+    name: netskope-alert-list
+    outputs:
+    - contextPath: Netskope.Alert.alert_id
+      description: The unique identifier of the alert.
+      type: String
+    - contextPath: Netskope.Alert.timestamp
+      description: Timestamp when the event/alert happened.
+      type: Number
+    - contextPath: Netskope.Alert.type
+      description: Shows if it is an application event or a connection event.
+      type: String
+    - contextPath: Netskope.Alert.access_method
+      description: Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder etc.
+      type: String
+    - contextPath: Netskope.Alert.traffic_type
+      description: "Type of the traffic: CloudApp or Web."
+      type: String
+    - contextPath: Netskope.Alert.action
+      description: Action taken on the event for the policy.
+      type: String
+    - contextPath: Netskope.Alert.count
+      description: Number of raw log lines/events sessionized or suppressed during the suppressed interval.
+      type: Number
+    - contextPath: Netskope.Alert.alert_name
+      description: Name of the alert.
+      type: String
+    - contextPath: Netskope.Alert.alert_type
+      description: Type of the alert.
+      type: String
+    - contextPath: Netskope.Alert.acked
+      description: Whether user acknowledged the alert or not.
+      type: Boolean
+    - contextPath: Netskope.Alert.policy
+      description: Name of the policy configured by an admin.
+      type: String
+    - contextPath: Netskope.Alert.app
+      description: Specific cloud application used by the user (e.
+      type: String
+    - contextPath: Netskope.Alert.appcategory
+      description: Application Category as designated by Netskope.
+      type: String
+    - contextPath: Netskope.Alert.dlp_file
+      description: File/Object name extracted from the file/object.
+      type: String
+    - contextPath: Netskope.Alert.dlp_profile
+      description: DLP profile name.
+      type: String
+    - contextPath: Netskope.Alert.dlp_rule
+      description: DLP rule that triggered.
+      type: String
+    - contextPath: Netskope.Alert.category
+      description: The alert category.
+      type: String
+    - contextPath: Netskope.Alert.cci
+      description: The cloud confidence index.
+      type: Number
+  - arguments:
+    - description: Get files last modified after the provided date string.
+      name: start_time
+    - description: Get files last modified before the provided date string.
+      name: end_time
+    - defaultValue: 50
+      description: The maximum amount of clients to retrieve.
+      name: limit
+    - defaultValue: 1
+      description: The page number of the clients to retrieve (minimum is 1).
+      name: page
+    description: List all quarantined files.
+    name: netskope-quarantined-file-list
+    outputs:
+    - contextPath: Netskope.Quarantine.quarantine_profile_id
+      description: The ID of quarantine profile.
+      type: String
+    - contextPath: Netskope.Quarantine.quarantine_profile_name
+      description: The name of quarantine profile.
+      type: String
+    - contextPath: Netskope.Quarantine.file_id
+      description: The ID of the quarantined file.
+      type: String
+    - contextPath: Netskope.Quarantine.original_file_name
+      description: The original filename before quarantining.
+      type: String
+    - contextPath: Netskope.Quarantine.policy
+      description: The policy name caused quarantine the file.
+      type: String
+    - contextPath: Netskope.Quarantine.quarantined_file_name
+      description: The filename after quarantining.
+      type: String
+    - contextPath: Netskope.Quarantine.user_id
+      description: The ID of the user related to the quarantined file.
+      type: String
+  - arguments:
+    - description: The ID of quarantine profile.
+      name: quarantine_profile_id
+      required: true
+    - description: The ID of the quarantined file.
+      name: file_id
+      required: true
+    description: Download a quarantined file.
+    name: netskope-quarantined-file-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - arguments:
+    - description: The profile ID of the quarantined file.
+      name: quarantine_profile_id
+      required: true
+    - description: The ID of the quarantined file.
+      name: file_id
+      required: true
+    - auto: PREDEFINED
+      description: Action to be performed on a quarantined.
+      name: action
+      predefined:
+      - block
+      - allow
+      required: true
+    description: Take an action on a quarantined file.
+    name: netskope-quarantined-file-update
+    outputs: []
+  - arguments:
+    - description: Name of an existing URL List shown in the Netskope UI on the URL List page.
+      name: name
+      required: true
+    - description: A comma-separated list of URLs.
+      isArray: true
+      name: urls
+      required: true
+    description: Update the URL List with the values provided. The command will override the whole list content, rather than appending the new values.
+    name: netskope-url-list-update
+    outputs:
+    - contextPath: Netskope.URLList.name
+      description: The name of the URL list.
+      type: String
+    - contextPath: Netskope.URLList.URL
+      description: The content the URL list.
+      type: String
+  - arguments:
+    - description: Name of an existing file hash list shown in the Netskope UI on the file hash list page.
+      name: name
+      required: true
+    - description: A comma-separated list of hashes.
+      isArray: true
+      name: hash
+      required: true
+    description: Update file hash list with the values provided. The command will override the whole list content, rather than appending the new values.
+    name: netskope-file-hash-list-update
+    outputs:
+    - contextPath: FileHashList.name
+      description: The name of the hash list.
+      type: String
+    - contextPath: FileHashList.hash
+      description: The content of the hash list.
+      type: String
+  - arguments:
+    - description: 'Free query on the clients, based on the client fields. For example, "host_info.hostname eq xxx". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-client-data.html.'
+      name: query
+    - defaultValue: 50
+      description: The maximum amount of clients to retrieve.
+      name: limit
+    - defaultValue: 1
+      description: The page number of the clients to retrieve (minimum is 1).
+      name: page
+    description: Get information about the Netskope clients.
+    name: netskope-client-list
+    outputs:
+    - contextPath: Netskope.Client.client_id
+      description: The ID of the Netskope client.
+      type: String
+    - contextPath: Netskope.Client.client_version
+      description: The client version.
+      type: String
+    - contextPath: Netskope.Client.device_id
+      description: The ID of the client's device.
+      type: String
+    - contextPath: Netskope.Client.host_info
+      description: Information about the client's host.
+      type: String
+    - contextPath: Netskope.Client.last_event
+      description: Information about the last event related to the client.
+      type: String
+    - contextPath: Netskope.Client.user_added_time
+      description: The last time a client's user was added to Netskope.
+      type: String
+    - contextPath: Netskope.Client.users
+      description: List of all users of the provided client.
+      type: String
+  - arguments:
+    - description: The hostname to view its users. To view all hosts, go to the devices section inside the settings page.
+      name: hostname
+      required: true
+    - defaultValue: 50
+      description: The maximum amount of users to retrieve.
+      name: limit
+    - defaultValue: 1
+      description: The page number of the users to retrieve (minimum is 1).
+      name: page
+    description: List all users of certain host by its hostname.
+    name: netskope-host-associated-user-list
+    outputs:
+    - contextPath: Netskope.User.user_id
+      description: The ID of the Netskope user.
+      type: String
+    - contextPath: Netskope.User.device_classification_status
+      description: The device classification status.
+      type: String
+    - contextPath: Netskope.User.last_event
+      description: Information about the last event related to the user.
+      type: Unknown
+    - contextPath: Netskope.User.user_source
+      description: The source of the user.
+      type: String
+    - contextPath: Netskope.User.userkey
+      description: The user key.
+      type: String
+    - contextPath: Netskope.User.username
+      description: The name/email of the user.
+      type: String
+  - arguments:
+    - description: The username to view its hosts. To view all users, go to the users section inside the settings page.
+      name: username
+      required: true
+    - defaultValue: 50
+      description: The maximum amount of hosts to retrieve.
+      name: limit
+    - defaultValue: 1
+      description: The page number of the hosts to retrieve (minimum is 1).
+      name: page
+    description: List all hosts related to a certain username.
+    name: netskope-user-associated-host-list
+    outputs:
+    - contextPath: Netskope.Host.nsdeviceuid
+      description: Netskope device UID.
+      type: String
+    - contextPath: Netskope.Host.os
+      description: The device operating system.
+      type: String
+    - contextPath: Netskope.Host.os_version
+      description: The device operating system version.
+      type: String
+    - contextPath: Netskope.Host.device_model
+      description: The device model.
+      type: String
+    - contextPath: Netskope.Host.hostname
+      description: The hostname of the device.
+      type: String
+    - contextPath: Netskope.Host.agent_status
+      description: The status of the agent on the device.
+      type: String
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3
   type: python
 fromversion: 6.2.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)

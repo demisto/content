@@ -331,3 +331,113 @@ def test_convert_timestamps_and_scan_type_to_readable():
     ]
     result_list = Client.convert_timestamps_and_scan_type_to_readable(test_list)
     assert expected_list == result_list
+
+
+def test_udso_list_command(mocker):
+    """
+    Given:
+    - Valid input parameters.
+
+    When:
+    - Calling udso_list_command function.
+
+    Then:
+    - Ensure the function returns a valid response.
+    """
+    from TrendMicroApex import udso_list_command
+    args = {'type': 'file', 'content_filter': 'test'}
+
+    expected_response = {
+        'Data': [
+            {'content': 'test1', 'type': 'file'},
+            {'content': 'test2', 'type': 'file'}
+        ]
+    }
+
+    mocker.patch.object(client, 'udso_list', return_value=expected_response)
+
+    result = udso_list_command(client, args)
+
+    assert result.outputs == {
+        'TrendMicroApex.UDSO(val.content == obj.content)': expected_response['Data'],
+        'TrendMicroApex.USDO(val.content == obj.content)': expected_response['Data']
+    }
+    assert result.readable_output == '### Apex One UDSO List\n|content|type|\n|---|---|\n| test1 | file |\n| test2 | file |\n'
+    assert result.raw_response == expected_response
+
+
+def test_udso_delete_command(mocker):
+    """
+    Given:
+    - A client object
+    - A dictionary containing the UDSO type and content to delete
+
+    When:
+    - Calling the udso_delete_command function
+
+    Then:
+    - Ensure the function successfully deletes the UDSO of the specified type and content
+    - Ensure the CommandResults object contains the expected readable output and raw response
+    """
+    from TrendMicroApex import udso_delete_command
+    expected_output = '### UDSO "test_content" of type "test_type" was deleted successfully'
+    expected_response = {'success': True}
+
+    mocker.patch.object(Client, 'udso_delete', return_value=expected_response)
+
+    args = {'type': 'test_type', 'content': 'test_content'}
+
+    result = udso_delete_command(client, args)
+
+    assert result.readable_output == expected_output
+    assert result.raw_response == expected_response
+
+
+def test_udso_add_command(mocker):
+    """
+    Given:
+    - All required arguments are provided.
+
+    When:
+    - Calling udso_add_command function.
+
+    Then:
+    - Ensure the function returns a CommandResults object with the expected readable output and raw response.
+    """
+    from TrendMicroApex import udso_add_command
+    args = {
+        'type': 'hash',
+        'content': '1234567890abcdef',
+        'scan_action': 'clean'
+    }
+    expected_output = '### UDSO "1234567890abcdef" of type "hash" was added successfully with scan action "clean"'
+
+    mocker.patch.object(client, 'udso_add', return_value={'success': True})
+
+    result = udso_add_command(client, args)
+
+    assert result.readable_output == expected_output
+    assert result.raw_response == {'success': True}
+
+
+def test_prodagent_isolate_command(mocker):
+    """
+    Given:
+    - The entity_id argument is provided.
+
+    When:
+    - Calling the prodagent_isolate_command function.
+
+    Then:
+    - Ensure the function returns a CommandResults object with the expected outputs.
+    """
+    from TrendMicroApex import prodagent_isolate_command
+    args = {'entity_id': '12345'}
+
+    mocker.patch.object(client, 'prodagent_isolate', return_value={'result_content': [{'agentGuid': '12345'}]})
+
+    result = prodagent_isolate_command(client, args)
+
+    assert result.outputs_prefix == 'TrendMicroApex.ProductAgent'
+    assert result.outputs == [{'agentGuid': '12345'}]
+    assert result.readable_output == '### Apex One ProductAgent Isolate\n|agentGuid|\n|---|\n| 12345 |\n'

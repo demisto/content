@@ -1,6 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto
-from CommonServerPython import *
+from pathlib import Path
 from CommonServerUserPython import *
 
 from multiprocessing import Process
@@ -65,9 +66,9 @@ server {
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
         proxy_read_timeout $timeout;
-        proxy_connect_timeout 1800;
-        proxy_send_timeout 1800;
-        send_timeout 1800;
+        proxy_connect_timeout 3600;
+        proxy_send_timeout 3600;
+        send_timeout 3600;
     }
 }
 
@@ -86,11 +87,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     Raises:
         DemistoException: raised if there is a detected config error
     """
-    params = demisto.params() if not params else params
+    params = params if params else demisto.params()
     template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    timeout: str = params.get('timeout') or '1800'
+    timeout: str = params.get('timeout') or '3600'
     ssl = ''
     sslcerts = ''
     serverport = port + 1
@@ -124,7 +125,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
 
 
 def start_nginx_server(port: int, params: Dict = {}) -> subprocess.Popen:
-    params = demisto.params() if not params else params
+    params = params if params else demisto.params()
     create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
     nginx_global_directives = 'daemon off;'
     global_directives_conf = params.get('nginx_global_directives')
@@ -148,53 +149,50 @@ def start_nginx_server(port: int, params: Dict = {}) -> subprocess.Popen:
 
 
 def nginx_log_process(nginx_process: subprocess.Popen):
-    try:
-        old_access = NGINX_SERVER_ACCESS_LOG + '.old'
-        old_error = NGINX_SERVER_ERROR_LOG + '.old'
-        log_access = False
-        log_error = False
-        # first check if one of the logs are missing. This may happen on rare ocations that we renamed and deleted the file
-        # before nginx completed the role over of the logs
-        missing_log = False
-        if not os.path.isfile(NGINX_SERVER_ACCESS_LOG):
-            missing_log = True
-            demisto.info(f'Missing access log: {NGINX_SERVER_ACCESS_LOG}. Will send roll signal to nginx.')
-        if not os.path.isfile(NGINX_SERVER_ERROR_LOG):
-            missing_log = True
-            demisto.info(f'Missing error log: {NGINX_SERVER_ERROR_LOG}. Will send roll signal to nginx.')
-        if missing_log:
-            nginx_process.send_signal(int(SIGUSR1))
-            demisto.info(f'Done sending roll signal to nginx (pid: {nginx_process.pid}) after detecting missing log file.'
-                         ' Will skip this iteration.')
-            return
-        if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
-            log_access = True
-            os.rename(NGINX_SERVER_ACCESS_LOG, old_access)
-        if os.path.getsize(NGINX_SERVER_ERROR_LOG):
-            log_error = True
-            os.rename(NGINX_SERVER_ERROR_LOG, old_error)
-        if log_access or log_error:
-            # nginx rolls the logs when getting sigusr1
-            nginx_process.send_signal(int(SIGUSR1))
-            gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
-        if log_access:
-            with open(old_access, 'rt') as f:
-                start = 1
-                for lines in batch(f.readlines(), 100):
-                    end = start + len(lines)
-                    demisto.info(f'nginx access log ({start}-{end-1}): ' + ''.join(lines))
-                    start = end
-            os.unlink(old_access)
-        if log_error:
-            with open(old_error, 'rt') as f:
-                start = 1
-                for lines in batch(f.readlines(), 100):
-                    end = start + len(lines)
-                    demisto.error(f'nginx error log ({start}-{end-1}): ' + ''.join(lines))
-                    start = end
-            os.unlink(old_error)
-    except Exception as e:
-        demisto.error(f'Failed nginx log processing: {e}. Exception: {traceback.format_exc()}')
+    old_access = NGINX_SERVER_ACCESS_LOG + '.old'
+    old_error = NGINX_SERVER_ERROR_LOG + '.old'
+    log_access = False
+    log_error = False
+    # first check if one of the logs are missing. This may happen on rare ocations that we renamed and deleted the file
+    # before nginx completed the role over of the logs
+    missing_log = False
+    if not os.path.isfile(NGINX_SERVER_ACCESS_LOG):
+        missing_log = True
+        demisto.info(f'Missing access log: {NGINX_SERVER_ACCESS_LOG}. Will send roll signal to nginx.')
+    if not os.path.isfile(NGINX_SERVER_ERROR_LOG):
+        missing_log = True
+        demisto.info(f'Missing error log: {NGINX_SERVER_ERROR_LOG}. Will send roll signal to nginx.')
+    if missing_log:
+        nginx_process.send_signal(int(SIGUSR1))
+        demisto.info(f'Done sending roll signal to nginx (pid: {nginx_process.pid}) after detecting missing log file.'
+                     ' Will skip this iteration.')
+        return
+    if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
+        log_access = True
+        Path(NGINX_SERVER_ACCESS_LOG).rename(old_access)
+    if os.path.getsize(NGINX_SERVER_ERROR_LOG):
+        log_error = True
+        Path(NGINX_SERVER_ERROR_LOG).rename(old_error)
+    if log_access or log_error:
+        # nginx rolls the logs when getting sigusr1
+        nginx_process.send_signal(int(SIGUSR1))
+        gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
+    if log_access:
+        with open(old_access, 'rt') as f:
+            start = 1
+            for lines in batch(f.readlines(), 100):
+                end = start + len(lines)
+                demisto.info(f'nginx access log ({start}-{end-1}): ' + ''.join(lines))
+                start = end
+        Path(old_access).unlink()
+    if log_error:
+        with open(old_error, 'rt') as f:
+            start = 1
+            for lines in batch(f.readlines(), 100):
+                end = start + len(lines)
+                demisto.error(f'nginx error log ({start}-{end-1}): ' + ''.join(lines))
+                start = end
+        Path(old_error).unlink()
 
 
 def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
@@ -262,7 +260,7 @@ def get_params_port(params: Dict = None) -> int:
     """
     Gets port from the integration parameters
     """
-    params = demisto.params() if not params else params
+    params = params if params else demisto.params()
     port_mapping: str = params.get('longRunningPort', '')
     err_msg: str
     port: int
@@ -284,7 +282,7 @@ def run_long_running(params: Dict = None, is_test: bool = False):
     :param is_test: Indicates whether it's test-module run or regular run
     :return: None
     """
-    params = demisto.params() if not params else params
+    params = params if params else demisto.params()
     nginx_process = None
     nginx_log_monitor = None
 
@@ -324,6 +322,10 @@ def run_long_running(params: Dict = None, is_test: bool = False):
             server.serve_forever()
     except Exception as e:
         error_message = str(e)
+        if isinstance(e, ValueError) and "Try to write when connection closed" in error_message:
+            # This indicates that the XSOAR platform is unreachable, and there is no way to recover from this, so we need to exit.
+            sys.exit(1)  # pylint: disable=E9001
+
         demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
         demisto.updateModuleHealth(f'An error occurred: {error_message}')
         raise ValueError(error_message)

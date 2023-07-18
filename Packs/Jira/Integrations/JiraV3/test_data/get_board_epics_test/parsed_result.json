@@ -1,0 +1,67 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "maxResults": 2,
+        "startAt": 0,
+        "isLast": true,
+        "values": [
+            {
+                "id": 21360,
+                "key": "COMPANYSA-1",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/epic/21360",
+                "name": "Create Company Snoozing App",
+                "summary": "Start creating the company snoozing app",
+                "color": {
+                    "key": "color_4"
+                },
+                "done": false
+            },
+            {
+                "id": 21424,
+                "key": "COMPANYSA-30",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/epic/21424",
+                "name": "New Epic",
+                "summary": "Issue for demo",
+                "color": {
+                    "key": "color_3"
+                },
+                "done": false
+            }
+        ]
+    },
+    "HumanReadable": "### Epics\n|Done|ID|Key|Name|Summary|\n|---|---|---|---|---|\n| false | 21360 | COMPANYSA-1 | Create Company Snoozing App | Start creating the company snoozing app |\n| false | 21424 | COMPANYSA-30 | New Epic | Issue for demo |\n",
+    "EntryContext": {
+        "Jira.BoardEpic(val.boardId && val.boardId == obj.boardId)": {
+            "boardId": "14",
+            "Epics": [
+                {
+                    "id": 21360,
+                    "key": "COMPANYSA-1",
+                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/epic/21360",
+                    "name": "Create Company Snoozing App",
+                    "summary": "Start creating the company snoozing app",
+                    "color": {
+                        "key": "color_4"
+                    },
+                    "done": false
+                },
+                {
+                    "id": 21424,
+                    "key": "COMPANYSA-30",
+                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/epic/21424",
+                    "name": "New Epic",
+                    "summary": "Issue for demo",
+                    "color": {
+                        "key": "color_3"
+                    },
+                    "done": false
+                }
+            ]
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

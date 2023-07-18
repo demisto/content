@@ -13,8 +13,10 @@ class GoogleSecreteManagerModule:
         try:
             return json5.loads(response.payload.data.decode("UTF-8"))
         except Exception as e:
-            logging.error(
-                f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
+            logging.warning(
+                f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, '
+                f'got error: {e}')
+            return {}
 
     def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple()) -> list:
         secrets = []
@@ -31,7 +33,7 @@ class GoogleSecreteManagerModule:
                     missing_attrs = [attr for attr in attr_validation if attr not in secret_value]
                     if missing_attrs:
                         missing_attrs_str = ','.join(missing_attrs)
-                        logging.error(
+                        logging.warning(
                             f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
                         continue
                     secrets.append(secret_value)
@@ -50,3 +52,4 @@ class GoogleSecreteManagerModule:
             return client
         except Exception as e:
             logging.error(f'Could not create GSM client, error: {e}')
+            raise

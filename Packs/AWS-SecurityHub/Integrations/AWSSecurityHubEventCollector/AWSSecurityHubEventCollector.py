@@ -1,8 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import datetime as dt
 import urllib3
 from typing import Iterator
 
-import demistomock as demisto
 from AWSApiModule import *
 
 import boto3
@@ -114,7 +115,7 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
 
 
 def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.datetime | None,
-                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], Exception | None]:
+                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], dict, Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
 
@@ -157,9 +158,7 @@ def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.date
         demisto.info('No new findings were found.')
         next_run = last_run
 
-    demisto.setLastRun(next_run)
-
-    return events, error
+    return events, next_run, error
 
 
 def get_events_command(client: boto3.client, should_push_events: bool,
@@ -275,7 +274,7 @@ def main():  # pragma: no cover
                                    limit=limit))
 
         elif command == 'fetch-events':
-            events, error = fetch_events(
+            events, next_run, error = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
@@ -283,6 +282,7 @@ def main():  # pragma: no cover
             )
 
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run)
 
             if error and events:
                 raise Exception(f'An error occurred while running fetch-events. '

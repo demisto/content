@@ -1,6 +1,6 @@
-id: Endpoint Enrichment - Generic v2.1 - Test
+id: Endpoint Enrichment - Generic v2.1.6.8 - Test
 version: -1
-name: Endpoint Enrichment - Generic v2.1 - Test
+name: Endpoint Enrichment - Generic v2.1.6.8 - Test
 description: |-
   A test for the Endpoint Enrichment - Generic playbook.
   We use specific hostnames that are known on the current integrations. The following list defines the integrations and the hostnames that should be enriched using them:

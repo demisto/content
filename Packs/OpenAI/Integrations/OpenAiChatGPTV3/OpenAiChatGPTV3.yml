@@ -18,12 +18,12 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: |-
   This integration provides access to the OpenAI ChatGPT API, which generates human-like responses to text prompts.
 
@@ -38,7 +38,7 @@ script:
       required: true
     description: Send Text Message as a prompt to ChatGPT
     name: chatgpt-send-prompt
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

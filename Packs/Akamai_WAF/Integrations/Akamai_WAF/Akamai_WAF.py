@@ -68,7 +68,8 @@ class Client(BaseClient):
                           clone_dns_names: bool = True,
                           exclude_sans: bool = False,
                           ra: str = "third-party",
-                          validation_type: str = "third-party"
+                          validation_type: str = "third-party",
+                          sans: list = []
                           ) -> dict:
         """
             Create an enrollment
@@ -103,7 +104,7 @@ class Client(BaseClient):
             "contractId": contract_id,
         }
 
-        body = {"csr": {"cn": csr_cn, "c": country, "o": company,
+        body = {"csr": {"sans": sans, "cn": csr_cn, "c": country, "o": company,
                         "ou": organizational_unit, "l": city,
                         },
                 "adminContact": admin_contact,
@@ -1878,6 +1879,21 @@ class Client(BaseClient):
                                   headers=headers,
                                   )
 
+    def list_siteshield_maps(self) -> dict:
+        """
+            Returns a list of all Site Shield maps that belong to your account.
+        Args:
+            N/A
+
+        Returns:
+            The response provides a list of siteshield maps
+
+        """
+        return self._http_request(method="GET",
+                                  url_suffix='siteshield/v1/maps',
+                                  headers={"accept": "application/json"},
+                                  )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -2721,6 +2737,24 @@ def list_papi_property_by_hostname_ec(raw_response: dict,
     return entry_context, human_readable
 
 
+def list_siteshield_maps_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse siteshield map
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of site shield maps
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        entry_context.append(raw_response.get('siteShieldMaps'))
+        human_readable.append(raw_response.get('siteShieldMaps'))
+    return entry_context, human_readable
+
+
 ''' COMMANDS '''
 # Created by C.L.
 
@@ -2838,6 +2872,7 @@ def create_enrollment_command(client: Client,
                               exclude_sans: bool = False,
                               ra: str = "third-party",
                               validation_type: str = "third-party",
+                              sans: list = []
                               ) -> Tuple[object, dict, Union[List, Dict]]:
     """
         Create an enrollment
@@ -2897,7 +2932,8 @@ def create_enrollment_command(client: Client,
         clone_dns_names=clone_dns_names,
         exclude_sans=exclude_sans,
         ra=ra,
-        validation_type=validation_type
+        validation_type=validation_type,
+        sans=sans
     )
 
     if raw_response:
@@ -3386,7 +3422,7 @@ def update_network_list_elements_command(client: Client, network_list_id: str, e
     elements = argToList(elements)
     # demisto.results(elements)
 
-    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  #type: ignore # noqa
+    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  # type: ignore # noqa
 
     if raw_response:
         human_readable = f'**{INTEGRATION_NAME} - network list {network_list_id} updated**'
@@ -5254,6 +5290,35 @@ def list_papi_property_by_hostname_command(client: Client,
     return human_readable, context_entry, raw_response
 
 
+# Created by D.S. 2023-03-30
+@logger
+def list_siteshield_maps_command(client: Client) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Returns a list of all Site Shield maps that belong to your account.
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_siteshield_maps()
+
+    title = f'{INTEGRATION_NAME} - list siteshield map command'
+    entry_context, human_readable_ec = list_siteshield_maps_ec(raw_response=raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.SiteShieldMaps": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -5261,14 +5326,19 @@ def main():
     params = demisto.params()
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
+    client_token = params.get('credentials_client_token', {}).get('password') or params.get('clientToken')
+    access_token = params.get('credentials_access_token', {}).get('password') or params.get('accessToken')
+    client_secret = params.get('credentials_client_secret', {}).get('password') or params.get('clientSecret')
+    if not(client_token and access_token and client_secret):
+        raise DemistoException('Client token, Access token and Client secret must be provided.')
     client = Client(
         base_url=params.get('host'),
         verify=verify_ssl,
         proxy=proxy,
         auth=EdgeGridAuth(
-            client_token=params.get('clientToken'),
-            access_token=params.get('accessToken'),
-            client_secret=params.get('clientSecret')
+            client_token=client_token,
+            access_token=access_token,
+            client_secret=client_secret
         )
     )
     command = demisto.command()
@@ -5337,6 +5407,7 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history':
             list_appsec_configuration_activation_history_command,
         f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-hostname': list_papi_property_by_hostname_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-siteshield-map': list_siteshield_maps_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())

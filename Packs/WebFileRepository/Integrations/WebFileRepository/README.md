@@ -91,6 +91,27 @@ Remove all the files from the repository
 #### Context Output
 
 There is no context output for this command.
+### wfr-upload-file
+***
+Upload a file to the repository
+
+
+#### Base Command
+
+`wfr-upload-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The entry ID list of the file. | Required | 
+| file_name | The name of the file. | Optional | 
+| extract_archive | Set to true to extract files to archive files, otherwise false. Possible values are: true, false. Default is false. | Optional | 
+| upload_directory | The directory path where to upload. Default is /. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
 ### wfr-upload-files
 ***
 Upload files to the repository

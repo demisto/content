@@ -1,3 +1,5 @@
+Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
+
 Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.
 This integration was integrated and tested with version v2 of EWS Extension Online Powershell v2
 

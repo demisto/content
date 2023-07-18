@@ -45,10 +45,10 @@ class Machine(Enum):
     Represents an XSOAR version.
     Serves as the single source of truth for versions used for collect_tests.
     """
-    V6_5 = Version('6.5')
-    V6_6 = Version('6.6')
     V6_8 = Version('6.8')
     V6_9 = Version('6.9')
+    V6_10 = Version('6.10')
+    V6_11 = Version('6.11')
     MASTER = 'Master'
 
     @staticmethod
@@ -190,14 +190,17 @@ class ContentItem(DictFileBased):
             return self['layout']['id']
         if self.path.parent.name == 'CorrelationRules' and self.path.suffix == '.yml':
             return self['global_rule_id']
-        if self.path.parent.name == 'XSIAMDashboards' and self.path.suffix == '.json':
-            return self['dashboards_data'][0]['global_id']
-        if self.path.parent.name == 'Triggers' and self.path.suffix == '.json':
-            return self['trigger_id']
-        if self.path.parent.parent.name == 'XDRCTemplates' and self.path.suffix == '.json':
-            return self['content_global_id']
-        if self.path.parent.name == 'LayoutRules' and self.path.suffix == '.json':
-            return self['rule_id']
+        if self.path.suffix == '.json':
+            if self.path.parent.name == 'XSIAMDashboards':
+                return self['dashboards_data'][0]['global_id']
+            if self.path.parent.name == 'XSIAMReports':
+                return self['templates_data'][0]['global_id']
+            if self.path.parent.name == 'Triggers':
+                return self['trigger_id']
+            if self.path.parent.parent.name == 'XDRCTemplates':
+                return self['content_global_id']
+            if self.path.parent.name == 'LayoutRules':
+                return self['rule_id']
         return self['id']
 
     @property
@@ -301,9 +304,9 @@ class PackManager:
         return self.get_pack_metadata(pack_id).get('support', '').lower() or None
 
 
-def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> Optional[tuple]:
+def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> tuple:
     if value is None:
-        return value
+        return tuple()
     if not value:
         return ()
     if isinstance(value, tuple):

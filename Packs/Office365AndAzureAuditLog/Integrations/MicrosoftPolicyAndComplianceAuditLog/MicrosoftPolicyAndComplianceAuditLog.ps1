@@ -1,14 +1,14 @@
 $script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
-function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
+function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client) {
     $integration_context = @{
-        "DeviceCode" = $client.device_code
-        "DeviceCodeExpiresIn" = $client.device_code_expires_in
-        "DeviceCodeCreationTime" = $client.device_code_creation_time
-        "AccessToken" = $client.access_token
-        "RefreshToken" = $client.refresh_token
-        "AccessTokenExpiresIn" = $client.access_token_expires_in
+        "DeviceCode"              = $client.device_code
+        "DeviceCodeExpiresIn"     = $client.device_code_expires_in
+        "DeviceCodeCreationTime"  = $client.device_code_creation_time
+        "AccessToken"             = $client.access_token
+        "RefreshToken"            = $client.refresh_token
+        "AccessTokenExpiresIn"    = $client.access_token_expires_in
         "AccessTokenCreationTime" = $client.access_token_creation_time
     }
 
@@ -26,36 +26,26 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
 }
 
 function CreateNewSession {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Scope='Function')]
-    param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
-    if ($password){
-        $url = "$url/powershell-liveid"
-    }
-    else
-    {
-        $url = "$url/powershell-liveid?BasicAuthToOAuthConversion=true"
-    }
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope = 'Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Scope = 'Function')]
+    param([string]$url, [string]$upn, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
+    $url = "$url/powershell-liveid?BasicAuthToOAuthConversion=true"
+    $credential = ConvertTo-SecureString "Bearer $bearer_token" -AsPlainText -Force
 
-    if ($password){
-        $credential = ConvertTo-SecureString "$password" -AsPlainText -Force
-    } else {
-        $credential = ConvertTo-SecureString "Bearer $bearer_token" -AsPlainText -Force
-    }
     $credential = New-Object System.Management.Automation.PSCredential($upn, $credential)
     $session_option_params = @{
         "SkipCACheck" = $insecure
         "SkipCNCheck" = $insecure
     }
-    $session_options =  New-PSSessionOption @session_option_params
+    $session_options = New-PSSessionOption @session_option_params
     $sessions_params = @{
         "ConfigurationName" = "Microsoft.Exchange"
-        "ConnectionUri" = $url
-        "Credential" = $credential
-        "Authentication" = "Basic"
-        "AllowRedirection" = $true
-        "SessionOption" = $session_options
+        "ConnectionUri"     = $url
+        "Credential"        = $credential
+        "Authentication"    = "Basic"
+        "AllowRedirection"  = $true
+        "SessionOption"     = $session_options
     }
     $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue
 
@@ -73,9 +63,6 @@ function CreateNewSession {
 
         .PARAMETER upn
         User Principal Name (UPN) is the name of a system user in an email address format.
-
-        .PARAMETER password
-        Password is filled only if authentication method is basic auth.
 
         .PARAMETER bearer_token
         Valid bearer token value.
@@ -99,8 +86,7 @@ function CreateNewSession {
     #>
 }
 
-class OAuth2DeviceCodeClient
-{
+class OAuth2DeviceCodeClient {
     [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
     [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
     [string]$device_code
@@ -114,8 +100,8 @@ class OAuth2DeviceCodeClient
     [bool]$proxy
 
     OAuth2DeviceCodeClient(
-            [string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy
+        [string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
+        [string]$refresh_token, [string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy
     ) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
@@ -174,11 +160,11 @@ class OAuth2DeviceCodeClient
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy) {
         $ic = $script:Demisto.getIntegrationContext()
         $client = [OAuth2DeviceCodeClient]::new(
-                $ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy
+            $ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
+            $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy
         )
 
         return $client
@@ -201,11 +187,11 @@ class OAuth2DeviceCodeClient
         $this.device_code_creation_time = $null
         # Get device-code and user-code
         $params = @{
-            "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
-            "Method" = "Post"
-            "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
-            "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
-            "NoProxy" = !$this.proxy
+            "URI"                  = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
+            "Method"               = "Post"
+            "Headers"              = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+            "Body"                 = "client_id=$($this.application_id)&scope=$($this.application_scope)"
+            "NoProxy"              = !$this.proxy
             "SkipCertificateCheck" = $this.insecure
         }
         $response = Invoke-WebRequest @params
@@ -236,11 +222,11 @@ class OAuth2DeviceCodeClient
         # Get new token using device-code
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
-                "Method" = "Post"
-                "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
-                "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
-                "NoProxy" = !$this.proxy
+                "URI"                  = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "Method"               = "Post"
+                "Headers"              = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+                "Body"                 = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
+                "NoProxy"              = !$this.proxy
                 "SkipCertificateCheck" = $this.insecure
             }
             $response = Invoke-WebRequest @params
@@ -253,7 +239,8 @@ class OAuth2DeviceCodeClient
             }
             elseif ($response_body.error -eq "expired_token") {
                 $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !$script:COMMAND_PREFIX-auth-start, Please run the ***$script:COMMAND_PREFIX-auth-start*** command again."
-            } else {
+            }
+            else {
                 $error_details = $response_body
             }
 
@@ -286,11 +273,11 @@ class OAuth2DeviceCodeClient
         # Get new token using refresh token
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
-                "Method" = "Post"
-                "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
-                "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
-                "NoProxy" = !$this.proxy
+                "URI"                  = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "Method"               = "Post"
+                "Headers"              = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+                "Body"                 = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
+                "NoProxy"              = !$this.proxy
                 "SkipCertificateCheck" = $this.insecure
             }
             $response = Invoke-WebRequest @params
@@ -330,8 +317,8 @@ class OAuth2DeviceCodeClient
         #>
     }
 
-    [bool]IsDeviceCodeExpired(){
-        if (!$this.device_code){
+    [bool]IsDeviceCodeExpired() {
+        if (!$this.device_code) {
             return $true
         }
         $current_time = [int][double]::Parse((Get-Date -UFormat %s)) - 30
@@ -354,8 +341,8 @@ class OAuth2DeviceCodeClient
         #>
     }
 
-    [bool]IsAccessTokenExpired(){
-        if (!$this.access_token){
+    [bool]IsAccessTokenExpired() {
+        if (!$this.access_token) {
             return $true
         }
         $current_time = [int][double]::Parse((Get-Date -UFormat %s)) - 30
@@ -377,7 +364,7 @@ class OAuth2DeviceCodeClient
         #>
     }
 
-    RefreshTokenIfExpired(){
+    RefreshTokenIfExpired() {
         if ($this.access_token -and $this.IsAccessTokenExpired()) {
             $this.RefreshTokenRequest()
         }
@@ -396,16 +383,14 @@ class OAuth2DeviceCodeClient
 class ExchangeOnlineClient {
     [string]$url
     [string]$upn
-    [string]$password
     [string]$bearer_token
-    [psobject]$session
+    [PSObject]$session
     [bool]$insecure
     [bool]$proxy
 
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
-    ExchangeOnlineClient([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
+    ExchangeOnlineClient([string]$url, [string]$upn, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
         $this.upn = $upn
-        $this.password = $password
         $this.bearer_token = $bearer_token
         $this.insecure = $insecure
         $this.proxy = $proxy
@@ -419,9 +404,6 @@ class ExchangeOnlineClient {
 
             .PARAMETER upn
             User Principal Name (UPN) is the name of a system user in an email address format.
-
-            .PARAMETER password
-            Password is filled only if authentication method is basic auth.
 
             .PARAMETER bearer_token
             Valid bearer token value.
@@ -438,7 +420,7 @@ class ExchangeOnlineClient {
     }
 
     CreateSession() {
-        $this.session = CreateNewSession -url $this.url -upn $this.upn -password $this.password -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
+        $this.session = CreateNewSession -url $this.url -upn $this.upn -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
         <#
             .DESCRIPTION
             This method is for internal use. It creates session to Exchange Online.
@@ -477,32 +459,31 @@ class ExchangeOnlineClient {
         [String[]]$operations,
         [String[]]$user_ids,
         [int]$result_size
-    ){
+    ) {
         Import-PSSession -Session $this.session -CommandName Search-UnifiedAuditLog -AllowClobber
         $cmd_args = @{
             "StartDate" = $start_date
-            "EndDate" = $end_date
+            "EndDate"   = $end_date
         }
-        if ($record_type){
+        if ($record_type) {
             $cmd_args.RecordType = $record_type
         }
-        if ($free_text){
+        if ($free_text) {
             $cmd_args.FreeText = $free_text
         }
-        if ($operations.Length -gt 0){
+        if ($operations.Length -gt 0) {
             $cmd_args.Operations = $operations
         }
-        if ($ip_addresses.Length -gt 0)
-        {
+        if ($ip_addresses.Length -gt 0) {
             $cmd_args.IPAddresses = $ip_addresses
         }
-        if ($user_ids.Length -gt 0)
-        {
+        if ($user_ids.Length -gt 0) {
             $cmd_args.UserIds = $user_ids
         }
-        if ($result_size -gt 0){
+        if ($result_size -gt 0) {
             $cmd_args.ResultSize = $result_size
-        } else {
+        }
+        else {
             $cmd_args.ResultSize = 5000
         }
         return Search-UnifiedAuditLog @cmd_args -ErrorAction Stop
@@ -510,24 +491,6 @@ class ExchangeOnlineClient {
 }
 
 #### COMMAND FUNCTIONS ####
-
-function TestModuleCommand {
-    [CmdletBinding()]
-    Param(
-        [ExchangeOnlineClient]$exo_client
-    )
-    try {
-        $exo_client.CreateSession()
-    }
-    finally {
-        $exo_client.CloseSession()
-    }
-    $raw_response = $null
-    $human_readable = "ok"
-    $entry_context = $null
-
-    Write-Output $human_readable, $entry_context, $raw_response
-}
 
 function StartAuthCommand {
     [CmdletBinding()]
@@ -575,29 +538,30 @@ function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClien
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
-function SearchAuditLogCommand{
+function SearchAuditLogCommand {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][ExchangeOnlineClient]$client,
         [hashtable]$kwargs
     )
-    try
-    {
+    try {
         $client.CreateSession()
-        if ($kwargs.end_date){
+        if ($kwargs.end_date) {
             $end_date = Get-Date $kwargs.end_date
-        } else {
+        }
+        else {
             $end_date = Get-Date
         }
         try {
             # If parse date range works, it is fine. The end date will be automatically now.
             $start_date, $end_date = ParseDateRange $kwargs.start_date
-        } catch {
-            try
-            {
+        }
+        catch {
+            try {
                 # If it didn't work, it should be a date.
                 $start_date = Get-Date $kwargs.start_date
-            } catch {
+            }
+            catch {
                 # If it's not a date and not a date range - throw.
                 $start_date = $kwargs.start_date
                 throw "start_date ('$start_date') is not a date range or a valid date "
@@ -605,19 +569,18 @@ function SearchAuditLogCommand{
         }
 
         $raw_response = $client.SearchUnifiedAuditLog(
-                $start_date,
-                $end_date,
-                $kwargs.free_text,
-                $kwargs.record_type,
+            $start_date,
+            $end_date,
+            $kwargs.free_text,
+            $kwargs.record_type,
                 (ArgToList $kwargs.ip_addresses),
                 (ArgToList $kwargs.operations),
                 (ArgToList $kwargs.user_ids),
                 ($kwargs.result_size -as [int])
         )
-        if ($raw_response){
+        if ($raw_response) {
             $list = New-Object Collections.Generic.List[PSObject]
-            foreach ($item in $raw_response)
-            {
+            foreach ($item in $raw_response) {
                 $list.add((ConvertFrom-Json $item.AuditData))
             }
             $context = @{
@@ -625,12 +588,14 @@ function SearchAuditLogCommand{
             }
             $human_readable = TableToMarkdown $list.ToArray() "Audit log from $start_date to $end_date"
             Write-Output $human_readable, $context, $list
-        } else {
+        }
+        else {
             $human_readable = "Audit log from $start_date to $end_date is empty"
             Write-Output $human_readable, $null, $null
         }
 
-    } finally {
+    }
+    finally {
         $client.CloseSession()
     }
 }
@@ -640,33 +605,33 @@ function Main {
     $command_arguments = $demisto.Args()
     $integration_params = $demisto.Params()
     <#
-        Proxy currently isn't supported by PWSH New-Pssession, However partly implmentation of proxy feature still function (OAuth2.0 and redirect),
+        Proxy currently isn't supported by PWSH New-PSSession, However partly implementation of proxy feature still function (OAuth2.0 and redirect),
         leaving this parameter for feature development if required.
     #>
     $no_proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
 
-    try
-    {
+    try {
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating ExchangeOnline client
         $exo_client = [ExchangeOnlineClient]::new(
-                $integration_params.url, $integration_params.credentials.identifier,
-                $integration_params.credentials.password, $oauth2_client.access_token, $insecure, $no_proxy)
+            $integration_params.url, $integration_params.credentials.identifier,
+            $oauth2_client.access_token, $insecure, $no_proxy)
         # Executing command
         $demisto.Debug("Command being called is $command")
-        switch ($command)
-        {
+        switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
+                throw "To complete the authentication process, run the '!o365-auditlog-auth-start' command,
+                and follow the printed instructions.
+                Then to verify the authentication was successful, run '!o365-auditlog-auth-test'."
             }
             "$script:COMMAND_PREFIX-search" {
                 ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $exo_client $command_arguments
             }
-                "$script:COMMAND_PREFIX-auth-start" {
+            "$script:COMMAND_PREFIX-auth-start" {
                 ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
             }
             "$script:COMMAND_PREFIX-auth-complete" {
@@ -675,25 +640,26 @@ function Main {
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $exo_client
             }
-            default{
+            default {
                 throw "Command $command no implemented"
             }
         }
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
-        # Return results to Demisto Server
+        # Return results to server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
-    } catch {
-                $demisto.debug("Integration: $script:INTEGRATION_NAME
-Command: $command
-Arguments: $($command_arguments | ConvertTo-Json)
-Error: $($_.Exception.Message)")
+    }
+    catch {
+        $demisto.debug("Integration: $script:INTEGRATION_NAME
+            Command: $command
+            Arguments: $($command_arguments | ConvertTo-Json)
+            Error: $($_.Exception.Message)")
         if ($command -ne "test-module") {
             ReturnError "Error:
-Integration: $script:INTEGRATION_NAME
-Command: $command
-Arguments: $($command_arguments | ConvertTo-Json)
-Error: $($_.Exception)" | Out-Null
+            Integration: $script:INTEGRATION_NAME
+            Command: $command
+            Arguments: $($command_arguments | ConvertTo-Json)
+            Error: $($_.Exception)" | Out-Null
         }
         else {
             ReturnError $_.Exception.Message

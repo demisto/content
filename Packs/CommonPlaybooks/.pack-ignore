@@ -18,6 +18,8 @@ SecneurX
 VirusTotal
 DetectedHashes
 NonFoundHashes
+opswat
+filescan
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
@@ -103,14 +105,8 @@ ignore=PA129
 [file:playbook-Block_Indicators_-_Generic_v2.yml]
 ignore=PB118
 
-[file:playbook-Block_IP_-_Generic_v3.yml]
-ignore=PB118,PB119
-
 [file:playbook-Retrieve_File_from_Endpoint_-_Generic_README.md]
 ignore=RM108
 
 [file:playbook-Get_File_Sample_By_Hash_-_Generic_v2_README.md]
 ignore=RM108
-
-[file:playbook-Block_Account_-_Generic_v2.yml]
-ignore=PB119

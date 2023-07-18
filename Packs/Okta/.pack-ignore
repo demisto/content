@@ -29,3 +29,12 @@ zipprotectwithpassword
 [file:IAMInitOktaUser.yml]
 ignore=BA124
 
+[file:OktaModelingRules.yml]
+ignore=MR108
+
+[file:Okta.yml]
+ignore=PR101
+
+[file:OktaModelingRules_1_3.yml]
+ignore=MR108
+

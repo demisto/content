@@ -1,14 +1,14 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 ''' Cado Response API Integration for the Cortex XSOAR Platform '''
 
 import time
 import traceback
 from typing import Any, Dict, Optional
 
-from CommonServerPython import *
 
 from CommonServerUserPython import *
 
-import demistomock as demisto
 
 import urllib3
 

@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import emoji
 
-import demistomock as demisto
-from CommonServerPython import *
 import traceback
 import urllib3
 from datetime import date
@@ -2069,25 +2069,30 @@ def get_passive_dns(client: Client, value, all_results=None, type=DBotScoreType.
 
 
 def import_ioc_with_approval(client: Client, import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
-                             url_mapping=None, email_mapping=None, md5_mapping=None, tags=None):
+                             threat_type="exploit", severity="low", default_state='inactive',
+                             ip_mapping=None, domain_mapping=None,
+                             url_mapping=None, email_mapping=None, md5_mapping=None, tags=None,
+                             source_confidence_weight=None, tags_tlp: str = None, expiration_ts=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    # prepare
     data = assign_params(
         classification=classification,
         confidence=int(confidence),
+        source_confidence_weight=arg_to_number(source_confidence_weight) if source_confidence_weight else None,
         ip_mapping=ip_mapping,
+        default_state=default_state,
+        expiration_ts=expiration_ts,
         domain_mapping=domain_mapping,
         url_mapping=url_mapping,
         email_mapping=email_mapping,
         md5_mapping=md5_mapping,
         threat_type=threat_type,
         severity=severity,
-        tags=json.dumps([{'name': tag} for tag in argToList(tags)]) if tags else None
+        tags=(json.dumps([({'name': tag, 'tlp': tags_tlp.lower()} if tags_tlp else {'name': tag}) for tag in argToList(tags)])
+              if tags else None)
     )
     files = None
     uploaded_file = None
@@ -2127,13 +2132,16 @@ def import_ioc_with_approval(client: Client, import_type, import_value, confiden
         raise DemistoException('The data was not imported. Check if valid arguments were passed')
 
 
-def import_ioc_without_approval(client: Client, file_id, classification, confidence=None, allow_unresolved='no',
+def import_ioc_without_approval(client: Client, classification, file_id=None, confidence=None,
+                                allow_unresolved='no',
                                 source_confidence_weight=None, expiration_ts=None, severity=None,
-                                tags=None, trustedcircles=None):
+                                tags=None, trustedcircles=None, indicators_json=None, tags_tlp: str = None):
     """
         Imports indicators data to ThreatStream.
         file_id of uploaded file to war room.
     """
+    if not file_id and not indicators_json:
+        raise DemistoException(f'{THREAT_STREAM} - Please specify file_id or indicators_json')
     if tags:
         tags = argToList(tags)
     if trustedcircles:
@@ -2142,15 +2150,19 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         confidence = int(confidence)
     if source_confidence_weight:
         source_confidence_weight = int(source_confidence_weight)
-    try:
-        # entry id of uploaded file to war room
-        file_info = demisto.getFilePath(file_id)
-        with open(file_info['path'], 'rb') as uploaded_file:
-            ioc_to_import = json.load(uploaded_file)
-    except json.JSONDecodeError:
-        raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a valid json file.')
-    except Exception:
-        raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a file.')
+    ioc_to_import = {}
+    if file_id:
+        try:
+            # entry id of uploaded file to war room
+            file_info = demisto.getFilePath(file_id)
+            with open(file_info['path'], 'rb') as uploaded_file:
+                ioc_to_import = json.load(uploaded_file)
+        except json.JSONDecodeError:
+            raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a valid json file.')
+        except Exception:
+            raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a file.')
+    elif indicators_json:
+        ioc_to_import = json.loads(indicators_json.replace("'", '"'))
     meta = ioc_to_import.get('meta', {})
     meta |= assign_params(
         classification=classification,
@@ -2159,12 +2171,12 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         source_confidence_weight=source_confidence_weight,
         expiration_ts=expiration_ts,
         severity=severity,
-        tags=tags,
+        tags=([({'name': tag, 'tlp': tags_tlp.lower()} if tags_tlp else {'name': tag}) for tag in argToList(tags)]
+              if tags else None),
         trustedcircles=trustedcircles
     )
-
     ioc_to_import.update({"meta": meta})
-    client.http_request("PATCH", "v1/intelligence/", json=ioc_to_import, resp_type='text')
+    client.http_request("PATCH", "v2/intelligence/", json=ioc_to_import, resp_type='text')
     return "The data was imported successfully."
 
 
@@ -2362,7 +2374,7 @@ def submit_report(client: Client, submission_type, submission_value, import_indi
         'import_indicators': import_indicators
     }
     if detail:
-        data['detail'] = detail
+        data['report_radio-notes'] = detail
 
     uploaded_file = None
     files = None

@@ -32,13 +32,10 @@ args:
 - description: Maximum number of API calls the script sends.
   name: limit
   defaultValue: '500'
-comment: 'A wrapper script for the panorama-security-policy-match command that receives
-  multiple values for the source, destination, and destination port arguments and performs
-  the policy match for each combination of the inputs.'
+comment: 'A wrapper script for the panorama-security-policy-match command that receives multiple values for the source, destination, and destination port arguments and performs the policy match for each combination of the inputs.'
 commonfields:
   id: PanoramaSecurityPolicyMatchWrapper
   version: -1
-enabled: false
 name: PanoramaSecurityPolicyMatchWrapper
 outputs:
 - contextPath: Panorama.SecurityPolicyMatch.Rules.Name
@@ -63,11 +60,10 @@ outputs:
   description: The matching rule to zone.
   type: String
 script: '-'
-system: false
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)

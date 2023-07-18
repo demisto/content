@@ -1,4 +1,7 @@
-Use this script to delete a reported phishing email from the mailbox it was reported to.
+A script for deleting reported phishing emails from the mailbox in which they were reported.
+
+## Note
+The script was specifically developed for use by the `Delete Reported Email` layout on the `Phishing - Generic v3` playbook, and should not be used elsewhere.
 
 ## Script Data
 ---
@@ -31,3 +34,12 @@ Use this script to delete a reported phishing email from the mailbox it was repo
 | DeleteReportedEmail.using_brand | The email service that was used to delete the email. | String |
 | DeleteReportedEmail.email_subject | The subject of the deleted email. | String |
 | DeleteReportedEmail.message_id | The message ID of the deleted email. | String |
+
+## Troubleshooting
+---
+* If the `Reported Email Origin` field is missing or has a value of `None`, the script will not be able to locate the email and fail.  
+  This can happen if the email forwarded to the listener mailbox was not forwarded as an attachment (with an `EML` file) as it should.
+* If either the `Reported Email Message ID` or `Reported Email To` fields are missing, the cause is likely to be one of the following:
+  * An `EML` file was not attached to the email.
+  * The playbook is being used as a sub-playbook, causing the `EML` file to exist only in the parent playbook.
+  * The `Process Email - Generic v2` sub-playbook failed, or the `ParseEmailFilesV2` step within it specifically failed.

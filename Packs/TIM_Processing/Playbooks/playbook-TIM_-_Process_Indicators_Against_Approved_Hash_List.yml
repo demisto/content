@@ -1,6 +1,8 @@
 id: TIM - Process Indicators Against Approved Hash List
 version: -1
 fromversion: 5.5.0
+marketplaces:
+- xsoar
 name: TIM - Process Indicators Against Approved Hash List
 description: This playbook checks if file hash indicators exist in
   a Cortex XSOAR list. If the indicators exist in the list, they are tagged as approved_hash.

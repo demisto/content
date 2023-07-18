@@ -1,7 +1,7 @@
-# type: ignore
-# pylint: disable=no-member
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# type: ignore
+# pylint: disable=no-member
 import copy
 from typing import Callable
 from googleapiclient import discovery
@@ -46,6 +46,58 @@ class Client:
                 proxy_user=parsed_proxy.username,
                 proxy_pass=parsed_proxy.password)
         return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify_certificate)
+
+    def gcp_iam_tagbindings_list_request(self, parent: str, limit: int = None) -> dict:
+        """
+        List tag bindings (key value pair) applied to a project/folder/organization object.
+        Args:
+            parent (str): The name of the parent resource to list projects under.
+            limit (int): The number of results to retrieve.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(parent=parent, pageSize=limit)
+
+        request = self.cloud_resource_manager_service.tagBindings().list(**params)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_tagvalues_get_request(self, name: str) -> dict:
+        """
+        Retrieves a TagValue.
+        Args:
+            name (str): Resource name for TagValue in the format `tagValues/456`.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(name=name)
+
+        request = self.cloud_resource_manager_service.tagValues().get(**params)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_tagkeys_get_request(self, name: str) -> dict:
+        """
+        Retrieves a TagKey.
+        Args:
+            name (str): A resource name in the format `tagKeys/{id}`, such as `tagKeys/123`.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(name=name)
+
+        request = self.cloud_resource_manager_service.tagKeys().get(**params)
+        response = request.execute()
+
+        return response
 
     def gcp_iam_project_list_request(self, parent: str, limit: int = None, page_token=None,
                                      show_deleted: bool = False) -> dict:
@@ -3667,6 +3719,54 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
     return command_results
 
 
+def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    List tag bindings (key value pair) applied to a project/folder/organization object.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+
+    parent = args.get('parent')
+
+    if not parent:
+        raise Exception('One of the arguments: ''parent'' must be provided.')
+    max_limit = 100
+
+    res_binding = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
+    if not res_binding:
+        return "No tag bindingds found"
+    if not res_binding.get('tagBindings')[0].get('tagValue'):
+        return "No tag bindingds found"
+    val_list = []
+    for value in res_binding.get('tagBindings'):
+        res_value = client.gcp_iam_tagvalues_get_request(name=value.get('tagValue'))
+        res_key = client.gcp_iam_tagkeys_get_request(name=res_value.get('parent'))
+        kv = {'key': res_key['shortName'], 'value': res_value['shortName']}
+        val_list.append(kv)
+
+    readable_output = tableToMarkdown(
+        "Keys and Values",
+        val_list,
+        headers=['key', 'value'],
+        headerTransform=pascalToSpace
+    )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCPIAM.TagBindings',
+        outputs_key_field='key',
+        outputs=val_list,
+        raw_response=val_list
+    )
+
+    return command_results
+
+
 def test_module(service_account_key: str) -> None:
     try:
         client: Client = Client(client_secret=service_account_key)
@@ -3756,7 +3856,8 @@ def main() -> None:
             'gcp-iam-testable-permission-list': gcp_iam_testable_permission_list_command,
             'gcp-iam-grantable-role-list': gcp_iam_grantable_role_list_command,
             'gcp-iam-role-get': gcp_iam_predefined_role_get_command,
-            'gcp-iam-role-list': gcp_iam_predefined_role_list_command
+            'gcp-iam-role-list': gcp_iam_predefined_role_list_command,
+            'gcp-iam-tagbindings-list': gcp_iam_tagbindings_list_command
         }
 
         if command in commands:

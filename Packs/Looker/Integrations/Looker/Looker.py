@@ -7,9 +7,10 @@ from typing import Dict
 import requests
 import traceback
 import json
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -20,8 +21,8 @@ MAX_TIMEOUT_MINUTES = 5
 
 ''' GLOBALS/PARAMS '''
 SESSION_VALIDITY_THRESHOLD = timedelta(minutes=MAX_TIMEOUT_MINUTES)
-CLIENT_ID = demisto.params().get('client_id')
-CLIENT_SECRET = demisto.params().get('client_secret')
+CLIENT_ID = demisto.params().get('credentials_api3_client', {}).get('identifier') or demisto.params().get('client_id')
+CLIENT_SECRET = demisto.params().get('credentials_api3_client', {}).get('password') or demisto.params().get('client_secret')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url']
                                           and demisto.params()['url'].endswith('/')) else demisto.params()['url']
@@ -401,6 +402,8 @@ def create_look(query_id, space_id, look_title, look_description=""):
 
 def main():
     LOG('Command being called is %s' % (demisto.command()))
+    if not(CLIENT_ID and CLIENT_SECRET):
+        raise DemistoException('API3 Client ID and Secret must be provided.')
     try:
         handle_proxy()
         verify_url(SERVER)

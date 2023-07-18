@@ -10,13 +10,10 @@ args:
 - defaultValue:
   description: The mailbox from which emails are sent from the 3rd party integration.
   name: service_mail
-  required: false
 - name: mail_sender_instance
-  required: false
   description: Name of the mail sender instance name for transmitting emails
   defaultValue:
 - name: new_thread
-  required: false
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -24,6 +21,9 @@ args:
   - n/a
   description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only
   defaultValue: n/a
+- name: subject_include_incident_id
+  description: Include the Incident ID within the email subject.
+  defaultValue: 'false'
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
@@ -39,7 +39,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
@@ -47,5 +47,4 @@ contentitemexportablefields:
     fromServerVersion: ''
 tags: []
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole

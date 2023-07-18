@@ -1,0 +1,9 @@
+[file:MicrosoftNPS.yml]
+ignore=MR108
+
+[file:MicrosoftNPSParsingRules.yml]
+ignore=PR101
+
+[file:MicrosoftNPS_1_3.yml]
+ignore=MR108
+

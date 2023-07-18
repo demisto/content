@@ -34,13 +34,13 @@ def test_params(mocker, params, expected_result):
       - Case 2: Should return "ID must be provided.".
       - Case 3: Should return "Token must be provided.".
     """
-
+    import MicrosoftGraphMail
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(MicrosoftGraphMail, 'return_error')
 
-    with pytest.raises(Exception) as e:
-        main()
+    main()
 
-    assert expected_result in str(e.value)
+    assert expected_result in MicrosoftGraphMail.return_error.call_args[0][0]
 
 
 @pytest.mark.parametrize('params, expected_results', [
@@ -58,22 +58,31 @@ def test_params_working(mocker, params, expected_results):
     When:
       - Setting an instance
     Then:
-      - Ensure that the instance can Co-op with previous versions params names and that MsGraphClient.__init__
+      - Ensure that the instance can Co-op with previous versions params names and that MsGraphMailClient.__init__
       was called with the right tenant id, auth id and key.
-      - Case 1: MsGraphClient.__init__ Should be called with tenant id, auth id and key extracted from credentials type params.
-      - Case 2: MsGraphClient.__init__ Should be called with tenant id, auth id and key
+      - Case 1: MsGraphMailClient.__init__ Should be called with tenant id,
+      auth id and key extracted from credentials type params.
+      - Case 2: MsGraphMailClient.__init__ Should be called with tenant id, auth id and key
       not extracted from credentials type params.
-      - Case 3: MsGraphClient.__init__ Should be called with only key param extracted from credentials type params.
+      - Case 3: MsGraphMailClient.__init__ Should be called with only key param extracted from credentials type params.
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(MsGraphClient, '__init__', return_value=None)
+    mocker.patch.object(MsGraphMailBaseClient, '__init__', return_value=None)
     main()
-    MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
-                                              'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
-                                              '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='',
-                                              display_full_email_body=False, mark_fetched_read=False, look_back=0,
-                                              managed_identities_client_id=None)
+    MsGraphMailBaseClient.__init__.assert_called_with(self_deployed=False, tenant_id=expected_results[0],
+                                                      auth_id=expected_results[1],
+                                                      enc_key=expected_results[2],
+                                                      app_name='ms-graph-mail',
+                                                      base_url='/v1.0',
+                                                      verify=True, proxy=False,
+                                                      ok_codes=(200, 201, 202, 204),
+                                                      mailbox_to_fetch='', folder_to_fetch='Inbox',
+                                                      first_fetch_interval='15 minutes',
+                                                      emails_fetch_limit=50, timeout=10, endpoint='com',
+                                                      certificate_thumbprint='', private_key='',
+                                                      display_full_email_body=False, mark_fetched_read=False, look_back=0,
+                                                      managed_identities_client_id=None)
 
 
 def test_build_mail_object():
@@ -81,7 +90,7 @@ def test_build_mail_object():
     user_id = 'ex@example.com'
     with open('test_data/mails') as mail_json:
         mail = json.load(mail_json)
-        res = build_mail_object(mail, user_id=user_id, get_body=True)
+        res = GraphMailUtils.build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, list)
         assert len(mail[0].get('value')) == len(res)
         assert res[0]['Created'] == '2019-04-16T19:40:00Z'
@@ -90,19 +99,21 @@ def test_build_mail_object():
 
     with open('test_data/mail') as mail_json:
         mail = json.load(mail_json)
-        res = build_mail_object(mail, user_id=user_id, get_body=True)
+        res = GraphMailUtils.build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, dict)
         assert res['UserID'] == user_id
         assert res['Body']
 
 
 def test_assert_pages():
-    assert assert_pages(3) == 3 and assert_pages(None) == 1 and assert_pages('4') == 4
+    assert GraphMailUtils.assert_pages(3) == 3
+    assert GraphMailUtils.assert_pages(None) == 1
+    assert GraphMailUtils.assert_pages('4') == 4
 
 
 def test_build_folders_path():
     inp = 'i,s,f,q'
-    response = build_folders_path(inp)
+    response = GraphMailUtils.build_folders_path(inp)
     assert response == 'mailFolders/i/childFolders/s/childFolders/f/childFolders/q'
 
 
@@ -119,11 +130,11 @@ def oproxy_client():
     base_url = "https://graph.microsoft.com/v1.0"
     ok_codes = (200, 201, 202)
 
-    return MsGraphClient(self_deployed=False, tenant_id='', auth_and_token_url=auth_and_token_url,
-                         enc_key=enc_key, app_name=app_name, base_url=base_url, use_ssl=True, proxy=False,
-                         ok_codes=ok_codes, mailbox_to_fetch=mailbox_to_fetch,
-                         folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
-                         emails_fetch_limit=emails_fetch_limit)
+    return MsGraphMailClient(self_deployed=False, tenant_id='', auth_id=auth_and_token_url,
+                             enc_key=enc_key, app_name=app_name, base_url=base_url, verify=True, proxy=False,
+                             ok_codes=ok_codes, mailbox_to_fetch=mailbox_to_fetch,
+                             folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
+                             emails_fetch_limit=emails_fetch_limit)
 
 
 def self_deployed_client():
@@ -137,10 +148,10 @@ def self_deployed_client():
     base_url = "https://graph.microsoft.com/v1.0"
     ok_codes = (200, 201, 202)
 
-    return MsGraphClient(self_deployed=True, tenant_id=tenant_id, auth_and_token_url=client_id, enc_key=client_secret,
-                         base_url=base_url, use_ssl=True, proxy=False, ok_codes=ok_codes, app_name='',
-                         mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch,
-                         first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit)
+    return MsGraphMailClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                             base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes, app_name='',
+                             mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch,
+                             first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -167,7 +178,7 @@ def test_pages_puller(mocker, client):
     }
     responses = client.pages_puller(first_response, 1)
     assert len(responses) == 1
-    mocker.patch.object(client.ms_client, 'http_request', return_value=second_response)
+    mocker.patch.object(client, 'http_request', return_value=second_response)
     responses = client.pages_puller(first_response, 2)
     assert len(responses) == 2
 
@@ -191,9 +202,9 @@ def test_list_mails_command(mocker, client):
         mail = json.load(mail_json)
         mocker.patch.object(client, 'list_mails', return_value=mail)
         mocker.patch.object(demisto, 'results')
-        list_mails_command(client, args)
-        hr = demisto.results.call_args[0][0].get('HumanReadable')
-        assert '2 mails received \nPay attention there are more results than shown. For more data please ' \
+        result_entry = list_mails_command(client, args)
+        hr = result_entry.get('HumanReadable')
+        assert '2 mails received\nPay attention there are more results than shown. For more data please ' \
                'increase "pages_to_pull" argument' in hr
 
     # call list mails with no emails
@@ -201,8 +212,8 @@ def test_list_mails_command(mocker, client):
         mail = json.load(mail_json)
         mocker.patch.object(client, 'list_mails', return_value=mail)
         mocker.patch.object(demisto, 'results')
-        list_mails_command(client, args)
-        hr = demisto.results.call_args[0][0].get('HumanReadable')
+        command_result = list_mails_command(client, args)
+        hr = command_result.readable_output
         assert '### No mails were found' in hr
 
 
@@ -216,10 +227,11 @@ def test_list_mails_command_encoding(mocker, client):
     Then
     - Validate that the queried value is properly url-encoded
     """
-    client = MsGraphClient(True, 'tenant', 'auth_token_url', 'enc_key', 'app_name', 'https://example.com',
-                           use_ssl=True, proxy=False, ok_codes=(200,), mailbox_to_fetch='mailbox',
-                           folder_to_fetch='folder', first_fetch_interval=10, emails_fetch_limit=10)
-    mocker.patch.object(client.ms_client, 'get_access_token')
+    client = MsGraphMailClient(self_deployed=True, tenant_id='tenant', auth_id='auth_token_url',
+                               enc_key='enc_key', app_name='app_name', base_url='https://example.com',
+                               verify=True, proxy=False, ok_codes=(200,), mailbox_to_fetch='mailbox',
+                               folder_to_fetch='folder', first_fetch_interval=10, emails_fetch_limit=10)
+    mocker.patch.object(client, 'get_access_token')
 
     search = 'Test&$%^'
     search_encoded = quote(search)
@@ -250,9 +262,9 @@ def test_list_mails_with_page_limit(mocker, client):
         mock_request = mocker.patch.object(MicrosoftClient, 'http_request', return_value=mail)
         mocker.patch.object(demisto, 'results')
         mocker.patch.object(demisto, 'args', return_value=args)
-        list_mails_command(client, args)
-        hr = demisto.results.call_args[0][0].get('HumanReadable')
-        assert '1 mails received \nPay attention there are more results than shown. For more data please ' \
+        result_entry = list_mails_command(client, args)
+        hr = result_entry.get('HumanReadable')
+        assert '1 mails received\nPay attention there are more results than shown. For more data please ' \
                'increase "pages_to_pull" argument' in hr
         assert "top=1" in mock_request.call_args_list[0].args[1]
 
@@ -361,7 +373,7 @@ def test_fetch_incidents(client, email_content_html, email_content_text, mocker,
         return_value=dateparser.parse('2019-11-12T15:01:00', settings={'TIMEZONE': 'UTC'})
     )
     # the third argument in side effect is for attachments (no-attachments here)
-    mocker.patch.object(client.ms_client, 'http_request', side_effect=[email_content_html, email_content_text, {}])
+    mocker.patch.object(client, 'http_request', side_effect=[email_content_html, email_content_text, {}])
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
@@ -445,7 +457,7 @@ class TestFetchIncidentsWithLookBack:
          - make sure the 'ID' field is being removed from the incidents before fetching.
         """
         client = self_deployed_client()
-        client.look_back = look_back
+        client._look_back = look_back
 
         last_emails_mocker = mocker.patch.object(
             client, '_fetch_last_emails', side_effect=self.create_incidents_queue()
@@ -479,7 +491,7 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data_as_html, ema
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
     # the third argument in side effect is for attachments (no-attachments here)
-    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
+    mocker.patch.object(client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
@@ -493,7 +505,7 @@ def test_fetch_incidents_changed_account(mocker, client, emails_data_as_html, em
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
     # the third argument in side effect is for attachments (no-attachments here)
-    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
+    mocker.patch.object(client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
@@ -506,7 +518,7 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data_as_html, ema
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
     # the third argument in side effect is for attachments (no-attachments here)
-    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
+    mocker.patch.object(client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents({})
 
@@ -532,10 +544,10 @@ def test_fetch_incidents_with_full_body(
         'CommonServerPython.get_current_time',
         return_value=dateparser.parse('2019-11-12T15:01:00', settings={'TIMEZONE': 'UTC'})
     )
-    client.display_full_email_body = True
+    client._display_full_email_body = True
     # the third argument in side effect is for attachments (no-attachments here)
     mocker.patch.object(
-        client.ms_client, 'http_request', side_effect=[emails_data_full_body_as_html, emails_data_full_body_as_text, {}]
+        client, 'http_request', side_effect=[emails_data_full_body_as_html, emails_data_full_body_as_text, {}]
     )
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
@@ -554,17 +566,15 @@ def test_fetch_incidents_with_full_body(
     assert result_incidents == expected_incident_full_body
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_parse_email_as_label(client):
-    assert client._parse_email_as_labels({'ID': 'dummy_id'}) == [{'type': 'Email/ID', 'value': 'dummy_id'}]
-    assert client._parse_email_as_labels({'To': ['dummy@recipient.com']}) == [
+def test_parse_email_as_label():
+    assert GraphMailUtils.parse_email_as_labels({'ID': 'dummy_id'}) == [{'type': 'Email/ID', 'value': 'dummy_id'}]
+    assert GraphMailUtils.parse_email_as_labels({'To': ['dummy@recipient.com']}) == [
         {'type': 'Email/To', 'value': 'dummy@recipient.com'}]
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_build_recipient_input(client):
+def test_build_recipient_input():
     recipient_input = ["dummy1@rec.com", "dummy2@rec.com", "dummy3@rec.com"]  # disable-secrets-detection
-    result_recipients_input = client._build_recipient_input(recipient_input)
+    result_recipients_input = GraphMailUtils.build_recipient_input(recipient_input)
     expected_recipients_input = [{'emailAddress': {'address': 'dummy1@rec.com'}},
                                  {'emailAddress': {'address': 'dummy2@rec.com'}},
                                  {'emailAddress': {'address': 'dummy3@rec.com'}}]
@@ -572,28 +582,25 @@ def test_build_recipient_input(client):
     assert result_recipients_input == expected_recipients_input
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_build_body_input(client):
+def test_build_body_input():
     first_body_input = ["test body 1", "text"]
     second_body_input = ["test body 2", "HTML"]
-    first_result_body_input = client._build_body_input(*first_body_input)
-    second_result_body_input = client._build_body_input(*second_body_input)
+    first_result_body_input = GraphMailUtils.build_body_input(*first_body_input)
+    second_result_body_input = GraphMailUtils.build_body_input(*second_body_input)
 
     assert first_result_body_input == {'content': 'test body 1', 'contentType': 'text'}
     assert second_result_body_input == {'content': 'test body 2', 'contentType': 'HTML'}
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_build_headers_input(client):
+def test_build_headers_input():
     headers_input = ['x-header-one:header1', 'x-header-two:heasder2']
     result_expecte_headers = [{'name': 'x-header-one', 'value': 'header1'},
                               {'name': 'x-header-two', 'value': 'heasder2'}]
 
-    assert client._build_headers_input(headers_input) == result_expecte_headers
+    assert GraphMailUtils.build_headers_input(headers_input) == result_expecte_headers
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_build_message(client):
+def test_build_message():
     message_input = {
         'to_recipients': ['dummy@recipient.com'],  # disable-secrets-detection
         'cc_recipients': ['dummyCC@recipient.com'],  # disable-secrets-detection
@@ -622,7 +629,7 @@ def test_build_message(client):
                         'subject': 'Dummy Subject', 'body': {'content': 'Dummy Body', 'contentType': 'text'},
                         'bodyPreview': 'Dummy Body', 'importance': 'Normal', 'flag': {'flagStatus': 'flagged'},
                         'attachments': []}
-    result_message = client.build_message(**message_input)
+    result_message = GraphMailUtils.build_message(**message_input)
 
     assert result_message == expected_message
 
@@ -644,7 +651,7 @@ def test_get_attachment(client):
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
-        res = item_result_creator(raw_response, user_id)
+        res = GraphMailUtils.item_result_creator(raw_response, user_id)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('EntryContext', {})
         assert output.get(output_prefix).get('ID') == 'exampleID'
@@ -696,7 +703,7 @@ def test_get_attachment_unsupported_type(client):
     with open('test_data/mail_with_unsupported_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
-        res = item_result_creator(raw_response, user_id)
+        res = GraphMailUtils.item_result_creator(raw_response, user_id)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('HumanReadable', '')
         assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
@@ -718,11 +725,11 @@ def test_create_attachment(mocker, function_name, attachment_type):
         - item_result_creator and file_result_creator called respectively to the type
 
     """
-    mocked_function = mocker.patch(f'MicrosoftGraphMail.{function_name}', return_value={})
+    mocker.patch(f'MicrosoftGraphMail.GraphMailUtils.{function_name}', return_value=function_name)
     raw_response = {'@odata.type': f'#microsoft.graph.{attachment_type}'}
     user_id = 'ex@example.com'
-    create_attachment(raw_response, user_id)
-    assert mocked_function.called
+    called_function = GraphMailUtils.create_attachment(raw_response, user_id)
+    assert called_function == function_name
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -739,14 +746,14 @@ def test_list_attachments_with_name(mocker, client):
         - Validate that the attachments are being parsed correctly
 
     """
-    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    output_prefix = 'MSGraphMailAttachment(val.ID && val.ID == obj.ID)'
     with open('test_data/list_attachment_result.json') as attachment_result:
         args = {"user_id": "example"}
         raw_response = json.load(attachment_result)
         mocker.patch.object(client, 'list_attachments', return_value=raw_response)
         mocker.patch.object(demisto, 'results')
-        list_attachments_command(client, args)
-        context = demisto.results.call_args[0][0].get('EntryContext')
+        command_result = list_attachments_command(client, args)
+        context = command_result.to_context().get('EntryContext')
 
         assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
         assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someName'
@@ -767,14 +774,14 @@ def test_list_attachments_without_name(mocker, client):
         - Validate that the attachments are being parsed correctly and the name is equal to the ID
 
     """
-    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    output_prefix = 'MSGraphMailAttachment(val.ID && val.ID == obj.ID)'
     with open('test_data/list_attachment_result_no_name.json') as attachment_result:
         args = {"user_id": "example"}
         raw_response = json.load(attachment_result)
         mocker.patch.object(client, 'list_attachments', return_value=raw_response)
         mocker.patch.object(demisto, 'results')
-        list_attachments_command(client, args)
-        context = demisto.results.call_args[0][0].get('EntryContext')
+        command_result = list_attachments_command(client, args)
+        context = command_result.to_context().get('EntryContext')
 
         assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
         assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someID'
@@ -796,12 +803,12 @@ def test_reply_mail_command(client, mocker):
     """
     args = {'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "id",
             'from': "ex1@example.com", 'replyTo': ["ex2@example.com"]}
-    mocker.patch.object(MicrosoftClient, 'http_request')
+    mocker.patch.object(client, 'http_request')
 
     reply_message = reply_email_command(client, args)
 
-    assert reply_message.outputs_prefix == "MicrosoftGraph"
-    assert reply_message.outputs_key_field == "SentMail"
+    assert reply_message.outputs_prefix == "MicrosoftGraph.SentMail"
+    assert reply_message.outputs_key_field == "ID"
     assert reply_message.outputs['ID'] == args['inReplyTo']
     assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
     assert reply_message.outputs['toRecipients'] == args['to']
@@ -868,7 +875,7 @@ def test_send_mail_command(mocker, client, args):
     with requests_mock.Mocker() as request_mocker:
         from_email = args.get('from')
 
-        mocker.patch.object(client.ms_client, 'get_access_token')
+        mocker.patch.object(client, 'get_access_token')
         send_mail_mocker = request_mocker.post(
             f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
         )
@@ -968,10 +975,10 @@ class TestCommandsWithLargeAttachments:
             ]:
                 yield header
         else:
-            for header in [   # testing on the computer_architecture.pdf
-                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/10520433',
+            for header in [   # testing on the test.pdf
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/4512758',
                  'Content-Type': 'application/octet-stream'},
-                {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/10520433',
+                {'Content-Length': '1367030', 'Content-Range': 'bytes 3145728-4512757/4512758',
                  'Content-Type': 'application/octet-stream'},
                 {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/10520433',
                  'Content-Type': 'application/octet-stream'},
@@ -992,8 +999,8 @@ class TestCommandsWithLargeAttachments:
                 'name': 'plant.jpg'
             },
             '3': {
-                'path': 'test_data/computer_architecture.pdf',  # bigger than 3mb attachment
-                'name': 'computer_architecture.pdf'
+                'path': 'test_data/test.pdf',  # bigger than 3mb attachment
+                'name': 'test.pdf'
             },
             '4': {
                 'path': 'test_data/sample.pdf',  # smaller than 3mb attachment
@@ -1005,7 +1012,7 @@ class TestCommandsWithLargeAttachments:
     @staticmethod
     def upload_response_side_effect(**kwargs):
         headers = kwargs.get('headers')
-        if int(headers['Content-Length']) < MsGraphClient.MAX_ATTACHMENT_SIZE:
+        if int(headers['Content-Length']) < MsGraphMailClient.MAX_ATTACHMENT_SIZE:
             return MockedResponse(status_code=201)
         return MockedResponse(status_code=200)
 
@@ -1057,7 +1064,7 @@ class TestCommandsWithLargeAttachments:
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
             mocked_draft_id = '123'
-            mocker.patch.object(client.ms_client, 'get_access_token')
+            mocker.patch.object(client, 'get_access_token')
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
 
             create_draft_mail_mocker = request_mocker.post(
@@ -1137,7 +1144,7 @@ class TestCommandsWithLargeAttachments:
             from_email = args.get('from')
             mocked_draft_id = '123'
             reply_message_id = args.get('inReplyTo')
-            mocker.patch.object(client.ms_client, 'get_access_token')
+            mocker.patch.object(client, 'get_access_token')
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
 
             create_draft_mail_mocker = request_mocker.post(  # mock the endpoint to create a draft for an existing message
@@ -1204,23 +1211,21 @@ class TestCommandsWithLargeAttachments:
             - Make sure for all three cases the expected context output is returned.
         """
         from MicrosoftGraphMail import create_draft_command
-        import MicrosoftGraphMail
 
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
-            mocker.patch.object(client.ms_client, 'get_access_token')
+            mocker.patch.object(client, 'get_access_token')
             create_draft_mail_mocker = request_mocker.post(
                 f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': '123'}
             )
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
-            return_outputs_mocker = mocker.patch.object(MicrosoftGraphMail, 'return_outputs')
 
             create_upload_mock = mocker.patch.object(
                 client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
             )
             upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
 
-            create_draft_command(client, args)
+            command_result = create_draft_command(client, args)
 
             # attachment 1 is an attachment bigger than 3MB
             if '1' in args.get('attachIDs'):  # means the attachment should be created in the upload session
@@ -1234,7 +1239,7 @@ class TestCommandsWithLargeAttachments:
                 assert not create_upload_mock.called
                 assert not upload_query_mock.called
                 assert create_draft_mail_mocker.last_request.json()['attachments']
-        assert return_outputs_mocker.call_args[0][1]['MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)']['ID'] == '123'
+        assert command_result.outputs['ID'] == '123'
         assert create_draft_mail_mocker.called
         assert create_draft_mail_mocker.last_request.json()
 
@@ -1248,7 +1253,7 @@ def test_server_to_endpoint(server_url, expected_endpoint):
     Given:
         - Host address for national endpoints
     When:
-        - Creating a new MsGraphClient
+        - Creating a new MsGraphMailClient
     Then:
         - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
     """
@@ -1281,8 +1286,8 @@ def test_fetch_last_emails__with_exclude(mocker):
     ]}
     client = oproxy_client()
     client._emails_fetch_limit = 2
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    mocker.patch.object(client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2022-07-28T12:09:17Z', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 2
     assert ids == ['3', '4']
     assert fetched_emails[0] == emails['value'][2]
@@ -1306,8 +1311,8 @@ def test_fetch_last_emails__no_exclude(mocker):
     ]}
     client = oproxy_client()
     client._emails_fetch_limit = 2
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids = client._fetch_last_emails('', last_fetch='0', exclude_ids=[])
+    mocker.patch.object(client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2022-07-28T12:09:17Z', exclude_ids=[])
     assert len(fetched_emails) == 1
     assert ids == ['1']
     assert fetched_emails[0] == emails['value'][0]
@@ -1331,8 +1336,8 @@ def test_fetch_last_emails__all_mails_in_exclude(mocker):
     ]}
     client = oproxy_client()
     client._emails_fetch_limit = 2
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    mocker.patch.object(client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2022-07-28T12:09:17Z', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 0
     assert ids == ['1', '2']
 
@@ -1347,29 +1352,20 @@ def test_fetch_last_emails__all_mails_in_exclude(mocker):
                                "status": "Unread"}),
                          ])
 def test_update_email_status_command(mocker, args: dict):
-    mark_as_read = (args["status"].lower() == 'read')
+    import MicrosoftGraphMail
 
     client = self_deployed_client()
-    http_request = mocker.patch.object(MicrosoftClient, "http_request", return_value={})
+    mocker.patch.object(client, "http_request")
 
-    result = update_email_status_command(client=client, args=args)
+    result = MicrosoftGraphMail.update_email_status_command(client=client, args=args)
 
-    if "folder_id" in args:
-        http_request.assert_called_with(
-            method="PATCH",
-            url_suffix=f"/users/{args['user_id']}/"
-                       f"{build_folders_path(args['folder_id'])}/messages/{args['message_ids']}",
-            json_data={'isRead': mark_as_read},
-        )
-
-    else:
-        http_request.assert_called_with(
-            method="PATCH",
-            url_suffix=f"/users/{args['user_id']}/messages/{args['message_ids']}",
-            json_data={'isRead': mark_as_read},
-        )
+    mark_as_read = (args["status"].lower() == 'read')
+    folder_id = args.get('folder_id')
+    folder_path = f'/{GraphMailUtils.build_folders_path(folder_id)}' if folder_id else ''
+    url_suffix = f"/users/{args['user_id']}{folder_path}/messages/{args['message_ids']}"
 
     assert result.outputs is None
+    client.http_request.assert_called_with(method="PATCH", url_suffix=url_suffix, json_data={'isRead': mark_as_read})
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])

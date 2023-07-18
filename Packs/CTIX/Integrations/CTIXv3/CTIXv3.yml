@@ -42,8 +42,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 script:
   script: ""
   type: python
@@ -306,8 +306,10 @@ script:
     arguments:
     - name: page
       description: page from where to start
+      defaultValue: 1
     - name: page_size
       description: page size of the result
+      defaultValue: 15
     outputs:
     - contextPath: CTIX.SavedSearch.id
       description: ID of the object
@@ -343,8 +345,10 @@ script:
     arguments:
     - name: page
       description: page of the result
+      defaultValue: 1
     - name: page_size
       description: page size of the result
+      defaultValue: 15
     outputs:
     - contextPath: CTIX.ServerCollection.name
       description: Name of the server
@@ -378,8 +382,10 @@ script:
     arguments:
     - name: page
       description: page of the result
+      defaultValue: 1
     - name: page_size
       description: page size of the result
+      defaultValue: 15
     - name: object_type
       description: object type of the indicator
     - name: action_type
@@ -685,11 +691,14 @@ script:
       description: query
     - name: object_id
       description: object id
+      defaultValue: ""
     - name: object_type
       description: object type
+      defaultValue: ""
     - name: tag_id
       description: tag id
       isArray: true
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.TagUpdation.meesage
       description: Result of the add indicator tag request
@@ -707,11 +716,14 @@ script:
       description: query
     - name: object_id
       description: object_id
+      defaultValue: ""
     - name: object_type
       description: object_type
+      defaultValue: ""
     - name: tag_id
       description: tag_id
       isArray: true
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.TagUpdation.message
       description: Result of the remove indicator tag request
@@ -761,8 +773,10 @@ script:
       defaultValue: "10"
     - name: object_id
       description: object id
+      defaultValue: ""
     - name: object_type
       description: object type
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.IndicatorDetails.aliases
       description: Aliases of the tag if any
@@ -869,8 +883,10 @@ script:
     arguments:
     - name: object_id
       description: object id
+      defaultValue: ""
     - name: object_type
       description: object type
+      defaultValue: ""
     - name: page
       default: true
       description: page
@@ -926,8 +942,10 @@ script:
       defaultValue: "10"
     - name: object_id
       description: object id
+      defaultValue: ""
     - name: object_type
       description: object type
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.IndicatorRelations.relationship_type
       description: Indicator relation types
@@ -1039,120 +1057,120 @@ script:
       type: string
   - name: ctix-get-lookup-threat-data
     arguments:
-      - name: object_type
-        description: object type
-      - name: object_names
-        description: "Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1"
-        isArray: true
-      - name: page_size
-        description: size of the page
-        defaultValue: "10"
+    - name: object_type
+      description: object type
+    - name: object_names
+      description: "Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1"
+      isArray: true
+    - name: page_size
+      description: size of the page
+      defaultValue: "10"
     outputs:
-      - contextPath: CTIX.ThreatDataLookup.analyst_score
-        description: Analyst score of the indicator
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.analyst_tlp
-        description: Analyst TLP of the indicator
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.confidence_score
-        description: Confidence score of the indicator
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.confidence_type
-        description: Confidence type of the indicator
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.country
-        description: Indicator origin country
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.created
-        description: Timestamp of when the indicator was created
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.ctix_created
-        description: Timestamp of when the indicator was created in CTIX
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.ctix_modified
-        description: Timestamp of when the indicator was modified in CTIX
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.first_seen
-        description: Timestamp of when the indicator was first seen
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.id
-        description: Indicator ID
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.indicator_type
-        description: Indicator type
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.ioc_type
-        description: IOC type
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.is_actioned
-        description: Is actioned
-        type: boolean
-      - contextPath: CTIX.ThreatDataLookup.is_deprecated
-        description: is deprecated
-        type: boolean
-      - contextPath: CTIX.ThreatDataLookup.is_false_positive
-        description: is false positive
-        type: boolean
-      - contextPath: CTIX.ThreatDataLookup.is_reviewed
-        description: "is reviewed "
-        type: boolean
-      - contextPath: CTIX.ThreatDataLookup.is_revoked
-        description: is revoked
-        type: boolean
-      - contextPath: CTIX.ThreatDataLookup.is_watchlist
-        description: is watchlisted
-        type: boolean
-      - contextPath: CTIX.ThreatDataLookup.is_whitelisted
-        description: is allowed
-        type: boolean
-      - contextPath: CTIX.ThreatDataLookup.last_seen
-        description: Timestamp of when the indicator was last seen
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.modified
-        description: Timestamp of when the indicator was modified
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.name
-        description: name of the indicator
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.null
-        description: "null"
-      - contextPath: CTIX.ThreatDataLookup.primary_attribute
-        description: Primary Attribute
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.published_collections
-        description: published collections
-      - contextPath: CTIX.ThreatDataLookup.risk_severity
-        description: Risk severity
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.source_collections
-        description: sources collections
-        type: unknown
-      - contextPath: CTIX.ThreatDataLookup.source_confidence
-        description: "Source confidence "
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.sources
-        description: sources
-      - contextPath: CTIX.ThreatDataLookup.sub_type
-        description: Sub type
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.subscriber_collections
-        description: subscriber collections
-      - contextPath: CTIX.ThreatDataLookup.subscribers
-        description: subscribers
-      - contextPath: CTIX.ThreatDataLookup.tags
-        description: Tags
-      - contextPath: CTIX.ThreatDataLookup.tlp
-        description: TLP
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.type
-        description: Type
-        type: string
-      - contextPath: CTIX.ThreatDataLookup.valid_from
-        description: Timestamp from when the indicator was valid
-        type: number
-      - contextPath: CTIX.ThreatDataLookup.valid_until
-        description: Timestamp till when the indicator was valid
-        type: number
+    - contextPath: CTIX.ThreatDataLookup.analyst_score
+      description: Analyst score of the indicator
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.analyst_tlp
+      description: Analyst TLP of the indicator
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.confidence_score
+      description: Confidence score of the indicator
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.confidence_type
+      description: Confidence type of the indicator
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.country
+      description: Indicator origin country
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.created
+      description: Timestamp of when the indicator was created
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.ctix_created
+      description: Timestamp of when the indicator was created in CTIX
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.ctix_modified
+      description: Timestamp of when the indicator was modified in CTIX
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.first_seen
+      description: Timestamp of when the indicator was first seen
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.id
+      description: Indicator ID
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.indicator_type
+      description: Indicator type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.ioc_type
+      description: IOC type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.is_actioned
+      description: Is actioned
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_deprecated
+      description: is deprecated
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_false_positive
+      description: is false positive
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_reviewed
+      description: "is reviewed "
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_revoked
+      description: is revoked
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_watchlist
+      description: is watchlisted
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_whitelisted
+      description: is allowed
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.last_seen
+      description: Timestamp of when the indicator was last seen
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.modified
+      description: Timestamp of when the indicator was modified
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.name
+      description: name of the indicator
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.null
+      description: "null"
+    - contextPath: CTIX.ThreatDataLookup.primary_attribute
+      description: Primary Attribute
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.published_collections
+      description: published collections
+    - contextPath: CTIX.ThreatDataLookup.risk_severity
+      description: Risk severity
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.source_collections
+      description: sources collections
+      type: unknown
+    - contextPath: CTIX.ThreatDataLookup.source_confidence
+      description: "Source confidence "
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.sources
+      description: sources
+    - contextPath: CTIX.ThreatDataLookup.sub_type
+      description: Sub type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.subscriber_collections
+      description: subscriber collections
+    - contextPath: CTIX.ThreatDataLookup.subscribers
+      description: subscribers
+    - contextPath: CTIX.ThreatDataLookup.tags
+      description: Tags
+    - contextPath: CTIX.ThreatDataLookup.tlp
+      description: TLP
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.type
+      description: Type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.valid_from
+      description: Timestamp from when the indicator was valid
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.valid_until
+      description: Timestamp till when the indicator was valid
+      type: number
     description: Lookup to get threat data
   - name: ctix-get-create-threat-data
     arguments:
@@ -1166,11 +1184,9 @@ script:
     - name: source
       type: string
       description: The source of the threat data
-      required: false
     - name: collection
       type: string
       description: The collection to store the threat data in
-      required: false
     outputs:
     - contextPath: CTIX.ThreatDataGetCreate.Found.analyst_score
       description: Analyst score of the indicator
@@ -1390,8 +1406,6 @@ script:
     arguments:
     - name: object_id
       description: if set, this will only retrieve Notes associated with the Threat Data object with ID=`object_id`
-      required: false
-      isArray: false
     - name: page
       description: the page number of the Notes to look up, default is the first page
       defaultValue: "1"
@@ -1466,7 +1480,6 @@ script:
     - name: id
       description: "the id of the Note"
       required: true
-      isArray: false
       default: true
     outputs:
     - contextPath: CTIX.Note.created
@@ -1535,15 +1548,11 @@ script:
     - name: text
       description: the text that you want the note to have
       required: true
-      isArray: false
       default: true
     - name: object_id
       description: if set, will associate Note to the Threat Data object with the provided ID
-      required: false
-      isArray: false
     - name: object_type
       description: only required if `object_id` is set, used to specify the type of object `object_id` is
-      required: false
       auto: PREDEFINED
       predefined:
       - indicator
@@ -1633,19 +1642,13 @@ script:
     - name: id
       description: "the id of the Note"
       required: true
-      isArray: false
       default: true
     - name: text
       description: the updated text that you want the note to have
-      required: false
-      isArray: false
     - name: object_id
       description: if set, will associate Note to the Threat Data object with the provided ID
-      required: false
-      isArray: false
     - name: object_type
       description: only required if `object_id` is set, used to specify the type of object `object_id` is
-      required: false
       auto: PREDEFINED
       predefined:
       - indicator
@@ -1735,7 +1738,6 @@ script:
     - name: id
       description: "the id of the Note"
       required: true
-      isArray: false
       default: true
     outputs:
     - contextPath: CTIX.Note.deletion.details
@@ -1756,18 +1758,108 @@ script:
       - DELETE
     - name: endpoint
       description: URL suffix of the API call to CTIX
-      isArray: false
       required: true
     - name: body
       description: any data you would like to pass, in JSON format
-      isArray: false
-      required: false
     - name: params
       description: any parameters you would like to pass, in JSON format
-      isArray: false
-      required: false
-  dockerimage: demisto/python3:3.10.10.51930
-  runonce: false
+  - name: ctix-get-vulnerability-data
+    description: Lookup vulnerability info
+    arguments:
+    - name: cve
+      description: "The CVE identifier to look up information about"
+      required: true
+      isArray: true
+      default: true
+    - name: extra_fields
+      description: "A comma separated list of extra fields to return in the response"
+      isArray: true
+    outputs:
+    - contextPath: CTIX.VulnerabilityLookup.cpes
+      description: CPEs
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.cvss2
+      description: CVSS2
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.cvss3
+      description: CVSS3
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.dbot_reputation
+      description: DbotReputation
+      type: integer
+    - contextPath: CTIX.VulnerabilityLookup.description
+      description: Description
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.last_modified
+      description: LastModified
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.created
+      description: LastPublished
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.name
+      description: Name
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.uuid
+      description: UUID
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.extra_data
+      description: Extra data
+      type: string
+  - name: cve
+    description: Lookup vulnerability info
+    arguments:
+    - name: cve
+      description: "The CVE identifier to look up information about"
+      required: true
+      isArray: true
+      default: true
+    - name: extra_fields
+      description: "A comma separated list of extra fields to return in the response"
+      isArray: true
+    outputs:
+    - contextPath: CTIX.VulnerabilityLookup.cpes
+      description: CPEs
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.cvss2
+      description: CVSS2
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.cvss3
+      description: CVSS3
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.dbot_reputation
+      description: DbotReputation
+      type: integer
+    - contextPath: CTIX.VulnerabilityLookup.description
+      description: Description
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.last_modified
+      description: LastModified
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.created
+      description: LastPublished
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.name
+      description: Name
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.uuid
+      description: UUID
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.extra_data
+      description: Extra data
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  dockerimage: demisto/python3:3.10.12.63474
   subtype: python3
 tests:
 - No tests (auto formatted)

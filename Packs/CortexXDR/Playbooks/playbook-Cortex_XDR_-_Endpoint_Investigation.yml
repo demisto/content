@@ -3022,7 +3022,7 @@ view: |-
     }
   }
 tests:
-- No tests (auto formatted)
+- Test Playbook - Cortex XDR - Endpoint Investigation
 fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}

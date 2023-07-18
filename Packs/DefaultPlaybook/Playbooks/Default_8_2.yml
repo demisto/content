@@ -935,10 +935,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 75aeada6-6704-4b40-840d-8911115d890c
+    taskid: bc18e52d-e000-42bc-8a4d-cd0667fc957e
     type: regular
     task:
-      id: 75aeada6-6704-4b40-840d-8911115d890c
+      id: bc18e52d-e000-42bc-8a4d-cd0667fc957e
       version: -1
       name: Save found endpoints in layout
       description: commands.local.cmd.set.incident
@@ -960,6 +960,8 @@ tasks:
               separator:
                 value:
                   simple: ', '
+      selectedindicators:
+        simple: Select indicators
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""

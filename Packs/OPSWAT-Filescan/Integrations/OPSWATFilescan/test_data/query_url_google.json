@@ -1,0 +1,1147 @@
+{
+    "items": [
+        {
+            "id": "fbb2274d-f62f-497e-a6a1-62458d4be34a",
+            "file": {
+                "name": "UNKNOW.EXE",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641c20ed2fbc9ad18a03340f"
+            },
+            "state": "success_partial",
+            "verdict": "informational",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "javascript",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 09:50:38",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 09:50:51"
+        },
+        {
+            "id": "fc1bf8dd-3ad8-4bc4-a215-773ed0f8d834",
+            "file": {
+                "name": "Snaptube_20230323.apk",
+                "mime_type": "application/java-archive",
+                "short_type": "apk",
+                "sha256": "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641c1f9a109d4db5166a37a0"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "apk",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "tag": {
+                        "name": "javadropper",
+                        "synonyms": [],
+                        "descriptions": [
+                            {
+                                "description": "Remote Access Trojan",
+                                "cluster": {
+                                    "type": "tool",
+                                    "authors": [
+                                        "Alexandre Dulaunoy",
+                                        "Florian Roth",
+                                        "Timo Steffens",
+                                        "Christophe Vandeplas",
+                                        "Dennis Rand",
+                                        "raw-data"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4",
+                    "tag": {
+                        "name": "android",
+                        "synonyms": [],
+                        "descriptions": [
+                            {
+                                "description": "Ransomware",
+                                "cluster": {
+                                    "type": "ransomware",
+                                    "authors": [
+                                        "https://docs.google.com/spreadsheets/d/1TWS238xacAto-fLKh1n5uTsdijWdCEsGIM0Y0Hvmc5g/pubhtml",
+                                        "http://pastebin.com/raw/GHgpWjar",
+                                        "MISP Project",
+                                        "https://id-ransomware.blogspot.com/2016/07/ransomware-list.html"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4",
+                    "tag": {
+                        "name": "generisk",
+                        "synonyms": [],
+                        "descriptions": [
+                            {
+                                "description": "Generisk is a generic detection for Android applications that may pose a privacy, security, or stability risk to the user or user's Android device. ",
+                                "cluster": {
+                                    "type": "android"
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4",
+                    "tag": {
+                        "name": "javadropper",
+                        "synonyms": [],
+                        "descriptions": [
+                            {
+                                "description": "Remote Access Trojan",
+                                "cluster": {
+                                    "type": "tool",
+                                    "authors": [
+                                        "Alexandre Dulaunoy",
+                                        "Florian Roth",
+                                        "Timo Steffens",
+                                        "Christophe Vandeplas",
+                                        "Dennis Rand",
+                                        "raw-data"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 09:45:00",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4",
+                        "filetype": "apk",
+                        "mime_type": "application/vnd.android.package-archive",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 09:45:37"
+        },
+        {
+            "id": "a8d606b4-47c8-44ec-972c-4630602ea711",
+            "file": {
+                "name": "downacademia.com_digital-forensic-by-andi-novianto.pdf",
+                "mime_type": "application/pdf",
+                "short_type": "pdf",
+                "sha256": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641c16adda1bbe29caf9aa23"
+            },
+            "state": "success",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pdf",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "xml",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "evasive",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 09:06:54",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                        "filetype": "pdf",
+                        "mime_type": "application/pdf",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 09:08:50"
+        },
+        {
+            "id": "955c4605-3bb2-477b-8d74-63d807ff960b",
+            "file": {
+                "name": "downacademia.com_digital-forensic-by-andi-novianto.pdf",
+                "mime_type": "application/pdf",
+                "short_type": "pdf",
+                "sha256": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641c16353b01ade53e70c15a"
+            },
+            "state": "success",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pdf",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "xml",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "evasive",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 09:04:54",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "7344ea00608415b6c0722f679abcaadbe48ce6ffed314d1bee36c42b7232db16",
+                        "filetype": "pdf",
+                        "mime_type": "application/pdf",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 09:06:50"
+        },
+        {
+            "id": "ac5e5257-9690-4bdf-a401-10345a4141a7",
+            "file": {
+                "name": "Linux%20All-In-One%20for%20Dummies%2C%206th%20Edition%20%28Emmett%20Dulaney%29%20%28Z-Library%29.pdf",
+                "mime_type": "application/pdf",
+                "short_type": "pdf",
+                "sha256": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641c1421da1bbe29caf9a9c1"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pdf",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "txt",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "xml",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "stealer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 08:56:02",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                        "filetype": "pdf",
+                        "mime_type": "application/pdf",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 08:59:01"
+        },
+        {
+            "id": "19c5bf40-6f69-4050-af7c-08b0f7a35bd2",
+            "file": {
+                "name": "Linux%20All-In-One%20for%20Dummies%2C%206th%20Edition%20%28Emmett%20Dulaney%29%20%28Z-Library%29.pdf",
+                "mime_type": "application/pdf",
+                "short_type": "pdf",
+                "sha256": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641c0ec1b236355850d79205"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pdf",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "txt",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "xml",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "stealer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 08:33:08",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "ecd1231169adbfb7b4a656872b8ccd0a766b4a99e918f52a834043a666d59dc9",
+                        "filetype": "pdf",
+                        "mime_type": "application/pdf",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 08:36:13"
+        },
+        {
+            "id": "7e724879-c1ff-45f4-b0ce-0fd34aeccc16",
+            "file": {
+                "name": "5581da534043fc10507cfa13357f2876.exe",
+                "mime_type": "application/x-msdownload; format=pe32",
+                "short_type": "peexe",
+                "sha256": "64dda7c8105120218fe71c334ed0bdc5690333c40699ec0246a0a8dde6804e29",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641befd228f6cfd59136fc97"
+            },
+            "state": "success",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "64dda7c8105120218fe71c334ed0bdc5690333c40699ec0246a0a8dde6804e29",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "64dda7c8105120218fe71c334ed0bdc5690333c40699ec0246a0a8dde6804e29",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "javascript",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "64dda7c8105120218fe71c334ed0bdc5690333c40699ec0246a0a8dde6804e29",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "overlay",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "64dda7c8105120218fe71c334ed0bdc5690333c40699ec0246a0a8dde6804e29",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 06:21:10",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "64dda7c8105120218fe71c334ed0bdc5690333c40699ec0246a0a8dde6804e29",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload; format=pe32",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 06:23:49"
+        },
+        {
+            "id": "33d6d2cd-bd0c-419a-b657-460c38ab861b",
+            "file": {
+                "name": "StressMyPC.exe",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641ba85bda1bbe29caf99a54"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "javascript",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "58f1ea49092711ecb08b17d979a6e4afbb892b5226dfcd42e9c9302d6ebeb27b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "greyware",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "58f1ea49092711ecb08b17d979a6e4afbb892b5226dfcd42e9c9302d6ebeb27b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "shell32.dll",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "greyware",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "overlay",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "shell32.dll",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 01:17:07",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "d96f70675ce605ce0d18fb6eb717ccaa8d9e789d5b5f7a20a3f6075a2a01a3ac",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 01:21:01"
+        },
+        {
+            "id": "cd974770-6057-4dea-a0f3-15ebe5e1c4c2",
+            "file": {
+                "name": "file",
+                "mime_type": "application/x-msdownload; format=pe32",
+                "short_type": "peexe",
+                "sha256": "249505e3a21c6f73f7e898c02375517a4cf7b40cf75bfcb7e581b6eecc562731",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641ba5c33b01ade53e709b53"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "249505e3a21c6f73f7e898c02375517a4cf7b40cf75bfcb7e581b6eecc562731",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "249505e3a21c6f73f7e898c02375517a4cf7b40cf75bfcb7e581b6eecc562731",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "javascript",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "249505e3a21c6f73f7e898c02375517a4cf7b40cf75bfcb7e581b6eecc562731",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "greyware",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "249505e3a21c6f73f7e898c02375517a4cf7b40cf75bfcb7e581b6eecc562731",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "overlay",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "249505e3a21c6f73f7e898c02375517a4cf7b40cf75bfcb7e581b6eecc562731",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 01:05:55",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "249505e3a21c6f73f7e898c02375517a4cf7b40cf75bfcb7e581b6eecc562731",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload; format=pe32",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 01:10:34"
+        },
+        {
+            "id": "1da1447f-95db-4557-975d-670b77da40ea",
+            "file": {
+                "name": "Quote_3500001277.bin",
+                "mime_type": "application/x-msdownload; format=pe64",
+                "short_type": "64bits",
+                "sha256": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641ba5bf00d9b27ec1312e76"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "64bits",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "javascript",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "overlay",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/23/2023, 01:05:14",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "eba2a7a9c4a6c3a2c3f04431312a94ee76bd6d23ed3014e940cd07911a726ff8",
+                        "filetype": "64bits",
+                        "mime_type": "application/x-msdownload; format=pe64",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "url": [
+                            {
+                                "value": "https://www.google.com"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/23/2023, 01:08:11"
+        }
+    ],
+    "count": 897,
+    "count_search_params": 1,
+    "method": "and"
+}

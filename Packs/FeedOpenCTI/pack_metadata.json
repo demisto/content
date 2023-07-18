@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Free Feed"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

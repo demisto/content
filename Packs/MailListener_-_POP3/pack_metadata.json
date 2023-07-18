@@ -2,7 +2,7 @@
     "name": "MailListener - POP3",
     "description": "Listen to a mailbox, enable incident triggering via e-mail",
     "support": "xsoar",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

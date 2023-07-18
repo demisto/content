@@ -53,7 +53,7 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that" "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())", "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3", "(http://www.foo.bar/taz?())","http://öevil.tld/","http://öevil.tld:5000/","http://öevil.tld/anypath", "www.evilö.tld/evil.aspx","https://www.evöl.tld/","https://www.evöl.tld/anypath", "hxxps://www.xn--e1v2i3l4.tld","www.evil.tld:443/path/to/resource.html", "https://www.evil.tld:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path", "ftp://foo.bar/resource","ftp://foo.bar/"'
+        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that" "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())", "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3", "(http://www.foo.bar/taz?())","http://öevil.com/","http://öevil.com:5000/","http://öevil.com/anypath", "www.evilö.com/evil.aspx","https://www.evöl.com/","https://www.evöl.com/anypath", "hxxps://www.xn--e1v2i3l4.com","www.evil.com:443/path/to/resource.html", "https://www.evil.com:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path", "ftp://foo.bar/resource","ftp://foo.bar/"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -328,7 +328,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://öevil.tld:5000/
+              simple: http://öevil.com:5000/
     continueonerrortype: ""
     view: |-
       {
@@ -369,7 +369,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.evil.tld:443/path/to/resource.html
+              simple: www.evil.com:443/path/to/resource.html
     continueonerrortype: ""
     view: |-
       {
@@ -410,7 +410,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://öevil.tld/
+              simple: http://öevil.com/
     continueonerrortype: ""
     view: |-
       {
@@ -451,7 +451,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://öevil.tld/anypath
+              simple: http://öevil.com/anypath
     continueonerrortype: ""
     view: |-
       {

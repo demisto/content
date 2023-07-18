@@ -487,7 +487,7 @@ def test_check_analysis_status_and_get_results_command_single_success_endpoint(r
                 'verdict': 'trusted',
                 'analysis_url': 'bla',
                 'computer_name': computer_name,
-                'scan_start_time': 'now'
+                'scan_start_time': 'Wed, 19 Jun 2022 07:48:12 GMT'
             }
         }
     )
@@ -998,7 +998,7 @@ def test_get_endpoint_analysis_result_success(requests_mock, mocker):
                 'verdict': 'trusted',
                 'analysis_url': 'bla',
                 'computer_name': computer_name,
-                'scan_start_time': 'now'
+                'scan_start_time': 'Wed, 19 Jun 2022 07:48:12 GMT'
             }
         }
     )

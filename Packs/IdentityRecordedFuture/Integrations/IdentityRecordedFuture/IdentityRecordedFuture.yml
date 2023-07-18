@@ -30,7 +30,6 @@ configuration:
   name: password_properties
   defaultvalue: Letter,Number
   type: 16
-  required: false
   options:
   - Letter
   - Number
@@ -43,11 +42,12 @@ configuration:
   - AtLeast16Characters
   - AtLeast24Characters
   additionalinfo: Filter for password properties
+  required: false
 - display: Limit of identities to get (min is 0 and max is 10 000)
   name: limit_identities
   defaultvalue: "500"
-  required: false
   type: 0
+  required: false
 - display: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). This will be used for identity search command as a default value.
   name: domains
   type: 12
@@ -57,21 +57,18 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset
     arguments:
     - name: latest-downloaded
-      required: false
       defaultValue: "All time"
       description: Time period for last downloaded time.(e.g. "7 days ago", "Three months ago", "Last Year", "All time")
     - name: domains
       description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online ). If not specified, domains from app instance will be used.
-      required: false
     - name: domain-type
       description: Type of identities to search for (Authorization or Email). If not specified use All.
-      required: false
       auto: PREDEFINED
       defaultValue: "All"
       predefined:
@@ -88,7 +85,6 @@ script:
     - name: password-hash
       description: Password hash value.
     - name: hash-algorithm
-      required: false
       defaultValue: "SHA256"
       description: Password hash algorithm.
       auto: PREDEFINED
@@ -114,10 +110,8 @@ script:
       required: true
       description: Identities for the lookup separated by comma.(e.g. "09719@norsegods.online, 1000739@norsegods.online").
     - name: domains
-      required: false
       description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online )
     - name: first-downloaded
-      required: false
       defaultValue: "All time"
       description: Time period for first downloaded time.(e.g. "7 days ago", "Three months ago", "Last Year", "All time")
     outputs:
@@ -187,7 +181,6 @@ script:
     - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.rank
       description: Rank for the exposed password.
       type: String
-  isfetch: false
   runonce: false
 tests:
 - No tests

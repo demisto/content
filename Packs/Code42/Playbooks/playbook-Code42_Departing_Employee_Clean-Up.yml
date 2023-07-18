@@ -1,0 +1,453 @@
+id: Departing Employee Clean-Up
+version: -1
+fromversion: "6.8.0"
+name: Departing Employee Clean-Up
+description: Queries the Departing Employee watchlist in Code42 Incydr and passes
+  relevant employee data to the Remove Employees from Departing Employee Watchlist
+  playbook. Intended to be run as a scheduled job.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: def1d2ad-0b7e-42ba-84be-4287c015f905
+    type: start
+    task:
+      id: def1d2ad-0b7e-42ba-84be-4287c015f905
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 38aef565-dce7-41db-890c-8543651af11b
+    type: title
+    task:
+      id: 38aef565-dce7-41db-890c-8543651af11b
+      version: -1
+      name: Playbook Complete
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2d9d6f44-d058-4132-8b98-0a44f2190ddc
+    type: condition
+    task:
+      id: 2d9d6f44-d058-4132-8b98-0a44f2190ddc
+      version: -1
+      name: Are There Watchlist Entries?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Code42.WatchlistUsers
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8c181bd8-d130-4eac-8ba9-2b5fde044b2c
+    type: regular
+    task:
+      id: 8c181bd8-d130-4eac-8ba9-2b5fde044b2c
+      version: -1
+      name: Set "No Entries" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: No employees on Departing Employee watchlist.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 261ab108-97c8-4079-83a5-7344d75edfaa
+    type: regular
+    task:
+      id: 261ab108-97c8-4079-83a5-7344d75edfaa
+      version: -1
+      name: Delete All Context Except Log
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Code42,watchlist_count
+      keysToKeep:
+        simple: Log
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c701e761-c699-4fa6-86fb-db34a4656cc0
+    type: regular
+    task:
+      id: c701e761-c699-4fa6-86fb-db34a4656cc0
+      version: -1
+      name: Write Log to Incident War Room
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${Log}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: c470fad1-3555-40f4-8ea2-74b55df0c269
+    type: regular
+    task:
+      id: c470fad1-3555-40f4-8ea2-74b55df0c269
+      version: -1
+      name: Set "Job Complete" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Finished Departing Employee Clean-Up Job.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 13ab2a72-4a7f-4c50-8a19-3a829d6ed006
+    type: regular
+    task:
+      id: 13ab2a72-4a7f-4c50-8a19-3a829d6ed006
+      version: -1
+      name: Set "Retrieved Employee(s)" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Retrieved employee(s) from Departing Employee watchlist.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d4d50bae-a662-48d3-8fb0-1c8af133fc86
+    type: playbook
+    task:
+      id: d4d50bae-a662-48d3-8fb0-1c8af133fc86
+      version: -1
+      name: Remove Employees from Departing Employee Watchlist
+      description: Loops through Departing Employee watchlist entries from Code42
+        Incydr and removes employees based on specified criteria.
+      playbookName: Remove Employees from Departing Employee Watchlist
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      incydr_departure_date:
+        simple: ${Code42.DepartingEmployee.DepartureDate}
+      incydr_uid:
+        simple: ${Code42.DepartingEmployee.UserID}
+      incydr_username:
+        simple: ${Code42.WatchlistUsers.Username}
+      look_back:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: cdd9d82a-58d3-4f7e-8ab8-a034f7b6497f
+    type: regular
+    task:
+      id: cdd9d82a-58d3-4f7e-8ab8-a034f7b6497f
+      version: -1
+      name: Set "Job Starting" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Beginning Departing Employee Clean-Up Job.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7df2bbf4-8186-4edd-833e-9596df9cba5d
+    type: regular
+    task:
+      id: 7df2bbf4-8186-4edd-833e-9596df9cba5d
+      version: -1
+      name: Query Departing Employee Watchlist
+      description: List all users who have been explicitly added to a given watchlist.
+      script: Code42|||code42-watchlists-list-included-users
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      watchlist:
+        simple: DEPARTING_EMPLOYEE
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 850,
+        "x": -170,
+        "y": -490
+      }
+    }
+  }
+inputs: []
+outputs: []

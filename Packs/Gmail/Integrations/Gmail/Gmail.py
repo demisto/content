@@ -103,7 +103,8 @@ def html_to_text(html):
     try:
         parser.feed(html)
         parser.close()
-    except Exception:
+    except Exception as e:
+        demisto.error(f'The following error occurred while parsing the HTML: {e}')
         pass
     return parser.get_text()
 
@@ -166,7 +167,7 @@ def parse_mail_parts(parts):
     html = ''
     attachments = []  # type: list
     for part in parts:
-        if 'multipart' in part['mimeType']:
+        if 'multipart' in part['mimeType'] and part.get('parts'):
             part_body, part_html, part_attachments = parse_mail_parts(
                 part['parts'])
             body += part_body
@@ -190,10 +191,45 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
+def format_fields_argument(fields: list[str]) -> list[str] | None:
+    """
+    Checks if the filter fields are valid, if so returns the valid fields,
+    otherwise returns `None`, when given an empty list returns `None`.
+    """
+    all_valid_fields = (
+        "Type",
+        "Mailbox",
+        "ThreadId",
+        "Labels",
+        "Headers",
+        "Attachments",
+        "RawData",
+        "Format",
+        "Subject",
+        "From",
+        "To",
+        "Body",
+        "Cc",
+        "Bcc",
+        "Date",
+        "Html",
+        "Attachment Names",
+    )
+    lower_filter_fields = {field.lower() for field in fields}
+    if valid_fields := [field for field in all_valid_fields if field.lower() in lower_filter_fields]:
+        valid_fields.append('ID')
+        return valid_fields
+    return None
+
+
+def filter_by_fields(full_mail: dict[str, Any], filter_fields: list[str]) -> dict:
+    return {field: full_mail.get(field) for field in filter_fields}
+
+
 def parse_privileges(raw_privileges):
     privileges = []
     for p in raw_privileges:
-        privilege = assign_params(**{'ServiceID': p.get('serviceId'), 'Name': p.get('privilegeName')})
+        privilege = assign_params(ServiceID=p.get('serviceId'), Name=p.get('privilegeName'))
         if privilege:
             privileges.append(privilege)
     return privileges
@@ -300,7 +336,7 @@ def get_email_context(email_data, mailbox):
     context_headers = email_data.get('payload', {}).get('headers', [])
     context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
-    headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+    headers = {h['Name'].lower(): h['Value'] for h in context_headers}
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
@@ -441,11 +477,13 @@ def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     return command_results
 
 
-def emails_to_entry(title, raw_emails, format_data, mailbox):
+def emails_to_entry(title, raw_emails, format_data, mailbox, fields: list[str] | None = None):
     gmail_emails = []
     emails = []
     for email_data in raw_emails:
         context_gmail, _, context_email, occurred, occurred_is_valid = get_email_context(email_data, mailbox)
+        if fields:
+            context_gmail = filter_by_fields(context_gmail, fields)
         gmail_emails.append(context_gmail)
         emails.append(context_email)
 
@@ -796,7 +834,7 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
         args.update({'list_accounts': batch})
         command_results.append(
             CommandResults(
-                readable_output='Serching mailboxes, please wait...',
+                readable_output='Searching mailboxes, please wait...',
                 scheduled_command=ScheduledCommand(
                     command='gmail-search-all-mailboxes',
                     next_run_in_seconds=10,
@@ -1349,7 +1387,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
     _in = args.get('in', '')
 
     query = args.get('query', '')
-    fields = args.get('fields')
+    fields = format_fields_argument(argToList(args.get('fields')))
     label_ids = [lbl for lbl in args.get('labels-ids', '').split(',') if lbl != '']
     max_results = int(args.get('max-results', 100))
     page_token = args.get('page-token')
@@ -1378,7 +1416,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
             return {'Mailbox': mailbox, 'q': q}
         return None
     if mails:
-        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
+        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox, fields)
         return res
     return None
 
@@ -1404,7 +1442,6 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'userId': user_id,
         'q': q,
         'maxResults': max_results,
-        'fields': fields,
         'labelIds': label_ids,
         'pageToken': page_token,
         'includeSpamTrash': include_spam_trash,
@@ -1870,13 +1907,14 @@ def handle_html(htmlBody):
         )
     ):
         maintype, subtype = m.group(2).split('/', 1)
+        name = f"image{i}.{subtype}"
         att = {
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': f"image{i}.{subtype}"
+            'name': name,
+            'cid': name
         }
-        att['cid'] = f'{str(att.get("name"))}@{randomword(8)}.{randomword(8)}'
         attachments.append(att)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
         lastIndex = m.end() - 1
@@ -2065,7 +2103,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         message.attach(alt)
         attach_body_to = alt
     else:
-        message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+        message = MIMEMultipart()  # type: ignore
 
     if not attach_body_to:
         attach_body_to = message  # type: ignore
@@ -2085,8 +2123,6 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
     # if there are any attachments to the mail or both body and htmlBody were given
     if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
-        msg = MIMEText(body, 'plain', 'utf-8')
-        attach_body_to.attach(msg)  # type: ignore
         htmlAttachments = []  # type: list
         inlineAttachments = []  # type: list
 
@@ -2100,6 +2136,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         else:
             # if not html body, cannot attach cids in message
             transientFileCID = None
+            msg = MIMEText(body, 'plain', 'utf-8')
+            attach_body_to.attach(msg)  # type: ignore
 
         attachments = collect_attachments(entry_ids, file_names)
         manual_attachments = collect_manual_attachments()
@@ -2129,62 +2167,55 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
 def send_mail_command():
     args = demisto.args()
-    emailto = argToList(args.get('to'))
-    emailfrom = args.get('from')
+    return mail_command(args)
+
+
+def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
+    email_to = argToList(args.get('to'))
+    email_from = args.get('from', ADMIN_EMAIL)
     body = args.get('body')
-    subject = args.get('subject')
+    subject = f"{subject_prefix}{args.get('subject')}"
     entry_ids = argToList(args.get('attachIDs'))
     cc = argToList(args.get('cc'))
     bcc = argToList(args.get('bcc'))
-    htmlBody = args.get('htmlBody')
-    replyTo = args.get('replyTo')
-    file_names = argToList(args.get('attachNames'))
-    attchCID = argToList(args.get('attachCIDs'))
-    transientFile = argToList(args.get('transientFile'))
-    transientFileContent = argToList(args.get('transientFileContent'))
-    transientFileCID = argToList(args.get('transientFileCID'))
-    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
+    html_body = args.get('htmlBody')
+    reply_to = args.get('replyTo')
+    attach_names = argToList(args.get('attachNames'))
+    attach_cids = argToList(args.get('attachCIDs'))
+    transient_file = argToList(args.get('transientFile'))
+    transient_file_content = argToList(args.get('transientFileContent'))
+    transient_file_cid = argToList(args.get('transientFileCID'))
+    manual_attach_obj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
+    render_body = argToBoolean(args.get('renderBody', False))
+    body_type = args.get('bodyType', 'Text').lower()
 
-    if emailfrom is None:
-        emailfrom = ADMIN_EMAIL
+    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
+                       attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
+                       additional_headers, template_param, in_reply_to, references)
+    rendering_body = html_body if body_type == "html" else body
 
-    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
-                       replyTo, file_names, attchCID, transientFile, transientFileContent,
-                       transientFileCID, manualAttachObj, additional_headers, template_param)
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
+    send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
+                                          subject)
+    if render_body:
+        html_result = CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=html_body,
+        )
+
+        return [send_mail_result, html_result]
+
+    return send_mail_result
 
 
 def reply_mail_command():
     args = demisto.args()
-    emailto = argToList(args.get('to'))
-    emailfrom = args.get('from')
-    inReplyTo = argToList(args.get('inReplyTo'))
+    in_reply_to = argToList(args.get('in_reply_to'))
     references = argToList(args.get('references'))
-    body = args.get('body')
-    subject = 'Re: ' + args.get('subject')
-    entry_ids = argToList(args.get('attachIDs'))
-    cc = argToList(args.get('cc'))
-    bcc = argToList(args.get('bcc'))
-    htmlBody = args.get('htmlBody')
-    replyTo = args.get('replyTo')
-    file_names = argToList(args.get('attachNames'))
-    attchCID = argToList(args.get('attachCIDs'))
-    transientFile = argToList(args.get('transientFile'))
-    transientFileContent = argToList(args.get('transientFileContent'))
-    transientFileCID = argToList(args.get('transientFileCID'))
-    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
-    additional_headers = argToList(args.get('additionalHeader'))
-    template_param = args.get('templateParams')
 
-    if emailfrom is None:
-        emailfrom = ADMIN_EMAIL
-
-    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
-                       replyTo, file_names, attchCID, transientFile, transientFileContent,
-                       transientFileCID, manualAttachObj, additional_headers, template_param, inReplyTo, references)
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
+    return mail_command(args, 'Re: ', in_reply_to, references)
 
 
 def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:
@@ -2618,7 +2649,7 @@ def fetch_incidents():
     return incidents
 
 
-def main():
+def main():  # pragma: no cover
     global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
     ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
     if '@' not in ADMIN_EMAIL:

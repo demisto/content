@@ -77,6 +77,24 @@
 					},
 					"simple": ""
 				},
+				"Categories": {
+					"complex": {
+						"filters": [],
+						"root": "Categories",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
 				"Email BCC": {
 					"complex": {
 						"accessor": "",

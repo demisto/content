@@ -1,4 +1,4 @@
-This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
+This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ASM - Decision" sub-playbook.
 
 ## Dependencies
 
@@ -6,6 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Cortex ASM - Remediation Objectives
 * Cortex ASM - Decision
 
 ### Integrations
@@ -14,9 +15,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Set
-* GetTime
 * RemediationPathRuleEvaluation
+* GetTime
+* Set
 
 ### Commands
 
@@ -28,7 +29,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ExternallyDetectedProviders | Providers of the external service. |  | Optional |
+| ExternallyDetectedProviders | Providers of external service. |  | Optional |
+| BypassDevCheck | Determine whether to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix<br/><br/>Set to "True" if you want to bypass.  " | False | Optional |
 
 ## Playbook Outputs
 

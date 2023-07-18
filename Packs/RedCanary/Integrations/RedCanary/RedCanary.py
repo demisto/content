@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Generator
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
@@ -232,14 +232,14 @@ def process_timeline(detection_id):
                         'attributes', {}).get('command_line'),
                 }
                 files.append({
-                    'Name': os.path.basename(image.get('path')),
+                    'Name': os.path.basename(image.get('path', '')),
                     'MD5': image.get('md5'),
                     'SHA256': image.get('sha256'),
                     'Path': image.get('path'),
-                    'Extension': os.path.splitext(image['path'])[-1],
+                    'Extension': os.path.splitext(image.get('path', ''))[-1],
                 })
                 processes.append({
-                    'Name': os.path.basename(image.get('path')),
+                    'Name': os.path.basename(image.get('path', '')),
                     'Path': image.get('path'),
                     'MD5': image.get('md5'),
                     'SHA256': image.get('sha256'),
@@ -571,7 +571,7 @@ def fetch_incidents(last_run):
         if incident_id not in last_incidents_ids:
             # makes sure that the incident wasn't fetched before
             incidents.append(incident)
-            new_incidents_ids.append(incident_id)
+        new_incidents_ids.append(incident_id)
 
     if incidents:
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
@@ -588,9 +588,10 @@ def test_integration():
 
 def main():
     global BASE_URL, API_KEY, USE_SSL
-    BASE_URL = urljoin(demisto.params().get('domain', ''), '/openapi/v3')
-    API_KEY = demisto.params().get('api_key')
-    USE_SSL = not demisto.params().get('insecure', False)
+    params = demisto.params()
+    BASE_URL = urljoin(params.get('domain', ''), '/openapi/v3')
+    API_KEY = params.get('api_key_creds', {}).get('password') or params.get('api_key')
+    USE_SSL = not params.get('insecure', False)
     ''' EXECUTION CODE '''
     COMMANDS = {
         'test-module': test_integration,

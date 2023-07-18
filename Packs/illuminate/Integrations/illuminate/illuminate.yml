@@ -7,7 +7,7 @@ category: Data Enrichment & Threat Intelligence
 description: Deprecated. Use Analyst1 integration instead.
 deprecated: true
 tests:
-  - No Tests - Deprecated
+- No Tests - Deprecated
 configuration:
 - display: illuminate API Credentials (username/password)
   name: credentials
@@ -573,6 +573,5 @@ script:
       type: String
     description: Queries the illuminate REST API and enriches the given URL with illuminate indicator data.
   dockerimage: demisto/python3:3.9.5.21272
-  runonce: false
   subtype: python3
 fromversion: 5.0.0

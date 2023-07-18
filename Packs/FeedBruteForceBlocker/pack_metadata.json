@@ -2,7 +2,7 @@
     "name": "BruteForce Feed",
     "description": "Indicators feed from BruteForceBlocker",
     "support": "xsoar",
-    "currentVersion": "1.1.22",
+    "currentVersion": "1.1.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Plug & Fetch",
+        "Free Feed"
+    ],
     "useCases": [],
     "keywords": [
         "BruteForceBlocker",
