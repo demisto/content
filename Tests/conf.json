@@ -3679,8 +3679,7 @@
         },
         {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
-            "playbookID": "Audit Log - Test",
-            "is_mockable": false
+            "playbookID": "Audit Log - Test"
         },
         {
             "integrations": "Nutanix Hypervisor",
