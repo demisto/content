@@ -129,9 +129,7 @@
          "id":"UnzipFile",
          "reason":"Issue: CIAC-5246 - Failed unit-test: test_unrar_no_password.",
          "ignored_native_images":[
-            "native:8.3",
             "native:8.2",
-            "native:dev"
          ]
       },
       {
