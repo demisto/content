@@ -81,6 +81,13 @@
     fi
   - section_end "Check Build Files Are Up To Date"
 
+.stop_contrib_external_build: &stop_contrib_external_build
+  - |
+    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?base=master?head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
+      echo "not running on contrib/ branches if there is no an open internal PR or the pipeline was manually triggered"
+      set -e
+      exit 1
+    fi
 
 .clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
@@ -158,6 +165,7 @@
 .default-before-script:
   before_script:
     - *setup-network-certs
+    - *stop_contrib_external_build
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
     - section_start "Creating new clean logs folder" --collapsed
