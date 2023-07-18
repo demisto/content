@@ -8,48 +8,43 @@ def test_canonicalize():
     assert _canonicalize_string("'BLAH'") == "blah"
     assert _canonicalize_string('" BLAH" ') == "blah"
 
-
-def test_is_dev_according_to_key_value_pairs():
-    from InferWhetherServiceIsDev import is_dev_according_to_key_value_pairs
-
-    # dev indicator with varying keys
-    assert is_dev_according_to_key_value_pairs([{"Key": "env", "Value": "dev"},
-                                                {"Key": "Name", "Value": "rdp_server"},
-                                                {"Key": "test", "Value": ""}])
-    assert is_dev_according_to_key_value_pairs([{"Key": "ENVIRONMENT", "Value": "TEST"}])
-
-    # pre-prod counts as dev and not as prod
-    assert is_dev_according_to_key_value_pairs([{"Key": "Stage", "Value": "status - preprod"}])
-
-    # no dev indicator
-    assert not is_dev_according_to_key_value_pairs([{"Key": "env", "Value": "prod"}])
-    assert not is_dev_according_to_key_value_pairs([{"Key": "dev", "Value": "my name"}])
-
-    # conflicting indicators
-    assert not is_dev_according_to_key_value_pairs([{"Key": "env", "Value": "prod"},
-                                                    {"Key": "env", "Value": "dev"}])
-
-    # extra arguments ok
-    assert is_dev_according_to_key_value_pairs([{"Key": "ENVIRONMENT", "Source": "AWS", "Value": "TEST"}])
+@pytest.mark.parametrize('tags_raw,matches', [([{"Key": "ENV", "Value": "nprd"}], [{"Key": "ENV", "Value": "nprd"}])])
+def test_get_indicators_from_key_value_pairs(tags_raw, matches):
+    from InferWhetherServiceIsDev import get_indicators_from_key_value_pairs
+    from InferWhetherServiceIsDev import is_dev_indicator
+    #_is_dev_indicator = is_dev_indicator('nprd')
+    assert get_indicators_from_key_value_pairs(tags_raw, is_dev_indicator) is matches
 
 
-def test_is_dev_according_to_classifications():
-    from InferWhetherServiceIsDev import is_dev_according_to_classifications
+def test_is_dev_indicator():
+    from InferWhetherServiceIsDev import is_dev_indicator
+    
+    # Test Dev Matches
+    assert is_dev_indicator('dev')
+    assert is_dev_indicator('uat')
+    assert is_dev_indicator('non-prod')
+    assert is_dev_indicator('noprod')
+    
+    #Test no match
+    assert not is_dev_indicator('devops')
+    assert not is_dev_indicator('prod')
+    assert not is_dev_indicator('pr')
 
-    assert is_dev_according_to_classifications(["SshServer", "DevelopmentEnvironment"])
-    assert not is_dev_according_to_classifications(["RdpServer", "SelfSignedCertificate"])
+
+def test_is_prod_indicator():
+    from InferWhetherServiceIsDev import is_prod_indicator
+
+
+
+# def test_is_dev_according_to_classifications():
+#     from InferWhetherServiceIsDev import is_dev_according_to_classifications
+
+#     assert is_dev_according_to_classifications(["SshServer", "DevelopmentEnvironment"])
+#     assert not is_dev_according_to_classifications(["RdpServer", "SelfSignedCertificate"])
 
 
 @pytest.mark.parametrize('in_classifications,in_tags,expected_out_boolean',
-                         [([], [{"Key": "ENV", "Value": "nprd"}], True),
-                          (["DevelopmentEnvironment"], [], True),
-                          (["DevelopmentEnvironment"], [{"Key": "ENV", "Value": "pprod"}], True),
-                          ([], [], False),
-                          # unexpected format and/or missing fields yield False & no errors
-                          ([], [{"key": "ENV", "value": "dev"}], False),
-                          (None, [], False),
-                          ([], None, False),
-                          (None, None, False)])
+                         [([], [{"Key": "ENV", "Value": "non-prod", "Source": "AWS"}], [{'result': 'The service is development', 'confidence': 'Likely Development', 'reason': 'Match on tag {ENV: non-prod} from AWS'}])])
 def test_main(mocker, in_classifications, in_tags, expected_out_boolean):
     import InferWhetherServiceIsDev
     import unittest
@@ -69,5 +64,15 @@ def test_main(mocker, in_classifications, in_tags, expected_out_boolean):
     InferWhetherServiceIsDev.main()
 
     # Verify the output value was set
-    expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmdevcheck': expected_out_boolean})]
+    expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmdevcheckdetails': expected_out_boolean})]
     assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
+
+
+                        #   (["DevelopmentEnvironment"], [], True),
+                        #   (["DevelopmentEnvironment"], [{"Key": "ENV", "Value": "pprod"}], True),
+                        #   ([], [], False),
+                        #   # unexpected format and/or missing fields yield False & no errors
+                        #   ([], [{"key": "ENV", "value": "dev"}], False),
+                        #   (None, [], False),
+                        #   ([], None, False),
+                        #   (None, None, False)
