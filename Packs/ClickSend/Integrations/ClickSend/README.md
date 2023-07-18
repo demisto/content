@@ -20,7 +20,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### text-to-voice
 
 ***
-Make phone call with you own text
+Make phone call with you own text. Example: !text-to-voice Message="Hi im here" phoneNumber=+972501234567 require_input=0 voice=male
 
 #### Base Command
 
@@ -39,14 +39,14 @@ Make phone call with you own text
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Voice.MSG.id | unknown |  | 
-| Voice.MSG.responseCode | unknown |  | 
-| Voice.MSG.responseMsg | unknown |  | 
+| Voice.MSG.id | unknown | Message ID | 
+| Voice.MSG.responseCode | unknown | Response Code | 
+| Voice.MSG.responseMsg | unknown | Response MSG | 
 
 ### voice-history
 
 ***
-Your calls history
+Your calls history Example: !voice-history
 
 #### Base Command
 
@@ -61,4 +61,4 @@ Your calls history
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Voice.History | unknown |  | 
+| Voice.History | unknown | Your Calls History | 
