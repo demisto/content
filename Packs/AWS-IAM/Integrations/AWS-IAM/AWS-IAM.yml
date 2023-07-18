@@ -10,10 +10,12 @@ configuration:
   name: roleArn
   type: 0
   section: Connect
+  required: false
 - display: Role Session Name
   name: roleSessionName
   type: 0
   section: Connect
+  required: false
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -38,26 +40,31 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
   section: Connect
+  required: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   display: Timeout
@@ -65,6 +72,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
   defaultvalue: '5'
   display: Retries
@@ -72,16 +80,19 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Amazon Web Services Identity and Access Management (IAM)
 display: AWS - Identity and Access Management
 name: AWS - IAM
@@ -1497,7 +1508,7 @@ script:
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
       description: The date when the given access key was last used.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.64385
+  dockerimage: demisto/boto3py3:1.0.0.65194
   runonce: false
   script: '-'
   subtype: python3
