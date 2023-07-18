@@ -1760,6 +1760,7 @@ def create_release_command():
         'name': args.get('name'),
         'body': args.get('body'),
         'draft': argToBoolean(args.get('draft')),
+        'target_commitish': args.get('ref')
     }
     response = http_request('POST', url_suffix=RELEASE_SUFFIX, data=data)
     release_url = response.get('html_url')
@@ -2027,6 +2028,7 @@ def github_trigger_workflow_command():
             repository (str): The GitHub repository name.
             branch (str): The branch to trigger the workflow on.
             workflow (str): The name of your workflow file.
+            inputs (str): The inputs of the workflow.
 
         Returns:
             CommandResults object with informative printout if trigger the workflow succeeded or not.
@@ -2036,15 +2038,17 @@ def github_trigger_workflow_command():
     repository = args.get('repository') or REPOSITORY
     branch = args.get('branch', 'master')
     workflow = args.get('workflow')
+    inputs = json.loads(args.get('inputs', '{}'))
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
     headers = {
         "Authorization": f"Bearer {TOKEN}",
         "Accept": "application/vnd.github.v3+json"
     }
-    data = {
-        "ref": branch
-    }
+    data = assign_params(
+        ref=branch,
+        inputs=inputs
+    )
     response = http_request('POST', url_suffix=suffix, headers=headers, data=data)
 
     if response.status_code == 204:

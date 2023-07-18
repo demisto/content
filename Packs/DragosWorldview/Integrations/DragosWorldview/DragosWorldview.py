@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# pack version: 1.0.4
 import json
 from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, Tuple

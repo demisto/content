@@ -240,3 +240,4 @@ Qradar
 XSIAM
 fromversion
 xpanse
+JavaScript
