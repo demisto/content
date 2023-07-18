@@ -59,7 +59,7 @@ script:
       description: <string> The packet ID ranges to search
     - name: search
       required: true
-      description: '<string> The search string to use. Example: "select hit, pretext, posttext where keyword='netwitness' sp ci ds". sp = Search Packets ci = Case Insensitive ds = Decode Sessions (e.g., convert email attachments before searching). For regular expressions, change “keyword” to “regex” '
+      description: '<string> The search string to use. Example: "select hit, pretext, posttext where keyword=’netwitness’ sp ci ds". sp = Search Packets ci = Case Insensitive ds = Decode Sessions (e.g., convert email attachments before searching). For regular expressions, change “keyword” to “regex” '
     - name: where
       description: <string> The where clause used to identify sessions to consider for the search
     - name: limit
