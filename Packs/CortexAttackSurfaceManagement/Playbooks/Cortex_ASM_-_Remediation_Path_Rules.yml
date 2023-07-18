@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex ASM - Remediation Path Rules
-description: This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task.
+description: This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task.
 starttaskid: "0"
 tasks:
   "0":
@@ -1388,7 +1388,7 @@ tasks:
       id: 8c115e9e-1d81-492f-8744-3c55d18e3337
       version: -1
       name: Select remediation action (dynamic)
-      description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
+      description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is set up and/or the alert meets the requirement for automated remediation.
       type: collection
       iscommand: false
       brand: ""
