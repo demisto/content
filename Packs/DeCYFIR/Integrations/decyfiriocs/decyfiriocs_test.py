@@ -74,6 +74,32 @@ def test_build_threat_intel_indicator_obj(mocker):
     assert ta_data[0] == ta_data_out
 
 
+def test_build_ta_relationships_data(mocker):
+    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
+
+    raw_iocs_data = util_load_json('test_data/iocs.json')
+    ta_data = raw_iocs_data['IN_DATA_7']
+    ti_data = raw_iocs_ti_data['ta_relationships']
+
+    client = Client(
+        base_url='test_url',
+        verify=False,
+        proxy=False,
+    )
+    ta_source_obj = {}
+    return_data = []
+
+    ta_source_obj, src_ti_relationships_data, return_data = client.build_ta_relationships_data(ta_rel_data_coll=ti_data,
+                                                                                               ta_source_obj=ta_source_obj,
+                                                                                               return_data=return_data,
+                                                                                               tlp_color='tlp_color',
+                                                                                               feed_tags=['feedTags']
+                                                                                               )
+    ta_source_obj["relationships"] = src_ti_relationships_data
+    return_data.append(ta_source_obj)
+    assert ta_data == return_data
+
+
 def test_add_aliases(mocker):
     raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
 

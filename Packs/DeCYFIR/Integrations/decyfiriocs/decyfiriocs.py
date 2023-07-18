@@ -116,6 +116,10 @@ class Client(BaseClient):
         relationship = RELATIONSHIPS_MAPPING_TYPES.get(str(target_type))
         if relationship:
             return self.build_relationships(relationship, source_value, source_type, target_value, target_type)
+        else:
+            relationship = RELATIONSHIPS_MAPPING_TYPES.get(str(source_type))
+            if relationship:
+                return self.build_relationships(relationship, source_value, source_type, target_value, target_type)
 
         return None
 
@@ -156,6 +160,7 @@ class Client(BaseClient):
             "score": THREAT_INTEL_SCORES.get(intel_type),
             "service": LABEL_DECYFIR,
             "rawJSON": data,
+            "relationships": [],
             "fields": {
                 "stixid": data.get(LABEL_ID),
                 "description": data.get("description", ''),
@@ -228,6 +233,7 @@ class Client(BaseClient):
                     ti_fields["cvssscore"] = label.get("cvss_score", "")
                     ti_fields["cvssvector"] = label.get("cvss_vector", "")
                     ti_fields["cvssversion"] = label.get("cvss_version", "")
+                    ti_data_obj["score"] = 0
 
                     if label.get("cvss_metrics_data"):
                         metrics = []
@@ -268,6 +274,95 @@ class Client(BaseClient):
 
         return ti_data_obj
 
+    def build_ta_relationships_data(self, ta_rel_data_coll: list, ta_source_obj: dict, return_data: list,
+                                    tlp_color: Optional[str],
+                                    feed_tags: Optional[List]):
+        src_ti_relationships_data = []
+        raw_ta_rels: List = []
+        raw_ta_data: Dict = {}
+        raw_ta_obj: Dict = {}
+
+        # Only source object getting from the iterating
+        for ta_rel_data in ta_rel_data_coll:
+            if ta_rel_data.get(LABEL_TYPE) == LABEL_THREAT_ACTOR:
+                raw_ta_obj = ta_rel_data
+                ta_source_obj = self.build_threat_intel_indicator_obj(ta_rel_data, tlp_color, feed_tags)
+
+            elif ta_rel_data.get(LABEL_TYPE) == LABEL_RELATIONSHIP:
+                raw_ta_rels.append(ta_rel_data)
+            else:
+                is_types_in = ta_rel_data.get(LABEL_TYPE) in [LABEL_INTRUSION_SET, LABEL_CAMPAIGN, LABEL_MALWARE]
+                if raw_ta_obj.get(LABEL_ID) != ta_rel_data.get(LABEL_ID) and is_types_in:
+                    ta_rel_data["labels"] = raw_ta_obj.get("labels", [])
+
+            raw_ta_data[ta_rel_data.get(LABEL_ID)] = ta_rel_data
+
+        # Mapping the relations with source and target objects
+        if raw_ta_rels is not None and raw_ta_rels:
+            for raw_ta_rel_ in raw_ta_rels:
+                # Source ref obj from relationship obj
+                if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
+                    source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF, ''), {})
+                else:
+                    source_ref_obj = raw_ta_data.get(raw_ta_rel_.get('sourceRef', ''), {})
+                # Target ref obj from relationship obj
+                if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
+                    target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF, ''), {})
+                else:
+                    target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('targetRef', ''), {})
+
+                if source_ref_obj is not None and target_ref_obj is not None:
+                    if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
+                        source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color,
+                                                                                   feed_tags)
+                        if source_ti_data_obj is not None and source_ti_data_obj:
+                            src_exists_in = False
+                            for re_data1 in return_data:
+                                if re_data1["name"] == source_ti_data_obj["name"]:
+                                    src_exists_in = True
+                                    break
+                            if not src_exists_in:
+                                return_data.append(source_ti_data_obj)
+                    else:
+                        source_ti_data_obj = ta_source_obj
+
+                    src_tar_flag = source_ti_data_obj is not None and source_ti_data_obj.get(
+                        LABEL_ID) != target_ref_obj.get(LABEL_ID)
+
+                    if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and src_tar_flag:
+
+                        target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color,
+                                                                                   feed_tags)
+                        if target_ti_data_obj is not None and target_ti_data_obj:
+                            tar_exists_in = False
+                            for re_data2 in return_data:
+                                if re_data2["name"] == target_ti_data_obj["name"]:
+                                    tar_exists_in = True
+                                    break
+                            if not tar_exists_in:
+                                return_data.append(target_ti_data_obj)
+                    else:
+                        target_ti_data_obj = ta_source_obj
+
+                    if source_ti_data_obj and target_ti_data_obj:
+                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                          target_ti_data_obj)
+
+                        if ti_relationships:
+                            is_scr_rel = raw_ta_obj.get(LABEL_ID) == source_ref_obj.get(LABEL_ID) or raw_ta_obj.get(
+                                LABEL_ID) == target_ti_data_obj.get(LABEL_ID)
+
+                            if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
+                                source_ti_data_obj[LABEL_RELATIONSHIPS].append(ti_relationships)
+
+                            if raw_ta_obj.get(LABEL_ID) != target_ti_data_obj.get(LABEL_ID):
+                                target_ti_data_obj[LABEL_RELATIONSHIPS].append(ti_relationships)
+
+                            if is_scr_rel:
+                                src_ti_relationships_data.append(ti_relationships)
+
+        return ta_source_obj, src_ti_relationships_data, return_data
+
     def convert_decyfir_ti_to_indicator_format(self, decyfir_api_key: str, data: Dict, tlp_color: Optional[str],
                                                feed_tags: Optional[List], threat_intel_type: str,
                                                is_data_save: bool) -> List[Dict]:
@@ -286,67 +381,11 @@ class Client(BaseClient):
                     if ta_rel_data_coll := self.get_decyfir_api_iocs_ti_data(
                         TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, ta_name)
                     ):
-                        raw_ta_rels: List = []
-                        raw_ta_data: Dict = {}
-                        raw_ta_obj: Dict = {}
-                        # Only source object getting from the iterating
-                        for ta_rel_data in ta_rel_data_coll:
-                            if ta_rel_data.get(LABEL_TYPE) == LABEL_THREAT_ACTOR:
-                                raw_ta_obj = ta_rel_data
-                                ta_source_obj = self.build_threat_intel_indicator_obj(ta_rel_data, tlp_color, feed_tags)
-
-                            elif ta_rel_data.get(LABEL_TYPE) == LABEL_RELATIONSHIP:
-                                raw_ta_rels.append(ta_rel_data)
-                            else:
-                                is_types_in = ta_rel_data.get(LABEL_TYPE) in [LABEL_INTRUSION_SET, LABEL_CAMPAIGN, LABEL_MALWARE]
-                                if raw_ta_obj.get(LABEL_ID) != ta_rel_data.get(LABEL_ID) and is_types_in:
-                                    ta_rel_data["labels"] = raw_ta_obj.get("labels", [])
-                                raw_ta_data[ta_rel_data.get(LABEL_ID)] = ta_rel_data
-
-                        # Mapping the relations with source and target objects
-                        if raw_ta_rels is not None and raw_ta_rels:
-                            for raw_ta_rel_ in raw_ta_rels:
-                                # Source ref obj from relationship obj
-                                if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
-                                    source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF, ''), {})
-                                else:
-                                    source_ref_obj = raw_ta_data.get(raw_ta_rel_.get('sourceRef', ''), {})
-                                # Target ref obj from relationship obj
-                                if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
-                                    target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF, ''), {})
-                                else:
-                                    target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('targetRef', ''), {})
-
-                                if source_ref_obj is not None and target_ref_obj is not None:
-                                    if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                        source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color,
-                                                                                                   feed_tags)
-                                        if source_ti_data_obj is not None and source_ti_data_obj:
-                                            return_data.append(source_ti_data_obj)
-                                    else:
-                                        source_ti_data_obj = ta_source_obj
-
-                                    src_tar_flag = source_ti_data_obj is not None and source_ti_data_obj.get(
-                                        LABEL_ID) != target_ref_obj.get(LABEL_ID)
-
-                                    if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and src_tar_flag:
-
-                                        target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color,
-                                                                                                   feed_tags)
-                                        if target_ti_data_obj is not None and target_ti_data_obj:
-                                            return_data.append(target_ti_data_obj)
-                                    else:
-                                        target_ti_data_obj = ta_source_obj
-
-                                    if source_ti_data_obj and target_ti_data_obj:
-                                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                          target_ti_data_obj)
-                                        if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                            if ti_relationships:
-                                                source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
-                                        else:
-                                            if ti_relationships:
-                                                src_ti_relationships_data = [ti_relationships]
+                        ta_source_obj, src_ti_relationships_data, return_data = self.build_ta_relationships_data(ta_rel_data_coll,
+                                                                                                                 ta_source_obj,
+                                                                                                                 return_data,
+                                                                                                                 tlp_color,
+                                                                                                                 feed_tags)
                     ta_source_obj[LABEL_RELATIONSHIPS] = src_ti_relationships_data
                     return_data.append(ta_source_obj)
                 else:
