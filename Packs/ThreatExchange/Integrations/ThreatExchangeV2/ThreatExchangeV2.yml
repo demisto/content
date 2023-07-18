@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatExchange v2 - test
+  id: ThreatExchange v2
   version: -1
 configuration:
 - display: App ID
@@ -50,8 +50,8 @@ configuration:
   required: false
 defaultclassifier: 'null'
 description: Receive threat intelligence about applications, IP addresses, URLs, and hashes. A service by Facebook.
-display: ThreatExchange v2 - test
-name: ThreatExchange v2 - test
+display: ThreatExchange v2
+name: ThreatExchange v2
 script:
   commands:
   - arguments:
