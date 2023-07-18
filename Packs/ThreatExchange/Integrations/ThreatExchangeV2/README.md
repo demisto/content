@@ -284,13 +284,14 @@ Checks URL Reputation
 `url`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| url | URL to be checked. | Required | 
-| limit | The maximum number of results per page. The maximum is 1000. Default is 20. | Optional | 
-| headers | A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3. | Optional | 
-| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago). | Optional | 
-| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago). | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                              | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| url               | URL to be checked.                                                                                                                                                           | Required | 
+| limit             | The maximum number of results per page. The maximum is 1000. Default is 20.                                                                                                  | Optional | 
+| headers           | A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.                                                                 | Optional | 
+| since             | The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago). | Optional | 
+| until             | The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).   | Optional | 
+| share_level       | A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol. Default is RED.                                                             | Optional | 
 
 
 #### Context Output
@@ -421,7 +422,7 @@ Checks domain reputation.
 | headers | A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3. | Optional | 
 | since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago). | Optional | 
 | until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago). | Optional | 
-
+| share_level       | A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol. Default is RED.                                                             | Optional | 
 
 #### Context Output
 

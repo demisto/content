@@ -102,7 +102,7 @@ class Client(BaseClient):
         )
         return response
 
-    def domain(self, domain: str, since: Optional[int], until: Optional[int],
+    def domain(self, domain: str, since: Optional[int], until: Optional[int], share_level: str,
                limit: Optional[int] = DEFAULT_LIMIT) -> Dict:
         """
         See Also:
@@ -111,6 +111,7 @@ class Client(BaseClient):
             domain: Domain
             since: Returns malware collected after a timestamp
             until: Returns malware collected before a timestamp
+            share_level: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
             limit: Defines the maximum size of a page of results. The maximum is 1,000
 
         Returns: The API call response
@@ -126,12 +127,14 @@ class Client(BaseClient):
                 'strict_text': True,
                 'since': since,
                 'until': until,
-                'limit': limit
+                'limit': limit,
+                'share_level': share_level
             })
         )
         return response
 
-    def url(self, url: str, since: Optional[int], until: Optional[int], limit: Optional[int] = DEFAULT_LIMIT) -> Dict:
+    def url(self, url: str, since: Optional[int], until: Optional[int], share_level: str,
+            limit: Optional[int] = DEFAULT_LIMIT) -> Dict:
         """
         See Also:
             https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-descriptors
@@ -139,6 +142,7 @@ class Client(BaseClient):
             url: URL
             since: Returns malware collected after a timestamp
             until: Returns malware collected before a timestamp
+            share_level: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
             limit: Defines the maximum size of a page of results. The maximum is 1,000
 
         Returns: The API call response
@@ -154,7 +158,8 @@ class Client(BaseClient):
                 'strict_text': True,
                 'since': since,
                 'until': until,
-                'limit': limit
+                'limit': limit,
+                'share_level': share_level
             })
         )
         return response
@@ -612,16 +617,25 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
     limit = arg_to_number(args.get('limit'), arg_name='limit')
     headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
+    share_level = args.get('share_level')
     results: List[CommandResults] = list()
 
     for domain in domains:
         try:
-            raw_response = client.domain(domain, since, until, limit)
+            raw_response = client.domain(domain, since, until, share_level, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
             err_msg = f'Could not process domain: "{domain}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
+            readable_output = f'Processing domain: "{domain}" resulted in an exception. See logs for the exact error.'
+            result = CommandResults(
+                outputs={},
+                readable_output=readable_output,
+                raw_response=raw_response
+            )
+            results.append(result)
+            continue
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
@@ -681,15 +695,24 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
     limit = arg_to_number(args.get('limit'), arg_name='limit')
     headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
+    share_level = args.get('share_level')
     results: List[CommandResults] = list()
     for url in urls:
         try:
-            raw_response = client.url(url, since, until, limit)
+            raw_response = client.url(url, since, until, share_level, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
             err_msg = f'Could not process URL: "{url}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
+            readable_output = f'Processing URL: "{url}" resulted in an exception. See logs for the exact error.'
+            result = CommandResults(
+                outputs={},
+                readable_output=readable_output,
+                raw_response=raw_response
+            )
+            results.append(result)
+            continue
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)

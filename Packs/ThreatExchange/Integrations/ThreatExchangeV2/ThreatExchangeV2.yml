@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatExchange v2
+  id: ThreatExchange v2 - test
   version: -1
 configuration:
 - display: App ID
@@ -50,8 +50,8 @@ configuration:
   required: false
 defaultclassifier: 'null'
 description: Receive threat intelligence about applications, IP addresses, URLs, and hashes. A service by Facebook.
-display: ThreatExchange v2
-name: ThreatExchange v2
+display: ThreatExchange v2 - test
+name: ThreatExchange v2 - test
 script:
   commands:
   - arguments:
@@ -263,6 +263,15 @@ script:
       name: since
     - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
+    - auto: PREDEFINED
+      defaultValue: RED
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
+      name: share_level
+      predefined:
+        - RED
+        - AMBER
+        - GREEN
+        - WHITE
     description: Checks the URL reputation.
     name: url
     outputs:
@@ -359,6 +368,15 @@ script:
       name: since
     - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
+    - auto: PREDEFINED
+      defaultValue: RED
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
+      name: share_level
+      predefined:
+        - RED
+        - AMBER
+        - GREEN
+        - WHITE
     description: Checks a domain reputation.
     name: domain
     outputs:
