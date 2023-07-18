@@ -107,14 +107,15 @@ def search_related_indicators(value: str) -> list[dict]:
     return demisto_indicators
 
 
-def get_indicators_stix_ids(value: str, indicator_type: str, demisto_indicators: list[dict]) -> list[str]:
+def get_indicators_stix_ids(value: str, indicator_type: str, indicators: list[dict]) -> list[str]:
     stix_ids = []
-    for indicator in demisto_indicators:
+    for indicator in indicators:
         if stix_id := indicator.get("stixid"):
+            demisto.debug(f"Found stix id: {stix_id} for indicator: {indicator}")
             stix_ids.append(stix_id)
         else:
             if indicator_type in SDOs:
-                stix_type = XSOAR_TYPES_TO_STIX_SDO.get(indicator.get("indicator_type", ""))
+                stix_type = XSOAR_TYPES_TO_STIX_SDO.get(indicator.get("indicator_type", "indicator"))
                 stix_id = create_sdo_stix_uuid(indicator, stix_type, indicator.get("value", ""))
             elif indicator_type in SCOs:
                 stix_type = XSOAR_TYPES_TO_STIX_SCO.get(indicator.get("indicator_type", "indicator"), 'indicator')
@@ -122,6 +123,7 @@ def get_indicators_stix_ids(value: str, indicator_type: str, demisto_indicators:
             else:
                 demisto.info(f"Indicator type: {indicator_type}, with the value: {value} is unknown.")
                 continue
+            demisto.debug(f"Created stix id: {stix_id} for indicator: {indicator}")
         stix_ids.append(stix_id)
     return stix_ids
 
