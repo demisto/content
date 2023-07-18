@@ -156,19 +156,14 @@ def get_campaign_from_sub_reports(report_object, id_to_object):
     report_relationships = []
     object_refs = report_object.get('object_refs', [])
     for obj in object_refs:
-        if obj.startswith('report--'):
-            sub_report_obj = id_to_object.get(obj, {})
-            for sub_report_obj_ref in sub_report_obj.get('object_refs', []):
-                if sub_report_obj_ref.startswith('campaign--'):
-                    related_campaign = id_to_object.get(sub_report_obj_ref)
-
-                    if related_campaign:
-                        entity_relation = EntityRelationship(name='related-to',
-                                                             entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
-                                                             entity_a_type='Report',
-                                                             entity_b=related_campaign.get('name'),
-                                                             entity_b_type='Campaign')
-                        report_relationships.append(entity_relation.to_indicator())
+        relationship_obj = id_to_object.get(obj, {})
+        if relationship_obj:
+            entity_relation = EntityRelationship(name='related-to',
+                                                 entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
+                                                 entity_a_type='Report',
+                                                 entity_b=relationship_obj.get('name'),
+                                                 entity_b_type=relationship_obj.get('type'))
+            report_relationships.append(entity_relation.to_indicator())
     return report_relationships
 
 
@@ -204,7 +199,8 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: Opti
     for report_object in report_objects:
         if is_sub_report(report_object):
             continue
-
+        if report_object.get('id') == 'report--70d827ca-ec87-423a-8ad5-b5eb94f86ae2':
+            print(5)
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = ThreatIntel.ObjectsNames.REPORT
@@ -642,7 +638,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
     if reports:
         demisto.debug(f'Feed Unit42 v2: {len(reports)} XSOAR Reports Indicators were created.')
     if campaigns:
-        demisto.debug(f'Feed Unit42 v2: {len(campaigns)} XSOAR campaigns Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(campaigns)} XSOA campaignsR Indicators were created.')
     if attack_patterns:
         demisto.debug(f'Feed Unit42 v2: {len(attack_patterns)} Attack Patterns Indicators were created.')
     if course_of_actions:
