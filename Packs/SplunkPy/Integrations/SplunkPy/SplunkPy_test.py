@@ -9,6 +9,7 @@ from CommonServerPython import *
 from datetime import timedelta, datetime
 from collections import namedtuple
 
+
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, url="https://test.url.com", search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -423,6 +424,7 @@ data_test_check_error = [
 
 @pytest.mark.parametrize('args, out_error', data_test_check_error)
 def test_check_error(args, out_error):
+
     class Service:
         def __init__(self):
             self.apps = APPS
@@ -433,8 +435,9 @@ def test_check_error(args, out_error):
         raise splunk.DemistoException('empty')
     except splunk.DemistoException as error:
         output = str(error)
-    assert output == out_error, 'check_error(service, {})\n\treturns: {}\n\tinstead: {}'.format(args,
-                                                                                                output, out_error)
+    assert (
+        output == out_error
+    ), f'check_error(service, {args})\n\treturns: {output}\n\tinstead: {out_error}'
 
 
 EMPTY_CASE = {}
@@ -461,8 +464,9 @@ data_test_build_kv_store_query = [
 def test_build_kv_store_query(args, expected_query, mocker):
     mocker.patch('SplunkPy.get_key_type', return_value=None)
     output = splunk.build_kv_store_query(None, args)
-    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
-                                                                                                     expected_query)
+    assert (
+        output == expected_query
+    ), f'build_kv_store_query({args})\n\treturns: {output}\n\tinstead: {expected_query}'
 
 
 data_test_build_kv_store_query_with_key_val = [
@@ -515,6 +519,7 @@ data_test_get_keys_and_types = [
 
 @pytest.mark.parametrize('raw_keys, expected_keys', data_test_get_keys_and_types)
 def test_get_keys_and_types(raw_keys, expected_keys):
+
     class KVMock:
         def __init__(self):
             pass
@@ -523,11 +528,14 @@ def test_get_keys_and_types(raw_keys, expected_keys):
             return raw_keys
 
     output = splunk.get_keys_and_types(KVMock())
-    assert output == expected_keys, 'get_keys_and_types(kv_store)\n\treturns: {}\n\tinstead: {}'.format(output,
-                                                                                                        expected_keys)
+    assert (
+        output == expected_keys
+    ), f'get_keys_and_types(kv_store)\n\treturns: {output}\n\tinstead: {expected_keys}'
 
 
-START_OUTPUT = '#### configuration for {} store\n| field name | type |\n| --- | --- |'.format('name')
+START_OUTPUT = (
+    '#### configuration for name store\n| field name | type |\n| --- | --- |'
+)
 EMPTY_OUTPUT = ''
 STANDARD_CASE = {'field.test': 'number'}
 STANDARD_OUTPUT = '\n| field.test | number |'
@@ -712,10 +720,18 @@ def test_reset_enriching_fetch_mechanism(mocker):
     assert integration_context == {'wow': 'wow'}
 
 
-@pytest.mark.parametrize('drilldown_creation_time, asset_creation_time, enrichment_timeout, output', [
-    (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
-    ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
-])
+@pytest.mark.parametrize(
+    "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
+    [
+        (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
+        (
+            (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
+            datetime.utcnow().isoformat(),
+            5,
+            True,
+        ),
+    ],
+)
 def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
                                          output):
     """
@@ -1073,6 +1089,7 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
      4, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
+
     class Service:
         def __init__(self):
             self.token = 'fake_token'
@@ -1082,8 +1099,13 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    requests_mock.post(base_url + 'services/auth/login', json={'sessionKey': 'session_key'})
-    requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
+    requests_mock.post(
+        f'{base_url}services/auth/login', json={'sessionKey': 'session_key'}
+    )
+    requests_mock.post(
+        f'{base_url}services/notable_update',
+        json={'success': success, 'message': 'wow'},
+    )
     if not success:
         mocker.patch.object(demisto, 'error')
     service = Service()
@@ -1354,11 +1376,11 @@ def test_splunk_search_command(mocker, polling, status):
     Then:
         Ensure the result as expected in polling and in regular search.
     """
-    mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
-                                                       'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'fast_mode': 'false', 'polling': polling})
+    mock_args = {'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
+                 'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
+                                                       'fast_mode': 'false', 'polling': polling}
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    search_result = splunk.splunk_search_command(Service(status))
+    search_result = splunk.splunk_search_command(Service(status), mock_args)
 
     if search_result.scheduled_command:
         assert search_result.outputs['Status'] == status
@@ -1390,7 +1412,7 @@ def test_module_test(mocker, credentials):
     service = client.Service(**credentials)
     # run
 
-    splunk.test_module(service)
+    splunk.test_module(service, {})
 
     # validate
     assert service.info.call_count == 1
@@ -1423,7 +1445,7 @@ def test_module__exception_raised(mocker, credentials):
     service = client.Service(**credentials)
 
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {})
 
     # validate
     assert return_error_mock.call_args[0][0] == 'Authentication error, please validate your credentials.'
@@ -1441,7 +1463,6 @@ def test_module_hec_url(mocker):
         - Validate that the request.get was called with the expected args
     """
     # prepare
-    mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
     mocker.patch.object(requests, 'get')
@@ -1449,7 +1470,7 @@ def test_module_hec_url(mocker):
     service = client.Service(username='test', password='test')
 
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {'hec_url': 'test_hec_url'})
 
     # validate
     assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
@@ -1468,12 +1489,11 @@ def test_module_message_object(mocker):
     """
     from splunklib import results
     # prepare
-    mocker.patch.object(demisto, 'params', return_value={'isFetch': True, 'fetchQuery': 'something'})
     message = results.Message("DEBUG", "There's something in that variable...")
     mocker.patch('splunklib.results.ResultsReader', return_value=[message])
     service = mocker.patch('splunklib.client.connect', return_value=None)
     # run
-    splunk.test_module(service)
+    splunk.test_module(service, {'isFetch': True, 'fetchQuery': 'something'})
 
     # validate
     assert service.info.call_count == 1
@@ -1548,10 +1568,9 @@ def test_empty_string_as_app_param_value(mocker):
     """
     # prepare
     mock_params = {'app': '', 'host': '111', 'port': '111'}
-    mocker.patch('demistomock.params', return_value=mock_params)
 
     # run
-    connection_args = splunk.get_connection_args()
+    connection_args = splunk.get_connection_args(mock_params)
 
     # validate
     assert connection_args.get('app') == '-'

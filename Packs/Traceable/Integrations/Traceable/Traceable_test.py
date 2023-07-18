@@ -11,7 +11,7 @@ sample_span_result = """{
           "displaySpanName": "POST /get_user",
           "userIdentifier": "xxx@outlook.zz",
           "sessionId": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e",
-          "ipAddress": "192.0.2.255",
+          "ipAddress": "8.8.8.8",
           "userCountry": "United States",
           "userCity": "Houston",
           "userRoles": [
@@ -24,11 +24,11 @@ sample_span_result = """{
           "endTime": 1687388481679,
           "traceId": "a1f93e44b31be69835cfeeac4f181869",
           "spanTags": {
-            "net.peer.port": "56453",
-            "http.url": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
+            "net.peer.port": "5355",
+            "http.url": "http://localhost:1111/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
             "enduser.role": "customer",
-            "net.peer.ip": "192.0.2.255",
-            "net.host.ip": "192.0.2.255",
+            "net.peer.ip": "8.8.8.8",
+            "net.host.ip": "8.8.8.8",
             "traceableai.enriched.api_type": "HTTP",
             "http.status_code": "200",
             "enduser.id": "xxx@outlook.zz",
@@ -49,11 +49,19 @@ sample_span_result = """{
           "spanRequestBody": "email=xxx@outlook.zz&password=${<script alert(1) />}",
           "spanRequestHeaders": {
             "content-type": "application/json",
-            "x-forwarded-for": "192.0.2.255"
+            "x-forwarded-for": "8.8.8.8"
           },
           "spanRequestCookies": {}
         }
       ]
+    }
+  }
+}"""
+
+empty_domain_event = """{
+  "data": {
+    "explore": {
+      "results": []
     }
   }
 }"""
@@ -106,13 +114,13 @@ sample_domain_event = """{
             "value": "United States"
           },
           "actorIpAddress": {
-            "value": "192.0.2.255"
+            "value": "8.8.8.8"
           },
           "actorDevice": {
             "value": "null"
           },
           "apiUri": {
-            "value": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com"
+            "value": "http://localhost:1111/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com"
           },
           "traceId": {
             "value": "a1f93e44b31be69835cfeeac4f181869"
@@ -174,6 +182,19 @@ class Response:
     text = None  # type: str
 
 
+def empty_response_handler(*args, **kwargs):
+    data: str = kwargs["json"]["query"]
+
+    r = Response()
+    if "DOMAIN_EVENT" in data:
+        r.text = empty_domain_event
+        return r
+    elif "spans(" in data:
+        r.text = sample_span_result
+        return r
+    return None
+
+
 def response_handler(*args, **kwargs):
     data: str = kwargs["json"]["query"]
 
@@ -233,6 +254,30 @@ def test_fetch_incidents_last_fetch_not_none(mocker):
         client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days"
     )
     assert len(incidents) == 1
+
+
+def test_fetch_incidents_no_events(mocker):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = empty_response_handler
+
+    next_run, incidents = fetch_incidents(
+        client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days"
+    )
+    assert len(incidents) == 0
 
 
 def test_construct_filterby_expression():

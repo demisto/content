@@ -6,9 +6,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Twinwave API token
   name: api-token
   required: true
@@ -17,10 +19,12 @@ configuration:
   display: Number of jobs to first fetch
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: all
   display: Filter incidents by submission source.
   name: source
@@ -29,15 +33,19 @@ configuration:
   - ui
   - api
   type: 15
+  required: false
 - display: Filter UI incidents by username. Exact match only. (Cannot use if source is all or api)
   name: username
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: TwinWave’s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities.
 display: Twinwave
 name: Twinwave
@@ -232,7 +240,7 @@ script:
     - contextPath: Twinwave.TempArtifactURL.URL
       description: Temporary URL
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   script: ''
   subtype: python3

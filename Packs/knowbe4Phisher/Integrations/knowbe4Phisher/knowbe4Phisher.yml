@@ -13,29 +13,36 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   type: 9
+  required: false
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   defaultvalue: 7 days
   display: First Fetch Time
   name: first_fetch
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: Maximum number of alerts per fetch. Default and recommended is 50
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
+  required: false
 - display: Incident type
   defaultvalue: PhishER
   name: incidentType
   type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: KnowBE4 PhishER integration allows to pull events from PhishER system and do mutations
 display: PhishER
 name: Phisher
@@ -165,7 +172,7 @@ script:
       required: true
     description: Removes tags from a given message.
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   script: '-'
