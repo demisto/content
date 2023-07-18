@@ -708,7 +708,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     for packs_to_install_body in batch_packs_install_request_body:
         # install_packs(client, host, packs_to_install_body)
         packs_to_install_together.extend(packs_to_install_body)
-        if len(packs_to_install_together) > 20:
+        if len(packs_to_install_together) > 15:
             # from demisto_client.demisto_api import DefaultApi
             result = client.generic_request(method="GET", path="/content/updating")
             logging.info(f'got from the api for /content/updating: {result}')
