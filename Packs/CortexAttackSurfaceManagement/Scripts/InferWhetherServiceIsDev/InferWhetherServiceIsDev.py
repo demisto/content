@@ -142,7 +142,7 @@ def determine_reason(external_indicators: List, matches: List) -> str:
     return reason_final
 
 
-def final_decision(external_indicators: List, dev_matches: List, prod_matches: List) -> Dict[str, Any]:
+def final_decision(external_indicators: List, dev_matches: List, prod_matches: List) -> Dict:
     """
     Final decision to be set in gridfield.
 
@@ -154,7 +154,7 @@ def final_decision(external_indicators: List, dev_matches: List, prod_matches: L
     Returns:
         dict: dictionary to be added to gridfield.
     """
-    final_dict = {}
+    final_dict: Dict[str, Any] = {}
     if (len(external_indicators) == 1 or len(dev_matches) > 0) and len(prod_matches) == 0:
         final_dict["result"] = True
         final_dict["confidence"] = "Likely Development"
