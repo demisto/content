@@ -12,6 +12,7 @@ configuration:
   displaypassword: API Token
   type: 9
   section: Connect
+  required: false
 - name: integrationReliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -38,11 +39,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use the IPinfo.io API to get data about an IP address.
 display: IPinfo v2
 name: ipinfo_v2

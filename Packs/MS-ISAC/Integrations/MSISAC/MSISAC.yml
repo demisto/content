@@ -17,9 +17,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform
 display: MS-ISAC
 name: MS-ISAC

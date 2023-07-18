@@ -22,9 +22,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: The Umbrella Reporting v2 API provides visibility into your core network and security activities and Umbrella logs.
 display: Cisco Umbrella Reporting
 name: Cisco Umbrella Reporting

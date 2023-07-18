@@ -7,6 +7,7 @@ configuration:
   name: server
   defaultvalue: https://api.cloudflare.com/client/v4/
   type: 0
+  required: false
 - name: credentials
   display: The API user Token.
   displaypassword: User Token
@@ -22,16 +23,19 @@ configuration:
   display: Default Zone ID
   type: 0
   additionalinfo: The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands.
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   additionalinfo:
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   additionalinfo: ''
+  required: false
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
 display: Cloudflare WAF
 name: CloudflareWAF

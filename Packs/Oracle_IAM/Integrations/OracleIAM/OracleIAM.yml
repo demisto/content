@@ -16,22 +16,27 @@ configuration:
   display: Allow creating users
   name: create_user_enabled
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create_if_not_exists
   type: 8
+  required: false
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
@@ -45,9 +50,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Integrate with Oracle's services to execute CRUD and Group operations for employee lifecycle processes.
 display: Oracle IAM
 name: OracleIAM

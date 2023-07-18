@@ -7,19 +7,24 @@ configuration:
   display: Number of incidents to create per minute
   name: incidents_per_minute
   type: 0
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents to create
   name: max_num_of_incidents
   type: 0
+  required: false
 - display: How often to create new incidents (in minutes)
   name: frequency
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 description: 'Creates mock email incidents using one of two randomly selected HTML templates. Textual content is randomly generated and defined to include some text (100 random words) and the following data (at least 5 of each data type): IP addresses, URLs, SHA-1 hashes, SHA-256 hashes, MD5 hashes, email addresses, domain names.'
 display: OnboardingIntegration
 name: OnboardingIntegration

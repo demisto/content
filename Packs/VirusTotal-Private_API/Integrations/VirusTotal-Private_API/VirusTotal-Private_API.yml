@@ -11,36 +11,45 @@ configuration:
   display: Use system proxy settings
   name: useProxy
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: '10'
   display: File Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   type: 0
+  required: false
 - defaultvalue: '20'
   display: IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   type: 0
+  required: false
 - defaultvalue: '10'
   display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   type: 0
+  required: false
 - defaultvalue: '10'
   display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   type: 0
+  required: false
 - display: Preferred Vendors List. List of vendors which are considered more trustworthy, comma separated.
   name: preferredVendors
   type: 12
+  required: false
 - display: Preferred Vendor Threshold. The minimal number of highly trusted vendors needed to consider a domain, IP, URL or file as malicious.
   name: preferredVendorsThreshold
   type: 0
+  required: false
 - defaultvalue: 'false'
   display: Determines whether to return all results, which can number in the thousands. If "true", returns all results and overrides the _fullResponse_ argument (if set to "false") in a command. If "false", the fullResponse argument in the command determines how results are returned.
   name: fullResponseGlobal
   type: 8
+  required: false
 description: Deprecated. Use "VirusTotal (API v3)"  or "VirusTotal - Premium (API v3)" integrations instead.
 display: VirusTotal - Private API (Deprecated)
 name: VirusTotal - Private API

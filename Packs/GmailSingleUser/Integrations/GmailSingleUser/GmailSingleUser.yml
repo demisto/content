@@ -21,11 +21,13 @@ configuration:
   additionalinfo: Allows you to specify the e-mail address from which to send e-mails from.
   section: Connect
   advanced: true
+  required: false
 - display: "Client ID"
   name: credentials
   type: 9
   section: Connect
   displaypassword: "Client Secret"
+  required: false
 - display: "Client ID"
   name: client_id
   type: 0
@@ -35,6 +37,7 @@ configuration:
   section: Connect
   advanced: true
 
+  required: false
 - display: "Client Secret"
   name: client_secret
   type: 4
@@ -42,18 +45,21 @@ configuration:
   additionalinfo: "Required. Not relevant for deprecated GSuite Apps setup - see Help section"
   hidden: true
   section: Connect
+  required: false
 - display: "Auth Redirect URI"
   name: redirect_uri
   type: 0
   section: Connect
   defaultvalue: https://oproxy.demisto.ninja/authcode
   additionalinfo: "Requited. Not relevant for deprecated GSuite Apps setup - see Help section"
+  required: false
 - display: ''
   name: auth_code_creds
   type: 9
   displaypassword: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
   hiddenusername: true
   section: Connect
+  required: false
 - display: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
   name: code
   type: 4
@@ -62,20 +68,24 @@ configuration:
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: First fetch timestamp, in days.
   name: fetch_time
   type: 0
   defaultvalue: 1 days
   additionalinfo:
   section: Collect
+  required: false
 - defaultvalue:
   display: Events query (e.g., "from:example@demisto.com")
   additionalinfo:
@@ -83,23 +93,27 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   type: 0
   additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). Default is 50.
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 description: Gmail API using OAuth 2.0.
 display: Gmail Single User
 name: Gmail Single User

@@ -9,6 +9,7 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: API Key
   name: apikey
   type: 4
@@ -22,6 +23,7 @@ configuration:
   name: incidentType
   type: 13
   defaultvalue: Recorded Future ASI Alert
+  required: false
 - display: Minimum severity of alerts to fetch
   name: min_severity
   defaultvalue: 'Informational'
@@ -30,6 +32,7 @@ configuration:
   - Informational
   - Moderate
   - Critical
+  required: false
 - defaultvalue: 'By Issue'
   display: How to group new issues
   name: issue_grouping
@@ -37,19 +40,23 @@ configuration:
   options:
   - By Host
   - By Issue
+  required: false
 - defaultvalue: 'false'
   display: Expand grouped By Host rules into separate Incidents (applicable if grouping By Host)
   name: expand_issues
   type: 8
+  required: false
 - display: Fetch limit
   additionalinfo: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "200"
   type: 0
+  required: false
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   type: 0
+  required: false
 script:
   script: '-'
   type: python

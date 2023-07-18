@@ -14,15 +14,19 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetches Credentials
   name: isFetchCredentials
   type: 8
+  required: false
 - display: Secret IDs (Provide multiple Id's by using ',' example- 1,2,3)
   name: secrets
   type: 12
+  required: false
 description: Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 display: DelineaSS
 name: DelineaSS

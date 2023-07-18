@@ -41,11 +41,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.
 display: CyberArk Identity Event Collector
 name: CyberArk Identity Event Collector

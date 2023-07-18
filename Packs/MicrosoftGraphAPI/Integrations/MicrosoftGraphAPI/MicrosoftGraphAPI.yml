@@ -11,22 +11,26 @@ configuration:
   name: app_id
   type: 0
   section: Connect
+  required: false
 - displaypassword: Application Secret (Required for using self deployed Azure app)
   name: credentials
   type: 9
   hiddenusername: true
   section: Connect
+  required: false
 - display: Tenant ID (Required for using self deployed Azure app)
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -34,6 +38,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Private Key
   hidden: true
   name: private_key
@@ -41,12 +46,14 @@ configuration:
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
@@ -54,6 +61,7 @@ configuration:
   type: 9
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Azure AD endpoint associated with a national cloud.
   defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
@@ -65,6 +73,7 @@ configuration:
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
   section: Connect
+  required: false
 - display: Scope (Required for using Cortex XSOAR Azure app)
   name: scope
   type: 12
@@ -72,22 +81,26 @@ configuration:
   defaultvalue: User.Read
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Application Secret (Deprecated)
   name: app_secret
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 description: Use the Microsoft Graph API integration to interact with Microsoft APIs that do not have dedicated integrations in Cortex XSOAR, for example, Mail Single-User, etc.
 display: Microsoft Graph API
 name: Microsoft Graph API

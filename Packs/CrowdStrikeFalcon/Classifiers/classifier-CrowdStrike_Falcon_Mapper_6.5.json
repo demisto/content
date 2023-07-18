@@ -3,6 +3,101 @@
     "feed": false,
     "id": "CrowdStrike Falcon-Mapper",
     "mapping": {
+        "CrowdStrike Falcon IDP Detection": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Account ID": {
+					"simple": "source_endpoint_account_object_guid"
+				},
+				"Account Name": {
+					"simple": "source_account_name"
+				},
+				"Behaviour Objective": {
+					"simple": "objective"
+				},
+				"Behaviour Scenario": {
+					"simple": "scenario"
+				},
+				"Behaviour Tactic": {
+					"simple": "tactic"
+				},
+				"CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+				"CrowdStrike Falcon Detection Type": {
+					"simple": "type"
+				},
+				"Display Name": {
+					"simple": "display_name"
+				},
+				"End Time": {
+					"simple": "end_time"
+				},
+				"External Confidence": {
+					"simple": "confidence"
+				},
+				"Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+				"OS": {
+					"simple": "platform"
+				},
+				"CrowdStrike Falcon Pattern ID": {
+					"simple": "pattern_id"
+				},
+				"Source Hostname": {
+					"simple": "source_endpoint_host_name"
+				},
+				"Src NT Domain": {
+					"simple": "source_account_domain"
+				},
+				"Start Time": {
+					"simple": "start_time"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"Tactic ID": {
+					"simple": "tactic_id"
+				},
+				"Technique": {
+					"simple": "technique"
+				},
+				"Technique ID": {
+					"simple": "technique_id"
+				},
+				"Threat Name": {
+					"simple": "name"
+				},
+				"Vendor Product": {
+					"simple": "product"
+				},
+				"name": {
+					"simple": "id"
+				},
+				"occurred": {
+					"simple": "created_timestamp"
+				},
+				"sAMAccountName": {
+					"simple": "source_account_sam_account_name"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "composite_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
+                }
+			}
+		},
         "CrowdStrike Falcon Detection": {
             "dontMapEventToLabels": true,
             "internalMapping": {

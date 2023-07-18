@@ -26,11 +26,13 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  required: false
 - name: authentication_type
   display: Authentication Type
   required: true
@@ -45,6 +47,7 @@ configuration:
   defaultvalue:
   type: 0
   additionalinfo: ""
+  required: false
 - name: credentials
   display: Client Secret (for Authorization Code mode)
   defaultvalue:
@@ -52,11 +55,13 @@ configuration:
   additionalinfo: ""
   displaypassword: Client Secret (for Authorization Code mode)
   hiddenusername: true
+  required: false
 - name: redirect_uri
   display: Application redirect URI (for Authorization Code mode)
   defaultvalue:
   type: 0
   additionalinfo: ""
+  required: false
 - name: auth_code
   display: Authorization code
   defaultvalue:
@@ -64,6 +69,7 @@ configuration:
   additionalinfo: for Authorization Code mode - received from the authorization step. see Detailed Instructions (?) section
   displaypassword: Authorization code
   hiddenusername: true
+  required: false
 description: Use the Azure Data Explorer integration to collect and analyze data inside Azure Data Explorer clusters, and to manage search queries.
 display: Azure Data Explorer
 name: AzureDataExplorer
@@ -428,7 +434,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-data-explorer-generate-login-url
     arguments: []
-  dockerimage: demisto/azure-kusto-data:1.0.0.63812
+  dockerimage: demisto/azure-kusto-data:1.0.0.65015
   runonce: false
   script: "-"
   subtype: python3

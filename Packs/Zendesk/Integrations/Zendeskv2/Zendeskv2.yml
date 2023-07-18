@@ -23,6 +23,7 @@ configuration:
   name: isFetch
   type: 8
   section: Connect
+  required: false
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -35,6 +36,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   type: 15
+  required: false
 - display: Close mirrored incidents
   name: close_incident
   defaultvalue: "true"
@@ -42,11 +44,13 @@ configuration:
   additionalinfo: If true, XSOAR will mirror also the ticket closeing.
   hidden:
   - marketplacev2
+  required: false
 - display: Get incident attachments
   name: get_attachments
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Comment and files that will be marked with this tag will be pushed into Zendesk.
   defaultvalue: mirror
   display: Mirror tags
@@ -56,6 +60,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Ticket Field to Fetch by
   name: time_filter
   defaultvalue: created-at
@@ -66,6 +71,7 @@ configuration:
   additionalinfo: Duplications might accrue when choosing 'updated-at'
   section: Collect
   advanced: true
+  required: false
 - display: Ticket types to fetch
   name: ticket_types
   defaultvalue: all
@@ -78,6 +84,7 @@ configuration:
   - task
   section: Collect
   advanced: true
+  required: false
 - display: Fetch tickets status filter
   name: ticket_status
   defaultvalue: all
@@ -92,6 +99,7 @@ configuration:
   - closed
   section: Collect
   advanced: true
+  required: false
 - display: Fetch tickets priority filter
   name: ticket_priority
   defaultvalue: all
@@ -104,37 +112,45 @@ configuration:
   - urgent
   section: Collect
   advanced: true
+  required: false
 - display: Fetch tickets query filter
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   defaultvalue: '50'
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
+  required: false
 - display: Incident type
   name: incidentType
   defaultvalue: Zendesk Ticket
   type: 13
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   script: '-'
   type: python

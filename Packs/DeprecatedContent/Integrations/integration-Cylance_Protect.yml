@@ -32,24 +32,30 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Time Field
   name: timeField
   defaultvalue: first_found
   type: 0
+  required: false
 - display: Extended Filter
   name: extendedFilter
   defaultvalue: ""
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 script:
   script: >-
     var server = params.server.replace(/[\/]+$/, '') + '/' + params.version + '/';

@@ -12,10 +12,12 @@ configuration:
   display: TSIG Key Name
   name: key_name
   type: 0
+  required: false
 - additionalinfo: Use TSIG key secret, associated with `key_name', to authenticate against `server'
   display: TSIG Key Secret
   name: key_secret
   type: 4
+  required: false
 description: Manage DNS records using NSUpdate.  Deprecated. Use Ansible DNS (in the Ansible Linux pack) instead.
 display: Ansible DNS (Deprecated)
 name: DNS
