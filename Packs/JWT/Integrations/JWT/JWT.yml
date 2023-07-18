@@ -19,53 +19,66 @@ configuration:
   display: Algorithm
   name: algorithm
   type: 0
+  required: false
 - additionalinfo: The “iss” (issuer) claim identifies the principal that issued the JWT.
   display: Issuer
   name: iss
   type: 0
+  required: false
 - additionalinfo: The “aud” (audience) claim identifies the recipients that the JWT is intended for.
   display: Audience
   name: aud
   type: 0
+  required: false
 - additionalinfo: The "jti" (JWT ID) claim provides a unique identifier for the JWT token.
   display: Token ID
   name: jti
   type: 0
+  required: false
 - additionalinfo: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
   display: Subject
   name: sub
   type: 0
+  required: false
 - additionalinfo: The "scp" (scope) claim is described in OAuth 2.0 Token Exchange as an array of strings, each of which represents an OAuth Scope granted for the issued security token.
   display: Scope
   name: scp
   type: 0
+  required: false
 - additionalinfo: The "iat" (issued at) claim identifies the time at which the JWT was issued.
   display: Issued At
   name: iat
   type: 0
+  required: false
 - additionalinfo: The "exp" (expiration time) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing.
   display: Expiration Time
   name: exp
   type: 0
+  required: false
 - additionalinfo: The "nbf" (not before) claim identifies the time before which the JWT MUST NOT be accepted for processing.
   display: Not Before
   name: nbf
   type: 0
+  required: false
 - additionalinfo: Additional claims to include in the request.
   display: Additional Claims
   name: additionalClaims
   type: 12
+  required: false
 - additionalinfo: Token Timeout in Seconds
   defaultvalue: '300'
   display: Token Timeout
   name: tokenTimeout
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. This Integration can be used to Generate New JWT Tokens, Encode and Decode Existing Ones.
 display: JWT
 name: JWT
