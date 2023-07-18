@@ -16,5 +16,6 @@
         "xsoar",
         "marketplacev2",
         "xpanse"
-    ]
+    ],
+    "hidden": true
 }
