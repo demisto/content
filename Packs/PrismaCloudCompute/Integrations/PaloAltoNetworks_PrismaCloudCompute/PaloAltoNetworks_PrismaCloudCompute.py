@@ -28,6 +28,7 @@ HEADERS_BY_NAME = {
     'compliance': ['type', 'id', 'description']
 }
 MAX_API_LIMIT = 50
+INTEGRATION_NAME = 'PaloAltoNetworks_PrismaCloudCompute'
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -1236,14 +1237,21 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
                 cve_data = {
                     "ID": cve_id, "CVSS": cvss, "Modified": modified, "Description": description
                 }
-
+                dbot_score = Common.DBotScore(indicator=cve_id,
+                                              indicator_type=DBotScoreType.CVE,
+                                              integration_name=INTEGRATION_NAME,
+                                              score=Common.DBotScore.NONE,
+                                              malicious_description=description,
+                                              reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
+                                                  args.get('integration_reliability', 'B - Usually reliable')))
                 results.append(
                     CommandResults(
                         outputs_prefix="CVE",
                         outputs_key_field=["ID"],
                         outputs=cve_data,
                         indicator=Common.CVE(
-                            id=cve_id, cvss=cvss, published="", modified=modified, description=description
+                            id=cve_id, cvss=cvss, published="", modified=modified, description=description,
+                            dbot_score=dbot_score
                         ),
                         raw_response=filtered_cves_information,
                         readable_output=tableToMarkdown(name=cve_id, t=cve_data)

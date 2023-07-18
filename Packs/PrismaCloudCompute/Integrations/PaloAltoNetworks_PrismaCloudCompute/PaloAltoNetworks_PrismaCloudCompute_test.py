@@ -1557,3 +1557,51 @@ def test_get_logs_defender_download_command(requests_mock):
     }
     r = get_logs_defender_download_command(client, args)
     assert r["File"] == f"{args.get('hostname')}-logs.tar.gz"
+
+
+EXAMPLE_CVES = [
+    {
+        "cve": "cve1",
+        "distro": "distro",
+        "distro_release": "distro_release",
+        "type": "type",
+        "package": "package",
+        "severity": "unimportant",
+        "status": "fixed in 2.22-15",
+        "cvss": 5,
+        "rules": ["<2.22-15"],
+        "conditions": None,
+        "modified": 1606135803,
+        "fixDate": 0,
+        "link_id": "",
+        "description": "description1"
+    }
+]
+
+
+@pytest.mark.parametrize("reliability",
+                         ["A+ - 3rd party enrichment",
+                          "A - Completely reliable",
+                          "B - Usually reliable",
+                          "C - Fairly reliable",
+                          "D - Not usually reliable",
+                          "E - Unreliable",
+                          "F - Reliability cannot be judged"])
+def test_get_cve_different_reliability(requests_mock, reliability, client):
+    """
+    Given:
+        - Different source reliability param
+    When:
+        - Running cve command
+    Then:
+        - Ensure the reliability specified is returned.
+    """
+    args = {
+        "cve": "cve_id_value",
+        "integration_reliability": reliability
+    }
+    requests_mock.get(url=f"{BASE_URL}/cves", json=EXAMPLE_CVES)
+
+    response = get_cves(client=client, args=args)[0]
+
+    assert response.indicator.dbot_score.reliability == reliability
