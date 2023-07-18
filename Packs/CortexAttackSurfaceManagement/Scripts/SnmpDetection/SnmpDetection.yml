@@ -18,7 +18,6 @@ outputs:
 - contextPath: SnmpDetection
   description: Checks if SNMP version is enabled and gets the versions running
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -21,16 +21,17 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key
   name: key
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: reliability
-  required: false
   type: 15
   options:
   - A+ - 3rd party enrichment
@@ -42,41 +43,42 @@ configuration:
   - F - Reliability cannot be judged
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: If enabled, the integration will log out after executing each command.
   defaultvalue: 'true'
   display: Auto Logout
   name: auto_logout
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes.
   defaultvalue: 'true'
   display: Auto Activate Changes
   name: auto_activate
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '15'
   display: Timeout (in seconds) for HTTP requests to Zscaler
   name: requestTimeout
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
 display: Zscaler Internet Access
 name: Zscaler
@@ -1915,7 +1917,6 @@ script:
       type: textArea
       isArray: true
     description: Deletes the IP destination groups for the specified group ID.
-  runonce: false
   script: ''
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474

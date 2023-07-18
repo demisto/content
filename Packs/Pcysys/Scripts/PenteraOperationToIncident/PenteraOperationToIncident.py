@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Union, List
 
 
-
 def pentera_operation_to_incident(full_action_report: list, custom_fields_output: Union[str, bool], context_key: str):
     def _init_missing_keys_in_operation_details(operation_details: dict, missing_keys_to_init: set):
         for missing_key_to_init in missing_keys_to_init:

@@ -13,33 +13,28 @@ configuration:
   type: 9
 - display: 2FA Token
   name: token
-  required: false
   type: 9
   hiddenusername: true
   displaypassword: 2FA Token
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
 script:
   commands:
   - arguments:
-    - default: false
-      description: Asset ID.
-      isArray: false
+    - description: Asset ID.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Returns the specified asset.
-    execution: false
     name: nexpose-get-asset
     outputs:
     - contextPath: Nexpose.Asset.Addresses
@@ -148,15 +143,10 @@ script:
       description: Common Vulnerabilities and Exposures IDs.
       type: string
   - arguments:
-    - default: false
-      description: Asset ID.
-      isArray: false
+    - description: Asset ID.
       name: asset_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns the specified tags for an asset.
-    execution: false
     name: nexpose-get-asset-tags
     outputs:
     - contextPath: Nexpose.AssetTag.Type
@@ -172,34 +162,16 @@ script:
       description: The risk modifier value associated with criticality tag type.
       type: string
   - arguments:
-    - default: false
-      description: Number of records to retrieve in each API call when pagination is used.
-      isArray: false
+    - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-      isArray: false
+    - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC"'
-      isArray: false
+    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC"'
       name: sort
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: A number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all assets for which you have access.
-    execution: false
     name: nexpose-get-assets
     outputs:
     - contextPath: Nexpose.Asset.AssetId
@@ -248,87 +220,39 @@ script:
       description: Endpoint operating system.
       type: string
   - arguments:
-    - default: false
-      description: 'Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a ";" separator. For example: "ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost". For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
-      isArray: false
+    - description: 'Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a ";" separator. For example: "ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost". For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: Number of records to retrieve in each API call when pagination is used.
-      isArray: false
+    - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-      isArray: false
+    - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: A number of records to limit the response to.
-      isArray: false
+    - description: A number of records to limit the response to.
       name: limit
-      required: false
-      secret: false
       defaultValue: '10'
-    - default: false
-      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";" separator. For example: "riskScore,DESC;hostName,ASC".'
-      isArray: false
+    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";" separator. For example: "riskScore,DESC;hostName,ASC".'
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: A specific IP address to search.
-      isArray: false
+    - description: A specific IP address to search.
       name: ipAddressIs
-      required: false
-      secret: false
-    - default: false
-      description: A specific host name to search.
-      isArray: false
+    - description: A specific host name to search.
       name: hostNameIs
-      required: false
-      secret: false
-    - default: false
-      description: A minimum risk score to use as a filter.
-      isArray: false
+    - description: A minimum risk score to use as a filter.
       name: riskScoreHigherThan
-      required: false
-      secret: false
-    - default: false
-      description: A string to search for in vulnerabilities titles.
-      isArray: false
+    - description: A string to search for in vulnerabilities titles.
       name: vulnerabilityTitleContains
-      required: false
-      secret: false
-    - default: false
-      description: Site IDs to filter for. Can be a comma-separated list.
+    - description: Site IDs to filter for. Can be a comma-separated list.
       isArray: true
       name: siteIdIn
-      required: false
-      secret: false
-    - default: false
-      description: Site names to filter for. Can be a comma-separated list.
+    - description: Site names to filter for. Can be a comma-separated list.
       isArray: true
       name: siteNameIn
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: Operator to determine how to match filters. "all" requires that all filters match for an asset to be included. "any" requires only one filter to match for an asset to be included.
-      isArray: false
       name: match
       predefined:
       - all
       - any
-      required: false
-      secret: false
-    deprecated: false
     description: Search and return all assets matching specific filters. Returns only assets the user has access to.
-    execution: false
     name: nexpose-search-assets
     outputs:
     - contextPath: Nexpose.Asset.AssetId
@@ -377,15 +301,11 @@ script:
       description: Endpoint operating system.
       type: string
   - arguments:
-    - default: false
-      description: ID of a specific scan to retrieve. Can be a comma-separated list.
+    - description: ID of a specific scan to retrieve. Can be a comma-separated list.
       isArray: true
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Get a specific scan.
-    execution: false
     name: nexpose-get-scan
     outputs:
     - contextPath: Nexpose.Scan.Id
@@ -422,21 +342,13 @@ script:
       description: The total number of vulnerabilities.
       type: number
   - arguments:
-    - default: false
-      description: ID of an asset to search for the vulnerability.
-      isArray: false
+    - description: ID of an asset to search for the vulnerability.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536"
-      isArray: false
+    - description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536"
       name: vulnerabilityId
       required: true
-      secret: false
-    deprecated: false
     description: Returns details and possible remediations for an asset's vulnerability.
-    execution: false
     name: nexpose-get-asset-vulnerability
     outputs:
     - contextPath: Nexpose.Asset.AssetId
@@ -515,28 +427,19 @@ script:
       description: Common Vulnerabilities and Exposures IDs.
       type: string
   - arguments:
-    - default: false
-      description: Name of the credential.
-      isArray: false
+    - description: Name of the credential.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
-      isArray: false
+    - description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
       name: site_assignment
       required: true
-      secret: false
       auto: PREDEFINED
       predefined:
       - All-Sites
       - Specific-Sites
-    - default: false
-      description: Credential service type.
-      isArray: false
+    - description: Credential service type.
       name: service
       required: true
-      secret: false
       auto: PREDEFINED
       predefined:
       - AS400
@@ -559,113 +462,50 @@ script:
       - SSH-Key
       - Sybase
       - Telnet
-    - default: false
-      description: Database name.
-      isArray: false
+    - description: Database name.
       name: database
-      required: false
-      secret: false
-    - default: false
-      description: Description for the credential.
-      isArray: false
+    - description: Description for the credential.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Domain address.
-      isArray: false
+    - description: Domain address.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Hostname or IP address to restrict the credentials to.
-      isArray: false
+    - description: Hostname or IP address to restrict the credentials to.
       name: host_restriction
-      required: false
-      secret: false
-    - default: false
-      description: HTTP realm.
-      isArray: false
+    - description: HTTP realm.
       name: http_realm
-      required: false
-      secret: false
-    - default: false
-      description: Password for the notes account that will be used for authenticating.
-      isArray: false
+    - description: Password for the notes account that will be used for authenticating.
       name: notes_id_password
-      required: false
-      secret: false
-    - default: false
-      description: NTLM password hash.
-      isArray: false
+    - description: NTLM password hash.
       name: ntlm_hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the scan engine should attempt to enumerate SIDs from the environment.
-      isArray: false
       name: oracle_enumerate_sids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
-      isArray: false
+    - description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
       name: oracle_listener_password
-      required: false
-      secret: false
-    - default: false
-      description: Oracle database name.
-      isArray: false
+    - description: Oracle database name.
       name: oracle_sid
-      required: false
-      secret: false
-    - default: false
-      description: Password for the credential.
-      isArray: false
+    - description: Password for the credential.
       name: password
-      required: false
-      secret: false
-    - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
-      isArray: false
+    - description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       name: port_restriction
-      required: false
-      secret: false
-    - default: false
-      description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan.
+    - description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan.
       isArray: true
       name: sites
-      required: false
-      secret: false
-    - default: false
-      description: SNMP community for authentication.
-      isArray: false
+    - description: SNMP community for authentication.
       name: community_name
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 authentication type for the credential.
-      isArray: false
       name: authentication_type
       predefined:
       - No-Authentication
       - MD5
       - SHA
-      required: false
-      secret: false
-    - default: false
-      description: SNMPv3 privacy password to use.
-      isArray: false
+    - description: SNMPv3 privacy password to use.
       name: privacy_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 Privacy protocol to use.
-      isArray: false
       name: privacy_type
       predefined:
       - No-Privacy
@@ -675,17 +515,10 @@ script:
       - AES-192-With-3-DES-Key-Extension
       - AES-256
       - AES-256-With-3-DES-Key-Extension
-      required: false
-      secret: false
-    - default: false
-      description: PEM formatted private key.
-      isArray: false
+    - description: PEM formatted private key.
       name: ssh_key_pem
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Elevation type to use for scans.
-      isArray: false
       name: ssh_permission_elevation
       predefined:
       - None
@@ -694,75 +527,40 @@ script:
       - su
       - pbrun
       - Privileged-Exec
-      required: false
-      secret: false
-    - default: false
-      description: Password to use for elevation.
-      isArray: false
+    - description: Password to use for elevation.
       name: ssh_permission_elevation_password
-      required: false
-    - default: false
-      description: Username to use for elevation.
-      isArray: false
+    - description: Username to use for elevation.
       name: ssh_permission_elevation_username
-      required: false
-    - default: false
-      description: Password for the private key.
-      isArray: false
+    - description: Password for the private key.
       name: ssh_private_key_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Whether to use Windows authentication.
-      isArray: false
       name: use_windows_authentication
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Username for the credential.
-      isArray: false
+    - description: Username for the credential.
       name: username
-      required: false
-    deprecated: false
     description: "Create a new shared credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential"
-    execution: false
     name: nexpose-create-shared-credential
     outputs:
     - contextPath: Nexpose.SharedCredential.id
       description: ID of the generated credential.
       type: number
   - arguments:
-    - default: false
-      description: Site name. Must be unique.
-      isArray: false
+    - description: Site name. Must be unique.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Site's description.
-      isArray: false
+    - description: Site's description.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Addresses of assets to include in site scans. Can be a comma-separated list.
+    - description: Addresses of assets to include in site scans. Can be a comma-separated list.
       isArray: true
       name: assets
       required: true
-      secret: false
-    - default: false
-      description: ID of a scan template to use. If not specified, the default scan template will be used. Use `nexpose-get-report-templates` to get a list of all available templates.
-      isArray: false
+    - description: ID of a scan template to use. If not specified, the default scan template will be used. Use `nexpose-get-report-templates` to get a list of all available templates.
       name: scanTemplateId
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Site importance. Defaults to "normal" if not specified.
-      isArray: false
       name: importance
       predefined:
       - very_low
@@ -770,33 +568,20 @@ script:
       - normal
       - high
       - very_high
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new site with the specified configuration.
-    execution: false
     name: nexpose-create-site
     outputs:
     - contextPath: Nexpose.Site.Id
       description: ID of the created site.
       type: number
   - arguments:
-    - default: false
-      description: The date and time the vulnerability exception is set to expire in ISO 8601 date format.
-      isArray: false
+    - description: The date and time the vulnerability exception is set to expire in ISO 8601 date format.
       name: expires
-      required: false
-      secret: false
-    - default: false
-      description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
-      isArray: false
+    - description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
       name: vulnerability_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required.
-      isArray: false
       name: scope_type
       predefined:
       - Global
@@ -805,11 +590,8 @@ script:
       - Asset Group
 #          - Instance  # We had issues with this option, so it's not currently supported
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: State of the vulnerability exception.
-      isArray: false
       name: state
       predefined:
       - Expired
@@ -817,17 +599,10 @@ script:
       - Rejected
       - Under Review
       required: true
-      secret: false
-    - default: false
-      description: A comment from the submitter as to why the exception was submitted.
-      isArray: false
+    - description: A comment from the submitter as to why the exception was submitted.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Reason why the vulnerability exception was submitted.
-      isArray: false
       name: reason
       predefined:
       - False Positive
@@ -836,146 +611,70 @@ script:
       - Acceptable Risk
       - Other
       required: true
-      secret: false
-    - default: false
-      description: ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`.
-      isArray: false
+    - description: ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`.
       name: scope_id
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new vulnerability exception.
-    execution: false
     name: nexpose-create-vulnerability-exception
     outputs:
     - contextPath: Nexpose.VulnerabilityException.id
       description: ID of the generated vulnerability exception.
       type: number
-  - deprecated: false
-    description: Delete an asset.
-    execution: false
+  - description: Delete an asset.
     name: nexpose-delete-asset
     arguments:
-    - default: false
-      description: ID of the asset to delete.
-      isArray: false
+    - description: ID of the asset to delete.
       name: id
       required: true
-      secret: false
   - arguments:
-    - default: false
-      description: ID of the site to delete
-      isArray: false
+    - description: ID of the site to delete
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site to delete (can be used instead of `site_id`)
-      isArray: false
+    - description: Name of the site to delete (can be used instead of `site_id`)
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the scheduled scan to delete.
-      isArray: false
+    - description: ID of the scheduled scan to delete.
       name: schedule_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a scheduled scan.
-    execution: false
     name: nexpose-delete-scan-schedule
   - arguments:
-    - default: false
-      description: ID of the shared credential to delete.
-      isArray: false
+    - description: ID of the shared credential to delete.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: "Beta Command\n\nDelete a shared credential."
-    execution: false
     name: nexpose-delete-shared-credential
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`)
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`)
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the site scan credential to delete.
-      isArray: false
+    - description: ID of the site scan credential to delete.
       name: credential_id
       required: true
-      secret: false
-    deprecated: false
     description: "Beta Command\n\nDelete a site scan credential."
-    execution: false
     name: nexpose-delete-site-scan-credential
   - arguments:
-    - default: false
-      description: ID of a site to delete
-      isArray: false
+    - description: ID of a site to delete
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site to delete (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site to delete (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes a site.
-    execution: false
     name: nexpose-delete-site
   - arguments:
-    - default: false
-      description: ID of the vulnerability exception to delete.
-      isArray: false
+    - description: ID of the vulnerability exception to delete.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a vulnerability exception.
-    execution: false
     name: nexpose-delete-vulnerability-exception
   - arguments:
-    - default: false
-      description: Number of records to retrieve in each API call when pagination is used.
-      isArray: false
+    - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-      isArray: false
+    - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: A number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
-      isArray: false
+    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves accessible sites.
-    execution: false
     name: nexpose-get-sites
     outputs:
     - contextPath: Nexpose.Site.Id
@@ -999,9 +698,7 @@ script:
     - contextPath: Nexpose.Site.LastScan
       description: The date and time of the site's last scan.
       type: date
-  - deprecated: false
-    description: Returns all available report templates.
-    execution: false
+  - description: Returns all available report templates.
     name: nexpose-get-report-templates
     outputs:
     - contextPath: Nexpose.Template.Id
@@ -1017,40 +714,21 @@ script:
       description: The type of the report template. document is a templatized, typically printable, report that has various sections of content. export is data-oriented output, typically CSV. file is a printable report template using a report template file.
       type: string
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: The date the data was collected on the asset in ISO 8601 format.
-      isArray: false
+    - description: The date the data was collected on the asset in ISO 8601 format.
       name: date
       required: true
-      secret: false
-    - default: false
-      description: Primary IPv4 or IPv6 address of the asset.
+    - description: Primary IPv4 or IPv6 address of the asset.
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: Hostname of the asset.
-      isArray: false
+    - description: Hostname of the asset.
       name: host_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The source used to detect the host name. "User" indicates the host name source is user-supplied.
-      isArray: false
       name: host_name_source
       predefined:
       - User
@@ -1060,39 +738,23 @@ script:
       - EPSEC
       - LDAP
       - Other
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new asset.
-    execution: false
     name: nexpose-create-asset
     outputs:
     - contextPath: Nexpose.Asset.id
       description: ID of the newly created asset.
       type: string
   - arguments:
-    - default: false
-      description: Asset IDs to create the report on. Can be a comma-separated list.
+    - description: Asset IDs to create the report on. Can be a comma-separated list.
       isArray: true
       name: assets
       required: true
-      secret: false
-    - default: false
-      description: Report template ID to create the report with. If not provided, the first available template will be used.
-      isArray: false
+    - description: Report template ID to create the report with. If not provided, the first available template will be used.
       name: template
-      required: false
-      secret: false
-    - default: false
-      description: Report name.
-      isArray: false
+    - description: Report name.
       name: name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Report format (uses PDF by default).
-      isArray: false
       name: format
       predefined:
       - pdf
@@ -1100,8 +762,6 @@ script:
       - xml
       - html
       - text
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
       description: Whether to download the report immediately after the report is generated. Defaults to "true". If the report takes longer than 10 seconds to generate, set to "false".
@@ -1109,9 +769,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Generates a new report on given assets according to a template and arguments.
-    execution: false
     name: nexpose-create-assets-report
     outputs:
     - contextPath: InfoFile.EntryId
@@ -1147,33 +805,17 @@ script:
   - name: nexpose-create-sites-report
     arguments:
     - name: sites
-      required: false
       description: Site IDs to create the report on. Can be a comma-separated list.
-      default: false
       isArray: true
-      secret: false
     - name: site_names
-      required: false
       description: Names of sites to create the report on. Can be a comma-separated list.
-      default: false
       isArray: true
-      secret: false
     - name: template
       description: Report template ID to use for report's creation. If not provided, the first available template will be used.
-      default: false
-      isArray: false
-      required: false
-      secret: false
     - name: name
       description: Report name
-      default: false
-      isArray: false
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Report format (uses PDF by default).
-      isArray: false
       name: format
       predefined:
       - pdf
@@ -1181,8 +823,6 @@ script:
       - xml
       - html
       - text
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
       description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
@@ -1222,32 +862,17 @@ script:
       description: The report format.
       type: string
     description: Generates a new report on given sites according to a template and arguments.
-    deprecated: false
-    execution: false
   - name: nexpose-create-site-scan-credential
     arguments:
     - name: site_id
-      required: false
       description: ID of the site.
-      default: false
-      isArray: false
-      secret: false
     - name: site_name
-      required: false
       description: Name of the site (can be used instead of `site_id`)
-      default: false
-      isArray: false
-      secret: false
-    - default: false
-      description: Name of the credential.
-      isArray: false
+    - description: Name of the credential.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Credential service type.
-      isArray: false
       name: service
       predefined:
       - AS400
@@ -1271,108 +896,47 @@ script:
       - Sybase
       - Telnet
       required: true
-      secret: false
-    - default: false
-      description: Database name.
-      isArray: false
+    - description: Database name.
       name: database
-      required: false
-      secret: false
-    - default: false
-      description: Description for the credential.
-      isArray: false
+    - description: Description for the credential.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Domain address.
-      isArray: false
+    - description: Domain address.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Hostname or IP address to restrict the credentials to.
-      isArray: false
+    - description: Hostname or IP address to restrict the credentials to.
       name: host_restriction
-      required: false
-      secret: false
-    - default: false
-      description: HTTP realm.
-      isArray: false
+    - description: HTTP realm.
       name: http_realm
-      required: false
-      secret: false
-    - default: false
-      description: Password for the notes account that will be used for authenticating.
-      isArray: false
+    - description: Password for the notes account that will be used for authenticating.
       name: notes_id_password
-      required: false
-      secret: false
-    - default: false
-      description: NTLM password hash.
-      isArray: false
+    - description: NTLM password hash.
       name: ntlm_hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the scan engine should attempt to enumerate SIDs from the environment.
-      isArray: false
       name: oracle_enumerate_sids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
-      isArray: false
+    - description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
       name: oracle_listener_password
-      required: false
-      secret: false
-    - default: false
-      description: Oracle database name.
-      isArray: false
+    - description: Oracle database name.
       name: oracle_sid
-      required: false
-      secret: false
-    - default: false
-      description: Password for the credential.
-      isArray: false
+    - description: Password for the credential.
       name: password
-      required: false
-      secret: false
-    - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
-      isArray: false
+    - description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       name: port_restriction
-      required: false
-      secret: false
-    - default: false
-      description: SNMP community for authentication.
-      isArray: false
+    - description: SNMP community for authentication.
       name: community_name
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 authentication type for the credential.
-      isArray: false
       name: authentication_type
       predefined:
       - No-Authentication
       - MD5
       - SHA
-      required: false
-      secret: false
-    - default: false
-      description: SNMPv3 privacy password to use.
-      isArray: false
+    - description: SNMPv3 privacy password to use.
       name: privacy_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 privacy protocol to use.
-      isArray: false
       name: privacy_type
       predefined:
       - No-Privacy
@@ -1382,17 +946,10 @@ script:
       - AES-192-With-3-DES-Key-Extension
       - AES-256
       - AES-256-With-3-DES-Key-Extension
-      required: false
-      secret: false
-    - default: false
-      description: PEM formatted private key.
-      isArray: false
+    - description: PEM formatted private key.
       name: ssh_key_pem
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Elevation type to use for scans.
-      isArray: false
       name: ssh_permission_elevation
       predefined:
       - None
@@ -1401,68 +958,35 @@ script:
       - su
       - pbrun
       - Privileged-Exec
-      required: false
-      secret: false
-    - default: false
-      description: Password to use for elevation.
-      isArray: false
+    - description: Password to use for elevation.
       name: ssh_permission_elevation_password
-      required: false
-    - default: false
-      description: Username to use for elevation.
-      isArray: false
+    - description: Username to use for elevation.
       name: ssh_permission_elevation_username
-      required: false
-    - default: false
-      description: Password for the private key.
-      isArray: false
+    - description: Password for the private key.
       name: ssh_private_key_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Whether to use Windows authentication.
-      isArray: false
       name: use_windows_authentication
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Username for the credential.
-      isArray: false
+    - description: Username for the credential.
       name: username
-      required: false
     outputs:
     - contextPath: Nexpose.SiteScanCredential.id
       description: ID of the generated credential.
       type: number
     description: "Beta Command\n\nCreate a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential"
-    deprecated: false
-    execution: false
   - arguments:
-    - default: false
-      description: ID of the scan to create a report about.
-      isArray: false
+    - description: ID of the scan to create a report about.
       name: scan
       required: true
-      secret: false
-    - default: false
-      description: Report template ID to use for creation. If not provided, the first available template will be used.
-      isArray: false
+    - description: Report template ID to use for creation. If not provided, the first available template will be used.
       name: template
-      required: false
-      secret: false
-    - default: false
-      description: Report name.
-      isArray: false
+    - description: Report name.
       name: name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Report format (uses PDF by default).
-      isArray: false
       name: format
       predefined:
       - pdf
@@ -1470,8 +994,6 @@ script:
       - xml
       - html
       - text
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
       description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
@@ -1479,9 +1001,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Generates a new report for a specified scan.
-    execution: false
     name: nexpose-create-scan-report
     outputs:
     - contextPath: InfoFile.EntryId
@@ -1515,154 +1035,76 @@ script:
       description: The report format.
       type: string
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Whether to enable the scheduled scan after creation.
-      isArray: false
       name: enabled
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration.
-      isArray: false
       name: on_scan_repeat
       predefined:
       - Restart-Scan
       - Resume-Scan
       required: true
-      secret: false
-    - default: false
-      description: The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time.
-      isArray: false
+    - description: The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time.
       name: start
       required: true
-      secret: false
-    - default: false
-      description: A list of IDs for asset groups to exclude from the scan.
+    - description: A list of IDs for asset groups to exclude from the scan.
       isArray: true
       name: excluded_asset_group_ids
-      required: false
-      secret: false
-    - default: false
-      description: A list of addresses to exclude from the scan.
+    - description: A list of addresses to exclude from the scan.
       isArray: true
       name: excluded_addresses
-      required: false
-      secret: false
-    - default: false
-      description: A list of IDs for asset groups to include in the scan.
+    - description: A list of IDs for asset groups to include in the scan.
       isArray: true
       name: included_asset_group_ids
-      required: false
-      secret: false
-    - default: false
-      description: A list of addresses to include in the scan.
+    - description: A list of addresses to include in the scan.
       isArray: true
       name: included_addresses
-      required: false
-      secret: false
-    - default: false
-      description: Maximum duration of the scan in days.
-      isArray: false
+    - description: Maximum duration of the scan in days.
       name: duration_days
-      required: false
-      secret: false
-    - default: false
-      description: Maximum duration of the scan in hours.
-      isArray: false
+    - description: Maximum duration of the scan in hours.
       name: duration_hours
-      required: false
-      secret: false
-    - default: false
-      description: Maximum duration of the scan in minutes.
-      isArray: false
+    - description: Maximum duration of the scan in minutes.
       name: duration_minutes
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: How frequently the schedule should repeat (Every...).
-      isArray: false
       name: frequency
       predefined:
       - Hour
       - Day
       - Week
       - Date-of-month
-      required: false
-      secret: false
-    - default: false
-      description: The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used.
-      isArray: false
+    - description: The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used.
       name: interval_time
-      required: false
-      secret: false
-    - default: false
-      description: Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`.
-      isArray: false
+    - description: Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`.
       name: date_of_month
-      required: false
-      secret: false
-    - default: false
-      description: A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
-      isArray: false
+    - description: A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
       name: scan_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the scan template to use.
-      isArray: false
+    - description: ID of the scan template to use.
       name: scan_template
-      required: false
-      secret: false
-    deprecated: false
     description: "Beta Command\n\nCreate a new site scan schedule."
-    execution: false
     name: nexpose-create-scan-schedule
     outputs:
     - contextPath: Nexpose.ScanSchedule.id
       description: ID of the newly created scan schedule.
       type: int
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve information about shared credentials for a specific site.
-    execution: false
     name: nexpose-list-assigned-shared-credential
     outputs:
     - contextPath: Nexpose.AssignedSharedCredential.enabled
@@ -1678,40 +1120,18 @@ script:
       description: Credential service type.
       type: string
   - arguments:
-    - default: false
-      description: ID of a specific vulnerability to retrieve.
-      isArray: false
+    - description: ID of a specific vulnerability to retrieve.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Number of records to retrieve in each API call when pagination is used.
-      isArray: false
+    - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-      isArray: false
+    - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
-      isArray: false
+    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve information about all or a specific vulnerability.
-    execution: false
     name: nexpose-list-vulnerability
     outputs:
     - contextPath: Nexpose.Vulnerability.added
@@ -1841,34 +1261,16 @@ script:
       description: The title (summary) of the vulnerability.
       type: string
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the scheduled scan (optional, will return a single specific scan if used).
-      isArray: false
+    - description: ID of the scheduled scan (optional, will return a single specific scan if used).
       name: schedule_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: A number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: "BetaCommand\n\nRetrieve information about scan schedules for a specific site or a specific scan schedule."
-    execution: false
     name: nexpose-list-scan-schedule
     outputs:
     - contextPath: Nexpose.ScanSchedule.assets.excludedAssetGroups.assetGroupIDs
@@ -1915,22 +1317,12 @@ script:
     - contextPath: Nexpose.ScanSchedule.repeat.start
       description: The scheduled start date and time. Repeating schedules will determine the next schedule to begin based on this date and time.
   - arguments:
-    - default: false
-      description: ID of a specific shared credential to retrieve.
-      isArray: false
+    - description: ID of a specific shared credential to retrieve.
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: A number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve information about all or a specific shared credential.
-    execution: false
     name: nexpose-list-shared-credential
     outputs:
     - contextPath: Nexpose.SharedCredential.account.authenticationType
@@ -2018,34 +1410,17 @@ script:
       description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan.
       type: array
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of a specific scan credential to retrieve.
-      isArray: false
+    - description: ID of a specific scan credential to retrieve.
       name: credential_id
-      required: false
-      secret: false
     - default: true
       defaultValue: '10'
       description: A number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: "Beta Command\n\nRetrieve information about all or a specific sca credential."
-    execution: false
     name: nexpose-list-site-scan-credential
     outputs:
     - contextPath: Nexpose.SiteScanCredential.account.authenticationType
@@ -2127,41 +1502,20 @@ script:
       description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `hostRestriction` is used.
       type: number
   - arguments:
-    - default: false
-      description: ID of the vulnerability exception to retrieve. If not set, retrieve all vulnerability exceptions.
-      isArray: false
+    - description: ID of the vulnerability exception to retrieve. If not set, retrieve all vulnerability exceptions.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Number of records to retrieve in each API call when pagination is used.
-      isArray: false
+    - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-      isArray: false
+    - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-      required: false
-      secret: false
     - default: true
       defaultValue: submit.date,ASC
       description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
-      isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: A number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve information about scan schedules for a specific site or a specific scan schedule.
-    execution: false
     name: nexpose-list-vulnerability-exceptions
     outputs:
     - contextPath: Nexpose.VulnerabilityException.expires
@@ -2204,33 +1558,16 @@ script:
       description: The identifier of the user who submitted the vulnerability exception.
       type: int
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: Specific host(s) on the site to run the scan on. Can be an IP address or a hostname. Can be a comma-separated list.
+    - description: Specific host(s) on the site to run the scan on. Can be an IP address or a hostname. Can be a comma-separated list.
       isArray: true
       name: hosts
-      required: false
-      secret: false
-    - default: false
-      description: Scan name.
-      isArray: false
+    - description: Scan name.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Starts a scan for the specified site.
-    execution: false
     name: nexpose-start-site-scan
     outputs:
     - contextPath: Nexpose.Scan.Id
@@ -2267,27 +1604,16 @@ script:
       description: The total number of vulnerabilities.
       type: number
   - arguments:
-    - default: false
-      description: IP addresses of assets to scan. Can be a comma-separated list.
+    - description: IP addresses of assets to scan. Can be a comma-separated list.
       isArray: true
       name: IPs
-      required: false
-      secret: false
-    - default: false
-      description: Hostnames of assets to scan. Can be a comma-separated list.
+    - description: Hostnames of assets to scan. Can be a comma-separated list.
       isArray: true
       name: hostNames
-      required: false
-      secret: false
-    - default: false
-      description: Scan name.
-      isArray: false
+    - description: Scan name.
       name: name
-      required: false
-      secret: false
     deprecated: true
     description: Deprecated. Use `nexpose-start-site-scan` using the `hosts` argument instead.
-    execution: false
     name: nexpose-start-assets-scan
     outputs:
     - contextPath: Nexpose.Scan.Id
@@ -2324,78 +1650,41 @@ script:
       description: The total number of vulnerabilities.
       type: number
   - arguments:
-    - default: false
-      description: ID of a running scan.
-      isArray: false
+    - description: ID of a running scan.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Stop a running scan.
-    execution: false
     name: nexpose-stop-scan
   - arguments:
-    - default: false
-      description: ID of a running scan.
-      isArray: false
+    - description: ID of a running scan.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Pause a running scan.
-    execution: false
     name: nexpose-pause-scan
   - arguments:
-    - default: false
-      description: ID of a paused scan.
-      isArray: false
+    - description: ID of a paused scan.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Resume a paused scan.
-    execution: false
     name: nexpose-resume-scan
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to return only active scans.
-      isArray: false
       name: active
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Number of records to retrieve in each API call when pagination is used.
-      isArray: false
+    - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-      isArray: false
+    - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: A number of records to limit the response to.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
-      isArray: false
+    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: Return a list of scans. Returns only active scans by default (active=true).
-    execution: false
     name: nexpose-get-scans
     outputs:
     - contextPath: Nexpose.Scan.Id
@@ -2420,24 +1709,13 @@ script:
       description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating.
       type: string
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the scan schedule to update.
-      isArray: false
+    - description: ID of the scan schedule to update.
       name: credential_id
       required: true
-      secret: false
     name: nexpose-disable-shared-credential
     description: "Beta Command\n\nDisable an assigned shared credential."
   - arguments:
@@ -2482,24 +1760,13 @@ script:
       type: string
     description: Returns the generated report.
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the scan schedule to update.
-      isArray: false
+    - description: ID of the scan schedule to update.
       name: credential_id
       required: true
-      secret: false
     name: nexpose-enable-shared-credential
     description: "Beta Command\n\nEnable an assigned shared credential."
   - arguments:
@@ -2522,162 +1789,78 @@ script:
       type: string
     description: Returns the status of a report generation process.
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the scan schedule to update.
-      isArray: false
+    - description: ID of the scan schedule to update.
       name: schedule_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: A flag indicating whether the scheduled scan is enabled.
-      isArray: false
       name: enabled
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration.
-      isArray: false
       name: on_scan_repeat
       predefined:
       - Restart-Scan
       - Resume-Scan
       required: true
-      secret: false
-    - default: false
-      description: The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time.
-      isArray: false
+    - description: The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time.
       name: start
       required: true
-      secret: false
-    - default: false
-      description: A list of IDs for asset groups to exclude from the scan.
+    - description: A list of IDs for asset groups to exclude from the scan.
       isArray: true
       name: excluded_asset_group_ids
-      required: false
-      secret: false
-    - default: false
-      description: A list of addresses to exclude from the scan.
+    - description: A list of addresses to exclude from the scan.
       isArray: true
       name: excluded_addresses
-      required: false
-      secret: false
-    - default: false
-      description: A list of IDs for asset groups to include in the scan.
+    - description: A list of IDs for asset groups to include in the scan.
       isArray: true
       name: included_asset_group_ids
-      required: false
-      secret: false
-    - default: false
-      description: A list of addresses to include in the scan.
+    - description: A list of addresses to include in the scan.
       isArray: true
       name: included_addresses
-      required: false
-      secret: false
-    - default: false
-      description: Maximum duration of the scan in days.
-      isArray: false
+    - description: Maximum duration of the scan in days.
       name: duration_days
-      required: false
-      secret: false
-    - default: false
-      description: Maximum duration of the scan in hours.
-      isArray: false
+    - description: Maximum duration of the scan in hours.
       name: duration_hours
-      required: false
-      secret: false
-    - default: false
-      description: Maximum duration of the scan in minutes.
-      isArray: false
+    - description: Maximum duration of the scan in minutes.
       name: duration_minutes
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: How frequently should the schedule repeat (Every...).
-      isArray: false
       name: frequency
       predefined:
       - Hour
       - Day
       - Week
       - Date-of-month
-      required: false
-      secret: false
-    - default: false
-      description: The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used.
-      isArray: false
+    - description: The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used.
       name: interval_time
-      required: false
-      secret: false
-    - default: false
-      description: Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`.
-      isArray: false
+    - description: Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`.
       name: date_of_month
-      required: false
-      secret: false
-    - default: false
-      description: A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
-      isArray: false
+    - description: A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
       name: scan_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the scan template to use.
-      isArray: false
+    - description: ID of the scan template to use.
       name: scan_template
-      required: false
-      secret: false
-    deprecated: false
     description: "Beta Command\n\nUpdate an existing site scan schedule."
-    execution: false
     name: nexpose-update-scan-schedule
   - arguments:
-    - default: false
-      description: ID of the site.
-      isArray: false
+    - description: ID of the site.
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`).
-      isArray: false
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the site scan credential to update.
-      isArray: false
+    - description: ID of the site scan credential to update.
       name: credential_id
       required: true
-      secret: false
-    - default: false
-      description: Name of the credential.
-      isArray: false
+    - description: Name of the credential.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Credential service type.
-      isArray: false
       name: service
       predefined:
       - AS400
@@ -2701,108 +1884,47 @@ script:
       - Sybase
       - Telnet
       required: true
-      secret: false
-    - default: false
-      description: Database name.
-      isArray: false
+    - description: Database name.
       name: database
-      required: false
-      secret: false
-    - default: false
-      description: Description for the credential.
-      isArray: false
+    - description: Description for the credential.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Domain address.
-      isArray: false
+    - description: Domain address.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Hostname or IP address to restrict the credentials to.
-      isArray: false
+    - description: Hostname or IP address to restrict the credentials to.
       name: host_restriction
-      required: false
-      secret: false
-    - default: false
-      description: HTTP realm.
-      isArray: false
+    - description: HTTP realm.
       name: http_realm
-      required: false
-      secret: false
-    - default: false
-      description: Password for the notes account that will be used for authenticating.
-      isArray: false
+    - description: Password for the notes account that will be used for authenticating.
       name: notes_id_password
-      required: false
-      secret: false
-    - default: false
-      description: NTLM password hash.
-      isArray: false
+    - description: NTLM password hash.
       name: ntlm_hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the scan engine should attempt to enumerate SIDs from the environment.
-      isArray: false
       name: oracle_enumerate_sids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
-      isArray: false
+    - description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
       name: oracle_listener_password
-      required: false
-      secret: false
-    - default: false
-      description: Oracle database name.
-      isArray: false
+    - description: Oracle database name.
       name: oracle_sid
-      required: false
-      secret: false
-    - default: false
-      description: Password for the credential.
-      isArray: false
+    - description: Password for the credential.
       name: password
-      required: false
-      secret: false
-    - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
-      isArray: false
+    - description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       name: port_restriction
-      required: false
-      secret: false
-    - default: false
-      description: SNMP community for authentication.
-      isArray: false
+    - description: SNMP community for authentication.
       name: community_name
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 authentication type for the credential.
-      isArray: false
       name: authentication_type
       predefined:
       - No-Authentication
       - MD5
       - SHA
-      required: false
-      secret: false
-    - default: false
-      description: SNMPv3 privacy password to use.
-      isArray: false
+    - description: SNMPv3 privacy password to use.
       name: privacy_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 Privacy protocol to use.
-      isArray: false
       name: privacy_type
       predefined:
       - No-Privacy
@@ -2812,17 +1934,10 @@ script:
       - AES-192-With-3-DES-Key-Extension
       - AES-256
       - AES-256-With-3-DES-Key-Extension
-      required: false
-      secret: false
-    - default: false
-      description: PEM formatted private key.
-      isArray: false
+    - description: PEM formatted private key.
       name: ssh_key_pem
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Elevation type to use for scans.
-      isArray: false
       name: ssh_permission_elevation
       predefined:
       - None
@@ -2831,108 +1946,61 @@ script:
       - su
       - pbrun
       - Privileged Exec
-      required: false
-      secret: false
-    - default: false
-      description: Password to use for elevation.
-      isArray: false
+    - description: Password to use for elevation.
       name: ssh_permission_elevation_password
-      required: false
-    - default: false
-      description: Username to use for elevation.
-      isArray: false
+    - description: Username to use for elevation.
       name: ssh_permission_elevation_username
-      required: false
-    - default: false
-      description: Password for the private key.
-      isArray: false
+    - description: Password for the private key.
       name: ssh_private_key_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Whether to use Windows authentication.
-      isArray: false
       name: use_windows_authentication
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Username for the credential.
-      isArray: false
+    - description: Username for the credential.
       name: username
-      required: false
-    deprecated: false
     description: "Beta Command\n\nUpdate an existing site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials."
-    execution: false
     name: nexpose-update-site-scan-credential
   - arguments:
-    - default: false
-      description: ID of the vulnerability exception to update.
-      isArray: false
+    - description: ID of the vulnerability exception to update.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: An expiration date for the vulnerability exception formatted in ISO 8601 format. Must be a date in the future.
-      isArray: false
+    - description: An expiration date for the vulnerability exception formatted in ISO 8601 format. Must be a date in the future.
       name: expiration
       required: true
-      secret: false
-    deprecated: false
     description: Update an existing vulnerability exception.
-    execution: false
     name: nexpose-update-vulnerability-exception-expiration
   - arguments:
-    - default: false
-      description: ID of the vulnerability exception to update.
-      isArray: false
+    - description: ID of the vulnerability exception to update.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A status to update the vulnerability exception to.
-      isArray: false
       name: status
       required: true
       predefined:
       - Recall
       - Approve
       - Reject
-      secret: false
-    deprecated: false
     description: Update an existing vulnerability exception.
-    execution: false
     name: nexpose-update-vulnerability-exception-status
   - arguments:
-    - default: false
-      description: ID of the shared credential to update.
-      isArray: false
+    - description: ID of the shared credential to update.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Name of the credential.
-      isArray: false
+    - description: Name of the credential.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
-      isArray: false
       name: site_assignment
       predefined:
       - All-Sites
       - Specific-Sites
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Credential service type.
-      isArray: false
       name: service
       predefined:
       - AS400
@@ -2956,114 +2024,50 @@ script:
       - Sybase
       - Telnet
       required: true
-      secret: false
-    - default: false
-      description: Database name.
-      isArray: false
+    - description: Database name.
       name: database
-      required: false
-      secret: false
-    - default: false
-      description: Description for the credential.
-      isArray: false
+    - description: Description for the credential.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Domain address.
-      isArray: false
+    - description: Domain address.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Hostname or IP address to restrict the credentials to.
-      isArray: false
+    - description: Hostname or IP address to restrict the credentials to.
       name: host_restriction
-      required: false
-      secret: false
-    - default: false
-      description: HTTP realm.
-      isArray: false
+    - description: HTTP realm.
       name: http_realm
-      required: false
-      secret: false
-    - default: false
-      description: Password for the notes account that will be used for authenticating.
-      isArray: false
+    - description: Password for the notes account that will be used for authenticating.
       name: notes_id_password
-      required: false
-      secret: false
-    - default: false
-      description: NTLM password hash.
-      isArray: false
+    - description: NTLM password hash.
       name: ntlm_hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the scan engine should attempt to enumerate SIDs from the environment.
-      isArray: false
       name: oracle_enumerate_sids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
-      isArray: false
+    - description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
       name: oracle_listener_password
-      required: false
-      secret: false
-    - default: false
-      description: Oracle database name.
-      isArray: false
+    - description: Oracle database name.
       name: oracle_sid
-      required: false
-      secret: false
-    - default: false
-      description: Password for the credential.
-      isArray: false
+    - description: Password for the credential.
       name: password
-      required: false
-      secret: false
-    - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
-      isArray: false
+    - description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       name: port_restriction
-      required: false
-      secret: false
-    - default: false
-      description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan.
+    - description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan.
       isArray: true
       name: sites
-      required: false
-      secret: false
-    - default: false
-      description: SNMP community for authentication.
-      isArray: false
+    - description: SNMP community for authentication.
       name: community_name
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 authentication type for the credential.
-      isArray: false
       name: authentication_type
       predefined:
       - No-Authentication
       - MD5
       - SHA
-      required: false
-      secret: false
-    - default: false
-      description: SNMPv3 privacy password to use.
-      isArray: false
+    - description: SNMPv3 privacy password to use.
       name: privacy_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: SNMPv3 Privacy protocol to use.
-      isArray: false
       name: privacy_type
       predefined:
       - No-Privacy
@@ -3073,17 +2077,10 @@ script:
       - AES-192-With-3-DES-Key-Extension
       - AES-256
       - AES-256-With-3-DES-Key-Extension
-      required: false
-      secret: false
-    - default: false
-      description: PEM formatted private key.
-      isArray: false
+    - description: PEM formatted private key.
       name: ssh_key_pem
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Elevation type to use for scans.
-      isArray: false
       name: ssh_permission_elevation
       predefined:
       - None
@@ -3092,43 +2089,22 @@ script:
       - su
       - pbrun
       - Privileged-Exec
-      required: false
-      secret: false
-    - default: false
-      description: Password to use for elevation.
-      isArray: false
+    - description: Password to use for elevation.
       name: ssh_permission_elevation_password
-      required: false
-    - default: false
-      description: Username to use for elevation.
-      isArray: false
+    - description: Username to use for elevation.
       name: ssh_permission_elevation_username
-      required: false
-    - default: false
-      description: Password for the private key.
-      isArray: false
+    - description: Password for the private key.
       name: ssh_private_key_password
-      required: false
     - auto: PREDEFINED
-      default: false
       description: Whether to use Windows authentication.
-      isArray: false
       name: use_windows_authentication
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Username for the credential.
-      isArray: false
+    - description: Username for the credential.
       name: username
-      required: false
-    deprecated: false
     description: Update an existing shared credential.
-    execution: false
     name: nexpose-update-shared-credential
-  isfetch: false
   runonce: false
   script: '-'
   type: python

@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
-
 # Consts
 COMPLIANCE_LABEL = "Compliance"
 CURL_GET_COMMAND = 'curl --insecure -L -I -m 1 http://{0} | grep -C 1 "200 OK"'

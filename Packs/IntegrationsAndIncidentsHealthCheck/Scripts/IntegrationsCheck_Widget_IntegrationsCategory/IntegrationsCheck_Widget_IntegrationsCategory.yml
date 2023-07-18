@@ -1,13 +1,11 @@
-comment: Data output script for populating the dashboard pie graph widget with the
-  failing integrations.
+comment: Data output script for populating the dashboard pie graph widget with the failing integrations.
 commonfields:
   id: IntegrationsCheck-Widget-IntegrationsCategory
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: IntegrationsCheck-Widget-IntegrationsCategory
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

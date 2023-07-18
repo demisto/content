@@ -1,14 +1,9 @@
 args:
-- default: false
-  description: The indicators query.
-  isArray: false
+- description: The indicators query.
   name: query
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: The action that will be taken if the indicator will be discovered in the organization.
-  isArray: false
   name: action
   predefined:
   - Warn
@@ -19,21 +14,12 @@ args:
   - BlockAndRemediate
   - Allowed
   required: true
-  secret: false
-- default: false
-  defaultValue: '10000'
+- defaultValue: '10000'
   description: The maximum number of indicators to fetch.
-  isArray: false
   name: limit
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: The results offset page. Only change when the number of the results exceed the limit.
-  isArray: false
   name: offset
-  required: false
-  secret: false
 comment: Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json representation of the indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update* command.
 commonfields:
   id: TransformIndicatorToMSDefenderIOC
@@ -101,10 +87,9 @@ outputs:
   description: True if alert generation is required, False if this indicator should not generate an alert.
   type: String
 script: '-'
-system: false
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

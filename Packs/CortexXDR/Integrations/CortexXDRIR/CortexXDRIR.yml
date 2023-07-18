@@ -8,15 +8,15 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   defaultvalue: 'true'
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -25,9 +25,9 @@ configuration:
   - Incoming
   - Outgoing
   - Both
-  required: false
   type: 15
   section: Collect
+  required: false
 - display: Server URL (copy URL from XDR)
   name: url
   required: true
@@ -36,90 +36,90 @@ configuration:
 - displaypassword: API Key ID
   name: apikey_id_creds
   type: 9
-  required: false
   hiddenusername: true
   display: ''
   section: Connect
+  required: false
 - displaypassword: API Key
   name: apikey_creds
   type: 9
-  required: false
   hiddenusername: true
   display: ''
   section: Connect
+  required: false
 - display: API Key ID
   name: apikey_id
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: API Key
   name: apikey
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Only fetch starred incidents
   name: starred
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
   defaultvalue: 3 days
   display: Starred incidents fetch window
   name: starred_incidents_fetch_window
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
   display: Sync Incident Owners
   name: sync_owners
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Prevent Only Mode
   name: prevent_only
-  required: false
   type: 8
   additionalinfo: Whether the XDR tenant Mode is prevent only
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Statuses to Fetch
   name: status
@@ -132,10 +132,10 @@ configuration:
   - resolved_security_testing
   - resolved_other
   - resolved_auto
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -599,7 +599,6 @@ script:
       - 'true'
     - description: Add a comment to the incident.
       name: add_comment
-      required: false
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
@@ -758,7 +757,7 @@ script:
       - 'true'
       - 'false'
   - arguments:
-    - description: 'A comma-separated list of enpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
+    - description: 'A comma-separated list of endpoints statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
       name: status
       isArray: true
     - description: A comma-separated list of endpoint IDs.
@@ -2660,7 +2659,6 @@ script:
     - description: The endpoint host name.
       isArray: true
       name: hostname
-      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2950,15 +2948,9 @@ script:
     - description: Remote IP address for the connection.
       isArray: true
       name: action_remote_ip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert action status
-      isArray: false
       name: alert_action_status
-      required: false
-      secret: false
       predefined:
       - detected
       - detected (allowed the session)
@@ -2997,8 +2989,7 @@ script:
       - prevented (terminated the session and sent a tcp reset to the client)
       - prevented (terminated the session and sent a tcp reset to the server)
       - prevented (on write)
-    - default: false
-      description: The local IP address for the connection.
+    - description: The local IP address for the connection.
       isArray: true
       name: action_local_port
     - description: The remote port for the connection.
@@ -3452,7 +3443,7 @@ script:
     name: xdr-set-user-role
     description: Add one or more users to a role.
   - arguments:
-    - description: A comma-separate list of one or more user emails of users you want to remove from a role. 
+    - description: A comma-separate list of one or more user emails of users you want to remove from a role.
       name: user_emails
       required: true
       isArray: true
@@ -3460,7 +3451,6 @@ script:
     description: Remove one or more users from a role.
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   ismappable: true

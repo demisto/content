@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
@@ -17,8 +17,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -40,8 +40,8 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -50,90 +50,78 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
-- name: credentials
   required: false
+- name: credentials
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: API Key
   hidden: true
   name: api_key
-  required: false
   type: 4
+  required: false
 - additionalinfo: When selected, will run on all active collections regardless of the supplied collections. Inactive or empty collections will be ignored.
   display: Get All Active Collections
   name: all_collections
-  required: false
   type: 8
+  required: false
 - additionalinfo: Supports a CSV of collections to fetch from. If an inactive or empty collection is supplied, a Timeout error will be raised. If not set, it will raise an error listing all the available collections.
   display: Collections to Fetch From
   name: collections
-  required: false
   type: 0
+  required: false
 - display: First Fetch Time
   name: initial_interval
-  required: false
   type: 0
   additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
   defaultvalue: 1 hour
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: This integration fetches indicators from AlienVault OTX using a TAXII client.
 display: AlienVault OTX TAXII Feed
 name: AlienVault OTX TAXII Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of indicators to return. The default value is 10.
-      isArray: false
       name: limit
       required: true
-      secret: false
-    - default: false
-      description: how far back should we fetch indicators  - e.g. 1 day, 2 hours. If not set, will use the first fetch integration parameter.
-      isArray: false
+    - description: how far back should we fetch indicators  - e.g. 1 day, 2 hours. If not set, will use the first fetch integration parameter.
       name: begin_date
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the indicators from AlienVault OTX.
-    execution: false
     name: alienvaultotx-get-indicators
   dockerimage: demisto/taxii:1.0.0.43208
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

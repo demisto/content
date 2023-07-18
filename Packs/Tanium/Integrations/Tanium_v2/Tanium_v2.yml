@@ -9,32 +9,32 @@ configuration:
   type: 0
 - display: Domain
   name: domain
-  required: false
   type: 0
+  required: false
 - display: Credentials
   name: credentials
-  required: false
   type: 9
+  required: false
 - additionalinfo: The API token was created in the Tanium platform and should be used for OAuth 2 authentication. See Help (?) for more information.
   display: API Token
   name: api_token
-  required: false
   type: 4
   hidden: true
-- name: credentials_api_token
   required: false
+- name: credentials_api_token
   type: 9
   additionalinfo: The API token was created in the Tanium platform and should be used for OAuth 2 authentication. See Help (?) for more information.
   displaypassword: API Token
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Tanium endpoint security and systems management, filters out [current results unavailable] when returning question results
 display: Tanium v2
 name: Tanium v2
@@ -1354,7 +1354,6 @@ script:
       description: The action results ID.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   script: ''
   subtype: python3
   type: python

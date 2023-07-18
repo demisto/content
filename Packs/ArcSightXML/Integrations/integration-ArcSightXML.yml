@@ -219,7 +219,6 @@ script:
     arguments: []
     description: Used for testing. Should fetch XML file and return an XSOAR incident object.
   isfetch: true
-  runonce: false
   dockerimage: demisto/python:2.7.18.27799
 tests:
 - No test

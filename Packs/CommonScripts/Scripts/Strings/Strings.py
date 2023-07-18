@@ -4,7 +4,6 @@ import re
 import string
 
 
-
 def strings(args):
     # Optional arguments and default values
     chars = 4

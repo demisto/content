@@ -4,7 +4,6 @@ commonfields:
   version: -1
 name: MyToDoTasksWidget
 script: '-'
-system: false
 tags:
 - widget
 timeout: '0'

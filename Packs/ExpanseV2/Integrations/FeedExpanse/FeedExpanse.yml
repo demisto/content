@@ -15,59 +15,61 @@ configuration:
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: API Key
   name: apikey
   type: 4
   additionalinfo: The API Key to use for connection
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - defaultvalue: '20000'
   display: The maximum number of indicators to fetch.
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: '7'
   name: min_last_observed
   display: 'Retrieve indicators observed in the last specified number of days'
-  required: false
   type: 0
+  required: false
 - defaultvalue: 'suddenDeath'
   display: ''
   name: feedExpirationPolicy
-  required: false
   type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
   defaultvalue: '720'
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -84,18 +86,18 @@ configuration:
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
-  required: false
   type: 18
   options:
   - None
   - Good
   - Suspicious
   - Bad
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -104,53 +106,30 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 script:
   commands:
   - name: feedexpanse-get-indicators
     arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of results to return per type
-      isArray: false
       name: max_indicators
-      required: false
-      secret: false
-    - default: false
-      defaultValue: yes
+    - defaultValue: yes
       description: Retrieve discovered IPs
-      isArray: false
       name: ip
-      required: false
-      secret: false
-    - default: false
-      defaultValue: yes
+    - defaultValue: yes
       description: Retrieve discovered Domains
-      isArray: false
       name: domain
-      required: false
-      secret: false
-    - default: false
-      defaultValue: yes
+    - defaultValue: yes
       description: Retrieve discovered certificates
-      isArray: false
       name: certificate
-      required: false
-      secret: false
-    - default: false
-      defaultValue: yes
+    - defaultValue: yes
       description: Retrieve IP Ranges
-      isArray: false
       name: iprange
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve discovered IPs/IP Ranges/Domains/Certificates
     execution: true
-  isfetch: false
   feed: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

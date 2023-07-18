@@ -17,28 +17,28 @@ configuration:
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: '5'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   defaultvalue: Trend Micro Vision One XDR Incident
   type: 13
+  required: false
 - defaultvalue: '30'
   display: Sync On First Run (days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Max Incidents
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
@@ -75,7 +75,6 @@ script:
       required: true
     - description: Description of a response task
       name: description
-      required: false
     description: Allows the user to sign in to new application and browser sessions. Supported IAM systems -> Azure AD and Active Directory (on-premises)
     name: trendmicro-visionone-enable-user-account
     outputs:
@@ -91,7 +90,6 @@ script:
       required: true
     - description: Description of a response task
       name: description
-      required: false
     description: Signs the user out of all active application and browser sessions, and prevents the user from signing in any new session. Supported IAM systems -> Azure AD and Active Directory (on-premises)
     name: trendmicro-visionone-disable-user-account
     outputs:
@@ -107,7 +105,6 @@ script:
       required: true
     - description: Description of a response task
       name: description
-      required: false
     description: Signs the user out of all active application and browser sessions. Supported IAM systems -> Azure AD
     name: trendmicro-visionone-force-signout
     outputs:
@@ -123,7 +120,6 @@ script:
       required: true
     - description: Description of a response task
       name: description
-      required: false
     description: Signs the user out of all active application and browser sessions, and forces the user to create a new password during the next sign-in attempt. Supported IAM systems -> Azure AD and Active Directory (on-premises)
     name: trendmicro-visionone-force-password-reset
     outputs:
@@ -149,7 +145,6 @@ script:
       required: true
     - description: Optional description for reference
       name: description
-      required: false
     description: Adds a file SHA-1, IP address, domain, or URL object to the User-Defined Suspicious Objects List, which blocks the objects on subsequent detections
     name: trendmicro-visionone-add-to-block-list
     outputs:
@@ -175,7 +170,6 @@ script:
       required: true
     - description: Optional description for reference
       name: description
-      required: false
     description: Removes a file SHA-1, IP address, domain, or URL from the User-Defined Suspicious Objects List
     name: trendmicro-visionone-remove-from-block-list
     outputs:
@@ -194,10 +188,8 @@ script:
       required: true
     - description: Email mailbox where the message will be quarantined from
       name: mailbox
-      required: false
     - description: Optional description for reference
       name: description
-      required: false
     description: Moves a message from a mailbox to the quarantine folder
     name: trendmicro-visionone-quarantine-email-message
     outputs:
@@ -216,10 +208,8 @@ script:
       required: true
     - description: Email mailbox where the message will be quarantined from
       name: mailbox
-      required: false
     - description: Optional description for reference
       name: description
-      required: false
     description: Deletes a message from a mailbox
     name: trendmicro-visionone-delete-email-message
     outputs:
@@ -235,7 +225,6 @@ script:
       required: true
     - description: Description
       name: description
-      required: false
     description: Disconnects an endpoint from the network (but allows communication with the managing Trend Micro product)
     name: trendmicro-visionone-isolate-endpoint
     outputs:
@@ -251,7 +240,6 @@ script:
       required: true
     - description: Description
       name: description
-      required: false
     description: Restores network connectivity to an endpoint that applied the "isolate endpoint" action
     name: trendmicro-visionone-restore-endpoint-connection
     outputs:
@@ -278,7 +266,6 @@ script:
       required: true
     - description: Exception description.
       name: description
-      required: false
     description: Adds domains, file SHA-1 values, IP addresses, or URLs to the Exception List and prevents these objects from being added to the Suspicious Object List
     name: trendmicro-visionone-add-objects-to-exception-list
     outputs:
@@ -329,14 +316,12 @@ script:
       required: true
     - description: Description
       name: description
-      required: false
     - description: The action to take if object is found. If you don't use this parameter, the scan action specified in default_settings.riskLevel.type will be used instead. "block" or "log".
       name: scan_action
       auto: PREDEFINED
       predefined:
       - block
       - log
-      required: false
     - description: The Suspicious Object risk level. If you don't use this parameter, high will be used instead. "high", "medium" or "low".
       name: risk_level
       auto: PREDEFINED
@@ -344,10 +329,8 @@ script:
       - high
       - medium
       - low
-      required: false
     - description: The number of days to keep the object in the Suspicious Object List. If you don't use this parameter, the default_settings.expiredDay scan action will be used instead.
       name: expiry_days
-      required: false
     description: Adds domains, file SHA-1/SHA-256 values, IP addresses, senderMailAddress, or URLs to the Suspicious Object List.
     name: trendmicro-visionone-add-objects-to-suspicious-list
     outputs:
@@ -430,10 +413,8 @@ script:
       required: true
     - description: Description
       name: description
-      required: false
     - description: Optional file name list for log
       name: filename
-      required: false
     description: Terminates a process that is running on an endpoint
     name: trendmicro-visionone-terminate-process
     outputs:
@@ -532,7 +513,6 @@ script:
       required: true
     - description: Description of the file.
       name: description
-      required: false
     description: Compresses a file on an endpoint in a password-protected archive and then sends the archive to the XDR service platform
     name: trendmicro-visionone-collect-forensic-file
     outputs:
@@ -603,7 +583,6 @@ script:
       required: true
     - description: Optional name for the package to be downloaded
       name: filename
-      required: false
     outputs:
     - contextPath: VisionOne.Download_Investigation_Package.submissionId
       description: The submission for the file
@@ -644,7 +623,6 @@ script:
       required: true
     - description: Optional name for the package to be downloaded
       name: filename
-      required: false
     outputs:
     - contextPath: VisionOne.Download_Analysis_Report.submissionId
       description: The submission for the file
@@ -660,16 +638,12 @@ script:
       required: true
     - description: Name of the file to be analyzed
       name: filename
-      required: false
     - description: The Base64 encoded password for decrypting the submitted document. sample.
       name: document_password
-      required: false
     - description: The Base64 encoded password for decrypting the submitted archive.
       name: archive_password
-      required: false
     - description: Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file.
       name: arguments
-      required: false
     description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
     name: trendmicro-visionone-submit-file-to-sandbox
     outputs:
@@ -691,10 +665,8 @@ script:
       required: true
     - description: The Base64 encoded password for decrypting the submitted document. sample.
       name: document_password
-      required: false
     - description: The Base64 encoded password for decrypting the submitted archive.
       name: archive_password
-      required: false
     outputs:
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.message
       description: Status message of the file submitted to sandbox.
@@ -841,10 +813,9 @@ script:
       type: string
     description: Updates the status of a workbench alert
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isFetchSamples: true
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

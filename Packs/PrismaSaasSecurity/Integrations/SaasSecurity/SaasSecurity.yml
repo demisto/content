@@ -6,10 +6,7 @@ configuration:
 - display: Server URL
   name: url
   defaultvalue: https://api.aperture.paloaltonetworks.com
-  additionalinfo: 'The instance configuration URL based on the server location:
-  <br/>US: https://api.aperture.paloaltonetworks.com<br/>
-  EU: https://api.aperture-eu.paloaltonetworks.com<br/>
-  APAC: https://api.aperture-apac.paloaltonetworks.com'
+  additionalinfo: 'The instance configuration URL based on the server location: <br/>US: https://api.aperture.paloaltonetworks.com<br/> EU: https://api.aperture-eu.paloaltonetworks.com<br/> APAC: https://api.aperture-apac.paloaltonetworks.com'
   type: 0
   required: true
 - display: Client ID
@@ -31,21 +28,19 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- additionalinfo: 'Selects which direction you want the incidents mirrored.
- You can mirror Incoming only (from SaaS Security to Cortex XSOAR),
-  **Outgoing** only (from Cortex XSOAR to SaaS Security), or both **Incoming And Outgoing**.'
+- additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror Incoming only (from SaaS Security to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to SaaS Security), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: mirror_direction
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
+  required: false
 - display: Number of incidents per fetch
   name: max_fetch
   defaultvalue: "20"
@@ -61,27 +56,26 @@ configuration:
   additionalinfo: Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used.
   name: state
   type: 15
-  required: false
   options:
   - All
   - Open
   - Closed
+  required: false
 - display: 'Fetch only incidents with matching severity'
   additionalinfo: If nothing is selected, **All** severities will be used.
   name: severity
   type: 16
-  required: false
   options:
   - '1'
   - '2'
   - '3'
   - '4'
   - '5'
+  required: false
 - display: 'Fetch only incidents with matching status'
   additionalinfo: If nothing is selected, **All** statuses will be used.
   name: status
   type: 16
-  required: false
   options:
   - New
   - Assigned
@@ -92,38 +86,31 @@ configuration:
   - Misidentified
   - In The Cloud
   - Dismiss
+  required: false
 - display: Fetch only incidents with matching Application IDs
   name: app_ids
   type: 0
+  additionalinfo: A comma-separated list of Application IDs. Run the ***saas-security-get-apps*** command to return the **Application ID**, **Name**, and **Type** for all applications.
   required: false
-  additionalinfo: A comma-separated list of Application IDs. Run the ***saas-security-get-apps***
-    command to return the **Application ID**, **Name**, and **Type** for all applications.
 - additionalinfo: If selected, when the incident closes on SaaS Security, the incident closes in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: close_incident
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  additionalinfo: By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified.
   required: false
-  additionalinfo: By default, SSL verification is enabled.
-    If selected, the connection isn’t secure and all requests return an SSL error
-    because the certificate cannot be verified.
 - display: Use system proxy settings
   name: proxy
   type: 8
+  additionalinfo: Uses the system proxy server to communicate with the integration. If not selected, the integration will not use the system proxy server.
   required: false
-  additionalinfo: Uses the system proxy server to communicate with the integration.
-    If not selected, the integration will not use the system proxy server.
-description: SaaS Security API is a cloud-based service that you can connect directly to
-  your sanctioned SaaS applications using the cloud app’s API to provide data classification,
-  sharing and permission visibility, and threat detection. This Content Pack provides insights
-  into risks posed by data exposure and policy violations and enables you to use Cortex XSOAR
-  to effectively manage the incidents discovered by SaaS Security API.
+description: SaaS Security API is a cloud-based service that you can connect directly to your sanctioned SaaS applications using the cloud app’s API to provide data classification, sharing and permission visibility, and threat detection. This Content Pack provides insights into risks posed by data exposure and policy violations and enables you to use Cortex XSOAR to effectively manage the incidents discovered by SaaS Security API.
 display: SaaS Security
 name: SaasSecurity
 script:
@@ -135,14 +122,11 @@ script:
       description: The number of incidents to pull. Maximum is 200, minimum is 10. Default is 50.
       defaultValue: "50"
     - name: from
-      description: The start time of the query, filtered by the date the incident
-        was updated,\ \ For example, `2021-08-23T09:26:25.872Z`.
+      description: The start time of the query, filtered by the date the incident was updated,\ \ For example, `2021-08-23T09:26:25.872Z`.
     - name: to
-      description: The end time of the query, filtered by the date the incident was
-        updated. For example, `2021-08-23T09:26:25.872Z`.
+      description: The end time of the query, filtered by the date the incident was updated. For example, `2021-08-23T09:26:25.872Z`.
     - name: app_ids
-      description: Comma-separated list of application IDs. Run the 'saas-security-get-apps'
-        command to return the Application ID, Name, and Type for all applications.
+      description: Comma-separated list of application IDs. Run the 'saas-security-get-apps' command to return the Application ID, Name, and Type for all applications.
       isArray: true
     - name: state
       auto: PREDEFINED
@@ -150,8 +134,7 @@ script:
       - All
       - Open
       - Closed
-      description: 'The state of the incidents. If empty, retrieves all states. Possible
-        values: "All", "Open", and "Closed".'
+      description: 'The state of the incidents. If empty, retrieves all states. Possible values: "All", "Open", and "Closed".'
       defaultValue: open
     - name: severity
       auto: PREDEFINED
@@ -161,8 +144,7 @@ script:
       - '3'
       - '4'
       - '5'
-      description: 'The severity of the incidents. In none is selected, all severities
-        will be pulled. Possible values: "1", "2", "3", "4", and "5".'
+      description: 'The severity of the incidents. In none is selected, all severities will be pulled. Possible values: "1", "2", "3", "4", and "5".'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -176,12 +158,9 @@ script:
       - In The Cloud
       - Dismiss
       isArray: true
-      description: 'The status of the incidents. Possible values: "New", "Assigned",
-        "In Progress", "Pending", "No Reason", "Business Justified", "Misidentified",
-        "In The Cloud", and "Dismiss".'
+      description: 'The status of the incidents. Possible values: "New", "Assigned", "In Progress", "Pending", "No Reason", "Business Justified", "Misidentified", "In The Cloud", and "Dismiss".'
     - name: next_page
-      description: Get the next batch of incidents. No other argument is needed when
-        providing this.
+      description: Get the next batch of incidents. No other argument is needed when providing this.
     outputs:
     - contextPath: SaasSecurity.Incident.incident_id
       description: The incident ID.
@@ -369,8 +348,7 @@ script:
       required: true
       description: The incident ID.
     - name: category
-      description: 'The reason for closing the incident. Possible values: "Misidentified",
-        "No Reason", and "Business Justified".'
+      description: 'The reason for closing the incident. Possible values: "Misidentified", "No Reason", and "Business Justified".'
       required: true
       auto: PREDEFINED
       predefined:
@@ -420,15 +398,13 @@ script:
       - Remove public sharing
       - Quarantine
       - Restore
-      description: 'The remediation action to take. Possible values: "Remove public
-        sharing"(only for Office365, Dropbox, Box, Google Drive apps), "Quarantine", and "Restore".'
+      description: 'The remediation action to take. Possible values: "Remove public sharing"(only for Office365, Dropbox, Box, Google Drive apps), "Quarantine", and "Restore".'
     - name: remove_inherited_sharing
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      description: 'Used when the remediation type is “Remove public sharing”. When
-        set to true, all the parent folders with a shared URL will be removed.'
+      description: 'Used when the remediation type is “Remove public sharing”. When set to true, all the parent folders with a shared URL will be removed.'
       defaultValue: "false"
     outputs:
     - contextPath: SaasSecurity.Remediation.asset_id
@@ -454,8 +430,7 @@ script:
       - Remove public sharing
       - Quarantine
       - Restore
-      description: 'The remediation action that was taken. Possible values: "Remove
-        public sharing"(only for Office365, Dropbox, Box, Google Drive apps), "Quarantine", and "Restore".'
+      description: 'The remediation action that was taken. Possible values: "Remove public sharing"(only for Office365, Dropbox, Box, Google Drive apps), "Quarantine", and "Restore".'
     outputs:
     - contextPath: SaasSecurity.Remediation.asset_id
       description: The asset ID.
@@ -477,52 +452,26 @@ script:
       type: String
   - name: get-remote-data
     arguments:
-    - default: false
-      description: The remote incident ID.
-      isArray: false
+    - description: The remote incident ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: UTC timestamp in seconds. The incident is only updated if it was
-        modified after the last update time.
-      isArray: false
+    - defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
-    description: Get remote data from a remote incident. Note that this method will
-      not update the current incident. It's used for debugging purposes.
-    execution: false
-  - deprecated: false
-    description: Returns the list of fields for an incident type.
-    execution: false
+    description: Get remote data from a remote incident. Note that this method will not update the current incident. It's used for debugging purposes.
+  - description: Returns the list of fields for an incident type.
     name: get-mapping-fields
   - arguments:
-    - default: false
-      description: Date string representing the local time. The incident is only returned
-        if it was modified after the last update time.
-      isArray: false
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
-    description: Get the list of incidents that were modified since the last update.
-      Note that this method is used for debugging purposes. get-modified-remote-data
-      is used as part of a Mirroring feature, which is available since Cortex XSOAR version 6.1.
-    execution: false
+    description: Get the list of incidents that were modified since the last update. Note that this method is used for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since Cortex XSOAR version 6.1.
     name: get-modified-remote-data
-  - deprecated: false
-    description: Updates local incident changes in the remote incident. This method
-      is only used for debugging purposes and will not update the current incident.
-    execution: false
+  - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

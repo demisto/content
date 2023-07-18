@@ -33,7 +33,6 @@ configuration:
   name: incidentSeverity
   defaultvalue: medium
   type: 15
-  required: false
   options:
   - critical
   - high
@@ -41,6 +40,7 @@ configuration:
   - low
   - trivial
   - info
+  required: false
 - display: Rate at which to check vulnerability events when fetching incidents
   name: incidentFrequency
   defaultvalue: 3 hr
@@ -166,7 +166,6 @@ script:
     description: Performs a scan on the specified asset.
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

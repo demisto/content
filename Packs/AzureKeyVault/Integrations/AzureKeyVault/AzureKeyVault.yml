@@ -5,7 +5,6 @@ commonfields:
 configuration:
 - display: Azure Cloud
   name: azure_cloud
-  required: false
   type: 15
   defaultvalue: Worldwide
   options:
@@ -18,17 +17,18 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  required: false
 - display: Client ID
   name: client_id
-  required: false
   type: 0
   section: Connect
-- name: credentials
   required: false
+- name: credentials
   type: 9
   displaypassword: Client Secret
   hiddenusername: true
   section: Connect
+  required: false
 - display: Tenant ID
   name: tenant_id
   required: true
@@ -37,30 +37,37 @@ configuration:
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
   section: Connect
+  hidden: true
+  required: false
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  displaypassword: Certificate Thumbprint
+  name:  credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  required: false
   type: 14
   section: Connect
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   name: use_managed_identities
-  required: false
   type: 8
   display: Use Azure Managed Identities
   section: Connect
   advanced: true
-- name: managed_identities_client_id
   required: false
+- name: managed_identities_client_id
   type: 9
   additionalinfo: The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
   section: Connect
   advanced: true
+  required: false
 - display: Default Subscription ID
   name: subscription_id
   required: true
@@ -73,47 +80,42 @@ configuration:
   section: Connect
 - display: Fetches credentials
   name: isFetchCredentials
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Key Vault names - comma seperated list of Key Vaults to fetch secrets from.
   name: key_vaults
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Secret names - comma seperated list of secrets to fetch.
   name: secrets
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use the Azure Key Vault integration to safeguard and manage cryptographic keys and secrets used by cloud applications and services.
 display: Azure Key Vault
 name: AzureKeyVault
 script:
   commands:
   - arguments:
-    - default: false
-      description: Key Vault name.
-      isArray: false
+    - description: Key Vault name.
       name: vault_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Key Vault supported Azure location. The location cannot be changed after the Key Vault is created. Default value is 'westus'.
-      isArray: false
       name: location
       predefined:
       - northcentralus
@@ -150,26 +152,16 @@ script:
       - norwayeast
       - westus3
       - jioindiawest
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify whether the key vault is a standard vault or a premium vault. Default value is 'standard'.
-      isArray: false
       name: sku_name
       predefined:
       - standard
       - premium
-      required: false
-      secret: false
-    - default: false
-      description: 'The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations > your registered application > click on manage application in local directory > copy Object ID property.'
-      isArray: false
+    - description: 'The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations > your registered application > click on manage application in local directory > copy Object ID property.'
       name: object_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Permissions to keys. If the Key Vault exists, you must supply the previous keys'' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,create,update,import,delete,backup,restore,recover]. '
       isArray: true
       name: keys
@@ -190,10 +182,7 @@ script:
       - verify
       - sign
       - purge
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Permissions to secrets. If the Key Vault exists, you must supply the previous secrets' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,set,delete,backup,restore,recover].
       isArray: true
       name: secrets
@@ -206,10 +195,7 @@ script:
       - backup
       - restore
       - purge
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Permissions to certificates. If the Key Vault exists, you must supply the previous certificate's permissions in order to keep them unchanged. Access policy property. Default value is [get,list,update,create,import,delete,recover,backup,restore,managecontacts,manageissuers,getissuers,listissuers,setissuers,deleteissuers].
       isArray: true
       name: certificates
@@ -230,10 +216,7 @@ script:
       - setissuers
       - deleteissuers
       - purge
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Permissions to storage accounts. If the Key Vault exists, you must supply the previous storage's permissions in order to keep them unchanged. Access policy property. Default value is [get,list,set,delete,backup,restore,recover].
       isArray: true
       name: storage
@@ -252,92 +235,53 @@ script:
       - backup
       - restore
       - purge
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True.
-      isArray: false
       name: enabled_for_deployment
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True.
-      isArray: false
       name: enabled_for_disk_encryption
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True.
-      isArray: false
       name: enabled_for_template_deployment
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be according to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network ACL property.
-      isArray: false
       name: default_action
       predefined:
       - Allow
       - Deny
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. For example, use 'AzureServices' if you wish to give azure services access to key vault, although the default action is 'Deny' or the access for a specific IP address. Network acl property. Default value is 'AzureServices'.
-      isArray: false
       name: bypass
       predefined:
       - AzureServices
       - None
-      required: false
-      secret: false
-    - default: false
-      description: Allow accessibility of a vault from a specific virtual network. This argument must be the full resource ID of a virtual network subnet. For example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1", you allow access to the Key Vault from subnet1. Network acl property.
-      isArray: false
+    - description: Allow accessibility of a vault from a specific virtual network. This argument must be the full resource ID of a virtual network subnet. For example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1", you allow access to the Key Vault from subnet1. Network acl property.
       name: vnet_subnet_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'True'
+    - defaultValue: 'True'
       description: Specifies whether the Network Resource Provider will ignore the check if parent subnet has serviceEndpoints configured.  This allows the configuration for the Key Vault to complete without error before the configuration to the virtual network's subnet is complete. Once the subnet configuration is complete, the Cosmos account will then be accessible through the configured subnet. Network Acl property.
-      isArray: false
       name: ignore_missing_vnet_service_endpoint
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: 'The list of IP address rules. Each rule governing the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property.'
+    - description: 'The list of IP address rules. Each rule governing the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property.'
       isArray: true
       name: ip_rules
-      required: false
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Create or update a key vault in the specified subscription. If the Key Vault exists, the updated properties will overwrite the existing ones. Please use azure-key-vault-access-policy-update command if you wish to update the access policy of an existing Key Vault.
-    execution: false
     name: azure-key-vault-create-update
     outputs:
     - contextPath: AzureKeyVault.KeyVault.id
@@ -392,46 +336,29 @@ script:
       description: The current provisioning state.
       type: String
   - arguments:
-    - default: false
-      description: Key Vault name to delete.
-      isArray: false
+    - description: Key Vault name to delete.
       name: vault_name
       required: true
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Delete the specified key vault.
     execution: true
     name: azure-key-vault-delete
   - arguments:
-    - default: false
-      description: Key Vault name.
-      isArray: false
+    - description: Key Vault name.
       name: vault_name
       required: true
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Get the specified key vault.
-    execution: false
     name: azure-key-vault-get
     outputs:
     - contextPath: AzureKeyVault.KeyVault.id
@@ -486,26 +413,14 @@ script:
       description: The URI of the vault for performing operations on keys and secrets. This property is readonly.
       type: String
   - arguments:
-    - default: false
-      description: Limit on the number of keys vaults to return. Default value is 50.
-      isArray: false
+    - description: Limit on the number of keys vaults to return. Default value is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: First index to retrieve from. Default value is 0.
-      isArray: false
+    - description: First index to retrieve from. Default value is 0.
       name: offset
-      required: false
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: The List operation gets information about the vaults associated with the subscription. For a limit greater than 25, more than one API call will be required and the command might take longer time.
-    execution: false
     name: azure-key-vault-list
     outputs:
     - contextPath: AzureKeyVault.KeyVault.id
@@ -560,31 +475,21 @@ script:
       description: 'The URI of the vault for performing operations on keys and secrets. '
       type: String
   - arguments:
-    - default: false
-      description: The name of the Key Vault to update it's access policy.
-      isArray: false
+    - description: The name of the Key Vault to update it's access policy.
       name: vault_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The name of the operation to do on the vault''s access policy. Supports three operations: add,remove,replace. For example, to add get, list permissions to the current secret permissions, use operation_kind=add and secrets=get,list.'
-      isArray: false
       name: operation_kind
       predefined:
       - add
       - remove
       - replace
       required: true
-      secret: false
-    - default: false
-      description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The update regards only the access policy for the specified object ID.
-      isArray: false
+    - description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The update regards only the access policy for the specified object ID.
       name: object_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Permissions to keys.
       isArray: true
       name: keys
@@ -605,10 +510,7 @@ script:
       - restore
       - recover
       - purge
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Permissions to secrets.
       isArray: true
       name: secrets
@@ -621,10 +523,7 @@ script:
       - restore
       - recover
       - purge
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Permissions to certificates.
       isArray: true
       name: certificates
@@ -643,10 +542,7 @@ script:
       - manageissuers
       - recover
       - purge
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Permissions to storage accounts.
       isArray: true
       name: storage
@@ -665,19 +561,12 @@ script:
       - backup
       - restore
       - purge
-      required: false
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Update access policies in a key vault in the specified subscription. The update regards only the access policy for the specified object ID.
     execution: true
     name: azure-key-vault-access-policy-update
@@ -704,27 +593,15 @@ script:
       description: Permissions to certificates.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the key resides in.
-      isArray: false
+    - description: The name of the Key Vault where the key resides in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: Key name.
-      isArray: false
+    - description: Key name.
       name: key_name
       required: true
-      secret: false
-    - default: false
-      description: Adding the version parameter retrieves a specific version of a key. This URI fragment is optional. If not specified, the latest version of the key is returned.
-      isArray: false
+    - description: Adding the version parameter retrieves a specific version of a key. This URI fragment is optional. If not specified, the latest version of the key is returned.
       name: key_version
-      required: false
-      secret: false
-    deprecated: false
     description: Get the public part of a stored key. This operation requires the keys/get permission.
-    execution: false
     name: azure-key-vault-key-get
     outputs:
     - contextPath: AzureKeyVault.Key.key.kid
@@ -755,29 +632,16 @@ script:
       description: Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the keys reside in.
-      isArray: false
+    - description: The name of the Key Vault where the keys reside in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limit on the number of keys to return. Default value is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: First index to retrieve from. Default value is 0.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: List keys in the specified vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the keys/list permission.
-    execution: false
     name: azure-key-vault-key-list
     outputs:
     - contextPath: AzureKeyVault.Key.kid
@@ -799,19 +663,12 @@ script:
       description: Soft Delete data retention days. Value should be >=7 and <=90 when softDelete enabled, otherwise 0.
       type: Number
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the key resides in.
-      isArray: false
+    - description: The name of the Key Vault where the key resides in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: Key name to delete.
-      isArray: false
+    - description: Key name to delete.
       name: key_name
       required: true
-      secret: false
-    deprecated: false
     description: Delete a key of any type from storage in Azure Key vault. This operation requires the keys/delete permission.
     execution: true
     name: azure-key-vault-key-delete
@@ -850,27 +707,15 @@ script:
       description: Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval.
       type: String
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the secret resides in.
-      isArray: false
+    - description: The name of the Key Vault where the secret resides in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: Secret name.
-      isArray: false
+    - description: Secret name.
       name: secret_name
       required: true
-      secret: false
-    - default: false
-      description: Secret version.If not specified, the latest version of the secret is returned.
-      isArray: false
+    - description: Secret version.If not specified, the latest version of the secret is returned.
       name: secret_version
-      required: false
-      secret: false
-    deprecated: false
     description: Get a specified secret from a given key vault. The GET operation is applicable to any secret stored in Azure Key Vault. This operation requires the secrets/get permission.
-    execution: false
     name: azure-key-vault-secret-get
     outputs:
     - contextPath: AzureKeyVault.Secret.value
@@ -892,27 +737,14 @@ script:
       description: Reflects the deletion recovery level currently in effect for secrets in the current vault. If it contains 'Purgeable', the secret can be permanently deleted by a privileged user; otherwise, only the system can purge the secret, at the end of the retention interval.
       type: String
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the secrets reside in.
-      isArray: false
+    - description: The name of the Key Vault where the secrets reside in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: Limit on the number of secrets to return. Default value is 50.
-      isArray: false
+    - description: Limit on the number of secrets to return. Default value is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: First index to retrieve from. Default value is 0.
-      isArray: false
+    - description: First index to retrieve from. Default value is 0.
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: List secrets in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the secrets/list permission.
-    execution: false
     name: azure-key-vault-secret-list
     outputs:
     - contextPath: AzureKeyVault.Secret.id
@@ -940,19 +772,12 @@ script:
       description: Soft Delete data retention days. Value should be >=7 and <=90 when softDelete enabled, otherwise 0.
       type: Number
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the secret resides in.
-      isArray: false
+    - description: The name of the Key Vault where the secret resides in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: Secret name to delete.
-      isArray: false
+    - description: Secret name to delete.
       name: secret_name
       required: true
-      secret: false
-    deprecated: false
     description: Delete a secret from a specified key vault. This operation requires the secrets/delete permission.
     execution: true
     name: azure-key-vault-secret-delete
@@ -982,27 +807,15 @@ script:
       description: Reflects the deletion recovery level currently in effect for secrets in the current vault.
       type: String
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the certificate resides in.
-      isArray: false
+    - description: The name of the Key Vault where the certificate resides in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: Certificate name.
-      isArray: false
+    - description: Certificate name.
       name: certificate_name
       required: true
-      secret: false
-    - default: false
-      description: The version of the certificate. If not specified, the latest version of the certificate is returned.
-      isArray: false
+    - description: The version of the certificate. If not specified, the latest version of the certificate is returned.
       name: certificate_version
-      required: false
-      secret: false
-    deprecated: false
     description: Gets information about a specific certificate. This operation requires the certificates/get permission.
-    execution: false
     name: azure-key-vault-certificate-get
     outputs:
     - contextPath: AzureKeyVault.Certificate.id
@@ -1039,27 +852,14 @@ script:
       description: The management policy.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the certificate reside in.
-      isArray: false
+    - description: The name of the Key Vault where the certificate reside in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: Limit on the number of certificates to return. Default value is 50.
-      isArray: false
+    - description: Limit on the number of certificates to return. Default value is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: First index to retrieve from. Default value is 0.
-      isArray: false
+    - description: First index to retrieve from. Default value is 0.
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: List certificates in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the certificates/list permission.
-    execution: false
     name: azure-key-vault-certificate-list
     outputs:
     - contextPath: AzureKeyVault.Certificate.id
@@ -1078,21 +878,13 @@ script:
       description: Last updated time in UTC.
       type: Date
   - arguments:
-    - default: false
-      description: The name of the Key Vault where the secret resides in.
-      isArray: false
+    - description: The name of the Key Vault where the secret resides in.
       name: vault_name
       required: true
-      secret: false
-    - default: false
-      description: The name of the certificate to retrieve the policy from.
-      isArray: false
+    - description: The name of the certificate to retrieve the policy from.
       name: certificate_name
       required: true
-      secret: false
-    deprecated: false
     description: Get the policy of the specified certificate.This operation requires the certificates/get permission.
-    execution: false
     name: azure-key-vault-certificate-policy-get
     outputs:
     - contextPath: AzureKeyVault.CertificatePolicy.id
@@ -1131,7 +923,7 @@ script:
     - contextPath: AzureKeyVault.Subscription.state
       description: Subscription state.
       type: String
-    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies 
+    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies
       description: Subscription policies.
       type: Unknown
     - contextPath: AzureKeyVault.Subscription.authorizationSource
@@ -1148,14 +940,11 @@ script:
     arguments:
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-      isArray: false
     - name: limit
       description: Limit on the number of resource groups to return.
-      required: false
       defaultValue: 50
     - name: tag
       description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
-      required: false
     outputs:
     - contextPath: AzureKeyVault.ResourceGroup.id
       description: Resource group ID.
@@ -1171,11 +960,7 @@ script:
       type: Unknown
     - contextPath: AzureKeyVault.ResourceGroup.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/crypto:1.0.0.64970
   runonce: false
   script: '-'
   subtype: python3

@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any, Dict
 
 
-
 def get_pcap() -> Dict[str, Any]:
     alert_id = demisto.incident()['CustomFields'].get('alertid')
     if not alert_id:

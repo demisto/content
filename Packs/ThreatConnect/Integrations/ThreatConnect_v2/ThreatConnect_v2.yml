@@ -18,8 +18,8 @@ configuration:
   type: 4
 - display: Default Organization
   name: defaultOrg
-  required: false
   type: 0
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -37,22 +37,22 @@ configuration:
 - defaultvalue: '3'
   display: Rating threshold for Malicious Indicators
   name: rating
-  required: false
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Confidence threshold for Malicious Indicators
   name: confidence
-  required: false
   type: 0
+  required: false
 - defaultvalue: '7'
   display: Indicator Reputation Freshness (in days)
   name: freshness
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Deprecated. Use the ThreatConnect v3 integration instead.
 deprecated: true
 display: ThreatConnect v2 (Deprecated)
@@ -64,19 +64,11 @@ script:
       description: The IPv4 or IPv6 address.
       name: ip
       required: true
-      isArray: false
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a user has permissions. For example, users with admin
-        permissions can search for indicators belonging to all owners.
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type IP address.
     name: ip
@@ -140,19 +132,11 @@ script:
       description: The URL for which to search. For example, "www.demisto.com".
       name: url
       required: true
-      isArray: false
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a client’s API user has been granted permission. For
-        example, "owner1", "owner2", or "owner3".
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a client’s API user has been granted permission. For example, "owner1", "owner2", or "owner3".
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type URL.
     name: url
@@ -216,19 +200,11 @@ script:
       description: The hash of the file. Can be "MD5", "SHA-1", or "SHA-256".
       name: file
       required: true
-      isArray: false
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a user has permissions. For example, users with admin
-        permissions can search for indicators belonging to all owners.
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type file.
     name: file
@@ -318,8 +294,7 @@ script:
   - arguments:
     - description: A list of results filtered by the owner of the indicator.
       name: owner
-    - description: The maximum number of results that can be returned. The default
-        is 500.
+    - description: The maximum number of results that can be returned. The default is 500.
       defaultValue: '500'
       name: limit
     description: Retrieves a list of all indicators.
@@ -444,22 +419,16 @@ script:
     name: tc-tag-indicator
   - arguments:
     - default: true
-      description: The name of the indicator by which to search. The command retrieves
-        information from all owners. Can be an IP address, a URL, or a file hash.
+      description: The name of the indicator by which to search. The command retrieves information from all owners. Can be an IP address, a URL, or a file hash.
       name: indicator
       required: true
     - description: Only for custom. Leave empty for standard ones
       name: indicator_type
     - description: Indicator Owner(s)
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -624,14 +593,9 @@ script:
       required: true
     - description: A list of indicators filtered by the owner.
       name: owner
-    - default: false
-      defaultValue: '100'
-      description: 'The limit of the indicators that will be available in the raw response. Default value is 100.
-       NOTICE: In the context you will be able to see up to 100 indicators.'
-      isArray: false
+    - defaultValue: '100'
+      description: 'The limit of the indicators that will be available in the raw response. Default value is 100. NOTICE: In the context you will be able to see up to 100 indicators.'
       name: limit
-      required: false
-      secret: false
     description: Fetches all indicators that have a tag.
     name: tc-get-indicators-by-tag
     outputs:
@@ -738,15 +702,11 @@ script:
     - description: The indicator to add.
       name: indicator
       required: true
-    - description: The threat rating of the indicator. Can be "0" - "Unknown", "1"
-        - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: The threat rating of the indicator. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: rating
-    - description: The confidence rating of the indicator. Can be "0%" - "Unknown,"
-        "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%"
-        - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+    - description: The confidence rating of the indicator. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidence
-    - description: The owner of the new indicator. The default is the "defaultOrg"
-        parameter.
+    - description: The owner of the new indicator. The default is the "defaultOrg" parameter.
       name: owner
     description: Adds a new indicator to ThreatConnect.
     name: tc-add-indicator
@@ -836,21 +796,18 @@ script:
       description: The web link of the indicator.
       type: string
   - arguments:
-    - description: The owner of the new incident. The default is the "defaultOrg"
-        parameter.
+    - description: The owner of the new incident. The default is the "defaultOrg" parameter.
       name: owner
     - default: true
       description: The name of the incident group.
       name: incidentName
       required: true
-    - description: The creation time of an incident in the "2017-03-21T00:00:00Z"
-        format.
+    - description: The creation time of an incident in the "2017-03-21T00:00:00Z" format.
       name: eventDate
     - description: The tag applied to the incident.
       name: tag
     - auto: PREDEFINED
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
       name: securityLabel
       predefined:
       - TLP:RED
@@ -902,8 +859,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
-        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES", "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
       name: indicatorType
       predefined:
       - ADDRESSES
@@ -922,9 +878,7 @@ script:
       required: true
     - description: A list of indicators filtered by the owner.
       name: owner
-    description: Associates an indicator with an existing incident. The indicator
-      must exist before running this command. To add an indicator, run the tc-add-indicator
-      command.
+    description: Associates an indicator with an existing incident. The indicator must exist before running this command. To add an indicator, run the tc-add-indicator command.
     name: tc-incident-associate-indicator
     outputs:
     - contextPath: TC.Indicator.Name
@@ -1016,19 +970,11 @@ script:
       description: The name of the domain.
       name: domain
       required: true
-      isArray: false
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a user has permissions. For example, users with admin
-        permissions can search for indicators belonging to all owners.
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type domain.
     name: domain
@@ -1211,8 +1157,7 @@ script:
     - description: The active indicator (only for hosts).
       name: whoisActive
     - auto: PREDEFINED
-      description: The updated indicator set as a false positive. Can be "True" or
-        "False".
+      description: The updated indicator set as a false positive. Can be "True" or "False".
       name: falsePositive
       predefined:
       - 'True'
@@ -1220,8 +1165,7 @@ script:
     - description: The number observations on the updated indicator.
       name: observations
     - auto: PREDEFINED
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
       name: securityLabel
       predefined:
       - TLP:RED
@@ -1427,8 +1371,7 @@ script:
       required: true
     - description: The earliest date on which the campaign was seen.
       name: firstSeen
-    - description: The owner of the new incident. The default is the "defaultOrg"
-        parameter.
+    - description: The owner of the new incident. The default is the "defaultOrg" parameter.
       name: owner
     - description: The description of the campaign.
       name: description
@@ -1461,12 +1404,10 @@ script:
     - description: The name of the event group.
       name: name
       required: true
-    - description: The date on which the event occurred. If the date is not specified,
-        the current date is used.
+    - description: The date on which the event occurred. If the date is not specified, the current date is used.
       name: eventDate
     - auto: PREDEFINED
-      description: The status of the event. Can be "Needs Review", "False Positive",
-        "No Further Action", or "Escalated".
+      description: The status of the event. Can be "Needs Review", "False Positive", "No Further Action", or "Escalated".
       name: status
       predefined:
       - Needs Review
@@ -1518,8 +1459,7 @@ script:
       name: groupID
       required: true
     - auto: PREDEFINED
-      description: The type of the group to delete. Can be "Incidents", "Events",
-        "Campaigns", or "Threats".
+      description: The type of the group to delete. Can be "Incidents", "Events", "Campaigns", or "Threats".
       name: type
       predefined:
       - Incidents
@@ -1530,21 +1470,17 @@ script:
     description: Deletes a group.
     name: tc-delete-group
   - arguments:
-    - description: The ID of the group to which to add attributes. To get the ID of
-        the group, run the tc-get-groups command.
+    - description: The ID of the group to which to add attributes. To get the ID of the group, run the tc-get-groups command.
       name: group_id
       required: true
-    - description: The type of attribute to add to the group. The type is located
-        in the UI in a specific group or under Org Config.
+    - description: The type of attribute to add to the group. The type is located in the UI in a specific group or under Org Config.
       name: attribute_type
       required: true
     - description: The value of the attribute.
       name: attribute_value
       required: true
     - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1597,9 +1533,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1635,14 +1569,11 @@ script:
       description: The ID of the group.
       type: Number
   - arguments:
-    - description: The ID of the group to which to add the security label. To get
-        the ID, run the tc-get-groups command.
+    - description: The ID of the group to which to add the security label. To get the ID, run the tc-get-groups command.
       name: group_id
       required: true
     - auto: PREDEFINED
-      description: The type of the group to which to add the security label. Can be
-        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group to which to add the security label. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1656,21 +1587,17 @@ script:
       - signatures
       - threats
       required: true
-    - description: The name of the security label to add to the group. For example,
-        "TLP:GREEN".
+    - description: The name of the security label to add to the group. For example, "TLP:GREEN".
       name: security_label_name
       required: true
     description: Adds a security label to a group.
     name: tc-add-group-security-label
   - arguments:
-    - description: The ID of the group to which to add the tag. To get the ID, run
-        the tc-get-groups command.
+    - description: The ID of the group to which to add the tag. To get the ID, run the tc-get-groups command.
       name: group_id
       required: true
     - auto: PREDEFINED
-      description: The type of the group to which to add the tag. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
+      description: The type of the group to which to add the tag. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1700,8 +1627,7 @@ script:
       description: The entity of the API.
       type: String
     - contextPath: TC.IndicatorType.CasePreference
-      description: The case preference of the indicator. For example, "sensitive",
-        "upper", or "lower".
+      description: The case preference of the indicator. For example, "sensitive", "upper", or "lower".
       type: String
     - contextPath: TC.IndicatorType.Custom
       description: Whether the indicator is a custom indicator.
@@ -1716,19 +1642,14 @@ script:
       description: The value label of the indicator.
       type: String
   - arguments:
-    - description: The type of the indicator. To get the available types, run the
-        tc-get-indicator-types command. The indicator must be spelled as displayed
-        in the ApiBranch column of the UI.
+    - description: The type of the indicator. To get the available types, run the tc-get-indicator-types command. The indicator must be spelled as displayed in the ApiBranch column of the UI.
       name: indicator_type
       required: true
-    - description: The name of the indicator. For example, "indicator_type=emailAddresses"
-        where "indicator=a@a.co.il".
+    - description: The name of the indicator. For example, "indicator_type=emailAddresses" where "indicator=a@a.co.il".
       name: indicator
       required: true
     - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1742,8 +1663,7 @@ script:
       - signatures
       - threats
       required: true
-    - description: The ID of the group. To get the ID of the group, run the tc-get-groups
-        command.
+    - description: The ID of the group. To get the ID of the group, run the tc-get-groups command.
       name: group_id
       required: true
     description: Associates an indicator with a group.
@@ -1769,9 +1689,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: Whether the file is malware. If "true", ThreatConnect creates a
-        password-protected ZIP file on your local machine that contains the sample
-        and uploads the ZIP file.
+      description: Whether the file is malware. If "true", ThreatConnect creates a password-protected ZIP file on your local machine that contains the sample and uploads the ZIP file.
       name: malware
       predefined:
       - 'true'
@@ -1808,9 +1726,7 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      description: The type of group for which to return the ID. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
+      description: The type of group for which to return the ID. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1824,8 +1740,7 @@ script:
       - signatures
       - threats
       required: true
-    - description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
-        command.
+    - description: The ID of the group to retrieve. To get the ID, run the tc-get-groups command.
       name: group_id
       required: true
     description: Retrieves a single group.
@@ -1854,9 +1769,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The type of group for which to return the attribute. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
+      description: The type of group for which to return the attribute. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1870,8 +1783,7 @@ script:
       - signatures
       - threats
       required: true
-    - description: The ID of the group for which to return the attribute. To get the
-        ID, run the tc-get-groups command.
+    - description: The ID of the group for which to return the attribute. To get the ID, run the tc-get-groups command.
       name: group_id
       required: true
     description: Retrieves the attribute of a group.
@@ -1897,9 +1809,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The type of group for which to return the security labels. Can
-        be "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of group for which to return the security labels. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1913,8 +1823,7 @@ script:
       - signatures
       - threats
       required: true
-    - description: The ID of the group for which to return the security labels. To
-        get the ID, run the tc-get-groups command.
+    - description: The ID of the group for which to return the security labels. To get the ID, run the tc-get-groups command.
       name: group_id
       required: true
     description: Retrieves the security labels of a group.
@@ -1931,9 +1840,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: The type of group for which to return the tags. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
+      description: The type of group for which to return the tags. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -1947,8 +1854,7 @@ script:
       - signatures
       - threats
       required: true
-    - description: The ID of the group for which to return the tags. To get the ID,
-        run the tc-get-groups command.
+    - description: The ID of the group for which to return the tags. To get the ID, run the tc-get-groups command.
       name: group_id
       required: true
     description: Retrieves the tags of a group.
@@ -1996,9 +1902,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The type of the group for which to return the indicators. Can be
-        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group for which to return the indicators. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -2012,8 +1916,7 @@ script:
       - signatures
       - threats
       required: true
-    - description: The ID of the group for which to return the indicators. To get
-        the ID, run the tc-get-groups command.
+    - description: The ID of the group for which to return the indicators. To get the ID, run the tc-get-groups command.
       name: group_id
       required: true
     description: Returns indicators associated with a group.
@@ -2048,9 +1951,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: The type of group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -2087,9 +1988,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: group_type
       predefined:
       - adversaries
@@ -2103,14 +2002,11 @@ script:
       - signatures
       - threats
       required: true
-    - description: The ID of the group. To get the ID of the group, run the tc-get-groups
-        command.
+    - description: The ID of the group. To get the ID of the group, run the tc-get-groups command.
       name: group_id
       required: true
     - auto: PREDEFINED
-      description: The type of group to associate. Can be "adversaries", "campaigns",
-        "documents", "emails", "events", "incidents", "intrusionSets", "reports",
-        "signatures", or "threats".
+      description: The type of group to associate. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       name: associated_group_type
       predefined:
       - adversaries
@@ -2150,8 +2046,7 @@ script:
     name: tc-get-indicator-owners
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of the group. Can be: "adversaries", "campaigns", "emails",
-        "incidents", "signatures", or "threats".'
+      description: 'The type of the group. Can be: "adversaries", "campaigns", "emails", "incidents", "signatures", or "threats".'
       name: group_type
       predefined:
       - adversaries
@@ -2198,7 +2093,6 @@ script:
       description: The extension of the file.
       type: String
   dockerimage: demisto/threatconnect-py3-sdk:1.0.0.40378
-  runonce: false
   script: ''
   subtype: python3
   type: python
