@@ -1,6 +1,6 @@
-id: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely - Test
+id: PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
 version: -1
-name: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely - Test
+name: PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +45,7 @@ tasks:
         This playbook is used to add an Anti-Spyware security profile to a rule in PAN-OS in a safe manner. This means that it first checks if there's already a security profile attached, and if there is - it won't necessarily overwrite it.
         In addition, it checks if there's a Security Profile Group attached, and if there is, it will try to add the Security Profile to the group safely.
         In case we are trying to apply a Security Profile that doesn't exist yet - the playbook will create it too.
-      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
+      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule
       type: playbook
       iscommand: false
       brand: ""
@@ -84,17 +84,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 665c09c0-3663-471c-8dc8-42c34f3af653
+    taskid: efc4ae6d-2174-43ee-8fce-dc2c91741e4e
     type: playbook
     task:
-      id: 665c09c0-3663-471c-8dc8-42c34f3af653
+      id: efc4ae6d-2174-43ee-8fce-dc2c91741e4e
       version: -1
-      name: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
-      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
+      name: PAN-OS - Add Anti-Spyware Security Profile To Rule
+      description: |-
+        This playbook is used to add an Anti-Spyware security profile to a rule in PAN-OS in a safe manner. It provides granular control over the behavior for cases where a rule already has an Anti-Spyware profile attached, or has a security profile group configured to it with/without an Anti-Spyware profile.
+        The playbook outputs the Anti-Spyware profile configured for the rule at the time the playbook finished. This could be the previous profile if it was not overwritten, or it could be a new one that it was overwritten with.
+      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -541,40 +543,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 1f29725e-9f0e-48fd-8f51-6a7472869079
-    type: regular
-    task:
-      id: 1f29725e-9f0e-48fd-8f51-6a7472869079
-      version: -1
-      name: Ensure some test profile is applied to the rule
-      description: Edits a policy rule.
-      script: '|||pan-os-edit-rule'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      behaviour:
-        simple: remove
-      element_to_change:
-        simple: profile-setting
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: b5a9793c-937c-4ce8-8353-fcad1a1e6306
@@ -596,8 +564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 2670
+          "x": 750,
+          "y": 2870
         }
       }
     note: false
@@ -622,7 +590,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "20"
     scriptarguments:
       rulename:
         complex:
@@ -678,7 +646,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2460
+          "y": 2660
         }
       }
     note: false
@@ -746,7 +714,44 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2850
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b97c8851-c104-4fe5-8df4-1ab3eff53d42
+    type: regular
+    task:
+      id: b97c8851-c104-4fe5-8df4-1ab3eff53d42
+      version: -1
+      name: Commit the changes + reverts
+      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      script: '|||pan-os-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      description:
+        simple: Commit for test
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2435
         }
       }
     note: false
@@ -764,8 +769,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2855,
-        "width": 1750,
+        "height": 3065,
+        "width": 1700,
         "x": -450,
         "y": 60
       }
@@ -788,8 +793,8 @@ inputs:
   value:
     simple: Prince Test Older Profile
   required: false
-  description: This will server as the "existing" profile for  the rule. It will get replaced during the test.
+  description: This will serve as the "existing" profile for  the rule. It will get replaced during the test.
   playbookInputQuery:
 outputs: []
-fromversion: 6.8.0
-description: ''
+fromversion: 6.9.0
+description: Test playbook for adding an anti spyware profile to a security rule in PAN-OS.
