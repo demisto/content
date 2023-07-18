@@ -127,7 +127,7 @@ validate-content-conf:
   cache:
     policy: pull-push
   variables:
-    KUBERNETES_CPU_REQUEST: 2000m
+    KUBERNETES_CPU_REQUEST: 3000m
   needs: []
   stage: prepare-testing-bucket
   script:
