@@ -1538,40 +1538,63 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
 
     if user_id and re.match(emailRegex, user_id):
         user_id = zoom_get_user_id_by_email(client, user_id)
-
+    json_data = {
+        'user_id': user_id,
+        'to_contact': to_contact,
+        'to_channel': to_channel,
+        'date': date_arg,
+        'from': from_arg,
+        'to': to_arg,
+        'include_deleted_and_edited_message': include_deleted_and_edited_message,
+        'search_type': search_type,
+        'search_key': search_key,
+        'exclude_child_message': exclude_child_message,
+        'page_size': limit
+    }
+    # remove all keys with val of None
+    request_data = remove_None_values_from_dict(json_data)
     url_suffix = f'users/{user_id}/messages'
     all_messages: List = []
     next_page_token = args.get('next_page_token', None)
     while True:
-        raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,
-                                                  user_id=user_id,
-                                                  to_contact=to_contact,
-                                                  to_channel=to_channel,
-                                                  date_arg=date_arg,
-                                                  from_arg=from_arg,
-                                                  to_arg=to_arg,
-                                                  include_deleted_and_edited_message=include_deleted_and_edited_message,
-                                                  search_type=search_type,
-                                                  search_key=search_key,
-                                                  exclude_child_message=exclude_child_message,
-                                                  next_page_token=next_page_token,
-                                                  page_size=limit)
-        data = raw_data.get('messages', [])
+        try:
+            raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,
+                                                      user_id=user_id,
+                                                      to_contact=to_contact,
+                                                      to_channel=to_channel,
+                                                      date_arg=date_arg,
+                                                      from_arg=from_arg,
+                                                      to_arg=to_arg,
+                                                      include_deleted_and_edited_message=include_deleted_and_edited_message,
+                                                      search_type=search_type,
+                                                      search_key=search_key,
+                                                      exclude_child_message=exclude_child_message,
+                                                      next_page_token=next_page_token,
+                                                      page_size=limit)
+            data = raw_data.get('messages', [])
+            if limit and len(all_messages) + len(data) > limit:
+                remaining_limit = limit - len(all_messages)
+                data = data[:remaining_limit]
 
-        if limit and len(all_messages) + len(data) > limit:
-            remaining_limit = limit - len(all_messages)
-            data = data[:remaining_limit]
+            all_messages.extend(data)
 
-        all_messages.extend(data)
-
-        if limit and len(all_messages) >= limit:
-            all_messages = all_messages[:limit]
-            break
-        next_page_token = raw_data.get('next_page_token', None)
-        if next_page_token and next_page_token != '':
-            next_page_token = raw_data['next_page_token']
-        else:
-            break
+            if limit and len(all_messages) >= limit:
+                all_messages = all_messages[:limit]
+                break
+            next_page_token = raw_data.get('next_page_token', None)
+            if next_page_token and next_page_token != '':
+                next_page_token = raw_data['next_page_token']
+            else:
+                break
+        except DemistoException as e:
+            error_message = e.message
+            if 'The next page token is invalid or expired.' in error_message and next_page_token:
+                raise DemistoException(f"Please ensure that the correct argument values are used when attempting to use \
+                                       the next_page_toke.\n \
+                                       Note that when using next_page_token it is mandatory to specify date time and not \
+                                       relative time.\n \
+                                       To find the appropriate values, refer to the ChatMessageNextToken located in the context. \
+                                       \n {error_message}")
     outputs = []
     for i in all_messages:
         outputs.append({
@@ -1587,11 +1610,16 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     md = tableToMarkdown('Messages', outputs)
     md += '\n' + 'Messages next token:' + raw_data.get('next_page_token', '')
 
+    if raw_data.get('next_page_token'):
+        request_data.update({'next_page_token': raw_data.get('next_page_token')})
+    else:
+        request_data = None
+
     return CommandResults(
-        outputs_prefix='Zoom.ChatMessage',
+        outputs_prefix='Zoom',
         readable_output=md,
-        outputs={'messages': all_messages,
-                 'ChatMessageNextToken': raw_data.get('next_page_token')},
+        outputs={'ChatMessage': {'messages': all_messages},
+                 'ChatMessageNextToken': request_data},
         raw_response=raw_data
     )
 
