@@ -27,8 +27,8 @@ configuration:
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Apply the filter to fetch policy events having actions such as "deliver", "mark-spam", "move", "inbox", "delete", "none". Fetches all types of actions by default.
   display: Policy action taken
   name: fetch_policy_actions
@@ -39,8 +39,8 @@ configuration:
   - inbox
   - delete
   - none
-  required: false
   type: 15
+  required: false
 - additionalinfo: Exclude alerts while fetching policy events of type 'Message Alert' or 'System Alert'.
   defaultvalue: System Alert
   display: Exclude alerts
@@ -48,45 +48,40 @@ configuration:
   options:
   - System Alert
   - Message Alert
-  required: false
   type: 15
+  required: false
 - additionalinfo: "Syntax: field.operator(operand) {and/or field.operator(operand)} \n\nExample: created_at.after(2020-11-11T09:16:44Z) or id.eq(537557694)"
   display: Fetches policy events as per the filter to limit the amount of data. Can be applied to specific fields.
   name: policy_filter
-  required: false
   type: 12
+  required: false
 - defaultvalue: Agari Phishing Defense Policy Event
   display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Agari Phishing Defense stops phishing, BEC, and other identity deception attacks that trick employees into harming your business.
 display: Agari Phishing Defense
 name: Agari Phishing Defense
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '25'
+    - defaultValue: '25'
       description: The maximum number of items to be returned in the paged response.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The earliest date time (UTC) a search should target (ISO 8601 format).
         Formats accepted: YYYY-MM-dd
         YYYY-MM-ddTHH:mm:ss
@@ -96,69 +91,32 @@ script:
         2020-05-01T00:00:00
         2 days
         5 hours.
-      isArray: false
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: "The latest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
-      isArray: false
+    - description: "The latest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: To page through a collection of policy events.
-      isArray: false
       name: page_id
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-delimited string that specifies the field ordering to be applied to the response. Example: created_at DESC, id ASC.'
+    - description: 'A comma-delimited string that specifies the field ordering to be applied to the response. Example: created_at DESC, id ASC.'
       isArray: true
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: A comma-delimited list of optional fields to add to the default payload. Additional fields would add data in the entry context.
+    - description: A comma-delimited list of optional fields to add to the default payload. Additional fields would add data in the entry context.
       isArray: true
       name: add_fields
-      required: false
-      secret: false
-    - default: false
-      description: A comma-delimited list of fields to remove from the default payload. Limited fields would return limited data in entry context.
+    - description: A comma-delimited list of fields to remove from the default payload. Limited fields would return limited data in entry context.
       isArray: true
       name: rem_fields
-      required: false
-      secret: false
-    - default: false
-      description: A comma-delimited list of fields to include in the payload. Limited fields would return limited data in entry context.
+    - description: A comma-delimited list of fields to include in the payload. Limited fields would return limited data in entry context.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: Search filters that can be applied to the response.
-      isArray: false
+    - description: Search filters that can be applied to the response.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: Exclude policy types such as 'MessageAlert' or 'SystemAlert'.
-      isArray: false
+    - description: Exclude policy types such as 'MessageAlert' or 'SystemAlert'.
       name: exclude_alert_types
-      required: false
-      secret: false
-    - default: false
-      description: Find by policy name.
-      isArray: false
+    - description: Find by policy name.
       name: policy_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Filter by policy action: ''deliver'', ''mark-spam'', ''move'', ''inbox'', ''delete'' and ''none''.'
-      isArray: false
       name: policy_action
       predefined:
       - deliver
@@ -167,11 +125,7 @@ script:
       - inbox
       - delete
       - none
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of policy events.
-    execution: false
     name: apd-list-policy-events
     outputs:
     - contextPath: AgariPhishingDefense.Alert.alert_definition_name
@@ -202,58 +156,29 @@ script:
       description: Indicates whether the original recipient was notified.
       type: Boolean
   - arguments:
-    - default: false
-      description: "The earliest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
-      isArray: false
+    - description: "The earliest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: "The latest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
-      isArray: false
+    - description: "The latest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      description: A comma-delimited list of optional fields to add to the default payload. Additional fields would add data in the entry context.
+    - description: A comma-delimited list of optional fields to add to the default payload. Additional fields would add data in the entry context.
       isArray: true
       name: add_fields
-      required: false
-      secret: false
-    - default: false
-      description: A comma-delimited list of fields to remove from the default payload. Limited fields would return limited data in entry context.
+    - description: A comma-delimited list of fields to remove from the default payload. Limited fields would return limited data in entry context.
       isArray: true
       name: rem_fields
-      required: false
-      secret: false
-    - default: false
-      description: A comma-delimited list of fields to include in the payload. Limited fields would return limited data in entry context.
+    - description: A comma-delimited list of fields to include in the payload. Limited fields would return limited data in entry context.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '25'
+    - defaultValue: '25'
       description: The maximum number of items to be returned in the paged response.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: To page through a collection of message data.
-      isArray: false
       name: page_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-delimited string that specifies the field ordering to be applied to the response.
+    - description: A comma-delimited string that specifies the field ordering to be applied to the response.
       isArray: true
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Search using advanced search syntax.
         Format: field operator operand {and/or field operator operand}
         Example: has_attachment=true and ip='10.0.0.0'
@@ -261,13 +186,8 @@ script:
         domain_reputation is not null
         sbrs gt 3
         sbrs>=3 and domain_tags eq internal
-      isArray: false
       name: search
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of messages.
-    execution: false
     name: apd-list-message-data
     outputs:
     - contextPath: AgariPhishingDefense.Message.has_attachment
@@ -391,31 +311,20 @@ script:
       description: SPF result.
       type: String
   - arguments:
-    - default: false
-      description: The primary identifier to remediate a message (UUID). To retrieve the ID execute the apd-list-message-data command.
-      isArray: false
+    - description: The primary identifier to remediate a message (UUID). To retrieve the ID execute the apd-list-message-data command.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: An operation to remediate a message. Remediation operation is either 'delete' or 'move'.
-      isArray: false
       name: operation
       predefined:
       - delete
       - move
       required: true
-      secret: false
-    deprecated: false
     description: Remediate suspected message.
-    execution: false
     name: apd-remediate-message
-  dockerimage: demisto/python3:3.10.11.58677
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

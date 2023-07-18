@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Cortex XSOAR Integration for Expanse Expander and Behavior
 
 """
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import urllib3

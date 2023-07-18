@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: 'false'
   display: Use HTTPS connection
   name: use_https
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -25,16 +25,16 @@ configuration:
 - defaultvalue: '1'
   display: Database refresh interval (number of hours to wait between each loading)
   name: fetchIntervalHours
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: PhishTank is a free community site where anyone can submit, verify, track, and share phishing data.
 display: PhishTank v2
 name: PhishTank V2
@@ -47,10 +47,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of the supplied URLs.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -77,19 +74,11 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  - deprecated: false
-    description: Reloads the PhishTank downloadable database. PhishTank database is an up to date phishing detection file (updated hourly) .
-    execution: false
+  - description: Reloads the PhishTank downloadable database. PhishTank database is an up to date phishing detection file (updated hourly) .
     name: phishtank-reload
-  - deprecated: false
-    description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
-    execution: false
+  - description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
     name: phishtank-status
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

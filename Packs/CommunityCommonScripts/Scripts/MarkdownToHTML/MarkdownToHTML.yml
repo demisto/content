@@ -1,34 +1,21 @@
 args:
-- default: false
-  description: Markdown Text to transform.
-  isArray: false
+- description: Markdown Text to transform.
   name: text
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'True'
-  description: If True - The markdown text will be converted to HTML without a Full
-    HTML structure.
-  isArray: false
+  description: If True - The markdown text will be converted to HTML without a Full HTML structure.
   name: convertOnlyMarkdown
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
-  description: If True - The resulted HTML will be nicely formatted as a Unicode string,
-    with a separate line for each tag and each string.
-  isArray: false
+  description: If True - The resulted HTML will be nicely formatted as a Unicode string, with a separate line for each tag and each string.
   name: prettifyHTML
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
 comment: Converts Markdown to HTML.
 commonfields:
   id: MarkdownToHTML
@@ -41,7 +28,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - markdown
 - HTML
@@ -52,7 +38,6 @@ contentitemexportablefields:
     fromServerVersion: ''
 dockerimage: demisto/bs4-py3:1.0.0.30051
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0

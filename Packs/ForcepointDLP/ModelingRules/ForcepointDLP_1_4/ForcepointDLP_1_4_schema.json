@@ -1,5 +1,5 @@
 {
-    "forcepoint_dlp_raw": {
+    "forcepoint_forcepoint_dlp_raw": {
       "eventid": {
         "type": "string",
         "is_array": false

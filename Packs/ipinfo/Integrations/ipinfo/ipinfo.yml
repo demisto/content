@@ -119,7 +119,6 @@ script:
       required: true
       default: true
       description: IP address to query. E.g. !ip 1.1.1.1
-      isArray: false
     outputs:
     - contextPath: IP.Address
       description: The IP address
@@ -187,8 +186,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Check IP reputation (when information is available, returns a JSON
-      with details).  Uses all configured Threat Intelligence feeds
+    description: Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
   - name: ipinfo_field
     arguments:
     - name: ip
@@ -209,7 +207,6 @@ script:
       - phone
       description: Name of the field to retrieve. Can be org, city, geo, etc.
     description: Retrieve value for a specific field from the IP address information
-  runonce: false
 tests:
 - IPInfoTest
 fromversion: 5.0.0

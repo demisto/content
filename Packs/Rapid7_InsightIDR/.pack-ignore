@@ -1,10 +1,10 @@
 [known_words]
-InsightIDR
-URLDomain
-FileType
+insightidr
+urldomain
+filetype
 geolocations
-URIs
-URI
+uris
+uri
 
 [file:InsightIDR-TestPlaybook.yml]
 ignore=auto-test
@@ -12,13 +12,12 @@ ignore=auto-test
 [file:README.md]
 ignore=RM104
 
-
 [file:Rapid7_InsightIDR.yml]
-ignore=BA108,BA109,IN145
-
+ignore=BA108,BA109
 
 [file:Rapid7_InsightIDR_image.png]
 ignore=IM111
 
 [file:classifier-Rapid7InsightIDR.json]
 ignore=BA101
+

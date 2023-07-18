@@ -833,11 +833,16 @@ def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
 def main():
     params = demisto.params()
     server_url = params.get('server_url')
+    technician_key = params.get('credentials_technician_key', {}).get(
+        'password') or params.get('technician_key')
+    client_id = params.get('credentials_client', {}).get('identifier') or params.get('client_id')
+    client_secret = params.get('credentials_client', {}).get('password') or params.get('client_secret')
+    refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
     if server_url == 'On-Premise':
         client = Client(url=params.get('server_url_on_premise') + API_VERSION,
                         use_ssl=not params.get('insecure', False),
                         use_proxy=params.get('proxy', False),
-                        technician_key=params.get('technician_key'),
+                        technician_key=technician_key,
                         fetch_time=params.get('first_fetch') if params.get('first_fetch') else '7 days',
                         fetch_status=params.get('fetch_status'),
                         fetch_limit=int(params.get('max_fetch')) if params.get('max_fetch') else 50,
@@ -848,9 +853,9 @@ def main():
         client = Client(url=server_url + API_VERSION,
                         use_ssl=not params.get('insecure', False),
                         use_proxy=params.get('proxy', False),
-                        client_id=params.get('client_id'),
-                        client_secret=params.get('client_secret'),
-                        refresh_token=params.get('refresh_token'),
+                        client_id=client_id,
+                        client_secret=client_secret,
+                        refresh_token=refresh_token,
                         fetch_time=params.get('fetch_time') if params.get('fetch_time') else '7 days',
                         fetch_status=params.get('fetch_status'),
                         fetch_limit=int(params.get('fetch_limit')) if params.get('fetch_limit') else 50,

@@ -16,7 +16,8 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.9'
-
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v8
       - name: Print Context
         run: |
           echo "$GITHUB_CONTEXT"
@@ -25,8 +26,7 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pipenv==2021.5.29
+          poetry install --with ci
       - name: Create Internal PR
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
@@ -34,6 +34,5 @@ jobs:
         run: |
           echo "Creating an internal PR from original merged external PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
-          pipenv sync
-          pipenv run ./create_internal_pr.py
+          poetry run ./create_internal_pr.py
           echo "Finished Creating Internal PR"

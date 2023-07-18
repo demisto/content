@@ -1,6 +1,6 @@
-import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import boto3
 
 import urllib3.util
 from datetime import timezone
@@ -637,6 +637,8 @@ def enable_security_hub_command(client, args):
 def get_master_account_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.get_master_account(**kwargs)
+    if 'Master' in response:
+        response['Master'] = convert_members_date_type([response.get('Master')])
     outputs = {'AWS-SecurityHub': response}
     del response['ResponseMetadata']
     table_header = 'AWS SecurityHub GetMasterAccount'

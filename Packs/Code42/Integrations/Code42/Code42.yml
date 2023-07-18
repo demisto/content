@@ -15,12 +15,12 @@ configuration:
   displaypassword: API Client Secret
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Alert severities to fetch when fetching incidents
   name: alert_severity
   options:
@@ -28,65 +28,48 @@ configuration:
   - High
   - Moderate
   - Low
-  required: false
   type: 16
+  required: false
 - defaultvalue: 24 hours
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - defaultvalue: '5'
   display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
   name: fetch_limit
-  required: false
   type: 0
+  required: false
 - defaultvalue: 'false'
   display: Include the list of files in returned incidents.
   name: include_files
-  required: false
   type: 8
+  required: false
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   defaultvalue: '3'
-  required: false
   type: 19
+  required: false
 - name: v2_events
   display: Use v2 file events
-  required: false
   defaultvalue: 'false'
   type: 8
+  required: false
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
 script:
   commands:
   - arguments:
-    - default: false
-      description: JSON query payload using Code42 query syntax.
-      isArray: false
+    - description: JSON query payload using Code42 query syntax.
       name: json
-      required: false
-      secret: false
-    - default: false
-      description: MD5 or SHA256 hash of the file to search for.
-      isArray: false
+    - description: MD5 or SHA256 hash of the file to search for.
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: Username to search for.
-      isArray: false
+    - description: Username to search for.
       name: username
-      required: false
-      secret: false
-    - default: false
-      description: Hostname to search for.
-      isArray: false
+    - description: Hostname to search for.
       name: hostname
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: (v1 events only) Exposure types to search for. Values can be "All", "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains". When "All" is specified with other types, other types would be ignored and filter rule for all types would be applied.
       isArray: true
       name: exposure
@@ -99,18 +82,11 @@ script:
       - SharedViaLink
       - SharedViaDomain
       - OutsideTrustedDomains
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The number of results to return. The default is 100.
-      isArray: false
       name: results
-      required: false
-      secret: false
     deprecated: true
     description: Searches for file events by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
-    execution: false
     name: code42-securitydata-search
     outputs:
     - contextPath: Code42.SecurityData.EventTimestamp
@@ -240,54 +216,24 @@ script:
       description: The hostname where the file event was captured.
       type: string
   - arguments:
-    - default: false
-      description: Add results to context at 'Code42.FileEvents'. If 'false', the search will only display results as a markdown table.
-      isArray: false
+    - description: Add results to context at 'Code42.FileEvents'. If 'false', the search will only display results as a markdown table.
       name: add-to-context
-      required: false
-      secret: false
       defaultValue: false
-    - default: false
-      description: Raw JSON file event query to be used for search.
-      isArray: false
+    - description: Raw JSON file event query to be used for search.
       name: json
-      required: false
-      secret: false
-    - default: false
-      description: The number of file events to return. Defaults to 50.
-      isArray: false
+    - description: The number of file events to return. Defaults to 50.
       name: results
-      required: false
-      secret: false
       defaultValue: 50
-    - default: false
-      defaultValue: "1"
+    - defaultValue: "1"
       description: Filter results by minimum risk score.
-      isArray: false
       name: min_risk_score
-      required: false
-      secret: false
-    - default: false
-      description: MD5 or SHA256 hash of the file to search for.
-      isArray: false
+    - description: MD5 or SHA256 hash of the file to search for.
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: Username to search for.
-      isArray: false
+    - description: Username to search for.
       name: username
-      required: false
-      secret: false
-    - default: false
-      description: Hostname to search for.
-      isArray: false
+    - description: Hostname to search for.
       name: hostname
-      required: false
-      secret: false
-    deprecated: false
     description: Search for Code42 Incydr File Events
-    execution: false
     name: code42-file-events-search
     outputs:
     - contextPath: Code42.FileEvents.timestamp
@@ -312,15 +258,10 @@ script:
     - contextPath: Code42.FileEvents.source
       description: Info about the origin of a file involved in the event (if any).
   - arguments:
-    - default: false
-      description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
-      isArray: false
+    - description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve alert details by alert ID
-    execution: false
     name: code42-alert-get
     outputs:
     - contextPath: Code42.SecurityAlert.Username
@@ -348,42 +289,24 @@ script:
       description: The severity of the alert.
       type: string
   - arguments:
-    - default: false
-      description: The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
-      isArray: false
+    - description: The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Resolves a Code42 Security alert.
-    execution: false
     name: code42-alert-resolve
     outputs:
     - contextPath: Code42.SecurityAlert.ID
       description: The alert ID of the resolved alert.
       type: string
   - arguments:
-    - default: false
-      description: The username to add to the Departing Employee List.
-      isArray: false
+    - description: The username to add to the Departing Employee List.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: The departure date for the employee, in the format YYYY-MM-DD.
-      isArray: false
+    - description: The departure date for the employee, in the format YYYY-MM-DD.
       name: departuredate
-      required: false
-      secret: false
-    - default: false
-      description: Note to attach to the Departing Employee.
-      isArray: false
+    - description: Note to attach to the Departing Employee.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a user to the Departing Employee List.
-    execution: false
     name: code42-departingemployee-add
     outputs:
     - contextPath: Code42.DepartingEmployee.CaseID
@@ -402,15 +325,9 @@ script:
       description: The departure date for the Departing Employee.
       type: Unknown
   - arguments:
-    - default: false
-      description: The username to remove from the Departing Employee List.
-      isArray: false
+    - description: The username to remove from the Departing Employee List.
       name: username
-      required: false
-      secret: false
-    deprecated: false
     description: Removes a user from the Departing Employee List.
-    execution: false
     name: code42-departingemployee-remove
     outputs:
     - contextPath: Code42.DepartingEmployee.CaseID
@@ -423,18 +340,11 @@ script:
       description: The username of the Departing Employee.
       type: string
   - arguments:
-    - default: false
-      description: The number of items to return.
-      isArray: false
+    - description: The number of items to return.
       name: results
-      required: false
-      secret: false
     - default: true
       description: Filters the results based on specific filters.
-      isArray: false
       name: filtertype
-      required: false
-      secret: false
       auto: PREDEFINED
       defaultValue: OPEN
       predefined:
@@ -442,9 +352,7 @@ script:
       - EXFILTRATION_24_HOURS
       - OPEN
       - LEAVING_TODAY
-    deprecated: false
     description: Get all employees on the Departing Employee List.
-    execution: false
     name: code42-departingemployee-get-all
     outputs:
     - contextPath: Code42.DepartingEmployee.UserID
@@ -460,21 +368,12 @@ script:
       description: The departure date for the Departing Employee.
       type: Unknown
   - arguments:
-    - default: false
-      description: The username to add to the High Risk Employee List.
-      isArray: false
+    - description: The username to add to the High Risk Employee List.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Note to attach to the High Risk Employee.
-      isArray: false
+    - description: Note to attach to the High Risk Employee.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a user to the High Risk Employee List.
-    execution: false
     name: code42-highriskemployee-add
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
@@ -487,15 +386,10 @@ script:
       description: Note associated with the High Risk Employee.
       type: string
   - arguments:
-    - default: false
-      description: The username to remove from the High Risk Employee List.
-      isArray: false
+    - description: The username to remove from the High Risk Employee List.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Removes a user from the High Risk Employee List.
-    execution: false
     name: code42-highriskemployee-remove
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
@@ -505,12 +399,8 @@ script:
       description: The username of the High Risk Employee.
       type: Unknown
   - arguments:
-    - default: false
-      description: To filter results by employees who have these risk tags. Comma delimited.
-      isArray: false
+    - description: To filter results by employees who have these risk tags. Comma delimited.
       name: risktags
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - PERFORMANCE_CONCERNS
@@ -520,27 +410,18 @@ script:
       - ELEVATED_ACCESS_PRIVILEGES
       - FLIGHT_RISK
       - CONTRACT_EMPLOYEE
-    - default: false
-      description: The number of items to return.
-      isArray: false
+    - description: The number of items to return.
       name: results
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: OPEN
       description: Filters the results based on specific filters.
-      isArray: false
       name: filtertype
       predefined:
       - EXFILTRATION_30_DAYS
       - EXFILTRATION_24_HOURS
       - OPEN
-      required: false
-      secret: false
-    deprecated: false
     description: Get all employees on the High Risk Employee List.
-    execution: false
     name: code42-highriskemployee-get-all
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
@@ -553,16 +434,11 @@ script:
       description: Note associated with the High Risk Employee.
       type: string
   - arguments:
-    - default: false
-      description: The username of the High Risk Employee.
-      isArray: false
+    - description: The username of the High Risk Employee.
       name: username
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Comma-delimited risk tags to associate with the High Risk Employee.
-      isArray: false
       name: risktags
       predefined:
       - PERFORMANCE_CONCERNS
@@ -573,10 +449,7 @@ script:
       - FLIGHT_RISK
       - CONTRACT_EMPLOYEE
       required: true
-      secret: false
-    deprecated: false
     description: Associates risk tags with the employee with the given username.
-    execution: false
     name: code42-highriskemployee-add-risk-tags
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
@@ -589,18 +462,12 @@ script:
       description: Risk tags to associate with the High Risk Employee.
       type: Unknown
   - arguments:
-    - default: false
-      description: The username of the High Risk Employee.
-      isArray: false
+    - description: The username of the High Risk Employee.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Comma-delimited risk tags to disassociate from the High Risk Employee.
-      isArray: false
+    - description: Comma-delimited risk tags to disassociate from the High Risk Employee.
       name: risktags
       required: true
-      secret: false
       auto: PREDEFINED
       predefined:
       - PERFORMANCE_CONCERNS
@@ -610,9 +477,7 @@ script:
       - ELEVATED_ACCESS_PRIVILEGES
       - FLIGHT_RISK
       - CONTRACT_EMPLOYEE
-    deprecated: false
     description: Disassociates risk tags from the user with the given username.
-    execution: false
     name: code42-highriskemployee-remove-risk-tags
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
@@ -625,28 +490,17 @@ script:
       description: Risk tags to disassociate from the High Risk Employee.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the Code42 organization from which to add the user.
-      isArray: false
+    - description: The name of the Code42 organization from which to add the user.
       name: orgname
       required: true
-      secret: false
-    - default: false
-      description: The username to give to the user.
-      isArray: false
+    - description: The username to give to the user.
       name: username
       required: true
-      secret: false
-    - default: false
-      defaultValue: The email to give to the user.
+    - defaultValue: The email to give to the user.
       description: The email of the user to create.
-      isArray: false
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Creates a Code42 user.
-    execution: false
     name: code42-user-create
     outputs:
     - contextPath: Code42.User.Username
@@ -659,81 +513,53 @@ script:
       description: An ID for a Code42 user.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to block.
-      isArray: false
+    - description: The username of the user to block.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Blocks a user in Code42.  A blocked user is not allowed to log in or restore files. Backups will continue if the user is still active.
-    execution: false
     name: code42-user-block
     outputs:
     - contextPath: Code42.User.UserID
       description: An ID for a Code42 user.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to deactivate.
-      isArray: false
+    - description: The username of the user to deactivate.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Deactivate a user in Code42; signing them out of their devices. Backups discontinue for a deactivated user, and their archives go to cold storage.
-    execution: false
     name: code42-user-deactivate
     outputs:
     - contextPath: Code42.User.UserID
       description: The ID of a Code42 User.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to unblock.
-      isArray: false
+    - description: The username of the user to unblock.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
-    execution: false
     name: code42-user-unblock
     outputs:
     - contextPath: Code42.User.UserID
       description: An ID for a Code42 user.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to reactivate.
-      isArray: false
+    - description: The username of the user to reactivate.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Reactivates the user with the given username.
-    execution: false
     name: code42-user-reactivate
     outputs:
     - contextPath: Code42.User.UserID
       description: The ID of a Code42 User.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to add to the given legal hold matter.
-      isArray: false
+    - description: The username of the user to add to the given legal hold matter.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: The name of the legal hold matter to which the user will be added.
-      isArray: false
+    - description: The name of the legal hold matter to which the user will be added.
       name: mattername
       required: true
-      secret: false
-    deprecated: false
     description: Adds a Code42 user to a legal hold matter.
-    execution: false
     name: code42-legalhold-add-user
     outputs:
     - contextPath: Code42.LegalHold.UserID
@@ -749,21 +575,13 @@ script:
       description: A name for a Code42 legal hold matter.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to release from the given legal hold matter.
-      isArray: false
+    - description: The username of the user to release from the given legal hold matter.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: The name of the legal hold matter from which the user will be released.
-      isArray: false
+    - description: The name of the legal hold matter from which the user will be released.
       name: mattername
       required: true
-      secret: false
-    deprecated: false
     description: Removes a Code42 user from a legal hold matter.
-    execution: false
     name: code42-legalhold-remove-user
     outputs:
     - contextPath: Code42.LegalHold.UserID
@@ -779,21 +597,12 @@ script:
       description: A name for a Code42 legal hold matter.
       type: String
   - arguments:
-    - default: false
-      description: Either the SHA256 or MD5 hash of the file.
-      isArray: false
+    - description: Either the SHA256 or MD5 hash of the file.
       name: hash
       required: true
-      secret: false
-    - default: false
-      description: The filename to save the file as.
-      isArray: false
+    - description: The filename to save the file as.
       name: filename
-      required: false
-      secret: false
-    deprecated: false
     description: Downloads a file from Code42.
-    execution: false
     name: code42-download-file
     outputs:
     - contextPath: File.Size
@@ -827,15 +636,10 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      description: Email id of the user.
-      isArray: false
+    - description: Email id of the user.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve high risk employee details.
-    execution: false
     name: code42-highriskemployee-get
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
@@ -863,14 +667,9 @@ script:
       description: The departure date for the Departing Employee.
       type: Unknown
     arguments:
-    - default: false
-      description: Email id of the departing employee.
-      isArray: false
+    - description: Email id of the departing employee.
       name: username
       required: true
-      secret: false
-    deprecated: false
-    execution: false
   - name: code42-watchlists-list
     description: List all existing watchlists in your environment.
     outputs:
@@ -887,17 +686,11 @@ script:
     description: Add a user to a watchlist.
     arguments:
     - name: username
-      default: false
       required: true
       description: Email id of the user to add to Watchlist.
-      secret: false
-      isArray: false
     - name: watchlist
-      default: false
       required: true
       description: WatchlistID or WatchlistType to add user to.
-      secret: false
-      isArray: false
     outputs:
     - contextPath: Code42.UsersAddedToWatchlists.Watchlist
       description: The ID/Type of the watchlist user was added to.
@@ -914,15 +707,9 @@ script:
     - name: username
       description: Email id of the user to add to Watchlist.
       required: true
-      secret: false
-      isArray: false
-      default: false
     - name: watchlist
-      default: false
       required: true
       description: WatchlistID or WatchlistType to remove user from.
-      secret: false
-      isArray: false
     outputs:
     - contextPath: Code42.UsersRemovedFromWatchlists.Watchlist
       description: The ID/Type of the watchlist user was removed from.
@@ -939,9 +726,6 @@ script:
     - name: watchlist
       description: The WatchlistID or WatchlistType to get a list of included users for.
       required: true
-      secret: false
-      isArray: false
-      default: false
     outputs:
     - contextPath: Code42.WatchlistUsers.WatchlistID
       description: The ID of the Watchlist.
@@ -958,9 +742,6 @@ script:
     - name: username
       description: The user to get risk profile for.
       required: true
-      secret: false
-      isArray: false
-      default: false
     outputs:
     - contextPath: Code42.UserRiskProfiles.Username
       description: The username.
@@ -980,27 +761,12 @@ script:
     - name: username
       description: The user to update.
       required: true
-      secret: false
-      isArray: false
-      default: false
     - name: start_date
       description: The user's start date (useful for New Employee Watchlist).
-      required: false
-      secret: false
-      isArray: false
-      default: false
     - name: end_date
       description: The user's end date (useful for Departing Employee Watchlist).
-      required: false
-      secret: false
-      isArray: false
-      default: false
     - name: notes
       description: Risk profile notes.
-      required: false
-      secret: false
-      isArray: false
-      default: false
     outputs:
     - contextPath: Code42.UpdatedUserRiskProfiles.Username
       description: The user that was updated.
@@ -1026,20 +792,13 @@ script:
         - 'incident' only displays the events that originally triggered the Code42 Alert.
         - 'searches' only displays events that have been added to the context from 'code42-file-events-search' commands.
         - 'all' will include all events in the table.
-      required: false
-      secret: false
-      isArray: false
-      default: false
       defaultValue: all
       predefined:
       - all
       - incident
       - searches
   dockerimage: demisto/py42:1.0.0.63737
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

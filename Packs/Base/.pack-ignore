@@ -47,10 +47,10 @@ ignore=SC101
 ignore=SC101
 
 [file:DeleteIndicatorRelationships.yml]
-ignore=BA124,RM109
+ignore=BA124
 
 [file:DBotShowClusteringModelInfo.yml]
-ignore=BA124,CJ105,RM109
+ignore=BA124,CJ105
 
 [file:DBotTrainClustering.yml]
 ignore=BA124,CJ105,RM109
@@ -78,6 +78,8 @@ FeedIndicatorType
 str
 FileResult
 JavaScript
+CPE
+CPEs
 
 [tests_require_network]
 CommonServerPython

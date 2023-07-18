@@ -20,19 +20,19 @@ configuration:
   name: username
   defaultvalue: admin
   type: 0
-  required: false
   hidden: true
+  required: false
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: Username
   name: user_creds
   type: 9
-  required: false
   displaypassword: Password
+  required: false
 - display: Validate server certificate
   name: secure
   defaultvalue: 'true'
@@ -46,9 +46,9 @@ configuration:
 - defaultvalue: ''
   display: Expiration time
   name: expiry
-  required: false
   type: 0
 
+  required: false
 script:
   script: ''
   type: javascript

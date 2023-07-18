@@ -23,64 +23,36 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use SSL/TLS secured connection
   name: use_ssl
-  required: false
   type: 8
+  required: false
 description: Writes log data to a MongoDB collection.
 display: MongoDB Log
 name: MongoDB Log
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of logs to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all log entries.
-    execution: false
     name: mongodb-read-log
   - arguments:
-    - default: false
-      description: The playbook that was used.
-      isArray: false
+    - description: The playbook that was used.
       name: playbook
-      required: false
-      secret: false
-    - default: false
-      description: The assigned user.
-      isArray: false
+    - description: The assigned user.
       name: user
-      required: false
-      secret: false
-    - default: false
-      description: Entity to write to the log.
-      isArray: false
+    - description: Entity to write to the log.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The actions that were performed.
-      isArray: false
+    - description: The actions that were performed.
       name: action
-      required: false
-      secret: false
-    - default: false
-      description: Message for the entry.
-      isArray: false
+    - description: Message for the entry.
       name: message
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a log entry.
-    execution: false
     name: mongodb-write-log
     outputs:
     - contextPath: MongoDB.Entry.Action
@@ -104,14 +76,9 @@ script:
     - contextPath: MongoDB.Entry.Message
       description: The message of the entry.
       type: String
-  - deprecated: false
-    description: Returns the number of log entries.
-    execution: false
+  - description: Returns the number of log entries.
     name: mongodb-logs-number
   dockerimage: demisto/py3-tools:1.0.0.45685
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: true
   script: '-'
   type: python

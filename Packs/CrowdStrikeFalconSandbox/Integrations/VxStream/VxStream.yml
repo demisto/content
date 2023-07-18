@@ -97,8 +97,7 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: string
-    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
-      reports generated for any environment ID
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the reports generated for any environment ID
   - name: crowdstrike-scan
     arguments:
     - name: file
@@ -172,8 +171,7 @@ script:
     - contextPath: File.state
       description: The state of the file test
       type: string
-    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
-      reports generated for any environment ID
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the reports generated for any environment ID
   - name: vx-get-environments
     deprecated: true
     arguments: []
@@ -262,8 +260,7 @@ script:
     - name: query
       required: true
       default: true
-      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options`
-        for more details). examples -  url:google, host:95.181.53.78
+      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options` for more details). examples -  url:google, host:95.181.53.78
     outputs:
     - contextPath: VX.Search.SHA256
       description: SHA256 of search result
@@ -300,9 +297,7 @@ script:
     arguments:
     - name: query
       default: true
-      description: Falcon Sandbox query syntax, e.g. url:google,host:95.181.53.78.
-        This argument integrates all other arguments to one, and cannot be given along
-        with the other arguments.
+      description: Falcon Sandbox query syntax, e.g. url:google,host:95.181.53.78. This argument integrates all other arguments to one, and cannot be given along with the other arguments.
     - name: filename
       description: Filename e.g. invoice.exe
     - name: filetype
@@ -408,8 +403,7 @@ script:
       default: true
       description: File hash (MD5, SHA1 or SHA256) - Mandatory in v1
     - name: environmentId
-      description: environment ID to submit file to (get all via crowdstrike-get-environments)  -
-        Mandatory in v1.
+      description: environment ID to submit file to (get all via crowdstrike-get-environments)  - Mandatory in v1.
       defaultValue: "100"
     - name: file-type
       auto: PREDEFINED
@@ -447,16 +441,14 @@ script:
       required: true
       description: War-room entry ID of sample file
     - name: environmentID
-      description: environment ID to submit file to(get all via crowdstrike-get-environments).
-        Default is 100, or other WINDOWS ID
+      description: environment ID to submit file to(get all via crowdstrike-get-environments). Default is 100, or other WINDOWS ID
     - name: delay
       description: Delay wait time between calls (in seconds)
       defaultValue: "3"
     - name: timeout
       description: Total wait time (in seconds)
       defaultValue: "60"
-    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file
-      playbook instead) Detonate file through Falcon Sandbox
+    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file playbook instead) Detonate file through Falcon Sandbox
   - name: crowdstrike-detonate-file
     deprecated: true
     arguments:
@@ -464,8 +456,7 @@ script:
       required: true
       description: War-room entry ID of sample file
     - name: environmentID
-      description: environment ID to submit file to(get all via crowdstrike-get-environments).
-        Default is 100, or other WINDOWS ID
+      description: environment ID to submit file to(get all via crowdstrike-get-environments). Default is 100, or other WINDOWS ID
     - name: delay
       description: Delay wait time between calls (in seconds)
       defaultValue: "3"
@@ -533,8 +524,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file
-      playbook instead) Detonate file through Falcon Sandbox
+    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file playbook instead) Detonate file through Falcon Sandbox
   - name: crowdstrike-submit-url
     arguments:
     - name: url
@@ -624,8 +614,7 @@ script:
       required: true
       description: 'URL address to be submitted '
     - name: environmentID
-      description: Environment ID to submit URL to (get all via crowdstrike-get-environments).
-        Default is 100, or other WINDOWS ID
+      description: Environment ID to submit URL to (get all via crowdstrike-get-environments). Default is 100, or other WINDOWS ID
       defaultValue: "100"
     - name: delay
       description: Delay wait time between calls (in seconds)
@@ -659,9 +648,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    description: "(Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate URL\
-      \ playbook instead) Detonates URL address through Falcon Sandbox (supported\
-      \ only in v2)"
+    description: "(Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate URL playbook instead) Detonates URL address through Falcon Sandbox (supported only in v2)"
   - name: crowdstrike-submit-file-by-url
     arguments:
     - name: environmentID
@@ -681,7 +668,6 @@ script:
       description: Job ID of file analysation
       type: string
     description: Submit a file by URL for analysis (Supported only in v2).
-  runonce: false
 tests:
 - No test - deprecated.
 fromversion: 5.0.0

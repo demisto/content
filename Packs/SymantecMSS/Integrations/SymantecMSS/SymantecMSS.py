@@ -47,9 +47,10 @@ def load_server_url():
 
 def load_certificate():
     """ Loads the certificate and passphrase from the configuration """
-    cert = demisto.params()["certificate"]
+    params = demisto.params()
+    cert = params.get("certificate")
     cert = base64.b64decode(cert)
-    passphrase = demisto.params()["passphrase"] if "passphrase" in demisto.params() else ""
+    passphrase = params.get('passphrase_creds', {}).get('password') or params.get("passphrase", "")
     return cert, passphrase
 
 
@@ -86,7 +87,7 @@ def api_call(body, headers):
         res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception(
-                "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
+                "Got status code " + str(res.status_code) + " with body " + str(res.content) + " with headers " + str(
                     res.headers))
         try:
             return defused_ET.fromstring(res.content)
