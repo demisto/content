@@ -138,19 +138,20 @@ severity_to_text = [
     'High',
     'Critical']
 
-BASE_URL = demisto.params()['url']
-ACCESS_KEY = demisto.params().get('credentials_access_key', {}).get('password') or demisto.params()['access-key']
-SECRET_KEY = demisto.params().get('credentials_secret_key', {}).get('password') or demisto.params()['secret-key']
+PARAMS = demisto.params()
+BASE_URL = PARAMS['url']
+ACCESS_KEY = PARAMS.get('credentials_access_key', {}).get('password') or PARAMS.get('access-key')
+SECRET_KEY = PARAMS.get('credentials_secret_key', {}).get('password') or PARAMS.get('secret-key')
 USER_AGENT_HEADERS_VALUE = 'Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)'
 AUTH_HEADERS = {'X-ApiKeys': f"accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}"}
-NEW_HEADERS = AUTH_HEADERS | {
+HEADERS = AUTH_HEADERS | {
     'accept': "application/json",
-    'content-type': "application/json"
+    'content-type': "application/json",
+    'User-Agent': USER_AGENT_HEADERS_VALUE
 }
-HEADERS = NEW_HEADERS | {'User-Agent': USER_AGENT_HEADERS_VALUE}
-USE_SSL = not demisto.params()['unsecure']
+USE_SSL = not PARAMS['unsecure']
 
-if not demisto.params()['proxy']:
+if not PARAMS['proxy']:
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
@@ -685,7 +686,7 @@ def export_request(request_params: dict, assets_or_vulns: str) -> dict:
         dict: The UUID of the assets export job or raise DemistoException.
     """
     full_url = f'{BASE_URL}{assets_or_vulns}/export'
-    res = requests.post(full_url, headers=NEW_HEADERS, verify=USE_SSL, json=request_params)
+    res = requests.post(full_url, headers=HEADERS, verify=USE_SSL, json=request_params)
     if res.status_code != 200:
         raise DemistoException(res.text)
     return res.json()
@@ -702,7 +703,7 @@ def export_request_with_export_uuid(export_uuid: str, assets_or_vulns: str) -> d
         dict: Status of the export job or raise DemistoException.
     """
     full_url = f'{BASE_URL}{assets_or_vulns}/export/{export_uuid}/status'
-    res = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+    res = requests.get(full_url, headers=HEADERS, verify=USE_SSL)
     if res.status_code != 200:
         raise DemistoException(res.text)
     return res.json()
@@ -720,7 +721,7 @@ def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) ->
         dict: Status of the export job or raise DemistoException.
     """
     full_url = f'{BASE_URL}{assets_or_vulns}/export/{export_uuid}/chunks/{chunk_id}'
-    res = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+    res = requests.get(full_url, headers=HEADERS, verify=USE_SSL)
     if res.status_code != 200:
         raise DemistoException(res.text)
     return res.json()

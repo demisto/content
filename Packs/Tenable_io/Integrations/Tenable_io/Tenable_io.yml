@@ -1142,7 +1142,7 @@ script:
     - name: page
       description: The page number of scan records to retrieve (used for pagination). The page size is defined by the "pageSize" argument.
     - name: pageSize
-      description: The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument. 
+      description: The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
     - name: limit
       description: The number of records to retrieve. If "pageSize" is defined, this argument is ignored.
       defaultValue: '50'
@@ -1197,7 +1197,7 @@ script:
       - PDF
       - CSV
     - name: chapters
-      description: | 
+      description: |
         A list of chapters to include in the export.
          Chapters can be any of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance.
          This argument is required if the file format is PDF or HTML.
@@ -1209,7 +1209,7 @@ script:
       - compliance_exec
       - remediations
       - vuln_by_plugin
-      - compliance 
+      - compliance
     - name: filterName
       description: |
         A list of filters to apply to the exported scan report.
@@ -1237,28 +1237,26 @@ script:
       - or
     - name: assetId
       description: The ID of the asset scanned.
-    - name: fileId
-      hidden: true
     polling: true
     description: Export and download a scan report.
     name: tenable-io-export-scan
     outputs:
-    - contextPath: File.Size
+    - contextPath: InfoFile.Size
       description: The size of the file in bytes.
       type: number
-    - contextPath: File.Name
+    - contextPath: InfoFile.Name
       description: The name of the file.
       type: string
-    - contextPath: File.EntryID
+    - contextPath: InfoFile.EntryID
       description: The War Room entry ID of the file.
       type: string
-    - contextPath: File.Info
+    - contextPath: InfoFile.Info
       description: The Format of the file.
       type: string
-    - contextPath: File.Type
+    - contextPath: InfoFile.Type
       description: The type of the file.
       type: string
-    - contextPath: File.Extension
+    - contextPath: InfoFile.Extension
       description: The file extension of the file.
   runonce: false
   script: '-'
