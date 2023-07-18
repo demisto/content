@@ -9,7 +9,6 @@ Describe "SearchAuditLogCommand Tests" {
         Mock New-Object
 
         $mockedClient = [ExchangeOnlinePowershellV3Client]::new(
-            "https://example.com",
             "app_id",
             "organization",
             [System.Convert]::ToBase64String(
