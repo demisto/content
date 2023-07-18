@@ -47,8 +47,6 @@ configuration:
   name: expiry
   type: 0
   required: false
-
-  required: false
 script:
   script: ''
   type: javascript
