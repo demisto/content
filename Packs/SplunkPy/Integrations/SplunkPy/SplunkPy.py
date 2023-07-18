@@ -574,16 +574,9 @@ class Notable:
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         if demisto.get(notable_data, 'comment'):
-            comments = notable_data.get('comment')
-            reviewers = notable_data.get('reviewer')
-            review_times = notable_data.get('review_time')
-
-            if not isinstance(comments, list):
-                comments = [comments]
-            if not isinstance(reviewers, list):
-                reviewers = [reviewers]
-            if not isinstance(review_times, list):
-                review_times = [review_times]
+            comments = argToList(notable_data.get('comment', []))
+            reviewers = argToList(notable_data.get('reviewer', []))
+            review_times = argToList(notable_data.get('review_time', []))
 
             demisto.debug(f"data to update comment= {comments}, review=  {reviewers}, time= {review_times}")
             for comment, reviewer, review_time in zip(comments, reviewers, review_times):
@@ -1307,31 +1300,18 @@ def get_remote_data_command(service: client.Service, args: dict,
             updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
     if updated_notable.get('comment'):
         comment_entries = []
-        comments = updated_notable.get('comment')
-        reviewers = updated_notable.get('reviewer')
-        review_times = updated_notable.get('review_time')
-        if not isinstance(comments, list):
-            comments = [updated_notable.get('comment')]
-        if not isinstance(reviewers, list):
-            reviewers = [updated_notable.get('reviewer')]
-        if not isinstance(review_times, list):
-            review_times = [updated_notable.get('review_time')]
-        demisto.debug(
-            f"data to update comment= {comments}, review=  {reviewers}, time= {review_times},",
-            f"last= {last_update_splunk_timestamp}")
+        comments = argToList(updated_notable.get('comment'))
+        reviewers = argToList(updated_notable.get('reviewer'))
+        review_times = argToList(updated_notable.get('review_time'))
         for comment, reviewer, review_time in zip(comments, reviewers, review_times):
             comment_entries.append({
                 'Comment': comment,
                 'Comment time': review_time,
                 'Reviwer': reviewer
             })
-            demisto.debug(
-                f'if time={float(review_time)} > last_run={last_update_splunk_timestamp}',
-                f'{last_update_splunk_timestamp < float(review_time)}')
             if (COMMENT_MIRRORED_FROM_XSOAR not in comment and last_update_splunk_timestamp
                     and last_update_splunk_timestamp < float(review_time)):
                 # Creating a note
-                demisto.debug(f'update comment: {updated_notable}')
                 entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': comment,
@@ -1339,11 +1319,10 @@ def get_remote_data_command(service: client.Service, args: dict,
                     'Tags': [comment_tag_from_splunk],  # The list of tags to add to the entry
                     'Note': True,
                 })
-                demisto.debug(f'update comment-{comment}')
+                demisto.debug(f'Update new comment-{comment}')
         if comment_entries:
             updated_notable['SplunkComments'] = comment_entries
 
-    demisto.debug(f'notable {notable_id} data: {updated_notable}')
     if close_incident and updated_notable.get('status_label'):
         status_label = updated_notable['status_label']
 
@@ -1414,7 +1393,8 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    demisto.debug(f"\n mirroring args: entries:{parsed_args.entries}  \n  delta:{parsed_args.delta} \n ")
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
             f'Got the following delta keys {list(delta.keys())} to update incident corresponding to notable {notable_id}'
@@ -1435,7 +1415,6 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
 
         if any(changed_data.values()):
             demisto.debug(f'Sending update request to Splunk for notable {notable_id}, data: {changed_data}')
-            base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
                 session_key = None if auth_token else get_auth_session_key(service)
                 response_info = update_notable_events(
@@ -1467,8 +1446,6 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
             if comment_tag_to_splunk in entry_tags:
                 demisto.debug('Add new comment')
                 comment_body = f'{entry.get("contents", "")}\n {COMMENT_MIRRORED_FROM_XSOAR}'
-                demisto.debug(f"will update comment: {comment_body}")
-                base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
                 try:
                     session_key = get_auth_session_key(service) if not auth_token else None
                     response_info = update_notable_events(

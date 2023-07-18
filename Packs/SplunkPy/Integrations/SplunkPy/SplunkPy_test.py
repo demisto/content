@@ -1028,13 +1028,24 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
 
 @pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
                          [({'status_label': 'New', 'event_id': 'id', 'status_end': 'false',
-                            'comment': 'new comment Mirrored from Cortex XSOAR', 'reviewer': 'admin',
-                            'review_time': '1689498539.413514'},
+                            'comment': 'new comment from splunk', 'reviewer': 'admin',
+                            'review_time': '1612881691.589575'},
                            {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
                            None,
                            )])
 def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
                                              func_call_kwargs: dict, expected_closure_data: dict):
+    """
+    Test case for get_remote_data_command with comment addition.
+    Given:
+        - notable data with new comment
+    When:
+        new comment added in splunk
+    Then:
+        - ensure the comment added as a new note
+        - ensure the event was updated
+
+    """
     class Jobs:
         def __init__(self):
             self.oneshot = lambda x: notable_data
@@ -1049,17 +1060,22 @@ def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
     mocker.patch.object(demisto, 'info')
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
     mocker.patch.object(demisto, 'results')
+
+    expected_comment_note = {'Type': 1, 'Contents': 'new comment from splunk',
+                             'ContentsFormat': 'text', 'Tags': ['from_splunk'], 'Note': True}
     service = Service()
     splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
                                    comment_tag_from_splunk='from_splunk', **func_call_kwargs)
-    results = demisto.results.call_args[0][0]
-    notable_data.update({'SplunkComments': [{'Comment': 'new comment Mirrored from Cortex XSOAR',
-                        'Comment time': '1689498539.413514', 'Reviwer': 'admin'}]})
+    results = demisto.results.call_args[0][0][0]
+    notable_data.update({'SplunkComments': [{'Comment': 'new comment from splunk',
+                        'Comment time': '1612881691.589575', 'Reviwer': 'admin'}]})
+    note_results = demisto.results.call_args[0][0][1]
 
-    expected_results = [notable_data]
+    expected_results = [notable_data][0]
 
     assert demisto.results.call_count == 1
     assert results == expected_results
+    assert note_results == expected_comment_note
 
 
 def test_get_modified_remote_data_command(mocker):
