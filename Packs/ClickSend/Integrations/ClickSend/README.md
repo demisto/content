@@ -20,7 +20,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### text-to-voice
 
 ***
-Make phone call with you own text. Example: !text-to-voice Message="Hi im here" phoneNumber=+972501234567 require_input=0 voice=male
+Make phone call with you own text. Example: !text-to-voice Message="Hi im here" phoneNumber=+972501234567 require_input=False voice=male
 
 #### Base Command
 
