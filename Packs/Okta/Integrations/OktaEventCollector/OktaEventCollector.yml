@@ -47,11 +47,13 @@ configuration:
   defaultvalue: "true"
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   script: ""
   type: python
