@@ -88,7 +88,6 @@ MISSING_ARGUMENT_JID = """Missing either a user JID  or a channel id"""
 TOO_MANY_JID = """Too many argument you must provide either a user JID  or a channel id and not both """
 
 
-
 '''CLIENT CLASS'''
 
 
@@ -315,7 +314,7 @@ class Client(Zoom_Client):
                 'search_type': search_type,
                 'exclude_child_message': exclude_child_message}
         )
-        
+
     def zoom_send_notification(self, url_suffix: str, json_data: dict):
         return self.error_handled_http_request(
             method='POST',
@@ -1613,12 +1612,12 @@ def zoom_send_notification_command(client, botJID: str, account_id: str, **args)
     to = args.get('to')
     channel_id = args.get('channel_id')
     visible_to_user = argToBoolean(args.get('visible_to_user'))
-    
+
     if (to and channel_id):
         raise DemistoException(TOO_MANY_JID)
     if not to and not channel_id:
         raise DemistoException(MISSING_ARGUMENT_JID)
-        
+
     url_suffix = '/im/chat/messages'
     json_data_all = {
         "robot_jid": botJID,
@@ -1633,10 +1632,10 @@ def zoom_send_notification_command(client, botJID: str, account_id: str, **args)
     }
     json_data = remove_None_values_from_dict(json_data_all)
 
-    raw_data = client.zoom_send_notification(url_suffix, json_data)
-    
-    
+    client.zoom_send_notification(url_suffix, json_data)
+
     return CommandResults()
+
 
 def main():  # pragma: no cover
     params = demisto.params()
@@ -1650,8 +1649,8 @@ def main():  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     botJID = params.get('botJID')
-    botEndpointURL = params.get('botEndpointURL')
-    longRunning = params.get('longRunning', False)
+    params.get('botEndpointURL')
+    params.get('longRunning', False)
     command = demisto.command()
 
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
@@ -1669,7 +1668,7 @@ def main():  # pragma: no cover
             account_id=account_id,
             client_id=client_id,
             client_secret=client_secret,
-            )
+        )
 
         if command == 'test-module':
             return_results(test_module(client=client))
