@@ -411,8 +411,10 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
 
 
 class PackSupportCondition(MetadataCondition):
-    ALLOWED_SUPPORT_TYPE = Metadata.XSOAR_SUPPORT
-
+    ALLOWED_SUPPORT_TYPE = [Metadata.XSOAR_SUPPORT,'Xsoar', 'Partner', 'Community']
+    # XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
+    # PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
+    # COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
     def generate_skip_reason(self, support_type: Optional[str], **kwargs) -> str:  # type: ignore[override]
         """
         Args:
