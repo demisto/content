@@ -3687,7 +3687,8 @@
         },
         {
             "integrations": "Azure Storage",
-            "playbookID": "Azure Storage - Test"
+            "playbookID": "Azure Storage - Test",
+            "is_mockable": false
         },
         {
             "integrations": "MicrosoftGraphApplications",
