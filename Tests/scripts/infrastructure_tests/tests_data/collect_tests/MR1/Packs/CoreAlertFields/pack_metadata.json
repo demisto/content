@@ -1,5 +1,6 @@
 {
   "support": "xsoar",
+  "description": "aa demo pack",
   "marketplaces": [
     "marketplacev2"
   ]

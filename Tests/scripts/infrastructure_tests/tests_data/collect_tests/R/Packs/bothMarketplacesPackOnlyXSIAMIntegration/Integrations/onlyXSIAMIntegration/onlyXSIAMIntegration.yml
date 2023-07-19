@@ -46,7 +46,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: a demo pack.
+description: aa demo pack.
 display: IPinfo v2
 script:
   commands:
