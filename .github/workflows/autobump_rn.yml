@@ -12,7 +12,7 @@ jobs:
   autobump_rn_version:
     runs-on: ubuntu-latest
     concurrency: autobump-version
-    if: github.repository == 'demisto/content' || startsWith(github.head_ref, 'contrib/')
+    if: github.repository == 'demisto/content' || startsWith(github.head_ref, 'contrib/') || contains(github.event.pull_request.labels.*.name, 'Allow auto bump')
     steps:
       - name: Print out context
         run: |
