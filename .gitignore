@@ -26,8 +26,8 @@ demistomock.ps1
 Tests/filter_file.txt
 Tests/filter_file_old.txt
 Tests/id_set.json
-Tests/Marketplace/Tests/tests_end_to_end_xsiam/test_cloud_api_keys.json
-Tests/Marketplace/Tests/tests_end_to_end_xsiam/test_cloud_server_path.json
+Tests/tests_end_to_end_xsiam/test_cloud_api_keys.json
+Tests/tests_end_to_end_xsiam/test_cloud_server_path.json
 .mypy_cache
 Scripts/*/*_unified.yml
 Integrations/*/*_unified.yml

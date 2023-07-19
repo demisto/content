@@ -6,7 +6,9 @@ check for total number of packs.
 ### Prerequisites
 The tests use XSIAM client. XSIAM authentication requires api key, api url and api key id.
 You need to pass 3 arguments to the tests.
+
 **--cloud_machine (string)** - tenant name, for example *test_machine*, a string indicates a specific tenant. should be consistent with other files (cloud_servers_path, cloud_servers_api_keys)
+
 **--cloud_servers_path (file path)** - a path to a json file that contains XSIAM tenant authentication details, like api url. Example:
 ```json
 {
