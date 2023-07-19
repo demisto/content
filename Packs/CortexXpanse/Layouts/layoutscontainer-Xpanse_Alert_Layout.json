@@ -384,18 +384,18 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "xpansehostname",
+								"fieldId": "xpansebusinessunits",
 								"height": 22,
-								"id": "4a073f20-b447-11ed-9fd0-85eb99e8103b",
+								"id": "896d87f0-2675-11ee-9bd7-d3698cbd65c3",
 								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "xpansecategory",
+								"fieldId": "xpansehostname",
 								"height": 22,
-								"id": "4c347f60-b447-11ed-9fd0-85eb99e8103b",
+								"id": "4a073f20-b447-11ed-9fd0-85eb99e8103b",
 								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0

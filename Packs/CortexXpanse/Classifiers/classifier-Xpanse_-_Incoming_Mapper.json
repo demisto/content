@@ -20,6 +20,25 @@
 						"transformers": []
 					}
 				},
+                "Xpanse Business Units": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "business_unit_hierarchies.[].[]",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
 				"Xpanse Country Code": {
 					"complex": {
 						"filters": [],
