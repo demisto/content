@@ -113,37 +113,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "incidentsubcategory",
+                                "fieldId": "subcategory",
                                 "height": 22,
-                                "id": "1c3570d0-6712-11ed-9428-9f8510e86b77",
+                                "id": "6b3d9b90-25fc-11ee-88c4-ff09b5e8aca8",
                                 "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "incidentcategory",
-                                "height": 22,
-                                "id": "1ec4f550-6712-11ed-9428-9f8510e86b77",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "decyfircategory",
-                                "height": 22,
-                                "id": "bb2078f0-6bba-11ed-9dbd-816884b4e382",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "decyfirsubcategory",
-                                "height": 22,
-                                "id": "bc75f6d0-6bba-11ed-9dbd-816884b4e382",
-                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

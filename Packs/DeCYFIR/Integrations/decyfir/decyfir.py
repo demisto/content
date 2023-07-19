@@ -188,6 +188,7 @@ class Client(BaseClient):
             "severity": severity,
             "rawJSON": str(json.dumps(details)),
             "category": alert_type,
+            "subcategory": alert_subtype,
             "dbotMirrorId": record_id,
             "sourceBrand": LABEL_DECYFIR,
             "labels": [
@@ -198,8 +199,8 @@ class Client(BaseClient):
             ],
             "customFields": {
                 "decyfirdatadetails": decyfir_data_details,
-                "decyfirsubcategory": alert_subtype,
-                "decyfircategory": alert_type,
+                # "decyfirsubcategory": alert_subtype,
+                # "decyfircategory": alert_type,
             }
         }
 
