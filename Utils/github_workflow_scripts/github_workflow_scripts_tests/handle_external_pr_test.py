@@ -112,7 +112,9 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
     (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
       f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[5]}/{SECURITY_CONTENT_ITEMS[5].lower()}-Hello_World_Alert-V2.json"], True),
     (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[6]}/{SECURITY_CONTENT_ITEMS[6].lower()}-Hello_World_Alert-V2.json"], True)
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[6]}/{SECURITY_CONTENT_ITEMS[6].lower()}-Hello_World_Alert-V2.json"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[7]}/{SECURITY_CONTENT_ITEMS[7].lower()}-Hello_World_Alert-V2.json"], True)
 ])
 def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
     """
@@ -129,13 +131,12 @@ def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
         - Case F: The provided files are an integration and an indicator field.
         - Case G: The provided files are an integration and a layout.
         - Case H: The provided files are an integration and a classifier.
+        - Case I: The provided files are an integration and a wizard.
 
     Then:
         - Case A: Requires a security engineer review.
         - Case B: Doesn't require a security engineer review.
-        - Cases C-H: Requires a security engineer review.
-
-
+        - Cases C-I: Requires a security engineer review.
     """
 
     assert is_requires_security_reviewer(pr_files) == expected

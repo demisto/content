@@ -43,7 +43,8 @@ SECURITY_CONTENT_ITEMS = [
     "IndicatorTypes",
     "IndicatorFields",
     "Layouts",
-    "Classifiers"
+    "Classifiers",
+    "Wizards"
 ]
 
 
