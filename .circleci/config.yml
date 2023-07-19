@@ -234,8 +234,11 @@ references:
 
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
+        echo "flake8 py2 version: $(python2 -m flake8 --version)"
         echo "flake8 py3 version: $(python3 -m flake8 --version)"
+        echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
 
