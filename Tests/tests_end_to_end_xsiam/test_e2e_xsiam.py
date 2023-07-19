@@ -61,7 +61,7 @@ def test_check_number_of_collector_packs_in_marketplace(xsiam_client: XsiamApiCl
     Then
     - ensure there are more than 120
     """
-    collection_packs_filter = create_filter(size=1, )
+    collection_packs_filter = create_filter(size=1, with_collection_type=True)
     results = xsiam_client.search_marketplace(collection_packs_filter)
 
     assert results['total'] > 120

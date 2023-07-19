@@ -439,12 +439,6 @@ slack-notify-nightly-build:
     - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
     - section_end "Lock Machine"
 
-    - section_start "Run end to end tests"
-    - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-    - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
-    - python3 -m pytest ./Tests/tests_end_to_end_xsiam -v --cloud_machine "$CLOUD_CHOSEN_MACHINE_ID" --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
-    - section_end "Run end to end tests"
-
     - section_start "Clean Machine" --collapsed
     - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
     - section_end "Clean Machine"

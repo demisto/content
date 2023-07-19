@@ -238,7 +238,7 @@
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
-    - python3 -m pytest ./Tests/Marketplace/Tests/ -v --ignore=./Tests/Marketplace/Tests/tests_end_to_end_xsiam --disable-warnings
+    - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/tests -v --disable-warnings
     - python3 -m pytest ./Tests/private_build/ -v --disable-warnings
     - python3 -m pytest Utils -v --disable-warnings
