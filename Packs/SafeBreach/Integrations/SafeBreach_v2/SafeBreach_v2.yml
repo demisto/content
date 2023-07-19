@@ -355,6 +355,7 @@ script:
       required: true
     description: Get SafeBreach simulation
     name: safebreach-get-simulation
+    deprecated: true
     outputs:
     - contextPath: SafeBreach.Simulation.Id
       description: ID of the simulation result.
@@ -470,6 +471,7 @@ script:
       required: true
     description: Reruns a specific SafeBreach simulation in your environment.
     name: safebreach-rerun-simulation
+    deprecated: true
     outputs:
     - contextPath: SafeBreach.Simulation.Id
       description: Simulation unique ID.
