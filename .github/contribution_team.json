@@ -1,5 +1,5 @@
 {
-    "REVIEWERS": [],
-    "CONTRIBUTION_TL": "",
-    "SECURITY_REVIEWER": ""
+    "REVIEWERS": ["mmhw", "maimorag", "anas-yousef"],
+    "CONTRIBUTION_TL": "dorschw",
+    "SECURITY_REVIEWER": "efelmandar"
 }
