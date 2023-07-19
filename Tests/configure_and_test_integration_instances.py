@@ -639,7 +639,6 @@ class XSOARBuild(Build):
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
-        logging.info('skipping installing nightly packs')
 
     @run_with_proxy_configured
     def test_integrations_post_update(self, new_module_instances: list,
