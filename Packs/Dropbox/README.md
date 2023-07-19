@@ -19,6 +19,8 @@ This integration was integrated and tested with version 2 of Dropbox API
 
 4. Run the ***!dropbox-auth-start*** command to test the connection and the authorization process.
 
+* Pay attention: Timestamp parsing support is under the a assumption that a UTC +0000 format is being used.
+
 ## Commands
 You can execute these commands from the Cortex XSIAM War Room, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
