@@ -25,9 +25,11 @@ Fetch indicators from the URLhaus API.
 
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands in a playbook.
-#### test-module
+
+#### Test Button
 ***
 Integration command for testing.
 
