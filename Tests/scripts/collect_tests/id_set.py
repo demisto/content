@@ -1,6 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
@@ -23,22 +23,22 @@ class IdSetItem(DictBased):
     See the IdSet class to see how it's parsed.
     """
 
-    def __init__(self, id_: Optional[str], dict_: dict):
+    def __init__(self, id_: str | None, dict_: dict):
         super().__init__(dict_)
-        self.id_: Optional[str] = id_  # None for packs, as they don't have it.
+        self.id_: str | None = id_  # None for packs, as they don't have it.
         self.file_path_str: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
-        self.path: Optional[Path] = Path(self.file_path_str) if self.file_path_str else None
+        self.path: Path | None = Path(self.file_path_str) if self.file_path_str else None
         self.name: str = self.get('name', '', warning_comment=self.file_path_str or '')
 
         # None for packs, that have no id.
-        self.pack_id: Optional[str] = self.get('pack', warning_comment=self.file_path_str) if id_ else None
-        self.pack_path: Optional[Path] = self._calculate_pack_path(self.path)
+        self.pack_id: str | None = self.get('pack', warning_comment=self.file_path_str) if id_ else None
+        self.pack_path: Path | None = self._calculate_pack_path(self.path)
 
         if self.pack_path and self.pack_path.name != self.pack_id:
             logger.warning(f'{self.pack_path.name=}!={self.pack_id} for content item {self.id_=} {self.name=}')
 
         # hidden for pack_name_to_pack_metadata, deprecated for content items
-        self.deprecated: Optional[bool] = \
+        self.deprecated: bool | None = \
             self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
 
     @classmethod
@@ -64,7 +64,7 @@ class IdSetItem(DictBased):
         return tuple(self.get('implementing_playbooks', (), warn_if_missing=False))
 
     @staticmethod
-    def _calculate_pack_path(path: Optional[Path]) -> Optional[Path]:
+    def _calculate_pack_path(path: Path | None) -> Path | None:
         if not path:
             return None
 
@@ -85,7 +85,7 @@ class IdSetItem(DictBased):
         # command_to_integrations maps commands to either a single integration, or a list of them
         # e.g. { command1: integration1,
         #        command2: [integration1, integration2, ...] }
-        for command, integrations in self.get('command_to_integration', {}, warn_if_missing=False).items():
+        for _command, integrations in self.get('command_to_integration', {}, warn_if_missing=False).items():
             result.update(
                 (integrations,) if isinstance(integrations, str)
                 else integrations
