@@ -105,8 +105,9 @@ validate-content-conf:
         RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
         EXIST=$(echo $RESP | jq --arg branch $UNDERSCORE_CI_BRANCH -c '.[] | select(.name==$branch)')
         if [ -n "$EXIST" ]; then
-            echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
-            echo "Merge it in order to merge the current branch into content repo."
+            RED='\033[0;31m'
+            NC='\033[0m'
+            echo -e "${RED}ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.${NC}"
             job-done
             exit 1
         fi
