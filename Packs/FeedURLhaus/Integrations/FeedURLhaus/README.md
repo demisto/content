@@ -29,14 +29,6 @@ Fetch indicators from the URLhaus API.
 ## Commands
 You can execute these commands in a playbook.
 
-#### Test Button
-***
-Integration command for testing.
-
-#### fetch-indicators
-***
-Command that is activated by the engine to fetch indicators.
-
-####$ urlhaus-get-indicators
+### urlhaus-get-indicators
 ***
 Manual command to fetch events and display them.
