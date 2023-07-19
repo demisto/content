@@ -31,6 +31,6 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Checking if contribution form needs to be filled for PR: $PR_NUMBER"
+          echo "Checking label Partner-Approved for: $PR_NUMBER"
           cd Utils/github_workflow_scripts
-          poetry run ./check_if_partner_pack_contributed_by_others.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
+          poetry run python check_if_partner_pack_contributed_by_others.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
