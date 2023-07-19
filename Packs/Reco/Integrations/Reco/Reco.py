@@ -647,6 +647,21 @@ class RecoClient(BaseClient):
         demisto.info(f"Got link: {link}")
         return link
 
+    def add_exclusion_filter(self, key_to_add: str, values_to_add : List[str]):
+        body = dict(environmentName="string", keyToAddTo=key_to_add, valuesToAdd=values_to_add)
+
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix="/algo/add_values_to_data_type_exclude_analyzer",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
+                data=json.dumps(body),
+            )
+            return response
+        except Exception as e:
+            demisto.error(f"Can't add exclusion filter: {str(e)}")
+            raise e
+
     def set_entry_label_relations(
             self, entry_id: str, label_name: str, label_status: str, entry_type: str
     ) -> Any:

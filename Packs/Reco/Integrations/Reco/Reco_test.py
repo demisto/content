@@ -772,3 +772,11 @@ def test_get_files_shared_with_3rd_parties(requests_mock, reco_client: RecoClien
 def test_date_formatting(reco_client: RecoClient) -> None:
     date = reco_client.get_date_time_before_days_formatted(30)
     assert ".999Z" in date
+
+
+def test_add_exclusion_filter(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/algo/add_values_to_data_type_exclude_analyzer", json={}, status_code=200
+    )
+    reco_client.add_exclusion_filter("key", ["val1", "val2"])
+
