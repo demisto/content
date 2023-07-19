@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import Iterable, Union
+from collections.abc import Iterable
 
 from git import InvalidGitRepositoryError, Repo
 
@@ -67,16 +67,16 @@ class PathManager:
         if not path.exists():
             logging.error(f'could not find {path} for calculating excluded paths')
         elif path.is_dir():
-            result.update((_ for _ in path.rglob('*') if _.is_file()))
+            result.update(_ for _ in path.rglob('*') if _.is_file())
         elif '*' in path.name:
-            result.update((_ for _ in path.rglob(path.name) if _.is_file()))
+            result.update(_ for _ in path.rglob(path.name) if _.is_file())
         elif path.is_file() and '*' not in path.name:
             result.add(path)
         else:
             logging.error(f'could not glob {path} - unexpected case')
         return set(result)
 
-    def _glob(self, paths: Iterable[Union[str, Path]]) -> set[Path]:
+    def _glob(self, paths: Iterable[str | Path]) -> set[Path]:
         """
         :param paths: to glob
         :return: set of all results
