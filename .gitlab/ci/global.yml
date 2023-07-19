@@ -57,7 +57,6 @@
   - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
   - SECRET_CONF_PATH=$(cat secret_conf_path)
   - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
-  - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_conf_repos.log
   - section_end "Download content-test-conf"
 
 .ssh-config-setup:
@@ -82,6 +81,13 @@
     fi
   - section_end "Check Build Files Are Up To Date"
 
+.stop_contrib_external_build: &stop_contrib_external_build
+  - |
+    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?base=master?head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
+      echo "not running on contrib/ branches if there is no an open internal PR or the pipeline was manually triggered"
+      set -e
+      exit 1
+    fi
 
 .clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
@@ -120,7 +126,7 @@
   - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
   - source ./.venv/bin/activate
   - |
-    if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${OVERRIDE_SDK_REF}" ]]; then
       echo "Installing SDK from $SDK_REF" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
       pip3 uninstall -y demisto-sdk | tee --append $ARTIFACTS_FOLDER/logs/installations.log
       pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}#egg=demisto-sdk" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
@@ -159,6 +165,7 @@
 .default-before-script:
   before_script:
     - *setup-network-certs
+    - *stop_contrib_external_build
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
     - section_start "Creating new clean logs folder" --collapsed
