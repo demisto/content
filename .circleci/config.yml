@@ -285,9 +285,10 @@ references:
             name: Get Contributor pack
             when: always
             command: |
-                REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                CONTRIBUTOR=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+                REPO=$(basename "$(git rev-parse --show-toplevel)")
+                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $CONTRIBUTOR -r $REPO
 
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:
