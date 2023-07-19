@@ -2,7 +2,9 @@ from __future__ import print_function
 
 import json
 import logging
+from pathlib import Path
 import uuid
+import os
 
 integrationContext = {}
 is_debug = False  # type: bool
@@ -434,6 +436,10 @@ def params():
       dict: Integrations parameters object
 
     """
+    if demisto_params := os.getenv("DEMISTO_PARAMS"):
+        with Path(demisto_params).open() as f:
+            return json.load(f)
+
     return {}
 
 
@@ -444,6 +450,9 @@ def args():
       dict: Arguments object
 
     """
+    if demisto_args := os.getenv("DEMISTO_ARGS_COMMAND"):
+        with Path(demisto_args).open() as f:
+            return json.load(f)["args"]
     return {}
 
 
@@ -455,6 +464,10 @@ def command():
       str: Integrations command name
 
     """
+    if demisto_args := os.getenv("DEMISTO_ARGS_COMMAND"):
+        with Path(demisto_args).open() as f:
+            return json.load(f)["command"]
+
     return ""
 
 
