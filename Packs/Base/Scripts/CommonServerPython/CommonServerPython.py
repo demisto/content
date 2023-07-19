@@ -11099,7 +11099,8 @@ def split_data_to_chunks(data, target_chunk_size):
         yield chunk
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url',
+                         num_of_attempts=3, token=None, API_url=None):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11123,6 +11124,12 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type token: ``str``
+    :param token received when adding data source
+
+    :type API_url: ``str``
+    :param the API URL of the XSIAM
 
     :return: None
     :rtype: ``None``
@@ -11155,9 +11162,12 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     if not data_format:
         data_format = 'text'
 
-    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
-    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
-    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token') if not token else token
+    if not API_url:
+        xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+        xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    else:
+        xsiam_url = API_url
     headers = {
         'authorization': xsiam_api_token,
         'format': data_format,
