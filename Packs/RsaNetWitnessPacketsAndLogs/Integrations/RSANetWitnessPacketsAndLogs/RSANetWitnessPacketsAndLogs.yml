@@ -116,7 +116,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
       defaultValue: "true"
     outputs:
     - contextPath: NetWitness.SearchHits
