@@ -108,7 +108,7 @@ class Client:
         """
         data_code = f'{self.session_metadata["cookie_key"]}{str(self.session_metadata["tid"])}'
         # Use the hashlib library function to calculate the MD5
-        data_hash = hashlib.md5(data_code.encode())  # nosec
+        data_hash = hashlib.sha256(data_code.encode())  # nosec
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
 
