@@ -6,9 +6,8 @@ from typing import Dict, List, Optional, Union
 import dateparser
 import requests
 
-import urllib3
-
-urllib3.disable_warnings()
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -95,15 +94,12 @@ class Client(BaseClient):
 
 def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
     """Converts whois date format to an ISO8601 string
-
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
     in a datetime. If a list is returned with multiple elements, takes only
     the first one.
-
     :type domain_date: ``Union[List[str],str]``
     :param severity:
         a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-
     :return: Parsed time in ISO8601 format
     :rtype: ``Optional[str]``
     """
@@ -380,10 +376,8 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
             if 'data' in qid_data and qid_data['data']:
                 qid_data.update({'qid': qid, 'indicator': qid_data['data']['indicator']})
                 if qid_data['data']['type'] == 'url' or qid_data['data']['type'] == 'domain':
-                    try:
-                        screenshot = requests.get(
-                            qid_data['data']['properties']['dom']['screenshot']
-                        )
+                    if 'dom' in qid_data['data']['properties']:
+                        screenshot = requests.get(qid_data['data']['properties']['dom']['screenshot'])
                         screenshot_file = fileResult(
                             qid_data['data']['properties']['dom']['screenshot'],
                             screenshot.content,
@@ -391,10 +385,8 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
                         )
                         screenshot_file['Type'] = entryTypes['image']
                         demisto.results(screenshot_file)
-                    except DemistoException:
-                        raise DemistoException(
-                            f'Failed to execute {demisto.command()} command. Error: Problem getting the screenshot'
-                        )
+                    else:
+                        demisto.results("No screenshot available")
                 reputation = qid_data['data']['risk']
                 score = convert_to_xsoar_severity(reputation)
                 if qid_data['data']['type'] == 'url':
@@ -430,13 +422,20 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
                         score=score
                     )
 
-                    ip_indicator = Common.IP(
-                        ip=qid_data['data']['indicator'],
-                        asn=qid_data['data']['properties']['geo'].get('asn'),
-                        geo_country=qid_data['data']['properties']['geo'].get('country'),
-                        port=qid_data.get('data', {}).get('attributes', {}).get('port'),
-                        dbot_score=dbot_score
-                    )
+                    if 'geo' in qid_data['data']['properties']:
+                        ip_indicator = Common.IP(
+                            ip=qid_data['data']['indicator'],
+                            asn=qid_data['data']['properties']['geo'].get('asn'),
+                            geo_country=qid_data['data']['properties']['geo'].get('country'),
+                            port=qid_data.get('data', {}).get('attributes', {}).get(
+                                'port') if qid_data['data']['attributes'] != [] else None,
+                            dbot_score=dbot_score
+                        )
+                    else:
+                        ip_indicator = Common.IP(
+                            ip=qid_data['data']['indicator'],
+                            dbot_score=dbot_score
+                        )
 
                     command_results.append(CommandResults(
                         readable_output=tableToMarkdown(
@@ -458,12 +457,18 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
                         score=score
                     )
 
-                    domain_indicator = Common.Domain(
-                        domain=qid_data['data']['indicator'],
-                        domain_status=qid_data['data']['properties']['whois'].get('status'),
-                        name_servers=qid_data['data']['properties']['whois'].get('nserver'),
-                        dbot_score=dbot_score
-                    )
+                    if 'whois' in qid_data['data']['properties']:
+                        domain_indicator = Common.Domain(
+                            domain=qid_data['data']['indicator'],
+                            domain_status=qid_data['data']['properties']['whois'].get('status'),
+                            name_servers=qid_data['data']['properties']['whois'].get('nserver'),
+                            dbot_score=dbot_score
+                        )
+                    else:
+                        domain_indicator = Common.Domain(
+                            domain=qid_data['data']['indicator'],
+                            dbot_score=dbot_score
+                        )
 
                     command_results.append(CommandResults(
                         readable_output=tableToMarkdown(
