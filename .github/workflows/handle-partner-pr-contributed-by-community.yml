@@ -25,7 +25,7 @@ jobs:
         run: |
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
-      - name: Check if label exists
+      - name: Check if partner-approved label exists
         id: check_label
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
