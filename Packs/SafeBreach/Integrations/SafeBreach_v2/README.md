@@ -69,29 +69,29 @@ Every customer environment might have some of the insights depending on the simu
 | 15 |  Email | Hash  | Email with encrypted malicious attachments
 | 24 |  Email |Hash  | Email with non-encrypted malicious attachment 
 
-## Playbooks
+## Playbooks - Deprecated
 
-#### SafeBreach - Process Non-Behavioral Insights Feed  
+#### SafeBreach - Process Non-Behavioral Insights Feed  - Deprecated
 - This playbook automatically remediates all non-behavioral indicators generated from SafeBreach Insights. To validate the remediation, it reruns the related insights and classifies the indicators as Remediated or Not Remediated.
 A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
 
-#### SafeBreach - Process Behavioral Insights Feed (Premium)
+#### SafeBreach - Process Behavioral Insights Feed (Premium)- Deprecated
 - This playbook processes all SafeBreach behavioral indicators. It creates an incident for each SafeBreach Insight, enriched with all the related indicators and additional SafeBreach contextual information.
 A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
 
-#### SafeBreach - Rerun Insights 
+#### SafeBreach - Rerun Insights - Deprecated
 - This is a sub-playbook reruns a list of SafeBreach insights based on Insight Id and waits until they complete. Used in main SafeBreach playbooks, such as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral Insights Feed".
 
-#### SafeBreach - Rerun Single Insight 
+#### SafeBreach - Rerun Single Insight - Deprecated
 - This playbook uses the following sub-playbooks, integrations, and scripts.
 
-#### SafeBreach - Compare and Validate Insight Indicators
+#### SafeBreach - Compare and Validate Insight Indicators - Deprecated
 - This playbook compares SafeBreach Insight indicators before and after the processing. It receives an insight and it's indicators before validation, fetches updated indicators after rerunning the insight, and then compares the results to validate mitigation. Indicators are classified as Remediated or Not Remediated based on their validated status and the appropriate field (SafeBreach Remediation Status) is updated.
   
-#### SafeBreach - SafeBreach Create Incidents per Insight and Associate Indicators
+#### SafeBreach - SafeBreach Create Incidents per Insight and Associate Indicators - Deprecated
 - This is a sub-playbook that creates incidents per SafeBreach insight, enriched with all the related indicators and additional SafeBreach insight contextual information. Used in main SafeBreach playbooks, such as "SafeBreach - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral Insights Feed".  
 
-#### SafeBreach - Handle Insight Incident (Premium)
+#### SafeBreach - Handle Insight Incident (Premium) - Deprecated
 - This playbook is triggered automatically for each SafeBreach Insight incident:
     1. Adding insight information (including suggested remediation actions);
     2. Assigning it to an analyst to remediate and either “ignore” or “validate.” Validated incidents are rerun with the related SafeBreach Insight and the results are compared to the previous indicator results. The incident is closed once all the indicators are resolved or the analyst “ignores” the incident. Unresolved indicators wait for handling by the analyst.
@@ -104,7 +104,7 @@ SafeBreach Insights dashboard summarizes the current status of actionable insigh
  ![SafeBreach Dashboard](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/xsoar_SafeBreach_dashboard.png)
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### safebreach-get-insights
 ***
@@ -487,7 +487,7 @@ Gets the status of a SafeBreach test for tracking progress of a run.
 
 
 
-### safebreach-get-simulation
+### safebreach-get-simulation - Deprecated
 ***
 Get SafeBreach simulation
 
@@ -724,7 +724,7 @@ Get SafeBreach simulation
 
 
 
-### safebreach-rerun-simulation
+### safebreach-rerun-simulation - Deprecated
 ***
 Reruns a specific SafeBreach simulation in your environment.
 
