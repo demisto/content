@@ -1,5 +1,3 @@
-{
-	"incidentFields": [
 		{
 			"id": "incident_subject",
 			"version": 1,
@@ -59,5 +57,3 @@
 			"aliases": null,
 			"aliasTo": ""
 		}
-	]
-}
