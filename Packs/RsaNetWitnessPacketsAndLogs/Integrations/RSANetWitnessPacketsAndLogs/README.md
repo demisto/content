@@ -461,7 +461,7 @@
 <td style="width: 97px;">useSSL</td>
 <td style="width: 61px;">boolean</td>
 <td style="width: 508px;">
-<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configure to use SSL you can change it here</p>
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configure to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>
