@@ -24,6 +24,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
 display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2
@@ -304,7 +305,291 @@ script:
     - contextPath: ReversingLabs.certificate_analytics
       description: ''
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.40822
+  - name: reversinglabs-titaniumcloud-yara-ruleset-actions
+    description: Perform various YARA ruleset actions.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: yara_action
+        description: YARA ruleset action
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'CREATE RULESET'
+          - 'DELETE RULESET'
+          - 'GET RULESET INFO'
+          - 'GET RULESET TEXT'
+      - name: ruleset_name
+        description: Name of the YARA ruleset
+        isArray: false
+        required: true
+        secret: false
+      - name: ruleset_text
+        description: Text of the YARA ruleset
+        isArray: false
+        required: false
+        secret: false
+      - name: sample_available
+        description: Return only samples that are available for download to the user. Must be boolean.
+        isArray: false
+        required: false
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: ReversingLabs.create_yara_ruleset
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.delete_yara_ruleset
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.get_yara_ruleset_info
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.get_yara_ruleset_text
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-yara-matches-feed
+    description: Returns a recordset of YARA ruleset matches in the specified time range.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: time_format
+        description: Define the time format that is used
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'utc'
+          - 'timestamp'
+      - name: time_value
+        description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.yara_matches_feed
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-yara-retro-hunt-actions
+    description: Perform various YARA retroactive hunting actions.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: yara_retro_action
+        description: YARA retro hunt action
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'ENABLE RETRO HUNT'
+          - 'START RETRO HUNT'
+          - 'CHECK STATUS'
+          - 'CANCEL RETRO HUNT'
+      - name: ruleset_name
+        description: Name of the YARA ruleset
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.enable_yara_retro
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.start_yara_retro
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.check_yara_retro_status
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.cancel_yara_retro
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-yara-retro-matches-feed
+    description: Returns a recordset of YARA ruleset matches in the specified time range.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: time_format
+        description: Define the time format that is used
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'utc'
+          - 'timestamp'
+      - name: time_value
+        description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.yara_retro_matches_feed
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-reanalyze-sample
+    description: Accepts a hash of a sample in the cloud that you want to reanalyze.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: hash
+        description: Hash string
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.reanalyze_sample
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-imphash-similarity
+    description: Accepts an imphash and returns a list of SHA-1 hashes of files sharing that imphash.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: imphash
+        description: Imphash string
+        isArray: false
+        required: true
+        secret: false
+      - name: max_results
+        description: Maximum number of returned results
+        defaultValue: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.imphash_similarity
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-url-downloaded-files
+    description: Returns a list of files downloaded from the provided URL.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: url
+        description: URL string
+        isArray: false
+        required: true
+        secret: false
+      - name: extended_results
+        description: Return extended results
+        defaultValue: true
+        isArray: false
+        required: false
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: classification
+        description: Return only results with this classification
+        isArray: false
+        required: false
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'MALICIOUS'
+          - 'SUSPICIOUS'
+          - 'KNOWN'
+          - 'UNKNOWN'
+      - name: last_analysis
+        description: Return results from the last analysis
+        defaultValue: false
+        isArray: false
+        required: false
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: analysis_id
+        description: Return results from a specific analysis
+        isArray: false
+        required: false
+        secret: false
+      - name: results_per_page
+        description: Number of results per query
+        defaultValue: 1000
+        isArray: false
+        required: false
+        secret: false
+      - name: max_results
+        description: Maximum number of results
+        defaultValue: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.url_downloaded_files
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-url-latest-analyses-feed
+    description: Returns the latest URL analysis reports.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: results_per_page
+        description: Number of results per query
+        defaultValue: 1000
+        isArray: false
+        required: false
+        secret: false
+      - name: max_results
+        description: Maximum number of results
+        defaultValue: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.url_latest_analyses_feed
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-url-analyses-feed-from-date
+    description: Returns URL analyses reports from the defined time onward.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: time_format
+        description: Define the time format that is used
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'utc'
+          - 'timestamp'
+      - name: start_time
+        description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
+        isArray: false
+        required: true
+        secret: false
+      - name: results_per_page
+        description: Number of results per query
+        defaultValue: 1000
+        isArray: false
+        required: false
+        secret: false
+      - name: max_results
+        description: Maximum number of results
+        defaultValue: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.url_analyses_feed_from_date
+        description: ''
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.64132
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
