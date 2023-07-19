@@ -27,25 +27,10 @@ jobs:
 
       - name: Check if label exists
         id: check_label
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-
-          label_name = 'Partner-Approved'
-          github_token = '${{ secrets.GITHUB_TOKEN }}'
-
-          g = Github(github_token)
-          repo = g.get_repo(f"{{ github.repository }}")
-          pr_number = int("{{ github.event.pull_request.number }}")
-
-          pr = repo.get_pull(pr_number)
-          labels = [label.name for label in pr.labels]
-
-          label_exists = label_name in labels
-          print(f'Label "{label_name}" exists: {label_exists}')
-
-          if not label_exists:
-              raise ValueError(f'Label "{label_name}" does not exist')
-          EOF
-
-      - name: Display success message
-        if: steps.check_label.outputs.returncode == '0'
-        run: echo "Label exists"
+          echo "Checking if contribution form needs to be filled for PR: $PR_NUMBER"
+          cd Utils/github_workflow_scripts
+          poetry run ./check_if_partner_pack_contributed_by_others.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
