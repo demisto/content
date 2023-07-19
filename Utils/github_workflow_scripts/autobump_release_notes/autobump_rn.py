@@ -305,8 +305,7 @@ def main():  # pragma: no cover
         sys.exit(0)
     except Exception as e:
         print(f"Failed to execute autobump in branch {ORGANIZATION_NAME}/{REPO_MANE}./n {e}/n")
-
-    
+        sys.exit("Bump version pack manually")
 
 
 if __name__ == "__main__":
