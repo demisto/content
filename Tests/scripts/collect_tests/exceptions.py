@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
@@ -24,7 +25,7 @@ class NonexistentPackException(UnsupportedPackException):
 
 
 class NonXsoarSupportedPackException(UnsupportedPackException):
-    def __init__(self, pack_name: str, support_level: str | None, content_version_range: VersionRange | None = None):
+    def __init__(self, pack_name: str, support_level: str | None, content_version_range: Optional[VersionRange] = None):
         self.support_level = support_level
         self.content_version_range = content_version_range
         super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
@@ -50,7 +51,7 @@ class NonNightlyPackInNightlyBuildException(Exception):
 
 
 class NonDictException(Exception):
-    def __init__(self, path: Path | None):
+    def __init__(self, path: Optional[Path]):
         self.message = path
         super().__init__(self.message)
 
@@ -107,7 +108,7 @@ class TestMissingFromIdSetException(InvalidTestException):
 
 
 class SkippedTestException(InvalidTestException):
-    def __init__(self, test_name: str, skip_place: str, skip_reason: str | None = None):
+    def __init__(self, test_name: str, skip_place: str, skip_reason: Optional[str] = None):
         """
         :param test_name: the name of the test that was skipped
         :param skip_place: where the test was skipped (conf.json or pack_ignore)

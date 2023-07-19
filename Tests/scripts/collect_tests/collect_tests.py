@@ -5,8 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Optional
-from collections.abc import Iterable, Sequence
+from typing import Iterable, Optional, Sequence, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
@@ -75,14 +74,14 @@ REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
 class CollectionResult:
     def __init__(
             self,
-            test: str | None,
-            modeling_rule_to_test: str | Path | None,  # path to dir of modeling rule to test
-            pack: str | None,
+            test: Optional[str],
+            modeling_rule_to_test: Optional[str | Path],  # path to dir of modeling rule to test
+            pack: Optional[str],
             reason: CollectionReason,
-            version_range: VersionRange | None,
+            version_range: Optional[VersionRange],
             reason_description: str,
-            conf: TestConf | None,
-            id_set: IdSet | Graph | None,
+            conf: Optional[TestConf],
+            id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool = False,
             is_nightly: bool = False,
             skip_support_level_compatibility: bool = False,
@@ -118,7 +117,7 @@ class CollectionResult:
         self.packs_to_install: set[str] = set()
         self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
-        self.machines: tuple[Machine, ...] | None = None
+        self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
             # raises if invalid
@@ -180,11 +179,11 @@ class CollectionResult:
 
     @staticmethod
     def _validate_collection(
-            pack: str | None,
-            test: str | None,
+            pack: Optional[str],
+            test: Optional[str],
             reason: CollectionReason,
-            conf: TestConf | None,
-            id_set: IdSet | Graph | None,
+            conf: Optional[TestConf],
+            id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool,
             is_nightly: bool,
             skip_support_level_compatibility: bool,
@@ -270,7 +269,7 @@ class CollectionResult:
         return result
 
     @staticmethod
-    def union(collected_tests: Sequence[Optional['CollectionResult']] | None) -> Optional['CollectionResult']:
+    def union(collected_tests: Optional[Sequence[Optional['CollectionResult']]]) -> Optional['CollectionResult']:
         non_none = filter(None, collected_tests or (None,))
         return sum(non_none, start=CollectionResult.__empty_result())
 
@@ -312,7 +311,7 @@ class TestCollector(ABC):
         ))
 
     @property
-    def _always_installed_packs(self) -> CollectionResult | None:
+    def _always_installed_packs(self) -> Optional[CollectionResult]:
         always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MAPPING[self.marketplace]
         return CollectionResult.union(tuple(
             CollectionResult(test=None, modeling_rule_to_test=None, pack=pack,
@@ -335,16 +334,17 @@ class TestCollector(ABC):
                 raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
 
     @abstractmethod
-    def _collect(self) -> CollectionResult | None:
+    def _collect(self) -> Optional[CollectionResult]:
         """
         Collects all relevant tests and packs.
         Every subclass implements its own methodology here.
         :return: A CollectedTests object with only the pack_name_to_pack_metadata to install and tests to run,
                 with machines=None.
         """
+        pass
 
-    def collect(self) -> CollectionResult | None:
-        result: CollectionResult | None = self._collect()
+    def collect(self) -> Optional[CollectionResult]:
+        result: Optional[CollectionResult] = self._collect()
 
         if not result:
             if self.trigger_sanity_tests:
@@ -363,7 +363,7 @@ class TestCollector(ABC):
 
         return result
 
-    def _collect_test_dependencies(self, test_ids: Iterable[str]) -> CollectionResult | None:
+    def _collect_test_dependencies(self, test_ids: Iterable[str]) -> Optional[CollectionResult]:
         result = []
 
         for test_id in test_ids:
@@ -427,7 +427,7 @@ class TestCollector(ABC):
             only_to_install=True,
         )
 
-    def _collect_all_marketplace_compatible_packs(self, is_nightly) -> CollectionResult | None:
+    def _collect_all_marketplace_compatible_packs(self, is_nightly) -> Optional[CollectionResult]:
         result = []
         for pack_metadata in PACK_MANAGER.iter_pack_metadata():
             try:
@@ -446,9 +446,9 @@ class TestCollector(ABC):
             self,
             id_: str,
             pack_id: str,
-            marketplaces: tuple[MarketplaceVersions, ...] | None,
+            marketplaces: Optional[tuple[MarketplaceVersions, ...]],
             path: Path,
-            version_range: VersionRange | None,
+            version_range: Optional[VersionRange],
             is_integration: bool,
     ):
         # exception order matters: important tests come first.
@@ -506,11 +506,11 @@ class TestCollector(ABC):
             pack_id: str,
             reason: CollectionReason,
             reason_description: str,
-            content_item_range: VersionRange | None = None,
+            content_item_range: Optional[VersionRange] = None,
             allow_incompatible_marketplace: bool = False,
             is_nightly: bool = False,
             only_to_install: bool = False,
-    ) -> CollectionResult | None:
+    ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
         collect_only_to_upload: bool = False
 
@@ -562,8 +562,8 @@ class TestCollector(ABC):
 
     def _collect_pack_for_modeling_rule(
         self, pack_id: str, reason_description: str, changed_file_path: Path,
-        content_item_range: VersionRange | None = None, is_nightly: bool = False,
-        reason: CollectionReason | None = None
+        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False,
+        reason: Optional[CollectionReason] = None
     ) -> CollectionResult:
         """Create a CollectionResult for a pack because of a modeling rule
 
@@ -621,8 +621,8 @@ class TestCollector(ABC):
 
     def _collect_pack_for_xsiam_component(
         self, pack_id: str, reason_description: str, changed_file_path: Path,
-        content_item_range: VersionRange | None = None, is_nightly: bool = False,
-        reason: CollectionReason | None = None
+        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False,
+        reason: Optional[CollectionReason] = None
     ) -> CollectionResult:
         """Create a CollectionResult for a pack because of an xsiam component.
 
@@ -675,8 +675,9 @@ class TestCollector(ABC):
 
     @staticmethod
     def __validate_deprecated_integration(path: Path):
-        if path.suffix == '.yml' and get_yaml(path).get('deprecated'):
-            raise NothingToCollectException(path, 'integration is deprecated')
+        if path.suffix == '.yml':
+            if get_yaml(path).get('deprecated'):
+                raise NothingToCollectException(path, 'integration is deprecated')
 
     def __validate_triggering_sanity_test(self, path: Path):
         if path in PATHS.files_triggering_sanity_tests:
@@ -693,7 +694,7 @@ class TestCollector(ABC):
                                                   ' (not triggering sanity tests)')
 
     @staticmethod
-    def __validate_support_level_is_xsoar(pack_id: str, content_item_range: VersionRange | None) -> None:
+    def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
         # intended to only be called from __validate_compatibility
         if (support_level := PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
             raise NonXsoarSupportedPackException(pack_id, support_level, content_item_range)
@@ -734,8 +735,8 @@ class BranchTestCollector(TestCollector):
             self,
             branch_name: str,
             marketplace: MarketplaceVersions,
-            service_account: str | None,
-            private_pack_path: str | None = None,
+            service_account: Optional[str],
+            private_pack_path: Optional[str] = None,
             graph: bool = False,
     ):
         """
@@ -749,16 +750,16 @@ class BranchTestCollector(TestCollector):
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
-        self.private_pack_path: Path | None = Path(private_pack_path) if private_pack_path else None
+        self.private_pack_path: Optional[Path] = Path(private_pack_path) if private_pack_path else None
 
     def _get_private_pack_files(self) -> tuple[str, ...]:
         if not self.private_pack_path:
             raise RuntimeError('private_pack_path cannot be empty')
         return tuple(str(path) for path in self.private_pack_path.rglob('*') if path.is_file())
 
-    def _collect(self) -> CollectionResult | None:
+    def _collect(self) -> Optional[CollectionResult]:
         collect_from = FilesToCollect(changed_files=self._get_private_pack_files(),
-                                      pack_ids_files_were_removed_from=()) \
+                                      pack_ids_files_were_removed_from=tuple()) \
             if self.private_pack_path \
             else self._get_git_diff()
 
@@ -767,7 +768,7 @@ class BranchTestCollector(TestCollector):
             self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
         ])
 
-    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
+    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> Optional[CollectionResult]:
         """NOTE: this should only be used from _collect"""
         collected = []
         for raw_path in changed_files:
@@ -789,7 +790,7 @@ class BranchTestCollector(TestCollector):
                 raise e
         return CollectionResult.union(collected)
 
-    def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
+    def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
         """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
@@ -807,7 +808,7 @@ class BranchTestCollector(TestCollector):
                 raise e
         return CollectionResult.union(collected)
 
-    def _collect_yml(self, content_item_path: Path) -> CollectionResult | None:
+    def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
@@ -913,10 +914,10 @@ class BranchTestCollector(TestCollector):
             )
 
     def _collect_xsiam_and_modeling_pack(self,
-                                         file_type: FileType | None,
+                                         file_type: Optional[FileType],
                                          pack_id: str, reason_description: str,
                                          path: Path,
-                                         content_item_range: VersionRange | None) -> CollectionResult | None:
+                                         content_item_range: Optional[VersionRange]) -> Optional[CollectionResult]:
         if file_type in MODELING_RULE_COMPONENT_FILES:
             # mark pack for installation and mark the modeling rule for dynamic testing
             return self._collect_pack_for_modeling_rule(
@@ -930,7 +931,7 @@ class BranchTestCollector(TestCollector):
             changed_file_path=path, content_item_range=content_item_range
         )
 
-    def _collect_single(self, path: Path) -> CollectionResult | None:
+    def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
 
         file_type = find_type(str(path))
@@ -1143,7 +1144,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
 
 
 class UploadBranchCollector(BranchTestCollector):
-    def _collect(self) -> CollectionResult | None:
+    def _collect(self) -> Optional[CollectionResult]:
         # same as BranchTestCollector, but without tests.
         if result := super()._collect():
             logger.info('UploadCollector drops collected tests, as they are not required')
@@ -1152,15 +1153,15 @@ class UploadBranchCollector(BranchTestCollector):
 
 
 class NightlyTestCollector(TestCollector, ABC):
-    def collect(self) -> CollectionResult | None:
-        result: CollectionResult | None = super().collect()
+    def collect(self) -> Optional[CollectionResult]:
+        result: Optional[CollectionResult] = super().collect()
 
         logger.info('NightlyCollector drops packs to upload, as they don\'t need to be uploaded')
         if result:
             result.packs_to_upload = set()
         return result
 
-    def _id_set_tests_matching_marketplace_value(self) -> CollectionResult | None:
+    def _id_set_tests_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
         :return: all tests whose marketplace field includes the collector's marketplace value
                     (or is equal to it, if `only_value` is used).
@@ -1187,7 +1188,7 @@ class NightlyTestCollector(TestCollector, ABC):
 
 
 class UploadAllCollector(TestCollector):
-    def _collect(self) -> CollectionResult | None:
+    def _collect(self) -> Optional[CollectionResult]:
         return self._collect_all_marketplace_compatible_packs(is_nightly=False)
 
 
@@ -1195,7 +1196,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self, graph: bool = False):
         super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
 
-    def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None:
+    def _collect_packs_of_content_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
         :return: all packs whose under which a content item marketplace field contains self.marketplaces
                 (or is equal to, if only_value is True).
@@ -1234,7 +1235,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                     continue
         return CollectionResult.union(result)
 
-    def _collect_modeling_rule_packs(self) -> CollectionResult | None:
+    def _collect_modeling_rule_packs(self) -> Optional[CollectionResult]:
         """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
 
         Returns:
@@ -1276,7 +1277,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             for test in self.conf['test_marketplacev2']
         ))  # type: ignore[return-value]
 
-    def _collect(self) -> CollectionResult | None:
+    def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
             self._collect_all_marketplace_compatible_packs(is_nightly=True),
@@ -1290,14 +1291,14 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
     def __init__(self, graph: bool = False):
         super().__init__(MarketplaceVersions.XSOAR, graph=graph)
 
-    def _collect(self) -> CollectionResult | None:
+    def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
             self._collect_all_marketplace_compatible_packs(is_nightly=True),
         ))
 
 
-def output(result: CollectionResult | None):
+def output(result: Optional[CollectionResult]):
     """
     writes to both log and files
     """
@@ -1307,7 +1308,7 @@ def output(result: CollectionResult | None):
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
-    modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
+    modeling_rules_to_test = map(lambda x: x.as_posix() if isinstance(x, Path) else str(x), modeling_rules_to_test)
     machines = result.machines if result and result.machines else ()
 
     test_str = '\n'.join(tests)
@@ -1334,7 +1335,7 @@ class XPANSENightlyTestCollector(NightlyTestCollector):
     def __init__(self, graph: bool = False):
         super().__init__(MarketplaceVersions.XPANSE, graph=graph)
 
-    def _collect(self) -> CollectionResult | None:
+    def _collect(self) -> Optional[CollectionResult]:
         logger.info('tests are not currently supported for XPANSE, returning nothing.')
         return None
 
