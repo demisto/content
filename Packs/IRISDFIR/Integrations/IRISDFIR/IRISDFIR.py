@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
 import traceback
 import requests
 import urllib3
@@ -103,14 +102,12 @@ def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
     command = demisto.command()
-    args = demisto.args()
 
     demisto.info(f'Command being called is {command}')
     try:
         # initialized Authentication client
         api_key = params.get('api_key', {}).get('password', '')
         api_endpoint = params.get('host')
-        server_port = params.get('port') or 443
         #  ignore proxy
         os.environ['NO_PROXY'] = api_endpoint.split("https://")[1]
         dfir_iris = DFIRIrisAPI(api_endpoint, api_key)
