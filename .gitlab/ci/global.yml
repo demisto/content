@@ -339,7 +339,9 @@
           if [ "$?" != "0" ]; then
             echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
           else
-            echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            RED='\033[0;31m'
+            NC='\033[0m'
+            echo -e "${RED}ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.${NC}"
             job-done
             exit 1
           fi
