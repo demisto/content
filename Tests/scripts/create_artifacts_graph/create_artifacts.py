@@ -7,7 +7,7 @@ from demisto_sdk.commands.content_graph.objects.pack import Pack
 from Tests.scripts.utils.log_util import install_logging
 import logging as logger
 from demisto_sdk.commands.common.logger import logging_setup
-from demisto_sdk.commands.common.tools import get_content_path, str2bool
+from demisto_sdk.commands.common.tools import get_content_path, string_to_bool
 
 import json
 
@@ -73,7 +73,7 @@ def main():
     parser.add_argument("-do", "--dependencies-output", help="Dependencies output file", required=True)
     parser.add_argument("-po", "--packs-output", help="Packs json output file", required=True)
     parser.add_argument(
-        "-bu", "--bucket-upload", help="Upload to bucket", type=lambda x: str2bool(x or False), default=False
+        "-bu", "--bucket-upload", help="Upload to bucket", type=lambda x: string_to_bool(x or False), default=False
     )
     parser.add_argument("--zip", default=True, action="store_true")
     parser.add_argument("--no-zip", dest="zip", action="store_false")
