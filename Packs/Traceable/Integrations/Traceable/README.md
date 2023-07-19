@@ -28,6 +28,7 @@ The following parameters can be used to customize what Events should be exported
 |Threat Category|Multi Select|No|Malicious Activities, API Abuse, Malicious Sources|Threat Categories to query|
 |IP Reputation Level|Multi Select|No|CRITICAL, HIGH, MEDIUM|IP Reputations to query|
 |IP Abuse Velocity|Multi Select|No|CRITICAL, HIGH, MEDIUM|IP Abuse Velocity to query|
+|IP Location Type|Multi Select|No|-|IP Location Type to query|
 
 ## Incident Types
 The integration generates _Exploit_ type of Inidents.
