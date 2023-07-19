@@ -2820,12 +2820,10 @@ script:
     - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: false
       deprecated: true
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve
       isArray: true
-      required: false
       default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
@@ -4276,7 +4274,6 @@ script:
       auto: PREDEFINED
     - description: The key to sort by.
       name: sort_key
-      required: false
       predefined:
       - RISK_SCORE
       - PRIMARY_DISPLAY_NAME
@@ -4286,7 +4283,6 @@ script:
       auto: PREDEFINED
     - description: The sort order.
       name: sort_order
-      required: false
       predefined:
       - 'DESCENDING'
       - 'ASCENDING'
@@ -4294,19 +4290,15 @@ script:
       defaultValue: ASCENDING
     - description: Comma separated list of entity IDs to look for.
       name: entity_id
-      required: false
       isArray: true
     - description: Primary display name to filter by.
       name: primary_display_name
-      required: false
       isArray: true
     - description: Secondary display name to filter by.
       name: secondary_display_name
-      required: false
       isArray: true
     - description: The maximum risk score severity to filter by.
       name: max_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4314,7 +4306,6 @@ script:
       auto: PREDEFINED
     - description: The minimum risk score severity to filter by.
       name: min_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4322,27 +4313,21 @@ script:
       auto: PREDEFINED
     - description: Whether to get only enabled or disabled identity entities.
       name: enabled
-      required: false
       predefined:
       - 'true'
       - 'false'
       auto: PREDEFINED
     - description: Filter by email.
       name: email
-      required: false
     - description: The hash for the next page.
       name: next_token
-      required: false
-    - description:  The maximum number of items to fetch per page. The maximum value allowed is 1000.
+    - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
       name: page_size
-      required: false
       defaultValue: 50
-    - description: The page number. Default is 1. 
+    - description: The page number. Default is 1.
       name: page
-      required: false
     - description: The maximum number of identity entities to list.
       name: limit
-      required: false
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
