@@ -411,10 +411,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
 
 
 class PackSupportCondition(MetadataCondition):
-    ALLOWED_SUPPORT_TYPE = [Metadata.XSOAR_SUPPORT,'Xsoar', 'Partner', 'Community']
-    # XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
-    # PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
-    # COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
+    ALLOWED_SUPPORT_TYPE = [Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT, Metadata., Metadata.COMMUNITY_SUPPORT]
     def generate_skip_reason(self, support_type: Optional[str], **kwargs) -> str:  # type: ignore[override]
         """
         Args:
@@ -436,7 +433,7 @@ class PackSupportCondition(MetadataCondition):
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
         support_type = self.branch_metadata.get(Metadata.SUPPORT)
-        if support_type != self.ALLOWED_SUPPORT_TYPE:
+        if support_type not in self.ALLOWED_SUPPORT_TYPE:
             return ConditionResult(
                 should_skip=True,
                 reason=self.generate_skip_reason(support_type=support_type),
