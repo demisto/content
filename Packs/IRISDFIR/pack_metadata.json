@@ -1,0 +1,21 @@
+{
+    "name": "IRIS DFIR",
+    "description": "IRIS is a collaborative platform aiming to help incident responders to share technical details during investigations. It's free and open-source.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Fabio Dias",
+    "url": "",
+    "email": "",
+    "created": "2023-07-19T15:46:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Enigmatyk"
+    ]
+}
