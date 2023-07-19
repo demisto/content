@@ -1,5 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
+from typing import Optional
 
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
@@ -76,7 +77,7 @@ class TestConf(DictFileBased):
                 result[integration].append(test)
         return dict(result)
 
-    def get_test(self, test_id: str) -> TestConfItem | None:
+    def get_test(self, test_id: str) -> Optional[TestConfItem]:
         try:
             return self.test_id_to_test[test_id]
         except KeyError:
