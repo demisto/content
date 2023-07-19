@@ -84,6 +84,9 @@ MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
                     rt_start_position, rt_end_position or format_attr"""
 MARKDOWN_EXTRA_FORMATS = """Too many style in text. you can provide only one style type"""
 MARKDOWN_EXTRA_MENTIONS = """Too many mentions in text. you can provide only one mention in each message"""
+MISSING_ARGUMENT_JID = """Missing either a user JID  or a channel id"""
+TOO_MANY_JID = """Too many argument you must provide either a user JID  or a channel id and not both """
+
 
 
 '''CLIENT CLASS'''
@@ -311,6 +314,14 @@ class Client(Zoom_Client):
                 'search_key': search_key,
                 'search_type': search_type,
                 'exclude_child_message': exclude_child_message}
+        )
+        
+    def zoom_send_notification(self, url_suffix: str, json_data: dict):
+        return self.error_handled_http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers={'authorization': f'Bearer {self.access_token}'}
         )
 
 
@@ -1596,6 +1607,37 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     )
 
 
+def zoom_send_notification_command(client, botJID: str, account_id: str, **args) -> CommandResults:
+    client = client
+    message = args.get('message')
+    to = args.get('to')
+    channel_id = args.get('channel_id')
+    visible_to_user = argToBoolean(args.get('visible_to_user'))
+    
+    if (to and channel_id):
+        raise DemistoException(TOO_MANY_JID)
+    if not to and not channel_id:
+        raise DemistoException(MISSING_ARGUMENT_JID)
+        
+    url_suffix = '/im/chat/messages'
+    json_data_all = {
+        "robot_jid": botJID,
+        "to_jid": to if to else channel_id,
+        "account_id": account_id,
+        "visible_to_user": visible_to_user,
+        "content": {
+            "head": {
+                "text": message
+            }
+        }
+    }
+    json_data = remove_None_values_from_dict(json_data_all)
+
+    raw_data = client.zoom_send_notification(url_suffix, json_data)
+    
+    
+    return CommandResults()
+
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -1607,6 +1649,9 @@ def main():  # pragma: no cover
     client_secret = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    botJID = params.get('botJID')
+    botEndpointURL = params.get('botEndpointURL')
+    longRunning = params.get('longRunning', False)
     command = demisto.command()
 
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
@@ -1624,7 +1669,7 @@ def main():  # pragma: no cover
             account_id=account_id,
             client_id=client_id,
             client_secret=client_secret,
-        )
+            )
 
         if command == 'test-module':
             return_results(test_module(client=client))
@@ -1670,6 +1715,9 @@ def main():  # pragma: no cover
             results = zoom_delete_message_command(client, **args)
         elif command == 'zoom-update-message':
             results = zoom_update_message_command(client, **args)
+        elif command == 'zoom-send-notification':
+            results = zoom_send_notification_command(client, botJID, account_id, **args)
+
         else:
             return_error('Unrecognized command: ' + demisto.command())
         return_results(results)

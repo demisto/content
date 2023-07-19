@@ -34,9 +34,24 @@ configuration:
   type: 4
   additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hidden: true
+- display: Long running instance
+  name: longRunning
+  type: 8
 - display: Use system proxy settings
   name: proxy
   type: 8
+- display: Bot JID
+  name: botJID
+  type: 0
+  required: false
+  hiddenpassword: true
+  additionalinfo: The BotJID in the Chat subscription section on the Features page
+    of your App Dashboard.
+- display: 'Bot Endpoint URL'
+  name: 'botEndpointURL'
+  type: 0
+  required: false
+  additionalinfo: Your server’s endpoint URL  
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1155,6 +1170,27 @@ script:
     - contextPath: Zoom.ChatMessage.next_page_token
       type: string
       description: The next page token for pagination.
+  - name: zoom-send-notification
+    description: >
+      sending message using chatbot app
+    arguments:
+    - name: message
+      description: the message
+      required: true
+      type: string
+    - name: to
+      description: The user to whom to send the message. You must provide this parameter or the channel_id parameter.
+      required: true
+      type: string
+    - name: channel_id
+      description: >
+        The ID of the channel to which to send the message. You must provide this parameter or the to parameter.
+      type: string
+    - name: visible_to_user
+      description: >
+        The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message.
+      type: boolean
+    outputs: []
 
   dockerimage: demisto/pyjwt3:1.0.0.63826
   script: "-"
