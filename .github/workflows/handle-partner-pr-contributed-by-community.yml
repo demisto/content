@@ -2,7 +2,7 @@ name: Check Label Workflow
 on:
   pull_request:
     types:
-      - opened
+      - [opened, synchronize, labeled, unlabeled]
 
 permissions:
   contents: read
