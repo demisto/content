@@ -1,5 +1,4 @@
-[
-	{
+{
 		"id": "Lacework Composite Alert",
 		"version": 1,
 		"cacheVersn": 0,
@@ -41,4 +40,3 @@
 			"fieldCliNameToExtractSettings": {}
 		}
 	}
-]
