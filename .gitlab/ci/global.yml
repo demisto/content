@@ -112,7 +112,7 @@
     if [[ -n "${CONTRIB_BRANCH}" ]]; then
       CONTRIBUTOR=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
       BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-      REPO=$(basename "$(git rev-parse --show-toplevel)")
+      REPO=$(basename "$(git rev-parse --show-toplevel)") 
       python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $CONTRIBUTOR -r $REPO
     fi
   - section_end "getting contrib packs"
