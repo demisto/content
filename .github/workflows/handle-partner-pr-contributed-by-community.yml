@@ -1,0 +1,50 @@
+name: Check Label Workflow
+on:
+  pull_request:
+    types:
+      - opened
+
+permissions:
+  contents: read
+
+jobs:
+  check_label_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v8
+      - name: Install python dependencies
+        run: |
+          poetry install --with ci
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      - name: Check if label exists
+        id: check_label
+        run: |
+
+          label_name = 'Partner-Approved'
+          github_token = '${{ secrets.GITHUB_TOKEN }}'
+
+          g = Github(github_token)
+          repo = g.get_repo(f"{{ github.repository }}")
+          pr_number = int("{{ github.event.pull_request.number }}")
+
+          pr = repo.get_pull(pr_number)
+          labels = [label.name for label in pr.labels]
+
+          label_exists = label_name in labels
+          print(f'Label "{label_name}" exists: {label_exists}')
+
+          if not label_exists:
+              raise ValueError(f'Label "{label_name}" does not exist')
+          EOF
+
+      - name: Display success message
+        if: steps.check_label.outputs.returncode == '0'
+        run: echo "Label exists"
