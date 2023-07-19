@@ -10,12 +10,6 @@ ignore=RM106,RM104
 [file:playbook-Content_Update_Manager_README.md]
 ignore=RM106
 
-[file:GetLatestReleaseNotes.yml]
-ignore=CJ105
-
-[file:CollectPacksData.yml]
-ignore=CJ105
-
 [file:playbook-Content_Update_Manager.yml]
 ignore=PB106
 

@@ -2,5 +2,5 @@
 ignore=IM111
 
 [file:GuidanceEncaseEndpoint.yml]
-ignore=CJ105,RM110
+ignore=RM110
 

@@ -1,4 +1,4 @@
-[file:DataminrPulse.yml]
+x[file:DataminrPulse.yml]
 ignore=IN124
 
 [file:incidentfield-Dataminr-Pulse-Alert-Type.json]
@@ -72,9 +72,6 @@ ignore=IF115
 
 [file:incidentfield-Dataminr-Pulse-Watchlists-Matched-By-Type.json]
 ignore=IF115
-
-[file:DataminrPulseDisplayRelatedAlerts.py]
-ignore=W9012
 
 [known_words]
 pv
