@@ -260,8 +260,8 @@ class TestInitServer:
         )
         mock_client.init_server()
         assert isinstance(mock_client.server, v20.Server)
-        assert mock_auth_header_key in mock_client.server._conn.session.headers[0]
-        assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
+        assert mock_auth_header_key in mock_client.server._conn.session.headers
+        assert mock_client.server._conn.session.headers.get(mock_auth_header_key) == mock_password
 
 
 class TestInitRoots:
