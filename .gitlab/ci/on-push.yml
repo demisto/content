@@ -616,17 +616,19 @@ test-upload-flow:
     - if: '$NIGHTLY'
   extends:
     - .default-job-settings
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   script:
     - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
 
 xsoar_server_master-test_playbooks_results:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   extends: .server_test_playbooks_report
   needs: ["xsoar_server_master"]
 
 xsiam_server_ga-test_playbooks_results:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
   extends: .server_test_playbooks_report
   needs: ["xsiam_server_ga"]
 
