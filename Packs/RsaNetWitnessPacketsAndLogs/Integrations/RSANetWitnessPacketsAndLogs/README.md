@@ -794,7 +794,7 @@
 <td style="width: 138px;">concentratorPort</td>
 <td style="width: 63.5px;">uint32</td>
 <td style="width: 436.5px;">
-<p>Port to use with concentratorIP 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker ...</p>
+<p>Port to use with concentratorIP 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
 </td>
 </tr>
 <tr>
