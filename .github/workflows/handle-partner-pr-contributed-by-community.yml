@@ -11,6 +11,11 @@ jobs:
   check_label_job:
     runs-on: ubuntu-latest
     steps:
+      - name: Print out context
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
