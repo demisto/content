@@ -108,6 +108,7 @@
 
 .get_contribution_pack: &get_contribution_pack
   - section_start "getting contrib packs" --collapsed
+  - THiS IS A TEST VERSION
   - |
     if [[ -n "${CONTRIB_BRANCH}" ]]; then
       CONTRIBUTOR=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
