@@ -22,7 +22,7 @@ RESPONSE_KEYS_DICTIONARY = {
 }
 
 
-class File(object):
+class File:
     content = b"12345"
 
 
@@ -43,7 +43,8 @@ def test_remove_identity_key_with_valid_application_input():
     res = remove_identity_key(
         arguments["remove_identifier_data_application_type"]["CreatedBy"]
     )
-    assert len(res.keys()) > 1 and res.get("Type")
+    assert len(res.keys()) > 1
+    assert res.get("Type")
     assert res["ID"] == "test"
 
 
@@ -59,7 +60,8 @@ def test_remove_identity_key_with_valid_user_input():
     res = remove_identity_key(
         arguments["remove_identifier_data_user_type"]["CreatedBy"]
     )
-    assert len(res.keys()) > 1 and res.get("Type")
+    assert len(res.keys()) > 1
+    assert res.get("Type")
     assert res.get("ID") is None
 
 
@@ -85,9 +87,9 @@ def test_remove_identity_key_with_invalid_object():
     Then
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
-    object = "not a dict"
-    res = remove_identity_key(object)
-    assert res == object
+    source = 'not a dict'
+    res = remove_identity_key(source)
+    assert res == source
 
 
 def test_url_validation_with_valid_link():
@@ -113,12 +115,8 @@ def test_url_validation_with_empty_string():
         - Returns Demisto error
     """
     next_link_url = ""
-    try:
+    with pytest.raises(CommonServerPython.DemistoException):
         url_validation(next_link_url)
-    except CommonServerPython.DemistoException:
-        assert True
-    else:
-        assert False
 
 
 def test_url_validation_with_invalid_url():
@@ -131,12 +129,8 @@ def test_url_validation_with_invalid_url():
         - Returns Demisto error
     """
 
-    try:
+    with pytest.raises(CommonServerPython.DemistoException):
         url_validation(arguments["invalid_next_link_url"])
-    except CommonServerPython.DemistoException:
-        assert True
-    else:
-        assert False
 
 
 def test_parse_key_to_context_exclude_keys_from_list():
@@ -310,7 +304,7 @@ def test_list_drives_in_site(command, args, response, expected_result, mocker):
 
 
 def expected_upload_headers():
-    for header in [   # testing on the computer_architecture.pdf
+    return [
         {'Content-Length': '327680', 'Content-Range': 'bytes 0-327679/7450762',
          'Content-Type': 'application/octet-stream'},
         {'Content-Length': '327680', 'Content-Range': 'bytes 327680-655359/7450762',
@@ -357,8 +351,7 @@ def expected_upload_headers():
          'Content-Type': 'application/octet-stream'},
         {'Content-Length': '241802', 'Content-Range': 'bytes 7208960-7450761/7450762',
          'Content-Type': 'application/octet-stream'},
-    ]:
-        yield header
+    ]
 
 
 def validate_upload_attachments_flow(create_upload_mock, upload_query_mock):
@@ -425,9 +418,8 @@ class MockedResponse:
 
 def upload_response_side_effect(**kwargs):
     headers = kwargs.get('headers')
-    if headers:
-        if int(headers['Content-Length']) < MsGraphClient.MAX_ATTACHMENT_UPLOAD:
-            return MockedResponse(status_code=201, json=json_response)
+    if headers and int(headers['Content-Length']) < MsGraphClient.MAX_ATTACHMENT_UPLOAD:
+        return MockedResponse(status_code=201, json=json_response)
     return MockedResponse(status_code=202, json='')
 
 
@@ -568,7 +560,6 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
             - Ensure the output are as expected.
     """
     from MicrosoftGraphFiles import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
-    import demistomock as demisto
     import re
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
