@@ -513,7 +513,7 @@ script:
     - name: tags
       description: The name of the tags to remove from supplied IP ranges.
     description: Removes tags from a list of IP ranges.
-  - name: asm-get-incidents
+  - name: asm-list-incidents
     arguments:
     - name: incident_id_list
       description: 'Incident IDs to filter on. Note: Incident IDs may also be references

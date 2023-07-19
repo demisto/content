@@ -1136,7 +1136,7 @@ def main() -> None:
             'asm-tag-asset-remove': remove_tag_to_assets_command,
             'asm-tag-range-assign': assign_tag_to_ranges_command,
             'asm-tag-range-remove': remove_tag_to_ranges_command,
-            'asm-get-incidents': list_incidents_command,
+            'asm-list-incidents': list_incidents_command,
             'asm-update-incident': update_incident_command,
             'asm-update-alerts': update_alert_command
         }

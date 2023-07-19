@@ -1634,14 +1634,14 @@ There is no context output for this command.
 #### Human Readable Output
 ```Removal operation: succeeded```
 
-### asm-get-incidents
+### asm-list-incidents
 
 ***
 Fetches ASM incidents that match provided filters. Incidents are an aggregation of related alerts. Note: Incident IDs may also be references as "Case IDs' elsewhere in the API.
 
 #### Base Command
 
-`asm-get-incidents`
+`asm-list-incidents`
 
 #### Input
 
@@ -1688,7 +1688,7 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 | ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident. | 
 
 #### Command example
-```!asm-get-incidents limit=1 status=new```
+```!asm-list-incidents limit=1 status=new```
 #### Context Example
 ```json
 {
