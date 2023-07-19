@@ -1,6 +1,6 @@
 [MODEL: dataset="watchguard_xtm_raw"]
-alter proto = uppercase(proto)
-| alter xdm.event.id = leefEventID,
+// alter proto = uppercase(proto)
+alter xdm.event.id = leefEventID,
     xdm.observer.version = leefProductVersion,
     xdm.source.port = srcPort,
     xdm.target.port = dstPort,
