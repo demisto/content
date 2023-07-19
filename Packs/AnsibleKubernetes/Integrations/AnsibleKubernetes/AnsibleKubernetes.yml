@@ -13,10 +13,12 @@ configuration:
   displaypassword: Password
   name: creds
   type: 9
+  required: false
 - additionalinfo: Token used to authenticate with the API.
   display: API Key
   name: api_key
   type: 4
+  required: false
 - additionalinfo: Allows connection when SSL certificates are not valid. Set to `false` when certificates are not trusted.
   defaultvalue: 'False'
   display: Validate Certs
