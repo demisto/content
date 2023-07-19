@@ -9,6 +9,8 @@ IGNORED_FILES=(
     "Tests/known_words.txt"
     "Utils/should_trigger_test_upload.sh"
     "Tests/Marketplace/Tests/tests_end_to_end_xsiam/test_e2e_xsiam.py"
+    "Tests/Marketplace/Tests/tests_end_to_end_xsiam/README.md"
+    "Tests/Marketplace/Tests/tests_end_to_end_xsiam/conftest.py"
 )
 
 for i in "${IGNORED_FILES[@]}"; do
