@@ -28,7 +28,7 @@ alter
     xdm.target.url = if(_is_policy_event = True, _policy_events_urls, _mail_tracking_events_urls),
     xdm.alert.subcategory = eventSubtype,
     xdm.alert.category = eventType,
-    xdm.event.type = coalesce(eventType , logType),
+    xdm.event.type = if(_is_policy_event = True, coalesce(eventType , logType)),
     xdm.email.recipients = arraymap(headerTo -> [], trim("@element", "\"")),
     xdm.alert.original_alert_id = mailID,
     xdm.email.message_id = messageID,

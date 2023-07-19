@@ -39,6 +39,7 @@ class NoContentException(Exception):
     that arises from the API and to handle this case correctly
     see `handle_error_no_content` method
     """
+
     ...
 
 
@@ -82,74 +83,100 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def get_last_time_event(events: list[dict]) -> str:
+    latest_time_event = max(
+        events,
+        key=lambda event: datetime.strptime(
+            event["genTime"].strip("Z").split(".")[0] + "Z", DATE_FORMAT_EVENT
+        ),
+    )
+    return latest_time_event["genTime"]
+
+
+def get_events_with_duplication_risk(
+    events: list[dict], latest_time: str
+) -> list[dict]:
+    return list(filter(lambda event: event["genTime"] == latest_time, events))
+
+
+def generate_id_for_event(event: dict) -> str:
+    return (
+        (event.get("messageID", "") or "")
+        + (event.get("subject", "") or "")
+        + (str(event.get("size", "")) or "")
+    )
+
+
+def get_event_ids_with_duplication_risk(
+    events: list[dict], latest_time: str
+) -> list[str]:
+    """
+    Generate an ids for all events to save it in the last_run object
+    """
+    events_with_duplication_risk = get_events_with_duplication_risk(events, latest_time)
+    return [generate_id_for_event(event) for event in events_with_duplication_risk]
+
+
+def deduplicate(
+    events: list[dict], ids_fetched_by_type: list[str] | None, time_from: str
+) -> list[dict]:
+    if not ids_fetched_by_type:
+        return events
+    filtered_events: list[dict] = []
+    for event in events:
+        if event["genTime"] != time_from:
+            filtered_events.append(event)
+            continue
+        if generate_id_for_event(event) not in ids_fetched_by_type:
+            filtered_events.append(event)
+    demisto.info(f"filtered Events {filtered_events=}")
+    return filtered_events
+
+
 def managing_set_last_run(
-    client: Client,
-    len_events: int,
-    limit: int,
+    events: list[dict],
     last_run: dict,
-    time_from: str,
     time_to: datetime,
     event_type: EventType,
     next_token: str | None,
 ) -> dict:
     """
-    The function handles the following four possible cases:
+    updating the last_run
+    1. No events returned
+        - set the time_from to be time_to
+        - remove the next_token
+        - remove fetched_event_ids
+    2. events returned
+        - set the time_from to be the latest time from all the events
+        - set the next_token to be the nextToken that returned from the API
+        - set the fetched_event_ids to be all ids of events that pose a risk of duplication
 
-    1. When `next_token` did not return (there are no more logs in the current time range)
-    2. When the number of logs retrieved is less than the limit (there are no more logs in the current time range)
-    3. When the number of retrieved logs is equal to the limit and the `next_token` is returned, in this case there are two cases:
-        1. In the next api call, no logs are returned (there are no more logs in the current time range)
-        2. In the next api call, log returns.
+    Args:
+        events (list[dict]): Events returned from the API for the current event type
+        last_run (dict): last_run obj
+        time_to (datetime): The last time point from the time range on which the api was called
+        event_type (EventType): The type of event
+        next_token (str | None): Token for the next fetch
 
-    - When there are no more logs in the current time range,
-      the `time_from` for the specific `event_type` is set to `time_to` + 1 second
-      and the `next_token` for the event_type is removed.
-
-    - In the case where there are another logs in the current time range,
-      the `genTime` of the log from the next api call is set to be the `time_from`
-      for the specific `event_type` for the next call and the `next_token` for the specific `event_type`
-      is set to be the `next_token` from the function's arguments.
-
+    Returns:
+        dict: last_run obj updated
     """
-
-    # the flag using detect if there are more logs in current time range
-    no_more_events_in_current_range_time = False
-
-    # In both cases there are no more logs in current range time
-    if len_events < limit or not next_token:
-        no_more_events_in_current_range_time = True
-
-    else:
-        # order the parameters for the api call with limit 1 and the `next_token`,
-        # the API call is consumed due ensure there is more logs in current range time
-        params = assign_params(
-            start=time_from,
-            end=time_to.strftime(DATE_FORMAT_EVENT),
-            limit=1,
-            token=urllib.parse.unquote(next_token),
-            type=event_type.value,
-        )
-
-        try:
-            event = client.get_logs(event_type, params)
-        except NoContentException:
-            # there are no more logs in current range time
-            no_more_events_in_current_range_time = True
-
-    if no_more_events_in_current_range_time or not event.get("logs"):
-        # save the time_from for a specific `event_type` for the next fetch
-        # the `start` time of the next fetch is time_to + 1 second
-        last_run[f"time_{event_type}_from"] = (time_to + timedelta(seconds=1)).strftime(
-            DATE_FORMAT_EVENT
-        )
-
-        # removing the `next_token` for a specific `event_type` from the `last_run`
+    if not events:
+        last_run[f"time_{event_type.value}_from"] = time_to.strftime(DATE_FORMAT_EVENT)
         last_run.pop(f"next_token_{event_type.value}", None)
-        return last_run
-
-    # In case returned log from the API call
-    last_run[f"time_{event_type.value}_from"] = event.get("logs")[0]["genTime"]
-    last_run[f"next_token_{event_type.value}"] = next_token
+        last_run.pop(f"fetched_event_ids_of_{event_type.value}", None)
+        demisto.info(f"No Events{last_run=}")
+    else:
+        latest_time = get_last_time_event(events)
+        last_run[f"time_{event_type.value}_from"] = latest_time
+        if next_token:
+            last_run[f"next_token_{event_type.value}"] = next_token
+        else:
+            last_run.pop(f"next_token_{event_type.value}", None)
+        last_run[
+            f"fetched_event_ids_of_{event_type.value}"
+        ] = get_event_ids_with_duplication_risk(events, latest_time)
+        demisto.info(f"There is Events{last_run=}")
 
     return last_run
 
@@ -161,7 +188,7 @@ def order_first_fetch(first_fetch: str) -> str:
     first_fetch: Optional[datetime] = arg_to_datetime(first_fetch)
     max_time_ago: Optional[datetime] = arg_to_datetime("4321 minutes")
     if first_fetch and max_time_ago:
-        if (first_fetch <= max_time_ago):
+        if first_fetch <= max_time_ago:
             raise ValueError(
                 "The request retrieves logs created within 72 hours at most before sending the request\n"
                 "Please put in the First Fetch Time parameter a value that is at most 72 hours / 3 days"
@@ -224,12 +251,13 @@ def fetch_events_command(
     """
     hide_sensitive = argToBoolean(args.get("hide_sensitive", True))
     time_to = datetime.now()
-    limit: int = arg_to_number(args.get("max_fetch", "1000"))  # type: ignore[assignment]
+    limit: int = arg_to_number(args.get("max_fetch", "5000"))  # type: ignore[assignment]
 
     events: list[dict] = []
     new_last_run: dict[str, str] = {}
     for event_type in EventType:
         time_from = last_run.get(f"time_{event_type.value}_from") or first_fetch
+        ids_fetched_by_type = last_run.get(f"fetched_event_ids_of_{event_type.value}")
 
         events_by_type, next_token = fetch_by_event_type(
             client=client,
@@ -237,6 +265,7 @@ def fetch_events_command(
             end=time_to.strftime(DATE_FORMAT_EVENT),
             limit=limit,
             token=last_run.get(f"next_token_{event_type.value}"),
+            ids_fetched_by_type=ids_fetched_by_type,
             event_type=event_type,
             hide_sensitive=hide_sensitive,
         )
@@ -244,11 +273,8 @@ def fetch_events_command(
         events.extend(events_by_type)
 
         last_run_for_type = managing_set_last_run(
-            client=client,
-            len_events=len(events_by_type),
-            limit=limit,
+            events=events_by_type,
             last_run=last_run,
-            time_from=time_from,
             time_to=time_to,
             next_token=next_token,
             event_type=event_type,
@@ -265,6 +291,7 @@ def fetch_by_event_type(
     end: str,
     limit: int,
     token: str | None,
+    ids_fetched_by_type: list[str] | None,
     event_type: EventType,
     hide_sensitive: bool,
 ) -> tuple[list[dict], str | None]:
@@ -280,7 +307,9 @@ def fetch_by_event_type(
         start (str), end (str): Start and end time period to retrieve logs.
         limit (int): Maximum number of log items to return.
         token (str | None): Token for retrieve the next set of log items.
+        ids_fetched_by_type (set[str] | None): ****
         event_type (EventType): The type of event log to return.
+        hide_sensitive (bool): ****
 
     Returns:
         tuple[list[dict], str | None]: List of the logs returned from trend micro,
@@ -300,7 +329,7 @@ def fetch_by_event_type(
     events_res: list[dict] = []
     while len(events_res) < limit:
         params["limit"] = min(limit - len(events_res), 500)
-
+        demisto.info(f"{len(events_res)}")
         try:
             res = client.get_logs(event_type, params)
         except NoContentException:
@@ -319,7 +348,7 @@ def fetch_by_event_type(
                 if hide_sensitive:
                     remove_sensitive_from_events(event)
 
-            events_res.extend(res.get("logs"))
+            events_res.extend(deduplicate(res.get("logs"), ids_fetched_by_type, start))
 
         else:  # no logs
             next_token = None
@@ -345,7 +374,7 @@ def main() -> None:  # pragma: no cover
     api_key = params["credentials"]["password"]
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    first_fetch = order_first_fetch(params.get("first_fetch") or "3 days")
+    first_fetch = order_first_fetch(params.get("first_fetch") or "1 days")
 
     should_push_events = argToBoolean(args.get("should_push_events", False))
     last_run = demisto.getLastRun()

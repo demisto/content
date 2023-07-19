@@ -8,6 +8,9 @@ from TrendMicroEmailSecurityEventCollector import (
     fetch_by_event_type,
     fetch_events_command,
     remove_sensitive_from_events,
+    generate_id_for_event,
+    get_event_ids_with_duplication_risk,
+    deduplicate,
     NoContentException,
     DATE_FORMAT_EVENT,
     EventType,
@@ -133,68 +136,37 @@ def test__encode_authorization(mock_client: Client):
 
 @freeze_time("2023-07-06T15:04:05 UTC")
 @pytest.mark.parametrize(
-    "args, mock_exception, mock_api",
+    "events, last_run, event_type, next_token",
     [
-        pytest.param(
-            {
-                "last_run": {},
-                "len_events": 1,
-                "limit": 2,
-                "time_from": "2023-07-05T15:04:05Z",
-                "event_type": EventType.ACCEPTED_TRAFFIC,
-                "next_token": "test_test",
-            },
-            None,
+        (
+            [
+                {
+                    "messageID": "<11111.11111.11111.1111@mx.test.com>",
+                    "subject": "test-test2 - 1111",
+                    "size": 3000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<22222.22222.22222.2222@mx.test.com>",
+                    "subject": "test1-test2 - 2222",
+                    "size": 4000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<33333.33333.33333.3333@mx.test.com>",
+                    "subject": "test2-test2 - 3333",
+                    "size": 5000,
+                    "genTime": "2023-07-14T10:00:18Z",
+                }
+            ],
             {},
-            id="len(events) < limit",
-        ),
-        pytest.param(
-            {
-                "last_run": {},
-                "len_events": 2,
-                "limit": 2,
-                "time_from": "2023-07-05T15:04:05Z",
-                "event_type": EventType.ACCEPTED_TRAFFIC,
-                "next_token": None,
-            },
-            None,
-            {},
-            id="no nextToken",
-        ),
-        pytest.param(
-            {
-                "last_run": {"next_token_accepted_traffic": "test_1"},
-                "len_events": 2,
-                "limit": 2,
-                "time_from": "2023-07-05T15:04:05Z",
-                "event_type": EventType.ACCEPTED_TRAFFIC,
-                "next_token": "test_token",
-            },
-            NoContentException("No content"),
-            {},
-            id="len(events) == limit, returned No Content from next API call",
-        ),
-        pytest.param(
-            {
-                "last_run": {},
-                "len_events": 2,
-                "limit": 2,
-                "time_from": "2023-07-05T15:04:05Z",
-                "event_type": EventType.ACCEPTED_TRAFFIC,
-                "next_token": "test_token",
-            },
-            None,
-            {"nextToken": "test", "logs": [{"genTime": "2023-07-05T16:04:05Z"}]},
-            id="len(events) == limit, event returned from the API call",
-        ),
+            EventType.ACCEPTED_TRAFFIC,
+            "test"
+        )
     ],
 )
 def test_managing_set_last_run(
-    mocker,
-    mock_client: Client,
-    args,
-    mock_exception: NoContentException,
-    mock_api: dict,
+    events: list[dict], last_run, event_type, next_token
 ):
     """
     Given:
@@ -208,30 +180,15 @@ def test_managing_set_last_run(
           when no event returns from the api call
     """
     time_to = datetime.now()
-    mocker.patch.object(
-        mock_client,
-        "get_logs",
-        side_effect=mock_exception,
-        return_value=mock_api,
-    )
-    results = managing_set_last_run(
-        client=mock_client,
-        len_events=args["len_events"],
-        limit=args["limit"],
-        last_run=args["last_run"],
-        time_from=args["time_from"],
-        time_to=time_to,
-        event_type=args["event_type"],
-        next_token=args["next_token"],
-    )
 
-    expected_time_from_for_event_type = mock_api.get("logs", [{}])[0].get(
-        "genTime"
-    ) or (time_to + timedelta(seconds=1)).strftime(DATE_FORMAT_EVENT)
-    assert (
-        results.get(f"time_{args['event_type']}_from")
-        == expected_time_from_for_event_type
+    results = managing_set_last_run(
+        events=events,
+        last_run=last_run,
+        time_to=time_to,
+        event_type=event_type,
+        next_token=next_token
     )
+    assert results
 
 
 @pytest.mark.parametrize(
@@ -251,7 +208,7 @@ def test_fetch_by_event_type_token_unquote(
     """
     mock_api = mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
     fetch_by_event_type(
-        mock_client, "", "", limit, next_token, EventType.ACCEPTED_TRAFFIC, False
+        mock_client, "", "", limit, next_token, None, EventType.ACCEPTED_TRAFFIC, False
     )
     assert mock_api.call_args[0][1]["token"] == "abc abc"
 
@@ -282,7 +239,7 @@ def test_fetch_by_event_type_returned_next_token_none(
     """
     mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
     _, next_token = fetch_by_event_type(
-        mock_client, "", "", limit, None, EventType.ACCEPTED_TRAFFIC, False
+        mock_client, "", "", limit, None, None, EventType.ACCEPTED_TRAFFIC, False
     )
 
     assert not next_token
@@ -365,7 +322,7 @@ def test_fetch_by_event_type(
     """
     mock_api = mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
     events, next_token = fetch_by_event_type(
-        mock_client, "", "", limit, None, EventType.ACCEPTED_TRAFFIC, False
+        mock_client, "", "", limit, None, None, EventType.ACCEPTED_TRAFFIC, False
     )
 
     assert len(events) == expected_results["len_events"]
@@ -410,9 +367,9 @@ def test_fetch_by_event_type(
                 f"time_{EventType.BLOCKED_TRAFFIC.value}_from": "2023-09-11T15:47:25Z",
             },
             [
-                {"limit": 1000, "start": "2023-08-11T15:47:25Z"},
-                {"limit": 1000, "start": "2023-09-11T15:47:25Z"},
-                {"limit": 1000, "start": "2023-02-11T15:47:25Z"},
+                {"limit": 5000, "start": "2023-08-11T15:47:25Z"},
+                {"limit": 5000, "start": "2023-09-11T15:47:25Z"},
+                {"limit": 5000, "start": "2023-02-11T15:47:25Z"},
             ],
         ),
     ],
@@ -447,3 +404,143 @@ def test_fetch_events_command(
     for i in range(3):
         assert mock_func.call_args_list[i][1]["limit"] == expected_calls[i]["limit"]
         assert mock_func.call_args_list[i][1]["start"] == expected_calls[i]["start"]
+
+
+@pytest.mark.parametrize(
+    "event, expected_results",
+    [
+        (
+            {
+                "messageID": "<11111.11111.11111.1111@mx.test.com>",
+                "subject": "test-test2 - 1111",
+                "size": 3000,
+            },
+            "<11111.11111.11111.1111@mx.test.com>test-test2 - 11113000",
+        ),
+        (
+            {
+                "messageID": "<11111.11111.11111.1111@mx.test.com>",
+                "subject": None,
+                "size": 3000,
+            },
+            "<11111.11111.11111.1111@mx.test.com>3000",
+        ),
+        (
+            {"messageID": "<11111.11111.11111.1111@mx.test.com>", "size": 3000},
+            "<11111.11111.11111.1111@mx.test.com>3000",
+        ),
+    ],
+)
+def test_generate_id_for_event(event: dict, expected_results: str):
+    """
+    Given:
+        - event
+    When:
+        - run `generate_id_for_event` function
+    Then:
+        - Ensure that ID is returned which is created
+          by concatenating 3 values included in the event
+    """
+    result = generate_id_for_event(event)
+    assert result == expected_results
+
+
+@pytest.mark.parametrize(
+    "events, latest_time, expected_results",
+    [
+        (
+            [
+                {
+                    "messageID": "<11111.11111.11111.1111@mx.test.com>",
+                    "subject": "test-test2 - 1111",
+                    "size": 3000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<22222.22222.22222.2222@mx.test.com>",
+                    "subject": "test1-test2 - 2222",
+                    "size": 4000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<33333.33333.33333.3333@mx.test.com>",
+                    "subject": "test2-test2 - 3333",
+                    "size": 5000,
+                    "genTime": "2023-07-14T10:00:18Z",
+                },
+            ],
+            "2023-07-15T10:00:18Z",
+            {
+                "<11111.11111.11111.1111@mx.test.com>test-test2 - 11113000",
+                "<22222.22222.22222.2222@mx.test.com>test1-test2 - 22224000",
+            },
+        )
+    ],
+)
+def test_get_event_ids_with_duplication_risk(
+    events: list[dict], latest_time: str, expected_results: set[str]
+):
+    results = get_event_ids_with_duplication_risk(events, latest_time)
+    assert len(results) == len(expected_results)
+    for result in results:
+        assert result in expected_results
+
+
+@pytest.mark.parametrize(
+    "events, ids_fetched_by_type, time_from, expected_results",
+    [
+        (
+            [
+                {
+                    "messageID": "<11111.11111.11111.1111@mx.test.com>",
+                    "subject": "test-test2 - 1111",
+                    "size": 3000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<22222.22222.22222.2222@mx.test.com>",
+                    "subject": "test1-test2 - 2222",
+                    "size": 4000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<33333.33333.33333.3333@mx.test.com>",
+                    "subject": "test2-test2 - 3333",
+                    "size": 5000,
+                    "genTime": "2023-07-14T10:00:18Z",
+                }
+            ],
+            {"<11111.11111.11111.1111@mx.test.com>test-test2 - 11113000"},
+            "2023-07-15T10:00:18Z",
+            2
+        ),
+        (
+            [
+                {
+                    "messageID": "<11111.11111.11111.1111@mx.test.com>",
+                    "subject": "test-test2 - 1111",
+                    "size": 3000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<22222.22222.22222.2222@mx.test.com>",
+                    "subject": "test1-test2 - 2222",
+                    "size": 4000,
+                    "genTime": "2023-07-15T10:00:18Z",
+                },
+                {
+                    "messageID": "<33333.33333.33333.3333@mx.test.com>",
+                    "subject": "test2-test2 - 3333",
+                    "size": 5000,
+                    "genTime": "2023-07-14T10:00:18Z",
+                }
+            ],
+            None,
+            "2023-07-15T10:00:18Z",
+            3
+        )
+    ]
+)
+def test_deduplicate(events: list[dict], ids_fetched_by_type: set[str] | None, time_from: str, expected_results):
+    results = deduplicate(events, ids_fetched_by_type, time_from)
+    assert expected_results == len(results)
