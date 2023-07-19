@@ -32,7 +32,7 @@ Open your Apache Web Server instance, and follow these instructions [Documentati
    <facility>.<priority> <TAB><TAB>@<host>:<port>
 ```
    Where:
-   * **facility** - This value must match the value that you typed in the previous step.
+   * **facility** - This value must match the value that you typed in the step 3.
    * **priority** - This value must match the value that you typed in step 3.
    * **TAB** - Indicates you must press the Tab key.
    * **host** - The syslog destination IP address.
