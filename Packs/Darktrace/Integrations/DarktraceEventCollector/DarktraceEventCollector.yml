@@ -100,3 +100,5 @@ script:
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- marketplacev2
