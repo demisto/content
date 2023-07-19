@@ -629,16 +629,16 @@ class XSOARBuild(Build):
             self: A build object
         """
         # Install all existing packs with latest version
-        # self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
-        #                                           service_account=self.service_account)
-        # # creates zip file test_pack.zip witch contains all existing TestPlaybooks
-        # create_test_pack()
-        # # uploads test_pack.zip to all servers
-        # self.concurrently_run_function_on_servers(function=upload_zipped_packs,
-        #                                           pack_path=f'{Build.test_pack_target}/test_pack.zip')
-        #
-        # logging.info('Sleeping for 45 seconds while installing nightly packs')
-        # sleep(45)
+        self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
+                                                  service_account=self.service_account)
+        # creates zip file test_pack.zip witch contains all existing TestPlaybooks
+        create_test_pack()
+        # uploads test_pack.zip to all servers
+        self.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+
+        logging.info('Sleeping for 45 seconds while installing nightly packs')
+        sleep(45)
         logging.info('skipping installing nightly packs')
 
     @run_with_proxy_configured
@@ -801,21 +801,20 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        # success = self.install_packs(install_packs_one_by_one=True)
-        # if not success:
-        #     logging.error('Failed to install content packs, aborting.')
-        #     sys.exit(1)
-        # # creates zip file test_pack.zip witch contains all existing TestPlaybooks
-        # create_test_pack()
-        # # uploads test_pack.zip to all servers (we have only one cloud server)
-        # for server in self.servers:
-        #     upload_zipped_packs(client=server.client,
-        #                         host=server.name,
-        #                         pack_path=f'{Build.test_pack_target}/test_pack.zip')
-        #
-        # logging.info('Sleeping for 45 seconds while installing nightly packs')
-        # sleep(45)
-        logging.info('skipping pack installations for xsoar-ng')
+        success = self.install_packs(install_packs_one_by_one=True)
+        if not success:
+            logging.error('Failed to install content packs, aborting.')
+            sys.exit(1)
+        # creates zip file test_pack.zip witch contains all existing TestPlaybooks
+        create_test_pack()
+        # uploads test_pack.zip to all servers (we have only one cloud server)
+        for server in self.servers:
+            upload_zipped_packs(client=server.client,
+                                host=server.name,
+                                pack_path=f'{Build.test_pack_target}/test_pack.zip')
+
+        logging.info('Sleeping for 45 seconds while installing nightly packs')
+        sleep(45)
 
     def test_integrations_post_update(self, new_module_instances: list,
                                       modified_module_instances: list) -> tuple:
