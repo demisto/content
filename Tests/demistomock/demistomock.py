@@ -8,6 +8,7 @@ import os
 
 integrationContext = {}
 is_debug = False  # type: bool
+ARGS_COMMAND_PATH = Path(__file__).parent / ".args_command.json"
 
 exampleIncidents = [
     {
@@ -450,9 +451,11 @@ def args():
       dict: Arguments object
 
     """
-    if demisto_args := os.getenv("DEMISTO_ARGS_COMMAND"):
-        with Path(demisto_args).open() as f:
-            return json.load(f)["args"]
+    if Path(ARGS_COMMAND_PATH).exists():
+        with Path(ARGS_COMMAND_PATH).open() as f:
+            args = json.load(f)
+            args.pop("cmd", None)
+            return args
     return {}
 
 
@@ -464,9 +467,9 @@ def command():
       str: Integrations command name
 
     """
-    if demisto_args := os.getenv("DEMISTO_ARGS_COMMAND"):
-        with Path(demisto_args).open() as f:
-            return json.load(f)["command"]
+    if Path(ARGS_COMMAND_PATH).exists():
+        with Path(ARGS_COMMAND_PATH).open() as f:
+            return json.load(f)["cmd"]
 
     return ""
 
