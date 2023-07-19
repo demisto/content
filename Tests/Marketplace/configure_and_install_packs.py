@@ -97,10 +97,10 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
     logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
 
-    for b in batch(pack_ids_with_valid_min_server_version, batch_size=20):
+    for b in batch(list(pack_ids_with_valid_min_server_version), batch_size=20):
         logging.info(f'installing packs in batch: {b}')
         install_packs_from_content_packs_to_install_path(servers=servers,
-                                                         pack_ids=list(b),
+                                                         pack_ids=b,
                                                          marketplace_tag_name=XSOAR_MP)
     logging.success(
         f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
