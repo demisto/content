@@ -349,7 +349,7 @@ script:
       - "50103"
       - "50104"
       - "50105"
-      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
       defaultValue: "50105"
     - name: useSSL
       auto: PREDEFINED
