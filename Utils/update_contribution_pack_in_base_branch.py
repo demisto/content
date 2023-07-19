@@ -11,14 +11,16 @@ def main():
     parser = argparse.ArgumentParser(description='Deploy a pack from a contribution PR to a branch')
     parser.add_argument('-p', '--pr_number', help='Contrib PR number')
     parser.add_argument('-b', '--branch', help='The contrib branch')
-    parser.add_argument('-c', '--contrib_repo', help='The contrib repo')
+    parser.add_argument('-c', '--contrib', help='The contributor name')
+    parser.add_argument('-r', '--repo', help='The contrib repo')
     args = parser.parse_args()
 
     pr_number = args.pr_number
-    repo = args.contrib_repo
+    contributor = args.contrib
     branch = args.branch
+    repo = args.repo
 
-    packs_dir_names = get_files_from_github(repo, branch, pr_number)
+    packs_dir_names = get_files_from_github(contributor, branch, pr_number, repo)
     if packs_dir_names:
         print('Successfully updated the base branch '
               'with the following contrib packs: Packs/'
@@ -49,7 +51,7 @@ def get_pr_files(pr_number: str) -> Iterable[str]:
         page += 1
 
 
-def get_files_from_github(username: str, branch: str, pr_number: str) -> List[str]:
+def get_files_from_github(username: str, branch: str, pr_number: str, repo: str) -> list[str]:
     """
     Write the changed files content repo
     Args:
@@ -62,7 +64,7 @@ def get_files_from_github(username: str, branch: str, pr_number: str) -> List[st
     content_path = os.getcwd()
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
-    base_url = f'https://raw.githubusercontent.com/{username}/content/{branch}/'
+    base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
     for file_path in get_pr_files(pr_number):
         abs_file_path = os.path.join(content_path, file_path)
         abs_dir = os.path.dirname(abs_file_path)
