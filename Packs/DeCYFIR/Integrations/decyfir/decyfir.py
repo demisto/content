@@ -198,9 +198,7 @@ class Client(BaseClient):
                 }
             ],
             "customFields": {
-                "decyfirdatadetails": decyfir_data_details,
-                # "decyfirsubcategory": alert_subtype,
-                # "decyfircategory": alert_type,
+                "decyfirdatadetails": decyfir_data_details
             }
         }
 
