@@ -10,10 +10,12 @@ configuration:
   name: first_fetch
   defaultvalue: 7 days
   type: 0
+  required: false
 - display: Max fetch
   defaultvalue: '50'
   name: max_fetch
   type: 0
+  required: false
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
   defaultvalue: https://safewalk-server.company.com:8443/
@@ -22,9 +24,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: API Key
   name: apikey
   defaultvalue: f8ee1ee7135d547368122410e19436d47fc351dc
@@ -34,16 +38,20 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
+  required: false
 - name: feedReputation
   display: Indicator Reputation
   type: 18
@@ -53,6 +61,7 @@ configuration:
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -73,20 +82,25 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
+  required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - name: feedTags
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
+  required: false
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -96,6 +110,7 @@ configuration:
   - WHITE
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 script:
   commands:
   - name: safewalk-get-transactionlog
