@@ -71,7 +71,7 @@ class ASClient:
         """
             Send the get blob service properties request to the API.
         Args:
-            account_name: The storage account name.
+            account_name: The storage account name.fff
 
         Returns:
             The json response from the API call.
