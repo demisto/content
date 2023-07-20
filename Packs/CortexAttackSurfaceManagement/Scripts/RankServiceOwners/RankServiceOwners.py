@@ -18,7 +18,8 @@ import numpy as np
 import google.cloud.storage
 
 
-from typing import Iterable, List, Dict, Any, Optional, Set, Callable, Tuple
+from typing import Any
+from collections.abc import Iterable, Callable
 
 
 STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
@@ -61,7 +62,7 @@ def load_pickled_xpanse_object(file_name: str) -> Any:
         return pickle.load(f)
 
 
-def featurize(asm_system_ids: List[str], owners: List[Dict[str, Any]]) -> np.ndarray:
+def featurize(asm_system_ids: list[str], owners: list[dict[str, Any]]) -> np.ndarray:
     """
     Featurize owners
     """
@@ -70,7 +71,7 @@ def featurize(asm_system_ids: List[str], owners: List[Dict[str, Any]]) -> np.nda
     return feats
 
 
-def normalize_scores(scores: List[float]) -> List[float]:
+def normalize_scores(scores: list[float]) -> list[float]:
     """
     Normalizes a list of non-negative reals to values between 0.5 and 1
 
@@ -81,7 +82,7 @@ def normalize_scores(scores: List[float]) -> List[float]:
     return [round(score / total / 2 + 0.5, ndigits=2) for score in scores]
 
 
-def score(owners: List[Dict[str, Any]], asm_system_ids: List[str]) -> List[Dict[str, Any]]:
+def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[str, Any]]:
     """
     Load the model, featurize inputs, score owners, normalize scores, and update the owners dicts
     """
@@ -94,7 +95,7 @@ def score(owners: List[Dict[str, Any]], asm_system_ids: List[str]) -> List[Dict[
     return owners
 
 
-def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def rank(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Sort owners by ranking score and use data-driven algorithm to return the top k,
     where k is a dynamic value based on the relative scores
@@ -105,7 +106,7 @@ def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)[:k]
 
 
-def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     """
     For now, `Justification` is the same as `Source`; in the future, will sophisticate
 
@@ -128,7 +129,7 @@ def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
     return owners
 
 
-def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
+def _canonicalize(owner: dict[str, Any]) -> dict[str, Any]:
     """
     Canonicalizes an owner dictionary and adds a deduplication key
     `Canonicalization` whose value is either:
@@ -147,7 +148,7 @@ def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
     return owner
 
 
-def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def canonicalize(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     """
     Calls _canonicalize on each well-formatted owner; drops and logs malformated inputs
     """
@@ -163,7 +164,7 @@ def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     return canonicalized
 
 
-def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     """
     Aggregate owners by their canonicalization.
 
@@ -281,7 +282,7 @@ def _get_k(
 
 
 # Model Featurization Code
-def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> Set[str]:
+def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str]:
     """
     Return all the spaceless ways that `personal_monikers` might manifest.
     Guaranteed lower case. Removes hyphens and quotes, and anything that
@@ -293,16 +294,16 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> Set[str
         if "@" in moniker:
             moniker = moniker[:moniker.index("@")]
 
-        split_full_moniker: List[str] = [
+        split_full_moniker: list[str] = [
             t.replace("-", "").replace("'", "") for t in moniker.split()
         ]
         result_set |= set(split_full_moniker)
 
         if len(split_full_moniker) >= 2:
             canonical_first_name: str = split_full_moniker[0]
-            all_possible_first_names: List[str] = [canonical_first_name]
+            all_possible_first_names: list[str] = [canonical_first_name]
             last_name: str = split_full_moniker[-1]
-            middle_names: List[str] = split_full_moniker[1:-1]
+            middle_names: list[str] = split_full_moniker[1:-1]
 
             # each name as a separate word
             result_set |= set(all_possible_first_names)
@@ -331,7 +332,7 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> Set[str
     return result_set
 
 
-def split_phrase(phrase: str) -> Set[str]:
+def split_phrase(phrase: str) -> set[str]:
     """
     Return the human-readable subcomponents of `phrase`.
     Keep both sides of :-delimited pairs (kv pairs).
@@ -345,7 +346,7 @@ def split_phrase(phrase: str) -> Set[str]:
 
     all_components = set()
     if ":" in phrase:
-        all_components |= set(t.strip() for t in phrase.split(":"))
+        all_components |= {t.strip() for t in phrase.split(":")}
     all_components |= set(re.split(SPLITTER, phrase))
 
     for w in all_components.copy():
@@ -353,12 +354,12 @@ def split_phrase(phrase: str) -> Set[str]:
             itertools.chain.from_iterable(re.findall(r"(\d*)([a-zA-Z]*)(\d*)", w))
         )
 
-    all_components = set([c.strip() for c in all_components if c])
-    all_components -= set(["", None])
+    all_components = {c.strip() for c in all_components if c}
+    all_components -= {"", None}
     return all_components
 
 
-def get_possible_3initials(personal_monikers: Iterable[str]) -> Set[str]:
+def get_possible_3initials(personal_monikers: Iterable[str]) -> set[str]:
     """
     Tries to generate 3 initials from `personal_monikers`. If there
     is a middle name in `personal_monikers`, returns those results.
@@ -367,22 +368,20 @@ def get_possible_3initials(personal_monikers: Iterable[str]) -> Set[str]:
     result_set = set()
     for moniker in personal_monikers:
         moniker = moniker.lower()
-        split_full_moniker: List[str] = moniker.split()
+        split_full_moniker: list[str] = moniker.split()
 
         if len(split_full_moniker) < 2:
             continue
 
         canonical_first_initial: str = split_full_moniker[0][0]
         last_initial: str = split_full_moniker[-1][0]
-        middle_names: List[str] = split_full_moniker[1:-1]
+        middle_names: list[str] = split_full_moniker[1:-1]
 
         if middle_names:
             # abort early
-            return set(
-                [
-                    f"{canonical_first_initial}{''.join([m[0] for m in middle_names])}{last_initial}"
-                ]
-            )
+            return {
+                f"{canonical_first_initial}{''.join([m[0] for m in middle_names])}{last_initial}"
+            }
         else:
             for hypothesized_letter in string.ascii_lowercase:
                 result_set.add(
@@ -405,13 +404,13 @@ def get_name_similarity_index(
     """
     total_indicators = 0.0
 
-    all_monikers: Set[str] = map(  # type: ignore
+    all_monikers: set[str] = map(  # type: ignore
         str.lower,
         generate_all_spaceless_monikers(personal_monikers),
     )
-    all_monikers = set([m for m in all_monikers if len(m) > 1])
+    all_monikers = {m for m in all_monikers if len(m) > 1}
     all_names = split_phrase(constant_name.lower())
-    all_names = set([n for n in all_names if len(n) > 1])
+    all_names = {n for n in all_names if len(n) > 1}
 
     for moniker in all_monikers:
         if moniker in all_names:
@@ -435,7 +434,7 @@ def get_name_similarity_index(
 
 
 class OwnerFeaturizationPipeline():
-    def __init__(self, sources: Optional[List] = None):
+    def __init__(self, sources: list | None = None):
         """
         Initialize a featurization pipeline.
 
@@ -459,7 +458,7 @@ class OwnerFeaturizationPipeline():
         else:
             self.SOURCES = sources.copy()
 
-        self.FEATURES: List[Tuple[str, Callable]] = [
+        self.FEATURES: list[tuple[str, Callable]] = [
             ("num_reasons", self.get_num_reasons),
             ("num_distinct_sources", self.get_num_distinct_sources),
             ("min_path_length", self.get_min_path_length),
@@ -469,31 +468,31 @@ class OwnerFeaturizationPipeline():
         ]
 
     @staticmethod
-    def _get_sources(owner: Dict[str, Any]) -> List[str]:
+    def _get_sources(owner: dict[str, Any]) -> list[str]:
         """
         Return a list of Sources.
         """
         return owner.get("Source", "").split(" | ")
 
-    def get_num_reasons(self, owner: Dict[str, Any]) -> int:
+    def get_num_reasons(self, owner: dict[str, Any]) -> int:
         """
         Returns the number of reasons on `owner`.
         """
         return len(self._get_sources(owner))
 
-    def get_num_distinct_sources(self, owner: Dict[str, Any]) -> int:
+    def get_num_distinct_sources(self, owner: dict[str, Any]) -> int:
         """
         Returns the number of distinct sources on `owner`.
         """
         # FIXME: current implementation is vulnerable to false string matches
         # solution is for RC to provide a field specifically for "Remote System Sources" that we can count
-        distinct_sources = set([])
+        distinct_sources = set()
         for src in self.SOURCES:
             if src.lower() in owner.get("Source", "").lower():
                 distinct_sources.add(src.lower())
         return len(distinct_sources)
 
-    def get_min_path_length(self, owner: Dict[str, Any]) -> Union[float, int]:
+    def get_min_path_length(self, owner: dict[str, Any]) -> Union[float, int]:
         """
         Returns the minimum path length to reach this owner.
         """
@@ -509,7 +508,7 @@ class OwnerFeaturizationPipeline():
 
     def get_name_similarity_person_asset(self,
                                          service_identifiers: Iterable[str],
-                                         owner: Dict[str, Any]) -> float:
+                                         owner: dict[str, Any]) -> float:
         """
         Returns >=1 if there is a blatant match between any `service_identifiers` and `owner`.
         Returns 0 if there is no match at all.
@@ -523,7 +522,7 @@ class OwnerFeaturizationPipeline():
                 best_similarity = similarity
         return best_similarity
 
-    def get_in_cmdb(self, owner: Dict[str, Any]) -> int:
+    def get_in_cmdb(self, owner: dict[str, Any]) -> int:
         """
         Return 1 if any `owner` is attested in any CMDB; 0 otherwise.
         """
@@ -532,7 +531,7 @@ class OwnerFeaturizationPipeline():
                 return 1
         return 0
 
-    def get_in_logs(self, owner: Dict[str, Any]) -> int:
+    def get_in_logs(self, owner: dict[str, Any]) -> int:
         """
         Return 1 if any `owner` is attested in any logs; 0 otherwise.
         """
@@ -541,7 +540,7 @@ class OwnerFeaturizationPipeline():
                 return 1
         return 0
 
-    def featurize(self, service_identifiers: Iterable[str], owners: List[Dict[str, Any]]) -> np.ndarray:
+    def featurize(self, service_identifiers: Iterable[str], owners: list[dict[str, Any]]) -> np.ndarray:
         """
         Generate a featurized numpy array from `service_identifiers` and `owners`.
         """

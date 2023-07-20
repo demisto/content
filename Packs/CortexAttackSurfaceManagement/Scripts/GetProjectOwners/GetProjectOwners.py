@@ -5,7 +5,7 @@ from those surfaced by Cortex ASM Enrichment.
 """
 
 
-from typing import Dict, List, Any
+from typing import Any
 import traceback
 import re
 
@@ -30,7 +30,7 @@ def extract_project_name(service_account: str) -> str:
         raise ValueError(f"Could not extract project name from service account {service_account}")
 
 
-def get_iam_policy(project_name: str) -> List[Dict[str, Any]]:
+def get_iam_policy(project_name: str) -> list[dict[str, Any]]:
     """
     Retrieve IAM policy for project
     """
@@ -40,13 +40,13 @@ def get_iam_policy(project_name: str) -> List[Dict[str, Any]]:
         raise RuntimeError(f"Error retrieving IAM policy for GCP project {project_name}") from ex
 
 
-def get_project_owners(results: List[Dict[str, Any]]) -> List[str]:
+def get_project_owners(results: list[dict[str, Any]]) -> list[str]:
     """
     Return list of principals with the "owner" role from results of get_iam_policy
     """
     try:
         policy = results[0]["Contents"]["bindings"]
-        owners: List[str] = []
+        owners: list[str] = []
         for group in policy:
             if group["role"] == "roles/owner":
                 owners.extend(member.replace("user:", "") for member in group["members"])
