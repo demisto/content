@@ -1221,6 +1221,8 @@ class MicrosoftClient(BaseClient):
             return err_str or error.text
         except Exception as e:
             demisto.error(f'Failed parsing JSON error response - {e}')
+        return ""
+
 
     def extract_microsoft_error(self, response: dict) -> str | None:
         """

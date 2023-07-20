@@ -590,8 +590,6 @@ def main() -> None:     # pragma: no cover
             return_results(commands_without_args[command](client, **args))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
-        else:
-            return_results(commands[command](client, **args))
 
     # Log exceptions and return errors
     except Exception as e:

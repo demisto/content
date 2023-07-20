@@ -127,6 +127,31 @@ def test_error_parser(mocker, error_content, status_code, expected_response):
     assert response == expected_response
 
 
+def test_raise_authentication_error(mocker):
+    """
+
+
+    """
+    mocker.patch.object(demisto, 'error')
+    client = oproxy_client_tenant()
+    err = Response()
+    err.status_code = 401
+    error_content_str = "Error: failed to get access token with err: " \
+                        "{\"error\":\"invalid_grant\",\"error_description\":\"AADSTS700003: Device object was not found in the " \
+                        "tenant 'test' directory.\\r\\nTrace ID: test\\r\\nCorrelation ID: test\\r\\n" \
+                        "Timestamp: 2023-07-20 12:03:53Z\",\"error_codes\":[700003],\"timestamp\":\"2023-07-20 12:03:53Z\"," \
+                        "\"trace_id\":\"test\",\"correlation_id\":\"test\"," \
+                        "\"error_uri\":\"https://login.microsoftonline.com/error?code=700003\",\"suberror\":" \
+                        "\"device_authentication_failed\",\"claims\":\"{\\\"access_token\\\":{\\\"capolids\\\":" \
+                        "{\\\"essential\\\":true,\\\"values\\\":[\\\"test\\\"]}}}\"}"
+    err._content = error_content_str.encode('utf-8')
+    err.reason = "test reason"
+    expected_msg = "Error in Microsoft authorization. Status: 401, body: invalid_grant. \nDevice object was not found in " \
+                   "the tenant 'test' directory."
+    with pytest.raises(Exception, match=expected_msg):
+        client._raise_authentication_error(err)
+
+
 def test_page_not_found_error(mocker):
     """
     Given:
