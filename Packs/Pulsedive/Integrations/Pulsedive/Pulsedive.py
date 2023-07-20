@@ -6,8 +6,9 @@ from typing import Dict, List, Optional, Union
 import dateparser
 import requests
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+
+urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
