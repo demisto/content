@@ -51,17 +51,19 @@ def main():
     leftArg = demisto.args()["left"]
     rightArg = demisto.args()["right"]
 
-    left_list = convert_all_inputs_to_list_of_strings(leftArg)
-    right_list = convert_all_inputs_to_list_of_strings(rightArg)
-    #left_list = argToList(str(leftArg))
-    #right_list = argToList(str(rightArg))
+    #left_list = convert_all_inputs_to_list_of_strings(leftArg)
+    #right_list = convert_all_inputs_to_list_of_strings(rightArg)
+    left_list = argToList(leftArg)
+    right_list = argToList(rightArg)
 
     #res = common_elements(leftArg, rightArg)
 
     for lval in left_list:
-
-        in_range = any(lval.lower() in r.lower() for r in right_list)
-        demisto.results(in_range)
+        #in_range = any(lval.lower() in r.lower() for r in right_list)
+        for rval in right_list:
+            if lval.lower() in rval.lower():
+                demisto.results(True)
+        return
 
 
 
