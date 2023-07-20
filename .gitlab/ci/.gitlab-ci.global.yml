@@ -83,8 +83,8 @@
 
 .stop_contrib_external_build: &stop_contrib_external_build
   - |
-    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?base=master?head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
-      echo "not running on contrib/ branches if there is no an open internal PR or the pipeline was manually triggered"
+    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?state=open&base=master&head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
+      echo "not running on contrib/ branches when there is no open internal PR or the pipeline was manually triggered"
       set -e
       exit 1
     fi
@@ -202,7 +202,7 @@
   trigger:
     strategy: depend
     include:
-      - local: .gitlab/ci/slack-notify.yml
+      - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
 
 
 .unittests-and-lint-settings:
@@ -237,11 +237,11 @@
     - .unittests-and-lint-settings
   script:
     - section_start "Test Infrastructure"
-    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-    - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/tests -v
-    - python3 -m pytest ./Tests/private_build/ -v
-    - python3 -m pytest Utils -v
+    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
+    - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
+    - python3 -m pytest ./Tests/tests -v --disable-warnings
+    - python3 -m pytest ./Tests/private_build/ -v --disable-warnings
+    - python3 -m pytest Utils -v --disable-warnings
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
         ./Tests/scripts/sdk_pylint_check.sh
@@ -339,7 +339,9 @@
           if [ "$?" != "0" ]; then
             echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
           else
-            echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            RED='\033[0;31m'
+            NC='\033[0m'
+            echo -e "${RED}ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.${NC}"
             job-done
             exit 1
           fi
