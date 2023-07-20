@@ -1,10 +1,10 @@
 DeCYFIR API's provides External Threat Landscape Management insights.
-This integration was integrated and tested with version v1 of decyfiriocs
+This integration was integrated and tested with version v1 of DeCYFIR Feed
 
-## Configure DeCYFIR Indicators & Threat Intelligence on Cortex XSOAR
+## Configure DeCYFIR Indicators & Threat Intelligence Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DeCYFIR Indicators & Threat Intelligence.
+2. Search for DeCYFIR Indicators & Threat Intelligence Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -29,3 +29,21 @@ This integration was integrated and tested with version v1 of decyfiriocs
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### decyfir-get-indicators
+
+***
+Gets indicators from the feed.
+
+#### Base Command
+
+`decyfir-get-indicators`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
