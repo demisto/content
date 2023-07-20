@@ -13,10 +13,12 @@ configuration:
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 description: Stairwell Inception is a security intelligence engine that automates the continuous capture, storage, and of executable files and other primary security artifacts to improve detection and response against advanced attacks that evade traditional security tools.
 display: 'Stairwell Inception'
 name: Inception

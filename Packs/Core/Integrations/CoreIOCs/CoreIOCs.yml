@@ -7,14 +7,17 @@ configuration:
   name: url
   type: 0
   hidden: true
+  required: false
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
+  required: false
 - display: API Key
   name: apikey
   type: 4
   hidden: true
+  required: false
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
   name: severity
