@@ -1,8 +1,18 @@
+args:
+- description: List of potential service owners
+  isArray: true
+  name: owners
+- name: asmsystemids
+  description: System IDs or names associated with the compute instance
+  isArray: true
+comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
-  id: 618a7b80-94ed-4709-8d57-d45a89f46a36
-  version: 58
-vcShouldKeepItemLegacyProdMachine: false
-name: RankServiceOwners_EXPANDR-4989
+  id: RankServiceOwners
+  version: -1
+dockerimage: demisto/xpanse-ml-ev2:1.0.0.65851
+enabled: true
+name: RankServiceOwners
+runas: DBotWeakRole
 script: |
   register_module_line('RankServiceOwners', 'start', __line__())
   ### pack version: 1.6.23
@@ -35,13 +45,10 @@ script: |
   # Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
   LOCAL_MODEL_CACHE_PATH = "/tmp/xpanse-ml"
 
-  # REMOTE_GCS_BUCKET = "xpanse-service-ownership-ml-models-dev"
-  # REMOTE_GCS_PATH = ""  # ok for this to be empty string
+  REMOTE_GCS_BUCKET = "xpanse-service-ownership-ml-models-dev"
+  REMOTE_GCS_PATH = ""  # ok for this to be empty string
 
   MODEL_FILE_NAME = "service_owner_model.pkl"
-
-  REMOTE_GCS_BUCKET = "qadium-datascience-plantains-dev"
-  REMOTE_GCS_PATH = "2023/afr-service-ownership/public"  # ok for this to be empty string
 
 
   def load_pickled_xpanse_object(file_name: str) -> Any:
@@ -119,9 +126,23 @@ script: |
   def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
       """
       For now, `Justification` is the same as `Source`; in the future, will sophisticate
+
+      Strip "Chain: " from both Source and Justification fields as post-processing step.
+
+      The "Chain: " prefix in the source indicates that the attribution of this owner
+      is multi-step: e.g. first we recovered the service account, then we recovered the
+      project owner for that service account.
+
+      Future work may further unroll this chain, for instance: recover the manager
+      of the project owner of the service account, which we would denote using the Source of:
+      "Chain: Chain: Manager of GCP project owner of service account".
+
+      The model takes the length of the chain into the account, with longer chains carrying less weight
       """
       for owner in owners:
-          owner['Justification'] = owner.get('Source', '')
+          normalized_source = owner.get('Source', '').replace('Chain: ', '')
+          owner['Source'] = normalized_source
+          owner['Justification'] = normalized_source
       return owners
 
 
@@ -581,22 +602,11 @@ script: |
 
 
   register_module_line('RankServiceOwners', 'end', __line__())
-type: python
-tags: []
-comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
-enabled: true
-args:
-- name: owners
-  description: List of potential service owners
-  isArray: true
-- name: asmsystemids
-  description: System IDs or names associated with the compute instance
-  isArray: true
 scripttarget: 0
 subtype: python3
-pswd: ""
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
 runonce: false
-dockerimage: docker.io/demisto/xpanse-ml-ev2:1.0.0.52696
-runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
