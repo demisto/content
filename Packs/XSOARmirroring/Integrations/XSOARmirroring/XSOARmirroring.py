@@ -617,11 +617,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             tags=tags,
             tags_and_operator=True
         )
+        
+        demisto.debug(f'######### DANF entries got: {entries}')        
 
         formatted_entries = []
         # file_attachments = []
 
         if entries:
+            demisto.debug('######### DANF in entry')
             for entry in entries:
                 if 'file' in entry and entry.get('file'):
                     file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
@@ -659,10 +662,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident['id'] = remote_args.remote_incident_id
         # incident['attachment'] = file_attachments
+        
+        demisto.debug(f'######### DANF get remote data response with mirrored_object: {mirrored_object}')
+        demisto.debug(f'######### DANF get remote data response with formatted_entries: {formatted_entriest}')
         mirror_data = GetRemoteDataResponse(
             mirrored_object=incident,
             entries=formatted_entries
         )
+        demisto.debug(f'######### DANF returned mirror_data: {mirror_data}')
         return mirror_data
 
     except Exception as e:
