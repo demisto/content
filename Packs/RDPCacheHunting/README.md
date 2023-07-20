@@ -16,7 +16,7 @@ To get started with this Pack, please follow the instructions below:
 
 This RDP Cache Hunting Pack provides an efficient way to investigate potential suspicious activity on your Remote Desktop Protocol (RDP) connections. 
 
-It allows you to collect RDP bitmap cache files, extract tiles from them, process the collages, and extract text from the tiles. You can then search the extracted text for indicators of compromise (IoCs) using the MITRE ATT&CK Software list and Mandiant Stringsifter ML ranking capabilities. 
+It allows you to collect RDP bitmap cache files using XDR, CarbonBlack or Powershell, extract tiles from them, process the collages, and extract text from the tiles. You can then search the extracted text for indicators of compromise (IoCs) using the MITRE ATT&CK Software list and Mandiant Stringsifter ML ranking capabilities. 
 
 The overall score of the pack is determined by summing up the similarity ratios for the strings and tools found in the similarity check (with a maximum score of 5 per finding) and the Stringsifter rank of any executable found using `'extractindicators'`. If the score is 0, no suspicious strings were found. 
 
