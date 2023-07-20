@@ -691,7 +691,7 @@ tasks:
       id: 6cc6060b-aea7-4d86-82be-ffc667e55c3d
       version: -1
       name: Hunt RDP IoCs - Exe + Path
-      description: Searches Splunk for events.
+      description: Hunt for Windows Executable & Path IOC's using Splunk search query.
       script: '|||splunk-search'
       type: regular
       iscommand: true
