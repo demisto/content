@@ -15,7 +15,6 @@ if [ "$#" -lt "1" ]; then
   [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like upload-flow/builds/branch_name/build_number/content.
   [-dz, --create_dependencies_zip] Upload packs with dependencies zip
   [-o, --override_all_packs]  Whether to override all packs, and not just modified packs.
-  [-fmp, --force_to_marketplace] The name of the marketplace to force upload ('xsoar', marketplacev2, or 'xpanse'), Mandatory when the --force flag is on.
   "
   exit 1
 fi
