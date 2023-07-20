@@ -1,4 +1,4 @@
-Manage, view and edit your lists in Recorded Future
+Manage, view, and edit your lists in Recorded Future.
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* RecordedFutureLists
+RecordedFutureLists
 
 ### Scripts
 
