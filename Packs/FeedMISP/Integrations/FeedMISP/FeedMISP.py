@@ -257,7 +257,6 @@ def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
     return FeedIndicatorType.ip_to_indicator_type(ip_attribute['value'])
 
 
-
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     """
     Gets the correct Indicator type that matches the attribute type, attribute type is not supported
