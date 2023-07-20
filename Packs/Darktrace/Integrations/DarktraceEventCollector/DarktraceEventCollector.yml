@@ -97,6 +97,8 @@ script:
   isfetchevents: true
   dockerimage: demisto/python3:3.10.12.63474
   feed: false
+marketplaces:
+- marketplacev2
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
