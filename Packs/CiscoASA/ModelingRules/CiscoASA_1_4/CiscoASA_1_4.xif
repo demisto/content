@@ -2,7 +2,7 @@
 alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
     severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
     message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
-    observer_ip = arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0);
+    observer_name = arrayindex(regextract(_raw_log , "([\w\-\_\.\@]+)\s\:\s%ASA-\d+"),0);
 
 [MODEL: dataset=cisco_asa_raw]
 //from <source_ip>/<source_port> to <dest_ip>/<dest_port>
@@ -43,7 +43,7 @@ config case_sensitive = true
     xdm.target.zone = dst_interface,
     xdm.target.user.username = dst_username,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 
@@ -126,7 +126,7 @@ config case_sensitive = true
     xdm.network.icmp.type = to_integer(icmp_type),
     xdm.event.outcome_reason = action,
     xdm.event.duration = to_integer(duration),
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.network.session_id= connection_id,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
@@ -157,7 +157,7 @@ config case_sensitive = true
     xdm.target.port = to_integer(dst_port),
     xdm.target.zone = dst_interface,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 
@@ -197,7 +197,7 @@ config case_sensitive = true
     xdm.source.user.username = src_username,
     xdm.target.user.username = dst_username,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 // src = <source_ip>, dest = <dest_ip>
@@ -219,7 +219,7 @@ config case_sensitive = true
     xdm.source.sent_bytes = to_integer(bytes ),
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.network.session_id = session_id,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
@@ -250,7 +250,7 @@ config case_sensitive = true
     xdm.target.ipv4 = dst_ip,
     xdm.target.zone = dst_interface,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 
@@ -279,7 +279,7 @@ config case_sensitive = true
     xdm.source.zone = src_interface,
     xdm.target.zone = coalesce(dst_interface1,dst_interface2),
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 //<source_interface>:<source_ip>/<source_port> to <dest_ip>/<dest_port>
@@ -304,7 +304,7 @@ config case_sensitive = true
     xdm.target.ipv4 = dst_ip,
     xdm.target.port = to_integer(dst_port),
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 //from <source_ip> to <dst_ip>
@@ -330,7 +330,7 @@ config case_sensitive = true
     xdm.target.ipv4 = dst_ip,
     xdm.target.zone = dst_interface,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.source.sent_bytes=to_integer(bytes),
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
@@ -365,7 +365,7 @@ config case_sensitive = true
     xdm.alert.severity = severity,
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = coalesce(outcome_reason,action),
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false),
     xdm.target.user.username = dst_user,
     xdm.source.sent_bytes = to_integer(sent_bytes),
@@ -391,7 +391,7 @@ config case_sensitive = true
     xdm.source.sent_bytes = to_integer(sent_bytes ),
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.source.sent_packets = packets,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
@@ -413,7 +413,7 @@ config case_sensitive = true
     xdm.source.port = to_integer(src_port),
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 // from laddr <source_ip> on interface <interface>> to <dest_ip>
@@ -435,7 +435,7 @@ config case_sensitive = true
     xdm.target.ipv4 = dst_ip,
     xdm.target.zone = dst_interface,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.network.icmp.type = to_integer(icmp_type),
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
@@ -459,7 +459,7 @@ config case_sensitive = true
     xdm.source.user.username = src_username,
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = coalesce(outcome_reason, action),
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 // event ids: 111001, 111004, 111005, 111007, 111008, 111009, 111010
@@ -482,7 +482,7 @@ config case_sensitive = true
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.event.outcome_reason = action,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false),
     xdm.target.ipv4 = dst_ip,
     xdm.target.user.username = dst_username,
@@ -498,7 +498,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.source.ipv4 = src_ip,
     xdm.event.outcome_reason = action,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
@@ -515,7 +515,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = action,
     xdm.network.icmp.type = to_integer(icmp_type),
@@ -538,7 +538,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.source.ipv4 = src_ipv4,
     xdm.source.ipv6 = src_ipv6,
     xdm.source.zone = src_interface ,
@@ -561,7 +561,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.outcome_reason = action,
     xdm.source.ipv4 = src_ip,
     xdm.target.user.username = dst_username,
@@ -576,7 +576,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.event.outcome_reason = action,
     xdm.target.ipv4 = dst_ip,
     xdm.target.zone = dst_interface,
@@ -597,7 +597,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.source.ipv4 = src_ip,
     xdm.source.port = to_integer(src_port),
     xdm.source.zone = src_interface,
@@ -616,7 +616,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.alert.name = alert_name,
     xdm.alert.description = alert_description;
 
@@ -637,7 +637,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.target.user.groups = coalesce(dst_group,dst_group2),
     xdm.target.user.username = dst_username,
     xdm.source.sent_packets = num_packets,
@@ -664,7 +664,7 @@ config case_sensitive = true
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_ip,
+    xdm.observer.name = observer_name,
     xdm.source.ipv4 = coalesce(src_ipv4_1,src_ipv4_2),
     xdm.network.session_id = session_id,
     xdm.target.user.groups = arraycreate(tunnel_group),
