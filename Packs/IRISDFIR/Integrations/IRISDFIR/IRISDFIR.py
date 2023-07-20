@@ -14,19 +14,17 @@ urllib3.disable_warnings()
 verify_cert = not demisto.params().get('insecure', False)
 proxies = handle_proxy()
 
-
 class DFIRIrisAPI:
     def __init__(self, api_endpoint, api_key):
         self.api_endpoint = api_endpoint
         self.api_key = api_key
         self.headers = {'Authorization': f'Bearer {self.api_key}',
-                        'User-Agent': 'Defined'
-                        }
+            'User-Agent': 'Defined'
+        }
 
     def get_last_case_id(self):
 
-        response = requests.get(f'{self.api_endpoint}/manage/cases/list',
-                                headers=self.headers, verify=verify_cert, proxies=proxies)
+        response = requests.get(f'{self.api_endpoint}/manage/cases/list', headers=self.headers, verify=verify_cert, proxies=proxies)
 
         if response.status_code == 200:
             cases = response.json()
@@ -45,8 +43,7 @@ class DFIRIrisAPI:
 
     def get_all_cases(self):
 
-        response = requests.get(f'{self.api_endpoint}/manage/cases/list',
-                                headers=self.headers, verify=verify_cert, proxies=proxies)
+        response = requests.get(f'{self.api_endpoint}/manage/cases/list', headers=self.headers, verify=verify_cert, proxies=proxies)
 
         if response.status_code == 200:
             cases = response.json()
@@ -65,11 +62,10 @@ def test_module(dfir_iris):
     try:
 
         headers = {'Authorization': f'Bearer {dfir_iris.api_key}',
-                   'User-Agent': 'Defined'
-                   }
+            'User-Agent': 'Defined'
+        }
 
-        response = requests.get(f'{dfir_iris.api_endpoint}/manage/cases/list',
-                                headers=headers, verify=verify_cert, proxies=proxies)
+        response = requests.get(f'{dfir_iris.api_endpoint}/manage/cases/list', headers=headers, verify=verify_cert, proxies=proxies)
 
         if response.status_code == 200:
             return 'ok'
@@ -123,7 +119,9 @@ def main():
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
 
-        return return_results(process_incidents(results_str, demisto.args()))
+
+        return return_results(process_incidents(results_str,  demisto.args()))
+
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

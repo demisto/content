@@ -8,7 +8,6 @@ IRIS is a collaborative platform aiming to help incident responders to share tec
     | **Parameter** | **Required** |
     | --- | --- |
     | Server IP or Host Name (e.g., https://192.168.0.1) | True |
-    | Port. If not specified, default port is 443 | False |
     | API Key for authentication | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
