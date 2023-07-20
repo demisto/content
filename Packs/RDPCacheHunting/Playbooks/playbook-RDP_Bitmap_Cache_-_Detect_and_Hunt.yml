@@ -222,6 +222,12 @@ tasks:
         complex:
           root: LOLBAS.Indicators
           accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: mimikatz
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
