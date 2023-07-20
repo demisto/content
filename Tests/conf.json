@@ -4434,6 +4434,7 @@
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
             "instance_names": "aks_device_code_instance",
+            "is_mockable": false,
             "integrations": [
                 "Azure Kubernetes Services"
             ]
