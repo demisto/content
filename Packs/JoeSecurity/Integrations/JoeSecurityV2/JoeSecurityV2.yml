@@ -31,14 +31,17 @@ configuration:
   display: Create relationships
   type: 8
   additionalinfo: Create relationships between indicators as part of enrichment.
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
+  required: false
 description: Access the full set of possibilities the JoeSandbox Cloud provides via the RESTful Web API v2.
 display: Joe Security v2
 name: JoeSecurityV2

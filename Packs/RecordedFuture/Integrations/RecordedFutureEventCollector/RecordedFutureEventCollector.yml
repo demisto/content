@@ -17,20 +17,24 @@ configuration:
   name: insecure
   type: 8
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 1000
   display: The maximum number of events per fetch. Default and maximum is 1000.
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 description: This integration fetches alerts from Recorded Future.
 display: Recorded Future Event Collector
 name: RecordedFutureEventCollector
@@ -50,7 +54,7 @@ script:
       name: limit
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetchevents: true
   script: '-'
   subtype: python3

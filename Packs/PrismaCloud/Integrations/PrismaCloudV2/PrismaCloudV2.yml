@@ -27,28 +27,33 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time.
   defaultvalue: 20
   display: 'Advanced: Time in minutes to look back when fetching incidents'
@@ -56,6 +61,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch only incidents matching these filters
   defaultvalue: 'alert.status=open'
   name: filters
@@ -63,16 +69,19 @@ configuration:
   additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - name: output_old_format
   display: Output results of V1 commands to the context data in the old format
   defaultvalue: 'false'
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
