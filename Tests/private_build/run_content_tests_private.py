@@ -13,7 +13,7 @@ import demisto_client.demisto_api
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_integration import check_integration
 from demisto_sdk.commands.common.constants import PB_Status
-from demisto_sdk.commands.common.tools import str2bool
+from demisto_sdk.commands.common.tools import string_to_bool
 
 from Tests.test_content import SettingsTester, DataKeeperTester, \
     print_test_summary, update_test_msg, turn_off_telemetry, \
@@ -32,14 +32,14 @@ def options_handler():
     parser.add_argument('-s', '--server', help='The server URL to connect to')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
-    parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
+    parser.add_argument('-n', '--nightly', type=string_to_bool, help='Run nightly tests')
     parser.add_argument('-t', '--slack', help='The token for slack', required=True)
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
     parser.add_argument('-sa', '--service_account', help="Path to GCS service account.", required=False)
-    parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
-    parser.add_argument('-m', '--memCheck', type=str2bool,
+    parser.add_argument('-i', '--isAMI', type=string_to_bool, help='is AMI build or not', default=False)
+    parser.add_argument('-m', '--memCheck', type=string_to_bool,
                         help='Should trigger memory checks or not. The slack channel to check the data is: '
                              'dmst_content_nightly_memory_data', default=False)
     parser.add_argument('-d', '--serverVersion', help='Which server version to run the '

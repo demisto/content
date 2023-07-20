@@ -13,7 +13,7 @@ from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifa
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
     check_if_index_is_updated, print_packs_summary, get_packs_summary, prepare_index_json
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
-from demisto_sdk.commands.common.tools import str2bool
+from demisto_sdk.commands.common.tools import string_to_bool
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -425,7 +425,7 @@ def option_handler():
                         default=str(uuid.uuid4()))
     parser.add_argument('-inf', '--is_infra_run',
                         help="Whether the upload run is an infrastructure one / nightly, or there are actual changes",
-                        required=False, type=str2bool, default=False)
+                        required=False, type=string_to_bool, default=False)
     parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.", default='unknown')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
@@ -434,7 +434,7 @@ def option_handler():
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+    parser.add_argument('-rt', '--remove_test_playbooks', type=string_to_bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-ek', '--encryption_key', type=str,
                         help='The encryption key for the pack, if it should be encrypted.', default='')

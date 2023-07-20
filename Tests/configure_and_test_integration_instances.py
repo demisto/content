@@ -21,7 +21,7 @@ import demisto_client
 
 from demisto_sdk.commands.common.constants import FileType
 from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
-    str2bool, format_version, find_type, listdir_fullpath
+    string_to_bool, format_version, find_type, listdir_fullpath
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
 from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
@@ -900,8 +900,8 @@ def options_handler(args=None):
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
-    parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
-    parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
+    parser.add_argument('-n', '--is-nightly', type=string_to_bool, help='Is nightly build')
+    parser.add_argument('-pr', '--is_private', type=string_to_bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',

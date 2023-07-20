@@ -21,7 +21,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES
-from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
+from demisto_sdk.commands.common.tools import string_to_bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -1200,18 +1200,18 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
+                        type=string_to_bool, default=False, required=True)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+    parser.add_argument('-rt', '--remove_test_playbooks', type=string_to_bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
-    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
+    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=string_to_bool, required=True)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
-    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
-    parser.add_argument('-dz', '--create_dependencies_zip', type=str2bool, help="Upload packs with dependencies zip",
+    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=string_to_bool, required=True)
+    parser.add_argument('-dz', '--create_dependencies_zip', type=string_to_bool, help="Upload packs with dependencies zip",
                         required=False)
     parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
     # disable-secrets-detection-end

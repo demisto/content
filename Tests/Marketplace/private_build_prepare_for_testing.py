@@ -3,7 +3,7 @@ import os
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.private_build.upload_packs_private import extract_packs_artifacts
-from demisto_sdk.commands.common.tools import str2bool
+from demisto_sdk.commands.common.tools import string_to_bool
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -40,9 +40,9 @@ def option_handler():
                         required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+    parser.add_argument('-rt', '--remove_test_playbooks', type=string_to_bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
-    parser.add_argument('-enc', '--encrypt_pack', type=str2bool,
+    parser.add_argument('-enc', '--encrypt_pack', type=string_to_bool,
                         help='Should encrypt pack or not.', default=False)
     parser.add_argument('-ek', '--encryption_key', type=str,
                         help='The encryption key for the pack, if it should be encrypted.', default='')

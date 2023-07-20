@@ -8,7 +8,7 @@ from packaging.version import Version
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_constants import IGNORED_FILES, PACKS_FULL_PATH
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.tools import str2bool, get_files_in_dir
+from demisto_sdk.commands.common.tools import string_to_bool, get_files_in_dir
 from pathlib import Path
 
 ARTIFACT_NAME = 'content_marketplace_packs.zip'
@@ -34,7 +34,7 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
-    parser.add_argument('-pvt', '--private', type=str2bool, help='Indicates if the tools is running '
+    parser.add_argument('-pvt', '--private', type=string_to_bool, help='Indicates if the tools is running '
                                                                  'on a private build.',
                         required=False, default=False)
 

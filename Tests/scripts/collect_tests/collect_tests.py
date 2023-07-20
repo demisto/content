@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Iterable, Optional, Sequence, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
-from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
+from demisto_sdk.commands.common.tools import find_type, string_to_bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
@@ -1344,14 +1344,14 @@ if __name__ == '__main__':
     logger.info('TestCollector v20230123')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
-    parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
+    parser.add_argument('-n', '--nightly', type=string_to_bool, help='Is nightly')
     parser.add_argument('-p', '--changed_pack_path', type=str,
                         help='Path to a changed pack. Used for private content')
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
-    parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
-    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
+    parser.add_argument('--graph', '-g', type=string_to_bool, help='Should use graph', default=False, required=False)
+    parser.add_argument('--override_all_packs', '-a', type=string_to_bool, help='Collect all packs if override upload', default=False,
                         required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())

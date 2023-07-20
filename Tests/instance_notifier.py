@@ -9,7 +9,7 @@ from Tests.configure_and_test_integration_instances import update_content_on_dem
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
-from demisto_sdk.commands.common.tools import str2bool
+from demisto_sdk.commands.common.tools import string_to_bool
 
 SERVER_URL = "https://{}"
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
@@ -17,7 +17,7 @@ ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
-    parser.add_argument('-t', '--instance_tests', type=str2bool, help='is instance test build?', required=True)
+    parser.add_argument('-t', '--instance_tests', type=string_to_bool, help='is instance test build?', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file', required=True)
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
