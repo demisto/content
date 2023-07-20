@@ -385,22 +385,17 @@ def search_pack_and_its_dependencies(client: demisto_client,
         batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
     """
-    if is_post_update:
-        # On post-update, we want to check for deprecation status locally before making the API call,
-        # because if the pack has been deprecated, the test upload flow won't upload the pack to the bucket,
-        # and the API call will fail.
-        logging.info("Detected post-update run mode. "
-                     "Pack deprecation status will be checked using local pack metadata.")
+    # Note:
+    # On pre-update, we use current prod data, so packs to install should not be deprecated, and should exist on the Marketplace.
+    # If they are not for some reason - the API call will fail with a 400 status "item not found" error.
 
+    # On post-update, we want to check for deprecation status locally before making the API call,
+    # because if the pack has been deprecated, the test upload flow won't upload the pack to the bucket,
+    # and the Marketplace API call for the pack will fail.
+    if is_post_update:
         if is_pack_deprecated(pack_id=pack_id, check_locally=True):
             logging.warning(f"Pack '{pack_id}' is deprecated (hidden) and will not be installed.")
             return
-
-    else:
-        # On pre-update, we use current prod data, so deprecated packs are not supposed to be passed to this function.
-        # If they are - the API call will fail with a 400 status "item not found" error.
-        logging.info("Detected pre-update run mode. "
-                     "Packs deprecation status will be checked using Marketplace API.")
 
     api_data = get_pack_dependencies(client, pack_id, lock)
 
@@ -682,6 +677,14 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         'multithreading': multithreading,
         'batch_packs_install_request_body': batch_packs_install_request_body,
     }
+
+    if is_post_update:
+        logging.info("Detected post-update run mode. "
+                     "Pack deprecation status will be determined using local pack metadata.")
+
+    else:
+        logging.info("Detected pre-update run mode. "
+                     "Pack deprecation status will be determined using Marketplace API.")
 
     if not multithreading:
         for pack_id in pack_ids:
