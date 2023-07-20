@@ -1063,7 +1063,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "configure_integration_env"
-resolved_reference = "93551097496e5be97d0d9c6b047e864a80a69910"
+resolved_reference = "7cdac796ebd48d9724220b6a7131e387d9a7f8a6"
 
 [[package]]
 name = "deprecated"
