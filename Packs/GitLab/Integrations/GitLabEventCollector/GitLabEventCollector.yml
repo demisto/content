@@ -22,10 +22,12 @@ configuration:
   name: group_ids
   type: 0
   section: Collect
+  required: false
 - display: Projects IDS
   name: project_ids
   type: 0
   section: Collect
+  required: false
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: after
   required: true
@@ -37,11 +39,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: ''
 display: GitLab Event Collector
 name: GitLab Event Collector
