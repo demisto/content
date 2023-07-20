@@ -1,0 +1,32 @@
+{
+    "related_count": 1,
+    "ssl_certs": [
+      {
+        "ip": "4.4.4.4",
+        "ssl_cert": {
+          "cert_key": "d1af9e1d6c892a56b34d88b1f75a84941252caff",
+          "expire_date": "2020-10-09T12:00:00Z",
+          "issue_date": "2020-01-10T00:00:00Z",
+          "issuer_commonName": "CloudFlare Inc ECC CA-2",
+          "issuer_countryName": "US",
+          "issuer_localityName": "",
+          "issuer_organizationName": "",
+          "issuer_organizationalUnitName": "",
+          "issuer_stateOrProvinceName": "CA",
+          "md5": "de9637657267d57d0cdce43210c9f57f",
+          "serial_number": "1.6698053004212972e+37",
+          "sha1": "d1af9e1d6c892a56b34d88b1f75a84941252caff",
+          "sha_256": "882e8e1ff4aa068b7402547455b56c801b8e37168e84ccb8529465223bf4d8bd",
+          "sig_algo": "ecdsa-with-sha256",
+          "signature": "[]",
+          "ssl_version": "3",
+          "subject_commonName": "sni.cloudflaressl.com",
+          "subject_countryName": "US",
+          "subject_localityName": "",
+          "subject_organizationName": "Cloudflare, Inc.",
+          "subject_organizationalUnitName": "www.digicert.com",
+          "timestamp": "Fri, 10 Jan 2020 08:06:36 GMT"
+        }
+      }
+    ]
+  }
