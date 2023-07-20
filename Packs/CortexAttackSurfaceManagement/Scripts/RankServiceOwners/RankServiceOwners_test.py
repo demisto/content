@@ -9,13 +9,29 @@ from RankServiceOwners import (
     aggregate,
     _get_k,
     OwnerFeaturizationPipeline,
-    get_model,
+    load_pickled_xpanse_object,
+    LOCAL_MODEL_CACHE_PATH,
     featurize,
-    normalize,
+    normalize_scores,
 )
 from contextlib import nullcontext as does_not_raise
 import numpy as np
 from unittest.mock import Mock
+import os
+import dill as pickle
+
+
+def test_load_pickled_xpanse_object():
+    obj = [1, 2, 3]
+    file_name = "test_model.pkl"
+    os.makedirs(LOCAL_MODEL_CACHE_PATH, exist_ok=True)
+    cache_path = os.path.join(LOCAL_MODEL_CACHE_PATH, file_name)
+    with open(cache_path, "wb") as f:
+        pickle.dump(obj, f)
+
+    assert load_pickled_xpanse_object(file_name) == obj
+    os.remove(cache_path)
+    os.rmdir(LOCAL_MODEL_CACHE_PATH)
 
 
 @pytest.mark.parametrize('owners,expected_out', [
@@ -157,19 +173,23 @@ def test_canonicalize(owner, expected_out):
 def test_aggregate(owners, expected_out):
     assert sorted(aggregate(owners), key=lambda x: sorted(x.items())) == sorted(expected_out, key=lambda x: sorted(x.items()))
 
-@pytest.mark.parametrize('owners,expected_out', [
+
+@pytest.mark.parametrize('scores,expected_out', [
     ([0.5, 1], [0.67, 0.83]),
     ([1, 10, 100], [.5, .55, .95]),
     ([], []),
 ])
-def test_normalize_scores(owners, expected_out):
-    assert np.allclose(normalize(owners), expected_out, atol=0.01)
+def test_normalize_scores(scores, expected_out):
+    assert np.allclose(normalize_scores(scores), expected_out, atol=0.01)
 
 
 def test_score(mocker):
+    model_mock = Mock()
+    model_mock.predict.return_value = np.array([4, 7, 31, 0.33, 15])
+
     mocker.patch(
         'RankServiceOwners.load_pickled_xpanse_object',
-        return_value=get_model()
+        return_value=model_mock
     )
 
     asm_system_ids = ["afr-rdp-1", "j291mv-is"]
@@ -187,7 +207,7 @@ def test_score(mocker):
         {'Name': 'Automation First Remediation', 'Email': 'afr@example.com', 'Source': 'GCP | Splunk', 'Timestamp': '5'},
     ]
     scores_out = [owner['Ranking Score'] for owner in score(asm_system_ids=asm_system_ids, owners=owners)]
-    assert np.allclose(scores_out, np.array([4, 7, 31, 0.33, 15]), atol=0.01)
+    assert np.allclose(scores_out, [0.53, 0.56, 0.77, 0.5, 0.63])
 
 
 @pytest.mark.parametrize('owners, asm_system_ids, expected_out', [
@@ -705,152 +725,3 @@ def test_missing_data():
     """
     observed_output = featurize([], [])
     assert np.array_equal(observed_output, np.empty(shape=(0, 6)))
-
-
-@pytest.fixture
-def model():
-    return get_model()
-
-
-def test_model_must_be_fit_on_same_shape(model):
-    """
-    Verifies the model raises an error if X is an unexpected shape.
-    """
-    default_X = np.array(
-        [
-            [10, 1, 1, 0.3, 1, 0],
-            [5, 2, 1, 0.3, 1, 0],
-            [1, 3, 1, 0.3, 1, 0]
-        ]
-    )
-    alt_X = np.random.rand(5, 10)
-    assert alt_X.shape[1] != default_X.shape[1]
-
-    with pytest.raises(ValueError):
-        model.fit(default_X).score(alt_X)
-
-
-def test_cmdb_on_top(model):
-    """
-    CMDB-attested should generally (not always) beat even well-attested others.
-
-    This is a request from the Remediation Content team,
-    who express a strong prior from customers that "my CMDB is correct".
-    Enough evidence CAN counteract this tendency.
-    """
-    # candidates with CMDB evidence tend to win
-    X = np.array(
-        [
-            [1, 1, 3, 0, 1, 0],  # in CMDB but otherwise much worse than second person
-            # not in CMDB but otherwise an extremely strong candidate --
-            # 3 paths, 2 distinct verbs, much more direct link, very similar name, in logs
-            [3, 2, 1, 0, 0, 1],
-        ]
-    )
-    scores = model.predict(X)
-    assert scores[0] > scores[1]
-
-    # candidates with CMDB evidence CAN be outranked
-    overwhelmingly_owner2 = np.array(
-        [
-            [1, 1, 3, 0.01, 1, 0],  # in CMDB but otherwise much worse than second person
-            # not in CMDB but otherwise an extremely strong candidate --
-            # 20 paths, 10 distinct verbs, much more direct link, very similar name, in logs
-            [20, 10, 1, 0.9, 0, 1],
-        ]
-    )
-    scores = model.predict(overwhelmingly_owner2)
-    assert scores[1] > scores[0]
-
-
-def test_impact_of_total_paths(model):
-    """
-    More paths --> more likely (all else equal).
-    """
-    X = np.array(
-        [
-            [6, 2, 1, 0.5, 1, 1],
-            [5, 2, 1, 0.5, 1, 1],
-        ]
-    )
-    scores = model.predict(X)
-    assert scores[0] > scores[1]
-
-
-def test_impact_of_distinct_verbs(model):
-    """
-    More verbs --> more likely (all else equal).
-    """
-    X = np.array(
-        [
-            [5, 3, 1, 0.5, 1, 1],
-            [5, 2, 1, 0.5, 1, 1],
-        ]
-    )
-    scores = model.predict(X)
-    assert scores[0] > scores[1]
-
-
-def test_impact_of_min_path_length(model):
-    """
-    Shorter path length --> more likely (all else equal).
-    """
-    X = np.array(
-        [
-            [5, 2, 1, 0.5, 1, 1],
-            [5, 2, 2, 0.5, 1, 1],
-        ]
-    )
-    scores = model.predict(X)
-    assert scores[0] > scores[1]
-
-
-def test_impact_of_name_similarity(model):
-    """
-    More similar name --> more likely (all else equal).
-    """
-    X = np.array(
-        [
-            [5, 2, 1, 0.6, 1, 1],
-            [5, 2, 1, 0.5, 1, 1],
-        ]
-    )
-    scores = model.predict(X)
-    assert scores[0] > scores[1]
-
-
-def test_impact_of_cmdb(model):
-    """
-    In CMDB --> more likely (all else equal).
-    """
-    X = np.array(
-        [
-            [5, 2, 1, 0.5, 1, 1],
-            [5, 2, 1, 0.5, 0, 1],
-        ]
-    )
-    scores = model.predict(X)
-    assert scores[0] > scores[1]
-
-
-def test_impact_of_logs(model):
-    """
-    In logs --> more likely (all else equal).
-    """
-    X = np.array(
-        [
-            [5, 2, 1, 0.5, 1, 1],
-            [5, 2, 1, 0.5, 1, 0],
-        ]
-    )
-    scores = model.predict(X)
-    assert scores[0] > scores[1]
-
-
-def test_one_owner(model):
-    X = np.array(
-        [
-            [1., 0., 1., 0., 0., 0.],
-        ]
-    )
-    assert model.predict(X)

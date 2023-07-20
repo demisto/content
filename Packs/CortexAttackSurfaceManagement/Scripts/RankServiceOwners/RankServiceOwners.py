@@ -17,13 +17,8 @@ import posixpath
 import numpy as np
 import google.cloud.storage
 
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import FunctionTransformer
 
 from typing import Iterable, List, Dict, Any, Optional, Set, Callable, Tuple
-from nicknames import NickNamer
 
 
 STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
@@ -32,125 +27,10 @@ STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any add
 # Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
 LOCAL_MODEL_CACHE_PATH = "/tmp/xpanse-ml"
 
-# GCP_PROJECT = "qa2-test-9996075903380"
-# GCP_PROJECT = "engine-qa2-test-9996075903380" # default, converted to explicit arg
-REMOTE_GCS_BUCKET = "qadium-datascience-plantains-dev"
-REMOTE_GCS_PATH = "2023/afr-service-ownership/public"  # ok for this to be empty string
+REMOTE_GCS_BUCKET = "xpanse-service-ownership-ml-models-dev"
+REMOTE_GCS_PATH = ""  # ok for this to be empty string
 
 MODEL_FILE_NAME = "service_owner_model.pkl"
-
-
-def get_heuristic_regression(reason_weight=1,
-                             src_weight=(1 / 1000),
-                             similarity_weight=10,
-                             cmdb_weight=30,
-                             log_weight=3) -> LinearRegression:
-    """
-    Returns a fitted linear model that is parameterized using the provided weights.
-    """
-
-    coefficients = np.array([reason_weight, src_weight, similarity_weight, cmdb_weight, log_weight])
-
-    X_train = np.random.rand(len(coefficients), len(coefficients))
-    y_train = X_train.dot(coefficients)
-
-    model = LinearRegression(fit_intercept=False)
-    model.fit(X_train, y_train)
-
-    assert np.allclose(coefficients, model.coef_)
-    return model
-
-
-def get_elementwise_inversion() -> Pipeline:
-    """
-    Returns a fitted transformer that inverts vectors x elementwise to 1/x.
-    """
-    return Pipeline([
-        ("squeeze", FunctionTransformer(np.squeeze, kw_args={"axis": 1})),
-        ("create square matrix", FunctionTransformer(np.diag)),
-        ("invert square matrix", FunctionTransformer(np.linalg.inv)),
-        ("retrieve vector", FunctionTransformer(np.diag)),
-    ])
-
-
-def get_base_score_fields() -> ColumnTransformer:
-    """
-    Returns a fitted ColumnTransformer that retrieves the appropriate fields.
-    """
-    idx_num_reasons = 0
-    idx_num_distinct_sources = 1
-    idx_name_similarity_person_asset = 3
-    idx_is_attested_in_cmdb = 4
-    idx_is_attested_in_recent_logs = 5
-
-    X_train = np.random.rand(5, 6)
-    y_train = np.random.rand(5, 1)
-    ct = ColumnTransformer(
-        transformers=[
-            (
-                "retain (# reasons, # srcs, similarity, in cmdb, in logs)",
-                "passthrough",
-                [
-                    idx_num_reasons,
-                    idx_num_distinct_sources,
-                    idx_name_similarity_person_asset,
-                    idx_is_attested_in_cmdb,
-                    idx_is_attested_in_recent_logs
-                ]
-            )
-        ]
-    )
-    ct.fit(X_train, y_train)
-    return ct
-
-
-def get_path_length_field() -> ColumnTransformer:
-    """
-    Returns a fitted ColumnTransformer that retrieves the appropriate field.
-    """
-    idx_min_path_length = 2
-
-    X_train = np.random.rand(5, 6)
-    y_train = np.random.rand(5, 1)
-    ct = ColumnTransformer([
-        ("retain (min path length)", "passthrough", [idx_min_path_length])
-    ])
-    ct.fit(X_train, y_train)
-    return ct
-
-
-def get_model():
-    """
-    Returns a fitted overall model for [num_samples, 6]-shaped inputs.
-
-    Columns are:
-    0: num_reasons (1 or larger)
-    1: num_distinct_sources (1 or larger)
-    2: min_path_length (1 or larger)
-    3: name_similarity_person_asset (float >=0: 0 is 'no similarity', >1 is 'very similar', and 0-1 is 'some similarity)
-    4: is_attested_in_cmdb (0 or 1)
-    5: is_attested_in_recent_logs (0 or 1)
-    """
-    invert_for_path_length = Pipeline([
-        ("select path column", get_path_length_field()),
-        ("invert elementwise to 1/x", get_elementwise_inversion()),
-        ("turn vector into an array",
-         FunctionTransformer(np.expand_dims, kw_args={"axis": 1})),
-    ])
-
-    score_the_owners = Pipeline([
-        ("select relevant columns", get_base_score_fields()),
-        ("get unscaled base predicted score", get_heuristic_regression()),
-    ])
-
-    overall_pipeline = Pipeline([
-        ('scale inputs for path length',
-         FunctionTransformer(lambda X: np.multiply(invert_for_path_length.transform(X),
-                                                   X))),
-        ('predict', score_the_owners)
-    ])
-
-    return overall_pipeline
 
 
 def load_pickled_xpanse_object(file_name: str) -> Any:
@@ -162,7 +42,9 @@ def load_pickled_xpanse_object(file_name: str) -> Any:
     os.makedirs(LOCAL_MODEL_CACHE_PATH, exist_ok=True)
     cache_path = os.path.join(LOCAL_MODEL_CACHE_PATH, file_name)
 
-    if not os.path.exists(cache_path):
+    # check that file is not empty; if authorization fails it will
+    # create the cache_path but the file will be empty
+    if not (os.path.exists(cache_path) and os.path.getsize(cache_path)):
         remote_path = posixpath.join(REMOTE_GCS_PATH, file_name)
 
         demisto.info(f"Starting download of '{file_name}' from gs://{REMOTE_GCS_BUCKET}/{remote_path}")
@@ -171,6 +53,7 @@ def load_pickled_xpanse_object(file_name: str) -> Any:
         blob = bucket.blob(remote_path)
         blob.download_to_filename(cache_path)
         demisto.info(f"Downloaded '{file_name}' from gs://{REMOTE_GCS_BUCKET}/{remote_path}")
+
     else:
         demisto.info(f"Found '{file_name}' locally")
 
@@ -186,35 +69,27 @@ def featurize(asm_system_ids: List[str], owners: List[Dict[str, Any]]) -> np.nda
     feats = pipeline.featurize(asm_system_ids, owners)
     return feats
 
-def normalize(scores: List[float]) -> List[float]:
-    """
-    Normalizes a score with respect to total and maps it to a value between 0.5 and 1
-    """
-    total = sum(scores)
-    return [score / total / 2 + 0.5 for score in scores]
 
-
-def normalize_scores(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def normalize_scores(scores: List[float]) -> List[float]:
     """
     Normalizes a list of non-negative reals to values between 0.5 and 1
 
     We want to show greater-than-half probabilities to the end user
     for the sake of confidence/psychological comfort
     """
-    normalized = normalize(owner['Ranking Score'] for owner in owners)
-    for owner, score in zip(owners, normalized):
-        owner['Ranking Score'] = score
-    return owners
+    total = sum(scores)
+    return [round(score / total / 2 + 0.5, ndigits=2) for score in scores]
 
 
 def score(owners: List[Dict[str, Any]], asm_system_ids: List[str]) -> List[Dict[str, Any]]:
     """
-    Loads the model from cache or downloads from GCS and scores owners
+    Load the model, featurize inputs, score owners, normalize scores, and update the owners dicts
     """
     model = load_pickled_xpanse_object(MODEL_FILE_NAME)
     featurized = featurize(asm_system_ids=asm_system_ids, owners=owners)
     scores = model.predict(featurized)
-    for owner, score in zip(owners, scores):
+    normalized = normalize_scores(scores)
+    for owner, score in zip(owners, normalized):
         owner['Ranking Score'] = score
     return owners
 
@@ -226,7 +101,7 @@ def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     See _get_k for hyperparameters that can be used to adjust the target value of k
     """
-    k = _get_k(scores=(owner['Ranking Score'] for owner in owners))
+    k = _get_k(scores=([owner['Ranking Score'] for owner in owners]))
     return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)[:k]
 
 
@@ -393,15 +268,11 @@ def _get_k(
 
 
 # Model Featurization Code
-def generate_all_spaceless_monikers(
-    personal_monikers: Iterable[str], nicknamer: Optional[NickNamer] = None
-) -> Set[str]:
+def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> Set[str]:
     """
     Return all the spaceless ways that `personal_monikers` might manifest.
     Guaranteed lower case. Removes hyphens and quotes, and anything that
     looks like a domain of an email address.
-
-    Includes nicknames if `nicknamer` is passed.
     """
     result_set = set()
     for moniker in personal_monikers:
@@ -420,19 +291,9 @@ def generate_all_spaceless_monikers(
             last_name: str = split_full_moniker[-1]
             middle_names: List[str] = split_full_moniker[1:-1]
 
-            # add nicknames
-            if nicknamer:
-                for nick in nicknamer.nicknames_of(canonical_first_name):
-                    all_possible_first_names.append(nick)
-            else:
-                demisto.info(
-                    f"Need a nicknamer to include possible nicknames for {canonical_first_name}"
-                )
-
             # each name as a separate word
             result_set |= set(all_possible_first_names)
             # firstmiddlelast
-            # (we don't include nicknames because use of middle is very formal)
             result_set.add(f"{canonical_first_name}{''.join(middle_names)}{last_name}")
             # firstlast
             for fname in all_possible_first_names:
@@ -521,28 +382,19 @@ def get_possible_3initials(personal_monikers: Iterable[str]) -> Set[str]:
 def get_name_similarity_index(
     personal_monikers: Iterable[str],
     constant_name: str,
-    nicknamer: Optional[NickNamer] = None,
 ) -> float:
     """
     Returns an index into name similarity between `personal_monikers` and `constant_name`.
-    Set `nicknamer` if you want to resolve cases with nicknames (like ["Daniel"] to
-    `dan-test`).
 
     Returns >=1 if there is a blatant match.
     Returns 0 if there is no match at all.
     Returns 0 to 1 if there is a potential match.
-
-    Note:
-    We can't use word embeddings for nicknames. For instance, cosine similarities:
-        dan, daniel -> 0.736
-        daniel, jason -> 0.747
-    Instead we hand-curated nicknames via a (small) package.
     """
     total_indicators = 0.0
 
     all_monikers: Set[str] = map(  # type: ignore
         str.lower,
-        generate_all_spaceless_monikers(personal_monikers, nicknamer=nicknamer),
+        generate_all_spaceless_monikers(personal_monikers),
     )
     all_monikers = set([m for m in all_monikers if len(m) > 1])
     all_names = split_phrase(constant_name.lower())
@@ -702,8 +554,7 @@ def main():
 
         # score and rank owners
         normalized = aggregate(canonicalize(unranked))
-        top_k = rank(score(owners=normalized, asm_system_ids=asm_system_ids))
-        final_owners = justify(normalize_scores(top_k))
+        final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
 
         # write output to context
         demisto.executeCommand("setAlert", {"asmserviceowner": final_owners})
@@ -711,7 +562,7 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute IdentifyServiceOwners. Error: {str(ex)}')
+        return_error(f'Failed to execute RankServiceOwners. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
