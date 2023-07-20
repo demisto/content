@@ -1,6 +1,7 @@
 $script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
+
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client) {
     $integration_context = @{
         "DeviceCode"              = $client.device_code
