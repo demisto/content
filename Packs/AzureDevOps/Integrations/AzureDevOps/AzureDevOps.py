@@ -576,8 +576,8 @@ class Client:
 
     def file_list_request(self, organization: str, repository_id: str, project: str, args: Dict[str, Any]):
 
-        params = {"api-version": 7.0, "versionDescriptor.version": args.get("branch_name"),
-                  "versionDescriptor.versionType": "branch", "recursionLevel": args.get("recursion_level"),
+        params = {"api-version": 7.0, "versionDescriptor.version": args["branch_name"],
+                  "versionDescriptor.versionType": "branch", "recursionLevel": args["recursion_level"],
                   "includeContentMetadata": True}
 
         full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/items'
@@ -1998,7 +1998,12 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
 
     response = client.file_list_request(organization, repository_id, project, args=args)
 
+    mapping = {"path": "File Name(s)"}
+    readable_output = tableToMarkdown('Files', response.get("value"), headers=["path"],
+                                      headerTransform=lambda header: mapping.get(header, header))
+
     return CommandResults(
+        readable_output=readable_output,
         outputs_prefix='AzureDevOps.File',
         outputs=response,
         raw_response=response

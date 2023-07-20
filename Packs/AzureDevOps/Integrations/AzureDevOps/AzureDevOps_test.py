@@ -1393,3 +1393,41 @@ def test_file_delete_command(requests_mock):
 
     assert result.readable_output.startswith('Commit "Test 5." was deleted successfully by "" in branch "Test".')
     assert result.outputs_prefix == 'AzureDevOps.File'
+
+def test_file_list_command(requests_mock):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing azure-devops-file-list command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, file_list_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/items'
+
+    mock_response = json.loads(load_mock_response('file_list.json'))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    args = {"branch_name": "Test",
+            "recursion_level": "OneLevel",
+            }
+    result = file_list_command(client, args, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith("### Files\n|File Name(s)|\n")
+    assert result.outputs_prefix == 'AzureDevOps.File'
