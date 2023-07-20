@@ -202,7 +202,7 @@
   trigger:
     strategy: depend
     include:
-      - local: .gitlab/ci/slack-notify.yml
+      - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
 
 
 .unittests-and-lint-settings:
@@ -237,11 +237,11 @@
     - .unittests-and-lint-settings
   script:
     - section_start "Test Infrastructure"
-    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-    - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/tests -v
-    - python3 -m pytest ./Tests/private_build/ -v
-    - python3 -m pytest Utils -v
+    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
+    - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
+    - python3 -m pytest ./Tests/tests -v --disable-warnings
+    - python3 -m pytest ./Tests/private_build/ -v --disable-warnings
+    - python3 -m pytest Utils -v --disable-warnings
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
         ./Tests/scripts/sdk_pylint_check.sh
