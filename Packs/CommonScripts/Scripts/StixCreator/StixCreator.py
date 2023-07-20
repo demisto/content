@@ -370,6 +370,12 @@ def main():
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
                     continue
 
+                except InvalidValueError:
+                    demisto.info(
+                        f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
+                    demisto.info(f"Export failure exception: {traceback.format_exc()}")
+                    continue
+
             except InvalidValueError:
                 demisto.info(
                     f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
