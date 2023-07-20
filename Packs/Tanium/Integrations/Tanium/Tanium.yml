@@ -20,6 +20,7 @@ configuration:
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Deprecated. Use Tanium v2 instead.
 display: Tanium (Deprecated)
 name: Tanium
