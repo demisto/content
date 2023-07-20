@@ -15,15 +15,18 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: UNHANDLED
   display: Fetch alerts with status (UNHANDLED,SUPPRESSED,RESOLVED)
   name: alert_status
@@ -34,6 +37,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: The type of alerts are Policy Violation, System Policy Violation, Anomaly Detection. If no type is chosen, all types will be fetched.
   display: Fetch alerts with type
   name: alert_type
@@ -44,6 +48,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: min_severity
@@ -59,11 +64,13 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Secret API Key
   name: secret
   required: true
@@ -75,12 +82,14 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Whether to use the system proxy.
   display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use the Armis integration to search alerts and devices, tag and untag devices, and set alert statuses.
 display: Armis
 name: Armis
