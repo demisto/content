@@ -72,61 +72,35 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: true
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
+    - description: Maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Date to return results from.
-      isArray: false
+    - description: Date to return results from.
       name: since_datetime
-      required: false
-      secret: false
-    - default: false
-      description: Offset which events to return.
-      isArray: false
+    - description: Offset which events to return.
       name: offset
-    deprecated: false
     description: Gets activity logs from Qualys.
-    execution: false
     name: qualys-get-activity-logs
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: true
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
+    - description: Maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Offset which events to return.
-      isArray: false
+    - description: Offset which events to return.
       name: offset
-    - default: false
-      description: Date to return results from.
-      isArray: false
+    - description: Date to return results from.
       name: vm_scan_date_after
-      required: false
-      secret: false
-    deprecated: false
     description: Gets host detections from Qualys.
-    execution: false
     name: qualys-get-host-detections
   dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true

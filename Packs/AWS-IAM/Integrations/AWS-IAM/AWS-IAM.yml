@@ -1508,7 +1508,7 @@ script:
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
       description: The date when the given access key was last used.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.64385
+  dockerimage: demisto/boto3py3:1.0.0.65194
   runonce: false
   script: '-'
   subtype: python3
