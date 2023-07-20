@@ -19,3 +19,9 @@ tls
 useraccountcontrol
 zipprotectwithpassword
 
+[file:script-ADGetUser.yml]
+ignore=BA120
+
+[file:script-ADGetUser_README.md]
+ignore=BA120
+

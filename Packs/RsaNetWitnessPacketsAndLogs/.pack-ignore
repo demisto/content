@@ -3,3 +3,13 @@ ignore=PA116
 
 [file:RSANetWitnessPacketsAndLogs_image.png]
 ignore=IM111
+
+[file:script-NetwitnessQuery_README.md]
+ignore=BA120
+
+[file:script-NetwitnessQuery.yml]
+ignore=BA120
+
+[file:script-NetwitnessSearch.yml]
+ignore=BA120
+

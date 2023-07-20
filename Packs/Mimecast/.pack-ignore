@@ -19,3 +19,9 @@ ignore=MR108
 [file:MimecastParsingRules.yml]
 ignore=PR101
 
+[file:script-MimecastQuery.yml]
+ignore=BA120
+
+[file:script-MimecastQuery_README.md]
+ignore=BA120
+

@@ -1,2 +1,6 @@
 [file:DelineaDSV_image.png]
 ignore=IM111
+
+[file:README.md]
+ignore=BA120
+

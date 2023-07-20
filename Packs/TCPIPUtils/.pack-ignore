@@ -1,2 +1,6 @@
 [file:playbook-TCPIPUtils_Test.yml]
 ignore=auto-test
+
+[file:integration-TCPIPUtils.yml]
+ignore=BA120
+

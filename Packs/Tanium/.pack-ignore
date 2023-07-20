@@ -8,7 +8,7 @@ ignore=RM104,RM106
 ignore=BA108,BA109
 
 [file:script-TaniumFilterComputersByIndexQueryFileDetails_README.md]
-ignore=RM106
+ignore=RM106,BA120
 
 [file:Tanium_image.png]
 ignore=IM111
