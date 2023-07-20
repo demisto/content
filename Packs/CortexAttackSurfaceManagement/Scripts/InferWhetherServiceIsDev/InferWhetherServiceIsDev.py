@@ -4,7 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 import traceback
 from collections.abc import Mapping
-from typing import Any, Dict, List, Callable
+from typing import Any
+from collections.abc import Callable
 
 
 DEV_ENV_CLASSIFICATION = "DevelopmentEnvironment"
@@ -27,7 +28,7 @@ def _canonicalize_string(in_str: str) -> str:
     return in_str.lower().strip(' \t"\'')
 
 
-def get_indicators_from_key_value_pairs(observed_key_value_pairs: List, is_indicator_match: Callable) -> List:
+def get_indicators_from_key_value_pairs(observed_key_value_pairs: list, is_indicator_match: Callable) -> list:
     """
     Returns list of matches based on criteria.
 
@@ -49,9 +50,8 @@ def get_indicators_from_key_value_pairs(observed_key_value_pairs: List, is_indic
                 key = _canonicalize_string(kv_pair.get("Key", ""))
                 value = _canonicalize_string(kv_pair.get("Value", ""))
 
-                if ("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier")):
-                    if is_indicator_match(value):
-                        indicators.append(kv_pair)
+                if (("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier"))) and is_indicator_match(value):
+                    indicators.append(kv_pair)
 
     return indicators
 
@@ -68,8 +68,8 @@ def is_dev_indicator(value: str) -> bool:
      """
     return (("dev" in value and "devops" not in value)
             or ("uat" in value and "prod" not in value)
-            or any([m == value for m in EXACT_DEV_MATCH])
-            or any([m in value for m in PARTIAL_DEV_MATCH]))
+            or any(m == value for m in EXACT_DEV_MATCH)
+            or any(m in value for m in PARTIAL_DEV_MATCH))
 
 
 def is_prod_indicator(value: str) -> bool:
@@ -86,11 +86,11 @@ def is_prod_indicator(value: str) -> bool:
     if is_dev_indicator(value):
         return False
     else:
-        return (any([m == value for m in EXACT_PROD_MATCH])
-                or any([m in value for m in PARTIAL_PROD_MATCH]))
+        return (any(m == value for m in EXACT_PROD_MATCH)
+                or any(m in value for m in PARTIAL_PROD_MATCH))
 
 
-def get_indicators_from_external_classification(classifications: List[str]) -> List:
+def get_indicators_from_external_classification(classifications: list[str]) -> list:
     """
     Returns whether any of the classification strings indicate that this service is
     a development environment. The Xpanse ASM classification strings are a defined
@@ -108,14 +108,11 @@ def get_indicators_from_external_classification(classifications: List[str]) -> L
             the described system is used for development.  Empty list means
             no matches.
     """
-    if (DEV_ENV_CLASSIFICATION in classifications):
-        ext_classification_match = [DEV_ENV_CLASSIFICATION]
-    else:
-        ext_classification_match = []
+    ext_classification_match = [DEV_ENV_CLASSIFICATION] if DEV_ENV_CLASSIFICATION in classifications else []
     return ext_classification_match
 
 
-def determine_reason(external_indicators: List, matches: List) -> str:
+def determine_reason(external_indicators: list, matches: list) -> str:
     """
     Craft the 'reason' for the final verdict of "development" server or not.
 
@@ -142,7 +139,7 @@ def determine_reason(external_indicators: List, matches: List) -> str:
     return reason_final
 
 
-def final_decision(external_indicators: List, dev_matches: List, prod_matches: List) -> Dict:
+def final_decision(external_indicators: list, dev_matches: list, prod_matches: list) -> dict:
     """
     Final decision to be set in gridfield.
 
@@ -154,7 +151,7 @@ def final_decision(external_indicators: List, dev_matches: List, prod_matches: L
     Returns:
         dict: dictionary to be added to gridfield.
     """
-    final_dict: Dict[str, Any] = {}
+    final_dict: dict[str, Any] = {}
     if (len(external_indicators) == 1 or len(dev_matches) > 0) and len(prod_matches) == 0:
         final_dict["result"] = True
         final_dict["confidence"] = "Likely Development"
@@ -214,11 +211,11 @@ def main():
     try:
         args = demisto.args()
 
-        internal_tags: List[Dict[str, Any]] = argToList(args.get("asm_tags", [{}]))
+        internal_tags: list[dict[str, Any]] = argToList(args.get("asm_tags", [{}]))
         dev_kv_indicators = get_indicators_from_key_value_pairs(internal_tags, is_dev_indicator)
         prod_kv_indicators = get_indicators_from_key_value_pairs(internal_tags, is_prod_indicator)
 
-        external_active_classifications: List[str] = argToList(args.get("active_classifications", []))
+        external_active_classifications: list[str] = argToList(args.get("active_classifications", []))
         external_indicators = get_indicators_from_external_classification(external_active_classifications)
 
         decision_dict = final_decision(external_indicators, dev_kv_indicators, prod_kv_indicators)
