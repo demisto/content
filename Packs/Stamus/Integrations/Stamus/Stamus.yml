@@ -68,6 +68,18 @@ script:
     - contextPath: StamusIntegration.IOC
       description: '[Fetch events matching an IOC.]'
       type: String
+    - contextPath: StamusIntegration.IOC.timestamp
+      description: '[Timestamp of the event]'
+      type: String
+    - contextPath: StamusIntegration.IOC.src_ip
+      description: '[Source IP of the event]'
+      type: String
+    - contextPath: StamusIntegration.IOC.dest_ip
+      description: '[Destination IP of the event]'
+      type: String
+    - contextPath: StamusIntegration.IOC.event_type
+      description: '[Type of the event - can be multitude, example: HTTP,SMB,DNS,Flow,TLS,KRB5,FTP etc]'
+      type: String
   - arguments:
     - default: false
       description: '[IP to get Host Insights information]'
@@ -83,6 +95,51 @@ script:
     - contextPath: StamusIntegration.HostInsights
       description: '[Fetch information about a host known by Host Insight module]'
       type: String
+    - contextPath: StamusIntegration.HostInsights.ip
+      description: '[Stamus Host Insights IP address]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.client_service.first_seen
+      description: '[Timestamp of first time seen]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.client_service
+      description: '[Client network service detected]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.services.proto
+      description: '[Network services protocol]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.services.port
+      description: '[Network services port]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.services.values.first_seen
+      description: '[Network services for the corresponding application protocol first time seen]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.services.values.last_seen
+      description: '[Network services for the corresponding application protocol last time seen]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.services.values.app_proto
+      description: '[Network services application layer protocol]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.services.services_count
+      description: '[Number of network services detected on the host]'
+      type: Number
+    - contextPath: StamusIntegration.HostInsights.host_id.client_service.name
+      description: '[Type of client network service detected - can be HTTP,KRB5,TLS,DCERPC,SMB etc]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.hostname.host
+      description: '[Hostname detected on the host]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.username.user
+      description: '[Username detected loggin in on the host]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.http\.user_agent.agent
+      description: '[HTTP User-Agent detected being used from the host]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.tls\.ja3.hash
+      description: '[TLS JA3 hash detected being used from the host]'
+      type: String
+    - contextPath: StamusIntegration.HostInsights.host_id.tls\.ja3s.hash
+      description: '[TLS JA3S hash detected being used from the host]'
+      type: String
   - arguments:
     - default: false
       description: '[Stamus ID used to get related information]'
@@ -97,6 +154,33 @@ script:
     outputs:
     - contextPath: StamusIntegration.RelatedEvents
       description: '[Get events for a Declaration of Compromise.]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.timestamp
+      description: '[Timestamp of the Stamus event]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.stamus.asset
+      description: '[Stamus asset]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.offender
+      description: '[Offender, against the Stamus asset]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.killchain
+      description: '[Killchain stage]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.method
+      description: '[Stamus method triggered]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.info
+      description: '[Extra Information]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.src_ip
+      description: '[Source IP of the event]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.dest_ip
+      description: '[Destination IP of the event]'
+      type: String
+    - contextPath: StamusIntegration.RelatedEvents.app_proto
+      description: '[Application protocol of the event]'
       type: String
   isfetch: true
   runonce: false
