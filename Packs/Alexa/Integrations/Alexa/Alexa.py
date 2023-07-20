@@ -81,6 +81,13 @@ def alexa_domain_command(domain, use_ssl, proxies, threshold, benign, reliabilit
         'EntryContext': ec
     })
 
+    
+def f(x):
+    if x == 'ok':
+        pass
+    else:
+        return 5
+    
 
 def test_module_command(use_ssl, proxies):
     domain = 'google.com'
