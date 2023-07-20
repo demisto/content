@@ -8,12 +8,6 @@ configuration:
   required: true
   section: Connect
   type: 0
-- advanced: true
-  display: Port. If not specified, default port is 443
-  name: port
-  required: false
-  section: Connect
-  type: 0
 - display: ""
   displaypassword: API Key for authentication
   hiddenusername: true
@@ -33,6 +27,17 @@ configuration:
   required: false
   section: Connect
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 867ed21d-28d9-4b58-8483-f7beee7ebaac
+    packName: IRIS DFIR Contribution Pack
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: IRIS is a collaborative platform aiming to help incident responders to share technical details during investigations. It's free and open-source.
 display: IRIS DFIR
 name: IRIS DFIR
@@ -61,11 +66,9 @@ script:
   - arguments: []
     description: Return a list of all IRIS DFIR cases
     name: iris-get-all-cases
-  dockerimage: demisto/python3-deb:3.10.12.65454
+  dockerimage: demisto/python3:3.10.12.65454
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
+sourcemoduleid: OpenLDAP
