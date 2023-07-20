@@ -47,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "38"
     scriptarguments:
       all:
         simple: "yes"
@@ -90,8 +90,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 750
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
@@ -141,6 +141,99 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "4":
+    id: "4"
+    taskid: 95ffbc8b-c20e-4afe-814f-4216feb726c8
+    type: regular
+    task:
+      id: 95ffbc8b-c20e-4afe-814f-4216feb726c8
+      version: -1
+      name: rsa-nw-update-incident
+      script: RSANetWitnessv115|||rsa-nw-update-incident
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+      description: Updates incident status and assignee.
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        complex:
+          root: RSANetWitness115.Incidents
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RSANetWitness115.Incidents.status
+                iscontext: true
+              right:
+                value:
+                  simple: New
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "5":
+    id: "5"
+    taskid: a6d62256-57e9-4dd8-80f5-4af2d06f0e2f
+    type: condition
+    task:
+      id: a6d62256-57e9-4dd8-80f5-4af2d06f0e2f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RSANetWitness115.Incidents
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: Closed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
@@ -868,14 +961,140 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
+  "37":
+    id: "37"
+    taskid: f8cb1a78-c2c2-459d-8b8f-99ba4192596f
+    type: condition
+    task:
+      id: f8cb1a78-c2c2-459d-8b8f-99ba4192596f
+      version: -1
+      name: is there new incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RSANetWitness115.Incidents
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: RSANetWitness115.Incidents.status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: New
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 1a45599e-95a5-4249-8e8d-9c6f31dc270d
+    type: regular
+    task:
+      id: 1a45599e-95a5-4249-8e8d-9c6f31dc270d
+      version: -1
+      name: get all incidents
+      description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
+      script: '|||rsa-nw-list-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 28c49d88-d832-462a-8697-df0d4650522e
+    type: regular
+    task:
+      id: 28c49d88-d832-462a-8697-df0d4650522e
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 4935,
-        "width": 492.5,
-        "x": 162.5,
+        "width": 605,
+        "x": 50,
         "y": 50
       }
     }
