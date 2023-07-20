@@ -2,7 +2,7 @@
 alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
     severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
     message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
-    observer_name = arrayindex(regextract(_raw_log , "([\w\-\_\.\@]+)\s\:\s%ASA-\d+"),0);
+    observer_name = arrayindex(regextract(_raw_log , "([\w\-\_\.\@]+)\s*\:*\s%ASA-\d+"),0);
 
 [MODEL: dataset=cisco_asa_raw]
 //from <source_ip>/<source_port> to <dest_ip>/<dest_port>
