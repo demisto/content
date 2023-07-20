@@ -109,10 +109,10 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
-    echo "Can not force upload while using a storage base path."
-    exit 1
-fi
+#if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
+#    echo "Can not force upload while using a storage base path."
+#    exit 1
+#fi
 if [ -n "$_storage_base_path" ] && [[ "$_storage_base_path" != *content ]]; then
   echo "$_storage_base_path"
   echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content.1"
