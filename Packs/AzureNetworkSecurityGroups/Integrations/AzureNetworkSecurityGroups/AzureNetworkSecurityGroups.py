@@ -511,13 +511,6 @@ def complete_auth(client: AzureNSGClient):
     return '✅ Authorization completed successfully.'
 
 
-@logger
-def reset_auth(client: AzureNSGClient):
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
-
-
 def test_module(client: AzureNSGClient) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -582,7 +575,6 @@ def main() -> None:     # pragma: no cover
         commands_without_args = {
             'azure-nsg-auth-start': start_auth,
             'azure-nsg-auth-complete': complete_auth,
-            'azure-nsg-auth-reset': reset_auth,
             'azure-nsg-subscriptions-list': nsg_subscriptions_list_command
         }
         if command == 'test-module':
