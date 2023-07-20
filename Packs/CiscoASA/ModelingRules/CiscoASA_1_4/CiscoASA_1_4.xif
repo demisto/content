@@ -603,3 +603,30 @@ filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
     xdm.target.ipv4 = dst_ip,
     xdm.target.zone = dst_interface,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
+
+// new !!---------------------------------------------------------------------------------------------------//
+// %ASA-x-xxxxx: (...)
+| filter _raw_log ~= "\d+\-\d+\:\s\([\w\-\_]+\)"
+| call cisco_asa_main_fields_extraction
+| alter reason_code = to_integer(arrayindex(regextract(_raw_log ,"\(reason\scode\s\=\s(\d+)\)"),0)),
+    ,dst_interface = arrayindex(regextract(_raw_log ,"[on|Testing]{2,}\s[i|I]nterface\s(\S+)"),0),
+    command_line = arrayindex(regextract(_raw_log ,"command\:\s\'([^\']+)\'"),0)
+| alter xdm.event.outcome_reason = coalesce(
+        // for event if 103001
+        if(
+            reason_code = 1 and event_id = 103001,"The local unit is not receiving the hello packet on the failover LAN interface when LAN failover occurs or on the serial failover cable when serial failover occurs, and declares that the peer is down.",
+            reason_code = 2 and event_id = 103001,"An interface did not pass one of the four failover tests, which are as follows: 1) Link Up, 2) Monitor for Network Traffic, 3) ARP, and 4) Broadcast Ping.",
+            reason_code = 3 and event_id = 103001 ,"No proper ACK for 15+ seconds after a command was sent on the serial cable.",
+            reason_code = 4 and event_id = 103001,"The failover LAN interface is down, and other data interfaces are not responding to additional interface testing. In addition, the local unit is declaring that the peer is down.",
+            reason_code = 5 and event_id = 103001,"The standby peer went down during the configuration synchronization process.",
+            reason_code = 6 and event_id = 103001,"Replication is not complete; the failover unit is not synchronized.",null
+        ),
+        // for event if 104001, 104002
+        arrayindex(regextract(_raw_log ,"Switching\sto\s[A-Z]+\s\-\s(.*)"),0)
+    ),
+    xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_name,
+    xdm.target.zone = dst_interface,
+    xdm.target.process.command_line = command_line;
