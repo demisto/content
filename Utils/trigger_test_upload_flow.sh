@@ -109,11 +109,6 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -z "$_force_to_marketplace" ]; then
-    echo "You must provide a name of marketplace to force upload."
-    exit 1
-fi
-
 if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
     echo "Can not force upload while using a storage base path."
     exit 1
