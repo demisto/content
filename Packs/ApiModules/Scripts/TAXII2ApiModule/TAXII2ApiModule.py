@@ -282,13 +282,10 @@ class Taxii2FeedClient:
         )
         if self.auth_header:
             # add auth_header to the session object
-            self._conn.session.headers = (  # type: ignore[attr-defined]
-                merge_setting(
-                    self._conn.session.headers,  # type: ignore[attr-defined]
-                    {self.auth_header: self.auth_key},
-                    dict_class=CaseInsensitiveDict,
-                ),
-            )
+            self._conn.session.headers = merge_setting(self._conn.session.headers,    # type: ignore[attr-defined]
+                                                       {self.auth_header: self.auth_key},
+                                                       dict_class=CaseInsensitiveDict)
+
         if version is TAXII_VER_2_0:
             self.server = v20.Server(
                 server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
@@ -1259,8 +1256,8 @@ class Taxii2FeedClient:
             self.objects_to_fetch.append('relationship')
         kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            return v20.as_pages(get_objects, per_request=page_size, kwargs=kwargs)
-        return v21.as_pages(get_objects, per_request=page_size, kwargs=kwargs)
+            return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
