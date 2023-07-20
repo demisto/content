@@ -30,6 +30,7 @@ configuration:
 - display: "The path to the public certificate required to authenticate."
   name: public_cert
   type: 0
+  required: false
 script:
   commands:
   - name: exterro-ftk-trigger-workflow
