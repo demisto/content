@@ -109,10 +109,10 @@ def get_indicators_from_external_classification(classifications: List[str]) -> L
             no matches.
     """
     if (DEV_ENV_CLASSIFICATION in classifications):
-        ext_classificaiton_match = [DEV_ENV_CLASSIFICATION]
+        ext_classification_match = [DEV_ENV_CLASSIFICATION]
     else:
-        ext_classificaiton_match = []
-    return ext_classificaiton_match
+        ext_classification_match = []
+    return ext_classification_match
 
 
 def determine_reason(external_indicators: List, matches: List) -> str:

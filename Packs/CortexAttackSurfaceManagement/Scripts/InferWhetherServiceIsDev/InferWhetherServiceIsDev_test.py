@@ -75,33 +75,40 @@ def test_determine_reason(external, internal, reason):
     assert determine_reason(external, internal) == reason
 
 
-@pytest.mark.parametrize('external, dev, prd, final',
-                         [(["DevelopmentEnvironment"], [], [],
-                          {"reason": "Match on external classification of DevelopmentEnvironment",
-                           "result": True, "confidence": "Likely Development"}),
-                          ([], [], [],
-                          {"confidence": "Not Enough Information", "reason": "Neither dev nor prod indicators found",
-                           "result": False}),
-                          ([], [{"Key": "env", "Value": "non-prod", "Source": "AWS"}], [],
-                          {"confidence": "Likely Development", "reason": "Match on tag {env: non-prod} from AWS",
-                           "result": True}),
-                          (["DevelopmentEnvironment"], [{"Key": "env", "Value": "non-prod", "Source": "AWS"}], [],
-                          {"confidence": "Likely Development", "result": True, "reason":
-                           "Match on external classification of DevelopmentEnvironment and tag {env: non-prod} from AWS"}),
-                          (["DevelopmentEnvironment"], [], [{"Key": "env", "Value": "prd", "Source": "AWS"}],
-                          {"result": False, "confidence": "Conflicting Information",
-                           "reason": "Match on external classification of DevelopmentEnvironment and tag {env: prd} from AWS"}),
-                          ([], [], [{"Key": "env", "Value": "prd", "Source": "AWS"}],
-                          {"result": False, "confidence": "Likely Production",
-                           "reason": "Match on tag {env: prd} from AWS"}),
-                          ([], [{"Key": "env", "Value": "dv", "Source": "Tenable.io"}],
-                               [{"Key": "env", "Value": "pr", "Source": "AWS"}],
-                          {"result": False, "confidence": "Conflicting Information",
-                           "reason": "Match on tag {env: dv} from Tenable.io and tag {env: pr} from AWS"})])
-def test_final_decision(external, dev, prd, final):
+def test_full_truth_tablen():
+    sample_dev_tag = [{"Key": "stage", "Value": "non-prod", "Source": "AWS"}]
+    sample_prod_tag = [{"Key": "tier", "Value": "prod", "Source": "Tenable.io"}]
+    # Blank list means no external classification or tag matches.
+    sample_no_match = []
+    sample_dev_classification = ["DevelopmentEnvironment"]
+
     from InferWhetherServiceIsDev import final_decision
 
-    assert final_decision(external, dev, prd) == final
+    # dev == True, all else is False
+
+    # kv pair contains no indicators
+    # DevEnv is set (--> dev)
+    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match)["result"]
+    # DevEnv is not set (--> can't tell)
+    assert not final_decision(sample_no_match, sample_no_match, sample_no_match)["result"]
+
+    # kv pair contains dev indicators only
+    # DevEnv is set (--> dev)
+    assert final_decision(sample_dev_tag, sample_dev_tag, sample_no_match)["result"]
+    # DevEnv is not set (--> dev)
+    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match)["result"]
+
+    # kv pair contains prod indicators only
+    # DevEnv is set (--> conflicting)
+    assert not final_decision(sample_dev_tag, sample_no_match, sample_prod_tag)["result"]
+    # DevEnv is not set (--> prod)
+    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag)["result"]
+
+    # kv pair contains conflicting indicators
+    # DevEnv is set (--> conflicting)
+    assert not final_decision(sample_dev_tag, sample_dev_tag, sample_prod_tag)["result"]
+    # DevEnv is not set (--> conflicting)
+    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag)["result"]
 
 
 @pytest.mark.parametrize('in_classifications,in_tags,expected_out_boolean',
