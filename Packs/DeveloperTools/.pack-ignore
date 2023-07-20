@@ -1,6 +1,3 @@
-[file:Process_Email_-_Generic_-_Test_-_Actual_Incident.yml]
-ignore=auto-test
-
 [file:script-VerifyHumanReadableEquals.yml]
 ignore=BA101
 
@@ -18,18 +15,6 @@ ignore=IM111
 
 [file:README.md]
 ignore=BA114
-
-[file:playbook-EDL_Indicator_Performance_Test.yml]
-ignore=auto-test
-
-[file:playbook-EDL_Performance_Test_-_Concurrency.yml]
-ignore=auto-test
-
-[file:TAXII2_Indicator_Performance_Test.yml]
-ignore=auto-test
-
-[file:TAXII2_Performance_Test_-_Concurrency.yml]
-ignore=auto-test
 
 [known_words]
 powershell

@@ -1,9 +1,6 @@
 [file:MicrosoftGraphSecurity.yml]
 ignore=IN126,IN135,DS107,PR101,MR108
 
-[file:playbook-Microsoft_Graph_Test.yml]
-ignore=auto-test
-
 [known_words]
 msg-search-alerts
 
