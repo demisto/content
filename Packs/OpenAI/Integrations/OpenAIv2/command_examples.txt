@@ -1,4 +1,0 @@
-!openai-answer-question question=`What are some XSOAR playbook best practices?` entry_id=1504@3d4f3713-0634-41eb-833b-299c6253eea9
-!openai-chatgpt prompt=`Give detailed analysis of the following using the following form:\n1- Analysis (Incident Description)\n2- Impact Analysis\n3- Action or Recommendations (Must be detailed)\n\nThere is a security incident with the following information:\n1- Title: ${incident.name}\n2- Indicator of compromise: ${ExtractedIndicators}\n3- Indicator of compromise reputation: ${Indicators.Score}\n...` model="gpt-35-turbo"
-!openai-completions prompt="Give me some characteristics of a phishing email"
-!openai-summarize entry_id=1504@3d4f3713-0634-41eb-833b-299c6253eea9
