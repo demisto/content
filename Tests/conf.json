@@ -1530,7 +1530,8 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 300
+            "timeout": 400,
+            "memory_threshold": 150
         },
         {
             "integrations": "PagerDuty v2",
@@ -1666,7 +1667,8 @@
             "instance_names": [
                 "ews_mail_sender_labdemisto"
             ],
-            "playbookID": "EWS V2 Send Mail Test 2"
+            "playbookID": "EWS V2 Send Mail Test 2",
+            "memory_threshold": 150
         },
         {
             "integrations": [
@@ -4614,7 +4616,7 @@
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
             ],
-            "memory_threshold": 160,
+            "memory_threshold": 350,
             "pid_threshold": 80,
             "is_mockable": false
         },
