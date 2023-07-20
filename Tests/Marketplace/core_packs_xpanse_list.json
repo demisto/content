@@ -25,13 +25,13 @@
     "Malware",
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
+    "Nmap",
     "PrismaCloud",
     "qualys",
     "Rapid7_Nexpose",
     "ServiceNow",
     "SplunkPy",
-    "Tenable_io",
-    "Jira"
+    "Tenable_io"
   ],
   "update_core_packs_list": [
     "AWS-EC2",
@@ -59,12 +59,12 @@
     "Malware",
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
+    "Nmap",
     "PrismaCloud",
     "qualys",
     "Rapid7_Nexpose",
     "ServiceNow",
     "SplunkPy",
-    "Tenable_io",
-    "Jira"
+    "Tenable_io"
   ]
 }
