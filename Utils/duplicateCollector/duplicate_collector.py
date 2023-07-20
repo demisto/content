@@ -181,7 +181,6 @@ def prepare_xif_file(new_pack_path: Path, custom: str):
         with open(xif_file_path, 'r') as xif_f:
             xif_data = xif_f.read()
 
-        modified_xif = re.sub(DATASET_REGEX, lambda match: f'{match.group("dataset_value")}', xif_data)
 
         with open(xif_file_path, 'w') as xif_f:
             xif_f.write(modified_xif)
