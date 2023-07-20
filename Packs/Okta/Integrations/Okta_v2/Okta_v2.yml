@@ -209,7 +209,7 @@ script:
       description: Term by which to search. Can be a first name, last name, or email address.
       name: term
       required: false
-    - description: Searches for users with a supported filtering expression for most properties. If `term` and `advanced_search` are provided, `advanced_search` will take precedence.
+    - description: Searches for users with a supported filtering expression for most properties, including custom-defined properties. If `term` and `advanced_search` are provided, `advanced_search` will take precedence.
       name: advanced_search
       required: false
     - description: The maximum number of results to return. The default and maximum is 200.
