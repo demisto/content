@@ -1777,7 +1777,7 @@ inputs:
   playbookInputQuery:
 - key: EntityID
   value:
-    simple: 172.16.13.46
+    simple:
   required: true
   description: Entity value.
   playbookInputQuery:
