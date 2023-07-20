@@ -202,7 +202,7 @@
   trigger:
     strategy: depend
     include:
-      - local: .gitlab/ci/slack-notify.yml
+      - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
 
 
 .unittests-and-lint-settings:
