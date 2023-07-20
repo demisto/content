@@ -12,15 +12,19 @@ configuration:
   display: Long running instance
   name: longRunning
   type: 8
+  required: false
 - display: Listen port, e.g. 7000
   name: longRunningPort
   type: 0
+  required: false
 - display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
+  required: false
 - display: Private Key (Required for HTTPS)
   name: private_key
   type: 14
+  required: false
 description: This integration will run a server that will listen for PingCastle XML reports.
 display: PingCastle
 name: PingCastle

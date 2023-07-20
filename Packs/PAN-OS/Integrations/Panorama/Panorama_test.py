@@ -7078,13 +7078,13 @@ def test_pan_os_delete_tag_command(mocker, is_shared):
             "device_group",
             "",
             {"disable_override": True, "comment": ""},
-            "<disable-override>yes</disable-override>"
+            "<disable-override>yes</disable-override><comments></comments>"
         ),
         (
             "",
             "vsys1",
             {"disable_override": True, "comment": ""},
-            ""
+            "<comments></comments>"
         ),
     ]
 )
