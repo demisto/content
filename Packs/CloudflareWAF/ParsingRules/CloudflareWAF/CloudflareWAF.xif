@@ -8,16 +8,14 @@ filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[+-]
 | alter _time = parse_timestamp("%FT%X%Ez", to_string(edgeendtimestamp));
 
 // Supports RFC3339 compatible timestamps with a numeric timezone offset and seconds fraction precision (for e.g. 2023-07-17T14:30:59.123+03:00)
-filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}[\+\-]\d{2}:\d{2}"
-| alter tmp_timestamp_string = to_string(edgeendtimestamp)
+filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.?\d+[Zz]|\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[\+\-]{1}\d{2}:\d{2}"
+| tmp_timestamp_string = replace(to_string(edgeendtimestamp), "Z", "+00:00") 
 | alter tmp_precision = arrayindex(regextract(tmp_timestamp_string, "\.(\d{1,6})"), 0)
 | alter tmp_precision_length = len(tmp_precision)
 | alter tmp_time = if( // adjust parsing format according to the precision length
     tmp_precision_length = 1, parse_timestamp("%FT%H:%M:%E1S%Ez", tmp_timestamp_string),
     tmp_precision_length = 2, parse_timestamp("%FT%H:%M:%E2S%Ez", tmp_timestamp_string),
     tmp_precision_length = 3, parse_timestamp("%FT%H:%M:%E3S%Ez", tmp_timestamp_string),
-    tmp_precision_length = 4, parse_timestamp("%FT%H:%M:%E4S%Ez", tmp_timestamp_string),
-    tmp_precision_length = 5, parse_timestamp("%FT%H:%M:%E5S%Ez", tmp_timestamp_string),
     tmp_precision_length = 6, parse_timestamp("%FT%H:%M:%E6S%Ez", tmp_timestamp_string))
 | alter _time = tmp_time
 | fields - tmp*;
