@@ -42,7 +42,7 @@ This playbook does not use any commands.
 | timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day<br/>\* 2 minutes<br/>\* 4 hours<br/>\* 8 days | 20 days | Required |
 | RunAll | Whether to run all the sub-tasks for Mitre Tactics. | true | Optional |
 | EntityType | Entity type to search. | hostname | Required |
-| EntityID | Entity value. | 172.16.13.46 | Required |
+| EntityID | Entity value. | None | Required |
 
 ## Playbook Outputs
 
@@ -50,7 +50,7 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| foundIncidents |  | unknown |
+| foundIncidents | Alerts found | unknown |
 
 ## Playbook Image
 
