@@ -630,3 +630,29 @@ filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
     xdm.observer.name = observer_name,
     xdm.target.zone = dst_interface,
     xdm.target.process.command_line = command_line;
+
+//722003 -  %ASA-x-xxxx: IP <src_ip>
+| filter _raw_log ~= "\d+\-\d+\:\sIP\s\<\d+\.\d+\.\d+\.\d+\>"
+| call cisco_asa_main_fields_extraction
+| alter src_ipv4 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\sIP\s\<(\d+\.\d+\.\d+\.\d+)\>"),0)
+| alter xdm.source.ipv4 = src_ipv4,
+    xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_name;
+
+//106016: from (<source_ip>) to <dest_ip>
+| filter _raw_log ~= "from\s\(\d+\.\d+\.\d+\.\d+\)\sto\s\d+\.\d+\.\d+\.\d+"
+| call cisco_asa_main_fields_extraction
+| alter src_ip = arrayindex(regextract(_raw_log ,"from\s\((\d+\.\d+\.\d+\.\d+)\)\sto\s\d+\.\d+\.\d+\.\d+"),0),
+    action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:\s([\w\s\-]+)\s"),0),
+    dst_ip = arrayindex(regextract(_raw_log ,"from\s\(\d+\.\d+\.\d+\.\d+\)\sto\s(\d+\.\d+\.\d+\.\d+)"),0),
+    dst_interface = arrayindex(regextract(_raw_log ,"on\sinterface\s(\S+)"),0)
+| alter xdm.source.ipv4 = src_ip,
+    xdm.target.ipv4 = dst_ip,
+    xdm.target.zone= dst_interface,
+    xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_name,
+    xdm.event.outcome_reason = action;
