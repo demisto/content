@@ -108,9 +108,23 @@ def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
     """
     For now, `Justification` is the same as `Source`; in the future, will sophisticate
+
+    Strip "Chain: " from both Source and Justification fields as post-processing step.
+
+    The "Chain: " prefix in the source indicates that the attribution of this owner
+    is multi-step: e.g. first we recovered the service account, then we recovered the
+    project owner for that service account.
+
+    Future work may further unroll this chain, for instance: recover the manager
+    of the project owner of the service account, which we would denote using the Source of:
+    "Chain: Chain: Manager of GCP project owner of service account".
+
+    The model takes the length of the chain into the account, with longer chains carrying less weight
     """
     for owner in owners:
-        owner['Justification'] = owner.get('Source', '')
+        normalized_source = owner.get('Source', '').replace('Chain: ', '')
+        owner['Source'] = normalized_source
+        owner['Justification'] = normalized_source
     return owners
 
 

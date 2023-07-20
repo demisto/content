@@ -76,13 +76,8 @@ def main():
                             current_owners.append({
                                 "name": "n/a",
                                 "email": email,
-                                # The "Chain: " prefix in the source indicates that the attribution of this owner
-                                # is multi-step: first we recovered the service account, then we recovered the
-                                # project owner for that service account.
-                                # Future work may further unroll this chain, for instance: recovering the manager
-                                # of the project owner of the service account, which we would aim to denote:
-                                # "Chain: Chain: Manager of GCP project owner of service account"
-                                # The model takes the length of the chain into the account, with longer chains carrying less weight
+                                # The "Chain: " prefix is used for internal model processing and will be removed
+                                # from final service owner source; see RankServiceOwners.py::justify
                                 "source": "Chain: GCP project owner of service account",
                                 "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             })

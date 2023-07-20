@@ -225,6 +225,19 @@ def test_score(mocker):
             },
         ]
     ),
+    # ideal input with Chain: (should be stripped)
+    (
+        [
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'Chain: source1', 'timestamp': '1'},
+        ],
+        [''],
+        [
+            {
+                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
+                'Ranking Score': 1.0, 'Justification': 'source1'
+            },
+        ]
+    ),
     # empty input
     (
         [],
