@@ -22,11 +22,6 @@ GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORI
 AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
 
 
-class ValidationError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-
 class Client:
     """
     API Client to communicate with AzureDevOps.
@@ -540,9 +535,18 @@ class Client:
         branch_details = [{"name": branch_name, "oldObjectId": branch_id}]
 
         # pre-process commit
-        comment = args.get("commit_comment")
-        file_path = args.get("file_path")
-        file_content = args.get("file_content")
+        comment = args.get("commit_comment")  # required
+        file_path = args.get("file_path", "")
+        file_content = args.get("file_content", "")
+
+        # validate file_path exists (explicitly or entry_id), file_content can be empty
+        entry_id = args.get("entry_id", "")
+        if not (entry_id or file_path):
+            raise DemistoException('You must specify either the "file_path" or the "entry_id" of the file.')
+        elif entry_id:
+            file_path = demisto.getFilePath(entry_id).get("path")
+            with open(file_path, 'rb') as f:
+                file_content = f.read()
 
         changes = {"changeType": change_type, "item": {"path": file_path}}
 
@@ -568,6 +572,19 @@ class Client:
                                            full_url=full_url,
                                            params=params,
                                            json_data=data,
+                                           resp_type='json')
+
+    def file_list_request(self, organization: str, repository_id: str, project: str, args: Dict[str, Any]):
+
+        params = {"api-version": 7.0, "versionDescriptor.version": args.get("branch_name"),
+                  "versionDescriptor.versionType": "branch", "recursionLevel": args.get("recursion_level"),
+                  "includeContentMetadata": True}
+
+        full_url = f'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository_id}/items'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
                                            resp_type='json')
 
 
@@ -1683,7 +1700,7 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
     project = args.get('project_name') or project
     # validate those arguments exist
     if not (organization and repository_id and project):
-        raise ValidationError(PARAMETERS_ERROR_MSG_PRS_REVIEWER)
+        raise DemistoException(PARAMETERS_ERROR_MSG_PRS_REVIEWER)
 
     return organization, repository_id, project
 
@@ -1971,6 +1988,22 @@ def file_delete_command(client: Client, args: Dict[str, Any], organization: Opti
         raw_response=response
     )
 
+def file_list_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                      project: Optional[str]) -> CommandResults:
+    """
+    Retrieve repository files (items) list.
+    """
+    # pre-processing inputs
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.file_list_request(organization, repository_id, project, args=args)
+
+    return CommandResults(
+        outputs_prefix='AzureDevOps.File',
+        outputs=response,
+        raw_response=response
+    )
+
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
@@ -2195,6 +2228,10 @@ def main() -> None:
         elif command == 'azure-devops-file-delete':
             return_results(file_delete_command(client, args, params.get('organization'),
                                                params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-file-list':
+            return_results(file_list_command(client, args, params.get('organization'),
+                                             params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

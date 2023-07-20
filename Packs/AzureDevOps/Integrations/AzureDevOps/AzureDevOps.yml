@@ -214,7 +214,7 @@ script:
     - description: The name or ID of the project.
       name: project
       required: true
-    - description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
+    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
       name: repository_id
       required: true
     - description: The name of the source branch of the pull request.
@@ -303,7 +303,7 @@ script:
     - description: The name or ID of the project.
       name: project
       required: true
-    - description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
+    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
       name: repository_id
       required: true
     - description: The ID of the pull request to update.
@@ -544,7 +544,7 @@ script:
     - description: The name or ID of the project.
       name: project
       required: true
-    - description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
+    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
       name: repository_id
       required: true
     - description: The ID of the pull request to retrieve.
@@ -772,7 +772,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: pull_request_id
@@ -820,15 +820,15 @@ script:
     description: Add a reviewer to a pull request.
     arguments:
       - name: organization_name
-        description: The name of the Azure DevOps organization.
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request's target branch.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: project_name
-        description: Project ID or project name.
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: reviewer_user_id
@@ -891,7 +891,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: pull_request_id
@@ -944,7 +944,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - defaultValue: '50'
@@ -1002,7 +1002,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: commit_id
@@ -1277,10 +1277,6 @@ script:
         description: Project ID or project name. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
-      - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
-        required: false
-        isArray: false
       - auto: PREDEFINED
         predefined:
           - Task
@@ -1443,7 +1439,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: item_id
@@ -1661,7 +1657,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: branch_name
@@ -1842,7 +1838,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: branch_name
@@ -2023,7 +2019,7 @@ script:
         required: false
         isArray: false
       - name: repository_id
-        description: The repository ID of the pull request’s target branch. Default value will be config param, user can supply a different value.
+        description: The repository ID. Default value will be config param, user can supply a different value.
         required: false
         isArray: false
       - name: branch_name
@@ -2188,6 +2184,67 @@ script:
       - type: String
         contextPath: AzureDevOps.File._links.refs.href
         description: Link to the branch.
+  - name: azure-devops-file-list
+    description: Retrieve repository files (items) list.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: branch_name
+        description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        required: true
+        isArray: false
+      - auto: PREDEFINED
+        defaultValue: 'None'
+        name: recursion_level
+        description: The recursion level of this request. The default is None, no recursion.
+        required: false
+        isArray: false
+        predefined:
+          - 'None'
+          - 'OneLevel'
+          - 'Full'
+      - defaultValue: '1'
+        description: The page number of the results to retrieve. Minimum value is 1.
+        name: page
+      - defaultValue: '50'
+        description: The number of results to retrieve. Minimum  value is 1.
+        name: limit
+    outputs:
+      - type: Number
+        contextPath: AzureDevOps.File.count
+        description: Count of files.
+      - type: String
+        contextPath: AzureDevOps.File.value.objectId
+        description: The file object ID.
+      - type: String
+        contextPath: AzureDevOps.File.value.gitObjectType
+        description: The file git object type.
+      - type: String
+        contextPath: AzureDevOps.File.value.commitId
+        description: ID (SHA-1) of the file commit.
+      - type: String
+        contextPath: AzureDevOps.File.value.path
+        description: The file's path.
+      - type: Boolean
+        contextPath: AzureDevOps.File.value.isFolder
+        description: If the item is folder or not.
+      - type: String
+        contextPath: AzureDevOps.File.value.contentMetadata.fileName
+        description: The file name.
+      - type: String
+        contextPath: AzureDevOps.File.value.url
+        description: URL link to the item.
+
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []

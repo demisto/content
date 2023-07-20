@@ -886,14 +886,14 @@ def test_organization_repository_project_preprocess_function(args, organization,
         3. Raise an exception if both don't exist
     """
 
-    from AzureDevOps import ValidationError, organization_repository_project_preprocess
+    from AzureDevOps import organization_repository_project_preprocess
 
     project = 'TEST'
     repository = 'TEST'
 
     try:
         organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository, project)
-    except ValidationError:
+    except DemistoException:
         assert expected_result == 'ERROR'
     else:
         assert organization == expected_result
