@@ -181,9 +181,13 @@ def prepare_xif_file(new_pack_path: Path, custom: str):
         with open(xif_file_path, 'r') as xif_f:
             xif_data = xif_f.read()
 
+        matches = re.findall(DATASET_REGEX, xif_data, re.MULTILINE)
+
+        for match in matches:
+            xif_data = xif_data.replace(match, f'{custom.lower()}_{custom.lower()}_raw')
 
         with open(xif_file_path, 'w') as xif_f:
-            xif_f.write(modified_xif)
+            xif_f.write(xif_data)
 
 
 def main():
