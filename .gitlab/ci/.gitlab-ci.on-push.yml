@@ -375,8 +375,6 @@ jobs-done-check-on-push:
       optional: true
     - job: xsoar-prepare-testing-bucket
       optional: true
-    - job: xsiam_server_ga
-      optional: true
     - job: xsoar_server_6_8
       optional: true
     - job: xsoar_server_6_9
