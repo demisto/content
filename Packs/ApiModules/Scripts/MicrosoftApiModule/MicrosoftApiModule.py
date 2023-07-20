@@ -14,7 +14,7 @@ class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
     security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
-    management_azure = 'https://management.azure.com/.default'   # resource_manager
+    management_azure = 'https://management.azure.com/.default'  # resource_manager
 
 
 class Resources:
@@ -270,7 +270,8 @@ AZURE_WORLDWIDE_CLOUD = AzureCloud(
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.com/',
         active_directory_data_lake_resource_id='https://datalake.azure.net/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
+        # noqa: E501
         media_resource_id='https://rest.media.azure.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.windows.net',
         app_insights_resource_id='https://api.applicationinsights.io',
@@ -310,7 +311,8 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.us/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
+        # noqa: E501
         media_resource_id='https://rest.media.usgovcloudapi.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
         app_insights_resource_id='https://api.applicationinsights.us',
@@ -346,7 +348,8 @@ AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.us/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
+        # noqa: E501
         media_resource_id='https://rest.media.usgovcloudapi.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
         app_insights_resource_id='https://api.applicationinsights.us',
@@ -382,7 +385,8 @@ AZURE_DOD_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://dod-graph.microsoft.us/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
+        # noqa: E501
         media_resource_id='https://rest.media.usgovcloudapi.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
         app_insights_resource_id='https://api.applicationinsights.us',
@@ -404,7 +408,6 @@ AZURE_DOD_CLOUD = AzureCloud(
         acr_login_server_endpoint='.azurecr.us',
         synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
 
-
 AZURE_GERMAN_CLOUD = AzureCloud(
     'Embedded',
     'AzureGermanCloud',
@@ -419,7 +422,8 @@ AZURE_GERMAN_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.cloudapi.de/',
         active_directory_graph_resource_id='https://graph.cloudapi.de/',
         microsoft_graph_resource_id='https://graph.microsoft.de',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
+        # noqa: E501
         media_resource_id='https://rest.media.cloudapi.de',
         ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
         portal='https://portal.microsoftazure.de',
@@ -448,7 +452,8 @@ AZURE_CHINA_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.chinacloudapi.cn/',
         active_directory_graph_resource_id='https://graph.chinacloudapi.cn/',
         microsoft_graph_resource_id='https://microsoftgraph.chinacloudapi.cn',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
+        # noqa: E501
         media_resource_id='https://rest.media.chinacloudapi.cn',
         ossrdbms_resource_id='https://ossrdbms-aad.database.chinacloudapi.cn',
         app_insights_resource_id='https://api.applicationinsights.azure.cn',
@@ -468,7 +473,6 @@ AZURE_CHINA_CLOUD = AzureCloud(
         mariadb_server_endpoint='.mariadb.database.chinacloudapi.cn',
         acr_login_server_endpoint='.azurecr.cn',
         synapse_analytics_endpoint='.dev.azuresynapse.azure.cn'))
-
 
 AZURE_CLOUD_NAME_MAPPING = {
     "Worldwide": "com",
@@ -891,28 +895,25 @@ class MicrosoftClient(BaseClient):
         Args:
             oproxy_response: Raw response from the Oproxy server to parse.
         """
-        msg = 'Error in authentication. Try checking the credentials you entered.'
+        msg = 'Error in Microsoft authorization.'
         try:
             demisto.info(
                 f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} '
                 f'{oproxy_response.text}'
             )
+            msg += f" Status: {oproxy_response.status_code},"
+            search_microsoft_response = re.search(r'{.*}', oproxy_response.text)
+            microsoft_response = self.extract_microsoft_error(json.loads(search_microsoft_response.group())) \
+                if search_microsoft_response else ""
+            err_str = microsoft_response or oproxy_response.text
+            if err_str:
+                msg += f' body: {err_str}'
             err_response = oproxy_response.json()
-            server_msg = err_response.get('message')
-            if not server_msg:
-                title = err_response.get('title')
-                detail = err_response.get('detail')
-                if title:
-                    server_msg = f'{title}. {detail}'
-                elif detail:
-                    server_msg = detail
+            server_msg = err_response.get('message', '') or f'{err_response.get("title", "")}. {err_response.get("detail", "")}'
             if server_msg:
                 msg += f' Server message: {server_msg}'
         except Exception as ex:
             demisto.error(f'Failed parsing error response - Exception: {ex}')
-        if oproxy_response.status_code == 403 and "Hash Verification Error" in oproxy_response.text:
-            msg += f'\nThe Oproxy server returned an error. There may be an issue with the *Token* parameter. ' \
-                   f'You can run the ***{self.command_prefix}-auth-reset*** command to reset the authentication process.'
         raise Exception(msg)
 
     def _oproxy_authorize_build_request(self, headers: dict[str, str], content: str,
@@ -1136,7 +1137,7 @@ class MicrosoftClient(BaseClient):
         return None
 
     def _get_token_device_code(
-            self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
+        self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
     ) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
@@ -1216,26 +1217,39 @@ class MicrosoftClient(BaseClient):
         try:
             response = error.json()
             demisto.error(str(response))
-            inner_error = response.get('error', {})
-            error_codes = response.get("error_codes", [""])
-            err_desc = response.get('error_description', '')
+            err_str = self.extract_microsoft_error(response)
+            return err_str or error.text
+        except Exception as e:
+            demisto.error(f'Failed parsing JSON error response - {e}')
 
-            if isinstance(inner_error, dict):
-                err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
-            else:
-                err_str = inner_error
-                re_search = re.search(REGEX_SEARCH_ERROR_DESC, err_desc)
-                err_str += f". \n{re_search['desc']}" if re_search else ""
+    def extract_microsoft_error(self, response: dict) -> str | None:
+        """
+        Extracts the Microsoft error message from the JSON response.
 
-            if err_str:
-                if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                    err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
-                               f"to reset the authentication process."
-                return err_str
-            # If no error message
-            raise ValueError
-        except ValueError:
-            return error.text
+        Args:
+            response (dict): JSON response received from the microsoft server.
+
+        Returns:
+            str or None: Extracted Microsoft error message if found, otherwise returns None.
+        """
+        inner_error = response.get('error', {})
+        error_codes = response.get("error_codes", [""])
+        err_desc = response.get('error_description', '')
+
+        if isinstance(inner_error, dict):
+            err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
+        else:
+            err_str = inner_error
+            re_search = re.search(REGEX_SEARCH_ERROR_DESC, err_desc)
+            err_str += f". \n{re_search['desc']}" if re_search else ""
+
+        if err_str:
+            if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
+                           f"to reset the authentication process."
+            return err_str
+        # If no error message
+        return None
 
     @staticmethod
     def epoch_seconds(d: datetime = None) -> int:
@@ -1381,7 +1395,6 @@ def get_azure_managed_identities_client_id(params: dict) -> str | None:
 
 def generate_login_url(client: MicrosoftClient,
                        login_url: str = "https://login.microsoftonline.com/") -> CommandResults:
-
     missing = []
     if not client.client_id:
         missing.append("client_id")
