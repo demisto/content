@@ -100,7 +100,7 @@ tasks:
               ignorecase: true
           accessor: EntryID
       execution-timeout:
-        simple: "300"
+        simple: "600"
       retry-count:
         simple: "3"
     separatecontext: false
@@ -164,7 +164,7 @@ tasks:
               ignorecase: true
           accessor: EntryID
       execution-timeout:
-        simple: "300"
+        simple: "600"
       retry-count:
         simple: "3"
     separatecontext: false
@@ -204,9 +204,9 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      similiarity_threshold:
+      similarity_threshold:
         complex:
-          root: 'inputs.similiarity_threshold '
+          root: 'inputs.similarity_threshold '
       string_A:
         complex:
           root: File
@@ -1112,6 +1112,8 @@ tasks:
         simple: "4961"
       image_resize_width:
         simple: "7016"
+      retry-count:
+          simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1167,6 +1169,8 @@ tasks:
         simple: "4961"
       image_resize_width:
         simple: "7016"
+      retry-count:
+          simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1631,6 +1635,8 @@ tasks:
         simple: "4961"
       image_resize_width:
         simple: "7016"
+      retry-count:
+          simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1688,7 +1694,7 @@ tasks:
               ignorecase: true
           accessor: EntryID
       execution-timeout:
-        simple: "300"
+        simple: "600"
       retry-count:
         simple: "3"
     separatecontext: false
@@ -1752,7 +1758,7 @@ tasks:
               ignorecase: true
           accessor: EntryID
       execution-timeout:
-        simple: "300"
+        simple: "600"
       retry-count:
         simple: "3"
     separatecontext: false
@@ -1864,7 +1870,7 @@ inputs:
   required: false
   description: StringSifter - Limit output to the top limit ranked strings.
   playbookInputQuery:
-- key: 'similiarity_threshold '
+- key: 'similarity_threshold '
   value:
     simple: "0.3"
   required: false
