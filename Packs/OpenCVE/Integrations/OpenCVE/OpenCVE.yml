@@ -256,6 +256,7 @@ script:
     name: ocve-get-reports
     outputs:
     - contextPath: reports
+      description: The reports
   - arguments:
     - description: The report ID
       name: report_id

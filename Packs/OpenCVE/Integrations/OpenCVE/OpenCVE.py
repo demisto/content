@@ -2,12 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
-# pack version: 0.3
-
-
 from datetime import datetime, timedelta
-from typing import Optional, Dict, List, Union
 
 
 class Client(BaseClient):
@@ -19,6 +14,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
+
     def __init__(self, server_url, verify, proxy, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, auth=auth)
 
@@ -79,7 +75,7 @@ class Client(BaseClient):
         response = self._http_request('GET', 'account/subscriptions/vendors')
         return response
 
-    def get_my_products_request(self) -> Dict:
+    def get_my_products_request(self) -> dict:
         '''
         List the products subscriptions of the authenticated user.
 
@@ -91,7 +87,7 @@ class Client(BaseClient):
         response = self._http_request('GET', 'account/subscriptions/products')
         return response
 
-    def get_cves_request(self, params: Optional[Dict] = {}) -> Dict:
+    def get_cves_request(self, params: dict | None = {}) -> dict:
         '''
         List the CVEs.
 
@@ -102,7 +98,7 @@ class Client(BaseClient):
         '''
         return self._http_request('GET', 'cve')
 
-    def get_cve_request(self, cve_id: str) -> Dict:
+    def get_cve_request(self, cve_id: str) -> dict:
         '''
         Get the details of a specific CVE.
 
@@ -114,7 +110,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'cve/{cve_id}')
         return response
 
-    def get_vendors_request(self, params: Optional[Dict] = {}) -> Dict:
+    def get_vendors_request(self, params: dict | None = {}) -> dict:
         '''
         List the vendors.
 
@@ -126,7 +122,7 @@ class Client(BaseClient):
         response = self._http_request('GET', 'vendors')
         return response
 
-    def get_vendor_request(self, vendor_name: str) -> Dict:
+    def get_vendor_request(self, vendor_name: str) -> dict:
         '''
         Get a specific vendor.
 
@@ -138,7 +134,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'vendors/{vendor_name}')
         return response
 
-    def get_cves_by_vendor_request(self, vendor_name: str, params: Optional[Dict] = {}) -> Dict:
+    def get_cves_by_vendor_request(self, vendor_name: str, params: dict | None = {}) -> dict:
         '''
         Get all CVEs by vendor name
 
@@ -156,7 +152,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'vendors/{vendor_name}/cve')
         return response
 
-    def get_vendor_products_request(self, vendor_name: str, params: Optional[Dict] = {}) -> Dict:
+    def get_vendor_products_request(self, vendor_name: str, params: dict | None = {}) -> dict:
         '''
         List the products associated to a vendor.
 
@@ -173,7 +169,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'vendors/{vendor_name}/products', params=params)
         return response
 
-    def get_vendor_product_request(self, vendor_name: str, product_name: str) -> Dict:
+    def get_vendor_product_request(self, vendor_name: str, product_name: str) -> dict:
         '''
         Get a specific product of a vendor.
 
@@ -186,7 +182,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'vendors/{vendor_name}/products/{product_name}')
         return response
 
-    def get_cves_by_product_request(self, vendor_name: str, product_name: str, params: Optional[Dict] = {}) -> Dict:
+    def get_cves_by_product_request(self, vendor_name: str, product_name: str, params: dict | None = {}) -> dict:
         '''
         Get the list of CVEs associated to a product.
 
@@ -206,7 +202,7 @@ class Client(BaseClient):
                                       params=params)
         return response
 
-    def get_reports_request(self) -> Dict:
+    def get_reports_request(self) -> dict:
         '''
         List the reports of the authenticated user.
 
@@ -218,7 +214,7 @@ class Client(BaseClient):
         response = self._http_request('GET', 'reports')
         return response
 
-    def get_report_request(self, report_id: str) -> Dict:
+    def get_report_request(self, report_id: str) -> dict:
         '''
         Get a specific report.
 
@@ -230,7 +226,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'reports/{report_id}')
         return response
 
-    def get_alerts_request(self, report_id: str, params: Optional[Dict] = {}) -> Dict:
+    def get_alerts_request(self, report_id: str, params: dict | None = {}) -> dict:
         '''
         List the alerts of a report.
 
@@ -244,7 +240,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'reports/{report_id}/alerts', params=params)
         return response
 
-    def get_alert_request(self, report_id: str, alert_id: str) -> Dict:
+    def get_alert_request(self, report_id: str, alert_id: str) -> dict:
         '''
         Get the details of an alert.
 
@@ -265,6 +261,7 @@ class OpenCVE():
     The Postman used to create these is available here:
         https://www.postman.com/rfortress-pan/workspace/opencve/collection/22097521-c2b14aab-829a-41e1-9cb9-0d859345a2a1
     '''
+
     def __init__(self, tlp):
         self.tlp = tlp
 
@@ -314,7 +311,7 @@ class OpenCVE():
         return needle
 
 
-def largest(*vals: Union[int, float]):
+def largest(*vals: int | float):
     '''
     Given a list of numbers, return the largest
 
@@ -325,14 +322,13 @@ def largest(*vals: Union[int, float]):
     '''
     largest = None
     for val in vals:
-        if type(val) == int or type(val) == float:
-            if largest is None or val > largest:
-                largest = val
+        if (type(val) == int or type(val) == float) and (largest is None or val > largest):
+            largest = val
 
     return largest
 
 
-def cve_to_warroom(cve: Dict) -> Dict[str, str]:
+def cve_to_warroom(cve: dict) -> dict[str, str]:
     '''
     Returning a cve structure with the following fields:
     * ID: The cve ID.
@@ -355,7 +351,7 @@ def cve_to_warroom(cve: Dict) -> Dict[str, str]:
     }
 
 
-def cve_to_indicator(cve: Dict) -> Common.CVE:
+def cve_to_indicator(cve: dict) -> Common.CVE:
     '''
     Converts a parsed_cve to a Common.CVE. This can be used in
         CommandResults() as the indicator argument.
@@ -369,12 +365,12 @@ def cve_to_indicator(cve: Dict) -> Common.CVE:
         id=cve.get('value'),
         cvss=cve.get('fields', {}).get('cvssscore'),
         description=cve.get('fields', {}).get('summary'),
-        published=cve.get('timestamp').replace('Z', ''),
-        modified=cve.get('modified').replace('Z', '')
+        published=cve.get('timestamp', '').replace('Z', ''),
+        modified=cve.get('modified', '').replace('Z', '')
     )
 
 
-def cve_to_context(parsed_cve: Dict[str, str]) -> Dict:
+def cve_to_context(parsed_cve: dict) -> dict:
     '''
     Flattens the parsed_cve dict for context.
 
@@ -393,7 +389,7 @@ def cve_to_context(parsed_cve: Dict[str, str]) -> Dict:
     return cve_context
 
 
-def parse_cve(ocve: OpenCVE, cve: Dict) -> Dict[str, str]:
+def parse_cve(ocve: OpenCVE, cve: dict) -> dict[str, str]:
     '''
     This method parses the CVE information and creates a dict of the results
 
@@ -411,7 +407,7 @@ def parse_cve(ocve: OpenCVE, cve: Dict) -> Dict[str, str]:
         elif cve['cvss'].get('v2', None) is not None:
             cvss_version = 2
 
-    parsed_cve = {
+    parsed_cve: dict = {
         'type': 'CVE',
         'value': cve.get('id'),
         'timestamp': cve.get('created_at'),
@@ -433,21 +429,21 @@ def parse_cve(ocve: OpenCVE, cve: Dict) -> Dict[str, str]:
         parsed_cve['fields']['tags'] = tags
 
     if 'raw_nvd_data' in cve:
-        if 'cve' in cve['raw_nvd_data']:
+        if 'cve' in cve['raw_nvd_data'] \
+                and 'references' in cve['raw_nvd_data']['cve'] and \
+                    'reference_data' in cve['raw_nvd_data']['cve']['references']:
             # Save the references
-            if 'references' in cve['raw_nvd_data']['cve']:
-                if 'reference_data' in cve['raw_nvd_data']['cve']['references']:
-                    references = []
+            references = []
 
-                    for reference in cve['raw_nvd_data']['cve']['references']['reference_data']:
-                        new_reference = {
-                            'title': reference.get('name', None),
-                            'source': reference.get('refsource', None),
-                            'link': reference.get('url', None)
-                        }
-                        references.append(new_reference)
+            for reference in cve['raw_nvd_data']['cve']['references']['reference_data']:
+                new_reference = {
+                    'title': reference.get('name', None),
+                    'source': reference.get('refsource', None),
+                    'link': reference.get('url', None)
+                }
+                references.append(new_reference)
 
-                    parsed_cve['fields']['publications'] = references
+            parsed_cve['fields']['publications'] = references
 
         if 'impact' in cve['raw_nvd_data']:
             if cvss_version == 2:
@@ -486,7 +482,7 @@ def parse_cve(ocve: OpenCVE, cve: Dict) -> Dict[str, str]:
     return parsed_cve
 
 
-def create_cves(parsed_cves: List[Dict[str, str]]):
+def create_cves(parsed_cves: list[dict[str, str]]):
     '''
     Creates CVEs in bulk.
 
@@ -512,7 +508,7 @@ def valid_cve_id_format(cve_id: str) -> bool:
     return bool(re.match(cveRegex, cve_id))
 
 
-def dedupe_cves(cves: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def dedupe_cves(cves: list[dict[str, str]]) -> list[dict[str, str]]:
     '''
     Loop through a list and remove duplicates
 
@@ -541,15 +537,15 @@ def test_module_command(client: Client) -> str:
         'ok' if test passed, anything else will fail the test.
     '''
     try:
-        client.get_my_vendors()
+        client.get_my_vendors_request()
         return 'ok'
 
-    except Exception as e:
-        if 'Read timed out.' not in str(e):
-            raise
+    except Exception:
+        demisto.error('Failed to execute test_module_command.')
+        raise
 
 
-def cve_latest_command(client: Client, ocve: OpenCVE, args: Dict) -> CommandResults:
+def cve_latest_command(client: Client, ocve: OpenCVE, args: dict) -> CommandResults:
     '''
     Gets the latest reports and pulls all alerts. From each alert all CVEs
         are looped through and returned as a CommandResult.
@@ -605,7 +601,7 @@ def cve_latest_command(client: Client, ocve: OpenCVE, args: Dict) -> CommandResu
     )
 
 
-def get_cve_command(client: Client, ocve: OpenCVE, args: Dict) -> List[CommandResults]:
+def get_cve_command(client: Client, ocve: OpenCVE, args: dict) -> list[CommandResults]:
     '''
     Gets a single or multiple CVEs. Multiple are separated with a comma.
 
@@ -678,7 +674,7 @@ def get_my_products_command(client: Client) -> CommandResults:
     )
 
 
-def get_vendor_command(client: Client, args: Dict) -> CommandResults:
+def get_vendor_command(client: Client, args: dict) -> CommandResults:
     '''
     Get a specific vendor machine name and human readable name
 
@@ -696,7 +692,7 @@ def get_vendor_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_vendors_command(client: Client, args: Dict) -> CommandResults:
+def get_vendors_command(client: Client, args: dict) -> CommandResults:
     '''
     Gets vendors based on filter criteria
 
@@ -721,7 +717,7 @@ def get_vendors_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_vendor_cves_command(client: Client, ocve: OpenCVE, args: Dict) -> List[CommandResults]:
+def get_vendor_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[CommandResults]:
     '''
     Gets CVEs related to a vendor
 
@@ -769,7 +765,7 @@ def get_vendor_cves_command(client: Client, ocve: OpenCVE, args: Dict) -> List[C
     return results
 
 
-def get_products_command(client: Client, args: Dict) -> CommandResults:
+def get_products_command(client: Client, args: dict) -> CommandResults:
     '''
     Gets a list of products for a specific vendor based on the provided filters
 
@@ -793,7 +789,7 @@ def get_products_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_product_command(client: Client, args: Dict) -> CommandResults:
+def get_product_command(client: Client, args: dict) -> CommandResults:
     '''
     Gets info for a specific product
 
@@ -813,7 +809,7 @@ def get_product_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_product_cves_command(client: Client, ocve: OpenCVE, args: Dict) -> List[CommandResults]:
+def get_product_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[CommandResults]:
     '''
     Gets CVEs related to a specific product.
 
@@ -877,7 +873,7 @@ def get_reports_command(client: Client) -> CommandResults:
     )
 
 
-def get_report_command(client: Client, args: Dict) -> CommandResults:
+def get_report_command(client: Client, args: dict) -> CommandResults:
     '''
     Gets a specific report
 
@@ -896,7 +892,7 @@ def get_report_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_alerts_command(client: Client, args: Dict) -> CommandResults:
+def get_alerts_command(client: Client, args: dict) -> CommandResults:
     '''
     Gets all alerts from a report
 
@@ -918,7 +914,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_alert_command(client: Client, args: Dict) -> CommandResults:
+def get_alert_command(client: Client, args: dict) -> CommandResults:
     '''
     Gets a specific alert
 
@@ -939,8 +935,8 @@ def get_alert_command(client: Client, args: Dict) -> CommandResults:
 
 
 def main():
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     url = params.get('url', 'https://opencve.io')
     verify_ssl: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -1012,4 +1008,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
