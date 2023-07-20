@@ -198,7 +198,6 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
             'Email': email,
             'Source': source,
             'Timestamp': timestamp,
-            # 'Count': len(duplicates)
         }
 
         # aggregate remaining keys according to type
