@@ -8,14 +8,12 @@ configuration:
   section: Connect
   type: 0
   advanced: true
-  required: false
-- display: Credentials
+- display: Username
   name: credentials
   required: true
   section: Connect
-  type: 9
-- advanced: true
-  display: NTLM authentication
+  displaypassword: Password 
+- display: NTLM authentication
   name: ntlm
   type: 8
   section: Connect
@@ -787,27 +785,7 @@ script:
       required: true
     description: Modifies the AD account attribute "Password Never Expire".
     execution: true
-    name: ad-modify-password-never-expire
-  - arguments:
-    - description: Username to test. By itself or formatted like SERVER_IP\\USERNAME
-      name: username
-      required: true
-    - description: Password to test.
-      name: password
-      required: true
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: NTLM authentication
-      name: ntlm
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-    name: ad-test-credentials
-    outputs:
-    - contextPath: ActiveDirectory.ValidCredentials
-      description: List of usernames that successfully logged in.
-  dockerimage: demisto/py3-tools:1.0.0.64293
+  dockerimage: demisto/py3-tools:1.0.0.65178
   ismappable: true
   isremotesyncout: true
   runonce: false
