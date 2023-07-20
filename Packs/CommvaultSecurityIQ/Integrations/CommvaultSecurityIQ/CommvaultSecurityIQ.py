@@ -202,8 +202,8 @@ def format_alert_description(msg: str) -> str:
     """
     default_value = msg
     resp = msg[msg.find("<html>") + 6: msg.find("</html>")]
-    if resp and len(resp.groups()) > 0:
-        msg = resp.group(1).strip()
+    if resp and len(resp) > 0:
+        msg = resp.strip()
         if msg:
             msg = re.sub("<span.*</span>", "", msg)
             if msg:
