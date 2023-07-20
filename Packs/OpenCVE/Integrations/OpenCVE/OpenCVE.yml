@@ -21,19 +21,17 @@ configuration:
   required: false
   type: 8
 - display: Fetch indicators
+  defaultvalue: 'true'
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this verdict
-  display: Indicator Verdict
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  display: Indicator Reputation
   name: feedReputation
   options:
-  - Unknown
   - None
-  - Benign
   - Good
   - Suspicious
-  - Malicious
   - Bad
   required: false
   type: 18
@@ -91,7 +89,7 @@ configuration:
   required: false
   type: 0
 description: Searches for CVE information using OpenCVE.
-display: OpenCVE (Community Contribution)
+display: OpenCVE (Contribution)
 name: OpenCVE
 script:
   commands:
@@ -341,7 +339,7 @@ script:
     outputs:
     - contextPath: products
       description: products
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.12.65389
   feed: true
   isFetchSamples: true
   runonce: false
