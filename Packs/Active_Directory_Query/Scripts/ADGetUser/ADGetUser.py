@@ -33,22 +33,22 @@ if demisto.get(demisto.args(), 'limit'):
 
 
 def escapeSpecialCharacters(s):
-    return re.sub(r'([\()])', lambda r: '\\' + r.group(), s)
+    return re.sub(r'([\()])', lambda r : '\\' + r.group(), s)
 
 
-def createAccountEntities(t, attrs):
+def createAccountEntities(t,attrs):
     accounts = []
     for l in t:
         account = {}
         account['Type'] = 'AD'
-        account['ID'] = demisto.get(l, 'dn')
-        account['Email'] = {'Address': demisto.get(l, 'mail')}
-        account['Username'] = demisto.get(l, 'samAccountName')
-        account['DisplayName'] = demisto.get(l, 'displayName')
-        account['Manager'] = demisto.get(l, 'manager')
-        account['Groups'] = demisto.get(l, 'memberOf').split('<br>') if demisto.get(l, 'memberOf') else ''
-        for attr in set(argToList(attrs)) - set(['dn', 'mail', 'name', 'displayName', 'memberOf']):
-            account[attr.title()] = demisto.get(l, attr)
+        account['ID'] = demisto.get(l,'dn')
+        account['Email'] = {'Address':demisto.get(l,'mail')}
+        account['Username'] = demisto.get(l,'samAccountName')
+        account['DisplayName'] = demisto.get(l,'displayName')
+        account['Manager'] = demisto.get(l,'manager')
+        account['Groups'] = demisto.get(l,'memberOf').split('<br>') if demisto.get(l,'memberOf') else ''
+        for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
+            account[attr.title()] = demisto.get(l,attr)
         accounts.append(account)
 
     return accounts
@@ -60,29 +60,28 @@ def prettifyDateTimeADFields(resAD):
             if isError(m):
                 continue
             m['ContentsFormat'] = formats['table']
-            for f in ['lastlogon', 'lastlogoff', 'pwdLastSet', 'badPasswordTime', 'lastLogonTimestamp']:
+            for f in [ 'lastlogon' , 'lastlogoff' , 'pwdLastSet' , 'badPasswordTime'
+, 'lastLogonTimestamp' ]:
                 if f not in m['Contents'][0]:
                     continue
-                if m['Contents'][0][f] == "0":
+                if  m['Contents'][0][f] == "0":
                     m['Contents'][0][f] = "N/A"
                 else:
                     try:
-                        m['Contents'][0][f] = FormatADTimestamp(m['Contents'][0][f]
+                        m['Contents'][0][f] = FormatADTimestamp( m['Contents'][0][f]
 )
                     except:
-                        pass  # Could not prettify timestamp - return as is
-            for f in ['whenChanged', 'whenCreated']:
+                        pass # Could not prettify timestamp - return as is
+            for f in [ 'whenChanged' , 'whenCreated' ]:
                 try:
-                    m['Contents'][0][f] = PrettifyCompactedTimestamp(m['Contents'][0][f]
+                    m['Contents'][0][f] = PrettifyCompactedTimestamp( m['Contents'][0][f]
 )
                 except:
-                    pass  # Could not prettify timestamp - return as is
+                    pass # Could not prettify timestamp - return as is
         return resAD
     except Exception as ex:
-        return {'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
-'Contents': 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str(resAD)}
-
-
+        return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'],
+'Contents' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str( resAD ) }
 def translateUserAccountControl(resAD, userAccountControlOut):
     try:
         for m in resAD:
@@ -90,8 +89,6 @@ def translateUserAccountControl(resAD, userAccountControlOut):
 list):
                 continue
             if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl']
-
-
 == "":
                 continue
             if userAccountControlOut:
