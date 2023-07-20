@@ -575,21 +575,118 @@ def test_get_scan_history_command(mocker):
         **test_data['called_with']['kwargs'])
 
 
-# @pytest.mark.parametrize(
-    
-# )
-# def test_export_scan_command(mocker, args, ):
-    
-#     test_data = load_json('export_scan')
-    
-#     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
-#     get_response = MockResponse(
-#         test_data['get_response_json'], 
-#         content=test_data['get_response_content'])
-#     post_response = MockResponse(
-#         test_data['post_response_json'])
-#     requests_get = mocker.patch.object(requests, 'get', return_value=get_response)
-#     requests_post = mocker.patch.object(requests, 'post', return_value=post_response)
-    # args, kwargs = requests_get.call_args
-    # with open('result.json', 'w') as f:
-    #     json.dump({'args': args, 'kwargs': kwargs}, f)
+def test_initiate_export_scan(mocker):
+    '''
+    Given:
+        - A request to export a scan report.
+
+    When:
+        - Running the "export-scan" command.
+
+    Then:
+        - Initiate an export scan request.
+    '''
+
+    from Tenable_io import initiate_export_scan
+
+    test_data = load_json('initiate_export_scan')
+    mock_demisto(mocker)
+    requests_post = mocker.patch.object(
+        requests, 'post', return_value=MockResponse(test_data['response_json']))
+    file = initiate_export_scan(test_data['args'])
+
+    assert file == test_data['expected_file']
+    requests_post.assert_called_with(**test_data['call_args'])
+
+
+def test_check_export_scan_status(mocker):
+    '''
+    Given:
+        - A request to export a scan report.
+
+    When:
+        - Running the "export-scan" command.
+
+    Then:
+        - Initiate an export scan request.
+    '''
+    from Tenable_io import check_export_scan_status, HEADERS
+
+    mock_demisto(mocker)
+    requests_get = mocker.patch.object(
+        requests, 'get', return_value=MockResponse({'status': 'ready'}))
+
+    file = check_export_scan_status('scan_id', 'file_id')
+
+    assert file == 'ready'
+    requests_get.assert_called_with(
+        'http://123-fake-api.com/scans/scan_id/export/file_id/status',
+        headers=HEADERS, verify=False)
+
+
+def test_download_export_scan(mocker):
+    '''
+    Given:
+        - A request to export a scan report.
+
+    When:
+        - Running the "export-scan" command.
+
+    Then:
+        - Initiate an export scan request.
+    '''
+    from Tenable_io import download_export_scan, HEADERS
+
+    mock_demisto(mocker)
+    requests_get = mocker.patch.object(
+        requests, 'get', return_value=MockResponse({}, content='content'))
+    file_result = mocker.patch('CommonServerPython.fileResult')
+
+    download_export_scan('scan_id', 'file_id', {'format': 'HTML'})
+
+    requests_get.assert_called_with(
+        'http://123-fake-api.com/scans/scan_id/export/file_id/download',
+        headers=HEADERS, verify=False)
+    file_result.assert_called_with(
+        'scan_scan_id_file_id.html',
+        'content', EntryType.ENTRY_INFO_FILE)
+
+
+@pytest.mark.parametrize(
+    'args, get_response_json, post_response_json, message',
+    [
+        ({'scanId': '', 'format': 'HTML'}, {}, {}, 'The "chapters" field must be provided for PDF or HTML formats.'),
+        ({'scanId': '', 'format': ''}, {'status': 'ready'}, {}, 'Unexpected response from Tenable IO: {}'),
+        ({'scanId': '', 'format': ''}, {'status': 'error'}, {'file': 'file_id'},
+         'Tenable IO encountered an error while exporting the scan report file.'),
+        ({'scanId': '', 'format': ''}, {'status': 'random'}, {'file': 'file_id'},
+         'Got unexpected status while exporting the scan report file: \'random\'')
+    ]
+)
+def test_export_scan_command_errors(mocker, args, get_response_json, post_response_json, message):
+    '''
+    Given:
+        - A request to export a scan report.
+
+    When:
+        - Running the "export-scan" command in any of the following cases:
+            - Case A: The "format" arg is HTML or PDF but "chapters" is not defined.
+            - Case B: The "scans/{scanId}/export" endpoint returns a json without a "file" key.
+            - Case C: An export scan request has been made and the report status is "error".
+            - Case D: An export scan request has been made and the report status is unrecognized.
+
+    Then:
+        - Return an error.
+    '''
+
+    from Tenable_io import export_scan_command
+
+    mock_demisto(mocker)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    get_response = MockResponse(get_response_json)
+    post_response = MockResponse(post_response_json)
+    mocker.patch.object(requests, 'get', return_value=get_response)
+    mocker.patch.object(requests, 'post', return_value=post_response)
+
+    with pytest.raises(DemistoException, match=message):
+        export_scan_command(args)
