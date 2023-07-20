@@ -8,6 +8,7 @@ configuration:
   name: server_url
   type: 0
   section: Connect
+  required: false
 - displaypassword: Client ID
   name: client_id
   required: true
@@ -35,11 +36,13 @@ configuration:
   type: 9
   section: Connect
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 14
   section: Connect
+  required: false
 - displaypassword: Subscription ID to use
   name: sub_id
   required: true
@@ -52,14 +55,17 @@ configuration:
   defaultvalue: 3 days
   section: Collect
   additionalinfo: First time to start fetching alerts from.
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   section: Collect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Collect
+  required: false
 description: XSIAM collector for Microsoft Defender for Cloud alerts.
 display: Microsoft Defender for Cloud Event Collector
 name: Microsoft Defender for Cloud Event Collector
