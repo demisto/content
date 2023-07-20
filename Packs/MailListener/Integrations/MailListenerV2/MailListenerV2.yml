@@ -22,6 +22,14 @@ configuration:
   required: true
   type: 9
   section: Connect
+- displaypassword: Client Certificate And Private Key (List of PEMs)
+  display: ""
+  name: clientCertAndKey
+  required: false
+  section: Connect
+  type: 9
+  advanced: true
+  hiddenusername: true
 - defaultvalue: INBOX
   display: Incoming mail folder
   name: folder
@@ -167,12 +175,13 @@ script:
       required: true
     description: Fetches an email by message ID and returns the information in an eml file format.
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/py3-tools:1.0.0.64927
+  dockerimage: demisto/py3-tools:1.0.0.65178
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  feed: false
 tests:
 - Mail-Listener Test Playbook
 defaultmapperin: mail-listener-mapper
