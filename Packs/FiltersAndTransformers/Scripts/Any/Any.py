@@ -63,7 +63,8 @@ def main():
         for rval in right_list:
             if lval.lower() in rval.lower():
                 demisto.results(True)
-        return
+    demisto.results(False)
+
 
 
 
