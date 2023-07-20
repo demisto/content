@@ -75,7 +75,7 @@ def test_determine_reason(external, internal, reason):
     assert determine_reason(external, internal) == reason
 
 
-def test_full_truth_tablen():
+def test_full_truth_table():
     sample_dev_tag = [{"Key": "stage", "Value": "non-prod", "Source": "AWS"}]
     sample_prod_tag = [{"Key": "tier", "Value": "prod", "Source": "Tenable.io"}]
     # Blank list means no external classification or tag matches.
