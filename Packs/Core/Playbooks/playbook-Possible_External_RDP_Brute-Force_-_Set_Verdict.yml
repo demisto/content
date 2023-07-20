@@ -556,4 +556,5 @@ outputs:
   type: unknown
 tests:
 - No tests (auto formatted)
+marketplaces: ["marketplacev2"]
 fromversion: 6.9.0
