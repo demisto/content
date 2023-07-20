@@ -8,17 +8,17 @@ ignore=RM106
 ignore=BA124
 
 [file:CherwellIncidentUnlinkTask.yml]
-ignore=BA124,
+ignore=BA124
 
 [file:CherwellCreateIncident.yml]
-ignore=BA124,
+ignore=BA124
 
 [file:CherwellQueryIncidents.yml]
-ignore=BA124,
+ignore=BA124
 
 [file:CherwellUpdateIncident.yml]
-ignore=BA124,
+ignore=BA124
 
 [file:CherwellIncidentOwnTask.yml]
-ignore=BA124,
+ignore=BA124
 
