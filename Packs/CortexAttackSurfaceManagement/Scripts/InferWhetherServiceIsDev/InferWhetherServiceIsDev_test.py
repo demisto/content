@@ -61,14 +61,14 @@ def test_get_indicators_from_external_classification(classifications, matches):
 
 @pytest.mark.parametrize('external, internal, reason',
                          [(["DevelopmentEnvironment"], [],
-                          "Match on external classification of DevelopmentEnvironment"),
+                          "match on external classification of DevelopmentEnvironment"),
                           (["DevelopmentEnvironment"], [{"Key": "env", "Value": "non-prod", "Source": "AWS"}],
-                          "Match on external classification of DevelopmentEnvironment and tag {env: non-prod} from AWS"),
+                          "match on external classification of DevelopmentEnvironment and tag {env: non-prod} from AWS"),
                           ([], [{"Key": "env", "Value": "non-prod", "Source": "AWS"}],
-                          "Match on tag {env: non-prod} from AWS"),
+                          "match on tag {env: non-prod} from AWS"),
                           ([], [{"Key": "env", "Value": "non-prod", "Source": "AWS"},
                                 {"Key": "stage", "Value": "sbx", "Source": "GCP"}],
-                          "Match on tag {env: non-prod} from AWS and tag {stage: sbx} from GCP")])
+                          "match on tag {env: non-prod} from AWS and tag {stage: sbx} from GCP")])
 def test_determine_reason(external, internal, reason):
     from InferWhetherServiceIsDev import determine_reason
 
@@ -88,33 +88,33 @@ def test_full_truth_table():
 
     # kv pair contains no indicators
     # DevEnv is set (--> dev)
-    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match)["result"]
+    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match)["boolean"]
     # DevEnv is not set (--> can't tell)
-    assert not final_decision(sample_no_match, sample_no_match, sample_no_match)["result"]
+    assert not final_decision(sample_no_match, sample_no_match, sample_no_match)["boolean"]
 
     # kv pair contains dev indicators only
     # DevEnv is set (--> dev)
-    assert final_decision(sample_dev_tag, sample_dev_tag, sample_no_match)["result"]
+    assert final_decision(sample_dev_tag, sample_dev_tag, sample_no_match)["boolean"]
     # DevEnv is not set (--> dev)
-    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match)["result"]
+    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match)["boolean"]
 
     # kv pair contains prod indicators only
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_tag, sample_no_match, sample_prod_tag)["result"]
+    assert not final_decision(sample_dev_tag, sample_no_match, sample_prod_tag)["boolean"]
     # DevEnv is not set (--> prod)
-    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag)["result"]
+    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag)["boolean"]
 
     # kv pair contains conflicting indicators
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_tag, sample_dev_tag, sample_prod_tag)["result"]
+    assert not final_decision(sample_dev_tag, sample_dev_tag, sample_prod_tag)["boolean"]
     # DevEnv is not set (--> conflicting)
-    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag)["result"]
+    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag)["boolean"]
 
 
 @pytest.mark.parametrize('in_classifications,in_tags,expected_out_boolean',
                          [([], [{"Key": "ENV", "Value": "non-prod", "Source": "AWS"}],
-                           [{'result': 'The service is development', 'confidence': 'Likely Development',
-                             'reason': 'Match on tag {ENV: non-prod} from AWS'}])])
+                           [{'boolean': True, 'result': 'The service is development', 'confidence': 'Likely Development',
+                             'reason': 'match on tag {ENV: non-prod} from AWS'}])])
 def test_main(mocker, in_classifications, in_tags, expected_out_boolean):
     import InferWhetherServiceIsDev
     import unittest

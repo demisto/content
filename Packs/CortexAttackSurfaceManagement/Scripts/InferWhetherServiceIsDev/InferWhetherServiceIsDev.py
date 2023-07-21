@@ -129,7 +129,7 @@ def determine_reason(external_indicators: list, matches: list) -> str:
         reason_parts.append("external classification of " + DEV_ENV_CLASSIFICATION)
     for match in matches:
         reason_parts.append("tag {" + f"{match.get('Key')}: {match.get('Value')}" + "} from " + match.get('Source'))
-    reason_final = "Match on "
+    reason_final = "match on "
     for reason in reason_parts:
         reason_final += reason + ", "
     # Strip last ','
@@ -153,24 +153,29 @@ def final_decision(external_indicators: list, dev_matches: list, prod_matches: l
     """
     final_dict: dict[str, Any] = {}
     if (len(external_indicators) == 1 or len(dev_matches) > 0) and len(prod_matches) == 0:
-        final_dict["result"] = True
+        final_dict["boolean"] = True
         final_dict["confidence"] = "Likely Development"
         reason_final = determine_reason(external_indicators, dev_matches)
         final_dict["reason"] = reason_final
     elif (len(external_indicators) == 1 or len(dev_matches) > 0) and len(prod_matches) > 0:
-        final_dict["result"] = False
+        final_dict["boolean"] = False
         final_dict["confidence"] = "Conflicting Information"
         reason_final = determine_reason(external_indicators, dev_matches + prod_matches)
         final_dict["reason"] = reason_final
     elif (len(external_indicators) == 0 and len(dev_matches) == 0) and len(prod_matches) > 0:
-        final_dict["result"] = False
+        final_dict["boolean"] = False
         final_dict["confidence"] = "Likely Production"
         reason_final = determine_reason(external_indicators, prod_matches)
         final_dict["reason"] = reason_final
     else:
-        final_dict["result"] = False
+        final_dict["boolean"] = False
         final_dict["confidence"] = "Not Enough Information"
         final_dict["reason"] = "Neither dev nor prod indicators found"
+    # Create a more human readable table for war room.
+    if final_dict.get("boolean"):
+        final_dict["result"] = 'The service is development'
+    else:
+        final_dict["result"] = 'The service is not development'
     return final_dict
 
 
@@ -221,11 +226,6 @@ def main():
         decision_dict = final_decision(external_indicators, dev_kv_indicators, prod_kv_indicators)
         demisto.executeCommand("setAlert", {"asmdevcheckdetails": [decision_dict]})
 
-        # Create a more human readable table for war room.
-        if decision_dict.get("result"):
-            decision_dict["result"] = 'The service is development'
-        else:
-            decision_dict["result"] = 'The service not development'
         output = tableToMarkdown("Dev Check Results", decision_dict, ['result', 'confidence', 'reason'])
         return_results(CommandResults(readable_output=output))
     except Exception as ex:
