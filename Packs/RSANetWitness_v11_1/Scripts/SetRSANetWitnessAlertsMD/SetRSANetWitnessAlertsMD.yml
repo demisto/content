@@ -10,7 +10,7 @@ comment: This automation takes several alert fields from the RSA NetWitness aler
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.65389
 runas: DBotWeakRole
 fromversion: 6.9.0
 tests:
