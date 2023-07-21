@@ -641,7 +641,7 @@ def fetch_comment_command(client: Client, env: str, args=None):
     if not comment_id:
         raise ValueError("Cannot fetch comment, missing comment_id")
 
-    fields: str = args.get("feilds") or """
+    fields: str = args.get("fields") or """
         author_user {
             id
             family_name
@@ -1304,7 +1304,7 @@ def fetch_users_command(client: Client, env: str, args=None):
             "pageOffset": page_size * page,
         }
     }
-    fields: str = args.get("feilds") or "user_id email family_name given_name status"
+    fields: str = args.get("fields") or "user_id email family_name given_name status"
     if args.get("id"):
         if not args["id"].startswith("auth0"):
             raise ValueError("id MUST be in 'auth0|12345' format")
