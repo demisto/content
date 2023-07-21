@@ -109,6 +109,7 @@ configuration:
   type: 8
   required: false
 defaultmapperin: Hurukai alert mapper
+defaultmapperout: Hurukai outgoing mapper
 defaultclassifier: Hurukai classifier
 description: |-
   HarfangLab EDR Connector,
@@ -344,6 +345,31 @@ script:
     outputs:
     - contextPath: Harfanglab.TelemetryLinuxAuthentications.authentications
       description: Provides a list of Linux authentications
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
+    - name: source_address
+      description: Source IP address
+    - name: success
+      description: Whether authentication succeeded or not
+      type: 8
+    - name: source_username
+      description: Source username
+    - name: target_username
+      description: Target username
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch
+      defaultValue: 100
+    description: Search Macos authentication telemetry
+    name: harfanglab-telemetry-authentication-macos
+    outputs:
+    - contextPath: Harfanglab.TelemetryMacosAuthentications.authentications
+      description: Provides a list of Macos authentications
 
   - arguments:
     - name: agent_id
