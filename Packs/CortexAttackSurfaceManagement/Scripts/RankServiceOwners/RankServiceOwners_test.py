@@ -17,6 +17,7 @@ from RankServiceOwners import (
 from contextlib import nullcontext as does_not_raise
 import numpy as np
 from unittest.mock import Mock
+from pathlib import Path
 import os
 import dill as pickle
 
@@ -31,7 +32,7 @@ def test_load_pickled_xpanse_object():
 
     assert load_pickled_xpanse_object(file_name) == obj
     os.remove(cache_path)
-    os.rmdir(LOCAL_MODEL_CACHE_PATH)
+    Path(LOCAL_MODEL_CACHE_PATH).rmdir()
 
 
 @pytest.mark.parametrize('owners,expected_out', [
