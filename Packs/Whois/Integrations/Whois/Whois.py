@@ -13,7 +13,6 @@ SHOULD_ERROR = demisto.params().get('with_error', False)
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
-
 # flake8: noqa
 
 """
