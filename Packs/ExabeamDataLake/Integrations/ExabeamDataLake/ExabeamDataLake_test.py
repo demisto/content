@@ -1,41 +1,38 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
+import pytest
 
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
+from CommonServerPython import DemistoException
+from ExabeamDataLake import _handle_time_range_query
 
 
-def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
-        return json.loads(f.read())
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        (
+            {"start_time": 1689943882318, "end_time": 1689944782318},
+            {
+                "rangeQuery": {
+                    "field": "@timestamp",
+                    "gte": "1689943882318",
+                    "lte": "1689944782318",
+                }
+            },
+        ),
+        (
+            {"start_time": 1689943882318, "end_time": None},
+            {"rangeQuery": {"field": "@timestamp", "gte": "1689943882318"}},
+        ),
+    ],
+)
+def test_handle_time_range_query(args: dict, expected: dict):
+    assert _handle_time_range_query(**args) == expected
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_handle_time_range_query_raise_error():
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Tests that the function raises a DemistoException when start_time is greater than end_time
+    """
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    start_time = 1626393600
+    end_time = 1626307200
+    with pytest.raises(DemistoException, match="Start time must be before end time"):
+        _handle_time_range_query(start_time, end_time)

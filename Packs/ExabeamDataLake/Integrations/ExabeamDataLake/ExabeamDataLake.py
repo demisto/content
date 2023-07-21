@@ -1,171 +1,245 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
+import demistomock as demisto
+from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 
-import urllib3
-from typing import Any
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+""" CONSTANTS """
 
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+TOKEN_INPUT_IDENTIFIER = "__token"
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    """
+    Client to use in the Exabeam DataLake integration. Overrides BaseClient
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        verify: bool,
+        proxy: bool,
+        headers,
+        api_key: str = "",
+    ):
+        super().__init__(
+            base_url=f"{base_url}", headers=headers, verify=verify, proxy=proxy
+        )
+        self.username = username
+        self.password = password
+        self.api_key = api_key
+        self.session = requests.Session()
+        self.session.headers = headers
+        if not proxy:
+            self.session.trust_env = False
+        if self.username != TOKEN_INPUT_IDENTIFIER:
+            self._login()
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
+        # if self.username != TOKEN_INPUT_IDENTIFIER:
+        #     self._logout()
+        # super().__del__()
 
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+    def _login(self):
         """
+        Login using the credentials and store the cookie
+        """
+        self._http_request(
+            "POST",
+            full_url=f"{self._base_url}/api/auth/login",
+            data={"username": self.username, "password": self.password},
+        )
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def _logout(self):
+        """
+        Logout from the session
+        """
+        try:
+            self._http_request("GET", full_url=f"{self._base_url}/api/auth/logout")
+        except Exception as err:
+            demisto.debug(f"An error occurred during the logout.\n{str(err)}")
+
+    def test_module_request(self):
+        """
+        Performs basic get request to check if the server is reachable.
+        """
+        self._http_request(
+            "GET", full_url=f"{self._base_url}/api/auth/check", resp_type="text"
+        )
+
+    def query_datalake_request(self, search_query: dict) -> dict:
+        headers = {"kbn-version": "5.1.1-SNAPSHOT", "Content-Type": "application/json"}
+        return self._http_request(
+            "POST",
+            full_url=f"{self._base_url}/dl/api/es/search",
+            data=json.dumps(search_query),
+            headers=headers,
+        )
 
 
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+def _handle_time_range_query(start_time: int, end_time: int | None) -> dict:
+    """Handle time range query
+     Args:
+          start_time: start time
+          end_time: end time
+    Returns:
+        dict: time range query
     """
 
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    if end_time and (start_time > end_time):
+        raise DemistoException("Start time must be before end time")
+
+    query_range: dict = {
+        "rangeQuery": {
+            "field": "@timestamp",
+            "gte": str(start_time),
+        }
+    }
+    if end_time:
+        query_range["rangeQuery"].update({"lte": str(end_time)})
+
+    return query_range
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def query_datalake_command(client: Client, args: dict) -> CommandResults:
+    """
+    Query the datalake command and return the results in a formatted table.
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    Args:
+        client: The client object for interacting with the API.
+        args: The arguments passed to the command.
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    Returns:
+        CommandResults: The command results object containing outputs and readable output.
+    """
+
+    def _parse_entry(entry: dict) -> dict:
+        """
+        Parse a single entry from the API response to a dictionary.
+
+        Args:
+            entry: The entry from the API response.
+
+        Returns:
+            dict: The parsed entry dictionary.
+        """
+        source: dict = entry.get("_source", {})
+        return {
+            "id": entry.get("_id"),
+            "Vendor": source.get("Vendor"),
+            "time": source.get("time"),
+            "Product": source.get("Product"),
+            "event name": source.get("event_name"),
+            "action": source.get("action"),
+        }
+
+    query = args["query"]
+    limit = arg_to_number(args.get("limit", 50))
+    all_result = argToBoolean(args.get("all_result", False))
+
+    result_size_to_get = 10_000 if all_result else limit
+
+    if start_time := args.get("start_time"):
+        start_time = date_to_timestamp(start_time)
+
+    if end_time := args.get("end_time"):
+        end_time = date_to_timestamp(end_time)
+
+    search_query = _handle_time_range_query(start_time, end_time) if start_time else {}
+
+    search_query.update(
+        {
+            "sortBy": [
+                {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
+            ],  # the response sort by timestamp
+            "query": query,  # can be "VPN" or "*"
+            "size": result_size_to_get,  # the size of the response
+            "clusterWithIndices": [
+                {
+                    "clusterName": "local",
+                    "indices": ["exabeam-2023.07.12"],
+                }  # TODO -need to check if this is hardcoded
+            ],
+        }
+    )
+
+    response = client.query_datalake_request(search_query)
+    if error := response["responses"][0].get("error"):
+        raise DemistoException(f"Error in query: {error['root_cause'][0]['reason']}")
+
+    data_response = response["responses"][0]["hits"]["hits"]
+    table_to_markdown = [_parse_entry(entry) for entry in data_response]
+    markdown_table = tableToMarkdown(name="Logs", t=table_to_markdown)
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix="ExabeamDataLake.Log",
+        outputs=data_response,
+        readable_output=markdown_table,
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
-''' MAIN FUNCTION '''
+def test_module(client: Client):
+    """test function
+
+    Args:
+        client: Client
+
+    Returns:
+        ok if successful
+    """
+    client.test_module_request()
+    demisto.results("ok")
+
+
+""" MAIN FUNCTION """
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
 
-    :return:
-    :rtype:
-    """
+    username = params["credentials"]["identifier"]
+    password = params["credentials"]["password"]
+    base_url = params["url"].rstrip("/")
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    verify_certificate = not params.get("insecure", False)
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    proxy = params.get("proxy", False)
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    headers = {"Accept": "application/json", "Csrf-Token": "nocheck"}
 
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    if username == TOKEN_INPUT_IDENTIFIER:
+        headers["ExaAuthToken"] = password
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: dict = {}
-
         client = Client(
-            base_url=base_url,
+            base_url,
             verify=verify_certificate,
+            username=username,
+            password=password,
+            proxy=proxy,
             headers=headers,
-            proxy=proxy)
+        )
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+        demisto.debug(f"Command being called is {command}")
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        match command:
+            case "test-module":
+                return_results(test_module(client))
+            case "exabeam-data-lake-query":
+                return_results(query_datalake_command(client, args))
+            case _:
+                raise NotImplementedError(f"Command {command} is not supported")
 
-    # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
-
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
