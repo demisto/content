@@ -1,0 +1,20 @@
+{
+    "description": "Hurukai mirror out mapper.",
+    "feed": false,
+    "id": "Hurukai - Outgoing Mapper",
+    "mapping": {
+        "Hurukai alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "state"
+                }
+            }
+        }
+    },
+    "name": "Hurukai outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
+

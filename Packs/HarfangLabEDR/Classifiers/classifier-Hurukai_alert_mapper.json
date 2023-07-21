@@ -155,6 +155,25 @@
 				"Agents ID": {
 					"simple": "agents.id"
 				},
+				"Total Security Event Count": {
+					"simple": "total_security_event_count"
+				},
+
+				"Critical Security Event Count": {
+					"simple": "security_event_count_by_level.critical"
+				},
+				"High Security Event Count": {
+					"simple": "security_event_count_by_level.high"
+				},
+				"Medium Security Event Count": {
+					"simple": "security_event_count_by_level.medium"
+				},
+				"Low Security Event Count": {
+					"simple": "security_event_count_by_level.low"
+				},
+				"MITRE Tactic Name": {
+					"simple": "mitre_tactics"
+				},
 				"First Seen": {
 					"simple": "first_seen"
 				},
@@ -169,6 +188,18 @@
 				},
 				"Rule Name": {
 					"simple": "rules.rule_name"
+				},
+				"Threat ID": {
+					"simple": "id"
+				},
+				"Top Agents": {
+					"simple": "top_agents.agent_hostname"
+				},
+				"Top Impacted Users": {
+					"simple": "top_impacted_users.user_name"
+				},
+				"Top Rules": {
+					"simple": "top_rules.rule_name"
 				},
 				"Users": {
 					"simple": "impacted_users.full_name"
