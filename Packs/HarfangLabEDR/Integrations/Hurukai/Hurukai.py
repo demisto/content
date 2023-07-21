@@ -40,6 +40,27 @@ SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 MAX_NUMBER_OF_ALERTS_PER_CALL = 25
 
 HFL_SECURITY_EVENT_INCOMING_ARGS = ['status']
+HFL_THREAT_INCOMING_ARGS = [
+    'status',
+    'security_event_count_by_level.critical',
+    'security_event_count_by_level.high',
+    'security_event_count_by_level.medium',
+    'security_event_count_by_level.low',
+    'mitre_tactics',
+    'agents.agent_hostname',
+    'last_seen',
+    'rules.rule_name',
+    'top_agents.agent_hostname',
+    'top_impacted_users.user_name',
+    'top_rules.rule_name',
+    'impacted_users.full_name',
+    'note.content'
+]
+#HFL_THREAT_INCOMING_ARGS = [
+#    'status',
+#    'note.content'
+#]
+
 
 SECURITY_EVENT_STATUS = {'new', 'probable_false_positive', 'false_positive', 'investigating', 'closed'}
 
@@ -288,7 +309,8 @@ class Client(BaseClient):
             'eventlog': '/api/data/telemetry/FullEventLog/',
             'dns': '/api/data/telemetry/DNSResolution/',
             'windows_authentications': '/api/data/telemetry/authentication/AuthenticationWindows/',
-            'linux_authentications': '/api/data/telemetry/authentication/AuthenticationLinux/'
+            'linux_authentications': '/api/data/telemetry/authentication/AuthenticationLinux/',
+            'macos_authentications': '/api/data/telemetry/authentication/AuthenticationMacos/'
         }
 
         kwargs = {
@@ -399,6 +421,32 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix='/api/data/alert/alert/Alert/tag/',
+            json_data=data
+        )
+
+    def change_threat_status(self, threatid, status):
+        data = {}  # type: Dict[str,Any]
+
+        if isinstance(threatid, list):
+            data['id'] = threatid
+        else:
+            data['id'] = [threatid]
+
+        if status.lower() == 'new':
+            data['new_status'] = 'new'
+        elif status.lower() == 'investigating':
+            data['new_status'] = 'investigating'
+        elif status.lower() == 'false positive':
+            data['new_status'] = 'false_positive'
+        elif status.lower() == 'closed':
+            data['new_status'] = 'closed'
+
+        data['tag_security_events'] = True
+        data['update_by_query'] = True
+
+        return self._http_request(
+            method='PATCH',
+            url_suffix='/api/data/alert/alert/Threat/status/',
             json_data=data
         )
 
@@ -1855,7 +1903,7 @@ def get_process_graph(client, args):
 
 def search_whitelist(client, args):
     keyword = args.get('keyword', None)
-    provided_by_hlab = args.get('provided_by_hlab', None)
+    provided_by_hlab = args.get('provided_by_hlab', False)
 
     data = client.search_whitelist(keyword, provided_by_hlab)
 
@@ -2463,6 +2511,36 @@ class TelemetryLinuxAuthentication(Telemetry):
         self.title = 'Linux Authentications'
         self.telemetry_type = 'linux_authentications'
 
+class TelemetryMacosAuthentication(Telemetry):
+
+    def __init__(self):
+        super().__init__()
+
+        self.keys += [
+            ('source_address', 'source_address'),
+            ('success', 'success'),
+            ('source_username', 'source_username'),
+            ('target_username', 'target_username'),
+        ]
+        self.output_keys = [
+            ('timestamp', '@timestamp'),
+            ('hostname', ['agent', 'hostname']),
+            ('agentid', ['agent', 'agentid']),
+            ('source address', 'source_address'),
+            ('source username', 'source_username'),
+            ('target username', 'target_username'),
+            ('success', 'success'),
+            ('tty', ['linux', 'tty']),
+            ('target uid', ['linux', 'target_uid']),
+            ('target group', ['linux', 'target_group']),
+            ('target gid', ['linux', 'target_gid']),
+            ('process name', 'process_name'),
+            ('pid', 'pid')
+
+        ]
+
+        self.title = 'Macos Authentications'
+        self.telemetry_type = 'macos_authentications'
 
 class TelemetryNetwork(Telemetry):
 
@@ -2656,6 +2734,7 @@ def get_function_from_command_name(command):
         'harfanglab-telemetry-dns': TelemetryDNSResolution().telemetry,
         'harfanglab-telemetry-authentication-windows': TelemetryWindowsAuthentication().telemetry,
         'harfanglab-telemetry-authentication-linux': TelemetryLinuxAuthentication().telemetry,
+        'harfanglab-telemetry-authentication-macos': TelemetryMacosAuthentication().telemetry,
         'harfanglab-telemetry-process-graph': get_process_graph,
 
         'harfanglab-hunt-search-hash': hunt_search_hash,
@@ -2756,6 +2835,9 @@ def get_security_events(client, security_event_ids=None, min_created_timestamp=N
     if threat_id:
         args['threat_key'] = threat_id
 
+    if min_updated_timestamp:
+        args['last_update__gte'] = min_updated_timestamp
+
     demisto.debug(f'Args for fetch_security_events: {args}')
 
     while True:
@@ -2793,16 +2875,7 @@ def get_security_events(client, security_event_ids=None, min_created_timestamp=N
                     alert['agent']['policy_name'] = agent.get('policy',{}).get('name')
                     alert['agent']['groups'] = groups
 
-            if min_updated_timestamp:
-                min_timestamp = dateutil.parser.isoparse(min_updated_timestamp)
-                if 'last_update' in alert:
-                    alert_update = dateutil.parser.isoparse(alert.get('last_update'))
-                    demisto.debug(f'alert_update: {alert_update}, min_timestamp: {min_timestamp}')
-
-                    if alert_update > min_timestamp:
-                        security_events.append(alert)
-            else:
-                security_events.append(alert)
+            security_events.append(alert)
 
             if max_results and len(security_events) >= max_results:
                 break
@@ -2826,14 +2899,10 @@ def enrich_threat(client, threat):
 
     #Get agents
     results = client.endpoint_search(threat_id=threat_id, fields=['id', 'hostname', 'domainname', 'osproducttype', 'ostype'])
-    if 'top_agents' in threat:
-        del(threat['top_agents'])
     threat['agents'] = results['results']
 
     #Get users
     results = client.user_search(threat_id=threat_id)
-    if 'top_impacted_users' in threat:
-        del(threat['top_impacted_users'])
     threat['impacted_users'] = results['results']
 
 
@@ -2844,9 +2913,6 @@ def enrich_threat(client, threat):
         url_suffix='/api/data/alert/alert/Threat/rules/',
         params=args
     )
-
-    if 'top_rules' in threat:
-        del(threat['top_rules'])
     threat['rules'] = results['results']
 
 
@@ -2871,7 +2937,12 @@ def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated
         if min_created_timestamp:
             args['from'] = min_created_timestamp
 
+        if min_updated_timestamp:
+            args['last_update__gte'] = min_updated_timestamp
+
         args['fields'] = 'id'
+
+        demisto.debug(f'Args for get_threats: {args}')
 
         while True:
             results = client._http_request(
@@ -2902,16 +2973,7 @@ def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated
         threat_id = threat.get('id', None)
         threat['incident_link'] = f'{client._base_url}/threat/{threat_id}/summary'
 
-        if min_updated_timestamp:
-            min_timestamp = dateutil.parser.isoparse(min_updated_timestamp)
-            if 'last_seen' in threat:
-                threat_update = dateutil.parser.isoparse(threat.get('last_seen'))
-                demisto.debug(f'threat_update: {threat_update}, min_timestamp: {min_timestamp}')
-
-                if threat_update > min_timestamp:
-                    threats.append(threat)
-        else:
-            threats.append(threat)
+        threats.append(threat)
 
     return threats
 
@@ -2947,7 +3009,16 @@ def get_modified_remote_data(client, args):
     for sec_event in sec_events:
         modified_ids_to_mirror.append(f'{IncidentType.SEC_EVENT.value}:{sec_event["id"]}')
 
-    #TODO: same thing for threats
+
+    threats = get_threats(client,
+                                     min_updated_timestamp=last_update_timestamp,
+                                     min_severity=args.get('min_severity', SEVERITIES[0]),
+                                     fields=['id'],
+                                     limit=10000,
+                                     ordering='-last_seen')
+
+    for threat in threats:
+        modified_ids_to_mirror.append(f'{IncidentType.THREAT.value}:{threat["id"]}')
 
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
@@ -2966,9 +3037,9 @@ def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, 
     Note that the fields that we mirror right now may have only one dot in them, so we only deal with this case.
 
     :param updated_object: The dictionary to set its values, so it will hold the fields we want to mirror in, with their values.
-    :param mirrored_data: The data of the incident or detection we want to mirror in.
-    :param mirroring_fields: The mirroring fields that we want to mirror in, given according to whether we want to mirror an
-        incident or a detection.
+    :param mirrored_data: The data of the security event or threat we want to mirror in.
+    :param mirroring_fields: The mirroring fields that we want to mirror in, given according to whether we want to mirror a
+        security event or a threat.
     """
     for field in mirroring_fields:
         if mirrored_data.get(field):
@@ -3008,6 +3079,24 @@ def get_remote_secevent_data(client, remote_incident_id: str):
     set_updated_object(updated_object, mirrored_data, HFL_SECURITY_EVENT_INCOMING_ARGS)
     return mirrored_data, updated_object
 
+def get_remote_threat_data(client, remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on a threat.
+    Gets the relevant threat entity from the remote system (HarfangLab EDR). The remote system returns a list with this
+    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    """
+    mirrored_data_list = get_threats(
+        client, threat_ids=[remote_incident_id])
+    mirrored_data = mirrored_data_list[0]
+
+    if 'status' in mirrored_data:
+        mirrored_data['status'] = STATUS_HFL_TO_XSOAR.get(mirrored_data.get('status'))
+
+    updated_object: Dict[str, Any] = {'incident_type': 'Hurukai threat'}
+    set_updated_object(updated_object, mirrored_data, HFL_THREAT_INCOMING_ARGS)
+    return mirrored_data, updated_object
+
+
 def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
     demisto.debug(f'{incident_type_name} is closed: {remote_incident_id}')
     entries.append({
@@ -3036,6 +3125,13 @@ def set_xsoar_security_events_entries(updated_object: Dict[str, Any], entries: L
         elif updated_object.get('status') in (set(STATUS_XSOAR_TO_HFL.keys()) - {'Closed'}):
             reopen_in_xsoar(entries, remote_incident_id, 'Hurukai alert')
 
+def set_xsoar_threats_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
+    if demisto.params().get('close_incident'):
+        if updated_object.get('status') == 'Closed':
+            close_in_xsoar(entries, remote_incident_id, 'Hurukai threat')
+        elif updated_object.get('status') in (set(STATUS_XSOAR_TO_HFL.keys()) - {'Closed'}):
+            reopen_in_xsoar(entries, remote_incident_id, 'Hurukai threat')
+
 def get_remote_data(client, args):
     """
     get-remote-data command: Returns an updated remote security event or threat.
@@ -3053,6 +3149,7 @@ def get_remote_data(client, args):
 
     mirrored_data = {}
     entries: List = []
+    updated_object = None
 
     try:
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_incident_id} '
@@ -3061,18 +3158,22 @@ def get_remote_data(client, args):
         if incident_type == IncidentType.SEC_EVENT:
             mirrored_data, updated_object = get_remote_secevent_data(client, remote_incident_id[4:])
             if updated_object:
-                demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
+                demisto.debug(f'Update security event {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_security_events_entries(updated_object, entries, remote_incident_id)  # sets in place
 
         elif incident_type == IncidentType.THREAT:
-            #TODO
-            pass
+            mirrored_data, updated_object = get_remote_threat_data(client, remote_incident_id[4:])
+            if updated_object:
+                demisto.debug(f'Update threat {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_threats_entries(updated_object, entries, remote_incident_id)  # sets in place
         else:
             # this is here as prints can disrupt mirroring
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
 
         if not updated_object:
             demisto.debug(f'No delta was found for detection {remote_incident_id}.')
+
+        demisto.debug(f'Updated object {updated_object}')
 
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
@@ -3098,7 +3199,7 @@ def close_in_hfl(delta: Dict[str, Any]) -> bool:
     closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
     return demisto.params().get('close_in_hfl') and any(field in delta for field in closing_fields)
 
-def update_detection_request(client, ids: List[str], status: str) -> Dict:
+def update_security_event_request(client, ids: List[str], status: str) -> Dict:
     if status not in SECURITY_EVENT_STATUS:
         raise DemistoException(f'HarfangLab EDR Error: '
                                f'Status given is {status} and it is not in {SECURITY_EVENT_STATUS}')
@@ -3107,18 +3208,53 @@ def update_detection_request(client, ids: List[str], status: str) -> Dict:
         client.change_security_event_status(eventid, status)
     return 'OK'
 
+def update_threat_request(client, ids: List[str], status: str) -> Dict:
+    if status not in SECURITY_EVENT_STATUS:
+        raise DemistoException(f'HarfangLab EDR Error: '
+                               f'Status given is {status} and it is not in {SECURITY_EVENT_STATUS}')
+
+    for threatid in ids:
+        client.change_threat_status(threatid, status)
+    return 'OK'
 
 def update_remote_security_event(client, delta, inc_status: IncidentStatus, detection_id: str) -> str:
+    demisto.debug(
+        f'Delta {delta}')
+
     if inc_status == IncidentStatus.DONE and close_in_hfl(delta):
         demisto.debug(f'Closing security event with remote ID {detection_id} in remote system.')
-        return str(update_detection_request(client, [detection_id[4:]], 'closed'))
+        return str(update_security_event_request(client, [detection_id[4:]], 'closed'))
 
     # status field in HarfangLab EDR is mapped to State field in XSOAR
-    elif 'status' in delta:
+    elif inc_status == IncidentStatus.PENDING:
         demisto.debug(f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
-        return str(update_detection_request(client, [detection_id[4:]], delta.get('status')))
+        return str(update_security_event_request(client, [detection_id[4:]], 'new'))
+
+    elif inc_status == IncidentStatus.ACTIVE:
+        demisto.debug(f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(update_security_event_request(client, [detection_id[4:]], 'investigating'))
 
     return ''
+
+def update_remote_threat(client, delta, inc_status: IncidentStatus, detection_id: str) -> str:
+    demisto.debug(
+        f'Delta {delta}')
+
+    if inc_status == IncidentStatus.DONE and close_in_hfl(delta):
+        demisto.debug(f'Closing security event with remote ID {detection_id} in remote system.')
+        return str(update_threat_request(client, [detection_id[4:]], 'closed'))
+
+    # status field in HarfangLab EDR is mapped to State field in XSOAR
+    elif inc_status == IncidentStatus.PENDING:
+        demisto.debug(f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(update_threat_request(client, [detection_id[4:]], 'new'))
+
+    elif inc_status == IncidentStatus.ACTIVE:
+        demisto.debug(f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(update_threat_request(client, [detection_id[4:]], 'investigating'))
+
+    return ''
+
 
 def update_remote_system(client, args):
     """
@@ -3147,8 +3283,10 @@ def update_remote_system(client, args):
                     demisto.debug(f'Security event updated successfully. Result: {result}')
 
             elif incident_type == IncidentType.THREAT:
-                #TODO
-                pass
+                demisto.debug(f'Updating remote threat {remote_incident_id}')
+                result = update_remote_threat(client, delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f'Threat updated successfully. Result: {result}')
             else:
                 raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
 
@@ -3216,7 +3354,7 @@ def main():
             args['max_fetch'] = demisto.params().get('max_fetch', None)
             args['mirror_direction'] = demisto.params().get('mirror_direction', None)
             args['fetch_types'] = demisto.params().get('fetch_types', None)
-        target_function(client, args)
+        return_results(target_function(client, args))
 
     # Log exceptions
     except Exception as e:
