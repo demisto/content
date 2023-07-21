@@ -472,6 +472,16 @@ def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
     assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
 
 
+def test_main_error(mocker, capfd):
+    score_mock = mocker.patch(
+        'RankServiceOwners.score'
+    )
+    score_mock.side_effect = Exception()
+
+    with capfd.disabled(), pytest.raises(SystemExit):  # avoids test failures on demisto.error statements
+        main()
+
+
 def test_get_k():
     """
     These cases are designed to specify the intuition we are trying to implement with the algorithm
