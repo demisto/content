@@ -1,4 +1,3 @@
-
 import argparse
 import ast
 import json
@@ -52,7 +51,8 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
+    # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
     'monitoring.pprof': 'true',
     'enable.pprof.memory.dump': 'true',
@@ -763,7 +763,7 @@ class CloudBuild(Build):
         super().__init__(options)
         self.is_cloud = True
         self.cloud_machine = options.cloud_machine
-        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
+        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id = \
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
@@ -1172,7 +1172,7 @@ def set_integration_params(build,
         # integration_params = [change_placeholders_to_values(placeholders_map, item) for item
         #                       in secret_params if item['name'] == integration['name']]
         integration_params = []
-        logging.info(f'SSSSSSSSSSSSSSSSSSSSSSSS={secret_params[:50]}SSSSSSSSSSSSSSSSSSSSSSSS')
+        logging.info(f'SSSSSSSSSSSSSSSSSSSSSSSS={secret_params[]}SSSSSSSSSSSSSSSSSSSSSSSS')
         for item in secret_params:
             try:
                 if item['name'] == integration['name']:
@@ -1191,44 +1191,52 @@ def set_integration_params(build,
                 "insecure": True,
                 "proxy": False,
             }
+    a = {'name': 'AutoFocusTagsFeed', 'params': {'feed': True, 'insecure': True, 'proxy': False,
+                                                 'api_key': {'password': 'c0872324-efa1-4676-82a9-f923c479a429'}},
+         'secret_name': 'AutoFocusTagsFeed', 'labels': {'secret_id': 'autofocustagsfeed'}}, {
+            'name': 'AutoFocus Daily Feed', 'instance_name': 'autofocus_feed_fetch_test',
+            'params': {'insecure': True, 'proxy': False, 'api_key': '6dae39fc-b4be-4dbf-b204-9ae00e1c5c64',
+                       'server_keys': {'sourcebrand': 'AutoFocus Daily Feed',
+                                       'searchfield': 'CustomFields.service, firstSeen, indicator_type'}}}
+    if integration_params:
+        matched_integration_params = integration_params[0]
+    # if there are more than one integration params, it means that there are configuration
+    # values in our secret conf for multiple instances of the given integration and now we
+    # need to match the configuration values to the proper instance as specified in the
+    # 'instance_names' list argument
+    if len(integration_params) != 1:
+        found_matching_instance = False
+    for item in integration_params:
+        if
+    item.get('instance_name', 'Not Found') in instance_names:
+    matched_integration_params = item
+    found_matching_instance = True
 
-        if integration_params:
-            matched_integration_params = integration_params[0]
-            # if there are more than one integration params, it means that there are configuration
-            # values in our secret conf for multiple instances of the given integration and now we
-            # need to match the configuration values to the proper instance as specified in the
-            # 'instance_names' list argument
-            if len(integration_params) != 1:
-                found_matching_instance = False
-                for item in integration_params:
-                    if item.get('instance_name', 'Not Found') in instance_names:
-                        matched_integration_params = item
-                        found_matching_instance = True
+    if not found_matching_instance:
+        optional_instance_names = [optional_integration.get('instance_name', 'None')
+                                   for optional_integration in integration_params]
+    failed_match_instance_msg = 'There are {} instances of {}, please select one of them by using' \
+                                ' the instance_name argument in conf.json. The options are:\n{}'
+    logging_module.error(failed_match_instance_msg.format(len(integration_params),
+                                                          integration['name'],
+                                                          '\n'.join(optional_instance_names)))
+    return False
 
-                if not found_matching_instance:
-                    optional_instance_names = [optional_integration.get('instance_name', 'None')
-                                               for optional_integration in integration_params]
-                    failed_match_instance_msg = 'There are {} instances of {}, please select one of them by using' \
-                                                ' the instance_name argument in conf.json. The options are:\n{}'
-                    logging_module.error(failed_match_instance_msg.format(len(integration_params),
-                                                                          integration['name'],
-                                                                          '\n'.join(optional_instance_names)))
-                    return False
+    integration['params'] = matched_integration_params.get('params', {})
+    integration['byoi'] = matched_integration_params.get('byoi', True)
+    integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
+    integration['validate_test'] = matched_integration_params.get('validate_test', True)
+    if integration['name'] not in build.unmockable_integrations:
+        integration['params'].update({'proxy': True})
+        logging.debug(
+            f'Configuring integration "{integration["name"]}" with proxy=True')
+    else:
+        integration['params'].update({'proxy': False})
+        logging.debug(
+            f'Configuring integration "{integration["name"]}" with proxy=False')
 
-            integration['params'] = matched_integration_params.get('params', {})
-            integration['byoi'] = matched_integration_params.get('byoi', True)
-            integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
-            integration['validate_test'] = matched_integration_params.get('validate_test', True)
-            if integration['name'] not in build.unmockable_integrations:
-                integration['params'].update({'proxy': True})
-                logging.debug(
-                    f'Configuring integration "{integration["name"]}" with proxy=True')
-            else:
-                integration['params'].update({'proxy': False})
-                logging.debug(
-                    f'Configuring integration "{integration["name"]}" with proxy=False')
 
-    return True
+return True
 
 
 def set_module_params(param_conf, integration_params):
@@ -1864,7 +1872,8 @@ def get_packs_with_higher_min_version(packs_names: Set[str],
     for pack_name in packs_names:
         pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
-                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
+                                               pack_metadata.get('server_min_version',
+                                                                 Metadata.SERVER_DEFAULT_MIN_VERSION))
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
