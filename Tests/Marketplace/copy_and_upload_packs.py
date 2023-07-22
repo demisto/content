@@ -458,7 +458,9 @@ def main():
     # Starting iteration over packs
     for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
+        logging.info(f"Starting iteration over pack {pack}")
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
+        logging.info(f"is_failed_to_upload pack_status: {pack_status}")
         if task_status:
             pack.status = pack_status  # type: ignore[misc]
             pack.cleanup()
@@ -466,6 +468,7 @@ def main():
 
         task_status = pack.copy_integration_images(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+        logging.info(f"copy_integration_images task_status: {task_status}")
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
@@ -473,6 +476,7 @@ def main():
 
         task_status = pack.copy_author_image(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+        logging.info(f"copy_author_image task_status: {task_status}")
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
@@ -480,6 +484,7 @@ def main():
 
         task_status = pack.copy_preview_images(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+        logging.info(f"copy_preview_images task_status: {task_status}")
         if not task_status:
             pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
@@ -488,6 +493,8 @@ def main():
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
             production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
             production_base_path, build_bucket_base_path)
+        logging.info(f"copy_and_upload_to_storage task_status: {task_status}  skipped_pack_uploading: {skipped_pack_uploading}")
+
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
@@ -500,7 +507,10 @@ def main():
 
         if pack.name in pc_successful_packs_dict:
             pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
+            logging.info("pack.name in pc_successful_packs_dict")
+
         elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
+            logging.info("pack.name in pc_successful_uploaded_dependencies_zip_packs_dict")
             pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name  # type: ignore[misc]
 
     copy_readme_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
@@ -520,6 +530,7 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    logging.info(f"get_packs_summary successful_packs: {successful_packs}  successful_uploaded_dependencies_zip_packs: {successful_uploaded_dependencies_zip_packs}  skipped_packs: {skipped_packs}  failed_packs: {failed_packs}" )
 
     # Store successful and failed packs list in CircleCI artifacts
     store_successful_and_failed_packs_in_ci_artifacts(
@@ -528,8 +539,8 @@ def main():
     )
 
     # verify that the successful from Prepare content and are the ones that were copied
-    # logging.warning("verify that no packs were mistakenly copied from successful_packs dict")
-    # verify_copy(successful_packs, pc_successful_packs_dict)
+    logging.warning("verify that no packs were mistakenly copied from successful_packs dict")
+    verify_copy(successful_packs, pc_successful_packs_dict)
     logging.warning("verify that no packs were mistakenly copied from successful_uploaded_dependencies dict")
     verify_copy(successful_uploaded_dependencies_zip_packs, pc_successful_uploaded_dependencies_zip_packs_dict)
 
