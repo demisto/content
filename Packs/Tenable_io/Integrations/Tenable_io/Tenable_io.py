@@ -1142,7 +1142,7 @@ def get_json(response: requests.models.Response) -> dict:
             f'Error processing request. Got response status code: {code}' + (
                 f' - {code_messages[code]}'
                 if code in code_messages
-                else f'. Full Response:\n{response.text}'))
+                else f'. Full Response:\n{response.text}')) from e
     except requests.exceptions.JSONDecodeError as e:
         demisto.debug(str(e))
         raise DemistoException(
