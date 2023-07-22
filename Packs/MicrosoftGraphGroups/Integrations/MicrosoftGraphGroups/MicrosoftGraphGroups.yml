@@ -429,7 +429,7 @@ script:
     execution: false
     name: msgraph-groups-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.64970
+  dockerimage: demisto/crypto:1.0.0.65874
   runonce: false
   script: '-'
   subtype: python3

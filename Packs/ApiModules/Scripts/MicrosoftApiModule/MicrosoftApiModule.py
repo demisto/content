@@ -1223,7 +1223,6 @@ class MicrosoftClient(BaseClient):
             demisto.error(f'Failed parsing JSON error response - {e}')
         return ""
 
-
     def extract_microsoft_error(self, response: dict) -> str | None:
         """
         Extracts the Microsoft error message from the JSON response.

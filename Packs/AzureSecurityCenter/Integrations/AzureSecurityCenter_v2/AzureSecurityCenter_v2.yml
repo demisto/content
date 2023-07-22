@@ -7,7 +7,6 @@ configuration:
   display: Microsoft Azure Management URL
   name: server_url
   type: 0
-
   required: false
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
@@ -421,7 +420,7 @@ script:
     execution: false
     name: azure-sc-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.64970
+  dockerimage: demisto/crypto:1.0.0.65874
   runonce: false
   script: '-'
   type: python
