@@ -434,9 +434,13 @@ def main():
 
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
+    logging.info(f"pack_names: {pack_names}")
+
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    logging.info(f"packs_list: {packs_list}")
 
     packs_for_current_marketplace = []
 
@@ -454,6 +458,8 @@ def main():
             continue
 
         packs_for_current_marketplace.append(pack)
+    logging.info(f"packs_for_current_marketplace: {packs_for_current_marketplace}")
+
 
     # Starting iteration over packs
     for pack in packs_for_current_marketplace:
