@@ -270,8 +270,7 @@ AZURE_WORLDWIDE_CLOUD = AzureCloud(
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.com/',
         active_directory_data_lake_resource_id='https://datalake.azure.net/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
-        # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
         media_resource_id='https://rest.media.azure.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.windows.net',
         app_insights_resource_id='https://api.applicationinsights.io',
@@ -311,8 +310,7 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.us/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
-        # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
         media_resource_id='https://rest.media.usgovcloudapi.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
         app_insights_resource_id='https://api.applicationinsights.us',
@@ -348,8 +346,7 @@ AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.us/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
-        # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
         media_resource_id='https://rest.media.usgovcloudapi.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
         app_insights_resource_id='https://api.applicationinsights.us',
@@ -385,8 +382,7 @@ AZURE_DOD_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://dod-graph.microsoft.us/',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
-        # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
         media_resource_id='https://rest.media.usgovcloudapi.net',
         ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
         app_insights_resource_id='https://api.applicationinsights.us',
@@ -408,6 +404,7 @@ AZURE_DOD_CLOUD = AzureCloud(
         acr_login_server_endpoint='.azurecr.us',
         synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
 
+
 AZURE_GERMAN_CLOUD = AzureCloud(
     'Embedded',
     'AzureGermanCloud',
@@ -422,8 +419,7 @@ AZURE_GERMAN_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.cloudapi.de/',
         active_directory_graph_resource_id='https://graph.cloudapi.de/',
         microsoft_graph_resource_id='https://graph.microsoft.de',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
-        # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
         media_resource_id='https://rest.media.cloudapi.de',
         ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
         portal='https://portal.microsoftazure.de',
@@ -452,8 +448,7 @@ AZURE_CHINA_CLOUD = AzureCloud(
         active_directory_resource_id='https://management.core.chinacloudapi.cn/',
         active_directory_graph_resource_id='https://graph.chinacloudapi.cn/',
         microsoft_graph_resource_id='https://microsoftgraph.chinacloudapi.cn',
-        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',
-        # noqa: E501
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
         media_resource_id='https://rest.media.chinacloudapi.cn',
         ossrdbms_resource_id='https://ossrdbms-aad.database.chinacloudapi.cn',
         app_insights_resource_id='https://api.applicationinsights.azure.cn',
@@ -473,6 +468,7 @@ AZURE_CHINA_CLOUD = AzureCloud(
         mariadb_server_endpoint='.mariadb.database.chinacloudapi.cn',
         acr_login_server_endpoint='.azurecr.cn',
         synapse_analytics_endpoint='.dev.azuresynapse.azure.cn'))
+
 
 AZURE_CLOUD_NAME_MAPPING = {
     "Worldwide": "com",
@@ -1218,10 +1214,12 @@ class MicrosoftClient(BaseClient):
             response = error.json()
             demisto.error(str(response))
             err_str = self.extract_microsoft_error(response)
-            return err_str or error.text
-        except Exception as e:
-            demisto.error(f'Failed parsing JSON error response - {e}')
-        return ""
+            if err_str:
+                return err_str
+            # If no error message
+            raise ValueError
+        except ValueError:
+            return error.text
 
     def extract_microsoft_error(self, response: dict) -> str | None:
         """

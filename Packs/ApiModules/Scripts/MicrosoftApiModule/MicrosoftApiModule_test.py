@@ -129,8 +129,12 @@ def test_error_parser(mocker, error_content, status_code, expected_response):
 
 def test_raise_authentication_error(mocker):
     """
-
-
+    Given:
+        - The error_content, status_code, and expected_response for testing the _raise_authentication_error function.
+    When:
+        - The _raise_authentication_error function is called with the given error_content and status_code.
+    Then:
+        - Assert that the response from the _raise_authentication_error matches the expected_response.
     """
     mocker.patch.object(demisto, 'error')
     client = oproxy_client_tenant()
