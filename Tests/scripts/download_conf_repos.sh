@@ -26,12 +26,9 @@ TEST_CONF_BRANCH="$UNDERSCORE_BRANCH"
 
 # download configuration files from Gitlab repo
 echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
-git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
-if [ "$?" != "0" ]; then
-    echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
-    TEST_CONF_BRANCH="master"
-    git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
-fi
+git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch fix-no-name-secrets
+echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
+TEST_CONF_BRANCH="fix-no-name-secrets"
 cp ./content-test-conf/secrets_build_scripts/GoogleSecretManagerModule.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./Tests/scripts
