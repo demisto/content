@@ -17,16 +17,19 @@ configuration:
   type: 9
   displaypassword: Secret
   section: Connect
+  required: false
 - display: Client ID
   name: client_id
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret
   name: secret
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: 'A+ - 3rd party enrichment'
   display: Source Reliability
   name: Reliability
@@ -42,27 +45,32 @@ configuration:
   - F - Reliability cannot be judged
   section: Collect
   advanced: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   defaultvalue: '3 days'
   section: Collect
+  required: false
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
   defaultvalue: '15'
   section: Collect
   advanced: true
+  required: false
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
   required: false
@@ -74,10 +82,12 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Mirroring Direction
   name: mirror_direction
   type: 15
@@ -89,16 +99,19 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -106,6 +119,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   name: close_in_cs_falcon
@@ -113,6 +127,7 @@ configuration:
   additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
   defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
@@ -124,12 +139,14 @@ configuration:
   - Endpoint Detection
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   type: 19
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
@@ -137,6 +154,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -2802,12 +2820,10 @@ script:
     - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: false
       deprecated: true
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve
       isArray: true
-      required: false
       default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
@@ -4258,7 +4274,6 @@ script:
       auto: PREDEFINED
     - description: The key to sort by.
       name: sort_key
-      required: false
       predefined:
       - RISK_SCORE
       - PRIMARY_DISPLAY_NAME
@@ -4268,7 +4283,6 @@ script:
       auto: PREDEFINED
     - description: The sort order.
       name: sort_order
-      required: false
       predefined:
       - 'DESCENDING'
       - 'ASCENDING'
@@ -4276,19 +4290,15 @@ script:
       defaultValue: ASCENDING
     - description: Comma separated list of entity IDs to look for.
       name: entity_id
-      required: false
       isArray: true
     - description: Primary display name to filter by.
       name: primary_display_name
-      required: false
       isArray: true
     - description: Secondary display name to filter by.
       name: secondary_display_name
-      required: false
       isArray: true
     - description: The maximum risk score severity to filter by.
       name: max_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4296,7 +4306,6 @@ script:
       auto: PREDEFINED
     - description: The minimum risk score severity to filter by.
       name: min_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4304,27 +4313,21 @@ script:
       auto: PREDEFINED
     - description: Whether to get only enabled or disabled identity entities.
       name: enabled
-      required: false
       predefined:
       - 'true'
       - 'false'
       auto: PREDEFINED
     - description: Filter by email.
       name: email
-      required: false
     - description: The hash for the next page.
       name: next_token
-      required: false
-    - description:  The maximum number of items to fetch per page. The maximum value allowed is 1000.
+    - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
       name: page_size
-      required: false
       defaultValue: 50
-    - description: The page number. Default is 1. 
+    - description: The page number. Default is 1.
       name: page
-      required: false
     - description: The maximum number of identity entities to list.
       name: limit
-      required: false
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
@@ -4358,7 +4361,7 @@ script:
       - contextPath: CrowdStrike.IDPEntity.EmailAddresses
         description: The identity entity email address.
         type: String
-  dockerimage: demisto/py3-tools:1.0.0.64927
+  dockerimage: demisto/py3-tools:1.0.0.66062
   isfetch: true
   ismappable: true
   isremotesyncin: true
