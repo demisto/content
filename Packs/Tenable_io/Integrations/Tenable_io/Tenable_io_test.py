@@ -69,8 +69,20 @@ def load_json(filename):
 def mock_demisto(mocker, mock_args=None):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker.patch.object(demisto, 'uniqueFile', return_value='file')
+    mocker.patch.object(demisto, 'investigation', return_value={'id': 'id'})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'debug')
+    # if file_type is None:
+    #     file_type = entryTypes['file']
+    # temp = demisto.uniqueFile()
+    # # pylint: disable=undefined-variable
+    # if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
+    #     data = data.encode('utf-8')
+    # # pylint: enable=undefined-variable
+    # with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
+    #     f.write(data)
+    # return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
 def test_get_scan_status(mocker, requests_mock):
@@ -640,16 +652,19 @@ def test_download_export_scan(mocker):
     mock_demisto(mocker)
     requests_get = mocker.patch.object(
         requests, 'get', return_value=MockResponse({}, content='content'))
-    file_result = mocker.patch('CommonServerPython.fileResult')
 
-    download_export_scan('scan_id', 'file_id', {'format': 'HTML'})
+    result = download_export_scan('scan_id', 'file_id', {'format': 'HTML'})
 
+    assert result == {
+        'Contents': '',
+        'ContentsFormat': 'text',
+        'Type': 9,
+        'File': 'scan_scan_id_file_id.html',
+        'FileID': 'file',
+    }
     requests_get.assert_called_with(
         'http://123-fake-api.com/scans/scan_id/export/file_id/download',
         headers=HEADERS, verify=False)
-    file_result.assert_called_with(
-        'scan_scan_id_file_id.html',
-        'content', EntryType.ENTRY_INFO_FILE)
 
 
 @pytest.mark.parametrize(
