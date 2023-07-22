@@ -1172,7 +1172,7 @@ def set_integration_params(build,
         # integration_params = [change_placeholders_to_values(placeholders_map, item) for item
         #                       in secret_params if item['name'] == integration['name']]
         integration_params = []
-        logging.info(f'SSSSSSSSSSSSSSSSSSSSSSSS={secret_params}SSSSSSSSSSSSSSSSSSSSSSSS')
+        logging.info(f'SSSSSSSSSSSSSSSSSSSSSSSSS={secret_params}SSSSSSSSSSSSSSSSSSSSSSSSS')
         for item in secret_params:
             try:
                 if item['name'] == integration['name']:
