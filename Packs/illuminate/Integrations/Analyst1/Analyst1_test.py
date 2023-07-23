@@ -558,7 +558,7 @@ def test_analyst1_evidence_submit_error(requests_mock, mock_client):
         analyst1_evidence_submit(mock_client, args)
     except DemistoException:
         return
-    assert False
+    raise AssertionError
 
 
 def test_analyst1_evidence_status_200_emptyid(requests_mock, mock_client):
@@ -755,8 +755,8 @@ def test_perform_test_request_good(requests_mock, mock_client):
     )
     try:
         perform_test_module(mock_client)
-    except DemistoException:
-        assert False
+    except DemistoException as e:
+        raise AssertionError from e
 
 
 def test_perform_test_request_invalid(requests_mock, mock_client):
@@ -772,5 +772,5 @@ def test_perform_test_request_invalid(requests_mock, mock_client):
 
 def test_argsToStr():
     args: dict = {'sensor_id': '1'}
-    assert '1' == argsToStr(args, 'sensor_id')
-    assert '' == argsToStr(args, 'unknown')
+    assert argsToStr(args, 'sensor_id') == '1'
+    assert argsToStr(args, 'unknown') == ''
