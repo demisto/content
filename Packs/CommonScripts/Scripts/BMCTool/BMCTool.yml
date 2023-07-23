@@ -29,4 +29,4 @@ tests:
 - No tests (auto formatted)
 outputs:
 - contextPath: Collages
-  description: 'Collage image of the tiles from the RDP session cache '
+  description: Collage image of the tiles from the RDP session cache.
