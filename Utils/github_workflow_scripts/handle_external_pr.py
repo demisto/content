@@ -289,6 +289,7 @@ def main():
     # assign reviewers / request review from
 
     # Parse reviewers from JSON
+    # Exit if JSON doesn't exist or not parsable
     content_roles_path = Path(get_env_var(CONTENT_ROLES_PATH_ENV_KEY, RELATIVE_CONTENT_ROLES_PATH))
     if content_roles_path.exists():
         with content_roles_path.open(encoding="utf8") as crp:
@@ -302,6 +303,7 @@ def main():
         content_reviewer = determine_reviewer(content_reviewers, content_repo)
         pr.add_to_assignees(content_reviewer)
         reviewers = [content_reviewer]
+
         # Add a security architect reviewer if the PR contains security content items
         if is_requires_security_reviewer(pr_files):
             reviewers.append(security_reviewer)
@@ -310,6 +312,7 @@ def main():
 
         pr.create_review_request(reviewers=reviewers)
         print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
+
         # create welcome comment (only users who contributed through Github need to have that contribution form filled)
         message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
         body = message_to_send.format(selected_reviewer=content_reviewer)

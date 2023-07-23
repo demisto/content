@@ -1,7 +1,14 @@
 import os
 import pytest
-from handle_external_pr import is_requires_security_reviewer, SECURITY_CONTENT_ITEMS, get_content_reviewers, CONTRIBUTION_REVIEWERS_KEY, CONTRIBUTION_SECURITY_REVIEWER_KEY
+from handle_external_pr import (
+    is_requires_security_reviewer,
+    get_content_reviewers,
+    SECURITY_CONTENT_ITEMS,
+    CONTRIBUTION_REVIEWERS_KEY,
+    CONTRIBUTION_SECURITY_REVIEWER_KEY
+)
 from typing import Any
+
 
 @pytest.mark.parametrize(
     'support_levels, expected_support_level', [
@@ -148,14 +155,26 @@ def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
         CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
         "CONTRIBUTION_TL": "tl1",
         "ON_CALL_DEVS": ["ocd1", "ocd2"]
-    }, (["cr1", "cr2", "cr3", "cr4"], "sr1")
-    )
+    }, ["cr1", "cr2", "cr3", "cr4"], "sr1")
 ])
-def test_get_content_reviewers(content_roles: dict[str, Any], expected_content_reviwers: list[str], expected_security_reviewers: str):
+def test_get_content_reviewers(
+    content_roles: dict[str, Any],
+    expected_content_reviewers: list[str],
+    expected_security_reviewers: str
+):
     """
-    TODO add docstring
+    Test retrieval of content and security reviewers.
+
+    Given:
+        - A ``dict[str, Any]``
+
+    When:
+        - Case A: 4 content reviewers and 1 security reviewers provided
+
+    Then:
+        - Case A: 4 content reviewers and 1 security reviewer added
     """
 
     actual_content_reviewers, actual_security_reviewer = get_content_reviewers(content_roles)
-    assert actual_content_reviewers == expected_content_reviwers
+    assert actual_content_reviewers == expected_content_reviewers
     assert actual_security_reviewer == expected_security_reviewers
