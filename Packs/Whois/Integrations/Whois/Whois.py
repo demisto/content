@@ -15,7 +15,6 @@ RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 
 # flake8: noqa
-
 """
     This integration is built using the joepie91 "Whois" module. For more information regarding this package please see
     the following - https://github.com/joepie91/python-whois
