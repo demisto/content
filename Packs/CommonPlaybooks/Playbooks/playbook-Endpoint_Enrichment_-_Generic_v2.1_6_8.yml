@@ -1,9 +1,7 @@
 id: Endpoint Enrichment - Generic v2.1
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+  contentitemfields: {}
 name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
@@ -14,7 +12,7 @@ description: |-
   - Cylance Protect v2
   - CrowdStrike Falcon
   - ExtraHop Reveal(x)
-
+  - Cortex XDR
   - Endpoint reputation using !endpoint command
 starttaskid: "0"
 tasks:
@@ -67,6 +65,7 @@ tasks:
       - "19"
       - "20"
       - "30"
+      - "40"
     separatecontext: false
     view: |-
       {
@@ -613,6 +612,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "30":
     id: "30"
     taskid: ec344482-77f7-42b5-8ee4-34317afd1179
@@ -995,6 +995,140 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 589c7eee-9b57-4e16-893b-41fcc534caa4
+    type: condition
+    task:
+      id: 589c7eee-9b57-4e16-893b-41fcc534caa4
+      version: -1
+      name: Is Cortex XDR enabled?
+      description: Checks if there is an active instance of the Cortex XDR integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2990,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 6b801798-1a2f-4176-854d-0308524dcc91
+    type: title
+    task:
+      id: 6b801798-1a2f-4176-854d-0308524dcc91
+      version: -1
+      name: Cortex XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2990,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 3b6087f9-c0a7-44ff-8040-1e9de3ad84d0
+    type: regular
+    task:
+      id: 3b6087f9-c0a7-44ff-8040-1e9de3ad84d0
+      version: -1
+      name: Cortex XDR Search device
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.EndpointID
+          transformers:
+          - operator: uniq
+      hostname:
+        complex:
+          root: inputs.Hostname
+      ip_list:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1007,6 +1141,7 @@ view: |-
       "33_4_#default#": 0.2,
       "36_37_yes": 0.49,
       "36_4_#default#": 0.13,
+      "39_4_#default#": 0.1,
       "3_1_yes": 0.3,
       "3_24_yes": 0.41,
       "3_4_#default#": 0.12,
@@ -1016,7 +1151,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1455,
-        "width": 4010,
+        "width": 4540,
         "x": -1000,
         "y": 80
       }
@@ -1199,8 +1334,7 @@ outputs:
   description: The information about the hostname that was enriched using Active Directory.
   type: unknown
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed.
-    installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.os_environment_display_string
@@ -1220,8 +1354,7 @@ outputs:
 - contextPath: CarbonBlackEDR.Sensor.physical_memory_size
   description: The size in bytes of physical memory.
 - contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/
-    endpoint.
+  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
 - contextPath: CarbonBlackEDR.Sensor.is_isolating
@@ -1259,8 +1392,7 @@ outputs:
 - contextPath: CarbonBlackEDR.Sensor.computer_sid
   description: Machine SID of this host.
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time
-    and zone.
+  description: Next expected communication from this computer in server-local time and zone.
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.cookie
@@ -1303,29 +1435,6 @@ outputs:
   description: The sensor group ID this sensor is assigned to.
 - contextPath: CarbonBlackEDR.Sensor.uninstall
   description: When set, indicates that the sensor will be directed to uninstall on next check-in.
-sourceplaybookid: Endpoint Enrichment - Generic v2.1
 tests:
-- Field polling test
-- test-domain-indicator
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
-- Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- Send Investigation Summary Reports - Test
-- Detonate File - No Files test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Retrieve File from Endpoint - Generic V2 Test
-- Isolate and unisolate endpoint - test
-- Block IP - Generic V3_Test
+- No tests (auto formatted)
 fromversion: 6.8.0
