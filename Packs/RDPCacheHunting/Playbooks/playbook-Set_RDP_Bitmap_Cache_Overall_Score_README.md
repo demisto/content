@@ -14,7 +14,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
+Set
 
 ### Commands
 
@@ -31,7 +31,7 @@ There are no inputs for this playbook.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| OverallScore | The overall score | unknown |
+| OverallScore | The overall score. | unknown |
 
 ## Playbook Image
 

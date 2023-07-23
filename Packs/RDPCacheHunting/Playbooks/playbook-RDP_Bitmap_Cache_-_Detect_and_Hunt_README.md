@@ -33,7 +33,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* Rasterize
+Rasterize
 
 ### Scripts
 
@@ -62,16 +62,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ShouldCollectRDPCache | When set to True, will use XDR to get RDP cache files from the endpoints, but set to False will try and use existing cache file from context | false | Required |
-| EndpointIDs | A comma seperated list of endpoint ID's to retrieve cache files from |  | Optional |
+| ShouldCollectRDPCache | When set to True, will use XDR to get RDP cache files from the endpoints. When set to False will try and use existing cache files from context. | false | Required |
+| EndpointIDs | A comma-separated list of endpoint ID's to retrieve cache files from. |  | Optional |
 | FilePath | The path of the file to retrieve or use wildcard for multiple files.<br/>For example:<br/>C:\\the\\path\\to\\cache_file.bin<br/>C:\\the\\path\\to\\\* | C:\Users\administrator\AppData\Local\Microsoft\Terminal Server Client\Cache\* | Optional |
-| Hostname | Hostname of the machine on which the file is located for PS remote it can also be an IP address. |  | Optional |
+| Hostname | Hostname of the machine on which the file is located. For PS remote it can also be an IP address. |  | Optional |
 | min_score | StringSifter - Limit output to strings with score &gt;= min-score. |  | Optional |
 | limit | StringSifter - Limit output to the top limit ranked strings. |  | Optional |
-| similiarity_threshold  | StringSimilarity - The similarity threshold to show results for, a value between 0 &lt; x &gt;1 | 0.3 | Optional |
-| QRadarTimeFrame | The time frame for the Qradar hunting query | LAST 7 DAYS | Optional |
-| SplunkEarliestTime | The earliest time for the Splunk hunting query | -7d@d | Optional |
-| SplunkLatestTime | The latest time for the Splunk hunting query | now | Optional |
+| similiarity_threshold  | StringSimilarity - The similarity threshold to show results for, a value between 0 &lt; x &gt;1. | 0.3 | Optional |
+| QRadarTimeFrame | The time frame for the QRadar hunting query. | LAST 7 DAYS | Optional |
+| SplunkEarliestTime | The earliest time for the Splunk hunting query. | -7d@d | Optional |
+| SplunkLatestTime | The latest time for the Splunk hunting query, | now | Optional |
 
 ## Playbook Outputs
 
