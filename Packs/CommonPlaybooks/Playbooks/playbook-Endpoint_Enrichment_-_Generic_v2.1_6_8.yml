@@ -145,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1470
+          "y": 1090
         }
       }
     note: false
@@ -1150,7 +1150,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1455,
+        "height": 1075,
         "width": 4540,
         "x": -1000,
         "y": 80
@@ -1190,7 +1190,7 @@ inputs:
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
-  type: unknown
+  type: string
 - contextPath: Endpoint.Hostname
   description: The hostnames of the endpoints that were enriched.
   type: string
@@ -1199,14 +1199,16 @@ outputs:
   type: string
 - contextPath: Endpoint.IP
   description: A list of the IP addresses of the endpoints.
+  type: string
 - contextPath: Endpoint.MAC
   description: A list of the MAC addresses of the endpoints that were enriched.
+  type: string
 - contextPath: Endpoint.Domain
   description: The domain names of the endpoints that were enriched.
   type: string
 - contextPath: CylanceProtectDevice
   description: The device information about the hostname that was enriched using Cylance Protect v2.
-  type: unknown
+  type: string
 - contextPath: ExtraHop.Device.Macaddr
   description: The MAC Address of the device.
   type: String
@@ -1287,154 +1289,290 @@ outputs:
   type: string
 - contextPath: Endpoint.IPAddress
   description: The endpoint IP address.
+  type: string
 - contextPath: Endpoint.ID
   description: The endpoint ID.
+  type: string
 - contextPath: Endpoint.Status
   description: The endpoint status.
+  type: string
 - contextPath: Endpoint.IsIsolated
   description: The endpoint isolation status.
+  type: string
 - contextPath: Endpoint.MACAddress
   description: The endpoint MAC address.
+  type: string
 - contextPath: Endpoint.Vendor
   description: The integration name of the endpoint vendor.
+  type: string
 - contextPath: Endpoint.Relationships
   description: The endpoint relationships of the endpoint that was enriched.
-  type: unknown
+  type: string
 - contextPath: Endpoint.Processor
   description: The model of the processor.
+  type: string
 - contextPath: Endpoint.Processors
   description: The number of processors.
+  type: string
 - contextPath: Endpoint.Memory
   description: Memory on this endpoint.
+  type: string
 - contextPath: Endpoint.Model
   description: The model of the machine or device.
+  type: string
 - contextPath: Endpoint.BIOSVersion
   description: The endpoint's BIOS version.
+  type: string
 - contextPath: Endpoint.OSVersion
   description: The endpoint's operation system version.
+  type: string
 - contextPath: Endpoint.DHCPServer
   description: The DHCP server of the endpoint.
+  type: string
 - contextPath: McAfee.ePO.Endpoint
   description: The endpoint that was enriched.
-  type: unknown
+  type: string
 - contextPath: Endpoint.Groups
   description: Groups for which the computer is listed as a member.
+  type: string
 - contextPath: ActiveDirectory.ComputersPageCookie
   description: An opaque string received in a paged search, used for requesting subsequent entries.
+  type: string
 - contextPath: ActiveDirectory.Computers.dn
   description: The computer distinguished name.
+  type: string
 - contextPath: ActiveDirectory.Computers.memberOf
   description: Groups for which the computer is listed.
+  type: string
 - contextPath: ActiveDirectory.Computers.name
   description: The computer name.
+  type: string
 - contextPath: CrowdStrike.Device
   description: The information about  the endpoint.
-  type: unknown
+  type: string
 - contextPath: ActiveDirectory.Computers
   description: The information about the hostname that was enriched using Active Directory.
-  type: unknown
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
   description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
+  type: number
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.os_environment_display_string
   description: Human-readable string of the installed OS.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_version
   description: The EMET version associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_dump_flags
   description: The flags of the EMET dump associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.clock_delta
   description: The clock delta associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.supports_cblr
   description: Whether the sensor supports Carbon Black Live Response (CbLR).
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_uptime
   description: The uptime of the process.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.last_update
   description: When the sensor was last updated.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.physical_memory_size
   description: The size in bytes of physical memory.
+  type: number
 - contextPath: CarbonBlackEDR.Sensor.build_id
   description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.is_isolating
   description: Boolean representing sensor-reported isolation status.
+  type: boolean
 - contextPath: CarbonBlackEDR.Sensor.event_log_flush_time
   description: |-
     If event_log_flush_time is set, the server will instruct the sensor to immediately
     send all data before this date, ignoring all other throttling mechanisms.
     To force a host current, set this value to a value far in the future.
     When the sensor has finished sending its queued data, this value will be null.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.computer_dns_name
   description: The DNS name of the endpoint on which the sensor is installed.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_report_setting
   description: The report setting of the EMET associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.id
   description: The ID of this sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_process_count
   description: The number of EMET processes associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_is_gpo
   description: Whether the EMET is a GPO.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.power_state
   description: The sensor power state.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.network_isolation_enabled
   description: Boolean representing the network isolation request status.
+  type: boolean
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_free_size
   description: The amount of free bytes on the system volume.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.status
   description: The sensor status.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.num_eventlog_bytes
   description: The number of event log bytes.
+  type: number
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_message
   description: Human-readable string indicating the sensor’s self-reported status.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.build_version_string
   description: Human-readable string of the sensor version.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.computer_sid
   description: Machine SID of this host.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
   description: Next expected communication from this computer in server-local time and zone.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.cookie
   description: The cookie associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_exploit_action
   description: The EMET exploit action associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.computer_name
   description: NetBIOS name of this computer.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.license_expiration
   description: When the license of the sensor expires.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.supports_isolation
   description: Whether the sensor supports isolation.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.parity_host_id
   description: The ID of the parity host associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.supports_2nd_gen_modloads
   description: Whether the sensor support modload of 2nd generation.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.network_adapters
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
   description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.registration_time
   description: Time this sensor was originally registered in server-local time and zone.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
   description: Whether a restart of the sensor is queued.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.notes
   description: The notes associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.num_storefiles_bytes
   description: Number of storefiles bytes associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.os_environment_id
   description: The ID of the OS environment of the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.shard_id
   description: The ID of the shard associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.boot_id
   description: A sequential counter of boots since the sensor was installed.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.last_checkin_time
   description: Last communication with this computer in server-local time and zone.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.os_type
   description: The operating system type of the computer.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.group_id
   description: The sensor group ID this sensor is assigned to.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.uninstall
   description: When set, indicates that the sensor will be directed to uninstall on next check-in.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint
+  description: The endpoint object of the endpoint that was enriched.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+  description: The endpoint ID.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+  description: The endpoint name.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
+  description: The endpoint type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+  description: The status of the endpoint.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.os_type
+  description: The endpoint OS type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.ip
+  description: A list of IP addresses.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.users
+  description: A list of users.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.domain
+  description: The endpoint domain.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.alias
+  description: The endpoint's aliases.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.content_version
+  description: Content version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
+  description: Installation package.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
+  description: Active directory.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
+  description: Endpoint version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.count
+  description: Number of endpoints returned.
+  type: number
+- contextPath: Account
+  description: The account object of the endpoint that was enriched.
+  type: string
+- contextPath: Account.Username
+  description: The username in the relevant system.
+  type: string
+- contextPath: Account.Domain
+  description: The domain of the account.
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
