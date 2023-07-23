@@ -74,7 +74,7 @@ def get_unsupported_chars_in_user(user: Optional[str]) -> set:
     Extracts the invalid user characters found in the provided string.
     """
     if not user:
-        return set([])
+        return set()
     return set(INVALID_USER_CHARS_REGEX.findall(user))
 
 
@@ -149,7 +149,7 @@ class MsGraphClient:
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def password_change_user_saas(self, user: str, password: str, force_change_password_next_sign_in: bool,
-                             force_change_password_with_mfa: bool):
+                                  force_change_password_with_mfa: bool):
         body = {
             "passwordProfile":
                 {
@@ -163,7 +163,7 @@ class MsGraphClient:
             url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
-   
+
     def password_change_user_on_premise(self, user: str, password: str) -> None:
         password_id_response = None
         try:
@@ -240,7 +240,7 @@ class MsGraphClient:
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def assign_manager(self, user, manager):
-        manager_ref = "{}users/{}".format(self.ms_client._base_url, manager)
+        manager_ref = f"{self.ms_client._base_url}users/{manager}"
         body = {"@odata.id": manager_ref}
         self.ms_client.http_request(
             method='PUT',
@@ -375,6 +375,7 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
     client.password_change_user_saas(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
     human_readable = f'User {user} password was changed successfully.'
     return human_readable, {}, {}
+
 
 def get_password(args: dict[str, Any]):
     """
