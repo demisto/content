@@ -1,6 +1,9 @@
 [file:Hurukai.yml]
 ignore=IN126,BA124,BA125
 
+[file:README.md]
+BA125
+
 [known_words]
 harfanglab
 filesize
