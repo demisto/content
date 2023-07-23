@@ -84,6 +84,7 @@ Packs/**/Integrations/**/.pytest.ini
 Packs/**/Scripts/**/.pytest.ini
 pytest_report.json
 test_runner.sh
+.sourcery_tmp.yaml
 
 # log files
 demisto_sdk_debug.log
