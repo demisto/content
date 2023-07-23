@@ -181,7 +181,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  feed: false
 tests:
 - Mail-Listener Test Playbook
 defaultmapperin: mail-listener-mapper
