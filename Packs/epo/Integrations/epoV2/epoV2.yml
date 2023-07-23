@@ -26,11 +26,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The timeout of the HTTP requests sent to McAfee ePO API (in seconds), the max timeout allowed is 300s.
   defaultvalue: '120'
   display: HTTP Timeout
@@ -38,6 +40,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 script:
   commands:
   - name: epo-help
@@ -812,7 +815,7 @@ script:
     - name: properties
       description: Properties of the issue.
     description: Update an issue.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3
