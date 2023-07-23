@@ -1,2 +1,3 @@
 [INGEST:vendor="paloaltonetworks", product="saassecurity", target_dataset="paloaltonetworks_saassecurity_raw", no_hit = keep]
-alter _time = timestamp;
+filter timestamp!= null
+| alter _time = timestamp;
