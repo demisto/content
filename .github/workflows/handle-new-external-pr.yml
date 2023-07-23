@@ -42,7 +42,7 @@ jobs:
           EVENT_PAYLOAD: ${{ toJson(github.event) }}
           CONTENT_ROLES_FILE: ${{ env.CONTENT_ROLES_FILE_PATH }}
         run: |
-          echo "Reading content reviewers from '${{ env.CONTENT_ROLES_FILE }}'...}"
+          echo "Reading content reviewers from '${{ env.CONTENT_ROLES_FILE }}'..."
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
           poetry run ./handle_external_pr.py

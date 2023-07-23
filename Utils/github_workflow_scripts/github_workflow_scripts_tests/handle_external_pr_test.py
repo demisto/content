@@ -149,18 +149,21 @@ def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
     assert is_requires_security_reviewer(pr_files) == expected
 
 
-@pytest.mark.parametrize('content_roles', [
-    ({
-        CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
-        CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
-        "CONTRIBUTION_TL": "tl1",
-        "ON_CALL_DEVS": ["ocd1", "ocd2"]
-    }, ["cr1", "cr2", "cr3", "cr4"], "sr1")
-])
+@pytest.mark.parametrize(
+    'content_roles,expected_content_reviewers,expected_security_reviewer',
+    [
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
+            "CONTRIBUTION_TL": "tl1",
+            "ON_CALL_DEVS": ["ocd1", "ocd2"]
+        }, ["cr1", "cr2", "cr3", "cr4"], "sr1")
+    ]
+)
 def test_get_content_reviewers(
     content_roles: dict[str, Any],
     expected_content_reviewers: list[str],
-    expected_security_reviewers: str
+    expected_security_reviewer: str
 ):
     """
     Test retrieval of content and security reviewers.
@@ -177,4 +180,4 @@ def test_get_content_reviewers(
 
     actual_content_reviewers, actual_security_reviewer = get_content_reviewers(content_roles)
     assert actual_content_reviewers == expected_content_reviewers
-    assert actual_security_reviewer == expected_security_reviewers
+    assert actual_security_reviewer == expected_security_reviewer
