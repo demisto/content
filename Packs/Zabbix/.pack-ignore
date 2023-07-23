@@ -2,4 +2,4 @@
 ignore=IM111
 
 [file:Zabbix.yml]
-ignore=IN153
+ignore=IN153,BA125
