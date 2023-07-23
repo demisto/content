@@ -1153,6 +1153,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
 def main() -> None:
     params = demisto.params()
 
+    demisto.info('test modeling rules')
     base_url = params.get('url') or DEFAULT_URL
     api_key = params.get('credentials', {}).get('password')
     verify_certificate = not argToBoolean(params.get('insecure', False))
