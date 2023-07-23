@@ -31,7 +31,7 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 | feedReputation | Indicator Reputation | False |
 | behavioralReputation | Behavioral Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp> | False |
 | feedExpirationPolicy |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
@@ -42,6 +42,7 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 
 
 ## SafeBreach Insights
+
 Table below summaries all available SafeBreach insights and their relative ids that should be used when calling the related commands.
 Every customer environment might have some of the insights depending on the simulation results that were not blocked in the environment.
 
@@ -72,26 +73,33 @@ Every customer environment might have some of the insights depending on the simu
 ## Playbooks - Deprecated
 
 #### SafeBreach - Process Non-Behavioral Insights Feed  - Deprecated
+
 - This playbook automatically remediates all non-behavioral indicators generated from SafeBreach Insights. To validate the remediation, it reruns the related insights and classifies the indicators as Remediated or Not Remediated.
 A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
 
 #### SafeBreach - Process Behavioral Insights Feed (Premium)- Deprecated
+
 - This playbook processes all SafeBreach behavioral indicators. It creates an incident for each SafeBreach Insight, enriched with all the related indicators and additional SafeBreach contextual information.
 A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
 
 #### SafeBreach - Rerun Insights - Deprecated
+
 - This is a sub-playbook reruns a list of SafeBreach insights based on Insight Id and waits until they complete. Used in main SafeBreach playbooks, such as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral Insights Feed".
 
 #### SafeBreach - Rerun Single Insight - Deprecated
+
 - This playbook uses the following sub-playbooks, integrations, and scripts.
 
 #### SafeBreach - Compare and Validate Insight Indicators - Deprecated
+
 - This playbook compares SafeBreach Insight indicators before and after the processing. It receives an insight and it's indicators before validation, fetches updated indicators after rerunning the insight, and then compares the results to validate mitigation. Indicators are classified as Remediated or Not Remediated based on their validated status and the appropriate field (SafeBreach Remediation Status) is updated.
   
 #### SafeBreach - SafeBreach Create Incidents per Insight and Associate Indicators - Deprecated
+
 - This is a sub-playbook that creates incidents per SafeBreach insight, enriched with all the related indicators and additional SafeBreach insight contextual information. Used in main SafeBreach playbooks, such as "SafeBreach - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral Insights Feed".  
 
 #### SafeBreach - Handle Insight Incident (Premium) - Deprecated
+
 - This playbook is triggered automatically for each SafeBreach Insight incident:
     1. Adding insight information (including suggested remediation actions);
     2. Assigning it to an analyst to remediate and either “ignore” or “validate.” Validated incidents are rerun with the related SafeBreach Insight and the results are compared to the previous indicator results. The incident is closed once all the indicators are resolved or the analyst “ignores” the incident. Unresolved indicators wait for handling by the analyst.
@@ -100,13 +108,17 @@ A special feed based triggered job is required to initiate this playbook for eve
 
 
 ## Dashboard (Premium) 
+
 SafeBreach Insights dashboard summarizes the current status of actionable insights and related indicators.
  ![SafeBreach Dashboard](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/xsoar_SafeBreach_dashboard.png)
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### safebreach-get-insights
+
 ***
 Gets SafeBreach Insights for all security control categories.
 
@@ -114,6 +126,7 @@ Gets SafeBreach Insights for all security control categories.
 #### Base Command
 
 `safebreach-get-insights`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -147,9 +160,11 @@ Gets SafeBreach Insights for all security control categories.
 
 
 ##### Command Example
+
 ```!safebreach-get-insights insightIds=[5,9]```
 
 ##### Context Example
+
 ```
 {
     "SafeBreach": {
@@ -237,6 +252,7 @@ Gets SafeBreach Insights for all security control categories.
 
 
 ### safebreach-get-remediation-data
+
 ***
 Gets remediation data for a specific SafeBreach Insight.
 
@@ -244,6 +260,7 @@ Gets remediation data for a specific SafeBreach Insight.
 #### Base Command
 
 `safebreach-get-remediation-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -280,9 +297,11 @@ Gets remediation data for a specific SafeBreach Insight.
 
 
 ##### Command Example
+
 ```!safebreach-get-remediation-data insightId=5```
 
 ##### Context Example
+
 ```
 {
     "DBotScore": [
@@ -367,6 +386,7 @@ Gets remediation data for a specific SafeBreach Insight.
 
 
 ### safebreach-rerun-insight
+
 ***
 Reruns a specific SafeBreach Insight related simulations in your environment.
 
@@ -374,6 +394,7 @@ Reruns a specific SafeBreach Insight related simulations in your environment.
 #### Base Command
 
 `safebreach-rerun-insight`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -397,9 +418,11 @@ Reruns a specific SafeBreach Insight related simulations in your environment.
 
 
 ##### Command Example
+
 ```!safebreach-rerun-insight insightIds=5```
 
 ##### Context Example
+
 ```
 {
     "SafeBreach": {
@@ -426,13 +449,16 @@ Reruns a specific SafeBreach Insight related simulations in your environment.
 ```
 
 ##### Human Readable Output
+
 ### Rerun SafeBreach Insight
+
 |# Attacks|Insight Id|Name|Test Id|
 |---|---|---|---|
 | 36 | 5 | Insight (Demisto) - Blacklist malicious domains | 1586684450523.75 |
 
 
 ### safebreach-get-test-status
+
 ***
 Gets the status of a SafeBreach test for tracking progress of a run.
 
@@ -440,6 +466,7 @@ Gets the status of a SafeBreach test for tracking progress of a run.
 #### Base Command
 
 `safebreach-get-test-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -460,9 +487,11 @@ Gets the status of a SafeBreach test for tracking progress of a run.
 
 
 ##### Command Example
+
 ```!safebreach-get-test-status testId=1585757174467.23```
 
 ##### Context Example
+
 ```
 {
     "SafeBreach": {
@@ -479,7 +508,9 @@ Gets the status of a SafeBreach test for tracking progress of a run.
 ```
 
 ##### Human Readable Output
+
 ### Test Status
+
 |Test Id|Name|Status|Start Time|End Time|Total Simulation Number|
 |---|---|---|---|---|---|
 | 1585757174467.23 | Rerun (Demisto) - #(2122) Write SamSam Malware (AA18-337A) to Disk | CANCELED | 2020-04-01T16:06:14.471Z | 2020-04-01T16:10:36.389Z | 9 |
@@ -488,6 +519,7 @@ Gets the status of a SafeBreach test for tracking progress of a run.
 
 
 ### safebreach-get-simulation - Deprecated
+
 ***
 Get SafeBreach simulation
 
@@ -495,6 +527,7 @@ Get SafeBreach simulation
 #### Base Command
 
 `safebreach-get-simulation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -545,9 +578,11 @@ Get SafeBreach simulation
 
 
 ##### Command Example
+
 ```!safebreach-get-simulation simulationId=d937cd0e5fd4e2c9266801b7bd17e097```
 
 ##### Context Example
+
 ```
 {
     "SafeBreach": {
@@ -716,7 +751,9 @@ Get SafeBreach simulation
 ```
 
 ##### Human Readable Output
+
 ### SafeBreach Simulation
+
 |Id|Name|Status|Result|Detected Action|Attacker|Target|
 |---|---|---|---|---|---|---|
 | d937cd0e5fd4e2c9266801b7bd17e097 | (#3055) Write wannacry malware to disk | Prevented | Fail | Prevent | Win10 - Cylance (172.31.42.76,172.31.42.76) | Win10 - Cylance (172.31.42.76,172.31.42.76) |
@@ -725,6 +762,7 @@ Get SafeBreach simulation
 
 
 ### safebreach-rerun-simulation - Deprecated
+
 ***
 Reruns a specific SafeBreach simulation in your environment.
 
@@ -732,6 +770,7 @@ Reruns a specific SafeBreach simulation in your environment.
 #### Base Command
 
 `safebreach-rerun-simulation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -755,9 +794,11 @@ Reruns a specific SafeBreach simulation in your environment.
 
 
 ##### Command Example
+
 ```!safebreach-rerun-simulation simulationId=d937cd0e5fd4e2c9266801b7bd17e097```
 
 ##### Context Example
+
 ```
 {
     "SafeBreach": {
@@ -780,13 +821,16 @@ Reruns a specific SafeBreach simulation in your environment.
 ```
 
 ##### Human Readable Output
+
 ### SafeBreach Rerun Simualtion
+
 |Simulation Id|Test Id|Name|
 |---|---|---|
 | d937cd0e5fd4e2c9266801b7bd17e097 | 1586684466634.76 | Rerun (Demisto) - #(3055) Write wannacry malware to disk |
 
 
 ### safebreach-get-indicators
+
 ***
 Fetches SafeBreach Insights from which indicators are extracted, creating new indicators or updating existing indicators.
 
@@ -794,6 +838,7 @@ Fetches SafeBreach Insights from which indicators are extracted, creating new in
 ##### Base Command
 
 `safebreach-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -808,15 +853,19 @@ Fetches SafeBreach Insights from which indicators are extracted, creating new in
 There is no context output for this command.
 
 ##### Command Example
+
 ```!safebreach-get-indicators limit=10```
 
 ##### Context Example
+
 ```
 None
 ```
 
 ##### Human Readable Output
+
 ### Indicators:
+
 |Fields|Rawjson|Score|Type|Value|
 |---|---|---|---|---|
 | description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 0a2076b9d288411486a0c6367bccf75ea0fd6ba9aaaa9ff046ff3959f60ff35f<br />tags: SafeBreachInsightId: 7 | value: 0a2076b9d288411486a0c6367bccf75ea0fd6ba9aaaa9ff046ff3959f60ff35f<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 0a2076b9d288411486a0c6367bccf75ea0fd6ba9aaaa9ff046ff3959f60ff35f |

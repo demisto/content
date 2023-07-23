@@ -128,8 +128,8 @@ configuration:
   display: Tags
   name: feedTags
   type: 0
-description: SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
-display: SafeBreach v2
+description: Deprecated. No available replacement.
+display: SafeBreach v2 (Deprecated)
 name: SafeBreach v2
 script:
   commands:
@@ -197,6 +197,7 @@ script:
     - contextPath: SafeBreach.Insight.AttackIds
       description: SafeBreach Attack Ids
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The ID of the insight for which to fetch remediation data.
       name: insightId
@@ -270,6 +271,7 @@ script:
     - contextPath: SafeBreach.Insight.RemediationData.Splunk
       description: Remediation data in a form of a Splunk query
       type: String
+    deprecated: true
   - arguments:
     - description: Array of insight IDs to rerun.
       isArray: true
@@ -304,6 +306,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Date
+    deprecated: true
   - arguments:
     - defaultValue: '1000'
       description: The maximum number of indicators to generate. The default is 1000.
@@ -323,6 +326,7 @@ script:
       - ''
     description: Fetches SafeBreach Insights from which indicators are extracted, creating new indicators or updating existing indicators.
     name: safebreach-get-indicators
+    deprecated: true
   - arguments:
     - description: The ID of the test to track.
       isArray: true
@@ -349,13 +353,13 @@ script:
     - contextPath: SafeBreach.Test.TotalSimulationNumber
       description: Number of simulations for the test.
       type: Number
+    deprecated: true
   - arguments:
     - description: The ID of the simulation. By default, taken from the incident.
       name: simulationId
       required: true
     description: Get SafeBreach simulation
     name: safebreach-get-simulation
-    deprecated: true
     outputs:
     - contextPath: SafeBreach.Simulation.Id
       description: ID of the simulation result.
@@ -465,13 +469,13 @@ script:
     - contextPath: SafeBreach.Simulation.Parameters
       description: Parameters of the simulation.
       type: JSON
+    deprecated: true
   - arguments:
     - description: The ID of the simulation to rerun.
       name: simulationId
       required: true
     description: Reruns a specific SafeBreach simulation in your environment.
     name: safebreach-rerun-simulation
-    deprecated: true
     outputs:
     - contextPath: SafeBreach.Simulation.Id
       description: Simulation unique ID.
@@ -500,6 +504,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Datetime
+    deprecated: true
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
   runonce: false
@@ -507,5 +512,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- No tests (deprecated)
 fromversion: 5.5.0
+deprecated: true
