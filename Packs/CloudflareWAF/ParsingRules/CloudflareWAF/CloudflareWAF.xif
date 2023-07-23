@@ -9,7 +9,7 @@ filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[+-]
 
 // Supports RFC3339 compatible timestamps with a numeric timezone offset and seconds fraction precision (for e.g. 2023-07-17T14:30:59.123+03:00)
 filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.?\d+[Zz]|\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[\+\-]{1}\d{2}:\d{2}"
-| tmp_timestamp_string = replace(to_string(edgeendtimestamp), "Z", "+00:00") 
+| alter tmp_timestamp_string = replace(to_string(edgeendtimestamp), "Z", "+00:00") 
 | alter tmp_precision = arrayindex(regextract(tmp_timestamp_string, "\.(\d{1,6})"), 0)
 | alter tmp_precision_length = len(tmp_precision)
 | alter tmp_time = if( // adjust parsing format according to the precision length
