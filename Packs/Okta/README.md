@@ -1,4 +1,4 @@
-# Product Name
+# Okta
 This pack includes Cortex XSIAM content.
 
 Okta integrates with Palo Alto Network’s Cortex XSOAR to help security analysts better understand and get in front of threats as they emerge. Okta enrichment gives security teams visibility into each user’s groups and roles, what apps and data they can access, and other contextual information that can streamline the investigation process for rapid response. For example, when a suspicious log-in from a new device or location is detected, security teams can automatically restricting access to sensitive applications, prompt step-up authentication, force a password reset, or suspend a compromised account.
