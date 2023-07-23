@@ -25,4 +25,4 @@ Parse RDP bitmap cache data into a single collage image file.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Collages | Collage image of the tiles from the RDP session cache  | Unknown |
+| Collages | Collage image of the tiles from the RDP session cache.  | Unknown |
