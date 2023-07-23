@@ -1892,7 +1892,7 @@ inputs:
   value:
     simple: now
   required: false
-  description: The latest time for the Splunk hunting query
+  description: The latest time for the Splunk hunting query.
   playbookInputQuery:
 outputs: []
 tests:
