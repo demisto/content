@@ -3,7 +3,7 @@ args:
   description: The RDP cache file's entryID to process.
 - defaultValue: "False"
   name: verbose
-  description: Should the command produce verbose output or not.
+  description: Should the command produce verbose output.
 - defaultValue: "64"
   name: width
   description: Image width.
