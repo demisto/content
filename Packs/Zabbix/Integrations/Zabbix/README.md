@@ -545,6 +545,24 @@ Get events
 | 0 | 0 | 1585589664 | 0 | 15 | Zabbix task manager processes more than 75% busy | 596351852 | 0 | 13560 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
+### test-module
+
+***
+Test if module is working
+
+#### Base Command
+
+`test-module`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
 ## Additional Information
 Using execute_command you can do anything available on Zabbix API.
 
