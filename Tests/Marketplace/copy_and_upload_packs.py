@@ -435,7 +435,6 @@ def main():
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
     logging.info(f"pack_names: {pack_names}")
-
     logging.info(f"packs_artifacts_path: {packs_artifacts_path}")
     logging.info(f"extract_destination_path: {extract_destination_path}")
 
