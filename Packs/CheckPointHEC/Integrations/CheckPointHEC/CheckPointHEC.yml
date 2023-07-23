@@ -62,15 +62,15 @@ configuration:
   type: 19
   required: false
 description: The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-display: 'CheckPointHEC'
+display: 'Check Point Harmony Email and Collaboration (HEC)'
 name: CheckPointHEC
 script:
   commands:
   - name: checkpointhec-get-entity
     arguments:
-      - name: entity
-        description: Entity id to retrieve
-        required: true
+    - name: entity
+      description: Entity id to retrieve
+      required: true
     description: Retrieve specific entity
     outputs:
     - contextPath: CheckPointHEC.Entity.internetMessageId
@@ -173,7 +173,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
