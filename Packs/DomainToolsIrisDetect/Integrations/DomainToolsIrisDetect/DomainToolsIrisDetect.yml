@@ -103,17 +103,13 @@ name: DomainToolsIrisDetect
 script:
   commands:
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         List of Iris Detect domain IDs to escalate. The domain ID can be 
         found using 'domaintools-iris-detect-get-new-domains' command.
       isArray: true
       name: watchlist_domain_ids
       required: true
-      secret: false
-    deprecated: false
     description: Reports a domain to Google's Safe Browsing API. After approval, their block list is picked up by Chrome and most modern browsers.
-    execution: false
     name: domaintools-iris-detect-escalate-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.EscalatedDomain.watchlist_domain_id
@@ -135,18 +131,14 @@ script:
       description: The email address of the person who created the escalated entry.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         List of Iris Detect domain IDs to escalate. The domain ID can be 
         found using 'domaintools-iris-detect-get-new-domains, 
         domaintools-iris-detect-get-watched-domains' commands.
       isArray: true
       name: watchlist_domain_ids
       required: true
-      secret: false
-    deprecated: false
     description: Mark a given domain as blocked, which allows a script against the Iris Detect API to pass these domains on to other teams or security controls within your organization to block them in email, web, or other filtering controls.
-    execution: false
     name: domaintools-iris-detect-blocklist-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.BlockedDomain.watchlist_domain_id
@@ -168,17 +160,13 @@ script:
       description: The email address of the person who created the blocked entry.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         List of Iris Detect domain IDs to escalate. The domain ID can be 
         found using 'domaintools-iris-detect-get-new-domains' command.
       isArray: true
       name: watchlist_domain_ids
       required: true
-      secret: false
-    deprecated: false
     description: Mark a given domain as watched, which will trigger more frequent scanning by DomainTools automation. Changes to watched domains can trigger incidents if enabled, or manually queried via the domaintools-iris-detect-get-watched-domains command.
-    execution: false
     name: domaintools-iris-detect-watch-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.WatchedDomain.state
@@ -203,17 +191,13 @@ script:
       description: The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00").
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         List of Iris Detect domain IDs to escalate. The domain ID can be 
         found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' command.
       isArray: true
       name: watchlist_domain_ids
       required: true
-      secret: false
-    deprecated: false
     description: Ignore a given domain, removing it from new and block lists, if applicable.
-    execution: false
     name: domaintools-iris-detect-ignore-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.IgnoredDomain.state
@@ -238,47 +222,30 @@ script:
       description: The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00").
       type: String
   - arguments:
-    - default: false
-      description: 'ISO 8601 datetime format: default None. Conditionally required if the include_counts parameter is set to True. for example 2022-05-18T12:19:51.685496'
-      isArray: false
+    - description: 'ISO 8601 datetime format: default None. Conditionally required if the include_counts parameter is set to True. for example 2022-05-18T12:19:51.685496'
       name: datetime_counts_since
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Default False. Includes counts for each monitor for new, watched, changed, and escalated domains.
-      isArray: false
       name: include_counts
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Sort order for monitor list. Valid values are an ordered list of the following:["term", "created_date", "domain_counts_changed", "domain_counts_discovered"].'
-      isArray: false
       name: sort
       predefined:
       - term
       - created_date
       - domain_counts_changed
       - domain_counts_discovered
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order "asc" or "desc"
-      isArray: false
       name: order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: This command allows users to retrieve the list of monitored terms and respective IDs associated with your organization's Iris Detect account. New terms can only be set up and configured directly within the Iris Detect UI (https://iris.domaintools.com/detect/). The results are limited to 100 monitors if include_counts is True, or 500 otherwise.
-    execution: false
     name: domaintools-iris-detect-get-monitors-list
     outputs:
     - contextPath: DomainToolsIrisDetect.Monitor.term
@@ -312,42 +279,25 @@ script:
       description: The email address of the person who created the monitor entry.
       type: String
   - arguments:
-    - default: false
-      description: Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496
-      isArray: false
+    - description: Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496
       name: discovered_since
-      required: false
-      secret: false
-    - default: false
-      description: |- 
+    - description: |-
         Monitor ID is used when requesting domains for a specific monitor. 
         The monitor ID can be found using the 
         'domaintools-iris-detect-get-monitors-list' command.
-      isArray: false
       name: monitor_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: true
       name: tlds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter domains by if they have an MX record in DNS.
-      isArray: false
       name: mx_exists
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'List of risk score ranges to filter domains by. Valid values are:["0-0", "1-39", "40-69", "70-99", "100-100"].'
-      isArray: false
       name: risk_score_ranges
       predefined:
       - 0-0
@@ -355,76 +305,40 @@ script:
       - 40-69
       - 70-99
       - 100-100
-      required: false
-      secret: false
-    - default: false
-      description: A "contains" search for any portion of a domain name.
-      isArray: false
+    - description: A "contains" search for any portion of a domain name.
       name: search
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Sort order for domain list. Valid values are an ordered list of the following:["discovered_date", "changed_date", "risk_score"].'
-      isArray: false
       name: sort
       predefined:
       - discovered_date
       - changed_date
       - risk_score
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Includes DNS and whois data in the response.
-      isArray: false
       name: include_domain_data
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Preview mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions.
-      isArray: false
       name: preview
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order "asc" or "desc"
-      isArray: false
       name: order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
-      isArray: false
+    - description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Manually retrieve new domains matching all of your monitored terms, or a specific term specified by a "monitor_id" that can be retrieved using the domaintools-iris-detect-get-monitors-list command. The number of domains returned is limited to 50 if including DNS and whois details, or 100 otherwise. Use the page and page_size parameter for pagination.
-    execution: false
     name: domaintools-iris-detect-get-new-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.New.state
@@ -516,104 +430,59 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'escalation_types: List[str]: default None. List of escalation types to filter domains by. Valid values are:["blocked", "google_safe"].'
-      isArray: false
       name: escalation_types
       predefined:
       - blocked
       - google_safe
-      required: false
-      secret: false
-    - default: false
-      description: |- 
+    - description: |-
         Monitor ID is used when requesting domains for a specific monitor. 
         The monitor ID can be found using the 
         'domaintools-iris-detect-get-monitors-list' command.
-      isArray: false
       name: monitor_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: true
       name: tlds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter domains by if they have an MX record in DNS.
-      isArray: false
       name: mx_exists
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: changed_since
-      required: false
-      secret: false
-    - default: false
-      description: A "contains" search for any portion of a domain name.
-      isArray: false
+    - description: A "contains" search for any portion of a domain name.
       name: search
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Sort order for domain list. Valid values are an ordered list of the following:["discovered_date", "changed_date", "risk_score"].'
-      isArray: false
       name: sort
       predefined:
       - discovered_date
       - changed_date
       - risk_score
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Includes DNS and whois data in the response.
-      isArray: false
       name: include_domain_data
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Preview mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions.
-      isArray: false
       name: preview
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: escalated_since
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order "asc" or "desc".
-      isArray: false
       name: order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'List of risk score ranges to filter domains by. Valid values are:["0-0", "1-39", "40-69", "70-99", "100-100"].'
-      isArray: false
       name: risk_score_ranges
       predefined:
       - 0-0
@@ -621,29 +490,13 @@ script:
       - 40-69
       - 70-99
       - 100-100
-      required: false
-      secret: false
-    - default: false
-      description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
-      isArray: false
+    - description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Manually retrieve changes to domains that have been marked as "watched" by users of your organization, matching all of your monitored terms, or a specific term specified by a "monitor_id" that can be retrieved using the domaintools-iris-detect-get-monitors-list command. The number of domains returned is limited to 50 if including DNS and whois details, or 100 otherwise. Use the page and page_size parameter for pagination.
-    execution: false
     name: domaintools-iris-detect-get-watched-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.Watched.state
@@ -735,9 +588,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'List of risk score ranges to filter domains by. Valid values are:["0-0", "1-39", "40-69", "70-99", "100-100"].'
-      isArray: false
       name: risk_score_ranges
       predefined:
       - 0-0
@@ -745,112 +596,58 @@ script:
       - 40-69
       - 70-99
       - 100-100
-      required: false
-      secret: false
-    - default: false
-      description: |- 
+    - description: |-
         Monitor ID is used when requesting domains for a specific monitor. 
         The monitor ID can be found using the 
         'domaintools-iris-detect-get-monitors-list' command.
-      isArray: false
       name: monitor_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: true
       name: tlds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter domains by if they have an MX record in DNS.
-      isArray: false
       name: mx_exists
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: changed_since
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: escalated_since
-      required: false
-      secret: false
-    - default: false
-      description: A "contains" search for any portion of a domain name.
-      isArray: false
+    - description: A "contains" search for any portion of a domain name.
       name: search
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Sort order for domain list. Valid values are an ordered list of the following:["discovered_date", "changed_date", "risk_score"].'
-      isArray: false
       name: sort
       predefined:
       - discovered_date
       - changed_date
       - risk_score
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Includes DNS and whois data in the response.
-      isArray: false
       name: include_domain_data
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Preview mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions.
-      isArray: false
       name: preview
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order "asc" or "desc".
-      isArray: false
       name: order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
-      isArray: false
+    - description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Manually retrieve domains that your organization has marked as ignored, matching all of your monitored terms, or a specific term specified by a "monitor_id" that can be retrieved using the domaintools-iris-detect-get-monitors-list command. This is most useful in cases when a domain might have been mistakenly ignored. The number of domains returned is limited to 50 if including DNS and whois details, or 100 otherwise. Use the page and page_size parameter for pagination.
     name: domaintools-iris-detect-get-ignored-domains
     outputs:
@@ -943,9 +740,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'List of risk score ranges to filter domains by. Valid values are:["0-0", "1-39", "40-69", "70-99", "100-100"]'
-      isArray: false
       name: risk_score_ranges
       predefined:
       - 0-0
@@ -953,114 +748,59 @@ script:
       - 40-69
       - 70-99
       - 100-100
-      required: false
-      secret: false
-    - default: false
-      description: |- 
+    - description: |-
         Monitor ID is used when requesting domains for a specific monitor. 
         The monitor ID can be found using the 
         'domaintools-iris-detect-get-monitors-list' command.
-      isArray: false
       name: monitor_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: true
       name: tlds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter domains by if they have an MX record in DNS.
-      isArray: false
       name: mx_exists
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: changed_since
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: escalated_since
-      required: false
-      secret: false
-    - default: false
-      description: A "contains" search for any portion of a domain name.
-      isArray: false
+    - description: A "contains" search for any portion of a domain name.
       name: search
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Sort order for domain list. Valid values are an ordered list of the following:["discovered_date", "changed_date", "risk_score"].'
-      isArray: false
       name: sort
       predefined:
       - discovered_date
       - changed_date
       - risk_score
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Includes DNS and whois data in the response.
-      isArray: false
       name: include_domain_data
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Preview mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions.
-      isArray: false
       name: preview
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order "asc" or "desc".
-      isArray: false
       name: order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
-      isArray: false
+    - description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Manually retrieve domains that your organization has escalated to Google Safe Browsing, matching all of your monitored terms, or a specific term specified by a "monitor_id" that can be retrieved using the domaintools-iris-detect-get-monitors-list command. The number of domains returned is limited to 50 if including DNS and whois details, or 100 otherwise. Use the page and page_size parameter for pagination.
-    execution: false
     name: domaintools-iris-detect-get-escalated-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.Escalated.state
@@ -1151,95 +891,54 @@ script:
       description: Associated isp for the Domain.
       type: String
   - arguments:
-    - default: false
-      description: |- 
+    - description: |-
         Monitor ID is used when requesting domains for a specific monitor. 
         The monitor ID can be found using the 
         'domaintools-iris-detect-get-monitors-list' command.
-      isArray: false
       name: monitor_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: true
       name: tlds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter domains by if they have an MX record in DNS.
-      isArray: false
       name: mx_exists
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: changed_since
-      required: false
-      secret: false
-    - default: false
-      description: A "contains" search for any portion of a domain name.
-      isArray: false
+    - description: A "contains" search for any portion of a domain name.
       name: search
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Sort order for domain list. Valid values are an ordered list of the following:["discovered_date", "changed_date", "risk_score"].'
-      isArray: false
       name: sort
       predefined:
       - discovered_date
       - changed_date
       - risk_score
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Includes DNS and whois data in the response.
-      isArray: false
       name: include_domain_data
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Preview mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions.
-      isArray: false
       name: preview
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
-      isArray: false
+    - description: Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: escalated_since
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order "asc" or "desc".
-      isArray: false
       name: order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'List of risk score ranges to filter domains by. Valid values are:["0-0", "1-39", "40-69", "70-99", "100-100"].'
-      isArray: false
       name: risk_score_ranges
       predefined:
       - 0-0
@@ -1247,29 +946,13 @@ script:
       - 40-69
       - 70-99
       - 100-100
-      required: false
-      secret: false
-    - default: false
-      description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
-      isArray: false
+    - description: Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Manually retrieve domains that your organization has marked as "blocklisted", matching all of your monitored terms, or a specific term specified by a "monitor_id" that can be retrieved using the domaintools-iris-detect-get-monitors-list command. The number of domains returned is limited to 50 if including DNS and whois details, or 100 otherwise. Use the page and page_size parameter for pagination. Use the page and page_size parameter for pagination.
-    execution: false
     name: domaintools-iris-detect-get-blocklist-domains
     outputs:
     - contextPath: DomainToolsIrisDetect.Blocked.state
@@ -1359,15 +1042,10 @@ script:
     - contextPath: DomainToolsIrisDetect.Blocked.ip.isp
       description: Associated isp for the Domain.
       type: String
-  - deprecated: false
-    description: This command will reset your fetch history.
-    execution: false
+  - description: This command will reset your fetch history.
     name: domaintools-iris-detect-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
