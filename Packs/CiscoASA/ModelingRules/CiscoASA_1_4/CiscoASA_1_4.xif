@@ -656,3 +656,23 @@ filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
     xdm.alert.severity = severity,
     xdm.observer.name = observer_name,
     xdm.event.outcome_reason = action;
+
+// Call-Home
+filter _raw_log contains "Call-Home"
+| call cisco_asa_main_fields_extraction
+| alter outcome_reason = arrayindex(regextract(_raw_log, "Reason\:\s+(\S+)"),0),
+| alter xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_name,
+    xdm.event.outcome_reason = outcome_reason;
+
+// UPDATE:
+| filter _raw_log ~= "\-\d+\:\sUPDATE\:"
+| call cisco_asa_main_fields_extraction
+| alter new_img_version = arrayindex(regextract(_raw_log ,"Image\sversion\sis\s(\S+)"),0)\
+| alter xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_name,
+    xdm.event.outcome_reason = outcome_reason;
