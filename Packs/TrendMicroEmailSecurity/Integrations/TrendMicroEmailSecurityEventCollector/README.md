@@ -15,7 +15,6 @@ Palo Alto Networks Trend Micro Email Security Event Collector integration for XS
     | Use system proxy settings |  | False |
     | Hide sensitive details from email |  | False |
     | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is executed. | False |
-    | First Fetch Time | "The first fetch time, e.g., 1 hour, 3 days,<br/>Note: The request retrieves logs created within 72 hours at most before sending the request,<br/>Please put in the First Fetch Time parameter a value that is at most 72 hours / 3 days"<br/> | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
