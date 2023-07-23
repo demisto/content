@@ -75,10 +75,6 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -fmp|--force_to_marketplace) _force_to_marketplace="$2"
-    shift
-    shift;;
-
   -ch|--slack-channel) _slack_channel="$2"
     shift
     shift;;
@@ -109,10 +105,10 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
-#if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
-#    echo "Can not force upload while using a storage base path."
-#    exit 1
-#fi
+if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
+    echo "Can not force upload while using a storage base path."
+    exit 1
+fi
 if [ -n "$_storage_base_path" ] && [[ "$_storage_base_path" != *content ]]; then
   echo "$_storage_base_path"
   echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content.1"
@@ -156,5 +152,4 @@ curl --request POST \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
   --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
-  --form "variables[UPLOAD_TO]=${_force_to_marketplace}" \
   "$BUILD_TRIGGER_URL"
