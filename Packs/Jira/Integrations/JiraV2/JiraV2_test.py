@@ -1251,7 +1251,8 @@ def test_get_project_id_old_version(requests_mock):
     second_case_mock = requests_mock.get('https://localhost/rest/api/latest/project', status_code=200)
     id = get_project_id(project_name='Test_name')
     assert id == 'Test_id'
-    assert first_case_mock.called_once and not second_case_mock.called
+    assert first_case_mock.called_once
+    assert not second_case_mock.called
 
 
 def test_get_project_id(mocker):
@@ -1270,6 +1271,7 @@ def test_get_project_id(mocker):
             raise DemistoException("Status code: 404\nMessage: Issue Does Not Exist")
         elif endpoint == 'rest/api/latest/project':
             return [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]
+        return None
 
     mocker.patch('JiraV2.jira_req', side_effect=mock_res)
     id = get_project_id(project_name='Test_name')
@@ -1292,6 +1294,7 @@ def test_get_project_id_non_english(mocker):
             raise DemistoException("Status code: 404\nMessage: La Incidencia no Existe")
         elif endpoint == 'rest/api/latest/project':
             return [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]
+        return None
 
     mocker.patch('JiraV2.jira_req', side_effect=mock_res)
     id = get_project_id(project_name='Test_name')
