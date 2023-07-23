@@ -31,9 +31,9 @@ If you are interested in alternative or advanced settings, such as configuring f
   * %Y-%m-%dT%H:%M:%SZ - UTC +00:00 format.
   * %Y-%m-%dT%H:%M:E3SZ - UTC +00:00 format with 3 digits of fractional precision.
   * %Y-%m-%dT%H:%M:E*SZ - UTC +00:00 format with 6 digits of fractional precision. 
-  * %Y-%m-%d<\Key>%H:%M:%S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM).
-  * %Y-%m-%d<\Key>%H:%M:%E3S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM) with 3 digits of fractional precision.
-  * %Y-%m-%d<\Key>%H:%M:%E*S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM) with 6 digits of fractional precision.
+  * %Y-%m-%d{Key}%H:%M:%S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM).
+  * %Y-%m-%d{Key}%H:%M:%E3S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM) with 3 digits of fractional precision.
+  * %Y-%m-%d{Key}%H:%M:%E*S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM) with 6 digits of fractional precision.
 
 
 ## Collect Events from Vendor
