@@ -36,6 +36,7 @@ script:
     description: Execute command on Zabbix API
   - name: test-module
     arguments: []
+    hidden: true
     description: Test if module is working
   - name: zabbix-hostgroup-get
     arguments:
