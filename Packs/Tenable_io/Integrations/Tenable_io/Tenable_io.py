@@ -174,17 +174,20 @@ class Client(BaseClient):
             'POST',
             f'scans/{scan_id}/export',
             params=remove_empty_elements(params),
-            json=remove_empty_elements(body)
-        ).get('file')
+            json=remove_empty_elements(body))
 
-    def check_export_scan_status(self, scan_id: str, file_id: str) -> str:
+    def check_export_scan_status(self, scan_id: str, file_id: str) -> dict:
         return self._http_request(
-            'GET', f'scans/{scan_id}/export/{file_id}/status'
-        ).get('status')
+            'GET', f'scans/{scan_id}/export/{file_id}/status')
 
-    def download_export_scan(self, scan_id: str, file_id: str, args: dict) -> dict:
-        return self._http_request(
-            'GET', f'scans/{scan_id}/export/{file_id}/download')
+    def download_export_scan(self, scan_id: str, file_id: str, file_format: str) -> dict:
+        return fileResult(
+            f'scan_{scan_id}_{file_id}.{file_format.lower()}',
+            self._http_request(
+                'GET',
+                f'scans/{scan_id}/export/{file_id}/download',
+                res_type='content'),
+            EntryType.ENTRY_INFO_FILE)
 
 
 def flatten(d):
@@ -1267,7 +1270,7 @@ def export_scan_body(args: dict) -> dict:
     body = {
         'format': args['format'].lower(),
         'chapters': chapters,
-        'filter.search_type': args.get('filterSearchType', '').lower(),
+        'filter.search_type': args['filterSearchType'].lower(),
         'asset_id': args.get('assetId'),
     }
 
@@ -1301,22 +1304,6 @@ def initiate_export_scan(client: Client, args: dict) -> str:
     return file_id
 
 
-def check_export_scan_status(scan_id: str, file_id: str) -> str:
-    response = requests.get(
-        f'{BASE_URL}scans/{scan_id}/export/{file_id}/status',
-        headers=HEADERS, verify=USE_SSL)
-    return get_json(response).get('status', '')
-
-
-def download_export_scan(scan_id: str, file_id: str, args: dict) -> dict:
-    response = requests.get(
-        f'{BASE_URL}scans/{scan_id}/export/{file_id}/download',
-        headers=HEADERS, verify=USE_SSL)
-    return fileResult(
-        f'scan_{scan_id}_{file_id}.{args["format"].lower()}',
-        response.content, EntryType.ENTRY_INFO_FILE)
-
-
 @polling_function(
     'tenable-io-export-scan',
     poll_message='Preparing scan report:',
@@ -1324,13 +1311,18 @@ def download_export_scan(scan_id: str, file_id: str, args: dict) -> dict:
     requires_polling_arg=False)
 def export_scan_command(client: Client, args: dict[str, Any]) -> PollResult:
 
-    file_id = args.get('fileId') or initiate_export_scan(client, args)
     scan_id = args['scanId']
+    file_id = (
+        args.get('fileId')
+        or client.initiate_export_scan(
+            scan_id, params))
 
-    match client.check_export_scan_status(scan_id, file_id):
+    status = client.check_export_scan_status(scan_id, file_id).get('status')
+    match status:
         case 'ready':
             return PollResult(
-                client.download_export_scan(scan_id, file_id, args),
+                client.download_export_scan(
+                    scan_id, file_id, args['format']),
                 continue_to_poll=False)
 
         case 'error':
