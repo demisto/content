@@ -4,6 +4,7 @@ from typing import Tuple
 from CommonServerPython import *
 
 CSRF_PARSING_CHARS = 14
+VERSION = ''
 
 
 class Client:
@@ -65,7 +66,7 @@ class Client:
         }
         try:
             headers = {}
-            if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
+            if LooseVersion(VERSION) >= LooseVersion('10.1.6'):
                 # We do this to get the cookie we need to add to the requests in the new version of PAN-OS
                 response = self.session.get(url=f'{self.session_metadata["base_url"]}/php/login.php?',
                                             verify=self.verify)
@@ -89,7 +90,7 @@ class Client:
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
         # Fix to login validation for version 9
-        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('9'):
+        if LooseVersion(VERSION) >= LooseVersion('9'):
             if 'window.Pan.staticMOTD' not in response.text:
                 match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
@@ -107,8 +108,11 @@ class Client:
         :return: hash token
         """
         data_code = f'{self.session_metadata["cookie_key"]}{str(self.session_metadata["tid"])}'
-        # Use the hashlib library function to calculate the MD5
-        data_hash = hashlib.sha256(data_code.encode())  # nosec
+        # Use the hashlib library function to calculate the MD5, or SHA256 for version 10.2.0 and above
+        if LooseVersion(VERSION) >= LooseVersion('10.2.0'):
+            data_hash = hashlib.sha256(data_code.encode())  # nosec
+        else:
+            data_hash = hashlib.md5(data_code.encode())  # nosec
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
 
@@ -463,6 +467,8 @@ def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
+    global VERSION
+    VERSION = params.get('version') or '8'
     demisto.debug(f'Command being called is: {command}')
     client: Client = None  # type: ignore
     try:
@@ -471,12 +477,14 @@ def main():  # pragma: no cover
                         device_group=params.get('device_group'), verify=not params.get('insecure'), tid=50)
         client.session_metadata['cookie_key'] = client.login()  # Login to PAN-OS and return the GUI cookie value
         headers = {}
-        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
+        if LooseVersion(VERSION) >= LooseVersion('10.1.6'):
             headers['Cookie'] = client.session_metadata["cookie"]
             headers['Content-Type'] = 'application/json'
             client.session_metadata["headers"] = headers
         if command == 'test-module':
-            return_results('ok')  # if login was successful, instance configuration is ok.
+            # run a command to test connectivity
+            get_policy_optimizer_statistics_command(client)
+            return_results('ok')
         elif command == 'pan-os-po-get-stats':
             return_results(get_policy_optimizer_statistics_command(client))
         elif command == 'pan-os-po-no-apps':
