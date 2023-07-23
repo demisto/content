@@ -22,6 +22,14 @@ configuration:
   required: true
   type: 9
   section: Connect
+- displaypassword: Client Certificate And Private Key (List of PEMs)
+  display: ""
+  name: clientCertAndKey
+  required: false
+  section: Connect
+  type: 9
+  advanced: true
+  hiddenusername: true
 - defaultvalue: INBOX
   display: Incoming mail folder
   name: folder
@@ -32,20 +40,24 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Fetch mails from these senders addresses only (eg. admin@demo.com,test@demo.com)
   name: permittedFromAdd
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch mails from these domains only (eg. demo.com, test.com)
   name: permittedFromDomain
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   additionalinfo: Whether to query search with headers when filtering by sender's email address.
   display: Query search with headers
@@ -53,42 +65,50 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 1 hour
   display: First fetch time
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '50'
   display: The maximum number of incidents to fetch each time
   name: limit
   type: 0
   section: Collect
+  required: false
 - display: Delete processed emails
   name: delete_processed
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Include raw body in incidents
   name: Include_raw_body
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Save the email .eml file
   name: save_file
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Use TLS for connection (defaults to True)
   name: TLS_connection
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Listens to a mailbox and enables incident triggering via e-mail.
 display: Mail Listener v2
 name: Mail Listener v2
@@ -155,7 +175,7 @@ script:
       required: true
     description: Fetches an email by message ID and returns the information in an eml file format.
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/py3-tools:1.0.0.64131
+  dockerimage: demisto/py3-tools:1.0.0.65178
   isfetch: true
   runonce: false
   script: '-'

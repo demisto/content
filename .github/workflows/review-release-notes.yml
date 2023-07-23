@@ -9,12 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content'
     steps:
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
-
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v35.1.0
@@ -23,20 +21,25 @@ jobs:
           files: |
             Packs/**/ReleaseNotes/**
           since_last_remote_commit: false
-
-      - name: Install SDK
+      - name: Setup Python
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Setup Poetry
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
+        uses: Gr1N/setup-poetry@v8
+      - name: Install python dependencies
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          python3 -m pip install demisto-sdk
-      
-      - name: set pythonpath
+          poetry install --with ci
+      - name: Set Python Path
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-            echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-  
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Review Release Notes
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
-
-          Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
+          poetry run demisto-sdk doc-review --release-notes --use-git --use-packs-known-words --known-words ./Tests/known_words.txt --console_log_threshold INFO
