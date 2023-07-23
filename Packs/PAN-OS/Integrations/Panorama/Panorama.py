@@ -405,24 +405,25 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
         dictionary (dict): The entry that the pan-os objects is in.
         keys_to_remove (list): keys which should be removed from the pan-os api response
     """
-    for key in keys_to_remove:
-        if key in dictionary:
-            del dictionary[key]
+    if dictionary:
+        for key in keys_to_remove:
+            if key in dictionary:
+                del dictionary[key]
 
-    for key in dictionary:
-        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
-            dictionary[key] = dictionary[key]['#text']
-        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
-                and dictionary[key][0].get('#text'):
-            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+        for key in dictionary:
+            if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+                dictionary[key] = dictionary[key]['#text']
+            elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                    and dictionary[key][0].get('#text'):
+                dictionary[key] = [text.get('#text') for text in dictionary[key]]
 
-    for value in dictionary.values():
-        if isinstance(value, dict):
-            parse_pan_os_un_committed_data(value, keys_to_remove)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    parse_pan_os_un_committed_data(item, keys_to_remove)
+        for value in dictionary.values():
+            if isinstance(value, dict):
+                parse_pan_os_un_committed_data(value, keys_to_remove)
+            elif isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        parse_pan_os_un_committed_data(item, keys_to_remove)
 
 
 def do_pagination(
@@ -7023,7 +7024,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
 
     # Keeping the existing profile types
     for p_type in profile_types:
-        if p_type in profile_types_result:
+        if profile_types_result and p_type in profile_types_result:
             p_name = profile_types_result.get(p_type, {}).get('member')
             rule_profiles += f"<{p_type}><member>{p_name}</member></{p_type}>"
 
