@@ -3578,67 +3578,33 @@ script:
       description: HTML URL for user
       type: String
   - arguments:
-    - default: false
-      description: The GitHub owner (organization or username) of the repository.
-      isArray: false
+    - description: The GitHub owner (organization or username) of the repository.
       name: owner
-      required: false
-      secret: false
-    - default: false
-      description: The GitHub repository name.
-      isArray: false
+    - description: The GitHub repository name.
       name: repository
-      required: false
-      secret: false
-    - default: false
-      description: The branch to trigger the workflow on.
-      isArray: false
+    - description: The branch to trigger the workflow on.
       name: branch
-      required: false
-      secret: false
-    - default: false
-      description: The name of your workflow file.
-      isArray: false
+    - description: The name of your workflow file.
       name: workflow
       required: true
-      secret: false
-    - default: false
-      description: The inputs for the workflow.
+    - description: The inputs for the workflow.
       name: inputs
-      required: false
-      secret: false
-    deprecated: false
     description: Triggers a GitHub workflow on a given repository and workflow.
-    execution: false
     name: GitHub-trigger-workflow
   - arguments:
-    - default: false
-      description: The GitHub owner (organization or username) of the repository.
-      isArray: false
+    - description: The GitHub owner (organization or username) of the repository.
       name: owner
-      required: false
-      secret: false
-    - default: false
-      description: The GitHub repository name.
+    - description: The GitHub repository name.
       isArray: true
       name: repository
-      required: false
-      secret: false
-    - default: false
-      description: The name of your workflow file.
+    - description: The name of your workflow file.
       isArray: true
       name: workflow
       required: true
-      secret: false
-    - default: false
-      description: The number of workflows to return. Default is 100.
+    - description: The number of workflows to return. Default is 100.
       isArray: true
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of GitHub workflows on a given repository.
-    execution: false
     name: GitHub-list-workflows
     outputs:
     - contextPath: GitHub.Workflow.id
