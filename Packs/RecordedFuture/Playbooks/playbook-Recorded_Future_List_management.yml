@@ -305,7 +305,7 @@ tasks:
       id: 7c6d84c0-cad7-4425-8979-9165e6e29656
       version: -1
       name: View Entities
-      description: Get the entities that are currently in given lists
+      description: Get the entities that are currently in the given lists.
       script: RecordedFutureLists|||recordedfuture-lists-entities
       type: regular
       iscommand: true
