@@ -32,21 +32,27 @@ jobs:
         run: |
           poetry install --with ci
 
+      - name: Set Absolute Content Roles File Path to Env
+        id: content_roles_path
+        run: echo "CONTENT_ROLES_FILE_PATH=$(realpath .github/content_roles.json)" >> "$GITHUB_ENV"
+
       - name: Update External PR
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
           EVENT_PAYLOAD: ${{ toJson(github.event) }}
+          CONTENT_ROLES_FILE: ${{ env.CONTENT_ROLES_FILE_PATH }}
         run: |
+          echo "Reading content reviewers from '${{ env.CONTENT_ROLES_FILE }}'...}"
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
           poetry run ./handle_external_pr.py
           echo "Finished Handling External PR"
-      - name: Send Notification
-        env:
-          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
-          EVENT_PAYLOAD: ${{ toJson(github.event) }}
-          CORTEX_XSOAR_SLACK_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
-        run: |
-          echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
-          cd Utils/github_workflow_scripts
-          poetry run ./send_slack_message.py
+      # - name: Send Notification
+      #   env:
+      #     CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+      #     EVENT_PAYLOAD: ${{ toJson(github.event) }}
+      #     CORTEX_XSOAR_SLACK_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
+      #   run: |
+      #     echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
+      #     cd Utils/github_workflow_scripts
+      #     poetry run ./send_slack_message.py
