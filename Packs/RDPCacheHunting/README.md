@@ -5,7 +5,7 @@ This pack offers a set of tools to detect suspicious activity in RDP cache files
 
 ## Getting Started / How to Set up the Pack
 
-To get started with this Pack, please follow the instructions below:
+To get started with this pack, follow the instructions below:
 
 1. Go to Marketplace and install this pack.
 2. Create a new job and select the incident type "RDP Sessions".
