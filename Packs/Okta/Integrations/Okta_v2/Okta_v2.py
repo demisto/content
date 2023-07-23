@@ -305,7 +305,6 @@ class Client(BaseClient):
             q=None if advanced_search else encode_string_results(term),
             search=encode_string_results(advanced_search) if advanced_search else None
         )
-        demisto.log(f'{query_params}')
         return self._http_request(
             method='GET',
             url_suffix=uri,
