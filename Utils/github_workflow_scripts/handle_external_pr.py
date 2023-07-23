@@ -21,7 +21,7 @@ print = timestamped_print
 
 
 # Replace the Github Users of the reviewers and security reviewer according to the current contributions team
-RELATIVE_CONTENT_ROLES_PATH = "../../.github/content_roles.json"
+CONTENT_ROLES_RELATIVE_PATH = "../../.github/content_roles.json"
 CONTENT_ROLES_PATH_ENV_KEY = "CONTENT_ROLES_FILE"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
@@ -290,7 +290,7 @@ def main():
 
     # Parse reviewers from JSON
     # Exit if JSON doesn't exist or not parsable
-    content_roles_path = Path(get_env_var(CONTENT_ROLES_PATH_ENV_KEY, RELATIVE_CONTENT_ROLES_PATH))
+    content_roles_path = Path(get_env_var(CONTENT_ROLES_PATH_ENV_KEY, CONTENT_ROLES_RELATIVE_PATH))
     if content_roles_path.exists():
         with content_roles_path.open(encoding="utf8") as crp:
             try:
@@ -321,7 +321,7 @@ def main():
 
     # Exit if no absolute/relative paths exist
     else:
-        print(f"WARNING: No content role JSON exists in env var CONTENT_ROLES_FILE or '{RELATIVE_CONTENT_ROLES_PATH}'")
+        print(f"WARNING: No content role JSON exists in env var CONTENT_ROLES_FILE or '{CONTENT_ROLES_RELATIVE_PATH}'")
         sys.exit(1)
 
 
