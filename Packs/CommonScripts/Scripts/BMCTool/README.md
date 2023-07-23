@@ -16,7 +16,7 @@ Parse RDP bitmap cache data into a single collage image file.
 | **Argument Name** | **Description** |
 | --- | --- |
 | EntryID | The RDP cache file's entryID to process. |
-| verbose | Should the command produce verbose output or not. |
+| verbose | Should the command produce verbose output. |
 | width | Image width. |
 
 ## Outputs
