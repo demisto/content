@@ -235,7 +235,7 @@ tasks:
       id: da0fedcd-8f14-4880-83bf-add93288f372
       version: -1
       name: Add Entities
-      description: Add entities to a list, separate entities by commas. "NOTE:" if
+      description: Add entities to a list. Separate entities by commas. "NOTE:" If
         entity type is specified, only one entity type can be added with each action.
       script: RecordedFutureLists|||recordedfuture-lists-add-entities
       type: regular
