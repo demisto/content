@@ -24,7 +24,7 @@ RDP Bitmap Cache - Detect and Hunt
 | --- | --- |
 | string_A | First input string.  |
 | string_B | Second input string. |
-| similiarity_threshold | The similiarity threshold to show results for, a value between 0 &lt; x &gt;1 |
+| similiarity_threshold | The similiarity threshold to show results for, a value between 0 &lt; x &gt;1. |
 
 ## Outputs
 
