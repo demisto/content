@@ -641,6 +641,7 @@ script:
     arguments:
     - name: values
       required: true
+      isArray: true
       description: Comma delimited set of possible Indicator or other Observable values. Submit as a basic string input with commas separating each value. For more complex or higher volume batches, use analyst1-batch-check-post.
     outputs:
     - contextPath: Analyst1.BatchResults.ID

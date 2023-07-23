@@ -623,7 +623,7 @@ def a1_tasking_array_from_rules(rulesJson: dict) -> list:
 def analyst1_get_sensor_taskings_command(client: Client, args: dict) -> List[CommandResults]:
     raw_data = client.get_sensor_taskings(argsToStr(args, 'sensor_id'), argsToInt(args, 'timeout', 200))
 
-    simplified_data: dict = raw_data
+    simplified_data: dict = raw_data.copy()
     if 'links' in simplified_data:
         del simplified_data['links']
 
@@ -682,7 +682,7 @@ def analyst1_get_sensor_diff(client: Client, args: dict) -> List[CommandResults]
     raw_data = client.get_sensor_diff(argsToStr(args, 'sensor_id'), argsToStr(args, 'version'), argsToInt(args, 'timeout', 200))
     # CommandResults creates both "outputs" and "human readable" in one go using updated XSOAR capabilities
 
-    simplified_data = raw_data
+    simplified_data = raw_data.copy()
     if 'links' in simplified_data:
         del simplified_data['links']
 
