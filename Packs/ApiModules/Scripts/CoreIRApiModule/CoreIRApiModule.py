@@ -1725,6 +1725,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
         return int(date.timestamp() * 1000)
     if isinstance(arg, (int, float)):
         return arg
+    return None
 
 
 def create_account_context(endpoints):
@@ -1813,7 +1814,7 @@ def get_endpoints_command(client, args):
     alias_name = argToList(args.get('alias_name'))
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    status = args.get('status')
+    status = argToList(args.get('status'))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -2385,7 +2386,7 @@ def get_process_context(alert, process_type):
     remove_nulls_from_dictionary(process_context)
 
     # If the process contains only 'HostName' , don't create an indicator
-    if len(process_context.keys()) == 1 and 'Hostname' in process_context.keys():
+    if len(process_context.keys()) == 1 and 'Hostname' in process_context:
         return {}
     return process_context
 
@@ -2678,7 +2679,7 @@ def sort_by_key(list_to_sort, main_key, fallback_key):
 
 def drop_field_underscore(section):
     section_copy = section.copy()
-    for field in section_copy.keys():
+    for field in section_copy:
         if '_' in field:
             section[field.replace('_', '')] = section.get(field)
 
@@ -2736,7 +2737,7 @@ def get_distribution_versions_command(client, args):
     versions = client.get_distribution_versions()
 
     readable_output = []
-    for operation_system in versions.keys():
+    for operation_system in versions:
         os_versions = versions[operation_system]
 
         readable_output.append(
@@ -3255,7 +3256,7 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+    for _i, alert in enumerate(alerts):
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
@@ -3409,7 +3410,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+    for _i, alert in enumerate(alerts):
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
@@ -3458,7 +3459,7 @@ def create_request_filters(
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status if isinstance(status, list) else [status]
         })
 
     if username:
