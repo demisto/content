@@ -19,14 +19,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "48"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 170,
-          "y": -80
+          "y": -470
         }
       }
     note: false
@@ -126,19 +126,16 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: inputs.FilePath
+            root: ProcessList
             transformers:
-            - operator: RegexExtractAll
-              args:
-                error_if_no_match: {}
-                ignore_case: {}
-                multi_line: {}
-                period_matches_newline: {}
-                regex:
-                  value:
-                    simple: '[^\\]+$'
-                unpack_matches: {}
             - operator: uniq
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: inputs.FilePath
+                  iscontext: true
         fieldassociated: ""
         placeholder: ""
         tooltip: Please consider carefully whether the process termination could impact system processes with a similar name.
@@ -429,6 +426,37 @@ tasks:
                 value:
                   simple: inputs.FilePath
                 iscontext: true
+      ProcessID:
+        complex:
+          root: inputs.AutoEradicate
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: Which Eradication actions would you like to perform?.Answers.2
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.AutoEradicate
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: inputs.ProcessID
+                iscontext: true
       ProcessTermination:
         complex:
           root: inputs.ProcessTermination
@@ -574,6 +602,124 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: d459e56b-3290-44e3-81c7-0a69a339dbbf
+    type: regular
+    task:
+      id: d459e56b-3290-44e3-81c7-0a69a339dbbf
+      version: -1
+      name: Set Process list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      key:
+        simple: ProcessList
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: inputs.FilePath
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[^\\]+$'
+              unpack_matches: {}
+          - operator: MakePair
+            args:
+              array1_key:
+                iscontext: true
+              array2:
+                value:
+                  simple: inputs.ProcessID
+                iscontext: true
+              array2_key: {}
+              determine_output_length_by: {}
+              merge_dict: {}
+              output_name1:
+                value:
+                  simple: Path
+              output_name2:
+                value:
+                  simple: PID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: e5166636-3899-4c68-8dfa-b2b39ca764ed
+    type: condition
+    task:
+      id: e5166636-3899-4c68-8dfa-b2b39ca764ed
+      version: -1
+      name: The file path and PID defined?
+      description: Check if the file path and PID are defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProcessID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -581,10 +727,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1020,
+        "height": 1410,
         "width": 1320,
         "x": -300,
-        "y": -80
+        "y": -470
       }
     }
   }
@@ -609,7 +755,7 @@ inputs:
       root: foundIncidents.CustomFields
       accessor: initiatorpath
   required: false
-  description: The file path for the file deletion task.
+  description: The file path for the file deletion and for the process termination task.
   playbookInputQuery:
 - key: Username
   value:
@@ -633,9 +779,14 @@ inputs:
   playbookInputQuery:
 - key: ProcessTermination
   value:
-    simple: "True"
+    simple: Name
   required: false
-  description: Set to 'True' to terminate the process by path.
+  description: "Choose 'PID' to terminate the process using the Process ID, or 'Name' to terminate the process using its name.\nPlease note that providing the file path is mandatory for the process termination. \nIf 'PID' is chosen, the input `ProcessID` should not be empty; otherwise, the termination will not proceed."
+  playbookInputQuery:
+- key: ProcessID
+  value: {}
+  required: false
+  description: The process ID to terminate.
   playbookInputQuery:
 outputs:
 - contextPath: TerminatedProcessFromEndpoints

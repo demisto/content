@@ -1,5 +1,5 @@
 This playbook is one of the sub-playbooks in the containment plan.
-This playbook handles the quarantining of files as a crucial step in the containment action.
+The playbook executes actions to quarantine files, which is a crucial step in the containment process.
 
 ## Dependencies
 
@@ -15,13 +15,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* PrintErrorEntry
+* Set
 
 ### Commands
 
 * core-get-quarantine-status
-* setParentIncidentContext
 * core-quarantine-files
+* setParentIncidentContext
 
 ## Playbook Inputs
 
@@ -30,10 +31,11 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | FileContainment | Set to 'True' to quarantine the identified file. | True | Optional |
-| FileRemediation | Choose 'Quarantine' or 'Delete' to avoid file remediation conflicts. <br/>For example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine. | Quarantine | Optional |
+| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine. | Quarantine | Optional |
 | FilePath | The path of the file to block. |  | Optional |
 | FileHash | The file hash to block. |  | Optional |
 | EndpointID | The endpoint ID to run commands over. |  | Optional |
+| AutoContainment | Whether to execute containment plan automatically. |  | Optional |
 
 ## Playbook Outputs
 

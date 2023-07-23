@@ -1,7 +1,7 @@
 id: Containment Plan - Block Indicators
 version: -1
 name: Containment Plan - Block Indicators
-description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles blocking of indicators as a crucial step in the containment action."
+description: "This playbook is one of the sub-playbooks in the containment plan. \nThe playbook executes actions to block indicators, which is a crucial step in the containment process."
 starttaskid: "0"
 tasks:
   "0":
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 30
+          "x": 230,
+          "y": -190
         }
       }
     note: false
@@ -50,6 +50,359 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+    scriptarguments:
+      comment:
+        complex:
+          root: alert
+          accessor: alertname
+      hash_list:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6555f437-9362-4b64-8416-9a207801acc8
+    type: title
+    task:
+      id: 6555f437-9362-4b64-8416-9a207801acc8
+      version: -1
+      name: Done - Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c769a542-379a-42a7-8cb0-325e6b48e2b4
+    type: condition
+    task:
+      id: c769a542-379a-42a7-8cb0-325e6b48e2b4
+      version: -1
+      name: Should block indicators?
+      description: Whether to block the indicators based on the input values.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 58da2cac-8a9e-4f4f-88de-623361cde61f
+    type: regular
+    task:
+      id: 58da2cac-8a9e-4f4f-88de-623361cde61f
+      version: -1
+      name: Set Block list files to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: BlockedFilesHash
+      value:
+        complex:
+          root: Core.blocklist.added_hashes
+          accessor: fileHash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4fb0cfd4-2555-4d5b-844c-c83c447c4a99
+    type: regular
+    task:
+      id: 4fb0cfd4-2555-4d5b-844c-c83c447c4a99
+      version: -1
+      name: Set Blocked Indicators to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: IndicatorsToBlock
+      value:
+        complex:
+          root: IndicatorsToBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: df934c6a-4169-41f4-8cbe-76de251da626
+    type: condition
+    task:
+      id: df934c6a-4169-41f4-8cbe-76de251da626
+      version: -1
+      name: Is file hash exist?
+      description: Checks whether the file hash exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                accessor: initiatorsha256
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileHash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 56214186-2922-4165-820b-062ad475cf73
+    type: condition
+    task:
+      id: 56214186-2922-4165-820b-062ad475cf73
+      version: -1
+      name: Should block indicators automatically?
+      description: Whether to disable the account automatically based on the input values.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 6401c6c9-8ff7-4f49-8676-fd99f48da60f
+    type: condition
+    task:
+      id: 6401c6c9-8ff7-4f49-8676-fd99f48da60f
+      version: -1
+      name: Is file hash exist?
+      description: Checks whether the file hash exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileHash
+                transformers:
+                - operator: uniq
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: fca5352e-ba68-4776-8b35-903387490051
+    type: regular
+    task:
+      id: fca5352e-ba68-4776-8b35-903387490051
+      version: -1
+      name: Auto add to XSIAM hash block list
+      description: Block lists requested files which have not already been block listed or added to allow list.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
     scriptarguments:
       comment:
         complex:
@@ -84,7 +437,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": -10,
           "y": 590
         }
       }
@@ -95,86 +448,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 6555f437-9362-4b64-8416-9a207801acc8
-    type: title
-    task:
-      id: 6555f437-9362-4b64-8416-9a207801acc8
-      version: -1
-      name: Done - Block Indicators
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: c769a542-379a-42a7-8cb0-325e6b48e2b4
-    type: condition
-    task:
-      id: c769a542-379a-42a7-8cb0-325e6b48e2b4
-      version: -1
-      name: Should block indicators?
-      description: Whether to block the indicators based on the input values.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.BlockIndicators
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 8292a09a-8cd0-450e-899f-a2dd294b9d28
+  "28":
+    id: "28"
+    taskid: 5ba573bb-fbf4-4890-8e63-15376725d187
     type: playbook
     task:
-      id: 8292a09a-8cd0-450e-899f-a2dd294b9d28
+      id: 5ba573bb-fbf4-4890-8e63-15376725d187
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -256,6 +535,8 @@ tasks:
       IP:
         complex:
           root: inputs.IP
+          transformers:
+          - operator: uniq
       InputEnrichment:
         simple: "False"
       MD5:
@@ -270,6 +551,8 @@ tasks:
               right:
                 value:
                   simple: "32"
+          transformers:
+          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -286,9 +569,13 @@ tasks:
               right:
                 value:
                   simple: "64"
+          transformers:
+          - operator: uniq
       URL:
         complex:
           root: inputs.URL
+          transformers:
+          - operator: uniq
       UserVerification:
         complex:
           root: inputs.UserVerification
@@ -314,8 +601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 955
+          "x": 230,
+          "y": 990
         }
       }
     note: false
@@ -325,12 +612,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 58da2cac-8a9e-4f4f-88de-623361cde61f
+  "29":
+    id: "29"
+    taskid: cb04e962-15e3-4189-8fcc-73efa9cb71fb
     type: regular
     task:
-      id: 58da2cac-8a9e-4f4f-88de-623361cde61f
+      id: cb04e962-15e3-4189-8fcc-73efa9cb71fb
       version: -1
       name: Set Block list files to the Incident context
       description: commands.local.cmd.set.parent.incident.context
@@ -340,7 +627,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "8"
+      - "28"
     scriptarguments:
       key:
         simple: BlockedFilesHash
@@ -353,7 +640,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": -10,
           "y": 760
         }
       }
@@ -364,109 +651,21 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: e2a45461-aaf2-4ccd-8e87-2fd847c86038
-    type: regular
-    task:
-      id: e2a45461-aaf2-4ccd-8e87-2fd847c86038
-      version: -1
-      name: Set Blocked Indicators to the Incident context
-      description: commands.local.cmd.set.parent.incident.context
-      script: Builtin|||setParentIncidentContext
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      key:
-        simple: IndicatorsToBlock
-      value:
-        complex:
-          root: IndicatorsToBlock
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: f8c2ef29-8616-42a0-804d-8cc3c9f49763
-    type: condition
-    task:
-      id: f8c2ef29-8616-42a0-804d-8cc3c9f49763
-      version: -1
-      name: Is file hash exist?
-      description: Checks if the file hash exists.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.FileHash
-            iscontext: true
-          ignorecase: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: inputs.FilePath
-            iscontext: true
-          right:
-            value:
-              simple: c:\windows\explorer.exe
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "24_1_yes": 0.44,
-      "24_8_#default#": 0.23,
-      "3_24_yes": 0.54,
-      "3_2_#default#": 0.14
+      "24_28_#default#": 0.24,
+      "26_28_#default#": 0.29,
+      "3_25_yes": 0.43,
+      "3_2_#default#": 0.12
     },
     "paper": {
       "dimensions": {
-        "height": 1365,
-        "width": 380,
-        "x": 450,
-        "y": 30
+        "height": 1585,
+        "width": 1190,
+        "x": -10,
+        "y": -190
       }
     }
   }
@@ -523,6 +722,11 @@ inputs:
   value: {}
   required: false
   description: The path of the file to block.
+  playbookInputQuery:
+- key: AutoContainment
+  value: {}
+  required: false
+  description: Whether to execute containment plan automatically.
   playbookInputQuery:
 outputs:
 - contextPath: Core.blocklist.added_hashes

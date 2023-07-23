@@ -1,5 +1,5 @@
 This playbook is one of the sub-playbooks in the containment plan. 
-This playbook handles blocking of indicators as a crucial step in the containment action.
+The playbook executes actions to block indicators, which is a crucial step in the containment process.
 
 ## Dependencies
 
@@ -15,12 +15,12 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* CompareLists
+This playbook does not use any scripts.
 
 ### Commands
 
-* setParentIncidentContext
 * core-blocklist-files
+* setParentIncidentContext
 
 ## Playbook Inputs
 
@@ -37,6 +37,7 @@ This playbook does not use any integrations.
 | URL | The URL indicator. |  | Optional |
 | Username | The username to disable. |  | Optional |
 | FilePath | The path of the file to block. |  | Optional |
+| AutoContainment | Whether to execute containment plan automatically. |  | Optional |
 
 ## Playbook Outputs
 

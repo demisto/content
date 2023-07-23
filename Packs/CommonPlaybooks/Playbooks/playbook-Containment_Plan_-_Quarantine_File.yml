@@ -3,7 +3,7 @@ version: -1
 name: Containment Plan - Quarantine File
 description: |-
   This playbook is one of the sub-playbooks in the containment plan.
-  This playbook handles the quarantining of files as a crucial step in the containment action.
+  The playbook executes actions to quarantine files, which is a crucial step in the containment process.
 starttaskid: "0"
 tasks:
   "0":
@@ -19,14 +19,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 70
+          "x": 200,
+          "y": -140
         }
       }
     note: false
@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1365
+          "x": 940,
+          "y": 1350
         }
       }
     note: false
@@ -86,20 +86,28 @@ tasks:
           root: inputs.EndpointID
       file_hash:
         complex:
-          root: inputs.FileHash
-          filters:
-          - - operator: isNotEqualString
-              left:
+          root: foundIncidents.CustomFields
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
                 value:
                   simple: inputs.FileHash
                 iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
       file_path:
         complex:
-          root: inputs.FilePath
+          root: foundIncidents.CustomFields
+          accessor: initiatorpath
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FilePath
+                iscontext: true
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -139,20 +147,47 @@ tasks:
           root: inputs.EndpointID
       file_hash:
         complex:
-          root: inputs.FileHash
+          root: foundIncidents.CustomFields
           filters:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: inputs.FileHash
+                  simple: foundIncidents.CustomFields.initiatorpath
                 iscontext: true
               right:
                 value:
                   simple: c:\windows\explorer.exe
               ignorecase: true
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
       file_path:
         complex:
-          root: inputs.FilePath
+          root: foundIncidents.CustomFields.initiatorpath
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FilePath
+                iscontext: true
       interval_in_seconds:
         simple: "20"
       timeout_in_seconds:
@@ -163,7 +198,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 580
+          "y": 570
         }
       }
     note: false
@@ -202,7 +237,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1150
+          "y": 1160
         }
       }
     note: false
@@ -293,7 +328,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "22"
       "yes":
       - "16"
     separatecontext: false
@@ -322,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 755
+          "x": 200,
+          "y": 770
         }
       }
     note: false
@@ -362,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 980
+          "y": 970
         }
       }
     note: false
@@ -372,19 +407,275 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fd83526a-3995-475b-8ea6-60233a3f1636
+    type: condition
+    task:
+      id: fd83526a-3995-475b-8ea6-60233a3f1636
+      version: -1
+      name: Should isolate automatically?
+      description: Whether to isolate the device automatically based on the input values.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 8395bf84-b9be-42af-8c0b-cdf64c82b8fa
+    type: regular
+    task:
+      id: 8395bf84-b9be-42af-8c0b-cdf64c82b8fa
+      version: -1
+      name: Get file quarantine status
+      description: Retrieves the quarantine status for a selected file.
+      script: '|||core-get-quarantine-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.EndpointID
+      file_hash:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      file_path:
+        complex:
+          root: inputs.FilePath
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a04c8ae8-b9a2-4a06-8d64-8463dd6582d9
+    type: condition
+    task:
+      id: a04c8ae8-b9a2-4a06-8d64-8463dd6582d9
+      version: -1
+      name: Should quarantine file?
+      description: Whether to quarantine the files based on the input values and the incident context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileRemediation
+            iscontext: true
+          right:
+            value:
+              simple: Quarantine
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.quarantineFiles.status
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 48f240fd-334d-4f88-8e66-726f9971ba3c
+    type: regular
+    task:
+      id: 48f240fd-334d-4f88-8e66-726f9971ba3c
+      version: -1
+      name: Auto file quarantine
+      description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.EndpointID
+      file_hash:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      file_path:
+        complex:
+          root: inputs.FilePath
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 36226619-1561-46d4-8cc6-c52b2fc1044c
+    type: regular
+    task:
+      id: 36226619-1561-46d4-8cc6-c52b2fc1044c
+      version: -1
+      name: Quarantine failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      message:
+        simple: Quarantine failed.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "13_2_#default#": 0.14,
+      "13_2_#default#": 0.17,
       "15_16_yes": 0.6,
-      "15_2_#default#": 0.23
+      "19_20_yes": 0.44,
+      "19_2_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 1360,
-        "width": 380,
-        "x": 450,
-        "y": 70
+        "height": 1555,
+        "width": 1370,
+        "x": -50,
+        "y": -140
       }
     }
   }
@@ -399,7 +690,7 @@ inputs:
   value:
     simple: Quarantine
   required: false
-  description: "Choose 'Quarantine' or 'Delete' to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
+  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
   playbookInputQuery:
 - key: FilePath
   value: {}
@@ -415,6 +706,11 @@ inputs:
   value: {}
   required: false
   description: The endpoint ID to run commands over.
+  playbookInputQuery:
+- key: AutoContainment
+  value: {}
+  required: false
+  description: Whether to execute containment plan automatically.
   playbookInputQuery:
 outputs:
 - contextPath: QuarantinedFilesFromEndpoints

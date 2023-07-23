@@ -1,7 +1,7 @@
 id: Containment Plan - Disable Account
 version: -1
 name: Containment Plan - Disable Account
-description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles disabling the account as a crucial step in the containment action.\n"
+description: "This playbook is one of the sub-playbooks in the containment plan. \nThe playbook executes actions to disable the user account, which is a crucial step in the containment process."
 starttaskid: "0"
 tasks:
   "0":

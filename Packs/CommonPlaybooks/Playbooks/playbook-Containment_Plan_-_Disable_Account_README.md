@@ -1,6 +1,5 @@
 This playbook is one of the sub-playbooks in the containment plan. 
-This playbook handles disabling the account as a crucial step in the containment action.
-
+The playbook executes actions to disable the user account, which is a crucial step in the containment process.
 
 ## Dependencies
 
@@ -17,8 +16,6 @@ This playbook does not use any integrations.
 ### Scripts
 
 * SetAndHandleEmpty
-* CompareLists
-* IsIntegrationAvailable
 
 ### Commands
 

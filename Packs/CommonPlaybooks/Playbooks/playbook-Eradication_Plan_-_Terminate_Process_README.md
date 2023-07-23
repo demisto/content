@@ -1,5 +1,7 @@
 This playbook is one of the sub-playbooks in the eradication plan. 
 This playbook handles the termination of the processes as a crucial step in the eradication action.
+The playbook executes actions of process termination, which is a crucial step in the eradication process.
+The process termination can be performed based on either the process ID or the process name.
 
 ## Dependencies
 
@@ -15,11 +17,13 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* PrintErrorEntry
 * Set
 
 ### Commands
 
 * setParentIncidentContext
+* core-run-script-execute-commands
 * core-get-script-execution-results
 * core-run-script-kill-process
 
@@ -29,9 +33,10 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ProcessTermination | Set to 'True' to terminate the process by path. | True | Optional |
+| ProcessTermination | Choose 'PID' to terminate the process by PID or 'Name' to terminate the process by process name. <br/>Note: If neither option is selected, the process will not be terminated. | Name | Optional |
 | EndpointID | The endpoint ID to run commands over. |  | Optional |
 | FilePath | The file path for the process termination. |  | Optional |
+| ProcessID | The process ID to terminate. |  | Optional |
 
 ## Playbook Outputs
 

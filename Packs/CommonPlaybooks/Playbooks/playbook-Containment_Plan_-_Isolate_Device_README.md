@@ -1,5 +1,5 @@
 This playbook is one of the sub-playbooks in the containment plan. 
-This playbook handles isolating the endpoint as a crucial step in the containment action.
+The playbook executes actions to isolate the Endpoint, which is a crucial step in the containment process.
 
 ## Dependencies
 
@@ -16,13 +16,12 @@ This playbook does not use any integrations.
 ### Scripts
 
 * SetAndHandleEmpty
-* CompareLists
 
 ### Commands
 
 * core-get-endpoints
-* core-isolate-endpoint
 * setParentIncidentContext
+* core-isolate-endpoint
 
 ## Playbook Inputs
 

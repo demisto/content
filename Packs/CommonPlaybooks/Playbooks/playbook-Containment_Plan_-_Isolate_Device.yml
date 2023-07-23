@@ -1,7 +1,7 @@
 id: Containment Plan - Isolate Device
 version: -1
 name: Containment Plan - Isolate Device
-description: "This playbook is one of the sub-playbooks in the containment plan. \nThis playbook handles isolating the endpoint as a crucial step in the containment action."
+description: "This playbook is one of the sub-playbooks in the containment plan. \nThe playbook executes actions to isolate the Endpoint, which is a crucial step in the containment process."
 starttaskid: "0"
 tasks:
   "0":
@@ -235,7 +235,7 @@ tasks:
     task:
       id: 1b35e319-899a-4a2b-80e4-591c3b92a9ae
       version: -1
-      name: Should isolate the endpoint?
+      name: Should isolate the device?
       description: Whether to isolate the endpoint based on the input values.
       type: condition
       iscommand: false
@@ -362,7 +362,7 @@ tasks:
       id: 65bfa257-2884-4787-8dd5-64589ea2ad55
       version: -1
       name: Is the endpoint ID or the endpoint name defined?
-      description: Checks if the endpoint ID or the endpoint name defined.
+      description: Checks if the endpoint ID or name defined.
       type: condition
       iscommand: false
       brand: ""

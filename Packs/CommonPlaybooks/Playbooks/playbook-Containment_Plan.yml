@@ -160,34 +160,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 2fefe3d3-09b4-4a9c-8537-bf861fadc8b4
-    type: title
-    task:
-      id: 2fefe3d3-09b4-4a9c-8537-bf861fadc8b4
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "58":
     id: "58"
     taskid: f495b99b-b851-438c-8fc8-0db9145c81a2
@@ -377,16 +349,6 @@ tasks:
         optionsarg:
         - complex:
             root: inputs.FilePath
-            filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: inputs.FilePath
-                  iscontext: true
-                right:
-                  value:
-                    simple: c:\windows\explorer.exe
-                ignorecase: true
             transformers:
             - operator: uniq
         fieldassociated: ""
@@ -508,7 +470,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+      - "148"
     scriptarguments:
       UserContainment:
         complex:
@@ -580,8 +542,11 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+      - "148"
     scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
       EndpointID:
         complex:
           root: inputs.EndpointID
@@ -661,11 +626,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+      - "148"
     scriptarguments:
       AutoBlockIndicators:
         complex:
           root: inputs.AutoBlockIndicators
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
       BlockIndicators:
         complex:
           root: inputs.BlockIndicators
@@ -838,7 +806,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+      - "148"
     scriptarguments:
       ClearUserSessions:
         complex:
@@ -913,7 +881,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+      - "148"
     scriptarguments:
       EndpointHostName:
         complex:
@@ -1079,6 +1047,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: a8f6c601-67bc-4dfd-8c09-008797b89324
+    type: title
+    task:
+      id: a8f6c601-67bc-4dfd-8c09-008797b89324
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1086,7 +1082,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1225,
+        "height": 1215,
         "width": 2060,
         "x": -780,
         "y": -810

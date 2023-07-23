@@ -1,5 +1,5 @@
 This playbook is one of the sub-playbooks in the eradication plan. 
-This playbook handles the deletion of files as a crucial step in the eradication action.
+This playbook executes actions of file deletion, which is a crucial step in the eradication process.
 
 ## Dependencies
 
@@ -19,8 +19,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* core-run-script-delete-file
 * core-get-script-execution-results
+* core-run-script-delete-file
 
 ## Playbook Inputs
 
