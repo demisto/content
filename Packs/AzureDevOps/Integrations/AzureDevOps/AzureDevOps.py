@@ -553,7 +553,7 @@ class Client:
         entry_id = args.get("entry_id", "")
         if not (entry_id or file_path):
             raise DemistoException('You must specify either the "file_path" or the "entry_id" of the file.')
-        elif entry_id:
+        if entry_id:
             file_path = demisto.getFilePath(entry_id).get("path")
             with open(file_path, 'rb') as f:
                 file_content = f.read()
