@@ -671,7 +671,6 @@ def test_module(client, args):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    args
     uri = 'users/me'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
