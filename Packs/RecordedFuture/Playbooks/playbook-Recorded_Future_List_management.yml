@@ -42,7 +42,7 @@ tasks:
       id: 91d36804-06a2-4828-8d82-77f91d060805
       version: -1
       name: Search List
-      description: Search for lists in Recorded Future
+      description: Search for lists in Recorded Future.
       script: RecordedFutureLists|||recordedfuture-lists-search
       type: regular
       iscommand: true
