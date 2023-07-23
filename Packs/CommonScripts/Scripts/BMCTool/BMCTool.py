@@ -140,8 +140,8 @@ class BMCContainer(Generic[AnyStr]):
             elif self.btype == self.BMC_CONTAINER:
                 t_bmp = ""
                 t_len, t_params = unpack("<LL", t_hdr[-0x8:])
-                if t_params & 0x08:  # This bit is always ONE when relevant data is smaller than expected data, 
-                                     # thus it is most likely the "compression" bit flag.
+                if t_params & 0x08:  # This bit is always ONE when relevant data is smaller than expected data,
+                    # thus it is most likely the "compression" bit flag.
                     if bl == 0:
                         if "22.bmc" in self.fname:
                             bl = 64 * 64 * 2
@@ -425,7 +425,7 @@ class BMCContainer(Generic[AnyStr]):
             c_bmp = b"" if not self.pal else self.PALETTE
             if self.btype == self.BIN_CONTAINER:
                 def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
-                    return b"".join([b"".join([a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j:64 * PAD * (j + 1)] 
+                    return b"".join([b"".join([a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j:64 * PAD * (j + 1)]
                                                for k in WIDTH]) for j in range(64)])
             else:
                 def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
@@ -487,7 +487,7 @@ def main():
     del bmcc
 
     results = CommandResults(
-        outputs_prefix = 'Collages',
+        outputs_prefix='Collages',
         outputs=sources
     )
 
