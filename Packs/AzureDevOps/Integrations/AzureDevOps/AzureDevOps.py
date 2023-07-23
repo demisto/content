@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # type: ignore
@@ -537,42 +539,9 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    @staticmethod
-    def file_pre_process_body_request(change_type: str, args: Dict[str, Any]) -> dict:
-        # pre-process branch
-        branch_name = args["branch_name"]  # required
-        branch_id = args["branch_id"]  # required
-        branch_details = [{"name": branch_name, "oldObjectId": branch_id}]
-
-        # pre-process commit
-        comment = args["commit_comment"]  # required
-        file_path = args.get("file_path", "")
-        file_content = args.get("file_content", "")
-
-        # validate file_path exists (explicitly or entry_id), file_content can be empty
-        entry_id = args.get("entry_id", "")
-        if not (entry_id or file_path):
-            raise DemistoException('You must specify either the "file_path" or the "entry_id" of the file.')
-        elif entry_id:
-            file_path = demisto.getFilePath(entry_id).get("path")
-            with open(file_path, 'rb') as f:
-                file_content = f.read()
-
-        changes = {"changeType": change_type, "item": {"path": file_path}}
-
-        # in case of add/edit (create/update), add another key with the new content
-        if change_type != "delete":
-            changes["newContent"] = {"content": file_content, "contentType": "rawtext"}
-
-        commits = [{"comment": comment, "changes": [changes]}]
-
-        data = {"refUpdates": branch_details, "commits": commits}
-
-        return data
-
     def file_request(self, org_repo_project_tuple: namedtuple, change_type: str, args: Dict[str, Any]):
 
-        data = self.file_pre_process_body_request(change_type, args)
+        data = file_pre_process_body_request(change_type, args)
 
         params = {"api-version": 7.0}
 
@@ -617,7 +586,7 @@ class Client:
         # initialize new branch - this is the syntax
         args["branch_id"] = "0000000000000000000000000000000000000000"
 
-        data = self.file_pre_process_body_request("add", args)
+        data = file_pre_process_body_request("add", args)
         params = {"api-version": 7.0}
 
         full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
@@ -1740,6 +1709,38 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
     return True
 
 
+def file_pre_process_body_request(change_type: str, args: Dict[str, Any]) -> dict:
+    # pre-process branch
+    branch_name = args["branch_name"]  # required
+    branch_id = args["branch_id"]  # required
+    branch_details = [{"name": branch_name, "oldObjectId": branch_id}]
+
+    # pre-process commit
+    comment = args["commit_comment"]  # required
+    file_path = args.get("file_path", "")
+    file_content = args.get("file_content", "")
+
+    # validate file_path exists (explicitly or entry_id), file_content can be empty
+    entry_id = args.get("entry_id", "")
+    if not (entry_id or file_path):
+        raise DemistoException('You must specify either the "file_path" or the "entry_id" of the file.')
+    elif entry_id:
+        file_path = demisto.getFilePath(entry_id)["path"]
+        file_content = Path(file_path).read_text()
+
+    changes = {"changeType": change_type, "item": {"path": file_path}}
+
+    # in case of add/edit (create/update), add another key with the new content
+    if change_type != "delete":
+        changes["newContent"] = {"content": file_content, "contentType": "rawtext"}
+
+    commits = [{"comment": comment, "changes": [changes]}]
+
+    data = {"refUpdates": branch_details, "commits": commits}
+
+    return data
+
+
 def pagination_preprocess_and_validation(args: Dict[str, Any]) -> Tuple[int, int]:
     """
     Ensure the pagination values are valid.
@@ -1784,7 +1785,7 @@ def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], org
 
     response = client.pull_requests_reviewer_list_request(org_repo_project_tuple, pull_request_id)
     mapping = {'displayName': 'Reviewer(s)'}
-    readable_output = tableToMarkdown('Reviewers List', response.get('value'), headers=['displayName'],
+    readable_output = tableToMarkdown('Reviewers List', response["value"], headers=['displayName'],
                                       headerTransform=lambda header: mapping.get(header, header))
 
     return CommandResults(
@@ -1806,7 +1807,7 @@ def pull_request_reviewer_create_command(client: Client, args: Dict[str, Any], o
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     pull_request_id = arg_to_number(args.get('pull_request_id'))
 
-    reviewer_user_id = args.get('reviewer_user_id')  # reviewer_user_id is required
+    reviewer_user_id = args["reviewer_user_id"]  # reviewer_user_id is required
     is_required = args.get('is_required', False)
 
     response = client.pull_requests_reviewer_create_request(org_repo_project_tuple, pull_request_id,
@@ -1942,15 +1943,16 @@ def work_item_pre_process_data(args: Dict[str, Any], arguments_list: List[str]) 
 
     data = []
 
-    for argument in arguments_list:
-        if args.get(argument):
-            arg_json_to_data = {"op": "add",
-                                "path": f'/fields/{mapping[argument]}',
-                                "from": None,
-                                "value": f'{args.get(argument)}'}
-
-            data.append(arg_json_to_data)
-
+    data.extend(
+        {
+            "op": "add",
+            "path": f'/fields/{mapping[argument]}',
+            "from": None,
+            "value": f'{args.get(argument)}',
+        }
+        for argument in arguments_list
+        if args.get(argument)
+    )
     return data
 
 
