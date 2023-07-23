@@ -176,7 +176,7 @@ script:
     - contextPath: NetWitness.Events.service
       description: Field describes the service that created the session (if available)
     - contextPath: NetWitness.Events.sessionid
-      description: NW Specific field that contains a NW specific 'serial number' of the Session. Allows a user to specify a session to retrieve from a Concentrator.
+      description: NW specific field that contains a NW specific 'serial number' of the session. Allows a user to specify a session to retrieve from a concentrator.
     - contextPath: NetWitness.Events.deviceType
       description: Field describes the type of system that generated a log message (ex. SQUID / Windows / rhlinux)
     - contextPath: NetWitness.Events.direction
