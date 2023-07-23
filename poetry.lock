@@ -1061,7 +1061,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "graph_gh_actions"
-resolved_reference = "a83e962ec9ab05e6dcd6dbd11f7ec8839323a9b9"
+resolved_reference = "fbcf3b2aa6c33f71aa336ee1d37bee3c672f964b"
 
 [[package]]
 name = "deprecated"
