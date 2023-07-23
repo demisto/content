@@ -41,16 +41,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: | 
-    "The first fetch time, e.g., 1 hour, 3 days,
-    Note: The request retrieves logs created within 72 hours at most before sending the request,
-    Please put in the First Fetch Time parameter a value that is at most 72 hours / 3 days"
-  display: First Fetch Time
-  defaultvalue: 1 days
-  name: first_fetch
-  required: false
-  type: 0
-  section: Collect
 script:
   commands:
   - deprecated: false
