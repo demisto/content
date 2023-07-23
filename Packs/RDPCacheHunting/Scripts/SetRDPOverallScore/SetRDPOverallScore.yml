@@ -10,7 +10,7 @@ tags:
 enabled: true
 outputs:
 - contextPath: RDPOverallScore
-  description: The overall score of matches found in the extracted strings  by StringSifter and StringSimilarity analysis. This is a value of 1 to 100  which is a precent of malicious strings found.
+  description: The overall score of matches found in the extracted strings by StringSifter and StringSimilarity analysis. This is a value of 1 to 100  which is a precent of malicious strings found.
 scripttarget: 0
 subtype: python3
 runonce: false
