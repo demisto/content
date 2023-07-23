@@ -1,0 +1,19 @@
+{
+    "objectId": "",
+    "gitObjectType": "blob",
+    "commitId": "",
+    "path": "Test",
+    "content": "Content Test",
+    "url": "",
+    "_links": {
+        "self": {
+            "href": ""
+        },
+        "repository": {
+            "href": ""
+        },
+        "blob": {
+            "href": ""
+        }
+    }
+}
