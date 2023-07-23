@@ -1,8 +1,6 @@
 import pytest
-import demistomock as demisto
-from unittest.mock import patch, MagicMock, call
-from CommonServerPython import CommandResults
 from StringSimilarity import stringSimilarity
+
 
 @pytest.mark.parametrize("first_string, second_string, similarity_threshold, expected_result", [
     ("hello", "hello", 0.9, {

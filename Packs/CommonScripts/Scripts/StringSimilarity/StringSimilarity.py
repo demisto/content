@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import difflib
 
+
 def stringSimilarity(firstString: str, second_string: str, similarityThreshold: float):
     """
     Calculate the similarity score between two strings using the SequenceMatcher.
@@ -32,18 +33,19 @@ def stringSimilarity(firstString: str, second_string: str, similarityThreshold: 
             "SimilarityScore": similarity_ratio
         })
         return commandResults
-    
+
     # Raise an exception if none of the conditions are met.
     raise ValueError("No similarity score calculated. Check the similarityThreshold value.")
-    
-    
+
+
 def main():
     similarity_threshold = float(demisto.getArg('similarity_threshold'))
     first_string = demisto.getArg('string_A')
     second_string = demisto.getArg('string_B')
     commandResults = stringSimilarity(first_string, second_string, similarity_threshold)
-    
+
     return_results(commandResults)
+
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
