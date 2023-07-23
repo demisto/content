@@ -21,11 +21,13 @@ configuration:
   displaypassword: ID or Client ID
   hiddenusername: true
   section: Connect
+  required: false
 - name: creds_tenant_id
   type: 9
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
+  required: false
 - additionalinfo: The API key to use to connect.
   defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
   display: Application ID
@@ -33,22 +35,26 @@ configuration:
   type: 0
   section: Connect
   hidden: true
+  required: false
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
   type: 8
   section: Connect
+  required: false
 - display: Tenant ID (for Client Credentials mode)
   name: _tenant_id
   type: 0
   section: Connect
   hidden: true
+  required: false
 - display: Client Secret (for Client Credentials mode)
   hiddenusername: true
   name: credentials
   type: 9
   section: Connect
   displaypassword: Client Secret
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
@@ -56,6 +62,7 @@ configuration:
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -63,6 +70,7 @@ configuration:
   section: Connect
   advanced: true
   hidden: true
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -70,12 +78,14 @@ configuration:
   section: Connect
   advanced: true
   hidden: true
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
@@ -83,11 +93,13 @@ configuration:
   type: 9
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 12 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - additionalinfo: The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit.
   defaultvalue: '30'
   display: Fetch incidents timeout
@@ -95,55 +107,65 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Due to API limitations, the maximum is 100.
   defaultvalue: '10'
   display: Number of incidents for each fetch.
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: Microsoft 365 Defender Incident
   display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Application ID (Deprecated)
   hidden: true
   name: app_id
   type: 4
   section: Connect
   advanced: true
+  required: false
 - display: Tenant ID (for Client Credentials mode) (Deprecated)
   hidden: true
   name: tenant_id
   type: 4
   section: Connect
   advanced: true
+  required: false
 - display: Client Secret (for Client Credentials mode) (Deprecated)
   hidden: true
   name: enc_key
   type: 4
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   section: Connect
   advanced: true
+  required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
 name: Microsoft 365 Defender

@@ -12,15 +12,19 @@ configuration:
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
 - display: API Token (optional)
   name: token
   type: 4
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use HTTPS connections
   name: use_https
   type: 8
+  required: false
 script:
   script: |-
     var sendRequest = function(url, json) {
