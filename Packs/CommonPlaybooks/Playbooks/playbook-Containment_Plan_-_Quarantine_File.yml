@@ -188,6 +188,10 @@ tasks:
                 value:
                   simple: inputs.FilePath
                 iscontext: true
+      incident_id:
+        complex:
+          root: alert
+          accessor: id
       interval_in_seconds:
         simple: "20"
       timeout_in_seconds:
@@ -607,6 +611,10 @@ tasks:
       file_path:
         complex:
           root: inputs.FilePath
+      incident_id:
+        complex:
+          root: alert
+          accessor: id
       interval_in_seconds:
         simple: "20"
       timeout_in_seconds:

@@ -216,7 +216,7 @@ tasks:
       - "8"
     scriptarguments:
       Tag:
-        simple: Bad Account
+        simple: XSIAM alert - ${alert.id}
       UserVerification:
         simple: "True"
       Username:
