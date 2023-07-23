@@ -1,5 +1,5 @@
 Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
-This integration was integrated and tested tested with version 8 up to version 10.1.6 and version 10.2.0 of PAN-OS Policy Optimizer.
+This integration was integrated and tested with version 8 up to version 10.1.6 and version 10.2.0 of PAN-OS Policy Optimizer.
 Moved to beta due to the lack of a formal API.
 
 ## Configure PAN-OS Policy Optimizer on Cortex XSOAR (beta)
