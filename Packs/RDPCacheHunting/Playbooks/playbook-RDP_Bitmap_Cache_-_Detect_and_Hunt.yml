@@ -629,7 +629,7 @@ tasks:
       id: 1216e574-1d1c-46fb-8e01-86260d41abaf
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- QRadar\n- PAN-OS \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -1886,7 +1886,7 @@ inputs:
   value:
     simple: -7d@d
   required: false
-  description: The earliest time for the Splunk hunting query
+  description: The earliest time for the Splunk hunting query.
   playbookInputQuery:
 - key: SplunkLatestTime
   value:
