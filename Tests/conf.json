@@ -3679,7 +3679,8 @@
         },
         {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
-            "playbookID": "Audit Log - Test"
+            "playbookID": "Audit Log - Test",
+            "memory_threshold": 220
         },
         {
             "integrations": "Nutanix Hypervisor",
