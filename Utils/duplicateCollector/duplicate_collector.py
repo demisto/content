@@ -130,13 +130,18 @@ def replace_metadata_id(new_pack_path: Path, custom_suffix: str):
 
 
 def monkey_patch_function(custom) -> str:
-    return f"""def monkey_patch_send_events_to_xsiam(func):
+    return f"""
+
+def monkey_patch_send_events_to_xsiam(func):
     def wrapper(events, vendor, product, **kwargs):
         # Call the original function with the new vendor and product parameters
         func(events, '{custom}', '{custom}', **kwargs)
     return wrapper
 
-send_events_to_xsiam= monkey_patch_send_events_to_xsiam(send_events_to_xsiam)
+
+send_events_to_xsiam = monkey_patch_send_events_to_xsiam(send_events_to_xsiam)
+
+
 """
 
 
@@ -162,11 +167,18 @@ def monkey_patch_collector_send_events_to_xsiam(new_pack_path, custom):
             continue
 
         with open(integration_python_file_path, 'r+') as integration_python_file:
-            original_code = integration_python_file.read()
+            original_code_lines = integration_python_file.readlines()
+            for i, line in enumerate(original_code_lines):
+                if not line.startswith(('from', 'import', ' urllib3')):
+                    break
 
+            monkey_patch_lines = [line + '\n' for line in monkey_patch_function(custom).split('\n')]
+            new_code_lines = original_code_lines[:i] + monkey_patch_lines + original_code_lines[i:]
+            # original_code.replace('from CommonServerPython import *', '')
             integration_python_file.seek(0)
-            code_to_patch = monkey_patch_function(custom)
-            integration_python_file.write(code_to_patch + '\n' + original_code)
+            # code_to_patch = monkey_patch_function(custom)
+            # integration_python_file.write(code_to_patch + '\n' + original_code)
+            integration_python_file.writelines(new_code_lines)
 
 
 def prepare_xif_file(new_pack_path: Path, custom: str):
