@@ -69,6 +69,18 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
         contribution_reviewers: list[str] = content_roles[CONTRIBUTION_REVIEWERS_KEY]
         security_reviewer: str = content_roles[CONTRIBUTION_SECURITY_REVIEWER_KEY]
 
+        if not isinstance(contribution_reviewers, list):
+            print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")
+            sys.exit(1)
+
+        if not isinstance(security_reviewer, str) or not security_reviewer:
+            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")
+            sys.exit(1)
+
+        if not contribution_reviewers or not security_reviewer:
+            print("No contribution or  reviewers")
+            sys.exit(1)
+
         return contribution_reviewers, security_reviewer
     except KeyError as ke:
         print(f"Error parsing reviewers: {str(ke)}.")
