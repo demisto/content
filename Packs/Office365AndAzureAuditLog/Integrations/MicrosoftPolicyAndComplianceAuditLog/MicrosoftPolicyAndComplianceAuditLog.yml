@@ -151,4 +151,6 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
+  dockerimage: demisto/powershell-ubuntu:7.3.0.49844
+tests:
+- Audit Log - Test
