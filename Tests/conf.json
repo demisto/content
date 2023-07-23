@@ -126,7 +126,8 @@
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_device_code",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 300
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -2085,7 +2086,7 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2148,7 +2149,8 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod v2",
             "instance_names": "ms_graph_security_prod_v2",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Graph",
@@ -5660,7 +5662,8 @@
         "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266",
         "EWS_O365_test": "Issue CIAC-6753",
         "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
-        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514"
+        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7514"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
