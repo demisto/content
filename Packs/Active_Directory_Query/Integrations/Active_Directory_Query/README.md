@@ -598,7 +598,7 @@ Modifies the computer organizational unit within a domain.
 `ad-modify-computer-ou`
 
 ##### Required Permissions
-Requires `Full Control` permissions from `Computer objects`.
+Requires `Write All Properties` permission from `Computer objects`.
 
 #### Input
 
@@ -631,7 +631,7 @@ Modifies the user organizational unit within a domain.
 `ad-modify-user-ou`
 
 ##### Required Permissions
-Requires `Read userAccountControl` and `write userAccountControl` permissions.
+Requires `Write All Properties` permission from `Computer objects`.
 
 #### Input
 
@@ -1109,7 +1109,7 @@ Used in the IAM premium pack.
 `iam-disable-user`
 
 ##### Required Permissions
-Requires `Create, delete, and manage user accounts` permissions.
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 #### Input
 
