@@ -16,6 +16,7 @@ part 2 - manage the schema on the mssql
     1. Access your Mcafee ePO interface.
     2. At the main options bar at the top-left corner, under **Configuration** select **Personal Settings**.
     3. At the left bar, select **Time Zone Prefrence** and set the system time zone to UTC +00:00 FIRMAT.
+    
 ## Collect Events from Vendor
 
 In order to use the collector, you can use one of the following options to collect events from the vendor:
