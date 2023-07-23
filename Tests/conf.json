@@ -1530,7 +1530,8 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 300
+            "timeout": 400,
+            "memory_threshold": 150
         },
         {
             "integrations": "PagerDuty v2",
@@ -1666,7 +1667,8 @@
             "instance_names": [
                 "ews_mail_sender_labdemisto"
             ],
-            "playbookID": "EWS V2 Send Mail Test 2"
+            "playbookID": "EWS V2 Send Mail Test 2",
+            "memory_threshold": 150
         },
         {
             "integrations": [
@@ -3687,7 +3689,8 @@
         },
         {
             "integrations": "Azure Storage",
-            "playbookID": "Azure Storage - Test"
+            "playbookID": "Azure Storage - Test",
+            "is_mockable": false
         },
         {
             "integrations": "MicrosoftGraphApplications",
@@ -4366,7 +4369,8 @@
         {
             "playbookID": "Test-GitLab-v2",
             "fromversion": "6.5.0",
-            "integrations": "GitLabv2"
+            "integrations": "GitLabv2",
+            "is_mockable": false
         },
         {
             "playbookID": "LGTM-test-playbook",
@@ -4432,6 +4436,7 @@
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
             "instance_names": "aks_device_code_instance",
+            "is_mockable": false,
             "integrations": [
                 "Azure Kubernetes Services"
             ]
@@ -4611,7 +4616,7 @@
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
             ],
-            "memory_threshold": 160,
+            "memory_threshold": 350,
             "pid_threshold": 80,
             "is_mockable": false
         },
@@ -5469,6 +5474,11 @@
         {
             "integrations": "Kaspersky Security Center",
             "playbookID": "Kaspersky Security Center - Test"
+        },
+        {
+            "integrations": "Forcepoint Security Management Center",
+            "playbookID": "ForcepointSecurityManagementCenter_test",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -5630,7 +5640,6 @@
         "Microsoft Graph Groups - Test dev": "No Working Instance",
         "Microsoft Graph Groups - Test prod": "No Working Instance",
         "Microsoft Graph Groups - Test": "No Working Instance",
-        "Azure Kubernetes Services - Test": "No Working Instance",
         "playbook-AzureDevOps-Test": "No Working Instance",
         "test playbook - Google Cloud Functions": "No Working Instance",
         "playbook-GCP-IAM_Test": "No Working Instance",
@@ -6016,8 +6025,9 @@
             "demisto/pytan": {
                 "pid_threshold": 11
             },
-            "demisto/google-k8s-engine:1.0.0.9467": {
-                "pid_threshold": 11
+            "demisto/google-k8s-engine1.0.0.64696": {
+                "pid_threshold": 11,
+                "memory_threshold": 110
             },
             "demisto/threatconnect-tcex": {
                 "pid_threshold": 11

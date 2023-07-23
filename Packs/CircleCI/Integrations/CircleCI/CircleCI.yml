@@ -13,10 +13,12 @@ configuration:
   name: api_key
   type: 4
   hidden: true
+  required: false
 - name: api_key_creds
   type: 9
   displaypassword: The API key
   hiddenusername: true
+  required: false
 - display: Version control system type
   name: vcs_type
   type: 15
@@ -38,10 +40,12 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 description: Gets the details of the CircleCI workflows; including the details of the last runs and the jobs, and retrieves the artifacts of the jobs.
 display: CircleCI
 name: CircleCI
