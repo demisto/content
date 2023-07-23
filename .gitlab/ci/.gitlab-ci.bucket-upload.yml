@@ -475,7 +475,7 @@ upload-packs-to-xpanse-marketplace:
 xsoar-force-pack-upload:
   needs: [ "xsoar-prepare-testing-bucket-upload-flow" ]
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    CURRENT_ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_BUCKET
     MARKETPLACE: "xsoar"
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_BUCKET
@@ -487,7 +487,7 @@ xsoar-force-pack-upload:
 marketplace-v2-force-pack-upload:
   needs: [ "mpv2-prepare-testing-bucket-upload-flow" ]
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    CURRENT_ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_V2_BUCKET
     MARKETPLACE: "marketplacev2"
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_V2_BUCKET
@@ -498,7 +498,7 @@ marketplace-v2-force-pack-upload:
 xpanse-force-pack-upload:
   needs: [ "xpanse-prepare-testing-bucket-upload-flow" ]
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    CURRENT_ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_XPANSE_BUCKET
     MARKETPLACE: "xpanse"
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_XPANSE_BUCKET
@@ -516,8 +516,8 @@ xpanse-force-pack-upload:
   script:
     - *check_user_permissions_to_upload_packs
     - EXTRACT_FOLDER=$(mktemp -d)
-    - PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-    - PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
+    - PACK_ARTIFACTS=$CURRENT_ARTIFACTS_FOLDER/content_packs.zip
+    - PACKS_DEPENDENCIES=$CURRENT_ARTIFACTS_FOLDER/packs_dependencies.json
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
     - GCS_BUILD_BUCKET="marketplace-ci-build"
     - |

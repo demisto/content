@@ -436,9 +436,17 @@ def main():
     pack_names = get_pack_names(target_packs)
     logging.info(f"pack_names: {pack_names}")
 
+    logging.info(f"packs_artifacts_path: {packs_artifacts_path}")
+    logging.info(f"extract_destination_path: {extract_destination_path}")
+
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
 
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names]
+    packs_list = []
+    for pack_name in pack_names:
+        logging.info(f"extract_destination_path/pack: {os.path.join(extract_destination_path, pack_name)}")
+        if os.path.exists(os.path.join(extract_destination_path, pack_name)):
+            packs_list.append(Pack(pack_name, os.path.join(extract_destination_path, pack_name)))
+
     logging.info(f"packs_list: {packs_list}")
 
     packs_for_current_marketplace = []
