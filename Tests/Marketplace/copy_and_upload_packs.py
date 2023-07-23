@@ -440,11 +440,8 @@ def main():
 
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
 
-    packs_list = []
-    for pack_name in pack_names:
-        logging.info(f"extract_destination_path/pack: {os.path.join(extract_destination_path, pack_name)}")
-        if os.path.exists(os.path.join(extract_destination_path, pack_name)):
-            packs_list.append(Pack(pack_name, os.path.join(extract_destination_path, pack_name)))
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
+                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     logging.info(f"packs_list: {packs_list}")
 
