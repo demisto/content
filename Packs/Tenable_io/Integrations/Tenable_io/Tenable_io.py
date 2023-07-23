@@ -158,10 +158,33 @@ if not USE_PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
-class TenableOIClient(BaseClient):
 
-    def __init__(self, ok_codes=(), auth=None, timeout=None):
-        super().__init__(BASE_URL, USE_SSL, USE_PROXY, set(ok_codes) | {200, 201, 204}, HEADERS, auth, timeout=timeout or BaseClient.REQUESTS_TIMEOUT)
+class Client(BaseClient):
+    def list_scan_filters(self):
+        return self._http_request(
+            'GET', 'filters/scans/reports')
+
+    def get_scan_history(self, scan_id, params) -> dict:
+        return self._http_request(
+            'GET', f'scans/{scan_id}/history',
+            params=remove_empty_elements(params))
+
+    def initiate_export_scan(self, scan_id: str, params: dict, body: dict) -> dict:
+        return self._http_request(
+            'POST',
+            f'scans/{scan_id}/export',
+            params=remove_empty_elements(params),
+            json=remove_empty_elements(body)
+        ).get('file')
+
+    def check_export_scan_status(self, scan_id: str, file_id: str) -> str:
+        return self._http_request(
+            'GET', f'scans/{scan_id}/export/{file_id}/status'
+        ).get('status')
+
+    def download_export_scan(self, scan_id: str, file_id: str, args: dict) -> dict:
+        return self._http_request(
+            'GET', f'scans/{scan_id}/export/{file_id}/download')
 
 
 def flatten(d):
@@ -1157,13 +1180,6 @@ def get_json(response: requests.models.Response) -> dict:
             f'\n{response.text}') from e
 
 
-def list_scan_filters_request() -> dict:
-    response = requests.get(
-        f'{BASE_URL}filters/scans/reports',
-        headers=HEADERS, verify=USE_SSL)
-    return get_json(response)
-
-
 def scan_filters_human_readable(filters: list) -> str:
     context_to_hr = {
         'name': 'Filter name',
@@ -1182,9 +1198,9 @@ def scan_filters_human_readable(filters: list) -> str:
         removeNull=True)
 
 
-def list_scan_filters_command() -> CommandResults:
+def list_scan_filters_command(client: Client) -> CommandResults:
 
-    response_dict = list_scan_filters_request()
+    response_dict = client.list_scan_filters()
     filters = response_dict.get('filters', [])
 
     return CommandResults(
@@ -1193,16 +1209,6 @@ def list_scan_filters_command() -> CommandResults:
         outputs=filters,
         readable_output=scan_filters_human_readable(filters),
         raw_response=response_dict)
-
-
-def get_scan_history_request(scan_id, params) -> dict:
-    remove_nulls_from_dictionary(params)
-    response = requests.get(
-        f'{BASE_URL}scans/{scan_id}/history',
-        params=params,
-        headers=HEADERS,
-        verify=USE_SSL)
-    return get_json(response)
 
 
 def scan_history_human_readable(history: list) -> str:
@@ -1236,9 +1242,9 @@ def scan_history_params(args: dict) -> dict:
     }
 
 
-def get_scan_history_command(args: dict[str, Any]) -> CommandResults:
+def get_scan_history_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    response_dict = get_scan_history_request(
+    response_dict = client.get_scan_history(
         args['scanId'],
         scan_history_params(args))
     history = response_dict.get('history', [])
@@ -1277,7 +1283,7 @@ def export_scan_body(args: dict) -> dict:
     return body
 
 
-def initiate_export_scan(args: dict) -> str:
+def initiate_export_scan(client: Client, args: dict) -> str:
     response = requests.post(
         f'{BASE_URL}scans/{args["scanId"]}/export',
         params=remove_empty_elements({
@@ -1316,15 +1322,15 @@ def download_export_scan(scan_id: str, file_id: str, args: dict) -> dict:
     poll_message='Preparing scan report:',
     interval=15,
     requires_polling_arg=False)
-def export_scan_command(args: dict[str, Any]) -> PollResult:
+def export_scan_command(client: Client, args: dict[str, Any]) -> PollResult:
 
-    file_id = args.get('fileId') or initiate_export_scan(args)
+    file_id = args.get('fileId') or initiate_export_scan(client, args)
     scan_id = args['scanId']
 
-    match check_export_scan_status(scan_id, file_id):
+    match client.check_export_scan_status(scan_id, file_id):
         case 'ready':
             return PollResult(
-                download_export_scan(scan_id, file_id, args),
+                client.download_export_scan(scan_id, file_id, args),
                 continue_to_poll=False)
 
         case 'error':
@@ -1353,6 +1359,13 @@ def main():  # pragma: no cover
     if not (ACCESS_KEY and SECRET_KEY):
         raise DemistoException('Access Key and Secret Key must be provided.')
 
+    client = Client(
+        BASE_URL,
+        verify=USE_SSL,
+        proxy=USE_PROXY,
+        ok_codes=(200,),
+        headers=HEADERS
+    )
     args = demisto.args()
     command = demisto.command()
 
@@ -1381,11 +1394,11 @@ def main():  # pragma: no cover
     elif command == 'tenable-io-export-vulnerabilities':
         return_results(export_vulnerabilities_command(args))
     elif command == 'tenable-io-list-scan-filters':
-        return_results(list_scan_filters_command())
+        return_results(list_scan_filters_command(client))
     elif command == 'tenable-io-get-scan-history':
-        return_results(get_scan_history_command(args))
+        return_results(get_scan_history_command(client, args))
     elif command == 'tenable-io-export-scan':
-        return_results(export_scan_command(args))
+        return_results(export_scan_command(client, args))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
