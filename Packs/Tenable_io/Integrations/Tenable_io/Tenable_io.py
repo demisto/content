@@ -1172,7 +1172,8 @@ def scan_filters_human_readable(filters: list) -> str:
         'Tenable IO Scan Filters',
         [d | d.get('control', {}) for d in filters],
         headers=list(context_to_hr),
-        headerTransform=context_to_hr.get)
+        headerTransform=context_to_hr.get,
+        removeNull=True)
 
 
 def list_scan_filters_command() -> CommandResults:
@@ -1214,7 +1215,8 @@ def scan_history_human_readable(history: list) -> str:
         'Tenable IO Scan History',
         [d | d.get('targets', {}) for d in history],
         headers=list(context_to_hr),
-        headerTransform=context_to_hr.get)
+        headerTransform=context_to_hr.get,
+        removeNull=True)
 
 
 def scan_history_params(args: dict) -> dict:
@@ -1261,7 +1263,7 @@ def export_scan_request_args(
     body = {
         'format': args['format'].lower(),
         'chapters': chapters,
-        'filter.search_type': filterSearchType,
+        'filter.search_type': (filterSearchType or '').lower(),
         'asset_id': assetId,
     }
     for i, (name, quality, value)\
@@ -1335,7 +1337,6 @@ def export_scan_command(args: dict[str, Any]) -> PollResult:
                     'fileId': file_id,
                     'scanId': scan_id,
                     'format': args['format'],  # not necessary but avoids confusion
-                    'hide_polling_output': True
                 })
 
         case default:
@@ -1349,37 +1350,38 @@ def main():  # pragma: no cover
         raise DemistoException('Access Key and Secret Key must be provided.')
 
     args = demisto.args()
-    match demisto.command():
-        case 'test-module':
-            demisto.results(test_module())
-        case 'tenable-io-list-scans':
-            demisto.results(get_scans_command())
-        case 'tenable-io-launch-scan':
-            demisto.results(launch_scan_command())
-        case 'tenable-io-get-scan-report':
-            demisto.results(get_report_command())
-        case 'tenable-io-get-vulnerability-details':
-            demisto.results(get_vulnerability_details_command())
-        case 'tenable-io-get-vulnerabilities-by-asset':
-            demisto.results(get_vulnerabilities_by_asset_command())
-        case 'tenable-io-get-scan-status':
-            demisto.results(get_scan_status_command())
-        case 'tenable-io-pause-scan':
-            demisto.results(pause_scan_command())
-        case 'tenable-io-resume-scan':
-            demisto.results(resume_scan_command())
-        case 'tenable-io-get-asset-details':
-            return_results(get_asset_details_command())
-        case 'tenable-io-export-assets':
-            return_results(export_assets_command(args))
-        case 'tenable-io-export-vulnerabilities':
-            return_results(export_vulnerabilities_command(args))
-        case 'tenable-io-list-scan-filters':
-            return_results(list_scan_filters_command())
-        case 'tenable-io-get-scan-history':
-            return_results(get_scan_history_command(args))
-        case 'tenable-io-export-scan':
-            return_results(export_scan_command(args))
+    command = demisto.command()
+
+    if command == 'test-module':
+        demisto.results(test_module())
+    elif command == 'tenable-io-list-scans':
+        demisto.results(get_scans_command())
+    elif command == 'tenable-io-launch-scan':
+        demisto.results(launch_scan_command())
+    elif command == 'tenable-io-get-scan-report':
+        demisto.results(get_report_command())
+    elif command == 'tenable-io-get-vulnerability-details':
+        demisto.results(get_vulnerability_details_command())
+    elif command == 'tenable-io-get-vulnerabilities-by-asset':
+        demisto.results(get_vulnerabilities_by_asset_command())
+    elif command == 'tenable-io-get-scan-status':
+        demisto.results(get_scan_status_command())
+    elif command == 'tenable-io-pause-scan':
+        demisto.results(pause_scan_command())
+    elif command == 'tenable-io-resume-scan':
+        demisto.results(resume_scan_command())
+    elif command == 'tenable-io-get-asset-details':
+        return_results(get_asset_details_command())
+    elif command == 'tenable-io-export-assets':
+        return_results(export_assets_command(args))
+    elif command == 'tenable-io-export-vulnerabilities':
+        return_results(export_vulnerabilities_command(args))
+    elif command == 'tenable-io-list-scan-filters':
+        return_results(list_scan_filters_command())
+    elif command == 'tenable-io-get-scan-history':
+        return_results(get_scan_history_command(args))
+    elif command == 'tenable-io-export-scan':
+        return_results(export_scan_command(args))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

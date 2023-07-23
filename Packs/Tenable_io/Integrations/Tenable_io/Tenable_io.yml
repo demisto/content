@@ -1105,7 +1105,7 @@ script:
       description: The regular expression used by the scan filter.
       type: String
     - contextPath: TenableIO.ScanFilter.control.readable_regex
-      description: An example expression that filter's regular expression would match.
+      description: An example expression that the filter's regular expression would match.
       type: String
     - contextPath: TenableIO.ScanFilter.operators
       description: The operators available for the scan filter.
@@ -1118,7 +1118,7 @@ script:
       description: The ID of the scan of which to get the runs.
       required: true
     - name: sortFields
-      description: 'The fields by which to sort, in the order defined by "sortOrder". Possible values: start_date, end_date, status.'
+      description: 'The fields by which to sort, in the order defined by "sortOrder".'
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -1126,25 +1126,25 @@ script:
       - end_date
       - status
     - name: sortOrder
-      description: The direction in which to sort the fields defined by "sortFields". Default is "asc".
+      description: The direction in which to sort the fields defined by "sortFields".
       defaultValue: asc
       auto: PREDEFINED
       predefined:
       - asc
       - desc
     - name: excludeRollover
-      description: Whether or not to exclude rollover scans from the scan history. Default is false.
+      description: Whether to exclude rollover scans from the scan history.
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: page
-      description: The 1-indexed page number of scan records to retrieve (used for pagination). The page size is defined by the "pageSize" argument.
+      description: The page number of scan records to retrieve (used for pagination) starting from 1. The page size is defined by the "pageSize" argument.
     - name: pageSize
       description: The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
     - name: limit
-      description: The number of records to retrieve. If "pageSize" is defined, this argument is ignored.
+      description: The maximum number of records to retrieve. If "pageSize" is defined, this argument is ignored.
       defaultValue: '50'
     description: Lists the individual runs of the specified scan.
     name: tenable-io-get-scan-history
@@ -1187,7 +1187,7 @@ script:
     - name: format
       description: |
         The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 60 days.
-         For scans that are older than 60 days, only the Nessus and CSV formats are supported. Default is CSV.
+         For scans that are older than 60 days, only the Nessus and CSV formats are supported.
       required: true
       defaultValue: CSV
       auto: PREDEFINED
@@ -1197,10 +1197,7 @@ script:
       - PDF
       - CSV
     - name: chapters
-      description: |
-        A list of chapters to include in the export.
-         Chapters can be any of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance.
-         This argument is required if the file format is PDF or HTML.
+      description: A list of chapters to include in the export. This argument is required if the file format is PDF or HTML.
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -1230,11 +1227,11 @@ script:
       isArray: true
     - name: filterSearchType
       description: For multiple filters, specifies whether to use the AND or the OR logical operator.
-      defaultValue: and
+      defaultValue: AND
       auto: PREDEFINED
       predefined:
-      - and
-      - or
+      - AND
+      - OR
     - name: assetId
       description: The ID of the asset scanned.
     polling: true
@@ -1251,7 +1248,7 @@ script:
       description: The War Room entry ID of the file.
       type: string
     - contextPath: InfoFile.Info
-      description: The Format of the file.
+      description: The format and encoding of the file.
       type: string
     - contextPath: InfoFile.Type
       description: The type of the file.

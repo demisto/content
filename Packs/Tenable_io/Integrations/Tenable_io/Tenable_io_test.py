@@ -73,16 +73,6 @@ def mock_demisto(mocker, mock_args=None):
     mocker.patch.object(demisto, 'investigation', return_value={'id': 'id'})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'debug')
-    # if file_type is None:
-    #     file_type = entryTypes['file']
-    # temp = demisto.uniqueFile()
-    # # pylint: disable=undefined-variable
-    # if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
-    #     data = data.encode('utf-8')
-    # # pylint: enable=undefined-variable
-    # with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
-    #     f.write(data)
-    # return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
 def test_get_scan_status(mocker, requests_mock):
