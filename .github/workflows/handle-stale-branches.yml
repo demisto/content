@@ -1,8 +1,8 @@
 name: Handle stale branches
 on:
-  push:
-    branches:
-      - fix_stale_branches
+  schedule:
+    # runs every day at midnight (UTC time).
+    - cron:  '0 0 * * *'
 permissions:
   contents: read
 
