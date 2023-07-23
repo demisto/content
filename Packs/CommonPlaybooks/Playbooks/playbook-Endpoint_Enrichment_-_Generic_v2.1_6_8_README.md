@@ -27,13 +27,13 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* ad-get-computer
-* cb-edr-sensors-list
 * cs-falcon-search-device
-* extrahop-devices-search
+* cb-edr-sensors-list
+* ad-get-computer
 * xdr-get-endpoints
 * epo-find-system
 * endpoint
+* extrahop-devices-search
 
 ## Playbook Inputs
 
