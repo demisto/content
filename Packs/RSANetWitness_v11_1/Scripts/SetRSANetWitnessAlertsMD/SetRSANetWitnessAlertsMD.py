@@ -17,10 +17,33 @@ def read_context_from_rsa_netwitness_alerts() -> dict:
     return data
 
 
+def parse_alerts(alerts: list) -> list:
+    return [
+        {
+            "Created": alert.get("created"),
+            "Events": alert.get("events"),
+            "ID": alert.get("id"),
+            "Risk Score": alert.get("riskScore"),
+            "Title": alert.get("title"),
+            "Type": alert.get("type"),
+            "Detail": alert.get("detail"),
+        }
+        for alert in alerts
+    ]
+
+
 def json_to_md(incident_fields: dict) -> str:
-    return "\n\n\n".join(
-        tableToMarkdown(name=key, t=val)
-        for key, val in incident_fields.items()
+    return tableToMarkdown(
+        name="RSA Alerts",
+        t=parse_alerts(incident_fields["RSA Alerts"]),
+        headers=["ID", "Title", "Type", "Risk Score", "Created", "Events", "Detail"],
+        removeNull=True,
+        json_transform_mapping={
+            "Events": JsonTransformer(
+                keys=["destination", "domain", "eventSource", "eventSourceId", "source"],
+                is_nested=True,
+            )
+        },
     )
 
 
