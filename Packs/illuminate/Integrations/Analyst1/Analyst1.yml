@@ -5,32 +5,25 @@ name: Analyst1
 display: Analyst1
 category: Data Enrichment & Threat Intelligence
 description: This integration utilizes Analyst1's system to enrich Demisto indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
-detaileddescription: |-
-  ### Partner Contributed Integration
-  #### Integration Author: Analyst1
-  Support and maintenance for this integration are provided by the author. Please use the following contact details:
-  - **Email**: [support@analystplatform.com](mailto:support@analystplatform.com)
-  ***
-  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/analyst1)
 configuration:
 - display: Analyst1 API Credentials (username/password)
   name: credentials
   type: 9
   required: true
 - display: Domain of Analyst1 server to use
-  additionalinfo: Format - server.that_you_use.com - No http/https
   name: server
   defaultvalue: partner.cloud.analyst1.com
   type: 0
   required: true
+  additionalinfo: Format - server.that_you_use.com - No http/https
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -753,10 +746,17 @@ script:
     - contextPath: Analyst1.EvidenceStatus.processingComplete
       description: True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false, indicating the upload is still in progress.
     description: Check on the status of the analyst1-evidence-submit action by using its output UUID.
-  dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
+  dockerimage: demisto/python3:3.10.12.65389
   subtype: python3
+  runonce: false
 fromversion: 5.0.0
 tests:
 - Analyst1 Integration Demonstration - Test
 - Analyst1 Integration Test
+detaileddescription: |-
+  ### Partner Contributed Integration
+  #### Integration Author: Analyst1
+  Support and maintenance for this integration are provided by the author. Please use the following contact details:
+  - **Email**: [support@analystplatform.com](mailto:support@analystplatform.com)
+  ***
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/analyst1)
