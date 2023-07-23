@@ -1,7 +1,6 @@
 import collections
 import random
 from collections import Counter
-from CommonServerPython import argToList, demisto, return_results
 
 
 def parse_data(list_content):

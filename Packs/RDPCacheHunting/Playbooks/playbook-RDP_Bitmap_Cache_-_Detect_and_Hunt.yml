@@ -49,7 +49,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -1195
+          "y": -1345
         }
       }
     note: false
@@ -173,7 +173,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -10
+          "y": -105
         }
       }
     note: false
@@ -326,14 +326,14 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-      - "59"
+      - "60"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -150
+          "y": -300
         }
       }
     note: false
@@ -828,7 +828,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -320
+          "y": -470
         }
       }
     note: false
@@ -905,7 +905,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -990
+          "y": -1140
         }
       }
     note: false
@@ -954,7 +954,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -660
+          "y": -810
         }
       }
     note: false
@@ -986,7 +986,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -800
+          "y": -950
         }
       }
     note: false
@@ -1025,7 +1025,7 @@ tasks:
       {
         "position": {
           "x": 10,
-          "y": -660
+          "y": -810
         }
       }
     note: false
@@ -1113,7 +1113,7 @@ tasks:
       image_resize_width:
         simple: "7016"
       retry-count:
-          simple: "3"
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1170,7 +1170,7 @@ tasks:
       image_resize_width:
         simple: "7016"
       retry-count:
-          simple: "3"
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1519,7 +1519,7 @@ tasks:
       {
         "position": {
           "x": 10,
-          "y": -490
+          "y": -640
         }
       }
     note: false
@@ -1550,7 +1550,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": -815
+          "y": -965
         }
       }
     note: false
@@ -1636,7 +1636,7 @@ tasks:
       image_resize_width:
         simple: "7016"
       retry-count:
-          simple: "3"
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1805,8 +1805,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
+          "x": 1050,
           "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 15bb1f6a-c0a2-4e8e-8a92-03eb0e568cc0
+    type: condition
+    task:
+      id: 15bb1f6a-c0a2-4e8e-8a92-03eb0e568cc0
+      version: -1
+      name: Is LOLBAS Feed integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "59"
+    scriptarguments:
+      brandname:
+        simple: LOLBAS Feed
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": -160
         }
       }
     note: false
@@ -1826,10 +1865,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3290,
+        "height": 3440,
         "width": 2810,
         "x": -1080,
-        "y": -1195
+        "y": -1345
       }
     }
   }
