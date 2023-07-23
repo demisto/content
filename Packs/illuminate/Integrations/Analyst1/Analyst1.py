@@ -10,7 +10,8 @@ import json
 import requests
 import urllib3
 import traceback
-from typing import Dict, Optional, List, Any, Callable, Collection
+from typing import Any
+from collections.abc import Callable, Collection
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,7 +23,7 @@ urllib3.disable_warnings()
 # Integration information
 INTEGRATION_NAME = 'Analyst1'
 INTEGRATION_CONTEXT_BRAND = 'Analyst1'
-MALICIOUS_DATA: Dict[str, str] = {
+MALICIOUS_DATA: dict[str, str] = {
     'Vendor': 'Analyst1',
     'Description': 'Analyst1 advises assessing the Indicator attributes for malicious context.'
 }
@@ -31,7 +32,7 @@ MALICIOUS_DATA: Dict[str, str] = {
 ''' HELPER FUNCTIONS '''
 
 
-class IdNamePair(object):
+class IdNamePair:
     def __init__(self, unique_id: int, name: str):
         self.id = unique_id
         self.name = name
@@ -40,7 +41,7 @@ class IdNamePair(object):
         return f'id = {self.id}, name = {self.name}'
 
 
-class EnrichmentOutput(object):
+class EnrichmentOutput:
     def __init__(self, analyst1_context_data: dict, raw_data: dict, indicator_type: str) -> None:
         self.analyst1_context_data = analyst1_context_data
         self.raw_data = raw_data
@@ -70,10 +71,10 @@ class EnrichmentOutput(object):
             indicator_value: str,
             indicator_type: str,
             reputation_key: str,
-            extra_context: Optional[dict] = None
+            extra_context: dict | None = None
     ):
         if self.has_context_data():
-            reputation_context: Dict[str, Any] = {primary_key: indicator_value}
+            reputation_context: dict[str, Any] = {primary_key: indicator_value}
 
             if extra_context is not None:
                 reputation_context.update(extra_context)
@@ -116,15 +117,12 @@ class EnrichmentOutput(object):
         }
 
         demisto.results(entry)
-        return
 
     def add_analyst1_context(self, key: str, data: Any):
         self.analyst1_context_data[key] = data
-        return
 
     def add_reputation_context(self, key: str, context: dict):
         self.reputation_context[key] = context
-        return
 
     def has_context_data(self):
         return len(self.analyst1_context_data) > 0
@@ -233,7 +231,6 @@ class Client(BaseClient):
         data: dict = self._http_request(method='GET', url_suffix='')
         if data.get('links') is None:
             raise DemistoException('Invalid URL or Credentials. JSON structure not recognized.')
-        return
 
     def enrich_indicator(self, indicator: str, indicator_type: str) -> EnrichmentOutput:
         raw_data: dict = self.indicator_search(indicator_type, indicator)
@@ -250,26 +247,26 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='indicator/' + str(ioc_id))
 
     @staticmethod
-    def get_data_key(data: dict, key: str) -> Optional[Any]:
+    def get_data_key(data: dict, key: str) -> Any | None:
         return None if key not in data else data[key]
 
     @staticmethod
-    def get_nested_data_key(data: dict, key: str, nested_key: str) -> Optional[Any]:
+    def get_nested_data_key(data: dict, key: str, nested_key: str) -> Any | None:
         top_level = Client.get_data_key(data, key)
         return None if top_level is None or nested_key not in top_level else top_level[nested_key]
 
     @staticmethod
-    def get_data_key_as_date(data: dict, key: str, fmt: str) -> Optional[str]:
+    def get_data_key_as_date(data: dict, key: str, fmt: str) -> str | None:
         value = Client.get_data_key(data, key)
         return None if value is None else datetime.fromtimestamp(value / 1000.0).strftime(fmt)
 
     @staticmethod
-    def get_data_key_as_list(data: dict, key: str) -> List[Any]:
+    def get_data_key_as_list(data: dict, key: str) -> list[Any]:
         data_list = Client.get_data_key(data, key)
-        return [] if data_list is None or not isinstance(data[key], (list,)) else data_list
+        return [] if data_list is None or not isinstance(data[key], list) else data_list
 
     @staticmethod
-    def get_data_key_as_list_of_values(data: dict, key: str, value_key: str) -> List[Any]:
+    def get_data_key_as_list_of_values(data: dict, key: str, value_key: str) -> list[Any]:
         data_list = Client.get_data_key_as_list(data, key)
         return [value_data[value_key] for value_data in data_list]
 
@@ -281,7 +278,7 @@ class Client(BaseClient):
     @staticmethod
     def is_indicator_malicious(data: dict) -> bool:
         benign = Client.get_nested_data_key(data, 'benign', 'value')
-        return False if benign is None or benign is True else True
+        return not (benign is None or benign is True)
 
     @staticmethod
     def get_context_from_response(data: dict) -> dict:
@@ -330,9 +327,9 @@ def perform_test_module(client: Client):
     client.perform_test_request()
 
 
-def domain_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    domains: List[str] = argToList(args.get('domain'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def domain_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    domains: list[str] = argToList(args.get('domain'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for domain in domains:
         enrichment_data: EnrichmentOutput = client.enrich_indicator(domain, 'domain')
@@ -351,9 +348,9 @@ def domain_command(client: Client, args: dict) -> List[EnrichmentOutput]:
     return enrichment_data_list
 
 
-def email_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    emails: List[str] = argToList(args.get('email'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def email_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    emails: list[str] = argToList(args.get('email'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for email in emails:
         enrichment_data: EnrichmentOutput = client.enrich_indicator(email, 'email')
@@ -366,9 +363,9 @@ def email_command(client: Client, args: dict) -> List[EnrichmentOutput]:
     return enrichment_data_list
 
 
-def ip_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    ips: List[str] = argToList(args.get('ip'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def ip_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    ips: list[str] = argToList(args.get('ip'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for ip in ips:
         enrichment_data: EnrichmentOutput = client.enrich_indicator(ip, 'ip')
@@ -381,9 +378,9 @@ def ip_command(client: Client, args: dict) -> List[EnrichmentOutput]:
     return enrichment_data_list
 
 
-def file_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    files: List[str] = argToList(args.get('file'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def file_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    files: list[str] = argToList(args.get('file'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for file in files:
         enrichment_data: EnrichmentOutput = client.enrich_indicator(file, 'file')
@@ -398,9 +395,9 @@ def file_command(client: Client, args: dict) -> List[EnrichmentOutput]:
     return enrichment_data_list
 
 
-def analyst1_enrich_string_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    strings: List[str] = argToList(args.get('string'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def analyst1_enrich_string_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    strings: list[str] = argToList(args.get('string'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for string in strings:
         enrichment_data_list.append(client.enrich_indicator(string, 'string'))
@@ -408,9 +405,9 @@ def analyst1_enrich_string_command(client: Client, args: dict) -> List[Enrichmen
     return enrichment_data_list
 
 
-def analyst1_enrich_ipv6_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    ips: List[str] = argToList(args.get('ip'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def analyst1_enrich_ipv6_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    ips: list[str] = argToList(args.get('ip'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for ip in ips:
         enrichment_data_list.append(client.enrich_indicator(ip, 'ipv6'))
@@ -418,9 +415,9 @@ def analyst1_enrich_ipv6_command(client: Client, args: dict) -> List[EnrichmentO
     return enrichment_data_list
 
 
-def analyst1_enrich_mutex_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    mutexes: List[str] = argToList(args.get('mutex'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def analyst1_enrich_mutex_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    mutexes: list[str] = argToList(args.get('mutex'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for mutex in mutexes:
         enrichment_data_list.append(client.enrich_indicator(mutex, 'mutex'))
@@ -428,9 +425,9 @@ def analyst1_enrich_mutex_command(client: Client, args: dict) -> List[Enrichment
     return enrichment_data_list
 
 
-def analyst1_enrich_http_request_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    http_requests: List[str] = argToList(args.get('http-request'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def analyst1_enrich_http_request_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    http_requests: list[str] = argToList(args.get('http-request'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for http_request in http_requests:
         enrichment_data_list.append(client.enrich_indicator(http_request, 'httpRequest'))
@@ -438,9 +435,9 @@ def analyst1_enrich_http_request_command(client: Client, args: dict) -> List[Enr
     return enrichment_data_list
 
 
-def url_command(client: Client, args: dict) -> List[EnrichmentOutput]:
-    urls: List[str] = argToList(args.get('url'))
-    enrichment_data_list: List[EnrichmentOutput] = []
+def url_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+    urls: list[str] = argToList(args.get('url'))
+    enrichment_data_list: list[EnrichmentOutput] = []
 
     for url in urls:
         enrichment_data: EnrichmentOutput = client.enrich_indicator(url, 'url')
@@ -454,20 +451,20 @@ def url_command(client: Client, args: dict) -> List[EnrichmentOutput]:
 
 
 def argsToStr(args: dict, key: str) -> str:
-    arg: Optional[Any] = args.get(key)
+    arg: Any | None = args.get(key)
     if arg is None:
         return ''
     return str(arg)
 
 
 def argsToInt(args: dict, key: str, default: int) -> int:
-    arg: Optional[Any] = args.get(key)
+    arg: Any | None = args.get(key)
     if arg is None:
         return default
     return int(arg)
 
 
-def analyst1_get_indicator(client: Client, args) -> Optional[CommandResults]:
+def analyst1_get_indicator(client: Client, args) -> CommandResults | None:
     raw_data = client.get_indicator(argsToStr(args, 'indicator_id'))
     if len(raw_data) > 0:
         command_results = CommandResults(
@@ -479,7 +476,7 @@ def analyst1_get_indicator(client: Client, args) -> Optional[CommandResults]:
     return None
 
 
-def analyst1_batch_check_command(client: Client, args) -> Optional[CommandResults]:
+def analyst1_batch_check_command(client: Client, args) -> CommandResults | None:
     raw_data = client.get_batch_search(argsToStr(args, 'values'))
     # assume succesful result or client will have errored
     if len(raw_data['results']) > 0:
@@ -493,7 +490,7 @@ def analyst1_batch_check_command(client: Client, args) -> Optional[CommandResult
     return None
 
 
-def analyst1_batch_check_post(client: Client, args: dict) -> Optional[dict]:
+def analyst1_batch_check_post(client: Client, args: dict) -> dict | None:
     runpath = 'values'
     values = args.get('values')
     if values is None or not values:
@@ -544,7 +541,7 @@ def analyst1_batch_check_post(client: Client, args: dict) -> Optional[dict]:
     return None
 
 
-def analyst1_evidence_submit(client: Client, args: dict) -> Optional[CommandResults]:
+def analyst1_evidence_submit(client: Client, args: dict) -> CommandResults | None:
     raw_data = client.post_evidence(argsToStr(args, 'fileName'),
                                     argsToStr(args, 'fileContent'), argsToStr(args, 'fileEntryId'),
                                     argsToStr(args, 'fileClassification'), argsToStr(args, 'tlp'), argsToStr(args, 'sourceId'))
@@ -559,7 +556,7 @@ def analyst1_evidence_submit(client: Client, args: dict) -> Optional[CommandResu
     return command_results
 
 
-def analyst1_evidence_status(client: Client, args: dict) -> Optional[CommandResults]:
+def analyst1_evidence_status(client: Client, args: dict) -> CommandResults | None:
     raw_data = client.get_evidence_status(argsToStr(args, 'uuid'))
 
     if not raw_data or raw_data is None:
@@ -581,7 +578,7 @@ def analyst1_evidence_status(client: Client, args: dict) -> Optional[CommandResu
 
 
 def a1_tasking_array_from_indicators(indicatorsJson: dict) -> list:
-    taskings_list: List[dict] = []
+    taskings_list: list[dict] = []
     for ioc in indicatorsJson:
         # each IOC or each HASH gets insertd for outward processing
         # convert ID to STR to make output consistent
@@ -608,7 +605,7 @@ def a1_tasking_array_from_indicators(indicatorsJson: dict) -> list:
 
 
 def a1_tasking_array_from_rules(rulesJson: dict) -> list:
-    taskings_list: List[dict] = []
+    taskings_list: list[dict] = []
     # convert ID to STR to make output consistent
     for rule in rulesJson:
         listRule = {
@@ -620,7 +617,7 @@ def a1_tasking_array_from_rules(rulesJson: dict) -> list:
     return taskings_list
 
 
-def analyst1_get_sensor_taskings_command(client: Client, args: dict) -> List[CommandResults]:
+def analyst1_get_sensor_taskings_command(client: Client, args: dict) -> list[CommandResults]:
     raw_data = client.get_sensor_taskings(argsToStr(args, 'sensor_id'), argsToInt(args, 'timeout', 200))
 
     simplified_data: dict = raw_data.copy()
@@ -637,7 +634,7 @@ def analyst1_get_sensor_taskings_command(client: Client, args: dict) -> List[Com
         rules_taskings = a1_tasking_array_from_rules(simplified_data['rules'])
         del simplified_data['rules']
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings',
@@ -666,7 +663,7 @@ def analyst1_get_sensor_taskings_command(client: Client, args: dict) -> List[Com
     return command_results_list
 
 
-def analyst1_get_sensors_command(client: Client, args: dict) -> Optional[CommandResults]:
+def analyst1_get_sensors_command(client: Client, args: dict) -> CommandResults | None:
     sensor_raw_data = client.get_sensors(argsToInt(args, 'page', 1), argsToInt(args, 'pageSize', 50))
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorList',
@@ -678,7 +675,7 @@ def analyst1_get_sensors_command(client: Client, args: dict) -> Optional[Command
     return command_results
 
 
-def analyst1_get_sensor_diff(client: Client, args: dict) -> List[CommandResults]:
+def analyst1_get_sensor_diff(client: Client, args: dict) -> list[CommandResults]:
     raw_data = client.get_sensor_diff(argsToStr(args, 'sensor_id'), argsToStr(args, 'version'), argsToInt(args, 'timeout', 200))
     # CommandResults creates both "outputs" and "human readable" in one go using updated XSOAR capabilities
 
@@ -706,7 +703,7 @@ def analyst1_get_sensor_diff(client: Client, args: dict) -> List[CommandResults]
         rules_removed = a1_tasking_array_from_rules(simplified_data['rulesRemoved'])
         del simplified_data['rulesRemoved']
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     command_results = CommandResults(
         outputs_prefix='Analyst1.SensorTaskings',
@@ -811,12 +808,12 @@ def main():
         if command == 'analyst1-indicator-by-id':
             analyst1_get_indicator(client, demisto.args())
         elif command in commands:
-            enrichment_outputs: List[EnrichmentOutput] = commands[command](client, demisto.args())
+            enrichment_outputs: list[EnrichmentOutput] = commands[command](client, demisto.args())
             [e.return_outputs() for e in enrichment_outputs]
     except DemistoException as e:
         if '[404]' in str(e):
             demisto.results('No Results')
-            return None
+            return
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]\nTrace:\n{traceback.format_exc()}'
         return_error(err_msg, error=e)
     return
