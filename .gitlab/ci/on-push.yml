@@ -474,6 +474,11 @@ slack-notify-nightly-build:
       else
         echo "No modeling rules were marked for testing during test collection"
       fi
+      if [[ -s schema_dataset_mappings_report.csv ]]; then
+        cp schema_dataset_mappings_report.csv $ARTIFACTS_FOLDER/schema_dataset_mappings_report.csv
+      else
+        echo "did not find the schema_dataset_mappings_report.csv file"
+      fi
     - section_end "Test Modeling Rules"
 
     - section_start "Cloud Machine information"
