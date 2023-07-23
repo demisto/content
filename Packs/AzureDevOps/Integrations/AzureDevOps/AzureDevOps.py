@@ -511,7 +511,7 @@ class Client:
         params = {"api-version": 7.0}
 
         full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
-                   f'_apis/wit/workitems/${args.get("type")}'
+                   f'_apis/wit/workitems/${args["type"]}'
 
         return self.ms_client.http_request(method='POST',
                                            headers={"Content-Type": "application/json-patch+json"},
@@ -528,7 +528,7 @@ class Client:
         params = {"api-version": 7.0}
 
         full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
-                   f'_apis/wit/workitems/{args.get("item_id")}'
+                   f'_apis/wit/workitems/{args["item_id"]}'
 
         return self.ms_client.http_request(method='PATCH',
                                            headers={"Content-Type": "application/json-patch+json"},
@@ -540,12 +540,12 @@ class Client:
     @staticmethod
     def file_pre_process_body_request(change_type: str, args: Dict[str, Any]) -> dict:
         # pre-process branch
-        branch_name = args.get("branch_name")
-        branch_id = args.get("branch_id")
+        branch_name = args["branch_name"]  # required
+        branch_id = args["branch_id"]  # required
         branch_details = [{"name": branch_name, "oldObjectId": branch_id}]
 
         # pre-process commit
-        comment = args.get("commit_comment")  # required
+        comment = args["commit_comment"]  # required
         file_path = args.get("file_path", "")
         file_content = args.get("file_content", "")
 
@@ -612,6 +612,46 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
+    def branch_create_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+
+        # initialize new branch - this is the syntax
+        args["branch_id"] = "0000000000000000000000000000000000000000"
+
+        data = self.file_pre_process_body_request("add", args)
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
+                   f'_apis/git/repositories/{org_repo_project_tuple.repository}/pushes'
+
+        return self.ms_client.http_request(method='POST',
+                                           full_url=full_url,
+                                           params=params,
+                                           json_data=data,
+                                           resp_type='json')
+
+    def pull_request_thread_create_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+
+        data = {
+                  "comments": [
+                    {
+                      "parentCommentId": 0,
+                      "content": args["comment_text"],
+                      "commentType": 1
+                    }
+                  ],
+                  "status": 1
+                }
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
+                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{args["pull_request_id"]}/threads'
+
+        return self.ms_client.http_request(method='POST',
+                                           full_url=full_url,
+                                           params=params,
+                                           json_data=data,
+                                           resp_type='json')
 
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
     """
@@ -2055,6 +2095,47 @@ def file_content_get_command(client: Client, args: Dict[str, Any], organization:
         raw_response=response
     )
 
+def branch_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                          project: Optional[str]) -> CommandResults:
+    """
+    Create a branch.
+    """
+    # pre-processing inputs
+    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.branch_create_request(org_repo_project_tuple, args=args)
+
+    readable_output = f'Branch {response.get("refUpdates", [])[0].get("name")} was created successfully by' \
+                      f' {response.get("pushedBy", {}).get("displayName")}.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.Branch',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def pull_request_thread_create_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                       repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+    """
+    Create a thread in a pull request.
+    """
+    # pre-processing inputs
+    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.pull_request_thread_create_request(org_repo_project_tuple, args=args)
+
+    readable_output = f'Thread {response.get("id")} was created successfully by' \
+                      f' {response.get("comments", [])[0].get("author", {}).get("displayName")}.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.PullRequestThread',
+        outputs=response,
+        raw_response=response
+    )
+
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
@@ -2287,6 +2368,14 @@ def main() -> None:
         elif command == 'azure-devops-file-content-get':
             return_results(file_content_get_command(client, args, params.get('organization'),
                                                     params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-branch-create':
+            return_results(branch_create_command(client, args, params.get('organization'),
+                                                 params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-pull-request-thread-create':
+            return_results(pull_request_thread_create_command(client, args, params.get('organization'),
+                                                              params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
