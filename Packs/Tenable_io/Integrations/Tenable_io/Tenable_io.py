@@ -150,12 +150,18 @@ HEADERS = AUTH_HEADERS | {
     'User-Agent': USER_AGENT_HEADERS_VALUE
 }
 USE_SSL = not PARAMS['unsecure']
+USE_PROXY = PARAMS['proxy']
 
-if not PARAMS['proxy']:
+if not USE_PROXY:
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
+
+class TenableOIClient(BaseClient):
+
+    def __init__(self, ok_codes=(), auth=None, timeout=None):
+        super().__init__(BASE_URL, USE_SSL, USE_PROXY, set(ok_codes) | {200, 201, 204}, HEADERS, auth, timeout=timeout or BaseClient.REQUESTS_TIMEOUT)
 
 
 def flatten(d):
@@ -1245,42 +1251,40 @@ def get_scan_history_command(args: dict[str, Any]) -> CommandResults:
         raw_response=response_dict)
 
 
-def export_scan_request_args(
-        scanId: str, historyId=None, historyUuid=None, chapters=None,
-        filterSearchType=None, assetId=None, filterName=None,
-        filterQuality=None, filterValue=None, **args) -> dict:
+def export_scan_body(args: dict) -> dict:
 
-    if chapters:
+    if chapters := args.get('chapters'):
         chapters = ';'.join(argToList(chapters))
     elif args['format'] in ('PDF', 'HTML'):
         raise DemistoException('The "chapters" field must be provided for PDF or HTML formats.')
 
-    url = f'{BASE_URL}scans/{scanId}/export'
-    params = {
-        'history_id': historyId,
-        'history_uuid': historyUuid,
-    }
     body = {
         'format': args['format'].lower(),
         'chapters': chapters,
-        'filter.search_type': (filterSearchType or '').lower(),
-        'asset_id': assetId,
+        'filter.search_type': args.get('filterSearchType', '').lower(),
+        'asset_id': args.get('assetId'),
     }
-    for i, (name, quality, value)\
-            in enumerate(zip(*map(argToList, (filterName, filterQuality, filterValue)))):
+
+    filter_lists = (argToList(args.get(f)) for f in ('filterName', 'filterQuality', 'filterValue'))
+    for i, (name, quality, value) in enumerate(zip(*filter_lists)):
         body |= {
             f'filter.{i}.filter': name,
             f'filter.{i}.quality': quality,
             f'filter.{i}.value': value,
         }
-    remove_nulls_from_dictionary(params)
+
     remove_nulls_from_dictionary(body)
-    return {'url': url, 'params': params, 'json': body}
+    return body
 
 
 def initiate_export_scan(args: dict) -> str:
     response = requests.post(
-        **export_scan_request_args(**args),
+        f'{BASE_URL}scans/{args["scanId"]}/export',
+        params=remove_empty_elements({
+            'history_id': args.get('historyId'),
+            'history_uuid': args.get('historyUuid'),
+        }),
+        json=export_scan_body(args),
         headers=HEADERS, verify=USE_SSL)
     response_json = get_json(response)
 
