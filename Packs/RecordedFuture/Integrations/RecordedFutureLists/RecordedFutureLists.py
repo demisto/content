@@ -12,7 +12,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 
 # === === === === === === === === === === === === === === ===
@@ -91,7 +91,7 @@ class Client(BaseClient):
     ################ Entity operations #################
     ####################################################
 
-    def entity_add(self) -> Dict[str, Any]:
+    def entity_operation(self, operation) -> Dict[str, Any]:
         parsed_args = demisto.args()
 
         list_id = parsed_args.pop("list_id")
@@ -111,7 +111,16 @@ class Client(BaseClient):
             )
 
         return self._call(
-            url_suffix=f'/v2/lists/{list_id}/entities/add', demisto_args=parsed_args
+            url_suffix=f'/v2/lists/{list_id}/entities/{operation}',
+            demisto_args=parsed_args,
+        )
+
+    def entity_fetch(self) -> Dict[str, Any]:
+        parsed_args = demisto.args()
+        if list_ids := parsed_args.get("list_ids"):
+            parsed_args["list_ids"] = list_ids.split(",")
+        return self._call(
+            url_suffix=f'/v2/lists/entities/lookup', demisto_args=parsed_args
         )
 
 
@@ -160,7 +169,15 @@ class Actions:
         #######################################################
 
     def entity_add_command(self) -> List[CommandResults]:
-        response = self.client.entity_add()
+        response = self.client.entity_operation("add")
+        return self._process_result_actions(response=response)
+
+    def entity_remove_command(self) -> List[CommandResults]:
+        response = self.client.entity_operation("remove")
+        return self._process_result_actions(response=response)
+
+    def entities_get_command(self) -> List[CommandResults]:
+        response = self.client.entity_fetch()
         return self._process_result_actions(response=response)
 
 
@@ -220,13 +237,18 @@ def main() -> None:
 
         elif command == 'recordedfuture-lists-search':
             return_results(actions.list_search_command())
-
         #######################################################
         ################## Entity commands ####################
         #######################################################
 
         elif command == 'recordedfuture-lists-add-entities':
             return_results(actions.entity_add_command())
+
+        elif command == 'recordedfuture-lists-remove-entities':
+            return_results(actions.entity_remove_command())
+
+        elif command == 'recordedfuture-lists-entities':
+            return_results(actions.entities_get_command())
 
     except Exception as e:
         return_error(message=f'Failed to execute {demisto.command()} command: {str(e)}')
