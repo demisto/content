@@ -136,10 +136,24 @@ def test_querying_invalid_dynamic_address_group_response(mocker, client):
     assert dag.readable_output == 'Dynamic Address Group dag_test_ag was not found.'
 
 
-def test_token_generator():
+@pytest.mark.parametrize('version , output',
+                         [('9.0.0', 'f6f4061a1bddc1c04d8109b39f581270'),
+                          ('10.2.1', '590c9f8430c7435807df8ba9a476e3f1295d46ef210f6efae2043a4c085a569e')])
+def test_token_generator(mocker, version, output):
+    """
+    Given:
+        version of PAN-OS.
+    When:
+        running token_generator.
+    Then:
+        return the correct token.
+        case 1: PAN-OS 9.0.0 should return a token generated with md5.
+        case 2: PAN-OS 10.2.1 should return a token generated with sha256.
+    """
+    mocker.patch('PANOSPolicyOptimizer.VERSION', version)
     client = get_firewall_instance_client()
     client.session_metadata['cookie_key'] = 'test'
-    assert client.token_generator() == 'f6f4061a1bddc1c04d8109b39f581270'
+    assert client.token_generator() == output
 
 
 def test_extract_csrf():
