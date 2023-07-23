@@ -411,7 +411,7 @@ tasks:
       id: d497f319-1eaa-49cb-8b7e-f3e2100becce
       version: -1
       name: Get List ID
-      description: Search for lists in Recorded Future
+      description: Search for lists in Recorded Future.
       script: RecordedFutureLists|||recordedfuture-lists-search
       type: regular
       iscommand: true
