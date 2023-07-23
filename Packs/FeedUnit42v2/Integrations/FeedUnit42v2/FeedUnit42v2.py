@@ -199,8 +199,6 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: Opti
     for report_object in report_objects:
         if is_sub_report(report_object):
             continue
-        if report_object.get('id') == 'report--70d827ca-ec87-423a-8ad5-b5eb94f86ae2':
-            print(5)
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = ThreatIntel.ObjectsNames.REPORT
@@ -713,6 +711,8 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client, feed_tags, tlp_color, create_relationships)
+            for i in indicators:
+                i['value'] = f'{i.get("value")}[{i.get("type")}]'
             for iter_ in batch(indicators, batch_size=2000):
                 try:
                     demisto.createIndicators(iter_)
