@@ -1,0 +1,19 @@
+{
+    "name": "CTF - Cloud IAM Incident",
+    "description": "Not so easy... Follow the instrucstion to set up your enviorment and enjoy the challange.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
