@@ -16,32 +16,39 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: |-
     ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON.
     Only required if the XSOAR instance is running on AWS or Azure cloud solutions.
   display: Project ID
   name: project_id
   type: 0
+  required: false
 - additionalinfo: ID of subscription from which to fetch incidents.
   display: Subscription ID
   name: subscription_id
   type: 0
+  required: false
 - additionalinfo: The maximum number of incidents to fetch every time.
   defaultvalue: '50'
   display: Max Incidents
   name: max_fetch
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: Enables to trust on all certificates
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Enables system proxy settings
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Security Command Center is a security and risk management platform for Google Cloud. Security Command Center enables you to understand your security and data attack surface by providing asset inventory and discovery, identifying vulnerabilities and threats, and helping you mitigate and remediate risks across an organization. This integration helps you to perform tasks related to findings and assets.
 display: Google Cloud SCC
 name: GoogleCloudSCC
@@ -552,7 +559,7 @@ script:
     - contextPath: GoogleCloudSCC.Finding.securityMarks.marks
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.64100
+  dockerimage: demisto/google-api-py3:1.0.0.65791
   isfetch: true
   runonce: false
   script: '-'
