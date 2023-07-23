@@ -5474,6 +5474,11 @@
         {
             "integrations": "Kaspersky Security Center",
             "playbookID": "Kaspersky Security Center - Test"
+        },
+        {
+            "integrations": "Forcepoint Security Management Center",
+            "playbookID": "ForcepointSecurityManagementCenter_test",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
