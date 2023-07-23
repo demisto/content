@@ -29,7 +29,6 @@ from StringSimilarity import stringSimilarity
 def test_string_similarity(first_string, second_string, similarity_threshold, expected_result):
     try:
         result = stringSimilarity(first_string, second_string, similarity_threshold)
-        print(result.outputs)
         assert result.outputs == expected_result
     except ValueError as e:
         assert "No similarity score calculated" in str(e)

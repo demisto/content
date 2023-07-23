@@ -374,15 +374,6 @@
                         "i": "caseinfoid-e8540fc1-1426-11ee-a737-19f59cf74e83",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "stringssimilarity",
-                                "height": 26,
-                                "id": "e8540fc0-1426-11ee-a737-19f59cf74e83",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "incidentrdpachehuntingstringssimilarity",
@@ -410,17 +401,6 @@
                         "hideName": false,
                         "i": "caseinfoid-f42767c1-1426-11ee-a737-19f59cf74e83",
                         "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "stringsifter",
-                                "height": 26,
-                                "id": "f42767c0-1426-11ee-a737-19f59cf74e83",
-                                "index": 0,
-                                "listId": "caseinfoid-cd59c980-0cde-11ed-89d1-e5ac65360f00",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "incidentrdpcachehuntingstringsifter",
