@@ -44,7 +44,7 @@ Open your Apache Web Server instance, and follow these instructions [Documentati
 ```
 10. Restart Apache to complete the syslog configuration.
 
-* Pay attention: Timestamp Parsing is only available for the default **%t** format: \[%d/%b/%Y<\Key>%H:%M:%S %z\] 
+* Pay attention: Timestamp Parsing is only available for the default **%t** format: `\[%d/%b/%Y<\Key>%H:%M:%S %z\] `
 
 ## Collect Events from Vendor
 
