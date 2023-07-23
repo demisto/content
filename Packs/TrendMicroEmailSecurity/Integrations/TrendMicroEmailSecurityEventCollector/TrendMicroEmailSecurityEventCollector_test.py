@@ -4,7 +4,7 @@ from freezegun import freeze_time
 from TrendMicroEmailSecurityEventCollector import (
     Client,
     set_first_fetch,
-    managing_set_last_run,
+    # managing_set_last_run,
     fetch_by_event_type,
     fetch_events_command,
     remove_sensitive_from_events,
