@@ -14,7 +14,7 @@ This automation calculates the similarity ratio between text and a list of strin
 ---
 This script is used in the following playbooks and scripts.
 
-* RDP Bitmap Cache - Detect and Hunt
+RDP Bitmap Cache - Detect and Hunt
 
 ## Inputs
 
