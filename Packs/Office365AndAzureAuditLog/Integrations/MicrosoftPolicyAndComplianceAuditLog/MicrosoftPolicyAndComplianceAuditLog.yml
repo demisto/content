@@ -2,6 +2,9 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: MicrosoftPolicyAndComplianceAuditLog
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - displaypassword: Certificate Password
   display: Certificate
@@ -151,6 +154,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/powershell-ubuntu:7.3.0.49844
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
+fromversion: 5.5.0
 tests:
 - Audit Log - Test
