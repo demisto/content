@@ -286,9 +286,7 @@ def main():
         pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
-    # assign reviewers / request review from
-
-    # Parse reviewers from JSON
+    # Parse PR reviewers from JSON and assign them
     # Exit if JSON doesn't exist or not parsable
     content_roles_path = Path(get_env_var(CONTENT_ROLES_PATH_ENV_KEY, CONTENT_ROLES_RELATIVE_PATH))
     if content_roles_path.exists():
@@ -300,6 +298,10 @@ def main():
                 sys.exit(1)
 
         content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+
+        print(f"Content Reviewers: {','.join(content_reviewers)}")
+        print(f"Security Reviewer: {security_reviewer}")
+
         content_reviewer = determine_reviewer(content_reviewers, content_repo)
         pr.add_to_assignees(content_reviewer)
         reviewers = [content_reviewer]
