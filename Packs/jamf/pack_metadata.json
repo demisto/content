@@ -2,15 +2,7 @@
     "name": "Jamf",
     "description": "Jamf device management",
     "support": "xsoar",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "currentVersion": "2.1.15",
-=======
     "currentVersion": "2.1.16",
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    "currentVersion": "2.1.16",
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

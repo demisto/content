@@ -1,13 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-<<<<<<< HEAD
-<<<<<<< HEAD
-from typing import Dict, List, Optional, Union
-=======
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
 import dateparser
 import requests
@@ -39,15 +32,7 @@ class Client(BaseClient):
             }
         )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def get_ip_reputation(self, ip: str, api_key) -> Dict[str, Any]:
-=======
     def get_ip_reputation(self, ip: str, api_key) -> dict[str, Any]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    def get_ip_reputation(self, ip: str, api_key) -> dict[str, Any]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         return self._http_request(
             method='GET',
             url_suffix='/info.php?',
@@ -58,15 +43,7 @@ class Client(BaseClient):
             }
         )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def get_domain_reputation(self, domain: str, api_key) -> Dict[str, Any]:
-=======
     def get_domain_reputation(self, domain: str, api_key) -> dict[str, Any]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    def get_domain_reputation(self, domain: str, api_key) -> dict[str, Any]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         return self._http_request(
             method='GET',
             url_suffix='/info.php?',
@@ -77,15 +54,7 @@ class Client(BaseClient):
             }
         )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def get_url_reputation(self, url: str, api_key) -> Dict[str, Any]:
-=======
     def get_url_reputation(self, url: str, api_key) -> dict[str, Any]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    def get_url_reputation(self, url: str, api_key) -> dict[str, Any]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         return self._http_request(
             method='GET',
             url_suffix='/info.php?',
@@ -96,15 +65,7 @@ class Client(BaseClient):
             }
         )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def post_value_scan(self, value: str, probe: str, api_key) -> Dict[str, Any]:
-=======
     def post_value_scan(self, value: str, probe: str, api_key) -> dict[str, Any]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    def post_value_scan(self, value: str, probe: str, api_key) -> dict[str, Any]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         return self._http_request(
             method='POST',
             url_suffix='/analyze.php',
@@ -116,15 +77,7 @@ class Client(BaseClient):
             }
         )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def get_value_scan(self, qid: str, api_key) -> Dict[str, Any]:
-=======
     def get_value_scan(self, qid: str, api_key) -> dict[str, Any]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    def get_value_scan(self, qid: str, api_key) -> dict[str, Any]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         return self._http_request(
             method='GET',
             url_suffix='/analyze.php?',
@@ -139,22 +92,6 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
-    """Converts whois date format to an ISO8601 string
-
-    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
-    in a datetime. If a list is returned with multiple elements, takes only
-    the first one.
-
-    :type domain_date: ``Union[List[str],str]``
-    :param severity:
-        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-
-=======
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 def parse_domain_date(domain_date: list[str] | str, date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> str | None:
     """Converts whois date format to an ISO8601 string
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
@@ -163,10 +100,6 @@ def parse_domain_date(domain_date: list[str] | str, date_format: str = '%Y-%m-%d
     :type domain_date: ``Union[List[str],str]``
     :param severity:
         a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-<<<<<<< HEAD
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     :return: Parsed time in ISO8601 format
     :rtype: ``Optional[str]``
     """
@@ -208,28 +141,12 @@ def test_module(client: Client, api_key) -> str:
     return 'ok'
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
-=======
 def ip_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-def ip_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    command_results: List[CommandResults] = []
-=======
     command_results: list[CommandResults] = []
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    command_results: list[CommandResults] = []
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     for ip in ips:
         try:
             ip_data = client.get_ip_reputation(ip, api_key)
@@ -289,28 +206,12 @@ def ip_reputation_command(client: Client, args: dict[str, Any], api_key) -> list
     return command_results
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
-=======
 def domain_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-def domain_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     domains = argToList(args.get('domain'))
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    command_results: List[CommandResults] = []
-=======
     command_results: list[CommandResults] = []
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    command_results: list[CommandResults] = []
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     for domain in domains:
         try:
             domain_data = client.get_domain_reputation(domain, api_key)
@@ -370,29 +271,13 @@ def domain_reputation_command(client: Client, args: dict[str, Any], api_key) -> 
     return command_results
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
-=======
 def url_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-def url_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
     urls = argToList(args.get('url'))
     if len(urls) == 0:
         raise ValueError('URL(s) not specified')
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    command_results: List[CommandResults] = []
-=======
     command_results: list[CommandResults] = []
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    command_results: list[CommandResults] = []
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     for url in urls:
         try:
             url_data = client.get_url_reputation(url, api_key)
@@ -447,37 +332,14 @@ def url_reputation_command(client: Client, args: dict[str, Any], api_key) -> lis
     return command_results
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-def scan_value_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
-=======
 def scan_value_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-def scan_value_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     values = argToList(args.get('value'))
     if len(values) == 0:
         raise ValueError('Value(s) not specified')
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if args.get('scan_type') == 'passiv':
-        scan_type_value = '0'
-    else:
-        scan_type_value = '1'
-
-    command_results: List[CommandResults] = []
-=======
     scan_type_value = '0' if args.get('scan_type') == 'passiv' else '1'
 
     command_results: list[CommandResults] = []
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    scan_type_value = '0' if args.get('scan_type') == 'passiv' else '1'
-
-    command_results: list[CommandResults] = []
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     for value in values:
         try:
             value_data = client.post_value_scan(value, scan_type_value, api_key)
@@ -496,15 +358,7 @@ def scan_value_command(client: Client, args: dict[str, Any], api_key) -> list[Co
     return command_results
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
-=======
 def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Scan result command
     """
@@ -512,35 +366,15 @@ def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[C
     if len(qids) == 0:
         raise ValueError('QID(s) not specified')
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    command_results: List[CommandResults] = []
-=======
     command_results: list[CommandResults] = []
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-    command_results: list[CommandResults] = []
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     for qid in qids:
         try:
             qid_data = client.get_value_scan(qid, api_key)
             if 'data' in qid_data and qid_data['data']:
                 qid_data.update({'qid': qid, 'indicator': qid_data['data']['indicator']})
                 if qid_data['data']['type'] == 'url' or qid_data['data']['type'] == 'domain':
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    try:
-                        screenshot = requests.get(
-                            qid_data['data']['properties']['dom']['screenshot']
-                        )
-=======
                     if 'dom' in qid_data['data']['properties']:
                         screenshot = requests.get(qid_data['data']['properties']['dom']['screenshot'])
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-                    if 'dom' in qid_data['data']['properties']:
-                        screenshot = requests.get(qid_data['data']['properties']['dom']['screenshot'])
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
                         screenshot_file = fileResult(
                             qid_data['data']['properties']['dom']['screenshot'],
                             screenshot.content,
@@ -548,20 +382,8 @@ def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[C
                         )
                         screenshot_file['Type'] = entryTypes['image']
                         demisto.results(screenshot_file)
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    except DemistoException:
-                        raise DemistoException(
-                            f'Failed to execute {demisto.command()} command. Error: Problem getting the screenshot'
-                        )
-=======
                     else:
                         demisto.results("No screenshot available")
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-                    else:
-                        demisto.results("No screenshot available")
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
                 reputation = qid_data['data']['risk']
                 score = convert_to_xsoar_severity(reputation)
                 if qid_data['data']['type'] == 'url':
@@ -597,18 +419,6 @@ def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[C
                         score=score
                     )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    ip_indicator = Common.IP(
-                        ip=qid_data['data']['indicator'],
-                        asn=qid_data['data']['properties']['geo'].get('asn'),
-                        geo_country=qid_data['data']['properties']['geo'].get('country'),
-                        port=qid_data.get('data', {}).get('attributes', {}).get('port'),
-                        dbot_score=dbot_score
-                    )
-=======
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
                     if 'geo' in qid_data['data']['properties']:
                         ip_indicator = Common.IP(
                             ip=qid_data['data']['indicator'],
@@ -623,10 +433,6 @@ def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[C
                             ip=qid_data['data']['indicator'],
                             dbot_score=dbot_score
                         )
-<<<<<<< HEAD
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
                     command_results.append(CommandResults(
                         readable_output=tableToMarkdown(
@@ -648,17 +454,6 @@ def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[C
                         score=score
                     )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    domain_indicator = Common.Domain(
-                        domain=qid_data['data']['indicator'],
-                        domain_status=qid_data['data']['properties']['whois'].get('status'),
-                        name_servers=qid_data['data']['properties']['whois'].get('nserver'),
-                        dbot_score=dbot_score
-                    )
-=======
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
                     if 'whois' in qid_data['data']['properties']:
                         domain_indicator = Common.Domain(
                             domain=qid_data['data']['indicator'],
@@ -671,10 +466,6 @@ def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[C
                             domain=qid_data['data']['indicator'],
                             dbot_score=dbot_score
                         )
-<<<<<<< HEAD
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
                     command_results.append(CommandResults(
                         readable_output=tableToMarkdown(

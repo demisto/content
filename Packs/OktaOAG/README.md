@@ -19,16 +19,8 @@ This pack includes Cortex XSIAM content.
 6. Click ***Validate Forwarder***. The Access Gateway then attempts to validate the remote logger connection information. If required, correct any input errors. On successful validation, the **Validate Forwarder** button changes to **Forwarder Validated**.
 7. Click **Okay**. The log forwarder definition appears in the list of log forwarders.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 * Pay attention: Timestamp support is available for the format **%Y-%m-%d{Key}%H:%M:%E3S%Ez**.
 
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-* Pay attention: Timestamp support is available for the format **%Y-%m-%d{Key}%H:%M:%E3S%Ez**.
-
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 ## Collect Events from Vendor
 
 In order to use the collector, you can use the following option to collect events from the vendor:

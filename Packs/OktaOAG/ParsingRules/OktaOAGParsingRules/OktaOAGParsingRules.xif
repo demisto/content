@@ -1,20 +1,4 @@
 [INGEST:vendor="okta", product="oag", target_dataset="okta_oag_raw", no_hit=keep]
-<<<<<<< HEAD
-<<<<<<< HEAD
-alter 
-    tmp_date_part = arraystring(regextract(_raw_log, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
-    tmp_time_part = arraystring(regextract(_raw_log, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
-    tmp_mili_part = arraystring(regextract(_raw_log, "\.(\d{3})[\-|\+]"), "")
-| alter 
-    tmp_time_format = to_string(to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")), "seconds"))
-| alter 
-    tmp_timeseconds_string = to_integer(arraystring(arraycreate(tmp_time_format, tmp_mili_part), ""))
-| alter 
-    _time = to_timestamp(tmp_timeseconds_string, "millis")
-| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time_format, tmp_timeseconds_string;
-=======
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 filter _raw_log ~= "^(\d{4}\-\d{2}\-\d{2})[\s\w]\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}"
 | alter 
     tmp_date_part = arraystring(regextract(_raw_log, "^(\d{4}\-\d{2}\-\d{2})[\s\w]\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}"), ""),
@@ -24,9 +8,4 @@ filter _raw_log ~= "^(\d{4}\-\d{2}\-\d{2})[\s\w]\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2
     tmp_timestamp_format = concat(tmp_date_part, " ", arraystring(arraycreate(tmp_time_part, tmp_mili_zone_part), ""))
 | alter 
     _time = parse_timestamp("%Y-%m-%d %H:%M:%E3S%Ez", tmp_timestamp_format)
-<<<<<<< HEAD
 | fields -tmp_date_part, tmp_time_part, tmp_mili_zone_part, tmp_timestamp_format;
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-| fields -tmp_date_part, tmp_time_part, tmp_mili_zone_part, tmp_timestamp_format;
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c

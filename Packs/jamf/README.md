@@ -14,14 +14,7 @@ If an application on your Apple device has a security issue, you can check for t
 We are currently support the retrieval of webhooks events from jamf by using an HTTP Log Collector.
 In order to configure the webhooks on jamf's side, please read [this documentation](https://docs.jamf.com/10.31.0/jamf-pro/administrator-guide/Webhooks.html). 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 * Pay attention: Timestamp parsing is available for the the Epoch (UNIX) **eventTimestamp** object, under the **webhook** field.
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-* Pay attention: Timestamp parsing is available for the the Epoch (UNIX) **eventTimestamp** object, under the **webhook** field.
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
 ### HTTP Log Collector
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/external-data-ingestion/additional-log-ingestion-methods-for-cortex-xdr/set-up-an-http-log-collector-to-receive-logs).\

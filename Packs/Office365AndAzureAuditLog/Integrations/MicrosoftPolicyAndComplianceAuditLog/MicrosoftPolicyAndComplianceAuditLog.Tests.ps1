@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<# I'm here so build will pass #>
-=======
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 Describe "SearchAuditLogCommand Tests" {
     BeforeAll {
         . "$PSScriptRoot/MicrosoftPolicyAndComplianceAuditLog.ps1"
@@ -93,7 +87,3 @@ Describe "SearchAuditLogCommand Tests" {
         }
     }
 }
-<<<<<<< HEAD
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c

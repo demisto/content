@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-[INGEST:vendor="Cisco", product="Meraki", target_dataset="Cisco_Meraki_raw", no_hit=drop]
-alter tmp_epoch_time = arraystring(regextract(_raw_log, "\s(\d{9,10})\."), ""),
-    tmp_epoch_mili = arraystring(regextract(_raw_log, "\s\d+\.(\d{3})\d+"), "")
-| alter tmp_epoch_int = to_integer(concat(tmp_epoch_time, tmp_epoch_mili))
-| alter _time = to_timestamp(tmp_epoch_int, "millis")
-| fields -tmp_epoch_time, tmp_epoch_mili, tmp_epoch_int;
-=======
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 [INGEST:vendor="Cisco", product="Meraki", target_dataset="Cisco_Meraki_raw", no_hit=keep]
 filter _raw_log ~= "\s\d{9,10}\."
 | alter 
@@ -18,9 +7,4 @@ filter _raw_log ~= "\s\d{9,10}\."
     tmp_epoch_int = to_integer(concat(tmp_epoch_time, tmp_epoch_mili))
 | alter 
     _time = to_timestamp(tmp_epoch_int, "millis")
-<<<<<<< HEAD
 | fields -tmp_epoch_time, tmp_epoch_mili, tmp_epoch_int;
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-| fields -tmp_epoch_time, tmp_epoch_mili, tmp_epoch_int;
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c

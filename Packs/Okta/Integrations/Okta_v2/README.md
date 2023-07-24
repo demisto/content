@@ -14,14 +14,10 @@ Integration with Okta's cloud-based identity management service.
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
-
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 ### okta-unlock-user
-
 ***
 Unlocks a single user.
 
@@ -29,7 +25,6 @@ Unlocks a single user.
 #### Base Command
 
 `okta-unlock-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,15 +37,12 @@ Unlocks a single user.
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-unlock-user username=testForDocs@test.com```
 
 ##### Human Readable Output
->
->User <testForDocs@test.com> unlocked
+>User testForDocs@test.com unlocked
 
 ### okta-deactivate-user
-
 ***
 Deactivates a single user.
 
@@ -58,7 +50,6 @@ Deactivates a single user.
 #### Base Command
 
 `okta-deactivate-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -71,15 +62,12 @@ Deactivates a single user.
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-deactivate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
->
->User <testForDocs@test.com> deactivated
+>User testForDocs@test.com deactivated
 
 ### okta-activate-user
-
 ***
 Activates a single user.
 
@@ -87,7 +75,6 @@ Activates a single user.
 #### Base Command
 
 `okta-activate-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,15 +87,12 @@ Activates a single user.
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-activate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
->
->### <testForDocs@test.com> is active now
+>### testForDocs@test.com is active now
 
 ### okta-suspend-user
-
 ***
 Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
 
@@ -116,7 +100,6 @@ Suspends a single user. This operation can only be performed on users with an AC
 #### Base Command
 
 `okta-suspend-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,15 +112,12 @@ Suspends a single user. This operation can only be performed on users with an AC
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-suspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
->
->### <testForDocs@test.com> status is Suspended
+>### testForDocs@test.com status is Suspended
 
 ### okta-unsuspend-user
-
 ***
 Returns a single user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
 
@@ -145,7 +125,6 @@ Returns a single user to ACTIVE status. This operation can only be performed on 
 #### Base Command
 
 `okta-unsuspend-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,15 +137,12 @@ Returns a single user to ACTIVE status. This operation can only be performed on 
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-unsuspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
->
->### <testForDocs@test.com> is no longer SUSPENDED
+>### testForDocs@test.com is no longer SUSPENDED
 
 ### okta-get-user-factors
-
 ***
 Returns all the enrolled factors for the specified user.
 
@@ -174,7 +150,6 @@ Returns all the enrolled factors for the specified user.
 #### Base Command
 
 `okta-get-user-factors`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -196,11 +171,9 @@ Returns all the enrolled factors for the specified user.
 
 
 ##### Command Example
-
 ```!okta-get-user-factors username=factor@test.com```
 
 ##### Context Example
-
 ```
 {
     "Account": {
@@ -236,20 +209,16 @@ Returns all the enrolled factors for the specified user.
 ```
 
 ##### Human Readable Output
->
 >Factors for user: 00upt1w8tgFQM2v0h7
->
 >### Factors
->
 >|FactorType|ID|Profile|Provider|Status|
 >|---|---|---|---|---|
 >| sms | mbgt21nffaaN5F060h7 | phoneNumber: +12025550191 | OKTA | PENDING_ACTIVATION |
->| token:software:totp | uftptgdrDJ7fDOq0h7 | credentialId: <factor@test.com> | GOOGLE | PENDING_ACTIVATION |
+>| token:software:totp | uftptgdrDJ7fDOq0h7 | credentialId: factor@test.com | GOOGLE | PENDING_ACTIVATION |
 >| push | opfg1joeaArlg27g0h7 |  | OKTA | PENDING_ACTIVATION |
 
 
 ### okta-reset-factor
-
 ***
 Un-enrolls an existing factor for the specified user. This enables the user to enroll a new factor.
 
@@ -257,7 +226,6 @@ Un-enrolls an existing factor for the specified user. This enables the user to e
 #### Base Command
 
 `okta-reset-factor`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -272,15 +240,12 @@ Un-enrolls an existing factor for the specified user. This enables the user to e
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-reset-factor factorId=ufsq7cvptfbjQa72c0h7 userId=00upt1w8t40wFQM2v6t4```
 
 ##### Human Readable Output
->
 >Factor: ufsq7cvptfbjQa72c0h7 deleted
 
 ### okta-set-password
-
 ***
 Sets passwords without validating existing user credentials.
 
@@ -288,7 +253,6 @@ Sets passwords without validating existing user credentials.
 #### Base Command
 
 `okta-set-password`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -303,15 +267,12 @@ Sets passwords without validating existing user credentials.
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-set-password username=testForDocs@test.com password=N3wPa55word!```
 
 ##### Human Readable Output
->
-><testForDocs@test.com> password was last changed on 2020-03-26T13:57:13.000Z
+>testForDocs@test.com password was last changed on 2020-03-26T13:57:13.000Z
 
 ### okta-add-to-group
-
 ***
 Adds a user to a group with OKTA_GROUP type.
 
@@ -319,7 +280,6 @@ Adds a user to a group with OKTA_GROUP type.
 #### Base Command
 
 `okta-add-to-group`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -335,15 +295,12 @@ Adds a user to a group with OKTA_GROUP type.
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-add-to-group groupName=Demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
->
 >User: 00uqk1qesl3k0SRbH0h7 added to group: Demisto successfully
 
 ### okta-remove-from-group
-
 ***
 Removes a user from a group with OKTA_GROUP type
 
@@ -351,7 +308,6 @@ Removes a user from a group with OKTA_GROUP type
 #### Base Command
 
 `okta-remove-from-group`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -367,15 +323,12 @@ Removes a user from a group with OKTA_GROUP type
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-remove-from-group groupName=demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
->
 >User: 00uqk1qesl3k0SRbH0h7 was removed from group: demisto successfully
 
 ### okta-get-groups
-
 ***
 Returns all user groups associated with a specified user.
 
@@ -383,7 +336,6 @@ Returns all user groups associated with a specified user.
 #### Base Command
 
 `okta-get-groups`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -409,11 +361,9 @@ Returns all user groups associated with a specified user.
 
 
 ##### Command Example
-
 ```!okta-get-groups username=testForDocs@test.com```
 
 ##### Context Example
-
 ```
 {
     "Account": {
@@ -449,11 +399,8 @@ Returns all user groups associated with a specified user.
 ```
 
 ##### Human Readable Output
->
->Okta groups for user: <testForDocs@test.com>
->
+>Okta groups for user: testForDocs@test.com
 >### Groups
->
 >|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2016-04-12T15:01:50.000Z | All users in your organization | 00g66lckgAJpLcNc0h7 | 2020-03-26T13:56:49.000Z | 2016-04-12T15:01:50.000Z | Everyone | okta:user_group | BUILT_IN |
@@ -461,7 +408,6 @@ Returns all user groups associated with a specified user.
 
 
 ### okta-verify-push-factor
-
 ***
 Enrolls and verifies a push factor for the specified user.
 
@@ -469,7 +415,6 @@ Enrolls and verifies a push factor for the specified user.
 #### Base Command
 
 `okta-verify-push-factor`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -487,15 +432,12 @@ Enrolls and verifies a push factor for the specified user.
 
 
 ##### Command Example
-
 ```!okta-verify-push-factor factorId=opfpt1joeaArlg27g0h7 userId=00upt1w8t40wFQM2v0h7```
 
 ##### Human Readable Output
->
 >Verify push factor result for user 00upt1w8t40wgQM2v0h7: WAITING
 
 ##### Context Example
-
 ```
 {
     "factorResult": "WAITING",
@@ -539,7 +481,6 @@ Enrolls and verifies a push factor for the specified user.
 ```
 
 ### okta-search
-
 ***
 Searches for Okta users.
 
@@ -547,7 +488,6 @@ Searches for Okta users.
 #### Base Command
 
 `okta-search`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -575,11 +515,9 @@ Searches for Okta users.
 
 
 ##### Command Example
-
 ```!okta-search term=test verbose=true```
 
 ##### Context Example
-
 ```
 {
     "Account": [
@@ -623,52 +561,39 @@ Searches for Okta users.
 ```
 
 ##### Human Readable Output
->
 >Okta users found:
->User:<bartest@test.com>
->
+>User:bartest@test.com
 >### Profile
->
 >|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|
->| <bartest@test.com> | bar | test | <bartest@test.com> |  |  |
+>| bartest@test.com | bar | test | bartest@test.com |  |  |
 
-### Additional Data
-
+ ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-02-12T14:03:51.000Z | 2020-02-12T14:03:50.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00uppjeleqJQ2kkN80h7 |  | 2020-02-12T14:03:51.000Z |  | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "<https://yourdomain.okta.com/api/v1/users/00uppjeleqJQ2kkN80h7"}> |
-
-### User:<test@that.com>
-
+| 2020-02-12T14:03:51.000Z | 2020-02-12T14:03:50.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00uppjeleqJQ2kkN80h7 |  | 2020-02-12T14:03:51.000Z |  | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uppjeleqJQ2kkN80h7"} |
+### User:test@that.com
 ### Profile
-
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
-| <test@that.com> | test | that | <test@that.com> |  | <test@that.com> |
+| test@that.com | test | that | test@that.com |  | test@that.com |
 
-### Additional Data
-
+ ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-02-19T12:33:20.000Z | 2018-07-31T12:48:33.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00ufufhqits3y78Ju0h7 |  | 2020-02-19T12:33:20.000Z | 2020-02-06T13:32:56.000Z | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "<https://yourdomain.okta.com/api/v1/users/00ufufhqits3y78Ju0h7"}> |
-
-### User:<testForDocs@test.com>
-
+| 2020-02-19T12:33:20.000Z | 2018-07-31T12:48:33.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00ufufhqits3y78Ju0h7 |  | 2020-02-19T12:33:20.000Z | 2020-02-06T13:32:56.000Z | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00ufufhqits3y78Ju0h7"} |
+### User:testForDocs@test.com
 ### Profile
-
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
-| <testForDocs@test.com> | test | that | <testForDocs@test.com> |  |  |
+| testForDocs@test.com | test | that | testForDocs@test.com |  |  |
 
-### Additional Data
-
+ ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"}provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "<https://yourdomain.okta.com/api/v1/users/00uqk1qesl3k0SRbH0h7"}> |
+| 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"}provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uqk1qesl3k0SRbH0h7"} |
 
 ### okta-get-user
-
 ***
 Fetches information for a single user. You must enter one or more parameters for the command to run.
 
@@ -676,7 +601,6 @@ Fetches information for a single user. You must enter one or more parameters for
 #### Base Command
 
 `okta-get-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -703,11 +627,9 @@ Fetches information for a single user. You must enter one or more parameters for
 | Account.ManagerEmail | String | The manager email. | 
 
 ##### Command Example
-
 ```!okta-get-user username=testForDocs@test.com verbose=true```
 
 ##### Context Example
-
 ```
 {
     "Account": {
@@ -728,24 +650,19 @@ Fetches information for a single user. You must enter one or more parameters for
 ```
 
 ##### Human Readable Output
->
->### User:<testForDocs@test.com>
->
+>### User:testForDocs@test.com
 >### Profile
->
 >|Email|First Name|Last Name|Login|Manager|Manager Email|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|---|---|
->| <testForDocs@test.com> | test | that | <testForDocs@test.com> | <manager@test.com> |  |  |  |
+>| testForDocs@test.com | test | that | testForDocs@test.com | manager@test.com |  |  |  |
 
-### Additional Data
-
+ ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"} provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | links|
 
 
 ### okta-create-user
-
 ***
 Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
 
@@ -753,7 +670,6 @@ Creates a new user with an option of setting a password, recovery question, and 
 ##### Base Command
 
 `okta-create-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -815,11 +731,9 @@ Creates a new user with an option of setting a password, recovery question, and 
 
 
 ##### Command Example
-
 ```!okta-create-user email=testForDocs@test.com firstName=test lastName=that login=testForDocs@test.com password=Pa55word! passwordQuestion="whats is your favourite integration" passwordAnswer="Okta of course"```
 
 ##### Context Example
-
 ```
 {
     "Account": {
@@ -838,16 +752,13 @@ Creates a new user with an option of setting a password, recovery question, and 
 ```
 
 ##### Human Readable Output
->
->### Okta User Created: <testForDocs@test.com>:
->
+>### Okta User Created: testForDocs@test.com:
 >|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
 >|---|---|---|---|---|---|---|
->| test | 00uqk1qesl3k0SRbH0h7 |  | that | <testForDocs@test.com> |  | STAGED |
+>| test | 00uqk1qesl3k0SRbH0h7 |  | that | testForDocs@test.com |  | STAGED |
 
 
 ### okta-update-user
-
 ***
 Updates a user with a given login. All fields are optional. Fields which are not set, will not be overwritten.
 
@@ -855,7 +766,6 @@ Updates a user with a given login. All fields are optional. Fields which are not
 #### Base Command
 
 `okta-update-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -903,20 +813,16 @@ Updates a user with a given login. All fields are optional. Fields which are not
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-update-user username=testForDocs@test.com firstName="First Name Updated"```
 
 ##### Human Readable Output
->
->### Okta user: <testForDocs@test.com> Updated:
->
+>### Okta user: testForDocs@test.com Updated:
 >|email|firstName|lastName|login|mobilePhone|secondEmail|
 >|---|---|---|---|---|---|
->| <testForDocs@test.com> | First Name Updated | that | <testForDocs@test.com> |  |  |
+>| testForDocs@test.com | First Name Updated | that | testForDocs@test.com |  |  |
 
 
 ### okta-get-group-members
-
 ***
 Enumerates all users that are members of a group.
 
@@ -924,7 +830,6 @@ Enumerates all users that are members of a group.
 #### Base Command
 
 `okta-get-group-members`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -952,11 +857,9 @@ Enumerates all users that are members of a group.
 
 
 ##### Command Example
-
 ```!okta-get-group-members groupName=Demisto limit=1 verbose=true```
 
 ##### Context Example
-
 ```
 {
     "Account": {
@@ -974,26 +877,20 @@ Enumerates all users that are members of a group.
 ```
 
 ##### Human Readable Output
->
 >### Users for group: Demisto:
->
->### User:<Test@demisto.com>
->
+>### User:Test@demisto.com
 >### Profile
->
 >|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|
->| <XSOAR@demisto.com> | Test | Demisto | <XSOAR@demisto.com> |  |  |
+>| XSOAR@demisto.com | Test | Demisto | XSOAR@demisto.com |  |  |
 
-### Additional Data
-
+ ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-|  | 2016-04-12T15:01:52.000Z | password: {} recovery_question: {"question": "born city"} provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-12T09:54:36.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcyVcGzS0h7 | self: {"href": "<https://yourdomain.okta.com/api/v1/users/00uclpjidYi0h7"}> |
+|  | 2016-04-12T15:01:52.000Z | password: {} recovery_question: {"question": "born city"} provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-12T09:54:36.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uclpjidYi0h7"} |
 
 
 ### okta-list-groups
-
 ***
 Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
 
@@ -1001,13 +898,12 @@ Lists groups in your organization. A subset of groups can be returned that match
 #### Base Command
 
 `okta-list-groups`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Searches the name property of groups for matching values. | Optional | 
-| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/>type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit <https://developer.okta.com/docs/api/getting_started/design_principles#filtering>. | Optional | 
+| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/>type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
 | limit | The maximum number of results to return. The default is 200. Default is 200. | Optional | 
 
 
@@ -1026,11 +922,9 @@ Lists groups in your organization. A subset of groups can be returned that match
 
 
 ##### Command Example
-
 ```!okta-list-groups filter=`type eq "OKTA_GROUP" and lastUpdated lt "2019-04-30T00:00:00.000Z" and lastMembershipUpdated gt "2019-04-30T00:00:00.000Z"` query=demisto```
 
 ##### Context Example
-
 ```
 {
     "Okta": {
@@ -1050,16 +944,13 @@ Lists groups in your organization. A subset of groups can be returned that match
 ```
 
 ##### Human Readable Output
->
 >### Groups
->
 >|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2018-01-19T02:02:06.000Z |  | 00gdougctEaf7c50h7 | 2020-03-26T13:56:56.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
 
 
 ### okta-get-failed-logins
-
 ***
 Returns failed login events.
 
@@ -1067,7 +958,6 @@ Returns failed login events.
 #### Base Command
 
 `okta-get-failed-logins`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1117,11 +1007,9 @@ Returns failed login events.
 
 
 ##### Command Example
-
 ```!okta-get-failed-logins since="2019-04-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
-
 ```
 {
     "Okta": {
@@ -1222,16 +1110,13 @@ Returns failed login events.
 ```
 
 ##### Human Readable Output
->
 >### Failed Login Events
->
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| unknown (User) | admin | 127.0.0.1 | CHROME on Windows 10 Computer | User login to Okta | FAILURE: VERIFICATION_ERROR | INFO | 127.0.0.1 | - | 09/30/2019, 18:42:38 |
 
 
 ### okta-get-logs
-
 ***
 Gets logs by providing optional filters.
 
@@ -1239,12 +1124,11 @@ Gets logs by providing optional filters.
 #### Base Command
 
 `okta-get-logs`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  <br/>The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" <br/>-Events that have a specific action; eventType target.id eq ":id" <br/>- Events published with a specific target id; actor.id eq ":id"<br/>- Events published with a specific actor ID. For more information about filtering, visit <https://developer.okta.com/docs/api/getting_started/design_principles#filtering>. | Optional | 
+| filter | Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  <br/>The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" <br/>-Events that have a specific action; eventType target.id eq ":id" <br/>- Events published with a specific target id; actor.id eq ":id"<br/>- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
 | query | The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. To satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: <br/>Events that mention a specific city: query=San Francisco; <br/>Events that mention a specific url: query=interestingURI.com; <br/>Events that mention a specific person: query=firstName lastName. | Optional | 
 | since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
 | until | Filters the upper  time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
@@ -1291,11 +1175,9 @@ Gets logs by providing optional filters.
 
 
 ##### Command Example
-
 ```!okta-get-logs filter=`actor.id eq "00u66lckvpjidYi0h7"` query=Boardman since="2020-03-03T20:23:17.573Z" limit=1```
 
 ##### Context Example
-
 ```
 {
     "Okta": {
@@ -1411,16 +1293,13 @@ Gets logs by providing optional filters.
 ```
 
 ##### Human Readable Output
->
 >### Okta Events
->
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
->| Test Demisto (User) | <Test@demisto.com> | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 03/03/2020, 20:23:17 |
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 03/03/2020, 20:23:17 |
 
 
 ### okta-get-group-assignments
-
 ***
 Gets events for when a user was added to a group.
 
@@ -1428,7 +1307,6 @@ Gets events for when a user was added to a group.
 #### Base Command
 
 `okta-get-group-assignments`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1478,11 +1356,9 @@ Gets events for when a user was added to a group.
 
 
 ##### Command Example
-
 ```!okta-get-group-assignments since="2019-04-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
-
 ```
 {
     "Okta": {
@@ -1597,16 +1473,13 @@ Gets events for when a user was added to a group.
 ```
 
 ##### Human Readable Output
->
 >### Group Assignment Events
->
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
->| Test Demisto (User) | <Test@demisto.com> | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 09/29/2019, 03:47:46 |
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 09/29/2019, 03:47:46 |
 
 
 ### okta-get-application-assignments
-
 ***
 Returns events for when a user was assigned to an application.
 
@@ -1614,7 +1487,6 @@ Returns events for when a user was assigned to an application.
 #### Base Command
 
 `okta-get-application-assignments`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1664,11 +1536,9 @@ Returns events for when a user was assigned to an application.
 
 
 ##### Command Example
-
 ```!okta-get-application-assignments since="2019-04-30T00:00:00.000Z" until="2020-02-30T00:00:00.000Z" sortOrder=DESCENDING limit=1```
 
 ##### Context Example
-
 ```
 {
     "Okta": {
@@ -1791,16 +1661,13 @@ Returns events for when a user was assigned to an application.
 ```
 
 ##### Human Readable Output
->
 >### Application Assignment Events
->
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
->| Test Demisto (User) | <Test@demisto.com> | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser) ShrikSAML (AppInstance) Test 1 that (User)  | 02/27/2020, 17:55:12 |
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser) ShrikSAML (AppInstance) Test 1 that (User)  | 02/27/2020, 17:55:12 |
 
 
 ### okta-get-application-authentication
-
 ***
 Returns logs using specified filters.
 
@@ -1808,7 +1675,6 @@ Returns logs using specified filters.
 #### Base Command
 
 `okta-get-application-authentication`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1858,11 +1724,9 @@ Returns logs using specified filters.
 
 
 ##### Command Example
-
 ```!okta-get-application-authentication since="2019-04-30T00:00:00.000Z" until="2020-02-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
-
 ```
 {
     "Okta": {
@@ -1982,16 +1846,13 @@ Returns logs using specified filters.
 ```
 
 ##### Human Readable Output
->
 >### Application Authentication Events
->
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
->| Test Demisto (User) | <Test@demisto.com> | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance) Test Demisto (AppUser)  | 10/14/2019, 12:16:53 |
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance) Test Demisto (AppUser)  | 10/14/2019, 12:16:53 |
 
 
 ### okta-delete-user
-
 ***
 Deletes the specified user.
 
@@ -1999,7 +1860,6 @@ Deletes the specified user.
 #### Base Command
 
 `okta-delete-user`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2013,26 +1873,22 @@ Deletes the specified user.
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-delete-user username=testForDocs@test.com```
 
 
 ##### Human Readable Output
->
->User: <testForDocs@test.com> was Deleted successfully
+>User: testForDocs@test.com was Deleted successfully
 
 ### okta-clear-user-sessions
-
 ***
 Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
 For more information and examples:
-<https://developer.okta.com/docs/reference/api/users/#user-sessions>
+https://developer.okta.com/docs/reference/api/users/#user-sessions
 
 
 #### Base Command
 
 `okta-clear-user-sessions`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2045,17 +1901,14 @@ For more information and examples:
 There is no context output for this command.
 
 ##### Command Example
-
 ```!okta-clear-user-sessions userId=00ui5brmwtJpMdoZZ0h7```
 
 
 ##### Human Readable Output
->
 >### User session was cleared for: 00ui5brmwtJpMdoZZ0h7
 
 
 ### okta-list-zones
-
 ***
 Get an Okta Zone object
 
@@ -2063,7 +1916,6 @@ Get an Okta Zone object
 #### Base Command
 
 `okta-list-zones`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2089,11 +1941,9 @@ Get an Okta Zone object
 
 
 #### Command Example
-
 ```!okta-list-zones```
 
 #### Context Example
-
 ```
 {
     "Okta": {
@@ -2188,9 +2038,7 @@ Get an Okta Zone object
 ```
 
 #### Human Readable Output
->
 >### Okta Zones
->
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| LegacyIpZone | nzo9rbw8evGOFV1VE0h7 | {'type': 'CIDR', 'value': '2.2.2.2/32'} | ACTIVE | true | 2020-04-23T08:58:55.000Z | 2017-03-03T22:05:24.000Z |
@@ -2198,7 +2046,6 @@ Get an Okta Zone object
 
 
 ### okta-update-zone
-
 ***
 Update an Okta Zone
 
@@ -2206,7 +2053,6 @@ Update an Okta Zone
 #### Base Command
 
 `okta-update-zone`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2235,11 +2081,9 @@ Update an Okta Zone
 
 
 #### Command Example
-
 ```!okta-update-zone zoneID=nzoqsmcx1qWYJ6wY33h7 zoneName=MyZone```
 
 #### Context Example
-
 ```
 {
     "Okta": {
@@ -2298,14 +2142,12 @@ Update an Okta Zone
 #### Human Readable Output
 
 >### Okta Zones
->
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
 
 
 ### okta-get-zone
-
 ***
 Get a Zone by its ID
 
@@ -2313,7 +2155,6 @@ Get a Zone by its ID
 #### Base Command
 
 `okta-get-zone`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2339,11 +2180,9 @@ Get a Zone by its ID
 
 
 #### Command Example
-
 ```!okta-get-zone zoneID=nzoqsmcx1qWYJ6wY33h7```
 
 #### Context Example
-
 ```
 {
     "Okta": {
@@ -2402,13 +2241,11 @@ Get a Zone by its ID
 #### Human Readable Output
 
 >### Okta Zones
->
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.3/32'},<br/>{'type': 'CIDR', 'value': '3.5.146.103/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.228/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.229/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
 
 ### okta-list-users
-
 ***
 Lists users in your organization.
 
@@ -2416,7 +2253,6 @@ Lists users in your organization.
 #### Base Command
 
 `okta-list-users`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2425,7 +2261,7 @@ Lists users in your organization.
 | limit | The maximum number of results to return. | Optional | 
 | query | Searches the name property of groups for matching values. | Optional | 
 | filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/>type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID.
-For more information about filtering, visit <https://developer.okta.com/docs/api/getting_started/design_principles#filtering>. | Optional | 
+For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
 | after | The cursor in which to retrive the results from and on. If the query didn't reach the end of results, the tag will be found in the readable output under the tag key. | Optional |
 
 #### Context Output
@@ -2445,11 +2281,9 @@ For more information about filtering, visit <https://developer.okta.com/docs/api
 
 
 #### Command Example
-
 ```!okta-list-users```
 
 #### Context Example
-
 ```json
 {
     "Okta":
@@ -2476,17 +2310,13 @@ For more information about filtering, visit <https://developer.okta.com/docs/api
 #### Human Readable Output
 
 >### Okta users found:
->
 > ### Users
->
 >|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
 >|---|---|---|---|---|---|---|
->| Dbot | XXXXX |  | XSOAR | <dbot@xsoar.com> |  | STAGED |
+>| Dbot | XXXXX |  | XSOAR | dbot@xsoar.com |  | STAGED |
 > 
 > ### tag: test12tag
->
 ### okta-create-zone
-
 ***
 Creates a Zone with the specified name
 
@@ -2494,7 +2324,6 @@ Creates a Zone with the specified name
 #### Base Command
 
 `okta-create-zone`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2509,7 +2338,6 @@ Creates a Zone with the specified name
 There is no context output for this command.
 
 ### okta-create-group
-
 ***
 Create a new group in Okta tenant.
 
@@ -2517,7 +2345,6 @@ Create a new group in Okta tenant.
 #### Base Command
 
 `okta-create-group`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2536,11 +2363,8 @@ Create a new group in Okta tenant.
 | OktaGroup.Type | unknown | Group Type in Okta | 
 
 #### Command example
-
 ```!okta-create-group name="TestGroup" description="TestGroup description."```
-
 #### Context Example
-
 ```json
 {
     "OktaGroup": {
@@ -2557,7 +2381,6 @@ Create a new group in Okta tenant.
 >Group Created: [GroupID:00g3qb398kItYXzKd1d7, GroupName: TestGroup]
 
 ### okta-assign-group-to-app
-
 ***
 Assign a group to an application
 
@@ -2565,7 +2388,6 @@ Assign a group to an application
 #### Base Command
 
 `okta-assign-group-to-app`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2578,11 +2400,8 @@ Assign a group to an application
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-
 ```!okta-assign-group-to-app appName="Default-App" groupName="TestGroup"```
-
 #### Human Readable Output
 
 >Group: TestGroup added to PA App successfully

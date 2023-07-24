@@ -789,15 +789,7 @@ script:
     - contextPath: IronDefense.Query.GetEvents.total
       description: The total number of results possible from the query.
       type: Number
-<<<<<<< HEAD
-<<<<<<< HEAD
-  dockerimage: demisto/python3:3.10.12.63474
-=======
   dockerimage: demisto/python3:3.10.12.65389
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
-  dockerimage: demisto/python3:3.10.12.65389
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
   isfetch: true
   runonce: false
   script: '-'

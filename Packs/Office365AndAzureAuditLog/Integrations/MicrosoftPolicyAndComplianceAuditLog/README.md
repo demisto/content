@@ -5,26 +5,6 @@ Use the integration to get logs from the O365 service.
 2. Search for Microsoft Policy And Compliance (Audit Log).
 3. Click **Add instance** to create and configure a new integration instance.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Exchange Online URL | True |
-    | Email (UPN) | False |
-    | Trust any certificate (not secure) | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
-
-## Authentication
-- OAuth2.0 (For MFA enabled accounts) -
-    1. Enter a value for the Email (UPN) parameter in the integration configuration.
-    2. Run the ***o365-auditlog-auth-start*** command and follow the instructions.
-    3. Run the ***o365-auditlog-auth-test*** command to verify that the authorization process was implemented correctly.
-
-
-=======
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Exchange Online URL |  | True |
@@ -35,10 +15,6 @@ Use the integration to get logs from the O365 service.
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-<<<<<<< HEAD
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 ## Required Permissions To Search Audit Logs
 - The minimum required Exchange permissions are **Audit Logs** or **View-Only Audit Logs**.
 - Go to [The Microsoft Admin Portal](https://admin.microsoft.com/Adminportal#/homepage).
@@ -50,23 +26,6 @@ Use the integration to get logs from the O365 service.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-### o365-auditlog-auth-start
-***
-Starts the OAuth2.0 authorization process.
-
-### o365-auditlog-auth-complete
-***
-Completes the OAuth2.0 authorization process.
-
-### o365-auditlog-auth-test
-***
-Tests the OAuth2.0 authorization process.
-=======
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
-=======
->>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
 ### o365-auditlog-search
 ***
