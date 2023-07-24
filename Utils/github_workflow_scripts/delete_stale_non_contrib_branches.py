@@ -2,6 +2,8 @@
 
 import os
 import sys
+from typing import Dict
+
 import urllib3
 from blessings import Terminal
 from github import Github, enable_console_debug_logging
@@ -37,12 +39,12 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> Dict[str]:  # no
                 continue
             # Make sure HEAD commit is stale
             if (last_modified := branch.commit.commit.last_modified) and (
-                last_commit_datetime := parse(last_modified)):
+                    last_commit_datetime := parse(last_modified)):
                 elapsed_days = (now - last_commit_datetime).days
                 associated_open_prs = branch.commit.get_pulls()  # type: ignore[attr-defined]
                 associated_open_prs = [pr for pr in associated_open_prs if pr.state == 'open']
                 if elapsed_days >= 60:
-                    branch_names[branch.name] = True if associated_open_prs else False
+                    branch_names[branch.name] = bool(associated_open_prs)
             else:
                 print(f"Couldn't load HEAD for {branch.name}")
     return branch_names
