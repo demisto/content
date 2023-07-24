@@ -5,7 +5,7 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "boolean",
+            "displayName": "result",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -19,11 +19,11 @@
             "_comment": "Mandatory: True means the asset is likey developement, everything else is False"
         },
         {
-            "displayName": "result",
+            "displayName": "result_readable",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "result",
+            "key": "result_readable",
             "orgType": "",
             "required": false,
             "script": "",

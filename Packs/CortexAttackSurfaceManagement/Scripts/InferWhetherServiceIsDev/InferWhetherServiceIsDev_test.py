@@ -88,32 +88,32 @@ def test_full_truth_table():
 
     # kv pair contains no indicators
     # DevEnv is set (--> dev)
-    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match)["boolean"]
+    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match)["result"]
     # DevEnv is not set (--> can't tell)
-    assert not final_decision(sample_no_match, sample_no_match, sample_no_match)["boolean"]
+    assert not final_decision(sample_no_match, sample_no_match, sample_no_match)["result"]
 
     # kv pair contains dev indicators only
     # DevEnv is set (--> dev)
-    assert final_decision(sample_dev_tag, sample_dev_tag, sample_no_match)["boolean"]
+    assert final_decision(sample_dev_tag, sample_dev_tag, sample_no_match)["result"]
     # DevEnv is not set (--> dev)
-    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match)["boolean"]
+    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match)["result"]
 
     # kv pair contains prod indicators only
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_tag, sample_no_match, sample_prod_tag)["boolean"]
+    assert not final_decision(sample_dev_tag, sample_no_match, sample_prod_tag)["result"]
     # DevEnv is not set (--> prod)
-    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag)["boolean"]
+    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag)["result"]
 
     # kv pair contains conflicting indicators
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_tag, sample_dev_tag, sample_prod_tag)["boolean"]
+    assert not final_decision(sample_dev_tag, sample_dev_tag, sample_prod_tag)["result"]
     # DevEnv is not set (--> conflicting)
-    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag)["boolean"]
+    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag)["result"]
 
 
 @pytest.mark.parametrize('in_classifications,in_tags,expected_out_boolean',
                          [([], [{"Key": "ENV", "Value": "non-prod", "Source": "AWS"}],
-                           [{'boolean': True, 'result': 'The service is development', 'confidence': 'Likely Development',
+                           [{'result': True, 'result_readable': 'The service is development', 'confidence': 'Likely Development',
                              'reason': 'match on tag {ENV: non-prod} from AWS'}])])
 def test_main(mocker, in_classifications, in_tags, expected_out_boolean):
     import InferWhetherServiceIsDev
