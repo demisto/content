@@ -1030,6 +1030,12 @@ def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex
     return assets_to_command_result(assets)
 
 
+def add_exclusion_filter(reco_client: RecoClient, key_to_add: str, values: List[str]) -> CommandResults:
+    """Add exclusion filter to Reco."""
+    response = reco_client.add_exclusion_filter(key_to_add, values)
+    return CommandResults(raw_response=response)
+
+
 def assets_to_command_result(assets: List[Dict[str, Any]]) -> CommandResults:
     """Convert assets to CommandResults."""
     assets_list = []
@@ -1265,6 +1271,9 @@ def main() -> None:
             result = get_files_shared_with_3rd_parties(reco_client,
                                                        demisto.args()["domain"],
                                                        int(demisto.args()["last_interaction_time_in_days"]))
+            return_results(result)
+        elif command == "reco-add-exclusion-filter":
+            result = add_exclusion_filter(reco_client, demisto.args()["key_to_add"], demisto.args()["values_to_add"])
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

@@ -1,3 +1,6 @@
+from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
+from CommonServerPython import BaseClient, CommandResults, datetime
+
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Reco
@@ -65,13 +68,23 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
   runonce: false
   script: "-"
   subtype: python3
   type: python
   commands:
+  - arguments:
+      - description: Values to add to the exclusion filter
+        name: values_to_add
+        type: List
+        required: true
+      - description: Incident ID to add the comment to
+        name: key_to_add
+        required: true
+    description: Add exclusion filter to Reco Classifier
+    name: reco-add-exclusion-filter
   - arguments:
     - description: Comment to add to the incident
       name: comment
