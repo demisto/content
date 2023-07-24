@@ -1,3 +1,4 @@
+from requests import HTTPError
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -346,7 +347,16 @@ class Client(BaseClient):
         total = 0
         total_items: list[dict] = []
         while total < fetch_limit and page_number >= 0:
-            response = self.list_incidents_request(page_size, page_number, until, timestamp)
+            try:
+                response = self.list_incidents_request(page_size, page_number, until, timestamp)
+            except HTTPError as e:
+                if e.response is not None and e.response.status_code == 429:
+                    raise DemistoException(
+                        'Too many requests, try later or reduce the number of Fetch Limit parameter.'
+                    ) from e
+                else:
+                    raise e
+
             items = response.get('items', [])
             new_items = remove_duplicates_for_fetch(items, last_fetched_ids)
             # items order is from old to new , add new items at the start of list to maintain order
@@ -809,6 +819,14 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
                 id_=incident_id,
                 page_size=None
             )
+        except HTTPError as e:
+            if e.response is not None and e.response.status_code == 429:
+                raise DemistoException(
+                    'Too many requests, try later or reduce the number of Fetch Limit parameter.'
+                ) from e
+            else:
+                raise e
+
         except Exception:
             demisto.error(f"Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
             raise
