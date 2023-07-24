@@ -351,7 +351,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar_server_master']
   tags:
     - gke
   rules:
@@ -374,8 +374,6 @@ jobs-done-check-on-push:
     - job: xpanse-prepare-testing-bucket
       optional: true
     - job: xsoar-prepare-testing-bucket
-      optional: true
-    - job: xsiam_server_ga
       optional: true
     - job: xsoar_server_6_8
       optional: true
@@ -554,7 +552,7 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
-    LOCK_MACHINE_NAME: "qa2-test-9999013965690"
+    LOCK_MACHINE_NAME: "qa2-test-9994335494192"
 
     UNREMOVABLE_PACKS: "Base"
   timeout: 36 hours
@@ -624,11 +622,11 @@ test-upload-flow:
     - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
 
-xsoar_server_master-test_playbooks_results:
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-  extends: .server_test_playbooks_report
-  needs: ["xsoar_server_master"]
+#xsoar_server_master-test_playbooks_results:
+#  variables:
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+#  extends: .server_test_playbooks_report
+#  needs: ["xsoar_server_master"]
 
 #xsiam_server_ga-test_playbooks_results:
 #  variables:
