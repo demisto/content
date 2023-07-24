@@ -93,7 +93,7 @@ def main():
                 print(f'Deleting stale branch {branch_name} without creating a postery PR')
                 content_repo.get_git_ref(f'heads/{branch_name}').delete()
             else:
-                if not has_open_pr(content_repo, branch_name):
+                if not has_open_pr:
                     print(f'Creating PR for {branch_name}')
                     title = branch_name
                     body = (f'## Description\r\nPosterity PR Created for the branch "{branch_name}"'
