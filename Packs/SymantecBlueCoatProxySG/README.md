@@ -4,7 +4,10 @@ This pack includes Cortex XSIAM content.
 You need to configure Bluecoat ProxySG to forward Syslog messages with the access log 'main' format.
 
 Go to the ProxySG software and open the "Configuration" tab [Product Doc](https://knowledge.broadcom.com/external/article/166529/sending-access-logs-to-a-syslog-server.html);
-1. From the left sidebar, navigate to **Access Logging** > **Logs** > **Logs** tab, and create a new log with the 'main' format defined for it.
+1. From the left sidebar, navigate to **Access Logging** > **Logs** > **Logs** tab, and create a new log with the `main` format defined for it:
+```bash
+   date time time-taken c-ip sc-status s-action sc-bytes cs-bytes csmethod cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query csusername cs-auth-group s-supplier-name rs(Content-Type) cs(Referer) cs(User-Agent) sc-filter-result cs-categories x-virus-id s-ip
+```
 2.  Click the **Upload Client** tab and configure your log as follows:
 
    | Field | Value |
