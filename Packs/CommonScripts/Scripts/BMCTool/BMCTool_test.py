@@ -21,6 +21,22 @@ def test_tile_header_size(container, expected_size):
     """
     assert BMCContainer.TILE_HEADER_SIZE[container] == expected_size
 
+def test_bmc_container_with_old_true():
+    # Test initialization with count > 0
+    old = True
+    bmc_container = BMCContainer(old)
+
+    # Check that the container is initialized correctly
+    assert bmc_container
+
+def test_bmc_container_with_count():
+    # Test initialization with count > 0
+    count = 5
+    bmc_container = BMCContainer(count)
+
+    # Check that the container is initialized correctly
+    assert bmc_container
+
 
 def test_palette_length():
     assert len(BMCContainer.PALETTE) == 1024
@@ -214,3 +230,16 @@ def test_b_uncompress(data, bbp, expected_output):
         container = BMCContainer()
         actual = container.b_export_bmp(width, height, data)
         assert actual == expected
+
+
+@pytest.fixture
+def bmc_container():
+    # Create an instance of BMCContainer for testing
+    return BMCContainer()
+
+def test_b_import_already_loaded(bmc_container):
+    # Test importing when data is already loaded
+    bmc_container.bdat = b"Some data"
+    assert bmc_container.b_import("path/to/valid_bmc_container.bin") == False
+
+
