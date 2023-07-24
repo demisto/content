@@ -151,6 +151,10 @@ def main():
                         else:
                             attachment['FileData'] = None
 
+            # probably a wrapper and we can ignore the outer "email"
+            if email.get('Format') == 'multipart/signed' and all(not email.get(field) for field in ['To', 'From', 'Subject']):
+                continue
+
             if isinstance(email.get("HTML"), bytes):
                 email['HTML'] = email.get("HTML").decode('utf-8')
 
