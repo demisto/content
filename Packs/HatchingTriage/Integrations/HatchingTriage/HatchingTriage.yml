@@ -19,10 +19,12 @@ configuration:
   defaultvalue: 'true'
   name: Verify SSL
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
+  required: false
 description: Submit a high volume of samples to run in a sandbox and view reports
 display: Hatching Triage
 name: Hatching Triage
@@ -586,7 +588,7 @@ script:
       required: true
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

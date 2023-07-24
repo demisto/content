@@ -1,0 +1,1883 @@
+id: Cloaked Ursa Diplomatic Phishing Campaign
+version: -1
+name: Cloaked Ursa Diplomatic Phishing Campaign
+description: "## Cloaked Ursa: Targeting Diplomatic Missions with Phishing Lures\n\n**Summary:**\n\nCloaked Ursa, a hacking group associated with Russia's Foreign Intelligence Service, has been persistently targeting diplomatic missions globally. Using phishing tactics, Their initial access attempts over the past two years have predominantly used phishing lures with a theme of diplomatic operations such as the following:\n\n- Notes verbale (semiformal government-to-government diplomatic communications)\n- Embassies’ operating status updates\n- Schedules for diplomats\n- Invitations to embassy events\n\n Recently, Unit42 researchers observed a shift in their strategy, with a focus on targeting diplomats themselves. In Kyiv alone, at least 22 out of over 80 foreign missions were targeted.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\nPlease create a new incident and choose the Cloaked Ursa (APT29) Diplomatic Phishing Campaign playbook and Rapid Breach Response incident type.\n\n**The playbook includes the following tasks:**\n\n**IoCs Collection**\n- Blog IoCs download\n\n**Hunting:**\n- Cortex XDR XQL exploitation patterns hunting\n- Advanced SIEM exploitation patterns hunting\n- Indicators hunting\n\nThe hunting queries are searching for the following activities:\n  - Related LNK files execution command line\n  - Dropped file names\n\n**Mitigations:**\n- Unit42 mitigation measures\n\n**References:**\n\n[Diplomats Beware: Cloaked Ursa Phishing With a Twist](https://unit42.paloaltonetworks.com/cloaked-ursa-phishing/)\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bdfccc2e-ee28-4622-8eb3-9e32bebdd5a7
+    type: start
+    task:
+      id: bdfccc2e-ee28-4622-8eb3-9e32bebdd5a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2ff00b7c-2104-40fe-8e95-5a67cfc744b3
+    type: title
+    task:
+      id: 2ff00b7c-2104-40fe-8e95-5a67cfc744b3
+      version: -1
+      name: Collect Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ba019ed0-b50c-4bf0-8a20-53d1b0c1f4d3
+    type: regular
+    task:
+      id: ba019ed0-b50c-4bf0-8a20-53d1b0c1f4d3
+      version: -1
+      name: Collect IoCs from Unit42
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      exclude_indicators:
+        simple: '"hxxps://"'
+      url:
+        simple: https://unit42.paloaltonetworks.com/cloaked-ursa-phishing/
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9202ab44-fc31-4fe9-8638-58d50b6727ab
+    type: title
+    task:
+      id: 9202ab44-fc31-4fe9-8638-58d50b6727ab
+      version: -1
+      name: Tag Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "20"
+      - "19"
+      - "49"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a23eb650-3dbb-408e-885a-9a9162539c10
+    type: title
+    task:
+      id: a23eb650-3dbb-408e-885a-9a9162539c10
+      version: -1
+      name: Set Rapid Breach Response Layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7708df1e-a81d-4cdb-80f2-ca509db5fea0
+    type: playbook
+    task:
+      id: 7708df1e-a81d-4cdb-80f2-ca509db5fea0
+      version: -1
+      name: Rapid Breach Response - Set Incident Info
+      description: This playbook is responsible for setting up the Rapid Breach Response Incident Info tab in the layout.
+      playbookName: Rapid Breach Response - Set Incident Info
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      SourceOfIndicators:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      countTotalIndicators:
+        complex:
+          root: CVE
+          accessor: ID
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IP.Address
+                iscontext: true
+          - operator: uniq
+          - operator: count
+      playbookDescription:
+        complex:
+          root: inputs.PlaybookDescription
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9f798a11-7e05-43f4-8989-ee23139ef1a2
+    type: regular
+    task:
+      id: 9f798a11-7e05-43f4-8989-ee23139ef1a2
+      version: -1
+      name: Tag Domain Indicators
+      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      scriptName: CreateNewIndicatorsOnly
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicator_values:
+        complex:
+          root: Domain
+          accessor: Name
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: APT29, UAC-0029, Midnight Blizzard, Nobelium, Cozy Bear
+      type:
+        simple: Domain
+      verdict:
+        simple: Malicious
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ef632a65-b77d-4134-894b-a96e6cfa0af0
+    type: title
+    task:
+      id: ef632a65-b77d-4134-894b-a96e6cfa0af0
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 77e2a9be-cf00-4ed7-8c71-bf4b8c125bfa
+    type: title
+    task:
+      id: 77e2a9be-cf00-4ed7-8c71-bf4b8c125bfa
+      version: -1
+      name: SIEM Advanced Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+      - "22"
+      - "21"
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b60b10f6-ea88-4482-8750-7e0d52169874
+    type: title
+    task:
+      id: b60b10f6-ea88-4482-8750-7e0d52169874
+      version: -1
+      name: Indicators Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a468f558-17be-4b04-8d7b-f7405072e380
+    type: title
+    task:
+      id: a468f558-17be-4b04-8d7b-f7405072e380
+      version: -1
+      name: Cortex Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 250e14d8-1fa4-4f39-812c-fb393ab63a87
+    type: playbook
+    task:
+      id: 250e14d8-1fa4-4f39-812c-fb393ab63a87
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      QRadarTimeFrame:
+        complex:
+          root: inputs.QRadarTimeRange
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      SplunkEarliestTime:
+        complex:
+          root: inputs.SplunkEarliestTime
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ae82f63b-6fc0-464b-8ff8-e6572c942d1b
+    type: regular
+    task:
+      id: ae82f63b-6fc0-464b-8ff8-e6572c942d1b
+      version: -1
+      name: Tag Email Indicators
+      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      scriptName: CreateNewIndicatorsOnly
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicator_values:
+        complex:
+          root: inputs.emailIndicators
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: APT29, UAC-0029, Midnight Blizzard, Nobelium, Cozy Bear
+      type:
+        simple: Email
+      verdict:
+        simple: Malicious
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 38fa6943-96ce-490e-81b0-379418bae5a7
+    type: regular
+    task:
+      id: 38fa6943-96ce-490e-81b0-379418bae5a7
+      version: -1
+      name: Tag URL Indicators
+      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      scriptName: CreateNewIndicatorsOnly
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicator_values:
+        complex:
+          root: URL
+          accessor: Data
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: APT29, UAC-0029, Midnight Blizzard, Nobelium, Cozy Bear
+      type:
+        simple: URL
+      verdict:
+        simple: Malicious
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c23232ea-f476-4567-8916-c16f7a1bee63
+    type: condition
+    task:
+      id: c23232ea-f476-4567-8916-c16f7a1bee63
+      version: -1
+      name: Is Splunk Enabled?
+      description: Check if Splunk instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "Yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SplunkPy
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 52d9ab48-3726-46d3-8767-4dcd57c2b7f9
+    type: condition
+    task:
+      id: 52d9ab48-3726-46d3-8767-4dcd57c2b7f9
+      version: -1
+      name: Is QRadar Enabled?
+      description: Check if Splunk instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "Yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 38276dec-e1d0-456e-8582-6040b84de65f
+    type: condition
+    task:
+      id: 38276dec-e1d0-456e-8582-6040b84de65f
+      version: -1
+      name: Is Elasticsearch Enabled?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Elasticsearch
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: cfec6212-a7bf-4c5e-84ba-21bc7a978a14
+    type: condition
+    task:
+      id: cfec6212-a7bf-4c5e-84ba-21bc7a978a14
+      version: -1
+      name: Is Azure Log Analytics Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure Log Analytics
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2abef928-3814-49be-8f41-7346cf04edee
+    type: regular
+    task:
+      id: 2abef928-3814-49be-8f41-7346cf04edee
+      version: -1
+      name: LNK file execution
+      description: Searches for a command line triggered by clicking one of the LNK files.
+      tags:
+      - SIEMResults
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      query:
+        simple: SecurityEvent | where EventID == 4688 | where (ParentProcessName contains @'cmd.exe' and CommandLine contains @'windoc.exe' and (CommandLine endswith @'bmw1.png' or CommandLine endswith @'bmw2.png' or CommandLine endswith @'bmw3.png' or CommandLine endswith @'bmw4.png' or CommandLine endswith @'bmw5.png' or CommandLine endswith @'bmw6.png' or CommandLine endswith @'bmw7.png' or CommandLine endswith @'bmw8.png' or CommandLine endswith @'bmw9.png'))
+      timespan:
+        complex:
+          root: inputs.LogAnalyticsTimespan
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: e7204e92-a516-495a-81a5-006be7ee5a67
+    type: regular
+    task:
+      id: e7204e92-a516-495a-81a5-006be7ee5a67
+      version: -1
+      name: LNK file execution
+      description: Searches for a command line triggered by clicking one of the LNK files.
+      tags:
+      - SIEMResults
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      query:
+        simple: index=* source="WinEventLog:*" AND ((ParentImage="*cmd.exe*") AND (CommandLine="*windoc.exe*") AND (CommandLine="*bmw1.png" OR CommandLine="*bmw2.png" OR CommandLine="*bmw3.png" OR CommandLine="*bmw4.png" OR CommandLine="*bmw5.png" OR CommandLine="*bmw6.png" OR CommandLine="*bmw7.png" OR CommandLine="*bmw8.png" OR CommandLine="*bmw9.png"))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 815dc7d0-c0b0-4957-8456-29e63c93e130
+    type: regular
+    task:
+      id: 815dc7d0-c0b0-4957-8456-29e63c93e130
+      version: -1
+      name: LNK file execution
+      description: Searches for a command line triggered by clicking one of the LNK files.
+      tags:
+      - SIEMResults
+      script: '|||es-eql-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      index:
+        complex:
+          root: inputs.ElasticIndex
+      query:
+        simple: (process.parent.executable.text:"*cmd.exe*" AND process.command_line.text:"*windoc.exe*" AND process.command_line.text:("*bmw1.png" OR "*bmw2.png" OR "*bmw3.png" OR "*bmw4.png" OR "*bmw5.png" OR "*bmw6.png" OR "*bmw7.png" OR "*bmw8.png" OR "*bmw9.png"))
+      timestamp_field:
+        complex:
+          root: inputs.ElasticEarliestTime
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 84c169dc-70b8-494a-811d-9a6ee1e68be0
+    type: playbook
+    task:
+      id: 84c169dc-70b8-494a-811d-9a6ee1e68be0
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND CATEGORYNAME(category)='Process Creation Success' AND "ParentImage" ILIKE '%cmd.exe%' AND "Process CommandLine" ILIKE '%windoc.exe%' AND ("Process CommandLine" ILIKE '%bmw1.png' OR "Process CommandLine" ILIKE '%bmw2.png' OR "Process CommandLine" ILIKE '%bmw3.png' OR "Process CommandLine" ILIKE '%bmw4.png' OR "Process CommandLine" ILIKE '%bmw5.png' OR "Process CommandLine" ILIKE '%bmw6.png' OR "Process CommandLine" ILIKE '%bmw7.png' OR "Process CommandLine" ILIKE '%bmw8.png' OR "Process CommandLine" ILIKE '%bmw9.png')
+      range:
+        complex:
+          root: inputs.QRadarTimeRange
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a6e499db-08ef-4489-8f31-dc99ed99ddd5
+    type: regular
+    task:
+      id: a6e499db-08ef-4489-8f31-dc99ed99ddd5
+      version: -1
+      name: Suspicious file paths and names
+      description: Searching for file names found part of the attacker's tool set.
+      tags:
+      - SIEMResults
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      query:
+        simple: SecurityEvent | where (TargetFilename contains @'bmw1.png' or TargetFilename contains @'bmw2.png' or TargetFilename contains @'bmw3.png' or TargetFilename contains @'bmw4.png' or TargetFilename contains @'bmw5.png' or TargetFilename contains @'bmw6.png' or TargetFilename contains @'bmw7.png' or TargetFilename contains @'bmw8.png' or TargetFilename contains @'bmw9.png' or TargetFilename contains @'bmw.iso' or TargetFilename contains @'$Recycle.Bin\AppvIsvSubsystems64.dll' or TargetFilename contains @'$Recycle.Bin\MSVCP140.dll' or TargetFilename contains @'$Recycle.Bin\Mso20Win32Client.DLL')
+      timespan:
+        complex:
+          root: inputs.LogAnalyticsTimespan
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 20e2a3ef-e9e9-4f7f-802c-06c14a7aedda
+    type: regular
+    task:
+      id: 20e2a3ef-e9e9-4f7f-802c-06c14a7aedda
+      version: -1
+      name: Suspicious file paths and names
+      description: Searching for file names found part of the attacker's tool set.
+      tags:
+      - SIEMResults
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      query:
+        simple: index=* source="WinEventLog:*" AND (TargetFilename="*bmw1.png*" OR TargetFilename="*bmw2.png*" OR TargetFilename="*bmw3.png*" OR TargetFilename="*bmw4.png*" OR TargetFilename="*bmw5.png*" OR TargetFilename="*bmw6.png*" OR TargetFilename="*bmw7.png*" OR TargetFilename="*bmw8.png*" OR TargetFilename="*bmw9.png*" OR TargetFilename="*bmw.iso*" OR TargetFilename="*$Recycle.Bin\\AppvIsvSubsystems64.dll*" OR TargetFilename="*$Recycle.Bin\\MSVCP140.dll*" OR TargetFilename="*$Recycle.Bin\\Mso20Win32Client.DLL*")
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 0f568d76-f4d3-4b9e-8790-f024f00e78c8
+    type: regular
+    task:
+      id: 0f568d76-f4d3-4b9e-8790-f024f00e78c8
+      version: -1
+      name: Suspicious file paths and names
+      description: Searching for file names found part of the attacker's tool set.
+      tags:
+      - SIEMResults
+      script: '|||es-eql-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      index:
+        complex:
+          root: inputs.ElasticIndex
+      query:
+        simple: file.path.text:("*bmw1.png*" OR "*bmw2.png*" OR "*bmw3.png*" OR "*bmw4.png*" OR "*bmw5.png*" OR "*bmw6.png*" OR "*bmw7.png*" OR "*bmw8.png*" OR "*bmw9.png*" OR "*bmw.iso*" OR "*$Recycle.Bin\\AppvIsvSubsystems64.dll*" OR "*$Recycle.Bin\\MSVCP140.dll*" OR "*$Recycle.Bin\\Mso20Win32Client.DLL*")
+      timestamp_range_start:
+        complex:
+          root: inputs.ElasticEarliestTime
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2709e709-8233-446b-8636-8b2126127203
+    type: playbook
+    task:
+      id: 2709e709-8233-446b-8636-8b2126127203
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND ("Filename" ILIKE '%bmw1.png%' OR "Filename" ILIKE '%bmw2.png%' OR "Filename" ILIKE '%bmw3.png%' OR "Filename" ILIKE '%bmw4.png%' OR "Filename" ILIKE '%bmw5.png%' OR "Filename" ILIKE '%bmw6.png%' OR "Filename" ILIKE '%bmw7.png%' OR "Filename" ILIKE '%bmw8.png%' OR "Filename" ILIKE '%bmw9.png%' OR "Filename" ILIKE '%bmw.iso%' OR "Filename" ILIKE '%$Recycle.Bin\AppvIsvSubsystems64.dll%' OR "Filename" ILIKE '%$Recycle.Bin\MSVCP140.dll%' OR "Filename" ILIKE '%$Recycle.Bin\Mso20Win32Client.DLL%')
+      range:
+        complex:
+          root: inputs.QRadarTimeRange
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c3248ac2-aa18-4eb9-8454-4bddc09374fa
+    type: title
+    task:
+      id: c3248ac2-aa18-4eb9-8454-4bddc09374fa
+      version: -1
+      name: Cortex XDR - XQL Hunting Queries
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d290b457-1630-43d1-86a4-9f508054cbb1
+    type: condition
+    task:
+      id: d290b457-1630-43d1-86a4-9f508054cbb1
+      version: -1
+      name: Is Cortex XDR - XQL Enabled?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "Yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - XQL Query Engine
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 89757384-dd4f-49df-8701-35aaa403cbb4
+    type: regular
+    task:
+      id: 89757384-dd4f-49df-8701-35aaa403cbb4
+      version: -1
+      name: LNK file execution
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      query:
+        simple: dataset = xdr_data | filter (causality_actor_process_command_line contains "bmw1.png" or causality_actor_process_command_line contains "bmw2.png" or causality_actor_process_command_line contains "bmw3.png" or causality_actor_process_command_line contains "bmw4.png" or causality_actor_process_command_line contains "bmw5.png" or causality_actor_process_command_line contains "bmw6.png" or causality_actor_process_command_line contains "bmw7.png" or causality_actor_process_command_line contains "bmw8.png" or causality_actor_process_command_line contains "bmw9.png") and causality_actor_process_command_line contains "windoc.exe" and causality_actor_process_command_line contains "cmd.exe"
+      query_name:
+        simple: LNK file execution
+      time_frame:
+        complex:
+          root: inputs.XQLTimeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 38de74a5-00a0-470a-8e00-22c902694b1a
+    type: regular
+    task:
+      id: 38de74a5-00a0-470a-8e00-22c902694b1a
+      version: -1
+      name: Suspicious file paths and names
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      query:
+        simple: dataset = xdr_data | filter action_file_name contains "bmw1.png" or action_file_name contains "bmw2.png" or action_file_name contains "bmw3.png" or action_file_name contains "bmw4.png" or action_file_name contains "bmw5.png" or action_file_name contains "bmw6.png" or action_file_name contains "bmw7.png" or action_file_name contains "bmw8.png" or action_file_name contains "bmw9.png" or action_file_name contains "$Recycle.Bin\AppvIsvSubsystems64.dll" or action_file_name contains "$Recycle.Bin\\Mso20Win32Client.dll" or action_file_name contains "$Recycle.Bin\\MSVCP140.dll" or action_file_name contains "bmw.iso"
+      query_name:
+        simple: Suspicious file paths and names
+      time_frame:
+        complex:
+          root: inputs.XQLTimeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 2155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 7897a924-b8ad-4cdd-8369-76429ed2e436
+    type: condition
+    task:
+      id: 7897a924-b8ad-4cdd-8369-76429ed2e436
+      version: -1
+      name: Should continue with the investigation?
+      description: Whether to continue with the investigation or close it.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "Yes":
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 063e6a9c-5dec-4101-8019-a60bef6b6433
+    type: condition
+    task:
+      id: 063e6a9c-5dec-4101-8019-a60bef6b6433
+      version: -1
+      name: Should block indicators automatically?
+      description: Checks whether to block the indicators automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.autoBlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 9fb30c6e-af41-4681-84d7-5aa7d08809d3
+    type: playbook
+    task:
+      id: 9fb30c6e-af41-4681-84d7-5aa7d08809d3
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: "True"
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: inputs.emailIndicators
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 81716d60-ffcd-4c48-888e-57637379e4f3
+    type: regular
+    task:
+      id: 81716d60-ffcd-4c48-888e-57637379e4f3
+      version: -1
+      name: Handle indicators manually
+      description: Manual task for indicators handling.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 62be319d-a3c8-418a-82c6-63aab4218ddb
+    type: regular
+    task:
+      id: 62be319d-a3c8-418a-82c6-63aab4218ddb
+      version: -1
+      name: Investigate further
+      description: Continue with the investigation manually.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: ede2a696-f7e5-45a4-8c5d-8e8e1931f441
+    type: title
+    task:
+      id: ede2a696-f7e5-45a4-8c5d-8e8e1931f441
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 5b885f9c-46bd-4b7f-8926-3fdbe8bdcc9d
+    type: title
+    task:
+      id: 5b885f9c-46bd-4b7f-8926-3fdbe8bdcc9d
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: e1b661f1-258f-4407-8357-05a8e443631e
+    type: title
+    task:
+      id: e1b661f1-258f-4407-8357-05a8e443631e
+      version: -1
+      name: Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c401125f-4ec2-4e97-8b11-dae2439a009b
+    type: regular
+    task:
+      id: c401125f-4ec2-4e97-8b11-dae2439a009b
+      version: -1
+      name: Unit42 recommendations
+      description: "## Recommendations\n\n- Train newly assigned diplomats and employees to a diplomatic mission on the cybersecurity threats for the region prior to their arrival. This training should include the specific tactics, techniques and procedures (TTPs) used by APTs in that region.\n\n- Always take extra precautions to observe URL redirection when using URL-shortening services.\n\n- Always be cautious of downloads, even from seemingly innocuous or legitimate sites. APTs routinely coopt legitimate sites or services for malicious purposes.\n\n- Always take extra precautions with attachments that require a web browser to open. These types of attachments include the following file extensions: .hta, .htm, .html, .mht, .mhtml, .svg, .xht and .xhtml. \n\n- Always verify file extension types to ensure you are opening the type of file you intend to. If the file extension does not match, or if it is attempting to obfuscate its nature, it is very likely malicious.\n\n- When received as an attachment to an email, or when downloaded from a link within an email, always look for hidden files and directories in archives such as those with the extensions .zip, .rar, .7z, .tar and .iso. The presence of hidden files or directories could indicate the archive is malicious.\n\n- Consider disabling JavaScript as a rule.\n"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 108bec27-7ad3-4ffa-8158-bec493792f8e
+    type: title
+    task:
+      id: 108bec27-7ad3-4ffa-8158-bec493792f8e
+      version: -1
+      name: Resolution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: a6c26157-67cc-4126-8c4b-9da1aa9741ba
+    type: regular
+    task:
+      id: a6c26157-67cc-4126-8c4b-9da1aa9741ba
+      version: -1
+      name: Tag File Indicators
+      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      scriptName: CreateNewIndicatorsOnly
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicator_values:
+        complex:
+          root: File
+          accessor: SHA256
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: APT29, UAC-0029, Midnight Blizzard, Nobelium, Cozy Bear
+      type:
+        simple: File
+      verdict:
+        simple: Malicious
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 1f0a8941-2aaf-4997-87cf-6fc060069222
+    type: regular
+    task:
+      id: 1f0a8941-2aaf-4997-87cf-6fc060069222
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_43_#default#": 0.34,
+      "22_43_#default#": 0.34,
+      "23_43_#default#": 0.32,
+      "24_43_#default#": 0.32,
+      "34_43_#default#": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3485,
+        "width": 3040,
+        "x": -780,
+        "y": 340
+      }
+    }
+  }
+inputs:
+- key: PlaybookDescription
+  value:
+    simple: "## Cloaked Ursa: Targeting Diplomatic Missions with Phishing Lures\n\n**Summary:**\n\nCloaked Ursa, a hacking group associated with Russia's Foreign Intelligence Service, has gained notoriety for its persistent targeting of diplomatic missions globally. Using phishing tactics, Their initial access attempts over the past two years have predominantly used phishing lures with a theme of diplomatic operations such as the following:\n\n- Notes verbale (semiformal government-to-government diplomatic communications)\n- Embassies’ operating status updates\n- Schedules for diplomats\n- Invitations to embassy events\n\n Recently, Unit42 researchers observed a shift in their strategy, with a focus on targeting diplomats themselves. In Kyiv alone, at least 22 out of over 80 foreign missions were targeted.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\nPlease create a new incident and choose the Cloaked Ursa (APT29) Diplomatic Phishing Campaign playbook and Rapid Breach Response incident type.\n\n**The playbook includes the following tasks:**\n\n**IoCs Collection**\n- Blog IoCs download\n\n**Hunting:**\n- Cortex XDR XQL exploitation patterns hunting\n- Advanced SIEM exploitation patterns hunting\n- Indicators hunting\n\nThe hunting queries are searching for the following activities:\n  - Related LNK files execution command line\n  - Dropped file names\n\n**Mitigations:**\n- Unit42 mitigation measures\n\n**References:**\n\n[Diplomats Beware: Cloaked Ursa Phishing With a Twist](https://unit42.paloaltonetworks.com/cloaked-ursa-phishing/)\n"
+  required: false
+  description: The playbook description to be used in the Rapid Breach Response - Set Incident Info sub-playbook.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: Wether to block the indicators automatically.
+  playbookInputQuery:
+- key: QRadarTimeRange
+  value:
+    simple: Last 30 Days
+  required: false
+  description: The time range for the QRadar queries.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -30d@d
+  required: false
+  description: The time range for the Splunk queries.
+  playbookInputQuery:
+- key: ElasticEarliestTime
+  value:
+    simple: now-30d/d
+  required: false
+  description: The time range for the Elastic queries.
+  playbookInputQuery:
+- key: LogAnalyticsTimespan
+  value:
+    simple: 30d
+  required: false
+  description: The time range for the Azure Log Analytics queries.
+  playbookInputQuery:
+- key: XQLTimeRange
+  value:
+    simple: 30 days ago
+  required: false
+  description: The time range for the XQL queries.
+  playbookInputQuery:
+- key: ElasticIndex
+  value: {}
+  required: false
+  description: The elastic index to search in.
+  playbookInputQuery:
+- key: emailIndicators
+  value:
+    simple: dawid.tomaszewski@resetlocations.com, ops.rejon4@kazmierz.pl
+  required: false
+  description: The email indicators provided in the blog.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

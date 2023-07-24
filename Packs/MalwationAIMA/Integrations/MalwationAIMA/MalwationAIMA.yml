@@ -16,14 +16,17 @@ configuration:
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: It is additional for MALWATION Content Analysis Platform.
   display: CAP API Key
   name: cap_apikey
   type: 4
+  required: false
 description: Malwation AIMA malware analysis sandboxing.
 display: Malwation AIMA
 name: MalwationAIMA
@@ -209,7 +212,7 @@ script:
     - contextPath: CAP.Mav.STATUS
       description: The status of the submission scanning process.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3
