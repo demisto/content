@@ -321,7 +321,7 @@ Updates attributes of an existing Active Directory user.
 `ad-update-user`
 
 ##### Required Permissions
-Requires `Create, delete, and manage user accounts` permissions.
+Requires `Write All Properties` and `Read All Properties` permission from `User objects`.
 
 #### Input
 
@@ -388,7 +388,7 @@ Creates an Active Directory contact.
 `ad-create-contact`
 
 ##### Required Permissions
-Requires `Create, delete, and manage user accounts` permissions.
+Requires `Write All Properties` and `Read All Properties` permission from `Contact objects`.
 
 #### Input
 
@@ -427,7 +427,7 @@ Updates attributes of an existing Active Directory contact.
 `ad-update-contact`
 
 ##### Required Permissions
-Requires `Create, delete, and manage user accounts` permissions.
+Requires `Write All Properties` and `Read All Properties` permission from `Contact objects`.
 
 #### Input
 
