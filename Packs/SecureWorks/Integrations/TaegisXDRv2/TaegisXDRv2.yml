@@ -43,12 +43,6 @@ configuration:
   type: 0
   required: false
   additionalinfo: The maximum limit is 200.
-- display: First fetch time interval
-  name: first_fetch
-  defaultvalue: 1 days
-  type: 0
-  required: false
-  additionalinfo: 'Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
