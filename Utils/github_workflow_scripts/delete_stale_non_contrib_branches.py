@@ -6,7 +6,6 @@ import urllib3
 from blessings import Terminal
 from github import Github, enable_console_debug_logging
 from github.Repository import Repository
-from typing import List
 from dateparser import parse
 from datetime import datetime, timezone
 from utils import timestamped_print
@@ -15,7 +14,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 
-def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # noqa: E999
+def get_non_contributor_stale_branch_names(repo: Repository) -> list[str]:  # noqa: E999
     """Return the list of branches that do not have the prefix of "contrib/" without open pull requests
     and that have not been updated for 2 months (stale). Protected branches are excluded from consideration.
 
@@ -40,12 +39,8 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # no
             if (last_modified := branch.commit.commit.last_modified) and (
                     last_commit_datetime := parse(last_modified)):
                 elapsed_days = (now - last_commit_datetime).days
-                # print(f'{elapsed_days=}')
                 if elapsed_days >= 60:
-                    associated_open_prs = branch.commit.get_pulls()  # type: ignore[attr-defined]
-                    associated_open_prs = [pr for pr in associated_open_prs if pr.state == 'open']
-                    if len(associated_open_prs) < 1:
-                        branch_names.append(branch.name)
+                    branch_names.append(branch.name)
             else:
                 print(f"Couldn't load HEAD for {branch.name}")
     return branch_names
