@@ -689,7 +689,8 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod",
-            "is_mockable": false
+            "is_mockable": false,
+            "memory_threshold": 300
         },
         {
             "integrations": "CloudShark",
