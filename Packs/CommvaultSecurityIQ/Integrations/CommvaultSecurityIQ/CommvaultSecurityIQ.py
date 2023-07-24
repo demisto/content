@@ -520,7 +520,7 @@ class Client(BaseClient):
         """
         if certificate_path and private_key_path:
             server = StreamServer(
-                ("0.0.0.0", port),
+                ("0.0.0.0", port), # disable-secrets-detection
                 self.perform_long_running_execution,
                 keyfile=private_key_path,
                 certfile=certificate_path,
@@ -528,7 +528,7 @@ class Client(BaseClient):
             demisto.debug("Starting HTTPS Server")
         else:
             server = StreamServer(
-                ("0.0.0.0", port), self.perform_long_running_execution
+                ("0.0.0.0", port), self.perform_long_running_execution # disable-secrets-detection
             )
             demisto.debug("Starting HTTP Server")
         return server
@@ -629,9 +629,7 @@ class Client(BaseClient):
         if fromtime is None:
             fromtime = str(dateparser.parse(first_fetch_time))
             fromtime = int(time.mktime(datetime.fromisoformat(fromtime).timetuple()))
-        event_endpoint = f"""/events?level=10&showInfo=false&showMinor=false
-        &showMajor=true&showCritical=false&showAnomalous=true
-        &fromTime={fromtime}&toTime={seconds_since_epoch}&showAnomalous=true"""
+        event_endpoint = f"""/events?level=10&showInfo=false&showMinor=false&showMajor=true&showCritical=false&showAnomalous=true&fromTime={fromtime}&toTime={seconds_since_epoch}&showAnomalous=true""" # disable-secrets-detection
         headers = self.headers
         if max_fetch is None:
             max_fetch = 50
@@ -919,13 +917,13 @@ class Client(BaseClient):
         """
         access_token = None
         try:
-            url = f"https://login.microsoftonline.com/{self.keyvault_tenant_id}/oauth2/token"
+            url = f"https://login.microsoftonline.com/{self.keyvault_tenant_id}/oauth2/token" # disable-secrets-detection
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
             data = {
                 "grant_type": "client_credentials",
                 "client_id": self.keyvault_client_id,
                 "client_secret": self.keyvault_client_secret,
-                "resource": "https://vault.azure.net",
+                "resource": "https://vault.azure.net", # disable-secrets-detection
             }
             demisto.debug("Trying to login to keyvault...")
             response = requests.post(url, headers=headers, data=data)
@@ -1017,8 +1015,8 @@ class Client(BaseClient):
         if "errorMessage" in response:
             return False
         identityServers=[]
-		if "identityServers" in resp:
-			identityServers=(list)response.get("identityServers")
+        if "identityServers" in resp:
+            identityServers=(list)response.get("identityServers")
         saml_identity_servers = [
             s for s in identityServers if s.get("type") == 1
         ]
@@ -1039,7 +1037,7 @@ class Client(BaseClient):
         try:
             self.validate_session_or_generate_token(self.current_api_token)
             response = self.http_request("GET", "/User?level=10")
-			userslist = (list)response.get("users")
+            userslist = (list)response.get("users")
             current_user = next(
                 (
                     user
@@ -1165,7 +1163,7 @@ class Client(BaseClient):
                 }
                 uvicorn.run(
                     app,
-                    host="0.0.0.0",
+                    host="0.0.0.0", # disable-secrets-detection
                     port=port,
                     log_config=log_config,
                     **ssl_args,  # type: ignore
@@ -1427,9 +1425,9 @@ def main() -> None:
             if (out is None) or len(out) == 0:
                 demisto.incidents([])
             else:
-				current_date = datetime.utcnow()
-				epoch = datetime(1970, 1, 1)
-				seconds_since_epoch = (current_date - epoch).total_seconds()
+                current_date = datetime.utcnow()
+                epoch = datetime(1970, 1, 1)
+                seconds_since_epoch = (current_date - epoch).total_seconds()
                 client.create_incident(
                     out,
                     datetime.fromtimestamp(seconds_since_epoch),
