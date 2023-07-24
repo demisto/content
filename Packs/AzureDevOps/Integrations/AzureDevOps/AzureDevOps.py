@@ -8,6 +8,8 @@ import copy
 from requests import Response
 from typing import Callable
 from collections import namedtuple
+from datetime import datetime
+
 
 PARAMETERS_ERROR_MSG_PRS_REVIEWER = "One or more arguments are missing." \
       "Please pass with the command: organization name, repository id and project." \
@@ -23,6 +25,7 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
 
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
 
 class OrgRepoProject(namedtuple('OrgRepoProject', field_names='organization repository project')):
     organization: str
@@ -645,6 +648,18 @@ class Client:
                                            full_url=full_url,
                                            params=params,
                                            json_data=data,
+                                           resp_type='json')
+
+    def pull_request_thread_list_request(self, org_repo_project_tuple: namedtuple, pull_request_id: str):
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
+                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{pull_request_id}/threads'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
                                            resp_type='json')
 
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
@@ -2122,6 +2137,7 @@ def file_content_get_command(client: Client, args: Dict[str, Any], organization:
         raw_response=response
     )
 
+
 def branch_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                           project: Optional[str]) -> CommandResults:
     """
@@ -2184,6 +2200,41 @@ def pull_request_thread_update_command(client: Client, args: Dict[str, Any], org
         raw_response=response
     )
 
+
+def pull_request_thread_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                     repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+    """
+    Retrieve all threads in a pull request.
+    """
+    # pre-processing inputs
+    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.pull_request_thread_list_request(org_repo_project_tuple, args["pull_request_id"])
+
+    list_to_table = []
+    for thread in response.get("value"):
+        thread_id = thread.get("id")
+        list_to_table.extend(
+            {
+                "Thread ID": thread_id,
+                "Content": comment.get("content"),
+                "Name": comment.get("author").get("displayName"),
+                "Date": comment.get("publishedDate"),
+            }
+            for comment in thread.get("comments")
+        )
+    readable_output = tableToMarkdown(
+        "Threads",
+        list_to_table,
+        headers=["Thread ID", "Content", "Name", "Date"]
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.PullRequestThread',
+        outputs=response,
+        raw_response=response
+    )
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
@@ -2428,6 +2479,10 @@ def main() -> None:
         elif command == 'azure-devops-pull-request-thread-update':
             return_results(pull_request_thread_update_command(client, args, params.get('organization'),
                                                               params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-pull-request-thread-list':
+            return_results(pull_request_thread_list_command(client, args, params.get('organization'),
+                                                            params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
