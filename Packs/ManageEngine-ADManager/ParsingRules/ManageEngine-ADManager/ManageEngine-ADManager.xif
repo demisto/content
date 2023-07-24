@@ -1,5 +1,5 @@
 [INGEST:vendor="manageengine", product="admanager", target_dataset="manageengine_admanager_raw", no_hit=keep]
-// Supports RFC 3164 compatible timestamps format: "MMM dd HH:MM:SS" . For example: "Dec 05 19:25:34"
+// Supports Legacy RFC 3164 compatible timestamps format: "MMM dd HH:MM:SS" . For example: "Dec 05 19:25:34"
 filter _raw_log ~= "\w{3}\s+\d{2}\s+\d{2}\:\d{2}\:\d{2}"
 | alter // 3164 timestamps lack the year, so default to the current year 
     tmp_current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
