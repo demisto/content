@@ -9,7 +9,7 @@ Steps to enable Syslog Logging in ADManager Plus:
 1. Log in to ADManager Plus.
 2. Go to **Admin** > **Personlize** > **Integration**
 3. Click the **Syslog Server** option.
-4. Enter the details the on the [*Syslog Settings*](https://www.manageengine.com/products/ad-manager/images/admanager-plus-being-integrated-with-syslog.png) form, including the **Syslog Server Name**, **Port Number** and **Port Protocol**.  In addition, select the [*RFC 5424*](https://datatracker.ietf.org/doc/html/rfc5424) **Syslog Standard** (recommended), and specify the requested data format for your Cortex XSIAM parser. 
+4. Enter the details on the [*Syslog Settings*](https://www.manageengine.com/products/ad-manager/images/admanager-plus-being-integrated-with-syslog.png) form, including the **Syslog Server Name**, **Port Number** and **Port Protocol**.  In addition, select the [*RFC 5424*](https://datatracker.ietf.org/doc/html/rfc5424) **Syslog Standard** (recommended), and specify the requested data format for your Cortex XSIAM parser. 
 5. Click **Save**.
 
 *Please note*: Although Cortex XSIAM supports both [*RFC 5424*](https://datatracker.ietf.org/doc/html/rfc5424) and [*RFC 3164*](https://datatracker.ietf.org/doc/html/rfc3164) syslog standards, it is highly recommended you choose the more modern RFC 5424 standard over the obsolete RFC 3164. In contrast to the verbose timestamp format defined in RFC 5424, the RFC 3164 timestamp format lacks a timezone, which might cause time-difference issues for machines in different timezones. 
