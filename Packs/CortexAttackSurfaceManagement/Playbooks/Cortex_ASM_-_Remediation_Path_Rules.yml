@@ -276,7 +276,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdevcheckdetails
-                accessor: result
+                accessor: boolean
             iscontext: true
           ignorecase: true
         - operator: isEqualString
