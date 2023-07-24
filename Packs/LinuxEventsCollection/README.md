@@ -23,7 +23,7 @@ You can configure the specific vendor and product for this instance.
    - vendor as linux
    - product as linux
 
-* Pay attention: Timestamp parsing is supported for UTC format.
+* Pay attention: Timestamp parsing is configured for **mmm dd HH:MM:SS** format in UTC timezone.
                  This can be done by running the following command on the relevant Linux server:
                  `sudo timedatectl set-timezone UTC`
 
