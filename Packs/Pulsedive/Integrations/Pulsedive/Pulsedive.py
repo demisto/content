@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Dict, List, Optional, Union
 
 import dateparser
 import requests
@@ -33,7 +32,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_ip_reputation(self, ip: str, api_key) -> Dict[str, Any]:
+    def get_ip_reputation(self, ip: str, api_key) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/info.php?',
@@ -44,7 +43,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_domain_reputation(self, domain: str, api_key) -> Dict[str, Any]:
+    def get_domain_reputation(self, domain: str, api_key) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/info.php?',
@@ -55,7 +54,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_url_reputation(self, url: str, api_key) -> Dict[str, Any]:
+    def get_url_reputation(self, url: str, api_key) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/info.php?',
@@ -66,7 +65,7 @@ class Client(BaseClient):
             }
         )
 
-    def post_value_scan(self, value: str, probe: str, api_key) -> Dict[str, Any]:
+    def post_value_scan(self, value: str, probe: str, api_key) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/analyze.php',
@@ -78,7 +77,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_value_scan(self, qid: str, api_key) -> Dict[str, Any]:
+    def get_value_scan(self, qid: str, api_key) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/analyze.php?',
@@ -93,7 +92,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
+def parse_domain_date(domain_date: list[str] | str, date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> str | None:
     """Converts whois date format to an ISO8601 string
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
     in a datetime. If a list is returned with multiple elements, takes only
@@ -142,12 +141,12 @@ def test_module(client: Client, api_key) -> str:
     return 'ok'
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     for ip in ips:
         try:
             ip_data = client.get_ip_reputation(ip, api_key)
@@ -207,12 +206,12 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
     domains = argToList(args.get('domain'))
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     for domain in domains:
         try:
             domain_data = client.get_domain_reputation(domain, api_key)
@@ -272,13 +271,13 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
     return command_results
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+def url_reputation_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
 
     urls = argToList(args.get('url'))
     if len(urls) == 0:
         raise ValueError('URL(s) not specified')
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     for url in urls:
         try:
             url_data = client.get_url_reputation(url, api_key)
@@ -333,17 +332,14 @@ def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Lis
     return command_results
 
 
-def scan_value_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+def scan_value_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
     values = argToList(args.get('value'))
     if len(values) == 0:
         raise ValueError('Value(s) not specified')
 
-    if args.get('scan_type') == 'passiv':
-        scan_type_value = '0'
-    else:
-        scan_type_value = '1'
+    scan_type_value = '0' if args.get('scan_type') == 'passiv' else '1'
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     for value in values:
         try:
             value_data = client.post_value_scan(value, scan_type_value, api_key)
@@ -362,7 +358,7 @@ def scan_value_command(client: Client, args: Dict[str, Any], api_key) -> List[Co
     return command_results
 
 
-def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+def scan_result_command(client: Client, args: dict[str, Any], api_key) -> list[CommandResults]:
     """
     Scan result command
     """
@@ -370,7 +366,7 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
     if len(qids) == 0:
         raise ValueError('QID(s) not specified')
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     for qid in qids:
         try:
             qid_data = client.get_value_scan(qid, api_key)
