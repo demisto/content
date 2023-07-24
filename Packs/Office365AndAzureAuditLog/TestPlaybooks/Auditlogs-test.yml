@@ -5,23 +5,23 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f74bcfd6-0360-4f6a-81d1-33af672d231b
+    taskid: 9a5f2f80-a23b-4310-817d-9093539f737f
     type: start
     task:
-      id: f74bcfd6-0360-4f6a-81d1-33af672d231b
+      id: 9a5f2f80-a23b-4310-817d-9093539f737f
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - "4"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -30,41 +30,42 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 624a1f4f-b347-498e-8af9-57d9c025c2cf
+    taskid: bc4e1676-42c7-44dd-85d8-3a874f4344a7
     type: regular
     task:
-      id: 624a1f4f-b347-498e-8af9-57d9c025c2cf
+      id: bc4e1676-42c7-44dd-85d8-3a874f4344a7
       version: -1
-      name: o365-auditlog-search
+      name: Run Audit Log Search Command
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
         for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
-        user who performed the action, the action, or the target object.
+        action, the user who performed the action, or the target object.
       script: MicrosoftPolicyAndComplianceAuditLog|||o365-auditlog-search
       type: regular
       iscommand: true
       brand: MicrosoftPolicyAndComplianceAuditLog
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
-      end_date: {}
-      free_text: {}
-      ip_addresses: {}
-      operations: {}
-      record_type: {}
-      result_size: {}
-      start_date: {}
-      user_ids: {}
+      operations:
+        simple: Update group.
+      record_type:
+        simple: "8"
+      start_date:
+        simple: 10 months
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
@@ -73,86 +74,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 345d02e7-5fdd-4046-82ef-dd26575b6303
-    type: condition
-    task:
-      id: 345d02e7-5fdd-4046-82ef-dd26575b6303
-      version: -1
-      name: Validate anything inside
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: O365AuditLog
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 8ff43f3e-0218-4775-875e-ab15affebd0e
+    taskid: 1c0dfb86-7a43-4317-8afc-808c8dbb5302
     type: title
     task:
-      id: 8ff43f3e-0218-4775-875e-ab15affebd0e
+      id: 1c0dfb86-7a43-4317-8afc-808c8dbb5302
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 735
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 0203058d-0d1d-4db3-8515-627675fc851c
-    type: regular
-    task:
-      id: 0203058d-0d1d-4db3-8515-627675fc851c
-      version: -1
-      name: Print error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Could not find any log. It may not be an error, but it can be.
-    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -165,15 +101,79 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: c4715295-f59c-4c71-8986-0090328932ab
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 96ebc2af-66c3-4f09-82a7-c3d28c10ca67
+    type: condition
+    task:
+      id: 96ebc2af-66c3-4f09-82a7-c3d28c10ca67
+      version: -1
+      name: Verify Command Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: O365AuditLog.Workload
+            iscontext: true
+          right:
+            value:
+              simple: AzureActiveDirectory
+      - - operator: isEqualString
+          left:
+            value:
+              simple: O365AuditLog.Operation
+            iscontext: true
+          right:
+            value:
+              simple: Update group.
+      - - operator: isEqualString
+          left:
+            value:
+              simple: O365AuditLog.RecordType
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ccb5fc55-b52f-4d94-84fd-072c3bbcd400
     type: regular
     task:
-      id: c4715295-f59c-4c71-8986-0090328932ab
+      id: ccb5fc55-b52f-4d94-84fd-072c3bbcd400
       version: -1
-      name: DeleteContext
-      description: Delete field from context
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -184,15 +184,12 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
@@ -201,13 +198,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 810,
+        "height": 735,
+        "width": 380,
         "x": 50,
         "y": 50
       }
