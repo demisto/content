@@ -488,11 +488,11 @@ class Client(BaseClient):
         try:
             new_access_token = response.get("token")
             current_epoch = int(datetime.now().timestamp())
-            self.current_api_token = new_access_token
-            self.access_token = new_access_token
-            self.qsdk_token = f"QSDK {new_access_token}"
+            self.current_api_token = str(new_access_token)
+            self.access_token = str(new_access_token)
+            self.qsdk_token = f"QSDK {str(new_access_token)}"
             self.access_token_last_generation = current_epoch
-            current_token_dict['accessToken'] = new_access_token
+            current_token_dict['accessToken'] = str(new_access_token)
             current_token_dict['accessTokenGenerationTime'] = current_epoch
             set_integration_context({"tokenDetails": current_token_dict})
 
@@ -582,7 +582,7 @@ class Client(BaseClient):
         else:
             demisto.debug("Failed in parsing the message ")
         if extracted_message:
-            dts = datetime.fromisoformat(extracted_message.get("timestamp"))
+            dts = datetime.fromisoformat(str(extracted_message.get("timestamp")))
             self.create_incident(extracted_message, dts, incidentType, False)
 
     def create_incident(
@@ -617,7 +617,7 @@ class Client(BaseClient):
             demisto.createIncidents(incidents)
             # self.define_indicator(extracted_message.get("originating_client"))
 
-    def get_events_list(self, last_run, first_fetch_time, max_fetch) -> list | None:
+    def get_events_list(self, last_run, first_fetch_time, max_fetch) -> Tuple[Optional[Any], Dict[str, int]]:
         """
         Function to get events
         """
@@ -878,7 +878,7 @@ class Client(BaseClient):
         out = None
         self.validate_session_or_generate_token(self.current_api_token)
         response = self.http_request("GET", "/Job/" + str(job_id), None)
-        if response.get("totalRecordsWithoutPaging") > 0:
+        if ("totalRecordsWithoutPaging" in response) and (int(response.get("totalRecordsWithoutPaging")) > 0):
             out = response
         return out
 
@@ -1016,9 +1016,11 @@ class Client(BaseClient):
         response = self.http_request("GET", "/IdentityServers")
         if "errorMessage" in response:
             return False
-
+		identityServers=[]
+		if "identityServers" in resp:
+			identityServers=(list)response.get("identityServers")
         saml_identity_servers = [
-            s for s in response.get("identityServers") if s.get("type") == 1
+            s for s in identityServers if s.get("type") == 1
         ]
         for identity_server_info in saml_identity_servers:
             identity_server_name = identity_server_info.get("IdentityServerName")
@@ -1037,10 +1039,11 @@ class Client(BaseClient):
         try:
             self.validate_session_or_generate_token(self.current_api_token)
             response = self.http_request("GET", "/User?level=10")
+			userslist = (list)response.get("users")
             current_user = next(
                 (
                     user
-                    for user in response.get("users")
+                    for user in userslist
                     if user.get("email") == user_email or user.get("UPN") == user_email
                 ),
                 None,
@@ -1075,7 +1078,7 @@ class Client(BaseClient):
 
         clientname = demisto.incident().get("CustomFields", {}).get("commvaultoriginatingclient")
         resp = self.http_request("GET", "/GetId?clientname=" + clientname)
-        return resp.get("clientId")
+        return (str)resp.get("clientId")
 
     def is_port_in_use(self, port: int) -> bool:
         """
@@ -1180,10 +1183,8 @@ class Client(BaseClient):
                 time.sleep(5)
 
 
-def fetch_incidents(client, last_run, first_fetch_time) -> list:
-    demisto.params().get(
-        "incidentType", "Commvault Suspicious File Activity"
-    )
+def fetch_incidents(client, last_run, first_fetch_time) -> Tuple[List[<nothing>], None]:
+
 
     max_fetch = demisto.params().get('max_fetch')
 
@@ -1191,7 +1192,7 @@ def fetch_incidents(client, last_run, first_fetch_time) -> list:
 
     if events is None:
         demisto.info("There are no events")
-        return [], None
+        return {}, None
     current_date = datetime.utcnow()
     epoch = datetime(1970, 1, 1)
 
@@ -1303,7 +1304,7 @@ def fetch_and_disable_saml_identity_provider(client):
     if client.fetch_and_disable_saml_identity_provider():
         resp = "Successfully disabled SAML identity provider"
     else:
-        raise DemistoException("Could not disable SAML identity provider :- {}".format(response.get('errorMessage')))
+        raise DemistoException("Could not disable SAML identity provider")
     return CommandResults(
         outputs_prefix='CommvaultSecurityIQ.Response',
         outputs_key_field='Response',
@@ -1350,7 +1351,9 @@ def main() -> None:
     certificate: str | None = params.get("certificate")
     private_key: str | None = params.get("private_key")
     cv_webservice_url: str = params.get("CVWebserviceUrl")
-
+    incidentType=params.get(
+        "incidentType", "Commvault Suspicious File Activity"
+    )
     cv_api_token: str = params.get('CommvaultAPIToken', {}).get('password')
     is_fetch: list[str] = params.get("isFetch")
     if not cv_webservice_url.endswith("/"):
@@ -1424,6 +1427,9 @@ def main() -> None:
             if (out is None) or len(out) == 0:
                 demisto.incidents([])
             else:
+				current_date = datetime.utcnow()
+				epoch = datetime(1970, 1, 1)
+				seconds_since_epoch = (current_date - epoch).total_seconds()
                 client.create_incident(
                     out,
                     datetime.fromtimestamp(seconds_since_epoch),
