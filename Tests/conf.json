@@ -23,8 +23,7 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
-            "instance_names": "microsoft_defender_atp_dev",
-            "memory_threshold": 300
+            "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -3684,7 +3683,8 @@
         },
         {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
-            "playbookID": "Audit Log - Test"
+            "playbookID": "Audit Log - Test",
+            "memory_threshold": 220
         },
         {
             "integrations": "Nutanix Hypervisor",
@@ -5660,7 +5660,6 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266",
         "EWS_O365_test": "Issue CIAC-6753",
         "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
