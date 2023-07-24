@@ -14,11 +14,12 @@ touch CloudEnvVariables
 
 #gsutil cp gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST # copy TestMachines locally for faster perf
 XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
+XSIAM_SERVER_CONFIG=$(jq -r ".[\"upload\"]" < "$XSIAM_SERVERS_PATH")
 
 echo here
 echo $XSIAM_SERVERS_PATH
 echo here2
-echo $XSIAM_SERVERS_LIST
+echo $XSIAM_SERVER_CONFIG
 echo here3
 export NUM_OF_TEST_MACHINES=`sed -n '$=' $TEST_MACHINES_LIST`# reads num of lines in file (this is the num of machines)
 
