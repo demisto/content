@@ -127,7 +127,7 @@
             "instance_names": "ms_teams_management_device_code",
             "is_mockable": false,
             "timeout": 700,
-            "memory_threshold": 300
+            "memory_threshold": 500
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -4966,6 +4966,7 @@
         {
             "playbookID": "Microsoft Teams - Test",
             "fromversion": "5.0.0",
+            "memory_threshold": 300,
             "instance_names": "ms_teams_management_device_code",
             "integrations": [
                 "Microsoft Teams Management",
