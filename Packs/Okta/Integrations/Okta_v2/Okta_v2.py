@@ -298,7 +298,6 @@ class Client(BaseClient):
         response['factorResult'] = "TIMEOUT"
         return response
 
-<<<<<<< HEAD
     def search(self, term, limit, advanced_search):
         uri = "users"
         query_params = assign_params(
@@ -306,14 +305,6 @@ class Client(BaseClient):
             q=None if advanced_search else encode_string_results(term),
             search=encode_string_results(advanced_search) if advanced_search else None
         )
-=======
-    def search(self, term, limit):
-        uri = "users"
-        query_params = {
-            'q': encode_string_results(term),
-            'limit': limit
-        }
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
         return self._http_request(
             method='GET',
             url_suffix=uri,
@@ -680,10 +671,6 @@ def test_module(client, args):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-<<<<<<< HEAD
-=======
-    args
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     uri = 'users/me'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
@@ -904,14 +891,16 @@ def search_command(client, args):
     term = args.get('term')
     limit = args.get('limit') or SEARCH_LIMIT
     verbose = args.get('verbose')
-<<<<<<< HEAD
+
+
+<< << << < HEAD
     advanced_search = args.get('advanced_search', '')
     if not term and not advanced_search:
         raise DemistoException('Please provide either the term or advanced_search argument')
     raw_response = client.search(term, limit, advanced_search)
-=======
+== == == =
     raw_response = client.search(term, limit)
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+>>>>>> > 5896217e5bc2e4aeea327a288d416e647bda2af2
 
     if raw_response and len(raw_response) > 0:
         users_context = client.get_users_context(raw_response)
@@ -1028,11 +1017,13 @@ def list_users_command(client, args):
         'Account(val.ID && val.ID == obj.ID)': context,
         'Okta.User(val.tag)': {'tag': after_tag}
     }
-<<<<<<< HEAD
+
+
+<< << << < HEAD
     return (
-=======
-    return(
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+== == == =
+    return (
+>>>>>> > 5896217e5bc2e4aeea327a288d416e647bda2af2
         readable_output,
         outputs,
         raw_response
@@ -1040,13 +1031,13 @@ def list_users_command(client, args):
 
 
 def list_groups_command(client, args):
-    raw_response = client.list_groups(args)
-    groups = client.get_readable_groups(raw_response)
-    context = createContext(groups, removeNull=True)
-    outputs = {
+    raw_response=client.list_groups(args)
+    groups=client.get_readable_groups(raw_response)
+    context=createContext(groups, removeNull=True)
+    outputs={
         'Okta.Group(val.ID && val.ID === obj.ID)': context
     }
-    readable_output = tableToMarkdown('Groups', groups)
+    readable_output=tableToMarkdown('Groups', groups)
 
     return (
         readable_output,
@@ -1056,13 +1047,13 @@ def list_groups_command(client, args):
 
 
 def get_logs_command(client, args):
-    raw_response = client.get_logs(args)
+    raw_response=client.get_logs(args)
     if not raw_response:
         return 'No logs found', {}, raw_response
 
-    logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown('Okta Events', logs)
-    outputs = {
+    logs=client.get_readable_logs(raw_response)
+    readable_output=tableToMarkdown('Okta Events', logs)
+    outputs={
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
@@ -1073,13 +1064,13 @@ def get_logs_command(client, args):
 
 
 def get_failed_login_command(client, args):
-    args['filter'] = 'eventType eq "user.session.start" and outcome.result eq "FAILURE"'
-    raw_response = client.get_logs(args)
+    args['filter']='eventType eq "user.session.start" and outcome.result eq "FAILURE"'
+    raw_response=client.get_logs(args)
     if not raw_response:
         return 'No logs found', {}, raw_response
-    logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown('Failed Login Events', logs)
-    outputs = {
+    logs=client.get_readable_logs(raw_response)
+    readable_output=tableToMarkdown('Failed Login Events', logs)
+    outputs={
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
@@ -1090,13 +1081,13 @@ def get_failed_login_command(client, args):
 
 
 def get_group_assignments_command(client, args):
-    args['filter'] = 'eventType eq "group.user_membership.add"'
-    raw_response = client.get_logs(args)
+    args['filter']='eventType eq "group.user_membership.add"'
+    raw_response=client.get_logs(args)
     if not raw_response:
         return 'No logs found', {}, raw_response
-    logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown('Group Assignment Events', logs)
-    outputs = {
+    logs=client.get_readable_logs(raw_response)
+    readable_output=tableToMarkdown('Group Assignment Events', logs)
+    outputs={
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
@@ -1107,13 +1098,13 @@ def get_group_assignments_command(client, args):
 
 
 def get_application_assignments_command(client, args):
-    args['filter'] = 'eventType eq "application.user_membership.add"'
-    raw_response = client.get_logs(args)
+    args['filter']='eventType eq "application.user_membership.add"'
+    raw_response=client.get_logs(args)
     if not raw_response:
         return 'No logs found', {}, raw_response
-    logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown('Application Assignment Events', logs)
-    outputs = {
+    logs=client.get_readable_logs(raw_response)
+    readable_output=tableToMarkdown('Application Assignment Events', logs)
+    outputs={
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
@@ -1124,13 +1115,13 @@ def get_application_assignments_command(client, args):
 
 
 def get_application_authentication_command(client, args):
-    args['filter'] = 'eventType eq "user.authentication.sso"'
-    raw_response = client.get_logs(args)
+    args['filter']='eventType eq "user.authentication.sso"'
+    raw_response=client.get_logs(args)
     if not raw_response:
         return 'No logs found', {}, raw_response
-    logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown('Application Authentication Events', logs)
-    outputs = {
+    logs=client.get_readable_logs(raw_response)
+    readable_output=tableToMarkdown('Application Authentication Events', logs)
+    outputs={
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
@@ -1143,15 +1134,15 @@ def get_application_authentication_command(client, args):
 def delete_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
         raise Exception("You must supply either 'Username' or 'userId")
-    user_term = args.get('userId') or args.get('username')
+    user_term=args.get('userId') or args.get('username')
     # Deletes a user permanently. This operation can only be performed on users that have a DEPROVISIONED status.
     # This action cannot be recovered!This operation on a user that hasn't been deactivated
     # causes that user to be deactivated. A second delete operation is required to delete the user.
-    user = client.get_user(user_term)
+    user=client.get_user(user_term)
     if user.get('status') != 'DEPROVISIONED':
         client.deactivate_user(args.get('userId') or client.get_user_id(args.get('username')))
-    raw_response = client.delete_user(user_term)
-    readable_output = f"User: {user_term} was Deleted successfully"
+    raw_response=client.delete_user(user_term)
+    readable_output=f"User: {user_term} was Deleted successfully"
     return (
         readable_output,
         {},
@@ -1159,20 +1150,20 @@ def delete_user_command(client, args):
 
 
 def clear_user_sessions_command(client, args):
-    user_id = args.get('userId')
-    raw_response = client.clear_user_sessions(user_id)
-    readable_output = f"### User session was cleared for: {user_id}"
+    user_id=args.get('userId')
+    raw_response=client.clear_user_sessions(user_id)
+    readable_output=f"### User session was cleared for: {user_id}"
 
     return readable_output, {}, raw_response
 
 
 def get_zone_command(client, args):
-    raw_response = client.get_zone(args.get('zoneID', ''))
+    raw_response=client.get_zone(args.get('zoneID', ''))
     if not raw_response:
         return 'No zones found.', {}, raw_response
-    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+    readable_output=tableToMarkdown('Okta Zones', raw_response, headers=[
                                       'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
-    outputs = {
+    outputs={
         'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
     }
     return (
@@ -1183,12 +1174,12 @@ def get_zone_command(client, args):
 
 
 def list_zones_command(client, args):
-    raw_response = client.list_zones(args.get('limit'))
+    raw_response=client.list_zones(args.get('limit'))
     if not raw_response:
         return 'No zones found.', {}, raw_response
-    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+    readable_output=tableToMarkdown('Okta Zones', raw_response, headers=[
                                       'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
-    outputs = {
+    outputs={
         'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
     }
     return (
@@ -1201,42 +1192,42 @@ def list_zones_command(client, args):
 def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
     # If user provided a new zone name - set it
     if zoneName:
-        zoneObject["name"] = zoneName
+        zoneObject["name"]=zoneName
 
     # Set IPs in CIDR mode. Single IPs will be added as /32.
     if gatewayIPs:
-        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in gatewayIPs]
-        zoneObject["gateways"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+        CIDRs=[f"{ip}/32" if '/' not in ip else f'{ip}' for ip in gatewayIPs]
+        zoneObject["gateways"]=[{"type": "CIDR", "value": cidr} for cidr in CIDRs]
 
     if proxyIPs:
-        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in proxyIPs]
-        zoneObject["proxies"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+        CIDRs=[f"{ip}/32" if '/' not in ip else f'{ip}' for ip in proxyIPs]
+        zoneObject["proxies"]=[{"type": "CIDR", "value": cidr} for cidr in CIDRs]
 
     return zoneObject
 
 
 def create_zone_command(client, args):
-    zone_name = args.get('name')
-    gateway_ips = argToList(args.get('gateway_ips'))
-    proxies = argToList(args.get('proxies'))
+    zone_name=args.get('name')
+    gateway_ips=argToList(args.get('gateway_ips'))
+    proxies=argToList(args.get('proxies'))
     if not (gateway_ips or proxies):
         raise Exception("You must supply either 'gateway_ips' or 'proxies'.")
 
-    zoneObject = {
+    zoneObject={
         "name": '',
         "type": "IP",
         "status": "ACTIVE",
         "gateways": [],
         "proxies": []
     }
-    zoneObject = apply_zone_updates(zoneObject, zone_name, gateway_ips, proxies)
+    zoneObject=apply_zone_updates(zoneObject, zone_name, gateway_ips, proxies)
 
-    raw_response = client.create_zone(zoneObject)
+    raw_response=client.create_zone(zoneObject)
     if not raw_response:
         return 'Zone not created.', {}, raw_response
-    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+    readable_output=tableToMarkdown('Okta Zones', raw_response, headers=[
         'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
-    outputs = {
+    outputs={
         'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
     }
     return (
@@ -1254,21 +1245,21 @@ def update_zone_command(client, args):
             {},
             'Nothing to update'
         )
-    zoneID = args.get('zoneID', '')
-    zoneObject = client.get_zone(zoneID)
+    zoneID=args.get('zoneID', '')
+    zoneObject=client.get_zone(zoneID)
     if zoneID == zoneObject.get('id'):
-        zoneName = args.get('zoneName', '')
-        gatewayIPs = argToList(args.get('gatewayIPs', ''))
-        proxyIPs = argToList(args.get('proxyIPs', ''))
-        zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
+        zoneName=args.get('zoneName', '')
+        gatewayIPs=argToList(args.get('gatewayIPs', ''))
+        proxyIPs=argToList(args.get('proxyIPs', ''))
+        zoneObject=apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
 
-        raw_response = client.update_zone(zoneObject)
+        raw_response=client.update_zone(zoneObject)
         if not raw_response:
             return 'Got empty response.', {}, raw_response
 
-        readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+        readable_output=tableToMarkdown('Okta Zones', raw_response, headers=[
                                           'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
-        outputs = {
+        outputs={
             'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
         }
         return (
@@ -1282,14 +1273,14 @@ def update_zone_command(client, args):
 
 def assign_group_to_app_command(client, args):
 
-    group_id = args.get('groupId')
+    group_id=args.get('groupId')
     if not group_id:
-        group_id = client.get_group_id(args.get('groupName'))
+        group_id=client.get_group_id(args.get('groupName'))
         if group_id is None:
             raise ValueError('Either group name not found or multiple groups include this name.')
-    app_id = client.get_app_id(args.get('appName'))
-    raw_response = client.assign_group_to_app(group_id, app_id)
-    readable_output = f"Group: {args.get('groupName')} added to PA App successfully"
+    app_id=client.get_app_id(args.get('appName'))
+    raw_response=client.assign_group_to_app(group_id, app_id)
+    readable_output=f"Group: {args.get('groupName')} added to PA App successfully"
     return (
         readable_output,
         {},
@@ -1299,13 +1290,13 @@ def assign_group_to_app_command(client, args):
 
 def create_group_command(client, args):
 
-    profile = client.build_group_profile(args)
-    raw_response = client.create_group(profile)
-    group_context = client.get_groups_context(raw_response)
-    outputs = {
+    profile=client.build_group_profile(args)
+    raw_response=client.create_group(profile)
+    group_context=client.get_groups_context(raw_response)
+    outputs={
         'OktaGroup(val.ID && val.ID === obj.ID)': createContext(group_context)
     }
-    readable_output = f"Group Created: [GroupID:{raw_response['id']}, GroupName: {raw_response['profile']['name']}]"
+    readable_output=f"Group Created: [GroupID:{raw_response['id']}, GroupName: {raw_response['profile']['name']}]"
     return (
         readable_output,
         outputs,
@@ -1322,8 +1313,8 @@ def get_after_tag(url):
     Returns:
         String: the value of the 'after' query param.
     """
-    parsed_url = urlparse(url)
-    captured_value = parse_qs(parsed_url.query)['after'][0]
+    parsed_url=urlparse(url)
+    captured_value=parse_qs(parsed_url.query)['after'][0]
     return captured_value
 
 
@@ -1336,8 +1327,8 @@ def delete_limit_param(url):
     Returns:
         String: the url with the limit query param.
     """
-    parsed_url = urlparse(url)
-    query_dict = parse_qs(parsed_url.query)
+    parsed_url=urlparse(url)
+    query_dict=parse_qs(parsed_url.query)
     query_dict.pop('limit')
     return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
 
@@ -1347,18 +1338,18 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
-    base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
-    apitoken = demisto.params().get("credentials", {}).get("password", '') or demisto.params().get('apitoken', '')
+    base_url=urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
+    apitoken=demisto.params().get("credentials", {}).get("password", '') or demisto.params().get('apitoken', '')
 
     if not apitoken:
         raise ValueError('Missing API token.')
 
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate=not demisto.params().get('insecure', False)
+    proxy=demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
 
-    commands = {
+    commands={
         'test-module': test_module,
         'okta-unlock-user': unlock_user_command,
         'okta-deactivate-user': deactivate_user_command,
@@ -1395,9 +1386,9 @@ def main():
 
     }
 
-    command = demisto.command()
+    command=demisto.command()
 
-    client = Client(
+    client=Client(
         base_url=base_url,
         verify=verify_certificate,
         headers={
@@ -1410,7 +1401,7 @@ def main():
 
     try:
         if command in commands:
-            human_readable, outputs, raw_response = commands[command](client, demisto.args())
+            human_readable, outputs, raw_response=commands[command](client, demisto.args())
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
     # Log exceptions
