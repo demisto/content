@@ -29,7 +29,7 @@ from CommonServerUserPython import *  # noqa
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-" CONSTANTS "
+# CONSTANTS
 MAX_SAMPLES = 20
 BUF_SIZE = 1024
 MAX_PORT: int = 65535
@@ -88,10 +88,10 @@ async def handle_post(
     credentials: HTTPBasicCredentials = Depends(basic_auth),
     token: APIKey = Depends(token_auth),
 ):
-    del credentials,token
+    del credentials, token
     global client
     try:
-        incidentType: str | None = demisto.params().get(
+        incident_type: str | None = demisto.params().get(
             "incidentType", "Commvault Suspicious File Activity"
         )
         current_date = datetime.utcnow()
@@ -127,7 +127,7 @@ async def handle_post(
         logging.error(f"could not print REQUEST: {err}")
         return {"status": "ERR"}
 
-    client.create_incident(incident_body, timestamp, incidentType, False)  # type: ignore
+    client.create_incident(incident_body, timestamp, incident_type, False)  # type: ignore
 
     return "OK"
 
@@ -362,7 +362,6 @@ class Client(BaseClient):
         """
         Constructor to initialize the Commvault client object
         """
-        
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.qsdk_token = None
         self.ws_url = base_url
@@ -527,7 +526,8 @@ class Client(BaseClient):
 
     def perform_long_running_execution(self, sock: Any, address: tuple) -> None:
         """
-        The long running execution loop. Gets input, and performs a while True loop and logs any error that happens.
+        The long running execution loop. Gets input, and performs a while True loop
+        and logs any error that happens.
         Stops when there is no more data to read.
         Args:
             sock: Socket.
@@ -560,7 +560,7 @@ class Client(BaseClient):
         """
         Function to start long running loop
         """
-        incidentType: str = demisto.params().get(
+        incident_type: str = demisto.params().get(
             "incidentType", "Commvault Suspicious File Activity"
         )
 
@@ -571,13 +571,13 @@ class Client(BaseClient):
             demisto.debug("Failed in parsing the message ")
         if extracted_message:
             dts = datetime.fromisoformat(str(extracted_message.get("timestamp")))
-            self.create_incident(extracted_message, dts, incidentType, False)
+            self.create_incident(extracted_message, dts, incident_type, False)
 
     def create_incident(
         self,
         extracted_message: Union[list, dict[str, Any]],
         date_obj: datetime,
-        incidentType: str,
+        incident_type: str,
         is_fetch: bool,
     ) -> None:
         """
@@ -592,7 +592,7 @@ class Client(BaseClient):
                 "name": f"Suspicious File Activity Detected at [{date_str}]",
                 "rawJSON": json.dumps(message_),
                 "occurred": message_.get("occurred"),
-                "type": incidentType,
+                "type": incident_type,
                 "details": "\n".join([f"{k}: {v}" for k, v in message_.items() if v]),
             }
             incidents.append(incident)
@@ -605,7 +605,7 @@ class Client(BaseClient):
 
     def get_events_list(
         self, last_run, first_fetch_time, max_fetch
-    ) -> tuple[Optional[Any], dict[str, int]]:
+    ) -> Optional[Any]:
         """
         Function to get events
         """
@@ -617,18 +617,20 @@ class Client(BaseClient):
         if fromtime is None:
             fromtime = str(dateparser.parse(first_fetch_time))
             fromtime = int(time.mktime(datetime.fromisoformat(fromtime).timetuple()))
-        event_endpoint = f"/events?level=10&showInfo=false&showMinor=false&"\
-        "showMajor=true&showCritical=false&showAnomalous=true&fromTime={fromtime}&"\
-        "toTime={seconds_since_epoch}&showAnomalous=true"  # disable-secrets-detection
+        ustring = (
+            "/events?level=10&showInfo=false&showMinor=false&"
+            "showMajor=true&showCritical=false&"
+            "showAnomalous=true&showAnomalous=true"
+        )
+        event_endpoint = f"{ustring}&fromTime={fromtime}&toTime={seconds_since_epoch}"  # disable-secrets-detection
         headers = self.headers
         if max_fetch is None:
             max_fetch = 50
         headers["pagingInfo"] = f"0,{max_fetch}"
         resp = self.http_request("GET", event_endpoint, None, headers=headers)
-        last_run_new = {"last_fetch": seconds_since_epoch}
         if resp and resp.get("commservEvents"):
-            return resp.get("commservEvents"), last_run_new
-        return None, last_run_new
+            return resp.get("commservEvents")
+        return None
 
     def get_subclient_content_list(self, subclient_id: Union[int, str]) -> dict:
         """
@@ -967,22 +969,21 @@ class Client(BaseClient):
                     f"Error [{response.get('error',{}).get('errorString','')}]"
                 )
                 return False
-            else:
-                if response.get("enabled"):
+            if response.get("enabled"):
+                demisto.debug(
+                    f"SAML is enabled for identity server [{identity_server_name}]. Going to disable it"
+                )
+                body = {"enabled": not_enable, "type": "SAML"}
+                response = self.http_request(
+                    "PUT",
+                    f"/V4/SAML/{identity_server_name}",
+                    json_data=body,
+                )
+                if response.get("errorCode", 0) > 0:
                     demisto.debug(
-                        f"SAML is enabled for identity server [{identity_server_name}]. Going to disable it"
+                        f"Could not disable as [{response.get('errMessage')}]"
                     )
-                    body = {"enabled": not_enable, "type": "SAML"}
-                    response = self.http_request(
-                        "PUT",
-                        f"/V4/SAML/{identity_server_name}",
-                        json_data=body,
-                    )
-                    if response.get("errorCode", 0) > 0:
-                        demisto.debug(
-                            f"Could not disable as [{response.get('errMessage')}]"
-                        )
-                        return False
+                    return False
         except Exception as error:
             demisto.debug(f"Could not disable identity provider due to [{error}]")
         return True
@@ -995,10 +996,10 @@ class Client(BaseClient):
         response = self.http_request("GET", "/IdentityServers")
         if "errorMessage" in response:
             return False
-        identityServers = []
+        identity_servers = []
         if "identityServers" in response:
-            identityServers = response["identityServers"]
-        saml_identity_servers = [s for s in identityServers if s.get("type") == 1]
+            identity_servers = response["identityServers"]
+        saml_identity_servers = [s for s in identity_servers if s.get("type") == 1]
         for identity_server_info in saml_identity_servers:
             identity_server_name = identity_server_info.get("IdentityServerName")
             if self.disable_providers(identity_server_name):
@@ -1165,7 +1166,7 @@ def fetch_incidents(
 
     max_fetch = demisto.params().get("max_fetch")
 
-    events, last_run_new = client.get_events_list(
+    events = client.get_events_list(
         {} if (last_run is None) else last_run, first_fetch_time, max_fetch
     )
 
@@ -1316,7 +1317,7 @@ def main() -> None:
     certificate: str | None = params.get("certificate")
     private_key: str | None = params.get("private_key")
     cv_webservice_url: str = params.get("CVWebserviceUrl")
-    incidentType = params.get("incidentType", "Commvault Suspicious File Activity")
+    incident_type = params.get("incidentType", "Commvault Suspicious File Activity")
     cv_api_token: str = params.get("CommvaultAPIToken", {}).get("password")
     is_fetch: list[str] = params.get("isFetch")
     if not cv_webservice_url.endswith("/"):
@@ -1400,7 +1401,7 @@ def main() -> None:
                 client.create_incident(
                     out,
                     datetime.fromtimestamp(seconds_since_epoch),
-                    incidentType,
+                    incident_type,
                     True,
                 )
             demisto.setLastRun(last_fetch)
