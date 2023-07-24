@@ -1,3 +1,9 @@
+import json
+from pathlib import Path
+
+import urllib3.request
+from urllib3.response import HTTPResponse
+
 import demisto_client
 import pytest
 import timeout_decorator
@@ -5,19 +11,20 @@ import Tests.Marketplace.search_and_install_packs as script
 from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
-import json
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
 
-MOCK_HELLOWORLD_SEARCH_RESULTS = {
-    "id": "HelloWorld",
-    "currentVersion": "1.1.10"
-}
-MOCK_AZURESENTINEL_SEARCH_RESULTS = {
-    "id": "AzureSentinel",
-    "currentVersion": "1.0.2"
-}
+
+def load_json_file(directory: str, file_name: str):
+    with open(Path(__file__).parent / 'test_data' / directory / file_name) as json_file:
+        json_data = json.load(json_file)
+    return json_data
+
+
+MOCK_HELLOWORLD_SEARCH_RESULTS = load_json_file('search_dependencies', "HelloWorld_1.2.19.json")
+MOCK_AZURESENTINEL_SEARCH_RESULTS = load_json_file('search_dependencies', 'AzureSentinel_1.5.8.json')
+
 MOCK_PACKS_INSTALLATION_RESULT = [
     {
         "id": "HelloWorld",
@@ -45,46 +52,16 @@ MOCK_PACKS_INSTALLATION_RESULT = [
     }
 ]
 
-MOCK_PACKS_DEPENDENCIES_RESULT = {
-    "dependencies": [
-        {
-            "id": "TestPack",
-            "currentVersion": "",
-            "dependants": {
-                "HelloWorld": {
-                    "level": "required"
-                }
-            },
-            "extras": {
-                "pack": {
-                    "currentVersion": "1.0.0"
-                }
-            }
-        }
-    ]
-}
-
 PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
 def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None, response_type='object'):
-    if path == '/contentpacks/marketplace/HelloWorld':
-        return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
-    if path == '/contentpacks/marketplace/AzureSentinel':
-        return MOCK_AZURESENTINEL_SEARCH_RESULTS, 200, None
-    elif path == '/contentpacks/marketplace/install':
-        return MOCK_PACKS_INSTALLATION_RESULT, 200, None
-    elif path == '/contentpacks/marketplace/search/dependencies':
-        return MOCK_PACKS_DEPENDENCIES_RESULT, 200, None
+    if body:
+        if body[0].get('id') == 'HelloWorld':
+            return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
+        elif body and body[0].get('id') == 'AzureSentinel':
+            return MOCK_AZURESENTINEL_SEARCH_RESULTS, 200, None
     return None, None, None
-
-
-def mocked_get_pack_display_name(pack_id):
-    if pack_id == 'HelloWorld':
-        return 'HelloWorld'
-    elif pack_id == 'AzureSentinel':
-        return 'AzureSentinel'
-    return ''
 
 
 class MockConfiguration:
@@ -116,7 +93,8 @@ class MockLock:
         return False
 
 
-def test_search_and_install_packs_and_their_dependencies(mocker):
+@pytest.mark.parametrize('use_multithreading', [True, False])
+def test_search_and_install_packs_and_their_dependencies(mocker, use_multithreading: bool):
     """
     Given
     - Valid pack ids.
@@ -138,22 +116,30 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
 
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
-    mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
-    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)
+    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)  # Relevant only for post-update unit-tests
 
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                                      client)
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
+                                                                                      client=client,
+                                                                                      multithreading=use_multithreading,
+                                                                                      is_post_update=False)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
     assert success is True
 
-    installed_packs, _ = script.search_and_install_packs_and_their_dependencies(bad_pack_ids,
-                                                                                client)
+    installed_packs, _ = script.search_and_install_packs_and_their_dependencies(pack_ids=bad_pack_ids,
+                                                                                client=client,
+                                                                                multithreading=use_multithreading,
+                                                                                is_post_update=False)
     assert bad_pack_ids[0] not in installed_packs
 
 
-def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
+@pytest.mark.parametrize('error_code,use_multithreading',
+                         [
+                             (400, True), (400, False),
+                             (500, True), (500, False),
+                         ])
+def test_search_and_install_packs_and_their_dependencies_with_error(mocker, error_code, use_multithreading: bool):
     """
     Given
     - Error when searching for a pack
@@ -165,72 +151,16 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
     good_pack_ids = ['HelloWorld']
 
     client = MockClient()
+    mock_response = HTTPResponse(status=error_code, body=b"Error")
 
     mocker.patch.object(script, 'install_packs')
-    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
-    mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
+    mocker.patch.object(urllib3.request.RequestMethods, 'request', return_value=mock_response)
 
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                                      client)
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
+                                                                                      client=client,
+                                                                                      multithreading=use_multithreading,
+                                                                                      is_post_update=False)
     assert success is False
-
-
-def test_search_pack_with_id(mocker):
-    """
-   Given
-   - Pack with a new name (different from its ID)
-   When
-   - Searching the pack in the Demsito instance.
-   Then
-   - Ensure the pack is found using its ID
-   """
-    client = MockClient()
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
-    expected_response = {
-        'id': 'HelloWorld',
-        'version': '1.1.10'
-    }
-    assert expected_response == script.search_pack(client, "New Hello World", 'HelloWorld', None)
-
-
-def test_search_pack_with_failure(mocker):
-    """
-   Given
-   - Error when searching for pack
-   - Response with missing data
-   When
-   - Searching the pack in the Demsito instance for installation.
-   Then
-   - Ensure error is raised.
-   """
-    client = MockClient()
-    lock = MockLock()
-
-    # Error when searching for pack
-    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
-    script.search_pack(client, "New Hello World", 'HelloWorld', lock)
-    assert not script.SUCCESS_FLAG
-
-    # Response with missing data
-    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('{"id": "HelloWorld"}', 200, None))
-    script.search_pack(client, "New Hello World", 'HelloWorld', lock)
-    assert not script.SUCCESS_FLAG
-
-
-ERROR_MESSAGE = """
-(400)
-Reason: Bad Request
-HTTP response headers: HTTPHeaderDict({'Content-Type': 'application/json',
-'Set-Cookie': 'S=A4Nj75P0P3UcPLb2eJByVpv311AEzeVsjIjLpKyFjNRJHjBHcJaj3LHskUp9Sdceu5BFhw38bX5+xs//0s/JL8/mig6kkm5/
-atpS7Rt5gyd3PKaVz0Mh9tvFuZ4JdhA3tIeq5gy9O+8ADlMT0JjLuCl7jqJmlH7ENX9JEJ6chadow3ah78loM3roczVSPiZPLg9hHDtwiq8tB5SNis5K;
-Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600; HttpOnly; Secure; SameSite=Lax,
-S-Expiration=MDIgTm92IDIwIDExOjIzICswMDAw; Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600;
-Secure; SameSite=Lax', 'Strict-Transport-Security': 'max-age=10886400000000000; includeSubDomains',
-'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'X-Xss-Protection': '1; mode=block',
-'Date': 'Mon, 02 Nov 2020 10:23:10 GMT', 'Content-Length': '218'})
-HTTP response body: {"id":"bad_request","status":400,"title":"Bad request","detail":"Request body is not well-formed.
-It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (35000)","encrypted":false,"multires":null}
-"""
 
 
 @timeout_decorator.timeout(3)
@@ -354,24 +284,22 @@ MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS = '{"id":"errGetContentPack","status":400
 class TestInstallPacks:
     def test_gcp_timeout_exception(self, mocker):
         """
-
-            Given:
-                An error response noting that the installation failed due to gcp timeout
-            When:
-                installing packs on servers
-            Then:
-                Retry once again.
-                Fail completely if reoccurs after retry.
-
-            """
+        Given:
+            An error response noting that the installation failed due to gcp timeout
+        When:
+            installing packs on servers
+        Then:
+            Retry once again.
+            Fail completely if reoccurs after retry.
+        """
         http_resp = MockHttpRequest(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
+        mocker.patch('time.sleep', return_value=None)
         client = MockClient()
         assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack3'}])
 
     def test_malformed_pack_exception(self, mocker):
         """
-
         Given:
             An error response noting that the installation failed due to malformed pack
         When:
@@ -383,6 +311,7 @@ class TestInstallPacks:
         """
         http_resp = MockHttpRequest(MALFORMED_PACK_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
+        mocker.patch('time.sleep', return_value=None)
         client = MockClient()
         assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack2'}])
 
