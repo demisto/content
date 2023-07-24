@@ -2,7 +2,7 @@
 
 import os
 import sys
-from typing import Dict
+from typing import Any
 
 import urllib3
 from blessings import Terminal
@@ -16,7 +16,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 
-def get_non_contributor_stale_branch_names(repo: Repository) -> Dict[str, any]:  # noqa: E999
+def get_non_contributor_stale_branch_names(repo: Repository) -> dict[str, Any]:  # noqa: E999
     """Return the list of branches that do not have the prefix of "contrib/" without open pull requests
     and that have not been updated for 2 months (stale). Protected branches are excluded from consideration.
 
@@ -24,7 +24,7 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> Dict[str, any]: 
         repo (Repository): The repository whose branches will be searched and listed
 
     Returns:
-        (List[str]): List of branch names that are stale and don't have the "contrib/" prefix
+        (Dict[str, Any]): List of branch names that are stale and don't have the "contrib/" prefix
     """
     # set now with GMT timezone
     now = datetime.now(timezone.min)
@@ -41,10 +41,14 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> Dict[str, any]: 
             if (last_modified := branch.commit.commit.last_modified) and (
                     last_commit_datetime := parse(last_modified)):
                 elapsed_days = (now - last_commit_datetime).days
-                associated_open_prs = branch.commit.get_pulls()  # type: ignore[attr-defined]
-                associated_open_prs = [pr for pr in associated_open_prs if pr.state == 'open']
                 if elapsed_days >= 60:
-                    branch_names[branch.name] = bool(associated_open_prs)
+                    associated_open_prs = branch.commit.get_pulls()
+                    for pr in associated_open_prs:
+                        if pr.state == 'open':
+                            branch_names[branch.name] = True
+                            break
+                    else:
+                        branch_names[branch.name] = False
             else:
                 print(f"Couldn't load HEAD for {branch.name}")
     return branch_names
