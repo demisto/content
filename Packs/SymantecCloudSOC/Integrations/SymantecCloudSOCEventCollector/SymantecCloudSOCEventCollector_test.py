@@ -1,7 +1,7 @@
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-from SymantecCloudSOC import Client
+from SymantecCloudSOCEventCollector import Client
 import pytest
 import json
 
