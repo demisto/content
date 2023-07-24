@@ -641,6 +641,12 @@ script:
         exist within your Expander instance.
     - name: manual_severity
       description: Administrator-defined severity for the incident.
+      auto: PREDEFINED
+      predefined:
+        - Low
+        - Medium
+        - High
+        - Critical
     - name: status
       auto: PREDEFINED
       predefined:
