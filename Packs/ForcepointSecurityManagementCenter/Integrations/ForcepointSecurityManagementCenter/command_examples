@@ -1,0 +1,21 @@
+forcepoint-smc-ip-list-create name="name" addresses="1.1.1.1" comment="test"
+forcepoint-smc-ip-list-update name="name" addresses="1.2.3.4" comment="test" is_override=True
+forcepoint-smc-ip-list-list name="name"
+forcepoint-smc-ip-list-delete name="name"
+forcepoint-smc-domain-create name="name"
+forcepoint-smc-domain-list name="name"
+forcepoint-smc-domain-delete name="name"
+forcepoint-smc-host-create name="name" address="1.1.1.1"
+forcepoint-smc-host-list name="name"
+forcepoint-smc-host-update name="name" address="1.2.3.4"
+forcepoint-smc-host-delete name="name"
+forcepoint-smc-policy-template-list limit=1
+forcepoint-smc-firewall-policy-create name="name" template="Firewall Template"
+forcepoint-smc-firewall-policy-list limit=1
+forcepoint-smc-rule-create policy_name="name" action=allow rule_name="test" destination_ip_list="test" ip_version="V4"
+forcepoint-smc-rule-update policy_name="name" action=continue rule_name="test" source_ip_list="test" ip_version="V4"
+forcepoint-smc-rule-list policy_name="name"
+forcepoint-smc-rule-delete policy_name="name" rule_name="test" ip_version=V4
+forcepoint-smc-firewall-policy-delete name="name"
+forcepoint-smc-engine-list limit=1
+forcepoint-smc-commit-changes engine_name="Forcepoint Engine"
