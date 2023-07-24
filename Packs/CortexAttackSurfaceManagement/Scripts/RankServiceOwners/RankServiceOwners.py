@@ -65,7 +65,7 @@ def load_pickled_xpanse_object(file_name: str) -> Any:
 
 def featurize(asm_system_ids: list[str], owners: list[dict[str, Any]]) -> np.ndarray:
     """
-    Featurize owners
+    Convert owners information into numerical array for model inference
     """
     pipeline = OwnerFeaturizationPipeline()
     feats = pipeline.featurize(asm_system_ids, owners)
@@ -299,7 +299,7 @@ def _get_k(
     return k
 
 
-# Model Featurization Code
+# Begin: Model Featurization Code
 def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str]:
     """
     Return all the spaceless ways that `personal_monikers` might manifest.
@@ -466,7 +466,7 @@ class OwnerFeaturizationPipeline():
         if sources is None:
             # Hardcoding is true as of May 2023.
             # To get the fields available as Sources, within the `content` repo, search the path
-            # `/Users/ptoman/Documents/Projects/content/Packs/CortexAttackSurfaceManagement`
+            # `Packs/CortexAttackSurfaceManagement`
             # for `Name,Email,Source,Timestamp`.
 
             # FIXME (plt 2023.06): work with RC to retain Source System directly from the `owners` metadata
@@ -582,7 +582,7 @@ def main():
         unranked = demisto.args().get("owners", [])
         asm_system_ids = demisto.args().get("asmsystemids", [])
 
-        # score and rank owners
+        # deduplicate/normalize, score, and rank owners
         normalized = aggregate(canonicalize(unranked))
         final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
 
