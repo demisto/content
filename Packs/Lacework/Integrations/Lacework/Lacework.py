@@ -459,6 +459,287 @@ def fetch_incidents():
     demisto.incidents(new_incidents)
 
 
+def get_activities_changedfiles():
+    """
+    Search for changed files by machine id
+    """
+    mid = demisto.args().get('mid')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters": []}
+
+    if mid:
+        search['filters'].append({
+            "field": "mid",
+            "expression": "eq",
+            "value": mid
+        })
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.activities.changed_files.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("Changed files machine id: " + str(mid),
+                        response,
+                        None)
+
+
+def get_activities_connections():
+    """
+    Search connections by machine mid
+    """
+    mid = demisto.args().get('mid')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters": [{
+        "field": "srcEntityId.mid",
+        "expression": "eq",
+        "value": mid
+    }]}
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.activities.connections.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("Connections by machine id: " + mid,
+                        response,
+                        None)
+
+
+def get_activities_dns():
+    """
+    Search DNS summaries by mid
+    """
+    mid = demisto.args().get('mid')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters": [{
+        "field": "mid",
+        "expression": "eq",
+        "value": mid
+    }]}
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.activities.dns.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("DNS by machine id: " + mid,
+                        response,
+                        None)
+
+
+def get_activities_userlogins():
+    """
+    Search user logins by machine id or username
+    """
+    mid = demisto.args().get('mid')
+    username = demisto.args().get('username')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters":[]}
+
+    if mid:
+        search['filters'].append({
+            "field": "mid",
+            "expression": "eq",
+            "value": mid
+        })
+
+    if username:
+        search['filters'].append({
+            "field": "username",
+            "expression": "eq",
+            "value": username
+        })
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.activities.user_logins.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("Logins by machine id: {0} username: {1}".format(mid, username),
+                        response,
+                        None)
+
+
+def get_entities_machines():
+    """
+    Search machines by hostname, ip, or machine id
+    """
+    mid = demisto.args().get('mid')
+    hostname = demisto.args().get('hostname')
+    ip = demisto.args().get('ip')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters":[]}
+
+    if mid:
+        search['filters'].append({
+            "field": "mid",
+            "expression": "eq",
+            "value": mid
+        })
+
+    if hostname:
+        search['filters'].append({
+            "field": "hostname",
+            "expression": "eq",
+            "value": hostname
+        })
+
+    if ip:
+        search['filters'].append({
+            "field": "primaryIpAddr",
+            "expression": "eq",
+            "value": ip
+        })
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.entities.machines.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("Machine details",
+                        response,
+                        None)
+
+
+def get_entities_machinedetails():
+    """
+    Search machine details by mid
+    """
+    mid = demisto.args().get('mid')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters": [{
+        "field": "mid",
+        "expression": "eq",
+        "value": mid
+    }]}
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.entities.machine_details.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("Machine details",
+                        response,
+                        None)
+
+
+def get_entities_processes():
+    """
+    Search active processes by mid
+    """
+    mid = demisto.args().get('mid')
+    pid = demisto.args().get('pid')
+    ppid = demisto.args().get('ppid')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters": [{
+        "field": "mid",
+        "expression": "eq",
+        "value": mid
+    }]}
+
+    if pid:
+        search['filters'].append({
+            "field": "pid",
+            "expression": "eq",
+            "value": pid
+        })
+
+    if ppid:
+        search['filters'].append({
+            "field": "ppid",
+            "expression": "eq",
+            "value": ppid
+        })
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.entities.processes.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("Activite processes on machine id: " + mid,
+                        response,
+                        None)
+
+
+def get_entities_commandlines():
+    """
+    Search active command lines by cmdLineHasH
+    """
+    cmdline_hash = demisto.args().get('cmdlineHash')
+    start_time = demisto.args().get('start_time')
+    end_time = demisto.args().get('end_time')
+
+    search = {"filters": [{
+        "field": "cmdlineHash",
+        "expression": "eq",
+        "value": cmdline_hash
+    }]}
+
+    if start_time and end_time:
+        search['timeFilter'] = {
+            "startTime": start_time,
+            "endTime": end_time
+        }
+
+    response = lacework_client.entities.command_lines.search(json=search)
+    for r in response:
+        response = r['data']
+
+    return create_entry("Command line details",
+                        response,
+                        None)
+
+
 ''' EXECUTION CODE '''
 
 
@@ -495,6 +776,22 @@ try:
         demisto.results(get_alert_details())
     elif demisto.command() == 'fetch-incidents':
         demisto.results(fetch_incidents())
+    elif demisto.command() == 'lw-get-activities-changedfiles':
+        demisto.results(get_activities_changedfiles())
+    elif demisto.command() == 'lw-get-activities-connections':
+        demisto.results(get_activities_connections())
+    elif demisto.command() == 'lw-get-activities-dns':
+        demisto.results(get_activities_dns())
+    elif demisto.command() == 'lw-get-activities-userlogins':
+        demisto.results(get_activities_userlogins())
+    elif demisto.command() == 'lw-get-entities-machines':
+        demisto.results(get_entities_machines())
+    elif demisto.command() == 'lw-get-entities-machinedetails':
+        demisto.results(get_entities_machinedetails())
+    elif demisto.command() == 'lw-get-entities-processes':
+        demisto.results(get_entities_processes())
+    elif demisto.command() == 'lw-get-entities-commandlines':
+        demisto.results(get_entities_commandlines())
 except Exception as e:
     LOG(e)
     LOG.print_log()

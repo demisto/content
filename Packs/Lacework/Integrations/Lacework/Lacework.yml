@@ -855,6 +855,187 @@ script:
     - contextPath: Lacework.Vulnerability.Host.vulnHash
       description: A unique hash of all data contained in the vulnerability
       type: String
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: The machine id (mid) to filter the results on.
+      name: mid
+      required: true
+    description: Search connections table by machine id
+    name: lw-get-activities-connections
+    outputs:
+    - contextPath: Lacework.Activities.Connections.dstEntityId.mid
+      description: 'Destination machine id'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.dstEntityId.port
+      description: 'Destination port number'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.dstEntityId.protocol
+      description: 'Destination protocol'
+      type: String
+    - contextPath: Lacework.Activities.Connections.dstEntityType
+      description: 'Destination entity type'
+      type: String
+    - contextPath: Lacework.Activities.Connections.dstInBytes
+      description: 'Destination in bytes'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.dstOutBytes
+      description: 'Destination out bytes'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.endpointDetails.dst_ip_addr
+      description: 'Destination endpoint IP address'
+      type: String
+    - contextPath: Lacework.Activities.Connections.endpointDetails.dst_port
+      description: 'Destination endpoint port'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.endpointDetails.protocol
+      description: 'Destination endpoint protocol'
+      type: String
+    - contextPath: Lacework.Activities.Connections.endpointDetails.src_ip_addr
+      description: 'Source endpoint IP address'
+      type: String
+    - contextPath: Lacework.Activities.Connections.endTime
+      description: 'Last time connection was seen'
+      type: Date
+    - contextPath: Lacework.Activities.Connections.numConns
+      description: 'Number of connections'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.srcEntityId.mid
+      description: 'Source machine id'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.srcEntityType
+      description: 'Source entity type'
+      type: String
+    - contextPath: Lacework.Activities.Connections.srcInBytes
+      description: 'Source in bytes'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.srcOutBytes
+      description: 'Source out bytes'
+      type: Number
+    - contextPath: Lacework.Activities.Connections.startTime
+      description: 'First time connection was seen'
+      type: Date
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: Filter results by machine id (mid)
+      name: mid
+      required: true
+    description: Search DNS dns summaries by machine id
+    name: lw-get-activities-dns
+    outputs:
+    - contextPath: Lacework.Activities.Dns.createdTime
+      description: 'Time DNS request was recorded'
+      type: Date
+    - contextPath: Lacework.Activities.Dns.dnsServerIp
+      description: 'IP Address of responding DNS server'
+      type: String
+    - contextPath: Lacework.Activities.Dns.fqdn
+      description: 'Fully qualified domain name requested'
+      type: String
+    - contextPath: Lacework.Activities.Dns.hostIpAddr
+      description: 'IP Address corresponding with requested FQDN'
+      type: String
+    - contextPath: Lacework.Activities.Dns.mid
+      description: 'Requesting machine id'
+      type: Number
+    - contextPath: Lacework.Activities.Dns.ttl
+      description: 'Answer time to live'
+      type: Number
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: Filter results by machine id (mid)
+      name: mid
+    - description: Filter results by username
+      name: username
+    description: Search user logins by machine id or username
+    name: lw-get-activities-userlogins
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: Filter results by hostname
+      name: hostname
+    - description: Filter results by ip
+      name: ip
+    - description: Filter results by machine id
+      name: mid
+    description: Search machines by hostname, ip, or machine id
+    name: lw-get-entities-machines
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: Filter results by machine id
+      name: mid
+      required: true
+    description: Search machine details by machine id
+    name: lw-get-entities-machinedetails
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: Filter results by machine id
+      name: mid
+      required: true
+    - description: Filter results by process id
+      name: pid
+    - description: Filter results by parent process id
+      name: ppid
+    description: Search processes by machine id, pid, or ppid
+    name: lw-get-entities-processes
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: Filter results on cmdLineHash
+      name: cmdlineHash
+      required: true
+    description: Search command lines by cmdLineHash (from processes table)
+    name: lw-get-entities-commandlines
+  - arguments:
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+      name: start_time
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+      name: end_time
+    - description: Filter results by machine id.
+      name: mid
+      required: true
+    description: Search changed files by machine id.
+    name: lw-get-activities-changedfiles
+    outputs:
+    - contextPath: Lacework.Activities.ChangedFiles.endTime
+      description: 'The time the changed file was last seen.'
+      type: Date
+    - contextPath: Lacework.Activities.ChangedFiles.filedataHash
+      description: 'SHA256 hash of file'
+      type: String
+    - contextPath: Lacework.Activities.ChangedFiles.filePath
+      description: 'Path to changed file'
+      type: String
+    - contextPath: Lacework.Activities.ChangedFiles.mid
+      description: 'Machine id changed file is on'
+      type: Number
+    - contextPath: Lacework.Activities.ChangedFiles.mtime
+      description: 'Modified time of changed file'
+      type: String
+    - contextPath: Lacework.Activities.ChangedFiles.size
+      description: 'Size of changed file'
+      type: Number
+    - contextPath: Lacework.Activities.ChangedFiles.startTime
+      description: 'The time the changed file was first seen.'
+      type: Date
   dockerimage: demisto/lacework:1.0.0.47313
   isfetch: true
   runonce: false
