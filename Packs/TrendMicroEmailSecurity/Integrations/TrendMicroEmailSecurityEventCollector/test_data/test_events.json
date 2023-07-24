@@ -128,30 +128,25 @@
             "genTime": "2023-07-14T10:00:18Z"
         }
     ],
-    "EVENTS_MANAGING_SET_LAST_RUN_1": [{
-        "messageID": "<33333.33333.33333.3333@mx.test.com>",
-        "subject": "test2-test2 - 3333",
-        "size": 5000,
-        "genTime": "2023-07-14T10:00:18Z"
-    }],
-    "EVENTS_MANAGING_SET_LAST_RUN_2": [
+    "EVENTS_MANAGING_SET_LAST_RUN": [
         {
-            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "mailID": "<33333.33333.33333.3333@mx.test.com>",
             "subject": "test-test2 - 1111",
             "size": 3000,
             "genTime": "2023-07-15T10:00:18Z"
         },
         {
-            "messageID": "<22222.22222.22222.2222@mx.test.com>",
+            "mailID": "<44444.44444.44444.4444@mx.test.com>",
             "subject": "test1-test2 - 2222",
             "size": 4000,
             "genTime": "2023-07-15T10:00:18Z"
         },
         {
-            "messageID": "<33333.33333.33333.3333@mx.test.com>",
+            "mailID": "<55555.55555.55555.5555@mx.test.com>",
             "subject": "test2-test2 - 3333",
             "size": 5000,
             "genTime": "2023-07-14T10:00:18Z"
         }
-    ]
+    ],
+    "EVENTS_NO_EVENTS": []
 }

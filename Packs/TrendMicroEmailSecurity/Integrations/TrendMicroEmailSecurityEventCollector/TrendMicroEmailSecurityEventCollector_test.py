@@ -4,7 +4,7 @@ from freezegun import freeze_time
 from TrendMicroEmailSecurityEventCollector import (
     Client,
     set_first_fetch,
-    # managing_set_last_run,
+    managing_set_last_run,
     fetch_by_event_type,
     fetch_events_command,
     remove_sensitive_from_events,
@@ -146,102 +146,130 @@ def test__encode_authorization(mock_client: Client):
     assert authorization_encoded == "dGVzdDp0ZXN0X2FwaV9rZXk="
 
 
-# @pytest.mark.parametrize(
-#     "event_key, last_run, event_type, expected_results",
-#     [
-#         pytest.param(
-#             "MANAGING_SET_LAST_RUN_1",
-#             {},
-#             EventType.ACCEPTED_TRAFFIC,
-#             {
-#                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-14T10:00:18Z",
-#                 f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-#                     "<33333.33333.33333.3333@mx.test.com>test2-test2 - 33335000"
-#                 ],
-#                 f"next_token_{EventType.ACCEPTED_TRAFFIC.value}": "test",
-#             },
-#             id="One event and last_run is empty"
-#         ),
-#         pytest.param(
-#             "MANAGING_SET_LAST_RUN_2",
-#             {},
-#             EventType.ACCEPTED_TRAFFIC,
-#             {
-#                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-15T10:00:18Z",
-#                 f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-#                     "<11111.11111.11111.1111@mx.test.com>test-test2 - 11113000",
-#                     "<22222.22222.22222.2222@mx.test.com>test1-test2 - 22224000",
-#                 ],
-#                 f"next_token_{EventType.ACCEPTED_TRAFFIC.value}": "test",
-#             },
-#             id="Events and last_run is empty"
-#         ),
-#         pytest.param(
-#             "MANAGING_SET_LAST_RUN_2",
-#             {
-#                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-12T10:00:18Z",
-#                 f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-#                     "test",
-#                     "test",
-#                 ],
-#                 f"next_token_{EventType.ACCEPTED_TRAFFIC.value}": "test0",
-#             },
-#             EventType.ACCEPTED_TRAFFIC,
-#             {
-#                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-15T10:00:18Z",
-#                 f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-#                     "<11111.11111.11111.1111@mx.test.com>test-test2 - 11113000",
-#                     "<22222.22222.22222.2222@mx.test.com>test1-test2 - 22224000",
-#                 ],
-#                 f"next_token_{EventType.ACCEPTED_TRAFFIC.value}": "test",
-#             },
-#             id="Events with updated lust_run"
-#         ),
-#         pytest.param(
-#             [],
-#             {
-#                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-15T10:00:18Z",
-#                 f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-#                     "<11111.11111.11111.1111@mx.test.com>test-test2 - 11113000",
-#                     "<22222.22222.22222.2222@mx.test.com>test1-test2 - 22224000",
-#                 ],
-#                 f"next_token_{EventType.ACCEPTED_TRAFFIC.value}": "test",
-#             },
-#             EventType.ACCEPTED_TRAFFIC,
-#             {
-#                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-15T10:00:18Z",
-#                 f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-#                     "<11111.11111.11111.1111@mx.test.com>test-test2 - 11113000",
-#                     "<22222.22222.22222.2222@mx.test.com>test1-test2 - 22224000",
-#                 ],
-#                 f"next_token_{EventType.ACCEPTED_TRAFFIC.value}": "test",
-#             },
-#             id="No events"
-#         ),
-#     ],
-# )
-# def test_managing_set_last_run(
-#     event_key: str, last_run, event_type, expected_results
-# ):
-#     """
-#     Given:
-#         - The arguments needed for the `managing_set_last_run` function
-#     When:
-#         - run `managing_set_last_run` function
-#     Then:
-#         - Ensure the `last_run` object returns with `from_time`
-#           that matches 'event_type' when the API call returns an event with 'genTime'
-#         - Ensure the last_run update is done both when last_run is given full and
-#           when it is empty when events are returned
-#         - Ensure the 'last_run' is returned unchanged
-#           when no events are returned from the API
-#     """
-#     dedup = Deduplicate([], event_type)
-#     events = load_event_for_test(event_key)
-#     results = managing_set_last_run(
-#         events=events, last_run=last_run, start="", event_type=event_type, deduplicate=dedup,
-#     )
-#     assert results == expected_results
+@pytest.mark.parametrize(
+    "event_key, last_run, start, event_type, expected_results",
+    [
+        pytest.param(
+            "NO_EVENTS",
+            {
+                f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-14T10:00:18Z",
+                f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
+                    "<33333.33333.33333.3333@mx.test.com>"
+                ],
+            },
+            "2023-07-14T11:00:18Z",
+            EventType.ACCEPTED_TRAFFIC,
+            {
+                f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-14T10:00:18Z",
+                f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
+                    "<33333.33333.33333.3333@mx.test.com>"
+                ],
+            },
+            id="No events",
+        )
+    ],
+)
+def test_managing_set_last_run_no_events(
+    event_key: str,
+    last_run: dict,
+    start: str,
+    event_type: EventType,
+    expected_results: dict,
+):
+    """
+    Given:
+        - args for `managing_set_last_run`
+    When:
+        - run `managing_set_last_run` function
+    Then:
+        - Ensure the last_run obj is not changed
+          when no events returned from the API
+    """
+    events = load_event_for_test(event_key)
+    dedup = Deduplicate([], event_type)
+    result = managing_set_last_run(
+        events=events,
+        last_run=last_run,
+        start=start,
+        event_type=event_type,
+        deduplicate=dedup,
+    )
+    assert result == expected_results
+
+
+@pytest.mark.parametrize(
+    "event_key, last_run, start, event_type, is_fetch_time_moved, new_event_ids_suspected, expected_results",
+    [
+        pytest.param(
+            "MANAGING_SET_LAST_RUN",
+            {
+                f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T10:00:18Z",
+                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
+                    "<22222.22222.22222.2222@mx.test.com>"
+                ],
+            },
+            "2023-07-14T11:00:18Z",
+            EventType.POLICY_LOGS,
+            True,
+            [],
+            {
+                f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-15T10:00:18Z",
+                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
+                    "<33333.33333.33333.3333@mx.test.com>",
+                    "<44444.44444.44444.4444@mx.test.com>"
+                ],
+            },
+            id="fetch time moved",
+        ),
+        pytest.param(
+            "MANAGING_SET_LAST_RUN",
+            {
+                f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T10:00:18Z",
+                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
+                    "<22222.22222.22222.2222@mx.test.com>"
+                ],
+            },
+            "2023-07-14T11:00:18Z",
+            EventType.POLICY_LOGS,
+            False,
+            [
+                "<22222.22222.22222.2222@mx.test.com>",
+                "<33333.33333.33333.3333@mx.test.com>",
+                "<44444.44444.44444.4444@mx.test.com>"
+            ],
+            {
+                f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T11:00:18Z",
+                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
+                    "<22222.22222.22222.2222@mx.test.com>",
+                    "<33333.33333.33333.3333@mx.test.com>",
+                    "<44444.44444.44444.4444@mx.test.com>"
+                ],
+            },
+            id="fetch time is not moved",
+        )
+    ]
+)
+def test_managing_set_last_run(
+    event_key: str,
+    last_run: dict,
+    start: str,
+    event_type: EventType,
+    is_fetch_time_moved: bool,
+    new_event_ids_suspected: list,
+    expected_results: dict,
+):
+    events = load_event_for_test(event_key)
+    dedup = Deduplicate([], EventType.ACCEPTED_TRAFFIC)
+    dedup.is_fetch_time_moved = is_fetch_time_moved
+    dedup.new_event_ids_suspected = new_event_ids_suspected
+    result = managing_set_last_run(
+        events=events,
+        last_run=last_run,
+        start=start,
+        event_type=event_type,
+        deduplicate=dedup,
+    )
+    assert result == expected_results
 
 
 @pytest.mark.parametrize(
