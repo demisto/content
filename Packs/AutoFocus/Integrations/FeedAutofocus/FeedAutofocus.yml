@@ -7,6 +7,7 @@ configuration:
   name: feed
   defaultvalue: 'true'
   type: 8
+  required: false
 - display: Indicator Feed
   name: indicator_feeds
   options:
@@ -18,15 +19,18 @@ configuration:
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   type: 4
   hidden: true
+  required: false
 - additionalinfo: Only necessary in case a Custom Feed is fetched. Can also support a CSV of Custom feed URLs.
   display: The URL for the custom feed to fetch
   name: custom_feed_urls
   type: 0
+  required: false
 - additionalinfo: Only necessary in case a Samples Feed is fetched.
   display: Samples Feed Scope Type
   name: scope_type
@@ -35,10 +39,12 @@ configuration:
   - public
   - private
   - global
+  required: false
 - additionalinfo: Relevant only for sample feeds. JSON styled AutoFocus query, an example can be found in the description (?) section. mandatory for Samples Feed.
   display: Samples Feed Query
   name: sample_query
   type: 0
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
@@ -49,6 +55,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -71,6 +78,7 @@ configuration:
   - WHITE
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 - defaultvalue: 'suddenDeath'
   display: ""
   name: feedExpirationPolicy
@@ -80,28 +88,35 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
   type: 1
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   defaultvalue: '15'
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed
 name: AutoFocus Feed
@@ -116,7 +131,7 @@ script:
       name: offset
     description: Gets the indicators from AutoFocus.
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   feed: true
   runonce: false
   script: '-'

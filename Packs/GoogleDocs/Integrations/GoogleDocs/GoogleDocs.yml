@@ -7,16 +7,20 @@ configuration:
   name: service_account_credentials
   type: 4
   hidden: true
+  required: false
 - displaypassword: Service Account Private Key file contents (JSON)
   name: credentials_service_account
   hiddenusername: true
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Google Docs integration to create and modify Google Docs documents.
 display: Google Docs
 name: GoogleDocs
