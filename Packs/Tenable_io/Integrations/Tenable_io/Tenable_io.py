@@ -6,7 +6,6 @@ import time
 import traceback
 from datetime import datetime
 import urllib3
-from typing import Iterable
 
 import requests
 
@@ -25,7 +24,7 @@ def paginate(
         page_start=1):
 
     def dec(func):
-        def inner(*arguments, **kwargs):
+        def inner(args, *arguments, **kwargs):
             """
             Args:
                 args (dict): command arguments (demisto.args()).
@@ -33,47 +32,49 @@ def paginate(
                 **kwargs: additional keyword arguments to the command function.
             """
             # support for class functions
-            args = next(arg for arg in arguments if isinstance(arg, dict))
 
-            keys_to_pages = (
+            keys = (
                 [keys_to_pages]
                 if isinstance(keys_to_pages, str)
                 # could be None or list/tuple
                 else keys_to_pages or [])
-
             pages = []
+
             def get_page(**page_args):
                 nonlocal pages
+                demisto.debug(f'{page_args=}')
                 pages += dict_safe_get(
-                    func(*arguments, args=args | page_args **kwargs),
-                    keys_to_pages,
-                    return_type=list)
+                    func(args | page_args, *arguments, **kwargs),
+                    keys, default_return_value=[], return_type=list)
 
-            if (page := args.get(page_arg_name)) and (page_size := args.get(page_size_arg_name)):
-
+            page, page_size = map(arg_to_number, map(args.get, (page_arg_name, page_size_arg_name)))
+            if isinstance(page, int) and isinstance(page_size, int):
+                demisto.debug(f'{page=}, {page_size=}')
                 offset = (page - page_start) * page_size
 
                 if offset < 0:
                     raise ValueError
 
                 get_page(
-                    limit=offset + page_size,
+                    limit=page_size,
                     offset=offset)
 
             else:
-                limit = args[limit_arg_name]
+                limit = arg_to_number(args[limit_arg_name])
+                demisto.debug(f'{limit=}')
+                offset = 0
 
                 if api_limit:
                     while limit > api_limit:
-                        offset = api_limit * page
                         get_page(
-                            limit=offset + api_limit,
+                            limit=api_limit,
                             offset=offset)
                         limit -= api_limit
+                        offset += api_limit
 
                 get_page(
                     limit=limit,
-                    offset=api_limit * page)
+                    offset=offset)
 
             return pages
 
@@ -231,20 +232,19 @@ class Client(BaseClient):
         return self._http_request(
             'GET', 'filters/scans/reports')
 
-    @paginate(
-        page_size_arg_name='pageSize',
-        keys_to_pages='history')
-    def get_scan_history(self, scan_id, args) -> dict:
+    def get_scan_history(self, scan_id, params) -> dict:
+        remove_nulls_from_dictionary(params)
         return self._http_request(
             'GET', f'scans/{scan_id}/history',
-            params=remove_empty_elements(args))
+            params=params)
 
     def initiate_export_scan(self, scan_id: str, params: dict, body: dict) -> dict:
+        remove_nulls_from_dictionary(params)
+        remove_nulls_from_dictionary(body)
         return self._http_request(
             'POST',
             f'scans/{scan_id}/export',
-            params=remove_empty_elements(params),
-            json=remove_empty_elements(body))
+            params=params, json_data=body)
 
     def check_export_scan_status(self, scan_id: str, file_id: str) -> dict:
         return self._http_request(
@@ -254,10 +254,16 @@ class Client(BaseClient):
         return fileResult(
             f'scan_{scan_id}_{file_id}.{file_format.lower()}',
             self._http_request(
-                'GET',
-                f'scans/{scan_id}/export/{file_id}/download',
-                res_type='content'),
+                'GET', f'scans/{scan_id}/export/{file_id}/download',
+                resp_type='content'),
             EntryType.ENTRY_INFO_FILE)
+
+
+def sub_dict(d: dict, *keys):
+    return {
+        key: d.get(key)
+        for key in keys
+    }
 
 
 def flatten(d):
@@ -1220,39 +1226,6 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         return request_uuid_export_vulnerabilities(args)
 
 
-def get_json(response: requests.models.Response) -> dict:
-    '''Handles error status codes and returns the json from response'''
-
-    try:
-        response.raise_for_status()
-        return response.json()
-    except HTTPError as e:
-        demisto.debug(f'Response: {response.text}\nError: {e}')
-        code_messages = {
-            400:
-                'Possible reasons:\n'
-                ' - Your request message is missing a required parameter\n.'
-                ' - The "format" command argument specified an unsupported'
-                ' export format for scan results that are older than 60 days.\n'
-                '   Only Nessus and CSV formats are supported for scan results that are older than 60 days.'
-                ' - Your command arguments included filter query parameters for scan results that are older than 60 days.',
-            404: 'Tenable Vulnerability Management cannot find the specified scan.',
-            429: 'Too Many Requests',
-        }
-        code = response.status_code
-        raise DemistoException(
-            f'Error processing request. Got response status code: {code}' + (
-                f' - {code_messages[code]}'
-                if code in code_messages
-                else f'. Full Response:\n{response.text}')) from e
-    except requests.exceptions.JSONDecodeError as e:
-        demisto.debug(str(e))
-        raise DemistoException(
-            'Error processing request. '
-            'Unexpected response from Tenable IO:'
-            f'\n{response.text}') from e
-
-
 def scan_filters_human_readable(filters: list) -> str:
     context_to_hr = {
         'name': 'Filter name',
@@ -1310,16 +1283,21 @@ def scan_history_params(args: dict) -> dict:
             f'{field}:{args["sortOrder"]}'
             for field in argToList(args.get('sortFields'))),
         'exclude_rollover': args['excludeRollover'],
-        'limit': args.get('pageSize') or args['limit'],
-        'offset': int(args.get('pageSize', 0)) * (int(args.get('page', 0)) - 1),
-    }
+    } | sub_dict(args, 'limit', 'offset')
 
 
-def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandResults:
-
-    history = client.get_scan_history(
+@paginate(
+    page_size_arg_name='pageSize',
+    keys_to_pages='history')
+def paginated_scan_history(args: dict[str, Any], client: Client):
+    client.get_scan_history(
         args['scanId'],
         scan_history_params(args))
+
+
+def get_scan_history_command(*args) -> CommandResults:
+
+    history = paginated_scan_history(*args)
 
     return CommandResults(
         outputs_prefix='TenableIO.ScanHistory',
@@ -1372,16 +1350,13 @@ def export_scan_body(args: dict) -> dict:
         'filter.search_type': args['filterSearchType'].lower(),
         'asset_id': args.get('assetId'),
     } | build_filters(args)
-    remove_nulls_from_dictionary(body)
     return body
 
 
 def initiate_export_scan(args: dict, client: Client) -> str:
     return client.initiate_export_scan(
         args['scanId'],
-        params=remove_empty_elements({
-            'history_id': args.get('historyId'),
-            'history_uuid': args.get('historyUuid')}),
+        params=sub_dict(args, 'historyId', 'historyUuid'),
         body=export_scan_body(args)
     ).get('file', '')
 
