@@ -405,25 +405,26 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
         dictionary (dict): The entry that the pan-os objects is in.
         keys_to_remove (list): keys which should be removed from the pan-os api response
     """
-    if dictionary:
-        for key in keys_to_remove:
-            if key in dictionary:
-                del dictionary[key]
+    if not dictionary:
+        return
+    for key in keys_to_remove:
+        if key in dictionary:
+            del dictionary[key]
 
-        for key in dictionary:
-            if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
-                dictionary[key] = dictionary[key]['#text']
-            elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
-                    and dictionary[key][0].get('#text'):
-                dictionary[key] = [text.get('#text') for text in dictionary[key]]
+    for key in dictionary:
+        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+            dictionary[key] = dictionary[key]['#text']
+        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                and dictionary[key][0].get('#text'):
+            dictionary[key] = [text.get('#text') for text in dictionary[key]]
 
-        for value in dictionary.values():
-            if isinstance(value, dict):
-                parse_pan_os_un_committed_data(value, keys_to_remove)
-            elif isinstance(value, list):
-                for item in value:
-                    if isinstance(item, dict):
-                        parse_pan_os_un_committed_data(item, keys_to_remove)
+    for value in dictionary.values():
+        if isinstance(value, dict):
+            parse_pan_os_un_committed_data(value, keys_to_remove)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    parse_pan_os_un_committed_data(item, keys_to_remove)
 
 
 def do_pagination(
