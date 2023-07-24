@@ -6,6 +6,7 @@ import time
 import traceback
 from datetime import datetime
 import urllib3
+from typing import Iterable
 
 import requests
 
@@ -13,6 +14,72 @@ from requests.exceptions import HTTPError
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+def paginate(
+        limit_arg_name='limit',
+        page_arg_name='page',
+        page_size_arg_name='page_size',
+        api_limit=None,
+        keys_to_pages=None,
+        page_start=1):
+
+    def dec(func):
+        def inner(*arguments, **kwargs):
+            """
+            Args:
+                args (dict): command arguments (demisto.args()).
+                *arguments: any additional arguments to the command function.
+                **kwargs: additional keyword arguments to the command function.
+            """
+            # support for class functions
+            args = next(arg for arg in arguments if isinstance(arg, dict))
+
+            keys_to_pages = (
+                [keys_to_pages]
+                if isinstance(keys_to_pages, str)
+                # could be None or list/tuple
+                else keys_to_pages or [])
+
+            pages = []
+            def get_page(**page_args):
+                nonlocal pages
+                pages += dict_safe_get(
+                    func(*arguments, args=args | page_args **kwargs),
+                    keys_to_pages,
+                    return_type=list)
+
+            if (page := args.get(page_arg_name)) and (page_size := args.get(page_size_arg_name)):
+
+                offset = (page - page_start) * page_size
+
+                if offset < 0:
+                    raise ValueError
+
+                get_page(
+                    limit=offset + page_size,
+                    offset=offset)
+
+            else:
+                limit = args[limit_arg_name]
+
+                if api_limit:
+                    while limit > api_limit:
+                        offset = api_limit * page
+                        get_page(
+                            limit=offset + api_limit,
+                            offset=offset)
+                        limit -= api_limit
+
+                get_page(
+                    limit=limit,
+                    offset=api_limit * page)
+
+            return pages
+
+        return inner
+
+    return dec
 
 
 FIELD_NAMES_MAP = {
@@ -164,10 +231,13 @@ class Client(BaseClient):
         return self._http_request(
             'GET', 'filters/scans/reports')
 
-    def get_scan_history(self, scan_id, params) -> dict:
+    @paginate(
+        page_size_arg_name='pageSize',
+        keys_to_pages='history')
+    def get_scan_history(self, scan_id, args) -> dict:
         return self._http_request(
             'GET', f'scans/{scan_id}/history',
-            params=remove_empty_elements(params))
+            params=remove_empty_elements(args))
 
     def initiate_export_scan(self, scan_id: str, params: dict, body: dict) -> dict:
         return self._http_request(
@@ -435,8 +505,8 @@ def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
     return res.json()
 
 
-def test_module():
-    send_scan_request()
+def test_module(client: Client):
+    client.list_scan_filters()
     return 'ok'
 
 
@@ -1245,19 +1315,48 @@ def scan_history_params(args: dict) -> dict:
     }
 
 
-def get_scan_history_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandResults:
 
-    response_dict = client.get_scan_history(
+    history = client.get_scan_history(
         args['scanId'],
         scan_history_params(args))
-    history = response_dict.get('history', [])
 
     return CommandResults(
         outputs_prefix='TenableIO.ScanHistory',
         outputs_key_field='id',
-        outputs=history,
-        readable_output=scan_history_human_readable(history),
-        raw_response=response_dict)
+        outputs=history)
+
+
+def build_filters(args: dict) -> dict:
+    '''
+    Makes filter args for the export scan endpoint by sequentially matching
+    the filterName, filterQuality and filterValue lists in args.
+    Example:
+
+        filterName:     name,description
+        filterQuality:  =,!=
+        filterValue:    test,test2
+
+        returns:
+        {
+            'filter.0.filter': 'name',
+            'filter.0.quality': '=',
+            'filter.0.value': 'test',
+            'filter.1.filter': 'description',
+            'filter.1.quality': '!=',
+            'filter.1.value': 'test2',
+        }
+    '''
+    filters: dict[str, str] = {}
+    filter_lists = map(argToList, map(args.get, ('filterName', 'filterQuality', 'filterValue')))
+    for i, (name, quality, value) in enumerate(zip(*filter_lists)):
+        filters |= {
+            f'filter.{i}.filter': name,
+            f'filter.{i}.quality': quality,
+            f'filter.{i}.value': value,
+        }
+
+    return filters
 
 
 def export_scan_body(args: dict) -> dict:
@@ -1272,36 +1371,19 @@ def export_scan_body(args: dict) -> dict:
         'chapters': chapters,
         'filter.search_type': args['filterSearchType'].lower(),
         'asset_id': args.get('assetId'),
-    }
-
-    filter_lists = (argToList(args.get(f)) for f in ('filterName', 'filterQuality', 'filterValue'))
-    for i, (name, quality, value) in enumerate(zip(*filter_lists)):
-        body |= {
-            f'filter.{i}.filter': name,
-            f'filter.{i}.quality': quality,
-            f'filter.{i}.value': value,
-        }
-
+    } | build_filters(args)
     remove_nulls_from_dictionary(body)
     return body
 
 
-def initiate_export_scan(client: Client, args: dict) -> str:
-    response = requests.post(
-        f'{BASE_URL}scans/{args["scanId"]}/export',
+def initiate_export_scan(args: dict, client: Client) -> str:
+    return client.initiate_export_scan(
+        args['scanId'],
         params=remove_empty_elements({
             'history_id': args.get('historyId'),
-            'history_uuid': args.get('historyUuid'),
-        }),
-        json=export_scan_body(args),
-        headers=HEADERS, verify=USE_SSL)
-    response_json = get_json(response)
-
-    if not (file_id := response_json.get('file')):
-        raise DemistoException(
-            f'Unexpected response from Tenable IO: {response_json}')
-
-    return file_id
+            'history_uuid': args.get('historyUuid')}),
+        body=export_scan_body(args)
+    ).get('file', '')
 
 
 @polling_function(
@@ -1309,27 +1391,25 @@ def initiate_export_scan(client: Client, args: dict) -> str:
     poll_message='Preparing scan report:',
     interval=15,
     requires_polling_arg=False)
-def export_scan_command(client: Client, args: dict[str, Any]) -> PollResult:
+def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
+    '''
+    Calls three endpoints. The first (called with initiate_export_scan) initiates an export and returns a file ID.
+    The second (called with client.check_export_scan_status) checks the status of the export and the function polls
+    until the status is 'ready'. The third endpoint is then called (with client.download_export_scan) which downloads
+    the file and returns a dict with it's contents (using fileResult).
+    '''
 
     scan_id = args['scanId']
     file_id = (
         args.get('fileId')
-        or client.initiate_export_scan(
-            scan_id, params))
+        or initiate_export_scan(args, client))
 
-    status = client.check_export_scan_status(scan_id, file_id).get('status')
-    match status:
+    match client.check_export_scan_status(scan_id, file_id).get('status'):
         case 'ready':
             return PollResult(
                 client.download_export_scan(
                     scan_id, file_id, args['format']),
                 continue_to_poll=False)
-
-        case 'error':
-            raise DemistoException(
-                'Tenable IO encountered an error while exporting the scan report file.\n'
-                f'Scan ID: {scan_id}\n'
-                f'File ID: {file_id}\n')
 
         case 'loading':
             return PollResult(
@@ -1341,9 +1421,12 @@ def export_scan_command(client: Client, args: dict[str, Any]) -> PollResult:
                     'format': args['format'],  # not necessary but avoids confusion
                 })
 
-        case default:
+        case error:
+            demisto.debug(f'{error=}')
             raise DemistoException(
-                f'Got unexpected status while exporting the scan report file: {default!r}')
+                'Tenable IO encountered an error while exporting the scan report file.\n'
+                f'Scan ID: {scan_id}\n'
+                f'File ID: {file_id}\n')
 
 
 def main():  # pragma: no cover
@@ -1362,7 +1445,7 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     if command == 'test-module':
-        demisto.results(test_module())
+        demisto.results(test_module(client))
     elif command == 'tenable-io-list-scans':
         demisto.results(get_scans_command())
     elif command == 'tenable-io-launch-scan':
@@ -1388,9 +1471,9 @@ def main():  # pragma: no cover
     elif command == 'tenable-io-list-scan-filters':
         return_results(list_scan_filters_command(client))
     elif command == 'tenable-io-get-scan-history':
-        return_results(get_scan_history_command(client, args))
+        return_results(get_scan_history_command(args, client))
     elif command == 'tenable-io-export-scan':
-        return_results(export_scan_command(client, args))
+        return_results(export_scan_command(args, client))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
