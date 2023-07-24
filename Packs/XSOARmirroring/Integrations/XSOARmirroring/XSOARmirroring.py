@@ -286,6 +286,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     last_fetch = last_run.get('last_fetch')
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
+        integration_context = get_integration_context()
+        integration_context['XSOARMirror_is_fetch_reset'] = True
+        set_integration_context(integration_context)
+        demisto.debug('Set integration context XSOARMirror_is_fetch_reset to True.')
     else:
         demisto.debug('Trying to convert the last_fetch to int, and convert it to date string if succeed. '
                       'This is for preventing backward compatibility breakage.')
@@ -577,16 +581,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         remote_args = GetRemoteDataArgs(args)
         demisto_debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
 
-        categories = params.get('categories', None)
-        if categories:
-            categories = categories.split(',')
-        else:
-            categories = None
-        tags = params.get('tags', None)
-        if tags:
-            tags = tags.split(',')
-        else:
-            tags = None
+        categories = argToList(params.get('categories', None))
+        tags = argToList(params.get('tags', None))
 
         incident = client.get_incident(incident_id=remote_args.remote_incident_id)  # type: ignore
         # If incident was modified before we last updated, no need to return it
@@ -609,22 +605,26 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
         demisto_debug(f'tags: {tags}')
         demisto_debug(f'tags: {categories}')
+        integration_context = get_integration_context()
+        XSOARMirror_is_fetch_reset = integration_context.get('XSOARMirror_is_fetch_reset', False)
+        from_date = 0 if XSOARMirror_is_fetch_reset else remote_args.last_update * 1000        
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
-            from_date=remote_args.last_update * 1000,
+            from_date=from_date,
             max_results=100,
             categories=categories,
             tags=tags,
             tags_and_operator=True
         )
-        
-        demisto.debug(f'######### DANF entries got: {entries}')        
+        if XSOARMirror_is_fetch_reset:
+            integration_context['XSOARMirror_is_fetch_reset'] = False
+            set_integration_context(integration_context)
+            demisto.debug('Set integration context variable XSOARMirror_is_fetch_reset to False.')
 
         formatted_entries = []
         # file_attachments = []
 
         if entries:
-            demisto.debug('######### DANF in entry')
             for entry in entries:
                 if 'file' in entry and entry.get('file'):
                     file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
@@ -662,14 +662,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident['id'] = remote_args.remote_incident_id
         # incident['attachment'] = file_attachments
-        
-        demisto.debug(f'######### DANF get remote data response with mirrored_object: {mirrored_object}')
-        demisto.debug(f'######### DANF get remote data response with formatted_entries: {formatted_entriest}')
         mirror_data = GetRemoteDataResponse(
             mirrored_object=incident,
             entries=formatted_entries
         )
-        demisto.debug(f'######### DANF returned mirror_data: {mirror_data}')
         return mirror_data
 
     except Exception as e:
