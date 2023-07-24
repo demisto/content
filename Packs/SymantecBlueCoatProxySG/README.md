@@ -23,7 +23,7 @@ Go to the ProxySG software and open the "Configuration" tab [Product Doc](https:
    Make sure the log is being written by going to **Statistics** > **Access Logging** > **Select "MyLog"** > **Start Tail**.
 
 * Pay attention: Timestamp parsing is configured for **%Y-%m-%d %H:%M:%S** format in UTC timezone.
-                 Please follow the [Product Instructions](https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/6-7/getting-started/page-help-administration/page-help-general/page-help-timezones.html) for selecting a timezone.
+                 Follow the [Product Instructions](https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/6-7/getting-started/page-help-administration/page-help-general/page-help-timezones.html) for selecting a timezone.
    
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
