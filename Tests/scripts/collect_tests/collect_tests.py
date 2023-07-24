@@ -139,7 +139,7 @@ class CollectionResult:
 
         except InvalidTestException as e:
             suffix = ' (pack will be installed)' if pack else ''
-            logger.info(f'{str(e)}, not collecting {test}{suffix}')
+            logger.error(f'{str(e)}, not collecting {test}{suffix}')
             test = None
 
         except NonNightlyPackInNightlyBuildException as e:
