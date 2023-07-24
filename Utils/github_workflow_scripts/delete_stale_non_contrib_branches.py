@@ -14,7 +14,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 
-def get_non_contributor_stale_branch_names(repo: Repository) -> list[str]:  # noqa: E999
+def get_non_contributor_stale_branch_names(repo: Repository) -> Dict[str]:  # noqa: E999
     """Return the list of branches that do not have the prefix of "contrib/" without open pull requests
     and that have not been updated for 2 months (stale). Protected branches are excluded from consideration.
 
@@ -26,7 +26,7 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> list[str]:  # no
     """
     # set now with GMT timezone
     now = datetime.now(timezone.min)
-    branch_names = []
+    branch_names = {}
     all_branches = repo.get_branches()
     print(f'{all_branches.totalCount=}')
     for branch in all_branches:
@@ -37,10 +37,12 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> list[str]:  # no
                 continue
             # Make sure HEAD commit is stale
             if (last_modified := branch.commit.commit.last_modified) and (
-                    last_commit_datetime := parse(last_modified)):
+                last_commit_datetime := parse(last_modified)):
                 elapsed_days = (now - last_commit_datetime).days
+                associated_open_prs = branch.commit.get_pulls()  # type: ignore[attr-defined]
+                associated_open_prs = [pr for pr in associated_open_prs if pr.state == 'open']
                 if elapsed_days >= 60:
-                    branch_names.append(branch.name)
+                    branch_names[branch.name] = True if associated_open_prs else False
             else:
                 print(f"Couldn't load HEAD for {branch.name}")
     return branch_names
@@ -80,7 +82,7 @@ def main():
     content_repo = gh.get_repo(f'{organization}/{repo}')
 
     stale_non_contrib_branches = get_non_contributor_stale_branch_names(content_repo)
-    for branch_name in stale_non_contrib_branches:
+    for branch_name, has_open_pr in stale_non_contrib_branches.items():
         try:
             base_branch = 'master'
             if not is_suitable_for_pr(content_repo, branch_name):
@@ -89,12 +91,15 @@ def main():
                 print(f'Deleting stale branch {branch_name} without creating a postery PR')
                 content_repo.get_git_ref(f'heads/{branch_name}').delete()
             else:
-                print(f'Creating PR for {branch_name}')
-                title = branch_name
-                body = (f'## Description\r\nPosterity PR Created for the branch "{branch_name}"'
-                        ' so that it may be restored if necessary')
-                pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=branch_name, draft=False)
-                print(f'{t.cyan}Posterity PR Created - {pr.html_url}{t.normal}')
+                if not has_open_pr(content_repo, branch_name):
+                    print(f'Creating PR for {branch_name}')
+                    title = branch_name
+                    body = (f'## Description\r\nPosterity PR Created for the branch "{branch_name}"'
+                            ' so that it may be restored if necessary')
+                    pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=branch_name, draft=False)
+                    print(f'{t.cyan}Posterity PR Created - {pr.html_url}{t.normal}')
+                else:
+                    pr = content_repo.get_pulls(head=branch_name)[0]
                 pr.add_to_labels('stale-branch')
                 pr.edit(state='closed')
                 print(f'{t.cyan}Posterity PR Closed{t.normal}')
