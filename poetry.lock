@@ -712,13 +712,13 @@ files = [
 
 [[package]]
 name = "configargparse"
-version = "1.5.5"
+version = "1.7"
 description = "A drop-in replacement for argparse that allows options to also be set via config files and/or environment variables."
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.5"
 files = [
-    {file = "ConfigArgParse-1.5.5-py3-none-any.whl", hash = "sha256:541360ddc1b15c517f95c0d02d1fca4591266628f3667acdc5d13dccc78884ca"},
-    {file = "ConfigArgParse-1.5.5.tar.gz", hash = "sha256:363d80a6d35614bd446e2f2b1b216f3b33741d03ac6d0a92803306f40e555b58"},
+    {file = "ConfigArgParse-1.7-py3-none-any.whl", hash = "sha256:d249da6591465c6c26df64a9f73d2536e743be2f244eb3ebe61114af2f94f86b"},
+    {file = "ConfigArgParse-1.7.tar.gz", hash = "sha256:e7067471884de5478c58a511e529f0f9bd1c66bfef1dea90935438d6c23306d1"},
 ]
 
 [package.extras]
@@ -1061,7 +1061,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "graph_gh_actions"
-resolved_reference = "c651fc8f4910620b5d1e319ba2c6613f5edd40d9"
+resolved_reference = "35fce542bb6e56d4aff49e60b438732cabe28818"
 
 [[package]]
 name = "deprecated"
@@ -5945,20 +5945,19 @@ files = [
 
 [[package]]
 name = "webdriver-manager"
-version = "3.9.0"
+version = "3.9.1"
 description = "Library provides the way to automatically manage drivers for different browsers"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "webdriver_manager-3.9.0-py2.py3-none-any.whl", hash = "sha256:3af0a5ce6d6273c70f57d211cf433b9347804dfea3afa3e69e99be22acb9af2d"},
-    {file = "webdriver_manager-3.9.0.tar.gz", hash = "sha256:7592579ab5d13fde3c5ee11a2bad2cf143cddbfac276db042b187ceb5fe48275"},
+    {file = "webdriver_manager-3.9.1-py2.py3-none-any.whl", hash = "sha256:1dfc29a786abb97ba28076d4766d931064eeeac71a9685a3e8d46f5d363fcbe3"},
+    {file = "webdriver_manager-3.9.1.tar.gz", hash = "sha256:cd1f49ebb325a98b4dc3c41056f5b645e82fff3f83e346607844ec0bdf561c0b"},
 ]
 
 [package.dependencies]
 packaging = "*"
 python-dotenv = "*"
 requests = "*"
-tqdm = "*"
 
 [[package]]
 name = "websocket-client"
