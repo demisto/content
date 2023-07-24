@@ -1,0 +1,57 @@
+{
+    "pullRequestThreadContext": "None",
+    "id": 66,
+    "publishedDate": "2023-07-23T20:08:57.74Z",
+    "lastUpdatedDate": "2023-07-23T20:12:44.327Z",
+    "comments": [
+        {
+            "id": 3,
+            "parentCommentId": 0,
+            "author": {
+                "displayName": "XXXXXXX",
+                "url": "",
+                "_links": {
+                    "avatar": {
+                        "href": ""
+                    }
+                },
+                "id": "",
+                "uniqueName": "",
+                "imageUrl": "",
+                "descriptor": ""
+            },
+            "content": "111",
+            "publishedDate": "2023-07-23T20:12:44.327Z",
+            "lastUpdatedDate": "2023-07-23T20:12:44.327Z",
+            "lastContentUpdatedDate": "2023-07-23T20:12:44.327Z",
+            "commentType": "text",
+            "_links": {
+                "self": {
+                    "href": ""
+                },
+                "repository": {
+                    "href": ""
+                },
+                "threads": {
+                    "href": ""
+                },
+                "pullRequests": {
+                    "href": ""
+                }
+            }
+        }
+    ],
+    "status": "active",
+    "threadContext": "None",
+    "properties": "None",
+    "identities": "None",
+    "isDeleted": "false",
+    "_links": {
+        "self": {
+            "href": ""
+        },
+        "repository": {
+            "href": ""
+        }
+    }
+}

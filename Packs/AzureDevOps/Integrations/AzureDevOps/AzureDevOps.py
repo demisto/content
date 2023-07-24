@@ -622,6 +622,31 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
+    def pull_request_thread_update_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+
+        data = {
+                  "comments": [
+                    {
+                      "parentCommentId": 0,
+                      "content": args["comment_text"],
+                      "commentType": 1
+                    }
+                  ],
+                  "status": 1
+                }
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
+                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{args["pull_request_id"]}/' \
+                   f'threads/{args["thread_id"]}'
+
+        return self.ms_client.http_request(method='PATCH',
+                                           full_url=full_url,
+                                           params=params,
+                                           json_data=data,
+                                           resp_type='json')
+
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
     """
     Create XSOAR context output for retrieving pipeline run information.
@@ -2139,6 +2164,27 @@ def pull_request_thread_create_command(client: Client, args: Dict[str, Any], org
     )
 
 
+def pull_request_thread_update_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                       repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+    """
+    Update a thread in a pull request.
+    """
+    # pre-processing inputs
+    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.pull_request_thread_update_request(org_repo_project_tuple, args=args)
+
+    readable_output = f'Thread {response.get("id")} was updated successfully by' \
+                      f' {response.get("comments", [])[0].get("author", {}).get("displayName")}.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.PullRequestThread',
+        outputs=response,
+        raw_response=response
+    )
+
+
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
     """
@@ -2377,6 +2423,10 @@ def main() -> None:
 
         elif command == 'azure-devops-pull-request-thread-create':
             return_results(pull_request_thread_create_command(client, args, params.get('organization'),
+                                                              params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-pull-request-thread-update':
+            return_results(pull_request_thread_update_command(client, args, params.get('organization'),
                                                               params.get('repository'), params.get('project')))
 
         else:

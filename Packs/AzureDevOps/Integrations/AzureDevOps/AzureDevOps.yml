@@ -2589,6 +2589,119 @@ script:
       - type: String
         contextPath: AzureDevOps.PullRequestThread._links.repository.href
         description: Link to the repository.
+  - name: azure-devops-pull-request-thread-update
+    description: Update a thread in a pull request.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: pull_request_id
+        description: The ID of the pull request to update.
+        required: true
+      - name: thread_id
+        description: The ID of the thread to update.
+        required: true
+      - name: comment_text
+        description: The comment content.
+        required: true
+        isArray: false
+    outputs:
+      - type: Unknown
+        contextPath: AzureDevOps.PullRequestThread.pullRequestThreadContext
+        description: Extended context information unique to pull requests.
+      - type: Number
+        contextPath: AzureDevOps.PullRequestThread.id
+        description: The ID of the pull request.
+      - type: Date
+        contextPath: AzureDevOps.PullRequestThread.publishedDate
+        description: The date the thread was published.
+      - type: Date
+        contextPath: AzureDevOps.PullRequestThread.lastUpdatedDate
+        description: Last update date.
+      - type: Number
+        contextPath: AzureDevOps.PullRequestThread.comments.id
+        description: The ID of the comments.
+      - type: Number
+        contextPath: AzureDevOps.PullRequestThread.comments.parentCommentId
+        description: An enumeration of the parent commit IDs for this commit.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.author.displayName
+        description: The display name of the comments creator.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.author.url
+        description: URL to retrieve information about this identity.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.author._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.author.id
+        description: The ID of the thread author.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.author.uniqueName
+        description: The unique name of the thread author.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.author.imageUrl
+        description: Link to the thread author user image.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.author.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.content
+        description: The comments content.
+      - type: Date
+        contextPath: AzureDevOps.PullRequestThread.comments.publishedDate
+        description: The date the comments were published.
+      - type: Date
+        contextPath: AzureDevOps.PullRequestThread.comments.lastUpdatedDate
+        description: Last update date.
+      - type: Date
+        contextPath: AzureDevOps.PullRequestThread.comments.lastContentUpdatedDate
+        description: The date the comment's content was last updated.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments.commentType
+        description: The comment type at the time of creation.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments._links.self.href
+        description: A collection of related REST reference links.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments._links.repository.href
+        description: Link to the repository where the comments are.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments._links.threads.href
+        description: Link to the threads.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.comments._links.pullRequests.href
+        description: Link to the pull request.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread.status
+        description: The status of the pull request thread.
+      - type: Unknown
+        contextPath: AzureDevOps.PullRequestThread.threadContext
+        description: Extended context information unique to pull requests.
+      - type: Unknown
+        contextPath: AzureDevOps.PullRequestThread.properties
+        description: Properties associated with the thread as a collection of key-value pairs.
+      - type: Unknown
+        contextPath: AzureDevOps.PullRequestThread.identities
+        description: Set of identities related to this thread.
+      - type: Boolean
+        contextPath: AzureDevOps.PullRequestThread.isDeleted
+        description: Specify if the thread is deleted which happens when all comments are deleted.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread._links.self.href
+        description: Link to the thread.
+      - type: String
+        contextPath: AzureDevOps.PullRequestThread._links.repository.href
+        description: Link to the repository.
 
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url

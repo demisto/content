@@ -1534,3 +1534,42 @@ def test_pull_request_thread_create_command(requests_mock):
 
     assert result.readable_output.startswith('Thread 65 was created successfully by XXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
+
+def test_pull_request_thread_update_command(requests_mock):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing azure-devops-pull-request-thread-update command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, pull_request_thread_update_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+    pull_request_id = 43
+    thread_id = 66
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pullRequests/' \
+          f'{pull_request_id}/threads/{thread_id}'
+
+    mock_response = json.loads(load_mock_response('pull_request_thread_update.json'))
+    requests_mock.patch(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    args = {"pull_request_id": 43, "thread_id": 66, "comment_text": "Test"}
+    result = pull_request_thread_update_command(client, args, ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith('Thread 66 was updated successfully by XXXXXXX.')
+    assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
