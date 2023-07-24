@@ -36,4 +36,4 @@ jobs:
         run: |
           echo "Checking label Partner-Approved for: $PR_NUMBER"
           cd Utils/github_workflow_scripts
-          poetry run python check_if_partner_pack_contributed_by_others.py
+          poetry run python check_if_partner_pack_contributed_by_others.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
