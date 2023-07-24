@@ -1,6 +1,3 @@
-from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
-from CommonServerPython import BaseClient, CommandResults, datetime
-
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Reco
@@ -76,13 +73,13 @@ script:
   type: python
   commands:
   - arguments:
-      - description: Values to add to the exclusion filter
-        name: values_to_add
-        type: List
-        required: true
-      - description: Incident ID to add the comment to
-        name: key_to_add
-        required: true
+    - description: Values to add to the exclusion filter (split by ',')
+      name: values_to_add
+      required: true
+      type: List
+    - description: key too add to the exclusion filter (e.g. "CASE_SENSITIVE_TERMS", "LOCATION_CASE_INSENSITIVE_TERMS", "OWNERS", "FILE_IDS", "LOCATIONS")
+      name: key_to_add
+      required: true
     description: Add exclusion filter to Reco Classifier
     name: reco-add-exclusion-filter
   - arguments:

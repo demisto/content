@@ -779,4 +779,3 @@ def test_add_exclusion_filter(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/algo/add_values_to_data_type_exclude_analyzer", json={}, status_code=200
     )
     reco_client.add_exclusion_filter("key", ["val1", "val2"])
-

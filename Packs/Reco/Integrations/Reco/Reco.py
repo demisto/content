@@ -647,7 +647,7 @@ class RecoClient(BaseClient):
         demisto.info(f"Got link: {link}")
         return link
 
-    def add_exclusion_filter(self, key_to_add: str, values_to_add : List[str]):
+    def add_exclusion_filter(self, key_to_add: str, values_to_add: List[str]):
         body = dict(environmentName="string", keyToAddTo=key_to_add, valuesToAdd=values_to_add)
 
         try:
@@ -1273,7 +1273,8 @@ def main() -> None:
                                                        int(demisto.args()["last_interaction_time_in_days"]))
             return_results(result)
         elif command == "reco-add-exclusion-filter":
-            result = add_exclusion_filter(reco_client, demisto.args()["key_to_add"], demisto.args()["values_to_add"])
+            result = add_exclusion_filter(reco_client, demisto.args()["key_to_add"],
+                                          demisto.args()["values_to_add"].split(','))
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
