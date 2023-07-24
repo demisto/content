@@ -15,7 +15,7 @@ part 2 - manage the schema on the mssql
   * Pay attention: Timestamp parsing is supported for the **EventTimeLocal** field with UTC format. To configure the format:
     1. Access your Mcafee ePO interface.
     2. At the main options bar at the top-left corner, under **Configuration** select **Personal Settings**.
-    3. At the left bar, select **Time Zone Prefrence** and set the system time zone to UTC +00:00 FIRMAT.
+    3. At the left bar, select **Time Zone Prefrence** and set the system time zone to UTC +00:00 format.
     
 ## Collect Events from Vendor
 
