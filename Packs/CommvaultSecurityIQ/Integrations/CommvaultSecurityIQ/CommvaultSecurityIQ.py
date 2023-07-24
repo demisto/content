@@ -24,6 +24,7 @@ from uvicorn.logging import AccessFormatter
 from urllib.parse import urlparse
 
 
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -617,7 +618,7 @@ class Client(BaseClient):
             demisto.createIncidents(incidents)
             # self.define_indicator(extracted_message.get("originating_client"))
 
-    def get_events_list(self, last_run, first_fetch_time, max_fetch) -> Tuple[Optional[Any], Dict[str, int]]:
+    def get_events_list(self, last_run, first_fetch_time, max_fetch) -> tuple[Optional[Any], dict[str, int]]:
         """
         Function to get events
         """
@@ -1181,7 +1182,7 @@ class Client(BaseClient):
                 time.sleep(5)
 
 
-def fetch_incidents(client, last_run, first_fetch_time) -> Tuple[dict, None]:
+def fetch_incidents(client, last_run, first_fetch_time) -> tuple[dict, None]:
 
 
     max_fetch = demisto.params().get('max_fetch')
