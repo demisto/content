@@ -180,9 +180,6 @@ references:
         node --version
         npm --version
         demisto-sdk --version
-        python3 -m pip uninstall demisto-sdk --yes
-        python3 -m pip install https://github.com/demisto/demisto-sdk/archive/run_on_local_docker_if_exist.zip
-        demisto-sdk --version
 
   remote_docker: &remote_docker
     setup_remote_docker:
