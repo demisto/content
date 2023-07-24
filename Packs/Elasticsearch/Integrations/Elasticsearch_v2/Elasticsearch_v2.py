@@ -57,6 +57,7 @@ FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
+TIME_FORMAT = param.get('time_format', '%Y-%m-%d %H:%M:%S')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
 
@@ -79,8 +80,11 @@ def convert_date_to_timestamp(date):
     if TIME_METHOD == 'Timestamp-Seconds':
         return int(date.timestamp())
 
-    else:  # this case includes "Timestamp-Milliseconds"
+    elif TIME_METHOD == 'Timestamp-Milliseconds':
         return int(date.timestamp() * 1000)
+
+    else:  # In case of 'Simple-Date'.
+        return date.strftime(TIME_FORMAT)
 
 
 def timestamp_to_date(timestamp_string):
