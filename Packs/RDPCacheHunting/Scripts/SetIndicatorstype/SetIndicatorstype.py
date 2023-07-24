@@ -1,6 +1,8 @@
 import collections
 import random
 from collections import Counter
+import demistomock as demisto
+from CommonServerPython import *
 
 
 def parse_data(list_content):
