@@ -74,7 +74,7 @@ configuration:
   name: tags
   type: 0
   required: false
-  additionalinfo: 'The tags of the alerts that will be fetched. If no tags are provided then no tag filtering will be applied on fetched alerts.'
+  additionalinfo: 'The tags of the alerts that will be fetched. If no tags are provided then no tag filtering will be applied on fetched alerts. These should include the tag prefix, ex. AT:Asset Tag.'
 description: Integration to pull assets and other ASM related information.
 display: Cortex Xpanse
 name: Cortex Xpanse
@@ -385,7 +385,7 @@ script:
       name: alert_id_list
     - description: Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).
       name: severity
-    - description: Comma-separated list of strings of alert tags.
+    - description: Comma separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.
       name: tags
     - name: status
       auto: PREDEFINED
