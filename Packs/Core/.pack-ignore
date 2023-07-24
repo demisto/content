@@ -24,3 +24,5 @@ ignore=BA101
 [file:playbook-XCloud_Cryptomining.yml]
 ignore=BA101
 
+[file:Trigger_-_Possible_External_RDP_Brute-Force.json]
+ignore=GR101
