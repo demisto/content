@@ -1406,11 +1406,7 @@ script:
       name: appName
     description: Assign a group to an application
     name: okta-assign-group-to-app
-<<<<<<< HEAD
   dockerimage: demisto/python3:3.10.12.65389
-=======
-  dockerimage: demisto/python3:3.10.12.63474
->>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
   runonce: false
   script: '-'
   subtype: python3
