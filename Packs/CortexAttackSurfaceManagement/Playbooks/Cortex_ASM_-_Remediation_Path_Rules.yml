@@ -146,8 +146,8 @@ tasks:
           accessor: asmcloud
       development_environment:
         complex:
-          root: alert
-          accessor: asmdevcheck
+          root: alert.asmdevcheckdetails
+          accessor: result
       ip:
         complex:
           root: alert
