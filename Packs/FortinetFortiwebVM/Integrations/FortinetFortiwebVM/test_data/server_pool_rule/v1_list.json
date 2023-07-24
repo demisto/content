@@ -1,0 +1,32 @@
+[
+    {
+        "id": "1",
+        "_id": "1",
+        "supertype": 1,
+        "superSingleServerOrServerBalance": 2,
+        "status1": 2,
+        "ip": "test",
+        "serverType1": 2,
+        "status": 2,
+        "port": 80,
+        "connectLimit": 0,
+        "recover": 0,
+        "warmUp": 0,
+        "warmRate": 10,
+        "http2": false,
+        "sSL": false,
+        "disSSL": "Disable",
+        "weight": 3434,
+        "clientCertificateFile": "",
+        "discertficateFile": "",
+        "inHeritHCheck": true,
+        "serverHealthCheck": "",
+        "backupServer": false,
+        "sslprotocols": {
+            "tls_v10": "1",
+            "tls_v11": "1",
+            "tls_v12": "1"
+        },
+        "ssltlsEncryptionLevel": 1
+    }
+]

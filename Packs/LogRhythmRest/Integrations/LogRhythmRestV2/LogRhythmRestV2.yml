@@ -19,25 +19,31 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: '100'
   display: Alarms max fetch
   name: alarmsMaxFetch
   type: 0
+  required: false
 - defaultvalue: '100'
   display: Cases max fetch
   name: casesMaxFetch
   type: 0
+  required: false
 - display: Fetch incidents from type
   name: fetchType
   defaultvalue: Both
@@ -61,14 +67,17 @@ configuration:
   - Closed_Unresolved
   - Closed_Reported
   - Closed_Monitor
+  required: false
 - display: Alarm rule name filter
   name: alarm_rule_name_filter
   defaultvalue: ''
   type: 0
+  required: false
 - display: Case tags filter
   name: case_tags_filter
   defaultvalue: ''
   type: 0
+  required: false
 - display: Case status filter
   name: case_status_filter
   type: 15
@@ -78,6 +87,7 @@ configuration:
   - Incident
   - Mitigated
   - Resolved
+  required: false
 - display: Case priority filter
   name: case_priority_filter
   type: 15
@@ -87,20 +97,24 @@ configuration:
   - '3'
   - '4'
   - '5'
+  required: false
 - display: Fetch case evidences
   name: fetch_case_evidences
   type: 8
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
+  required: false
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.56857
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   commands:
   - name: lr-alarms-list

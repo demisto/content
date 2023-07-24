@@ -32,6 +32,6 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
-4. When configuring the Syslog Collector, set the following values:
-   - vendor as vendor - forcepoint
-   - product as product - forcepoint dlp
+4. When configuring the Syslog Collector, change the format to *CEF*.
+
+*NOTE*: The log format is CEF. The name of the *Vender* and the *Product* will be based on the vendor and product fields in the raw data.  
