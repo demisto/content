@@ -63,9 +63,9 @@ def main():
         )
         sys.exit(1)
 
-    print(
-        f'{t.cyan}Checking if one of {COMMUNITY_LABEL}/{PARTNER_LABEL}/{INTERNAL_LABEL} labels exist in PR {pr_number}'
-    )
+    # print(
+    #     f'{t.cyan}Checking if one of {COMMUNITY_LABEL}/{PARTNER_LABEL}/{INTERNAL_LABEL} labels exist in PR {pr_number}'
+    # )
     # if not (is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist):
     #     print(
     #         f'{t.red}ERROR: PR labels {pr_label_names} '
