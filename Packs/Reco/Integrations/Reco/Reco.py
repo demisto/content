@@ -1274,7 +1274,7 @@ def main() -> None:
             return_results(result)
         elif command == "reco-add-exclusion-filter":
             result = add_exclusion_filter(reco_client, demisto.args()["key_to_add"],
-                                          demisto.args()["values_to_add"].split(','))
+                                          argToList(demisto.args()["values_to_add"]))
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

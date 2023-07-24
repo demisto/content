@@ -77,6 +77,7 @@ script:
       name: values_to_add
       required: true
       type: List
+      isArray: true
     - description: key too add to the exclusion filter (e.g. "CASE_SENSITIVE_TERMS", "LOCATION_CASE_INSENSITIVE_TERMS", "OWNERS", "FILE_IDS", "LOCATIONS")
       name: key_to_add
       required: true
