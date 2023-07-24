@@ -1071,7 +1071,7 @@ def test_get_remote_data_command_with_message(mocker):
     )
     mocker.patch("SplunkPy.isinstance", return_value=True)
 
-    splunk.get_remote_data_command(Service(), **func_call_kwargs)
+    splunk.get_remote_data_command(Service(), comment_tag_from_splunk='from_splunk', **func_call_kwargs)
     (debug_message,) = debug_mock.call_args_list[1][0]
     assert debug_message == "Splunk-SDK message: test message"
 
@@ -1097,8 +1097,9 @@ def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
 
     """
     class Jobs:
-        def __init__(self):
-            self.oneshot = lambda x: notable_data
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == splunk.OUTPUT_MODE_JSON
+            return notable_data
 
     class Service:
         def __init__(self):
@@ -1108,12 +1109,12 @@ def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[notable_data])
     mocker.patch.object(demisto, 'results')
+    service = Service()
 
     expected_comment_note = {'Type': 1, 'Contents': 'new comment from splunk',
                              'ContentsFormat': 'text', 'Tags': ['from_splunk'], 'Note': True}
-    service = Service()
     splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
                                    comment_tag_from_splunk='from_splunk', **func_call_kwargs)
     results = demisto.results.call_args[0][0][0]
