@@ -15,48 +15,47 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - additionalinfo: |-
     ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON.
     Only required if the XSOAR instance is running on AWS or Azure cloud solutions.
   display: Project ID
   name: project_id
-  required: false
   type: 0
+  required: false
 - additionalinfo: ID of subscription from which to fetch incidents.
   display: Subscription ID
   name: subscription_id
-  required: false
   type: 0
+  required: false
 - additionalinfo: The maximum number of incidents to fetch every time.
   defaultvalue: '50'
   display: Max Incidents
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - additionalinfo: Enables to trust on all certificates
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - additionalinfo: Enables system proxy settings
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Security Command Center is a security and risk management platform for Google Cloud. Security Command Center enables you to understand your security and data attack surface by providing asset inventory and discovery, identifying vulnerabilities and threats, and helping you mitigate and remediate risks across an organization. This integration helps you to perform tasks related to findings and assets.
 display: Google Cloud SCC
 name: GoogleCloudSCC
 script:
   commands:
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The filter expression is a list of one or more restrictions combined via logical operators AND and OR.
         Parentheses are supported, and OR has higher precedence than AND.Examples include:
         1) name
@@ -75,12 +74,8 @@ script:
 
         Example: resourceProperties.displayName="test.com" OR resourceProperties.projectNumber="455757558851"
         Use a negated partial match on the empty string to filter based on a property not existing: "-resourceProperties.project=45".
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         This parameter defines what fields and order to use for sorting.
         The string value should be a comma-separated list of fields.
         The default sorting order is ascending. To specify descending order for a field, a suffix "desc" should be appended to the field name.
@@ -89,72 +84,36 @@ script:
         name, updateTime, resourceProperties,  securityMarks.marks,  securityCenterProperties.resource_name,
         securityCenterProperties.resource_display_name,  securityCenterProperties.resource_parent, securityCenterProperties.resource_parent_display_name,  securityCenterProperties.resource_project,
         securityCenterProperties.resource_project_display_name,  securityCenterProperties.resource_type.
-      isArray: false
       name: orderBy
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Time is used as a reference point when filtering assets. The filter is limited to assets existing at the supplied time and their values are those at that specific time. If not provided, it will take current time. Format: YYYY-MM-ddTHH:mm:ss.sssZ
         Example:  2020-07-22T07:10:02.782Z.
-      isArray: false
       name: readTime
-      required: false
-      secret: false
-    - default: false
-      description: "When compareDuration is set, the \"stateChange\" attribute is updated to indicate whether the asset was added, removed, or remained present during the compareDuration period of time that precedes the readTime. \nPossible \"stateChange\" values when compareDuration is specified:\n1) ADDED\n2) REMOVED\n3) ACTIVE\n\nIf compareDuration is not specified, then the only possible stateChange is \"UNUSED\", \nExample value: 3.5s."
-      isArray: false
+    - description: "When compareDuration is set, the \"stateChange\" attribute is updated to indicate whether the asset was added, removed, or remained present during the compareDuration period of time that precedes the readTime. \nPossible \"stateChange\" values when compareDuration is specified:\n1) ADDED\n2) REMOVED\n3) ACTIVE\n\nIf compareDuration is not specified, then the only possible stateChange is \"UNUSED\", \nExample value: 3.5s."
       name: compareDuration
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A field mask is used to specify the specific response fields to be listed in the response.
         An empty field mask will list all fields. Comma-separated values are supported in this parameter.
         Example: "asset.resourceProperties.owner,asset.securityCenterProperties.resourceName".
-      isArray: false
       name: fieldMask
-      required: false
-      secret: false
-    - default: false
-      description: The value returned by the last response of the google-cloud-scc-asset-list command indicates that this is a continuation of prior assets.list call, and that the system should return the next page of data.
-      isArray: false
+    - description: The value returned by the last response of the google-cloud-scc-asset-list command indicates that this is a continuation of prior assets.list call, and that the system should return the next page of data.
       name: pageToken
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000.
-      isArray: false
       name: pageSize
-      required: false
-      secret: false
-    - default: false
-      description: ' This parameter is used to filter assets by resource types by providing a single value or a comma-separated value of resource types. If any resource type is not provided, by default all resource types will be considered for listing assets.The value provided inside resourceType would be applied in the query as a filter parameter for filtering results. Example: cloudfunction, bucket.'
-      isArray: false
+    - description: ' This parameter is used to filter assets by resource types by providing a single value or a comma-separated value of resource types. If any resource type is not provided, by default all resource types will be considered for listing assets.The value provided inside resourceType would be applied in the query as a filter parameter for filtering results. Example: cloudfunction, bucket.'
       name: resourceType
-      required: false
-      secret: false
-    - default: false
-      description: 'This parameter is used to filter assets by the project by providing a single value or a comma-separated value of projects. If any project is not provided, by default all projects will be considered for listing assets. Value provided inside the project would be applied in the query as a filter parameter for filtering results. Example: Automeet, Backstory.'
-      isArray: false
+    - description: 'This parameter is used to filter assets by the project by providing a single value or a comma-separated value of projects. If any project is not provided, by default all projects will be considered for listing assets. Value provided inside the project would be applied in the query as a filter parameter for filtering results. Example: Automeet, Backstory.'
       name: project
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: This parameter is used to filter assets by their lifeCycleState value by selecting an option from the dropdown. If 'True' is selected the assets having lifeCycleState as 'ACTIVE' will be fetched and if 'False' or no option selected from the dropdown, then assets with all states will be considered for listing assets. The value selected in activeAssetsOnly would be applied in the query as a filter parameter for filtering results.
-      isArray: false
       name: activeAssetsOnly
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     deprecated: true
     description: Lists an organization's assets.
-    execution: false
     name: google-cloud-scc-asset-list
     outputs:
     - contextPath: GoogleCloudSCC.Asset.name
@@ -221,45 +180,24 @@ script:
       description: Name of the command.
       type: String
   - arguments:
-    - default: false
-      description: Filter findings by their severity (LOW, MEDIUM, HIGH, CRITICAL). Comma-separated values are supported and if any severity value is not provided, by default all the severities will be considered for listing of findings. Value provided inside severity would be applied in the query as a filter parameter for filtering results.
-      isArray: false
+    - description: Filter findings by their severity (LOW, MEDIUM, HIGH, CRITICAL). Comma-separated values are supported and if any severity value is not provided, by default all the severities will be considered for listing of findings. Value provided inside severity would be applied in the query as a filter parameter for filtering results.
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter findings by providing comma-separated values of categories or a single category.
         If any category value is not provided, by default all the categories will be considered for listing findings.
         Value provided inside the category would be applied in the query as a filter parameter for filtering results.
         For Example: anomaly,application.
-      isArray: false
       name: category
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '-'
+    - defaultValue: '-'
       description: Filter findings by providing the value of a single source type. If any source type Id value  is not provided, by default all source types will be considered for list findings.
-      isArray: false
       name: sourceTypeId
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000.
-      isArray: false
       name: pageSize
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ACTIVE
+    - defaultValue: ACTIVE
       description: Filter the findings by their state. Can be 'ACTIVE', 'INACTIVE'. Comma-separated values are supported and if any state value is not provided, by default 'ACTIVE' state will be considered for listing of findings. Value provided inside the state would be applied in the query as a filter parameter for filtering results.
-      isArray: false
       name: state
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         The filter  expression is a list of one or more restrictions combined via logical operators AND and OR.
         Parentheses are supported, and OR has higher precedence than AND.Examples include:
         1) name
@@ -284,23 +222,15 @@ script:
 
         Examples: "sourceProperties.browser="chrome" AND sourceProperties.event_type="proximity""
         Use a negated partial match on the empty string to filter based on a property not existing: "-severity=LOW".
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         This parameter defines what fields and order to use for sorting.
         The string value should be a comma separated list of fields. The default sorting order is ascending.
         To specify descending order for a field, a suffix " desc" should be appended to the field name.
         For example: "name desc,sourceProperties.browser".
         Supported fields: name, parent, state, category, resourceName, eventTime, sourceProperties, securityMarks.marks.
-      isArray: false
       name: orderBy
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         When compareDuration is set, the "stateChange" attribute is updated to indicate whether the finding had its state changed, the finding's state remained unchanged, or if the finding was added in any state during the compareDuration period of time that precedes the readTime. This is the time between (readTime - compareDuration) and readTime.
         The results aren't affected if the finding is made inactive and then active again.
 
@@ -312,34 +242,17 @@ script:
 
         If compareDuration is not specified, then the only possible stateChange is "UNUSED".
         Example value: "3.5s".
-      isArray: false
       name: compareDuration
-      required: false
-      secret: false
-    - default: false
-      description: "Time used as a reference point when filtering findings. The filter is limited to findings existing at the supplied time and their values are those at that specific time. If not provided, it will take current time. \nFormat: YYYY-MM-ddTHH:mm:ss.sssZ\nExample: 2020-07-22T07:10:02.782Z."
-      isArray: false
+    - description: "Time used as a reference point when filtering findings. The filter is limited to findings existing at the supplied time and their values are those at that specific time. If not provided, it will take current time. \nFormat: YYYY-MM-ddTHH:mm:ss.sssZ\nExample: 2020-07-22T07:10:02.782Z."
       name: readTime
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A field mask is used to specify the specific response fields to be listed in the response.
         An empty field mask will list all fields. Comma-separated values are supported in this parameter.
         Example: "user.displayName,sourceProperties.browser".
-      isArray: false
       name: fieldMask
-      required: false
-      secret: false
-    - default: false
-      description: The value returned by the last response of a google-cloud-scc-finding-list command indicates that this is a continuation of a prior findings.list call, and that the system should return the next page of data.
-      isArray: false
+    - description: The value returned by the last response of a google-cloud-scc-finding-list command indicates that this is a continuation of a prior findings.list call, and that the system should return the next page of data.
       name: pageToken
-      required: false
-      secret: false
-    deprecated: false
     description: Lists an organization or source's findings.
-    execution: false
     name: google-cloud-scc-finding-list
     outputs:
     - contextPath: GoogleCloudSCC.Finding.name
@@ -412,57 +325,32 @@ script:
       description: Name of the command.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The relative resource name of the finding.
         Format: organizations/{organization_id}/sources/{source_id}/finding/{findingId}
         Example: organizations/595779152576/sources/14801394649435054450/findings/bc5a86da657611ebb979005056a5924e.
-      isArray: false
       name: name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Time at which the event took place. By default UTC current time will be taken if no value is provided in eventTime.
         Format: YYYY-MM-ddTHH:mm:ss.sssZ
         Example: 2020-07-22T07:10:02.782Z, 2014-10-02T15:01:23.045123456Z.
-      isArray: false
       name: eventTime
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Related severity of the finding.
-      isArray: false
       name: severity
       predefined:
       - LOW
       - MEDIUM
       - HIGH
       - CRITICAL
-      required: false
-      secret: false
-    - default: false
-      description: URI that points to a web page outside of Cloud SCC (Security Command Center) where additional information about the finding can be found.
-      isArray: false
+    - description: URI that points to a web page outside of Cloud SCC (Security Command Center) where additional information about the finding can be found.
       name: externalUri
-      required: false
-      secret: false
-    - default: false
-      description: Source specific properties. These properties are managed by the source that writes the finding. For example "key1=val1,key2=val2".
-      isArray: false
+    - description: Source specific properties. These properties are managed by the source that writes the finding. For example "key1=val1,key2=val2".
       name: sourceProperties
-      required: false
-      secret: false
-    - default: false
-      description: A updateMask argument supports single or comma-separated fields that need to be updated/deleted. A updateMask is automatically generated in the backend for the specific arguments provided in the command and only those values will be updated. To delete attributes/properties, add those keys in updateMask without specifying those fields individually in the command arguments.
-      isArray: false
+    - description: A updateMask argument supports single or comma-separated fields that need to be updated/deleted. A updateMask is automatically generated in the backend for the specific arguments provided in the command and only those values will be updated. To delete attributes/properties, add those keys in updateMask without specifying those fields individually in the command arguments.
       name: updateMask
-      required: false
-      secret: false
-    deprecated: false
     description: Update an organization's or source's finding.
-    execution: false
     name: google-cloud-scc-finding-update
     outputs:
     - contextPath: GoogleCloudSCC.Finding.name
@@ -502,43 +390,21 @@ script:
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Name of the organization or project the assets belong to. Organization Id provided in the Integration Configuration will be taken by default, if no value is provided to the parent.
 
         Format: "organizations/[organization-number]" (such as "organizations/123"), "projects/[project-id]" (such as "projects/my-project-id"), or "projects/[project-number]" (such as "projects/12345").
-      isArray: false
       name: parent
-      required: false
-      secret: false
-    - default: false
-      description: "This parameter is used to filter assets by asset types by providing a single value or a comma-separated value of asset types.\nFor example: \"compute.googleapis.com/Disk\".\n\nRegular expression is also supported. \nFor example:\n1) \"compute.googleapis.com.*\" resources whose asset type starts with \"compute.googleapis.com\".\n2) \".*Instance\" resources whose asset type ends with \"Instance\".\n3) \".*Instance.*\" resources whose asset type contains \"Instance\"."
-      isArray: false
+    - description: "This parameter is used to filter assets by asset types by providing a single value or a comma-separated value of asset types.\nFor example: \"compute.googleapis.com/Disk\".\n\nRegular expression is also supported. \nFor example:\n1) \"compute.googleapis.com.*\" resources whose asset type starts with \"compute.googleapis.com\".\n2) \".*Instance\" resources whose asset type ends with \"Instance\".\n3) \".*Instance.*\" resources whose asset type contains \"Instance\"."
       name: assetTypes
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000.
-      isArray: false
       name: pageSize
-      required: false
-      secret: false
-    - default: false
-      description: The nextPageToken returned from the previous scc-asset-resource-list command response, or unspecified for the first  scc-asset-resource-list command. It is a continuation of a prior scc-asset-resource-list call, and the API should return the next page of assets.
-      isArray: false
+    - description: The nextPageToken returned from the previous scc-asset-resource-list command response, or unspecified for the first  scc-asset-resource-list command. It is a continuation of a prior scc-asset-resource-list call, and the API should return the next page of assets.
       name: pageToken
-      required: false
-      secret: false
-    - default: false
-      description: "Time used as a reference point when filtering assets. This can only be set to a timestamp between the current time and the current time minus 35 days (inclusive). If not provided, it will take current time. \n\nFormat:\n(<number> <time unit>, e.g., \"12 hours ago\", \"7 days ago\", \"1 week\", \"1 month\") or (<date> <time>, e.g. \"yyyy-mm-ddTHH-MM-SS\") or ( \"YYYY-MM-ddTHH:mm:ss.sssZ\", e.g. 2020-07-22T07:10:02.782Z) or (<date>, e.g. \"2020-07-22\")."
-      isArray: false
+    - description: "Time used as a reference point when filtering assets. This can only be set to a timestamp between the current time and the current time minus 35 days (inclusive). If not provided, it will take current time. \n\nFormat:\n(<number> <time unit>, e.g., \"12 hours ago\", \"7 days ago\", \"1 week\", \"1 month\") or (<date> <time>, e.g. \"yyyy-mm-ddTHH-MM-SS\") or ( \"YYYY-MM-ddTHH:mm:ss.sssZ\", e.g. 2020-07-22T07:10:02.782Z) or (<date>, e.g. \"2020-07-22\")."
       name: readTime
-      required: false
-      secret: false
-    deprecated: false
     description: Lists cloud asset's resources.
-    execution: false
     name: google-cloud-scc-asset-resource-list
     outputs:
     - contextPath: GoogleCloudSCC.CloudAsset.Resource.name
@@ -584,25 +450,16 @@ script:
       description: Token to retrieve the next page of results, or empty if there are no more results.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Name of the project. Supports comma separated values.
 
         Format: "projects/[project-number]" or for multiple projects "projects/[first-project-number], projects/[second-project-number]"
-      isArray: false
       name: projectName
       required: true
-      secret: false
-    - default: false
-      defaultValue: '2'
+    - defaultValue: '2'
       description: Number of iterations to search the owner information. Each iteration retrieves 1000 records. The minimum value is 1 and maximum value is 10.
-      isArray: false
       name: maxIteration
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the owner information for the provided projects.
-    execution: false
     name: google-cloud-scc-asset-owner-get
     outputs:
     - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.name
@@ -648,30 +505,22 @@ script:
       description: Specifies the identities that do not cause logging for this type of permission.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The relative resource name of the finding.
 
         Format: organizations/{organization_id}/sources/{source_id}/finding/{findingId}
 
         Example: organizations/595779152576/sources/14801394649435054450/findings/bc5a86da657611ebb979005056a5924e
-      isArray: false
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The desired state of the finding.
-      isArray: false
       name: state
       predefined:
       - ACTIVE
       - INACTIVE
       required: true
-      secret: false
-    deprecated: false
     description: Update the state of organization's or source's finding.
-    execution: false
     name: google-cloud-scc-finding-state-update
     outputs:
     - contextPath: GoogleCloudSCC.Finding.name
@@ -710,11 +559,8 @@ script:
     - contextPath: GoogleCloudSCC.Finding.securityMarks.marks
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.64100
-  feed: false
+  dockerimage: demisto/google-api-py3:1.0.0.65791
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

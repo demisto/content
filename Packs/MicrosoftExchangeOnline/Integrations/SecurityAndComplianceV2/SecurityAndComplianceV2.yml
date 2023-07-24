@@ -8,20 +8,20 @@ commonfields:
 configuration:
 - display: Certificate Password
   name: certificate_password
-  required: false
   type: 4
   additionalinfo: Password used to sign the certificate.
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Certificate
   name: certificate
   type: 4
-  required: false
   additionalinfo: A pfx certificate encoded in Base64.
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: UPN/Email
   additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
   name: delegated_auth
@@ -32,123 +32,87 @@ configuration:
 - display: The organization used in app-only authentication.
   name: organization
   type: 0
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: The application ID from the Azure portal
   name: app_id
   type: 0
-  required: false
   section: Connect
   advanced: true
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Tenant ID
   name: tenant_id
   type: 0
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Connection URI
   name: connection_uri
   type: 0
-  required: false
   defaultvalue: https://ps.compliance.protection.outlook.com/powershell-liveid/
   additionalinfo: Please refer to the documentation for a list of known endpoints.
   section: Connect
   advanced: true
+  required: false
 - display: AzureADAuthorizedEndpointURI Base
   name: azure_ad_authorized_endpoint_uri_base
   type: 0
-  required: false
   additionalinfo: Excluding /common or /<tenantID>
   defaultvalue: https://login.microsoftonline.com
   section: Connect
   advanced: true
+  required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
 script:
   commands:
-  - deprecated: false
-    description: Create compliance search in the Security & Compliance Center.
-    execution: false
+  - description: Create compliance search in the Security & Compliance Center.
     name: o365-sc-new-search
     arguments:
-    - default: false
-      description: |
+    - description: |
         The name of the compliance search.
         If not specified, will have the prefix "XSOAR-" followed by the GUID e.g., XSOAR-d6228fd0-756b-4e4b-8721-76776df91526.
-      isArray: false
       name: search_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of a Core eDiscovery case to associate with the new compliance search.
-      isArray: false
+    - description: The name of a Core eDiscovery case to associate with the new compliance search.
       name: case
-      required: false
-      secret: false
-    - default: false
-      description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
-      isArray: false
+    - description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
       name: kql
-      required: false
-      secret: false
-    - default: false
-      description: Description of the compliance search.
-      isArray: false
+    - description: Description of the compliance search.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
-      isArray: false
+    - description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
       name: allow_not_found_exchange_locations
-      required: false
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all.
+    - description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all.
       isArray: true
       name: exchange_location
       defaultValue: 'All'
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
       isArray: true
       name: exchange_location_exclusion
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
+    - description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
       isArray: true
       name: public_folder_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites.
+    - description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites.
       isArray: true
       name: share_point_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value.
+    - description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value.
       isArray: true
       name: share_point_location_exclusion
-      required: false
-      secret: false
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
       description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
@@ -240,112 +204,59 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
       description: Security and compliance search Tenant ID.
       type: String
-  - deprecated: false
-    description: Modifies non-running compliance searches in the Security & Compliance Center.
-    execution: false
+  - description: Modifies non-running compliance searches in the Security & Compliance Center.
     name: o365-sc-set-search
     arguments:
-    - default: false
-      description: The name of the compliance search.
-      isArray: false
+    - description: The name of the compliance search.
       name: search_name
       required: true
-      secret: false
-    - default: false
-      description: Modify the text search string or a query that is formatted using the Keyword Query Language (KQL).
-      isArray: false
+    - description: Modify the text search string or a query that is formatted using the Keyword Query Language (KQL).
       name: kql
-      required: false
-      secret: false
-    - default: false
-      description: Modify the description for the compliance search.
-      isArray: false
+    - description: Modify the description for the compliance search.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
-      isArray: false
+    - description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
       name: allow_not_found_exchange_locations
-      required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      description: Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes.
+    - description: Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes.
       isArray: true
       name: add_exchange_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the add_exchange_location argument.
+    - description: Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the add_exchange_location argument.
       isArray: true
       name: add_exchange_location_exclusion
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of added public folders to include, or you can use the value "All" to include all.
+    - description: Comma-separated list of added public folders to include, or you can use the value "All" to include all.
       isArray: true
       name: add_public_folder_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites.
+    - description: Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites.
       isArray: true
       name: add_share_point_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
+    - description: Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
       isArray: true
       name: add_share_point_location_exclusion
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of removed mailboxes/distribution group to include.
+    - description: Comma-separated list of removed mailboxes/distribution group to include.
       isArray: true
       name: remove_exchange_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the add_exchange_location argument.
+    - description: Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the add_exchange_location argument.
       isArray: true
       name: remove_exchange_location_exclusion
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of removed public folders to include.
+    - description: Comma-separated list of removed public folders to include.
       isArray: true
       name: remove_public_folder_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value.
+    - description: Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value.
       isArray: true
       name: remove_share_point_location
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
+    - description: Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
       isArray: true
       name: remove_share_point_location_exclusion
-      required: false
-      secret: false
-  - deprecated: false
-    description: Remove compliance search by name from the Security & Compliance Center.
-    execution: false
+  - description: Remove compliance search by name from the Security & Compliance Center.
     name: o365-sc-remove-search
     arguments:
-    - default: false
-      description: The name of the compliance search.
-      isArray: false
+    - description: The name of the compliance search.
       name: search_name
       required: true
-      secret: false
-  - deprecated: false
-    description: List compliance searches in the Security & Compliance Center.
-    execution: false
+  - description: List compliance searches in the Security & Compliance Center.
     name: o365-sc-list-search
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
@@ -439,55 +350,34 @@ script:
       description: Security and compliance search Tenant ID.
       type: String
   - arguments:
-    - default: false
-      description: The name of the compliance search.
-      isArray: false
+    - description: The name of the compliance search.
       name: search_name
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
-      isArray: false
+    - description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
       name: limit
-      required: false
-      secret: false
       defaultValue: 100
-    - default: false
-      description: Whether to include mailboxes which have no results in results entry context.
-      isArray: false
+    - description: Whether to include mailboxes which have no results in results entry context.
       name: all_results
-      required: false
-      secret: false
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      description: Whether to export search results as json file to war-room.
-      isArray: false
+    - description: Whether to export search results as json file to war-room.
       name: export
-      required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      secret: false
       defaultValue: 'false'
-    - default: false
-      description: Show search statistics. Default is "false".
-      isArray: false
+    - description: Show search statistics. Default is "false".
       name: statistics
-      required: false
-      secret: false
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Gets compliance search by name from the Security & Compliance Center.
-    execution: false
     name: o365-sc-get-search
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
@@ -590,59 +480,36 @@ script:
       description: The byte size of the security and compliance search results in location.
       type: Number
   - arguments:
-    - default: false
-      description: The name of the compliance search.
-      isArray: false
+    - description: The name of the compliance search.
       name: search_name
       required: true
-      secret: false
-    deprecated: false
     description: Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
-    execution: false
     name: o365-sc-start-search
-  - deprecated: false
-    description: Stop running compliance search in the Security & Compliance Center.
-    execution: false
+  - description: Stop running compliance search in the Security & Compliance Center.
     name: o365-sc-stop-search
     arguments:
-    - default: false
-      description: The name of the compliance search.
-      isArray: false
+    - description: The name of the compliance search.
       name: search_name
       required: true
-      secret: false
   - arguments:
-    - default: false
-      description: The name of the compliance search.
-      isArray: false
+    - description: The name of the compliance search.
       name: search_name
       required: true
-      secret: false
-    - default: false
-      description: 'Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview".'
-      isArray: false
+    - description: 'Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview".'
       name: action
-      required: false
-      secret: false
       defaultValue: "Preview"
       auto: PREDEFINED
       predefined:
       - "Preview"
       - "Purge"
-    - default: false
-      description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
-      isArray: false
+    - description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
       name: purge_type
-      required: false
-      secret: false
       auto: PREDEFINED
       defaultValue: "SoftDelete"
       predefined:
       - 'SoftDelete'
       - 'HardDelete'
-    deprecated: false
     description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
-    execution: false
     name: o365-sc-new-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
@@ -739,19 +606,12 @@ script:
       description: Security and compliance search action Tenant ID.
       type: String
   - arguments:
-    - default: false
-      description: The name of the compliance search action.
-      isArray: false
+    - description: The name of the compliance search action.
       name: search_action_name
       required: true
-      secret: false
-    deprecated: false
     description: Removes a compliance search action by searching for the action name in the Security & Compliance Center.
-    execution: false
     name: o365-sc-remove-search-action
-  - deprecated: false
-    description: Lists compliance search actions from the Security & Compliance Center.
-    execution: false
+  - description: Lists compliance search actions from the Security & Compliance Center.
     name: o365-sc-list-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
@@ -848,44 +708,27 @@ script:
       description: Security and compliance search action Tenant ID.
       type: String
   - arguments:
-    - default: false
-      description: The name of the compliance search action.
-      isArray: false
+    - description: The name of the compliance search action.
       name: search_action_name
       required: true
-      secret: false
-    - default: false
-      description: 'The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.'
-      isArray: false
+    - description: 'The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.'
       name: limit
-      required: false
-      secret: false
       defaultValue: 100
-    - default: false
-      description: 'Whether to export search results as json file to war-room.'
-      isArray: false
+    - description: 'Whether to export search results as json file to war-room.'
       name: export
-      required: false
-      secret: false
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      description: Whether to print the results in the War Room. Default is "false".
-      isArray: false
+    - description: Whether to print the results in the War Room. Default is "false".
       name: results
-      required: false
-      secret: false
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Gets compliance search action from the Security & Compliance Center.
-    execution: false
     name: o365-sc-get-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
@@ -1012,29 +855,24 @@ script:
       description: Security and compliance search action Tenant ID.
       type: String
   - name: o365-sc-compliance-case-create
-    deprecated: false
     description: Create eDiscovery cases in the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: case_name
       description: Case name create.
       required: true
-      isArray: false
     - name: case_type
       description: |
-                   "AdvancedEdiscovery: Used to manage legal or other types of investigations.
-                    ComplianceClassifier: This type of case corresponds to a trainable classifier.
-                    DataInvestigation: Data investigation cases are used to investigate data spillage incidents.
-                    DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.
-                    eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.
-                    This is the default value.
-                    InsiderRisk: Insider risk cases are used to manage insider risk management cases.
-                    Typically, insider risk management cases are manually created in the Microsoft Purview
-                    compliance portal to further investigate activity based on a risk alert.
-                    SupervisionPolicy: This type of case corresponds to communication compliance policy."
-      required: false
+        "AdvancedEdiscovery: Used to manage legal or other types of investigations.
+         ComplianceClassifier: This type of case corresponds to a trainable classifier.
+         DataInvestigation: Data investigation cases are used to investigate data spillage incidents.
+         DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.
+         eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.
+         This is the default value.
+         InsiderRisk: Insider risk cases are used to manage insider risk management cases.
+         Typically, insider risk management cases are manually created in the Microsoft Purview
+         compliance portal to further investigate activity based on a risk alert.
+         SupervisionPolicy: This type of case corresponds to communication compliance policy."
       defaultValue: "eDiscovery"
-      isArray: false
       auto: PREDEFINED
       predefined:
       - AdvancedEdiscovery
@@ -1046,12 +884,8 @@ script:
       - SupervisionPolicy
     - name: description
       description: Case description.
-      required: false
-      isArray: false
     - name: external_id
       description: Case external ID.
-      required: false
-      isArray: false
     outputs:
     - contextPath: O365.SecurityAndCompliance.ComplianceCase.Name
       description: Case name.
@@ -1063,17 +897,12 @@ script:
       description: Case created date time.
       type: String
   - name: o365-sc-compliance-case-list
-    deprecated: false
-    description: List different types of compliance cases in the Microsoft Purview compliance portal 
-    execution: false
+    description: List different types of compliance cases in the Microsoft Purview compliance portal
     arguments:
     - name: identity
       description: List cases by identity.
-      required: false
-      isArray: false  
     - name: case_type
       description: Comma-separated closed list of Case Types to filter by.
-      required: false
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -1086,8 +915,6 @@ script:
       - SupervisionPolicy
     - name: limit
       description: Limit returned cases list size.
-      required: false
-      isArray: false
       defaultValue: 50
     outputs:
     - contextPath: O365.SecurityAndCompliance.ComplianceCase.Name
@@ -1103,47 +930,33 @@ script:
       description: Case created date time.
       type: String
   - name: o365-sc-compliance-case-delete
-    deprecated: false
     description: Removes compliance cases from the Microsoft Purview compliance portal or the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: identity
       description: Delete case by identity.
       required: true
-      isArray: false
   - name: o365-sc-case-hold-policy-create
-    deprecated: false
     description: Creates new case hold policies in the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: policy_name
       description: Name of the policy to create.
       required: true
-      isArray: false  
     - name: case
       description: eDiscovery case, Case Name, Case Identity (GUID value).
       required: true
-      isArray: false  
     - name: comment
       description: Attach a comment to the case.
-      required: false
-      isArray: false  
     - name: exchange_location
       description: Mailbox or distribution group.
-      required: false
-      isArray: true  
+      isArray: true
     - name: public_folder_location
-      description: Comma-separated list of public folders to include, or you can use the value "All" to include all.      
-      required: false
-      isArray: true      
+      description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
+      isArray: true
     - name: share_point_location
       description: SharePoint Online and OneDrive for Business sites to include.
-      required: false
       isArray: true
     - name: enabled
       description: Set hold policy as enabled or not.
-      required: false
-      isArray: false
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
@@ -1163,22 +976,14 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-policy-get
-    deprecated: false
     description: View existing case hold policies in the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: identity
       description: Identity of the case hold policy to get.
-      required: false
-      isArray: false 
     - name: case
       description: Case of policy to get. Case name or case GUID.
-      required: false
-      isArray: false
     - name: distribution_detail
       description: Whether to include distribution details or not.
-      required: false
-      isArray: false
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
@@ -1186,8 +991,6 @@ script:
       - 'false'
     - name: include_bindings
       description: Whether to include bindings or not.
-      required: false
-      isArray: false
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
@@ -1210,48 +1013,33 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-policy-delete
-    deprecated: false
     description: Removes case hold policies from the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: identity
       description: Identify of the case hold policy to delete.
       required: true
-      isArray: false 
     - name: force_delete
-      description: Whether to use force delete or not. Can be used if current policy status is pending delete. 
-      required: false
-      isArray: false
+      description: Whether to use force delete or not. Can be used if current policy status is pending delete.
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
   - name: o365-sc-case-hold-rule-create
-    deprecated: false
     description: Creates new case hold rules in the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: rule_name
       description: Create rule with the specified name.
       required: true
-      isArray: false 
     - name: policy_name
       description: Create rule for the specified policy.
       required: true
-      isArray: false 
     - name: query
       description: Query using Keyword Query Language (KQL).
-      required: false
-      isArray: false 
     - name: comment
       description: Attach a comment to the created rule.
-      required: false
-      isArray: false 
     - name: is_disabled
       description: Whether the rule is disabled or not.
-      required: false
-      isArray: false
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
@@ -1268,22 +1056,14 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-rule-list
-    deprecated: false
     description: View case hold rules in the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: identity
       description: Get hold rule list by identity.
-      required: false
-      isArray: false 
     - name: policy
       description: Get hold rule list by policy.
-      required: false
-      isArray: false 
     - name: limit
       description: Limit the returned items list size.
-      required: false
-      isArray: false 
       defaultValue: 50
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
@@ -1299,27 +1079,18 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-rule-delete
-    deprecated: false
     description: Removes case hold rules from the Microsoft Purview compliance portal.
-    execution: false
     arguments:
     - name: identity
       description: Delete rule by identity.
-      required: false
-      isArray: false 
     - name: force_delete
-      description: Whether to use force delete or not. Can be used if current rule status is pending delete. 
-      required: false
-      isArray: false
+      description: Whether to use force delete or not. Can be used if current rule status is pending delete.
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
   dockerimage: demisto/pwsh-exchangev3:1.0.0.49044
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: true
   script: '-'
   type: powershell

@@ -15,11 +15,10 @@ args:
   default: true
   description: IP address to look up
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 marketplaces:
 - xsoar
 - marketplacev2
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

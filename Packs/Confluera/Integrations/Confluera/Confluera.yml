@@ -18,8 +18,7 @@ configuration:
   name: url
   type: 0
   required: true
-  additionalinfo: Confluera iq-hub portal address, the integration should connect
-    to.
+  additionalinfo: Confluera iq-hub portal address, the integration should connect to.
 - display: Username
   name: username
   type: 9
@@ -41,8 +40,7 @@ script:
   - name: confluera-fetch-progressions
     arguments:
     - name: hours
-      description: 'Specifies the time duration for which progressions need to be
-        fetched '
+      description: 'Specifies the time duration for which progressions need to be fetched '
       defaultValue: "72"
     outputs:
     - contextPath: Confluera.Progressions

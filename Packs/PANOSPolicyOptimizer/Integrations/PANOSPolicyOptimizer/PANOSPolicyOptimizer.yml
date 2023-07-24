@@ -13,32 +13,31 @@ configuration:
   type: 9
 - display: Vsys - Firewall instances only
   name: vsys
-  required: false
   type: 0
+  required: false
 - display: Device Group - Panorama instances only
   name: device_group
-  required: false
   type: 0
+  required: false
 - defaultvalue: 8
   display: PAN-OS Version (The exact version, e.g., 10.1.4, 1.1, 9)
   name: version
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
 display: PAN-OS Policy Optimizer (Beta)
 name: PAN-OS Policy Optimizer
 script:
   commands:
-  - deprecated: false
-    description: Gets the Policy Optimizer statistics.
-    execution: false
+  - description: Gets the Policy Optimizer statistics.
     name: pan-os-po-get-stats
     outputs:
     - contextPath: PanOS.PolicyOptimizer.Stats.no_app_specified
@@ -56,68 +55,46 @@ script:
     - contextPath: PanOS.PolicyOptimizer.Stats.unused_in_90_days
       description: Number of unused security policies in 90 days.
       type: Number
-  - deprecated: false
-    description: Shows all security policies with no apps specified.
-    execution: false
+  - description: Shows all security policies with no apps specified.
     name: pan-os-po-no-apps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains information about the rules that have no apps specified. For example, Source and Destination.
       type: Unknown
-  - deprecated: false
-    description: Gets the unused apps.
-    execution: false
+  - description: Gets the unused apps.
     name: pan-os-po-unused-apps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedApps
       description: Shows all security rules with unused apps.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: The time frame in days to show the unused rules.
-      isArray: false
       name: timeframe
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Unused
       description: Rule usage type to filter by. Can be Unused, Used, or Any.
-      isArray: false
       name: usage
       predefined:
       - Unused
       - Used
       - Any
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Whether to exclude rules reset during the last x days, where x is the value defined in the timeframe argument. It will not exclude rules by default.
-      isArray: false
       name: exclude
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to get pre-rules, post-rules or both. 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
-      isArray: false
       name: position
       defaultValue: 'both'
       predefined:
       - pre
       - post
       - both
-      required: false
-      secret: false
-    - default: false
-      defaultValue: security
+    - defaultValue: security
       description: Which type of rules to query.
-      isArray: false
       name: rule_type
       predefined:
       - security
@@ -130,11 +107,7 @@ script:
       - authentication
       - dos
       - sdwan
-      required: false
-      secret: false
-    deprecated: false
     description: Gets unused, used, or any rules.
-    execution: false
     name: pan-os-po-get-rules
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedRules
@@ -147,36 +120,22 @@ script:
       description: Shows all used security rules.
       type: String
   - arguments:
-    - default: false
-      description: The UUID of the security rule.
-      isArray: false
+    - description: The UUID of the security rule.
       name: rule_uuid
       required: true
-      secret: false
-    deprecated: false
     description: Gets the app usage statistics for a specific security rule.
-    execution: false
     name: pan-os-po-app-and-usage
     outputs:
     - contextPath: PanOS.PolicyOptimizer.AppsAndUsage
       description: Shows detailed app usage statistics for specific security rules.
       type: Unknown
   - arguments:
-    - default: false
-      description: Dynamic address group name.
-      isArray: false
+    - description: Dynamic address group name.
       name: dag
       required: true
-      secret: false
-    deprecated: false
     description: Gets a specific dynamic address group.
-    execution: false
     name: pan-os-get-dag
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -65,9 +65,8 @@ outputs:
   description: File content type
 scripttarget: 0
 subtype: python3
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.49934
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

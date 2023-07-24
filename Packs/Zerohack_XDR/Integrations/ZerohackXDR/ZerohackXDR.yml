@@ -18,8 +18,8 @@ configuration:
   name: max_fetch
   defaultvalue: "10"
   type: 0
-  required: false
   additionalinfo: This number determines how many incidents must be fetched with each API call. It is suggested you keep it below 100.
+  required: false
 - display: Zerohack XDR API Key
   name: apikey
   type: 4
@@ -29,8 +29,8 @@ configuration:
   name: first_fetch
   defaultvalue: 1 day
   type: 0
-  required: false
   additionalinfo: This parameter decides how many old events you want to fetch when starting the integration.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -56,9 +56,8 @@ script:
       required: true
       description: The severity level helps in extracting latest incident of a specific severity.
     description: Fetch a single incident of your choice of severity level to study the incidents structure before you start continously fecthing incidents.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

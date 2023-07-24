@@ -9,7 +9,6 @@ tags:
 - cuckoo
 comment: Deprecated. Use the 'cuckoo-create-task-from-file' command instead.
 deprecated: true
-system: false
 args:
 - name: entryID
   required: true

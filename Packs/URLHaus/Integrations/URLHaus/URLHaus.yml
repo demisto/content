@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: https://urlhaus-api.abuse.ch/v1/
   display: Server URL (e.g. https://192.168.0.1)
   name: url
-  required: false
   type: 0
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -24,40 +24,40 @@ configuration:
   type: 15
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
+  required: false
 - additionalinfo: Maximal value is 1000.
   defaultvalue: '10'
   display: Maximum number of relationships to fetch per indicator
   name: max_num_of_relationships
-  required: false
   type: 0
+  required: false
 - defaultvalue: '1'
   hidden: true
   display: Blacklists appearances threshold
   name: threshold
-  required: false
   type: 0
+  required: false
 - display: Compromised (is malicious)
   hidden: true
   name: compromised_is_malicious
-  required: false
   type: 8
+  required: false
 - additionalinfo: Determines how many times a command should be retried before raising an error.
   defaultvalue: '3'
   display: Number of retries
   name: retry
-  required: false
   type: 0
+  required: false
 description: URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
 display: URLhaus
 name: URLhaus
@@ -69,10 +69,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves URL information from URLhaus.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -162,10 +159,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves domain information from URLhaus.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -228,10 +222,7 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves file information from URLhaus.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Size
@@ -315,11 +306,8 @@ script:
   - arguments:
     - default: true
       description: SHA256 hash of the file to download.
-      isArray: false
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Downloads a malware sample from URLhaus.
     execution: true
     name: urlhaus-download-sample
@@ -355,10 +343,6 @@ script:
       description: File extension.
       type: string
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -9,12 +9,12 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Picus Refresh Token
   name: picus_apikey
   required: true
@@ -24,137 +24,75 @@ display: Picus Security
 name: PicusNG
 script:
   commands:
-  - deprecated: false
-    description: This command returns the simulation agent list with agent name, id, status, agent type and platform information as in Picus platform > Agents.
-    execution: false
+  - description: This command returns the simulation agent list with agent name, id, status, agent type and platform information as in Picus platform > Agents.
     name: picus-get-agent-list
   - arguments:
-    - default: false
-      description: Agent id
-      isArray: false
+    - description: Agent id
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: This command returns agent name, status, agent type, platform and also mitigation devices and attack modules using the agent ID.
-    execution: false
     name: picus-get-agent-detail
   - arguments:
-    - default: false
-      description: ID of the agent
-      isArray: false
+    - description: ID of the agent
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: this simulation created with cortex app
+    - defaultValue: this simulation created with cortex app
       description: Description of the simulation
-      isArray: false
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Name of the simulation
-      isArray: false
+    - description: Name of the simulation
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Schedule now state
-      isArray: false
       name: schedule_now
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    - default: false
-      description: Id of the template
-      isArray: false
+    - description: Id of the template
       name: template_id
       required: true
-      secret: false
-    deprecated: false
     description: |-
       This command creates and runs a simulation as requested; scheduled or instant.
       You can create a simulation by giving your simulation a name and adding the template ID, agent ID.
-    execution: false
     name: picus-create-simulation
   - arguments:
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: This command returns template list that contains template name, id, description, content type, category as in Picus Platform> Threat Templates.
-    execution: false
     name: picus-get-template-list
-  - deprecated: false
-    description: This command returns the agent name, id, status, agent installation information and the token expiration information.
-    execution: false
+  - description: This command returns the agent name, id, status, agent installation information and the token expiration information.
     name: picus-get-integration-agent-list
   - arguments:
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: This command returns the list of you latest simulation result overview as in Picus Platform > Simulations tab. Latest simulation run results are included.
-    execution: false
     name: picus-get-simulation-list
     outputs:
     - contextPath: Picus.simulationlist.simulation_id
       description: ID of the simulation
       type: Number
   - arguments:
-    - default: false
-      description: Simulation ID
-      isArray: false
+    - description: Simulation ID
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: This command runs the existing simulation using the Simulation ID.
-    execution: false
     name: picus-simulate-now
   - arguments:
-    - default: false
-      description: Simulation ID
-      isArray: false
+    - description: Simulation ID
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: This command returns the information about a specific simulation.
-    execution: false
     name: picus-get-simulation-detail
   - arguments:
-    - default: false
-      description: Simulation ID
-      isArray: false
+    - description: Simulation ID
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: This command returns detailed information about simulation results including Prevention and Detection result details for the latest simulation run.
-    execution: false
     name: picus-get-latest-simulation-result
     outputs:
     - contextPath: Picus.latestSimulationResult.simulation_run_id
@@ -167,144 +105,75 @@ script:
       description: Simulation Status
       type: String
   - arguments:
-    - default: false
-      description: Simulation ID
-      isArray: false
+    - description: Simulation ID
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Simulation Run ID
-      isArray: false
+    - description: Simulation Run ID
       name: run_id
       required: true
-      secret: false
-    deprecated: false
     description: This command returns detailed information about simulation results including Prevention and Detection result details for a specific simulation run with run id.
-    execution: false
     name: picus-get-simulation-result
   - arguments:
-    - default: false
-      description: Simulation ID
-      isArray: false
+    - description: Simulation ID
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Simulation Run ID
-      isArray: false
+    - description: Simulation Run ID
       name: run_id
       required: true
-      secret: false
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: This command returns simulation result based on threats. Threat result includes threat id and name, prevention result and action count.
-    execution: false
     name: picus-get-simulation-threats
     outputs:
     - contextPath: Picus.SimulationThreats
       description: Threat list of simulation
       type: String
   - arguments:
-    - default: false
-      description: Simulation ID
-      isArray: false
+    - description: Simulation ID
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Simulation Run ID
-      isArray: false
+    - description: Simulation Run ID
       name: run_id
       required: true
-      secret: false
-    - default: false
-      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
-      isArray: false
+    - description: Threat ID list ("111,222,333,...") or single threat ID can be given.
       name: threat_ids
       required: true
-      secret: false
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Pagination value
-      isArray: false
+    - description: Pagination value
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: This command returns simulation result based on action list using threat ID, simulation ID and simulation run ID.
-    execution: false
     name: picus-get-simulation-actions
     outputs:
     - contextPath: Picus.SimulationActions
       description: Action Results(ID and result combination)
       type: String
   - arguments:
-    - default: false
-      description: Simulation ID list ("111,222,333,...") or single simulation ID can be given.
-      isArray: false
+    - description: Simulation ID list ("111,222,333,...") or single simulation ID can be given.
       name: ids
-      required: false
-      secret: false
-    deprecated: false
     description: This command returns mitigation device information as obtained under Picus platform > Mitigation > Vendor Based Mitigations. Vendor based mitigation devices can be fetched using this command.
-    execution: false
     name: picus-get-mitigation-devices
   - arguments:
-    - default: false
-      description: Mitigation Device ID
-      isArray: false
+    - description: Mitigation Device ID
       name: device_id
       required: true
-      secret: false
-    - default: false
-      description: Action ID list ("111,222,333,...") or single action ID can be given.
-      isArray: false
+    - description: Action ID list ("111,222,333,...") or single action ID can be given.
       name: action_ids
       required: true
-      secret: false
-    deprecated: false
     description: This command returns action based signature suggestions.
-    execution: false
     name: picus-get-signature-list
   - arguments:
-    - default: false
-      description: Simulation Agent ID
-      isArray: false
+    - description: Simulation Agent ID
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: 'Device ID '
-      isArray: false
+    - description: 'Device ID '
       name: device_id
-      required: false
-      secret: false
-    - default: false
-      description: Simulation ID
-      isArray: false
+    - description: Simulation ID
       name: simulation_id
       required: true
-      secret: false
-    deprecated: false
     description: Set parameter on playbook. (This command is only used on playbook)
-    execution: false
     name: picus-set-paramPB
     outputs:
     - contextPath: Picus.param.agent_id
@@ -317,25 +186,16 @@ script:
       description: Simulation ID
       type: String
   - arguments:
-    - default: false
-      description: Threat id and result combine. Used for playbook.
-      isArray: false
+    - description: Threat id and result combine. Used for playbook.
       name: threatinfo
       required: true
-      secret: false
-    deprecated: false
     description: Filter insecure attacks on playbook. (This command is only used on playbook)
-    execution: false
     name: picus-filter-insecure-attacks
     outputs:
     - contextPath: Picus.filterinsecure
       description: Insecure Attack List
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

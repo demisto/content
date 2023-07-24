@@ -37,8 +37,8 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -1409,8 +1409,7 @@ script:
     - contextPath: ThreatGrid.DomainAssociatedIp.ips
       description: The associated IP.
       type: String
-  runonce: false
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

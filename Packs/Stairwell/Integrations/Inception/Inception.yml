@@ -44,12 +44,11 @@ script:
     - contextPath: Inception.File_Details
       type: Dictionary
       description: File details from enrichment
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

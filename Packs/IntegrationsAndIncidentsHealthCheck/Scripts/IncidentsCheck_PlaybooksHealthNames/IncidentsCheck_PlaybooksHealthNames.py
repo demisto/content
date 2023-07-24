@@ -5,7 +5,6 @@ import random
 from typing import Counter
 
 
-
 def parse_data(playbook_names):
     playbooks_data = []
 

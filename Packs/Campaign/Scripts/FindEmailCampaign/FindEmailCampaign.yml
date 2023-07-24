@@ -1,140 +1,72 @@
 args:
-- default: false
-  defaultValue: type
+- defaultValue: type
   description: The name of the incident field in which the incident type is stored. Default is "type". Change this argument only if you are using a custom field for specifying the incident type.
-  isArray: false
   name: incidentTypeFieldName
-  required: false
-  secret: false
-- default: false
-  defaultValue: Phishing
+- defaultValue: Phishing
   description: A comma-separated list of incident types by which to filter. Specify "None" to search through all incident types.
-  isArray: false
   name: incidentTypes
-  required: false
-  secret: false
-- default: false
-  defaultValue: 14 days ago
+- defaultValue: 14 days ago
   description: 'The date from which to search for similar incidents. Date format is the same as in the incidents query page. For example: "3 days ago", "2019-01-01T00:00:00 +0200".'
-  isArray: false
   name: existingIncidentsLookback
-  required: false
-  secret: false
-- default: false
-  description: Additional text by which to query incidents.
-  isArray: false
+- description: Additional text by which to query incidents.
   name: query
-  required: false
-  secret: false
-- default: false
-  defaultValue: '1000'
+- defaultValue: '1000'
   description: The maximum number of incidents to fetch.
-  isArray: false
   name: limit
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: emailsubject
   description: The name of the field that contains the email subject.
-  isArray: false
   name: emailSubject
   predefined:
   - Subject of the email.
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbody
+- defaultValue: emailbody
   description: The name of the field that contains the email body.
-  isArray: false
   name: emailBody
   predefined:
   - ''
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbodyhtml
+- defaultValue: emailbodyhtml
   description: The name of the field that contains the HTML version of the email body.
-  isArray: false
   name: emailBodyHTML
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailfrom
+- defaultValue: emailfrom
   description: The name of the field that contains the email sender.
-  isArray: false
   name: emailFrom
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: All
   description: Whether to compare the new incident to closed incidents, unclosed incidents, or all incidents.
-  isArray: false
   name: statusScope
   predefined:
   - All
   - ClosedOnly
   - NonClosedOnly
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0.8'
+- defaultValue: '0.8'
   description: Threshold by which to consider incidents as similar. The range of values is 0-1.
-  isArray: false
   name: threshold
-  required: false
-  secret: false
-- default: false
-  defaultValue: '30'
+- defaultValue: '30'
   description: The maximum number of incidents to display as part of a campaign. If a campaign includes a higher number of incidents, the results will contain only this amount of incidents.
-  isArray: false
   name: maxIncidentsToReturn
-  required: false
-  secret: false
-- default: false
-  defaultValue: '3'
+- defaultValue: '3'
   description: Minimum number of incidents to consider as a campaign.
-  isArray: false
   name: minIncidentsForCampaign
-  required: false
-  secret: false
-- default: false
-  defaultValue: '2'
+- defaultValue: '2'
   description: Minimum number of unique recipients of similar email incidents to consider as a campaign.
-  isArray: false
   name: minUniqueRecipients
-  required: false
-  secret: false
-- default: false
-  description: A comma-seperated list of fields to display. An example is "emailclassification,closereason". If a list of fields is provided, and a campaign is detected, these incidents fields will be displayed.
-  isArray: false
+- description: A comma-seperated list of fields to display. An example is "emailclassification,closereason". If a list of fields is provided, and a campaign is detected, these incidents fields will be displayed.
   name: fieldsToDisplay
   predefined:
   - ''
-  required: false
-  secret: false
-- default: false
-  defaultValue: 'false'
+- defaultValue: 'false'
   description: Include the current incident in EmailCampaign path in context.
-  isArray: false
   name: includeSelf
-  required: false
-  secret: false
   predefined:
   - 'true'
   - 'false'
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: 'Whether to plot incidents-indicators relations to canvas. Default is "false". Skipping the canvas plotting stage would improve runtime. Note that canvas plotting would be skipped anyway if the number of incidents exceeds a certain threshold in order to avoid performance issues.'
-  isArray: false
   name: plotCanvas
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
   id: FindEmailCampaign
@@ -191,13 +123,12 @@ outputs:
   type: string
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.46712
+dockerimage: demisto/sklearn:1.0.0.64885
 tests:
 - No tests (auto formatted)
 runonce: true
