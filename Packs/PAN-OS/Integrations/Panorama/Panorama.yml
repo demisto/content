@@ -7637,6 +7637,9 @@ script:
     description: Gets the operational information of the device groups in the topology.
     name: pan-os-platform-get-device-groups
     outputs:
+    - contextPath: PANOS.DeviceGroups
+      type: Array
+      description: The ID of the PAN-OS host.
     - contextPath: PANOS.DeviceGroupOp.hostid
       type: String
       description: The ID of the PAN-OS host.

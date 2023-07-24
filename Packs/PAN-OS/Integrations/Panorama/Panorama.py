@@ -10648,11 +10648,13 @@ class PanoramaCommand:
         :param device_filter_str: If provided, filters this command to only the devices specified.
         """
         result = []
+        device_groups = []
         for device in topology.active_top_level_devices(device_filter_str):
             if isinstance(device, Panorama):
                 response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
                 for device_group_xml in response.findall("./result/devicegroups/entry"):
                     dg_name = get_element_attribute(device_group_xml, "name")
+                    device_groups.append(dg_name)
                     for device_xml in device_group_xml.findall("./devices/entry"):
                         device_group_information: DeviceGroupInformation = dataclass_from_element(
                             device, DeviceGroupInformation, device_xml
@@ -10660,7 +10662,7 @@ class PanoramaCommand:
                         device_group_information.name = dg_name
                         result.append(device_group_information)
 
-        return result
+        return result, device_groups
 
     @staticmethod
     def get_template_stacks(
