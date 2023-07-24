@@ -16,6 +16,11 @@ You need to configure an audit log policy in the Citrix ADC UI.
 8. From the dropdown list, select the bind point as **SYSTEM_GLOBAL** and click **Bind**, and then click **Done**.
 9. Navigate to **System** > **Auditing** > **Message Actions**, and create the audit message action.
 
+Note:
+In order to parse the timestamp correctly, make sure to configure the logs to be sent in a GMT timezone.
+
+
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
