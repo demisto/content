@@ -268,11 +268,11 @@ def test_get_incidents(mocker):
 def test_fetch_alerts_related_incident(mocker, alerts_limit: int):
     """
     Given:
-            -alerts_limit
+            alerts_limit(int): limit of alerts per incident
     When:
-             Calling the fetch_alerts_related_incident command with alerts_limit.
+            Calling the fetch_alerts_related_incident command with alerts_limit.
     Then:
-                Assert that the alerts_limit is as expected
+            Assert that the amount of response from the fetch_alerts_related_incident is as the limit given.
     """
     fetch_responses = util_load_json('test_data/fetch_alerts.json')
     mocker.patch.object(client, 'incident_list_alerts_request', return_value=fetch_responses)

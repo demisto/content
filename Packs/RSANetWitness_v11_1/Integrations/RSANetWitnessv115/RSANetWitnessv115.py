@@ -354,7 +354,7 @@ class Client(BaseClient):
                     raise DemistoException(
                         'Too many requests, try later or reduce the number of Fetch Limit parameter.'
                     ) from e
-                raise e               
+                raise e
 
             items = response.get('items', [])
             new_items = remove_duplicates_for_fetch(items, last_fetched_ids)
@@ -852,7 +852,6 @@ def fetch_incidents(client: Client, params: dict) -> list:
             max_alerts = min(arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS, DEFAULT_MAX_INCIDENT_ALERTS)
             alerts = fetch_alerts_related_incident(client, inc_id, max_alerts)
             item['alerts'] = alerts
-            item['alerts_ids'] = [alert['id'] for alert in alerts or ()]
 
         incident = {"name": f"RSA NetWitness 11.5 {inc_id} - {item.get('title')}",
                     "occurred": item.get('created'),
