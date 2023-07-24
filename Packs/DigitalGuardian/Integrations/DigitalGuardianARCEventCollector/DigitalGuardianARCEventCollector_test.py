@@ -40,10 +40,9 @@ def test_get_raw_events_command(mocker):
     raw_events = util_load_json('test_data/events_mock_request.json')
     mocker.patch.object(Client, 'get_token', return_value='token')
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
-    days = 7
     client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", client_id="11",
                     client_secret="22", export_profile="33")
-    events = get_raw_events(client, days)
+    events = get_raw_events(client)
 
     mock_events = util_load_json('test_data/events.json')
 
@@ -60,16 +59,16 @@ def test_get_events_command(mocker):
     Then:
         - Ensure the events are returned as expected
     """
-    from DigitalGuardianARCEventCollector import Client, get_events
+    from DigitalGuardianARCEventCollector import Client, get_events_command
 
     raw_events = util_load_json('test_data/events_mock_request.json')
     mocker.patch.object(Client, 'get_token', return_value='aaa')
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
 
-    args = {"limit": 1, "days": 7}
+    args = {"limit": 1}
     client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", client_id="11",
                     client_secret="22", export_profile="33")
-    events, _ = get_events(client, args)
+    events, _ = get_events_command(client, args)
 
     expected_events = util_load_json('test_data/events_mock_1_response.json')
 
@@ -116,7 +115,7 @@ def test_fetch_events_command(mocker):
 
     client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", client_id="11",
                     client_secret="22", export_profile="33")
-    next_run, events = fetch_events(client, limit=2, last_run={}, first_fetch_time={})
+    next_run, events = fetch_events(client, limit=2, last_run={})
 
     mock_events = util_load_json('test_data/events.json')
     assert events == mock_events

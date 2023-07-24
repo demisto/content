@@ -9,7 +9,8 @@ Key Benefits:
 - Continuous Monitoring of Evolving Infrastructure
 - Enforcement Actions for Dangerous Domains
 
-The DomainTools Iris Detect content pack works independently or alongside the DomainTools Iris Content Pack. It works with the Iris Detect APIs to help you discover, track, and act against lookalike domains. A DomainTools key provisioned for Iris Detect is required.
+The DomainTools Iris Detect content pack works independently or alongside the DomainTools Iris content pack. It works with the Iris Detect APIs to 
+help you discover, track, and act against lookalike domains. A DomainTools key provisioned for Iris Detect is required.
 
 Configure the pack to ingest and optionally create incidents off of new, watched, or escalated domains on a scheduled basis, as frequently as hourly. Indicator mappings and layouts help you act on the domains.
 

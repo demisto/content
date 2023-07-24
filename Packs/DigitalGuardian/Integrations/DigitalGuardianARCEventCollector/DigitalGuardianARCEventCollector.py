@@ -57,20 +57,19 @@ class Client(BaseClient):
         set_integration_context(integration_context)
         return response.get("access_token")
 
-    def get_events(self, days, token):
+    def get_events(self, token):
         headers = {
             'Authorization': 'Bearer ' + token
         }
-        sdays = str(days)
         response = self._http_request(
             method='GET',
-            full_url=f'{self.gateway_url}/rest/2.0/export_profiles/{self.export_profile}/export?q=dg_time:last_n_days,{sdays}',
+            full_url=f'{self.gateway_url}/rest/2.0/export_profiles/{self.export_profile}/export?q=dg_time:last_n_days,1',
             headers=headers,
         )
         return response
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client, params: Dict[str, Any]) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -79,7 +78,6 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     Args:
         client (Client): Digital Guardian client to use.
         params (Dict): Integration parameters.
-        first_fetch_time (int): The first fetch time as configured in the integration params.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
@@ -89,7 +87,6 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
         fetch_events(
             client=client,
             last_run={},
-            first_fetch_time=first_fetch_time,
             limit=limit,
         )
 
@@ -101,12 +98,11 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-def get_raw_events(client, days):
+def get_raw_events(client):
     """
        helper function that is used in get-events and fetch-events to get the actual events and sort them
        Args:
            client (Client): DG client
-           days (int): number of days to fetch
        Returns:
            list: list of events
     """
@@ -114,7 +110,6 @@ def get_raw_events(client, days):
     event_list = []
     token = client.get_token()
     events = client.get_events(
-        days=days,
         token=token
     )
     for field_names in events["fields"]:
@@ -136,8 +131,7 @@ def get_events_command(client, args):
             list: list of events
             commandresults: readable output
     """
-    days = args.get("days")
-    event_list = get_raw_events(client, days)
+    event_list = get_raw_events(client)
     limit = int(args.get("limit", 1000))
     if limit:
         event_list = event_list[:limit]
@@ -170,7 +164,8 @@ def create_events_for_push(event_list, last_time, id_list, limit):
                 id_list.append(event.get("dg_guid"))
             else:
                 id_list = [event.get("dg_guid")]
-        id_list.append(event.get("dg_guid"))
+        else:
+            id_list.append(event.get("dg_guid"))
         event_list_for_push.append(event)
         last_time = event.get("inc_mtime")
         index += 1
@@ -179,13 +174,11 @@ def create_events_for_push(event_list, last_time, id_list, limit):
     return event_list_for_push, last_time, id_list
 
 
-def fetch_events(client: Client, last_run: dict[str, list], first_fetch_time: int, limit: int):
+def fetch_events(client: Client, last_run: dict[str, list], limit: int):
     """
     Args:
         client (Client): DG client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
         limit (int):
 
     Returns:
@@ -196,22 +189,14 @@ def fetch_events(client: Client, last_run: dict[str, list], first_fetch_time: in
     id_list = last_run.get('id_list', [])
 
     last_time = last_run.get('start_time', None)
-    last_time_date = arg_to_datetime(last_time)
-    if last_time_date:
-        fetch_time = (datetime.now() - last_time_date).days + 1
-    else:
-        fetch_time = first_fetch_time
     demisto.debug('fetching events')
-    event_list = get_raw_events(client, fetch_time)
+    event_list = get_raw_events(client)
     event_list_for_push, time_of_event, id_list = create_events_for_push(event_list, last_time, id_list, limit)
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'start_time': time_of_event, 'id_list': id_list}
     demisto.debug(f'Setting next run {next_run}.')
     return next_run, event_list_for_push
-
-
-''' MAIN FUNCTION '''
 
 
 def add_time_to_events(events):
@@ -241,7 +226,6 @@ def main() -> None:  # pragma: no cover
     next_run = None
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = params.get('first_fetch', 3)
     proxy = params.get('proxy', False)
     limit = arg_to_number(params.get('number_of_events', 1000))
 
@@ -259,7 +243,7 @@ def main() -> None:  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
+            result = test_module(client, params)
             return_results(result)
 
         elif command == 'digital-guardian-get-events':
@@ -278,7 +262,6 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                first_fetch_time=first_fetch_time,
                 limit=limit
             )
             add_time_to_events(events)

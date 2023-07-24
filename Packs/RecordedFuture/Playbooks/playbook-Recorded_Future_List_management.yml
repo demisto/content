@@ -1,0 +1,463 @@
+id: Recorded Future List Management
+version: -1
+description: Manage, view, and edit your lists in Recorded Future.
+name: Recorded Future List Management
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 26352583-6bb9-4a08-8136-536094826dfe
+    type: start
+    task:
+      id: 26352583-6bb9-4a08-8136-536094826dfe
+      version: -1
+      name: ""
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 91d36804-06a2-4828-8d82-77f91d060805
+    type: regular
+    task:
+      id: 91d36804-06a2-4828-8d82-77f91d060805
+      version: -1
+      name: Search List
+      description: Search for lists in Recorded Future.
+      script: RecordedFutureLists|||recordedfuture-lists-search
+      type: regular
+      iscommand: true
+      brand: RecordedFutureLists
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      limit:
+        simple: "100"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ef8c7fb2-3a7b-40c6-8861-8df242ab8dde
+    type: collection
+    task:
+      id: ef8c7fb2-3a7b-40c6-8861-8df242ab8dde
+      version: -1
+      name: List Options
+      type: collection
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: {}
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Do you want to...
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Add
+        - simple: Remove
+        - simple: View
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which List?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${RecordedFuture.List.name}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: What Entity?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Input entities to add/remove, separate by comma (for urls containing
+          commas: replace comma with %2C). Leave blank if viewing a list.'
+        readonly: false
+      title: Add, Remove, View?
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f6c03720-f49c-4609-8795-968d7908138c
+    type: condition
+    task:
+      id: f6c03720-f49c-4609-8795-968d7908138c
+      version: -1
+      name: Add, Remove, View
+      type: condition
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      add:
+      - "8"
+      remove:
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: add
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Add, Remove, View?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Add
+    - label: remove
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Add, Remove, View?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Remove
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: da0fedcd-8f14-4880-83bf-add93288f372
+    type: regular
+    task:
+      id: da0fedcd-8f14-4880-83bf-add93288f372
+      version: -1
+      name: Add Entities
+      description: Add entities to a list. Separate entities by commas. "NOTE:" If
+        entity type is specified, only one entity type can be added with each action.
+      script: RecordedFutureLists|||recordedfuture-lists-add-entities
+      type: regular
+      iscommand: true
+      brand: RecordedFutureLists
+    scriptarguments:
+      freetext_names:
+        simple: ${Add, Remove, View?.Answers.2}
+      list_id:
+        simple: ${ListID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 81b77ea8-6aca-4fd3-8207-a3d7e0eaa127
+    type: regular
+    task:
+      id: 81b77ea8-6aca-4fd3-8207-a3d7e0eaa127
+      version: -1
+      name: Remove Entities
+      description: Remove entities from a list. Separate entities by commas. "NOTE:"
+        If entity type is specified, only one entity type can be added with each action.
+      script: RecordedFutureLists|||recordedfuture-lists-remove-entities
+      type: regular
+      iscommand: true
+      brand: RecordedFutureLists
+    scriptarguments:
+      freetext_names:
+        simple: ${Add, Remove, View?.Answers.2}
+      list_id:
+        simple: ${ListID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7c6d84c0-cad7-4425-8979-9165e6e29656
+    type: regular
+    task:
+      id: 7c6d84c0-cad7-4425-8979-9165e6e29656
+      version: -1
+      name: View Entities
+      description: Get the entities that are currently in the given lists.
+      script: RecordedFutureLists|||recordedfuture-lists-entities
+      type: regular
+      iscommand: true
+      brand: RecordedFutureLists
+    scriptarguments:
+      list_ids:
+        simple: ${ListID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: adb8def1-12be-4f62-88df-79e8bca2105e
+    type: regular
+    task:
+      id: adb8def1-12be-4f62-88df-79e8bca2105e
+      version: -1
+      name: Get List ID
+      description: Search for lists in Recorded Future.
+      script: RecordedFutureLists|||recordedfuture-lists-search
+      type: regular
+      iscommand: true
+      brand: RecordedFutureLists
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: ListID=id
+      list_names:
+        simple: ${Add, Remove, View?.Answers.1}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: cb4e2d59-cbe0-474e-8a51-ca56ecf04f7f
+    type: regular
+    task:
+      id: cb4e2d59-cbe0-474e-8a51-ca56ecf04f7f
+      version: -1
+      name: Get List ID
+      description: Search for lists in Recorded Future.
+      script: RecordedFutureLists|||recordedfuture-lists-search
+      type: regular
+      iscommand: true
+      brand: RecordedFutureLists
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: ListID=id
+      list_names:
+        simple: ${Add, Remove, View?.Answers.1}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d497f319-1eaa-49cb-8b7e-f3e2100becce
+    type: regular
+    task:
+      id: d497f319-1eaa-49cb-8b7e-f3e2100becce
+      version: -1
+      name: Get List ID
+      description: Search for lists in Recorded Future.
+      script: RecordedFutureLists|||recordedfuture-lists-search
+      type: regular
+      iscommand: true
+      brand: RecordedFutureLists
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: ListID=id
+      ignore-outputs:
+        simple: "false"
+      list_names:
+        simple: ${Add, Remove, View?.Answers.1}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_10_#default#": 0.89,
+      "4_8_add": 0.85,
+      "4_9_remove": 0.66
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1015,
+        "width": 1220,
+        "x": -370,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

@@ -34,12 +34,6 @@ configuration:
   required: true
   type: 0
   section: Connect
-- defaultvalue: 3
-  section: Collect
-  display: First fetch time (Enter only number of days, integer)
-  name: first_fetch
-  required: false
-  type: 0
 - defaultvalue: 1000
   section: Collect
   display: Max events per fetch

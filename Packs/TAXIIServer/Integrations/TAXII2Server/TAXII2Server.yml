@@ -13,6 +13,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: TAXII2 Server version
   name: version
   defaultvalue: "2.1"
@@ -33,6 +34,7 @@ configuration:
   name: credentials
   type: 9
   section: Connect
+  required: false
 - additionalinfo: JSON string of indicator query collections. Dictionary of the collection name as the key and the query as the value.
   defaultvalue: |-
     {
@@ -50,6 +52,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Maximum number of items to return.
   defaultvalue: '2000'
   display: Response Size
@@ -62,28 +65,33 @@ configuration:
   type: 12
   section: Connect
   advanced: true
+  required: false
 - display: Private Key (Required for HTTPS)
   name: key
   type: 14
   section: Connect
   advanced: true
+  required: false
 - display: TAXII2 Service URL Address
   additionalinfo: Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL.
   name: service_address
   type: 0
   section: Connect
+  required: false
 - additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   display: NGINX Global Directives
   name: nginx_global_directives
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   display: NGINX Server Conf
   name: nginx_server_conf
   type: 12
   section: Connect
   advanced: true
+  required: false
 - display: STIX types for STIX indicator Domain Object
   name: provide_as_indicator
   type: 16
@@ -99,6 +107,7 @@ configuration:
   additionalinfo: Choose which STIX Cyber Observable Object provides as STIX Domain Object of 'indicator'
   section: Collect
   advanced: true
+  required: false
 description: This integration provides TAXII2 Services for system indicators (Outbound feed).
 display: TAXII2 Server
 name: TAXII2 Server
