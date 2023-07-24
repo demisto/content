@@ -43,6 +43,8 @@ def main():
 
     github_client: Github = Github(github_token, verify=False)
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
+    print(f'the pr number is {pr_number}')
+    print(f'the type of pr_number is {type(pr_number)}')
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     t = Terminal()
 
