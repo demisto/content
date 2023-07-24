@@ -35,7 +35,7 @@ def stringSimilarity(firstString: str, second_string: str, similarityThreshold: 
         return commandResults
 
     # Raise an exception if none of the conditions are met.
-    raise ValueError("No similarity score calculated. Check the similarityThreshold value.")
+    return ValueError("No similarity score calculated. Check the similarityThreshold value.")
 
 
 def main():
@@ -43,7 +43,7 @@ def main():
     first_string = demisto.getArg('string_A')
     second_string = demisto.getArg('string_B')
     commandResults = stringSimilarity(first_string, second_string, similarity_threshold)
-
+    
     return_results(commandResults)
 
 
